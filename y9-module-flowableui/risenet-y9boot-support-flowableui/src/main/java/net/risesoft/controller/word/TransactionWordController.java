@@ -36,6 +36,8 @@ import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.itemadmin.TransactionHistoryWordModel;
@@ -96,6 +98,7 @@ public class TransactionWordController {
      * @param processInstanceId 流程实例id
      * @param fileType 文件类型
      */
+    @FlowableLog(operationName = "下载历史版本正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downLoadHistoryDoc")
     public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
         @RequestParam(required = false) String processSerialNumber,
@@ -153,6 +156,7 @@ public class TransactionWordController {
      *
      * @param id 正文id
      */
+    @FlowableLog(operationName = "下载正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, @RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber,
@@ -210,6 +214,7 @@ public class TransactionWordController {
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
      */
+    @FlowableLog(operationName = "下载正文（抄送件）", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downloadCS")
     public void downloadCS(@RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber,
@@ -278,6 +283,7 @@ public class TransactionWordController {
     /**
      * 新建正文空白模板
      */
+    @FlowableLog(operationName = "新建正文空白模板", operationType = FlowableOperationTypeEnum.ADD)
     @RequestMapping("/openBlankWordTemplate")
     public void openBlankWordTemplate(HttpServletRequest request, HttpServletResponse response) {
         String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "tags"
@@ -608,6 +614,7 @@ public class TransactionWordController {
      * @param taskId 任务id
      * @return String
      */
+    @FlowableLog(operationName = "转PDF", operationType = FlowableOperationTypeEnum.SAVE)
     @RequestMapping(value = "/saveAsPDFFile")
     public String saveAsPDFFile(@RequestParam(required = false) String fileType,
         @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
@@ -719,6 +726,7 @@ public class TransactionWordController {
      * @param file 文件
      * @return Map<String, Object>
      */
+    @FlowableLog(operationName = "上传正文", operationType = FlowableOperationTypeEnum.UPLOAD)
     @PostMapping(value = "/upload")
     public Map<String, Object> upload(@RequestParam String processSerialNumber,
         @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
@@ -795,6 +803,7 @@ public class TransactionWordController {
      * @param request 请求
      * @return String
      */
+    @FlowableLog(operationName = "保存正文", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/uploadWord")
     public String uploadWord(@RequestParam(required = false) String fileType,
         @RequestParam(required = false) String isTaoHong, @RequestParam String processSerialNumber,

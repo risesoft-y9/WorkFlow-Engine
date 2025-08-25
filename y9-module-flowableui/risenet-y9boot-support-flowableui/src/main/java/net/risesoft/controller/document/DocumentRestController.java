@@ -381,6 +381,7 @@ public class DocumentRestController {
      * @param smsContent 短信内容
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "办件发送", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/forwarding")
     public Y9Result<Map<String, Object>> forwarding(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String sponsorHandle, @RequestParam(required = false) String processInstanceId,

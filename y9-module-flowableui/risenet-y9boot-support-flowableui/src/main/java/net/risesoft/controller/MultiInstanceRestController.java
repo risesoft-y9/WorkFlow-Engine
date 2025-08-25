@@ -24,6 +24,8 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.TaskModel;
@@ -68,6 +70,7 @@ public class MultiInstanceRestController {
      * @param smsContent 短信内容
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "加签", operationType = FlowableOperationTypeEnum.ADD)
     @PostMapping(value = "/addExecutionId")
     public Y9Result<String> addExecutionId(@RequestParam @NotBlank String processInstanceId,
         @RequestParam(required = false) String executionId, @RequestParam @NotBlank String taskId,
@@ -109,8 +112,9 @@ public class MultiInstanceRestController {
         }
         List<Map<String, Object>> listMap = new ArrayList<>();
         if (task != null) {
-            String type = processDefinitionApi
-                .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+            String type =
+                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getData();
             if (SysVariables.PARALLEL.equals(type)) {
                 listMap = multiInstanceService.listAssignee4Parallel(processInstanceId);
             } else if (SysVariables.SEQUENTIAL.equals(type)) {
@@ -134,6 +138,7 @@ public class MultiInstanceRestController {
      * @param elementUser 减签人员
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "并行减签", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/removeExecution")
     public Y9Result<String> removeExecution(@RequestParam @NotBlank String executionId,
         @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser) {
@@ -155,6 +160,7 @@ public class MultiInstanceRestController {
      * @param num 减签序号
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "串行减签", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/removeExecution4Sequential")
     public Y9Result<String> removeExecution4Sequential(@RequestParam @NotBlank String executionId,
         @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser,
@@ -174,6 +180,8 @@ public class MultiInstanceRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
+
+    @FlowableLog(operationName = "设置主办人", operationType = FlowableOperationTypeEnum.ADD)
     @PostMapping(value = "/setSponsor")
     public Y9Result<String> setSponsor(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();

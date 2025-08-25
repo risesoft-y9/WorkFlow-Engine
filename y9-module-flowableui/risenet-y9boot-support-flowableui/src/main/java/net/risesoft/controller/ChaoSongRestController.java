@@ -20,6 +20,8 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.core.DocumentApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.user.UserInfo;
@@ -51,6 +53,7 @@ public class ChaoSongRestController {
      * @param type 意见状态
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "改变抄送件意见状态")
     @PostMapping(value = "/changeChaoSongState")
     public Y9Result<String> changeChaoSongState(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String type) {
@@ -69,6 +72,7 @@ public class ChaoSongRestController {
      * @param ids 抄送id,逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "批量设置抄送状态为已阅")
     @PostMapping(value = "/changeStatus")
     public Y9Result<String> changeStatus(@RequestParam String[] ids) {
         try {
@@ -86,6 +90,7 @@ public class ChaoSongRestController {
      * @param ids 抄送ids，逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "批量删除抄送件", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteList")
     public Y9Result<String> deleteList(@RequestParam String[] ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -141,6 +146,7 @@ public class ChaoSongRestController {
      * @param processDefinitionKey 流程定义key
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "保存抄送信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/save")
     public Y9Result<Map<String, Object>> save(@RequestParam(required = false) String processInstanceId,
         @RequestParam @NotBlank String users, @RequestParam(required = false) String isSendSms,
@@ -185,6 +191,7 @@ public class ChaoSongRestController {
      * @param page 页码
      * @return Y9Page<ChaoSongModel>
      */
+    @FlowableLog(operationName = "搜索抄送列表")
     @GetMapping(value = "/search")
     public Y9Page<ChaoSongModel> search(@RequestParam(required = false) String documentTitle,
         @RequestParam Integer status, @RequestParam int rows, @RequestParam int page) {

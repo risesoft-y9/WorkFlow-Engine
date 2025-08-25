@@ -18,6 +18,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.OrganWordApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -50,6 +52,7 @@ public class OrganWordRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "验证并获取最新编号", operationType = FlowableOperationTypeEnum.CHECK)
     @PostMapping(value = "/checkNumber")
     public Y9Result<Map<String, Object>> checkNumber(@RequestParam @NotBlank String characterValue,
         @RequestParam @NotBlank String custom, @RequestParam Integer year,
@@ -60,8 +63,11 @@ public class OrganWordRestController {
         String userId = person.getPersonId();
         Map<String, Object> map = new HashMap<>(16);
         try {
-            Integer status = organWordApi.checkNumberStr(tenantId, userId, characterValue, custom, year, number, itemId,
-                common, processSerialNumber).getData();
+            Integer status =
+                organWordApi
+                    .checkNumberStr(tenantId, userId, characterValue, custom, year, number, itemId, common,
+                        processSerialNumber)
+                    .getData();
             if (status == 0) {
                 /*
                   当前编号已被使用，获取最新的可以用的编号
@@ -168,14 +174,16 @@ public class OrganWordRestController {
      * @param processSerialNumber
      * @return
      */
+    @FlowableLog(operationName = "保存编号信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveNumberString")
     public Y9Result<Map<String, Object>> saveNumberString(@RequestParam String custom,
         @RequestParam String numberString, @RequestParam String itemId, @RequestParam String processSerialNumber) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
         try {
-            Map<String, Object> map = organWordApi
-                .saveNumberString(tenantId, userId, custom, numberString, itemId, processSerialNumber).getData();
+            Map<String, Object> map =
+                organWordApi.saveNumberString(tenantId, userId, custom, numberString, itemId, processSerialNumber)
+                    .getData();
             return Y9Result.success(map, "保存编号成功");
         } catch (Exception e) {
             LOGGER.error("保存编号失败", e);

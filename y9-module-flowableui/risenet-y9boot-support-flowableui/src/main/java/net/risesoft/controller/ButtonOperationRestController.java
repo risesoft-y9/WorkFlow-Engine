@@ -289,6 +289,7 @@ public class ButtonOperationRestController {
      * @param processDefinitionId 流程定义id
      * @return Y9Result<List < TargetModel>>
      */
+    @FlowableLog(operationName = "获取有办结权限的用户任务集合")
     @RequestMapping(value = "/getContainEndEvent4UserTask", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<TargetModel>> getContainEndEvent4UserTask(@RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -307,7 +308,7 @@ public class ButtonOperationRestController {
      * @return Y9Result<String>
      */
     @SuppressWarnings("unchecked")
-
+    @FlowableLog(operationName = "获取串行办理人顺序")
     @RequestMapping(value = "/getHandleSerial", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<String> getHandleSerial(@RequestParam @NotBlank String taskId) {
         try {
@@ -343,6 +344,7 @@ public class ButtonOperationRestController {
      * @param taskDefKey 任务key
      * @return Y9Result<List < Map < String, String>>>
      */
+    @FlowableLog(operationName = "获取目标任务节点集合")
     @RequestMapping(value = "/getTargetNodes", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<List<TargetModel>> getTargetNodes(@RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskDefKey) {
@@ -378,6 +380,7 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "获取退回或收回的任务列表")
     @SuppressWarnings("unchecked")
     @RequestMapping(value = "/getTaskList", method = RequestMethod.GET, produces = "application/json")
     public Y9Result<Map<String, Object>> getTaskList(@RequestParam @NotBlank String taskId) {

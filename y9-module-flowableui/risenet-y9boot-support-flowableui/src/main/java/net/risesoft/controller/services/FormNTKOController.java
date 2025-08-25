@@ -37,6 +37,8 @@ import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.itemadmin.TransactionHistoryWordModel;
@@ -103,6 +105,7 @@ public class FormNTKOController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
+    @FlowableLog(operationName = "下载历史正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downLoadHistoryDoc")
     public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
         @RequestParam(required = false) String processSerialNumber,
@@ -171,6 +174,7 @@ public class FormNTKOController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
+    @FlowableLog(operationName = "下载正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/download")
     public void download(@RequestParam String id, @RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber,
@@ -233,6 +237,7 @@ public class FormNTKOController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
+    @FlowableLog(operationName = "下载正文（抄送）", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downloadCS")
     public void downloadCS(@RequestParam(required = false) String fileType, @RequestParam String processSerialNumber,
         @RequestParam(required = false) String processInstanceId, @RequestParam String tenantId,
@@ -298,6 +303,7 @@ public class FormNTKOController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
+    @FlowableLog(operationName = "下载正文文件", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber,
@@ -373,6 +379,7 @@ public class FormNTKOController {
     /**
      * 新建正文空白模板
      */
+    @FlowableLog(operationName = "新建正文空白模板", operationType = FlowableOperationTypeEnum.ADD)
     @RequestMapping("/openBlankWordTemplate")
     public void openBlankWordTemplate(HttpServletRequest request, HttpServletResponse response) {
         String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "tags"
@@ -730,6 +737,7 @@ public class FormNTKOController {
      * @param userId 人员id
      * @return String
      */
+    @FlowableLog(operationName = "保存word转PDF的正文", operationType = FlowableOperationTypeEnum.SAVE)
     @SuppressWarnings("unused")
     @RequestMapping(value = "/saveAsPDFFile")
     public String saveAsPDFFile(@RequestParam(required = false) String fileType,
@@ -761,8 +769,11 @@ public class FormNTKOController {
             title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            Boolean result2 = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            Boolean result2 =
+                transactionWordApi
+                    .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
+                        y9FileStore.getDisplayFileSize(), y9FileStore.getId())
+                    .getData();
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
             }
@@ -865,6 +876,7 @@ public class FormNTKOController {
      * @param file 文件
      * @return Map<String, Object>
      */
+    @FlowableLog(operationName = "上传正文文件", operationType = FlowableOperationTypeEnum.UPLOAD)
     @PostMapping(value = "/upload")
     public Map<String, Object> upload(@RequestParam String processSerialNumber,
         @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
@@ -916,8 +928,11 @@ public class FormNTKOController {
             String title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
-            Boolean result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            Boolean result =
+                transactionWordApi
+                    .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
+                        y9FileStore.getDisplayFileSize(), y9FileStore.getId())
+                    .getData();
             if (Boolean.TRUE.equals(result)) {
                 map.put(UtilConsts.SUCCESS, true);
                 if (fileType != null && (fileType.equals(".pdf") || fileType.equals(".tif"))) {
@@ -944,6 +959,7 @@ public class FormNTKOController {
      * @param userId 人员id
      * @return String
      */
+    @FlowableLog(operationName = "保存正文", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/uploadWord")
     public String uploadWord(@RequestParam(required = false) String fileType,
         @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String docCategory,
@@ -972,8 +988,11 @@ public class FormNTKOController {
             title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            Boolean result2 = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, docCategory, taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            Boolean result2 =
+                transactionWordApi
+                    .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, docCategory, taskId,
+                        y9FileStore.getDisplayFileSize(), y9FileStore.getId())
+                    .getData();
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
             }

@@ -17,6 +17,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.SpeakInfoApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -42,6 +44,7 @@ public class SpeakInfoRestController {
      * @param id 信息id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除沟通交流信息", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteById")
     public Y9Result<Object> deleteById(@RequestParam @NotBlank String id) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -56,6 +59,7 @@ public class SpeakInfoRestController {
      * @param processInstanceId 流程实例id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存沟通交流信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String content,
         @RequestParam @NotBlank String processInstanceId) {

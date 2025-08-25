@@ -16,6 +16,8 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -54,6 +56,7 @@ public class CommonSentencesRestController {
      * @param tabIndex 序号
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除个人常用语", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam int tabIndex) {
         try {
@@ -89,6 +92,7 @@ public class CommonSentencesRestController {
      * @param content 内容
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存个人常用语", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/save")
     public Y9Result<String> save(@RequestParam @NotBlank String content) {
         try {
@@ -109,6 +113,7 @@ public class CommonSentencesRestController {
      * @param tabIndex 序号
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "修改个人常用语", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveEdit")
     public Y9Result<String> saveEdit(@RequestParam @NotBlank String content, @RequestParam @NotBlank String tabIndex) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();

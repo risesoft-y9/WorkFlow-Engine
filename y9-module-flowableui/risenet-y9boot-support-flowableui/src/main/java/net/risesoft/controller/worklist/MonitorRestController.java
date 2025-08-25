@@ -23,6 +23,8 @@ import net.risesoft.api.itemadmin.TransactionWordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.pojo.Y9Page;
@@ -151,6 +153,7 @@ public class MonitorRestController {
      * @param processInstanceIds 流程实例ids，逗号隔开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "批量彻底删除流程实例", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/removeProcess")
     public Y9Result<String> removeProcess(@RequestParam @NotBlank String processInstanceIds) {
         String tenantId = Y9LoginUserHolder.getTenantId();

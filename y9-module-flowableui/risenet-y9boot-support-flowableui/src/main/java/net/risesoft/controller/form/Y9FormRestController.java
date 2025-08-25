@@ -94,6 +94,7 @@ public class Y9FormRestController {
      * @param guid 主键id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除子表单数据", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delChildTableRow")
     public Y9Result<String> delChildTableRow(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String tableId, @RequestParam @NotBlank String guid) {

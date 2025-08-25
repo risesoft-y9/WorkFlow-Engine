@@ -26,6 +26,8 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
@@ -100,6 +102,7 @@ public class OpinionRestController {
      * @param id 意见id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除意见", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam @NotBlank String id) {
         try {
@@ -272,6 +275,7 @@ public class OpinionRestController {
      * @param jsonData 意见实体json
      * @return Y9Result<OpinionModel>
      */
+    @FlowableLog(operationName = "保存意见", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<OpinionModel> save(@RequestParam @NotBlank String jsonData) {
         try {
@@ -294,6 +298,7 @@ public class OpinionRestController {
      * @param id 意见id
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "更新意见", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/updateOpinion")
     public Y9Result<Object> updateOpinion(@RequestParam @NotBlank String content, @RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();

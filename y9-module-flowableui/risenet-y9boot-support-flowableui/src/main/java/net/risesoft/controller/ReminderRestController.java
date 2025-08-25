@@ -15,6 +15,8 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ReminderApi;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ReminderModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -43,6 +45,7 @@ public class ReminderRestController {
      * @param ids 催办id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "删除催办信息", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteList")
     public Y9Result<String> deleteList(@RequestParam String[] ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -97,6 +100,7 @@ public class ReminderRestController {
      * @param msgContent 催办信息
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存催办信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveReminder")
     public Y9Result<String> saveReminder(@RequestParam @NotBlank String processInstanceId,
         @RequestParam String[] taskIds, @RequestParam @NotBlank String msgContent) {
@@ -111,6 +115,7 @@ public class ReminderRestController {
      * @param ids 催办id
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "批量设置催办阅读时间", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/setReadTime")
     public Y9Result<String> setReadTime(@RequestParam String[] ids) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -139,6 +144,7 @@ public class ReminderRestController {
      * @param msgContent 催办信息
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "更新催办信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/updateReminder")
     public Y9Result<String> updateReminder(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String msgContent) {
