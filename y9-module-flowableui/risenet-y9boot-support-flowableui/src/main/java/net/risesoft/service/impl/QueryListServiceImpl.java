@@ -18,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
-import net.risesoft.api.itemadmin.form.FormDataApi;
 import net.risesoft.api.itemadmin.worklist.QueryListApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
@@ -32,6 +31,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
+import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.QueryListService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
@@ -44,7 +44,7 @@ public class QueryListServiceImpl implements QueryListService {
 
     private final ItemApi itemApi;
 
-    private final FormDataApi formDataApi;
+    private final HandleFormDataService handleFormDataService;
 
     private final OfficeFollowApi officeFollowApi;
 
@@ -147,9 +147,10 @@ public class QueryListServiceImpl implements QueryListService {
             List<ActRuDetailModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
-            Map<String, Object> formDataMap;
             String processInstanceId;
+            List<String> processSerialNumbers = new ArrayList<>();
             for (ActRuDetailModel actRuDetail : hpiModelList) {
+                processSerialNumbers.add(actRuDetail.getProcessSerialNumber());
                 mapTemp = new HashMap<>(16);
                 processInstanceId = actRuDetail.getProcessInstanceId();
                 String processSerialNumber = actRuDetail.getProcessSerialNumber();
@@ -185,8 +186,6 @@ public class QueryListServiceImpl implements QueryListService {
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
                     }
-                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                    mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
                     int countFollow =
                         officeFollowApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
@@ -198,6 +197,7 @@ public class QueryListServiceImpl implements QueryListService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
+            handleFormDataService.execute(itemId, items, processSerialNumbers);
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取列表失败", e);

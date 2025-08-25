@@ -1,5 +1,8 @@
 package net.risesoft.service;
 
+import java.util.List;
+import java.util.Map;
+
 import org.springframework.data.domain.Page;
 
 import net.risesoft.entity.DraftEntity;
@@ -51,6 +54,8 @@ public interface DraftEntityService {
      * @return
      */
     Page<DraftEntity> pageDraftList(String itemId, String userId, int page, int rows, String title, boolean delFlag);
+
+    void handelFormData(String itemId, List<Map<String, Object>> items, List<String> processSerialNumbers);
 
     /**
      *

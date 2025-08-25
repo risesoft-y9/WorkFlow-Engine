@@ -20,13 +20,11 @@ import net.risesoft.api.itemadmin.RemindInstanceApi;
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
-import net.risesoft.api.itemadmin.form.FormDataApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDoingApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.processadmin.SysVariables;
-import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
@@ -36,6 +34,7 @@ import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoingService;
+import net.risesoft.service.HandleFormDataService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -57,7 +56,7 @@ public class DoingServiceImpl implements DoingService {
 
     private final ChaoSongApi chaoSongApi;
 
-    private final FormDataApi formDataApi;
+    private final HandleFormDataService handleFormDataService;
 
     private final SpeakInfoApi speakInfoApi;
 
@@ -76,16 +75,15 @@ public class DoingServiceImpl implements DoingService {
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
+            List<String> processSerialNumbers = new ArrayList<>();
             if (StringUtils.isBlank(searchTerm)) {
                 piPage = this.processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId,
                     positionId, processDefinitionKey, page, rows);
                 List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
-                Map<String, Object> formDataMap;
                 ProcessParamModel processParam;
-                ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
-                String processInstanceId = "";
+                String processInstanceId = "", processSerialNumber = "", documentTitle, level = "", number = "";
                 for (ProcessInstanceModel piModel : hpiModelList) {// 以办理时间排序
                     mapTemp = new HashMap<>(16);
                     try {
@@ -103,11 +101,18 @@ public class DoingServiceImpl implements DoingService {
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                         processParam =
                             this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        String processSerialNumber = processParam.getProcessSerialNumber();
-                        String documentTitle =
-                            StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
-                        String level = processParam.getCustomLevel();
-                        String number = processParam.getCustomNumber();
+                        if (null == processParam) {
+                            documentTitle = "流程参数表数据不存在";
+                        } else {
+                            documentTitle =
+                                StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
+                            level = processParam.getCustomLevel();
+                            number = processParam.getCustomNumber();
+                            processSerialNumber = processParam.getProcessSerialNumber();
+                            processSerialNumbers.add(processSerialNumber);
+                        }
+                        mapTemp.put(SysVariables.LEVEL, level);
+                        mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("itemName", itemName);
                         mapTemp.put("processDefinitionKey", processDefinitionKey);
                         mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
@@ -120,8 +125,6 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put(SysVariables.ITEM_ID, itemId);
-                        mapTemp.put(SysVariables.LEVEL, level);
-                        mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("isReminder", isReminder);
                         int chaosongNum =
                             this.chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId)
@@ -129,17 +132,6 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
-                        formDataMap = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                        if (formDataMap.get("leaveType") != null) {
-                            String leaveType = (String)formDataMap.get("leaveType");
-                            for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
-                                if (leaveType.equals(leaveTypeEnum.getValue())) {
-                                    formDataMap.put("leaveType", leaveTypeEnum.getName());
-                                    break;
-                                }
-                            }
-                        }
-                        mapTemp.putAll(formDataMap);
                         mapTemp.put("processInstanceId", processInstanceId);
                         int speakInfoNum = this.speakInfoApi
                             .getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId)
@@ -153,7 +145,6 @@ public class DoingServiceImpl implements DoingService {
                         if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                             mapTemp.put("remindSetting", true);
                         }
-
                         int countFollow =
                             this.officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId)
                                 .getData();
@@ -165,15 +156,15 @@ public class DoingServiceImpl implements DoingService {
                     serialNumber += 1;
                     items.add(mapTemp);
                 }
+                handleFormDataService.execute(itemId, items, processSerialNumbers);
             } else {
                 piPage = this.processDoingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                     processDefinitionKey, searchTerm, page, rows);
                 List<ProcessInstanceModel> hpiModelList = piPage.getRows();
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
-                Map<String, Object> formDataMap;
                 ProcessParamModel processParam;
-                String processInstanceId = "";
+                String processInstanceId = "", processSerialNumber = "", documentTitle, level = "", number = "";
                 for (ProcessInstanceModel piModel : hpiModelList) {
                     mapTemp = new HashMap<>(16);
                     try {
@@ -187,17 +178,25 @@ public class DoingServiceImpl implements DoingService {
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                         processParam =
                             this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        String processSerialNumber = processParam.getProcessSerialNumber();
-                        String documentTitle =
-                            StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
-                        String level = processParam.getCustomLevel();
-                        String number = processParam.getCustomNumber();
+                        if (null == processParam) {
+                            documentTitle = "流程参数表数据不存在";
+                        } else {
+                            documentTitle =
+                                StringUtils.isBlank(processParam.getTitle()) ? "无标题" : processParam.getTitle();
+                            level = processParam.getCustomLevel();
+                            number = processParam.getCustomNumber();
+                            processSerialNumber = processParam.getProcessSerialNumber();
+                            processSerialNumbers.add(processSerialNumber);
+                        }
+
+                        mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
+                        mapTemp.put(SysVariables.LEVEL, level);
+                        mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put("itemName", itemName);
                         mapTemp.put("processInstanceId", processInstanceId);
                         mapTemp.put("processDefinitionKey", processDefinitionKey);
                         mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                         mapTemp.put("processDefinitionId", processDefinitionId);
-                        mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                         mapTemp.put("taskName", taskList.get(0).getName());
                         mapTemp.put("taskCreateTime", sdf.format(taskList.get(0).getCreateTime()));
@@ -205,8 +204,7 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put(SysVariables.ITEM_ID, itemId);
-                        mapTemp.put(SysVariables.LEVEL, level);
-                        mapTemp.put(SysVariables.NUMBER, number);
+
                         mapTemp.put("isReminder", isReminder);
                         int chaosongNum =
                             this.chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId)
@@ -214,8 +212,6 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("chaosongNum", chaosongNum);
                         mapTemp.put("status", 1);
                         mapTemp.put("taskDueDate", "");
-                        formDataMap = this.formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                        mapTemp.putAll(formDataMap);
                         mapTemp.put("processInstanceId", processInstanceId);
                         int speakInfoNum = this.speakInfoApi
                             .getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId)
@@ -228,6 +224,7 @@ public class DoingServiceImpl implements DoingService {
                     serialNumber += 1;
                     items.add(mapTemp);
                 }
+                handleFormDataService.execute(itemId, items, processSerialNumbers);
             }
             return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {

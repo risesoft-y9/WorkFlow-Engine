@@ -212,7 +212,16 @@ public class FormDataApiImpl implements FormDataApi {
     public Y9Result<Map<String, Object>> getData(@RequestParam String tenantId, @RequestParam String itemId,
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> map = formDataService.getData(tenantId, itemId, processSerialNumber);
+        Map<String, Object> map = formDataService.getData(itemId, processSerialNumber);
+        return Y9Result.success(map);
+    }
+
+    @Override
+    public Y9Result<Map<String, Map<String, Object>>> getDataByProcessSerialNumbers(@RequestParam String tenantId,
+        @RequestParam String itemId, @RequestParam List<String> processSerialNumbers) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Map<String, Map<String, Object>> map =
+            formDataService.getDataByProcessSerialNumbers(itemId, processSerialNumbers);
         return Y9Result.success(map);
     }
 

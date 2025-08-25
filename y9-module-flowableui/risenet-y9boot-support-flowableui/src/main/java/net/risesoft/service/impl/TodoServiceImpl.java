@@ -26,15 +26,11 @@ import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.itemadmin.TaskVariableApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
-import net.risesoft.api.itemadmin.form.FormDataApi;
-import net.risesoft.api.itemadmin.worklist.ItemTodoApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
-import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
-import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.itemadmin.TaskVariableModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
@@ -42,6 +38,7 @@ import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
+import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.TodoService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -65,8 +62,6 @@ public class TodoServiceImpl implements TodoService {
 
     private final ChaoSongApi chaoSongApi;
 
-    private final FormDataApi formDataApi;
-
     private final TaskVariableApi taskvariableApi;
 
     private final SpeakInfoApi speakInfoApi;
@@ -75,9 +70,7 @@ public class TodoServiceImpl implements TodoService {
 
     private final OfficeFollowApi officeFollowApi;
 
-    private final ItemTodoApi itemTodoApi;
-
-    private final TaskApi taskApi;
+    private final HandleFormDataService handleFormDataService;
 
     @Override
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
@@ -102,9 +95,9 @@ public class TodoServiceImpl implements TodoService {
             Map<String, Object> vars;
             Collection<String> keys;
             Map<String, Object> mapTemp;
-            Map<String, Object> formDataMap;
             ProcessParamModel processParam;
             String taskId;
+            List<String> processSerialNumbers = new ArrayList<>();
             for (TaskModel task : taslList) {
                 mapTemp = new HashMap<>(16);
                 taskId = task.getId();
@@ -125,8 +118,9 @@ public class TodoServiceImpl implements TodoService {
                     Boolean isReminder = String.valueOf(priority).contains("8");// 催办的时候任务的优先级+5
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String processSerialNumber = processParam.getProcessSerialNumber();
-                    String level = processParam.getCustomLevel();
-                    String number = processParam.getCustomNumber();
+                    processSerialNumbers.add(processSerialNumber);
+                    mapTemp.put(SysVariables.LEVEL, processParam.getCustomLevel());
+                    mapTemp.put(SysVariables.NUMBER, processParam.getCustomNumber());
                     mapTemp.put("itemId", itemId);
                     mapTemp.put("itemName", itemName);
                     mapTemp.put("processDefinitionKey", processDefinitionKey);
@@ -141,7 +135,6 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put(SysVariables.TASK_SENDER, taskSender);
                     mapTemp.put(SysVariables.IS_NEW_TODO, isNewTodo);
                     mapTemp.put(SysVariables.IS_REMINDER, isReminder);
-                    mapTemp.put(SysVariables.NUMBER, number);
                     String multiInstance = processDefinitionApi
                         .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
                         .getData();
@@ -173,19 +166,6 @@ public class TodoServiceImpl implements TodoService {
                     if (taskVariableModel != null) {// 是否正在发送标识
                         mapTemp.put("isForwarding", taskVariableModel.getText().contains("true"));
                     }
-                    formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                    if (formDataMap.get("leaveType") != null) {
-                        String leaveType = (String)formDataMap.get("leaveType");
-                        ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
-                        for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
-                            if (leaveType.equals(leaveTypeEnum.getValue())) {
-                                formDataMap.put("leaveType", leaveTypeEnum.getName());
-                                break;
-                            }
-                        }
-                    }
-                    mapTemp.put(SysVariables.LEVEL, level);
-                    mapTemp.putAll(formDataMap);
                     mapTemp.put("processInstanceId", processInstanceId);
                     int speakInfoNum =
                         speakInfoApi.getNotReadCount(tenantId, Y9LoginUserHolder.getPersonId(), processInstanceId)
@@ -198,7 +178,6 @@ public class TodoServiceImpl implements TodoService {
                     if (remindInstanceModel != null) {// 流程实例是否设置消息提醒
                         mapTemp.put("remindSetting", true);
                     }
-
                     int countFollow =
                         officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
@@ -228,11 +207,12 @@ public class TodoServiceImpl implements TodoService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
+            handleFormDataService.execute(itemId, items, processSerialNumbers);
             return Y9Page.success(page, taskPage.getTotalPages(), taskPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取待办异常", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.failure(0, 0, 0, List.of(), "获取列表失败", 500);
     }
 
     @Override

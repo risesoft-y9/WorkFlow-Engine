@@ -47,7 +47,7 @@ public class DraftApiImpl implements DraftApi {
 
     private final DraftEntityRepository draftEntityRepository;
 
-    private final ItemRepository spmApproveitemRepository;
+    private final ItemRepository itemRepository;
 
     private final FormDataService formDataService;
 
@@ -97,7 +97,7 @@ public class DraftApiImpl implements DraftApi {
     public Y9Result<Integer> getDeleteDraftCount(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        int count = 0;
+        int count;
         if (StringUtils.isEmpty(itemId)) {
             count = draftEntityRepository.countByCreaterIdAndDelFlagTrue(orgUnitId);
         } else {
@@ -141,7 +141,7 @@ public class DraftApiImpl implements DraftApi {
         @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
-        int count = 0;
+        int count;
         if (StringUtils.isEmpty(itemId)) {
             count = draftEntityRepository.countByCreaterIdAndDelFlagFalse(orgUnitId);
         } else {
@@ -173,15 +173,16 @@ public class DraftApiImpl implements DraftApi {
         }
         Page<DraftEntity> pageList = draftEntityService.pageDraftList(itemId, orgUnitId, page, rows, title, delFlag);
         List<Map<String, Object>> draftList = new ArrayList<>();
-        Map<String, Object> formDataMap = null;
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         int number = (page - 1) * rows;
         ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
+        List<String> processSerialNumbers = new ArrayList<>();
         for (DraftEntity draftEntity : pageList) {
+            processSerialNumbers.add(draftEntity.getProcessSerialNumber());
             Map<String, Object> retMap = new HashMap<>(16);
-            Optional<Item> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
-            if (spmApproveitem.isPresent() && spmApproveitem.get().getId() != null) {
-                retMap.put("itemName", spmApproveitem.get().getName());
+            Optional<Item> item = itemRepository.findById(draftEntity.getItemId());
+            if (item.isPresent() && item.get().getId() != null) {
+                retMap.put("itemName", item.get().getName());
             } else {
                 retMap.put("itemName", "");
             }
@@ -198,22 +199,10 @@ public class DraftApiImpl implements DraftApi {
             retMap.put("title", StringUtils.isEmpty(draftEntity.getTitle()) ? "无标题" : draftEntity.getTitle());
             retMap.put("urgency", draftEntity.getUrgency());
             retMap.put("draftTime", sdf.format(draftEntity.getDraftTime()));
-
-            formDataMap = formDataService.getData(tenantId, itemId, draftEntity.getProcessSerialNumber());
-            if (formDataMap.get("leaveType") != null) {
-                String leaveType = (String)formDataMap.get("leaveType");
-                for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
-                    if (leaveType.equals(leaveTypeEnum.getValue())) {
-                        formDataMap.put("leaveType", leaveTypeEnum.getName());
-                        break;
-                    }
-                }
-            }
-            retMap.putAll(formDataMap);
-
             draftList.add(retMap);
             number += 1;
         }
+        draftEntityService.handelFormData(itemId, draftList, processSerialNumbers);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), draftList);
     }
 
@@ -246,9 +235,9 @@ public class DraftApiImpl implements DraftApi {
         for (DraftEntity draftEntity : pageList) {
             DraftModel model = new DraftModel();
             Y9BeanUtil.copyProperties(draftEntity, model);
-            Optional<Item> spmApproveitem = spmApproveitemRepository.findById(draftEntity.getItemId());
-            if (spmApproveitem.isPresent() && spmApproveitem.get().getId() != null) {
-                model.setItemName(spmApproveitem.get().getName());
+            Optional<Item> item = itemRepository.findById(draftEntity.getItemId());
+            if (item.isPresent() && item.get().getId() != null) {
+                model.setItemName(item.get().getName());
             } else {
                 model.setItemName("");
             }
