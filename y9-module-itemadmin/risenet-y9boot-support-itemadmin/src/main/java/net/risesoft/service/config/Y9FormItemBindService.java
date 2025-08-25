@@ -46,6 +46,15 @@ public interface Y9FormItemBindService {
     void deleteBindInfo(String itemId);
 
     /**
+     * Description: 获取PC段表单绑定的最大顺序
+     * 
+     * @param itemId
+     * @param processDefinitionId
+     * @return
+     */
+    Integer getMaxTabIndex(String itemId, String processDefinitionId);
+
+    /**
      * 根据id获取绑定信息
      *
      * @param id
@@ -136,5 +145,12 @@ public interface Y9FormItemBindService {
      * @return
      */
     Y9Result<String> save(Y9FormItemMobileBind eformItem);
+
+    /**
+     * Description: 批量更新排序
+     * 
+     * @param idAndTabIndexs
+     */
+    void updateOrder(String[] idAndTabIndexs);
 
 }

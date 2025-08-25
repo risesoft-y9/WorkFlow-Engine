@@ -49,4 +49,5 @@ public interface Y9FormItemMobileBindRepository
 
     @Transactional
     void deleteByItemId(String itemId);
+
 }

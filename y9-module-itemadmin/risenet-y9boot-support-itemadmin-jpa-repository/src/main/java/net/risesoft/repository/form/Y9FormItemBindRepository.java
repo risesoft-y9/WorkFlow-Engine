@@ -6,6 +6,7 @@ import jakarta.transaction.Transactional;
 
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
+import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 
 import net.risesoft.entity.form.Y9FormItemBind;
@@ -48,4 +49,18 @@ public interface Y9FormItemBindRepository
 
     @Transactional
     void deleteByItemId(String itemId);
+
+    @Query("select max(t.tabIndex) from Y9FormItemBind t where t.itemId=?1 and t.processDefinitionId=?2 ")
+    Integer getMaxTabIndex(String itemId, String processDefinitionId);
+
+    /**
+     * 根据id修改tabIndex
+     *
+     * @param tabIndex
+     * @param id
+     */
+    @Modifying
+    @Transactional
+    @Query("update Y9FormItemBind t set t.tabIndex=?1 where t.id=?2")
+    void updateOrder(Integer tabIndex, String id);
 }
