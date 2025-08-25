@@ -145,6 +145,19 @@ public interface FormDataApi {
         @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
+     * 根据事项id和流程编号集合获取数据
+     *
+     * @param tenantId 租户id
+     * @param itemId 事项id
+     * @param processSerialNumbers 流程编号集合
+     * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @GetMapping("/getDataByProcessSerialNumbers")
+    Y9Result<Map<String, Map<String, Object>>> getDataByProcessSerialNumbers(@RequestParam("tenantId") String tenantId,
+        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumbers") List<String> processSerialNumbers);
+
+    /**
      * 获取字段权限
      *
      * @param tenantId 租户id

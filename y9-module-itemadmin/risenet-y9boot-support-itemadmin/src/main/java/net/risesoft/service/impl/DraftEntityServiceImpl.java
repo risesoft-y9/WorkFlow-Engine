@@ -3,6 +3,7 @@ package net.risesoft.service.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
@@ -22,6 +23,7 @@ import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OpenDataModel;
@@ -35,6 +37,7 @@ import net.risesoft.service.config.ItemStartNodeRoleService;
 import net.risesoft.service.core.DocumentService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.core.ProcessParamService;
+import net.risesoft.service.form.FormDataService;
 import net.risesoft.service.word.TransactionWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -53,7 +56,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     private final DraftEntityRepository draftEntityRepository;
 
-    private final ItemService spmApproveitemService;
+    private final ItemService itemService;
 
     private final DocumentService documentService;
 
@@ -68,6 +71,8 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     private final ItemStartNodeRoleService itemStartNodeRoleService;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final FormDataService formDataService;
 
     @Transactional
     @Override
@@ -106,7 +111,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     public OpenDataModel openDraft(String processSerialNumber, String itemId, boolean mobile) {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         OpenDataModel model = new OpenDataModel();
-        Item item = spmApproveitemService.findById(itemId);
+        Item item = itemService.findById(itemId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
@@ -152,6 +157,35 @@ public class DraftEntityServiceImpl implements DraftEntityService {
             }
         }
         return list;
+    }
+
+    @Override
+    public void handelFormData(String itemId, List<Map<String, Object>> items, List<String> processSerialNumbers) {
+        Map<String, Map<String, Object>> formDataResultData =
+            formDataService.getDataByProcessSerialNumbers(itemId, processSerialNumbers);
+        items.forEach(map -> {
+            Map<String, Object> formDataMap = formDataResultData.get(map.get("processSerialNumber").toString());
+            if (null != formDataMap) {
+                formatFormData(formDataMap);
+                map.putAll(formDataMap);
+            } else {
+                LOGGER.error("流程序列号{}对应的表单数据为null！", map.get("processSerialNumber"));
+            }
+        });
+
+    }
+
+    void formatFormData(Map<String, Object> map) {
+        if (map.get("leaveType") != null) {
+            String leaveType = (String)map.get("leaveType");
+            ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
+            for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
+                if (leaveType.equals(leaveTypeEnum.getValue())) {
+                    map.put("leaveType", leaveTypeEnum.getName());
+                    break;
+                }
+            }
+        }
     }
 
     @Override
@@ -237,7 +271,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                 if (StringUtils.isNotBlank(type)) {
                     draft.setType(type);
                 }
-                Item item = spmApproveitemService.findById(itemId);
+                Item item = itemService.findById(itemId);
                 if (null != item) {
                     if (StringUtils.isBlank(type)) {
                         draft.setType(item.getSystemName());
@@ -282,7 +316,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                     if (StringUtils.isNotBlank(type)) {
                         draft.setType(type);
                     }
-                    Item item = spmApproveitemService.findById(itemId);
+                    Item item = itemService.findById(itemId);
                     if (null != item) {
                         if (StringUtils.isBlank(type)) {
                             draft.setType(item.getSystemName());

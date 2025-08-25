@@ -237,11 +237,11 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public Map<String, Object> findById(String itemId, Map<String, Object> map) {
-        Item spmApproveitem = itemRepository.findById(itemId).orElse(null);
-        if (spmApproveitem != null) {
-            map.put("processDefinitionKey", spmApproveitem.getWorkflowGuid());
-            map.put("itemId", spmApproveitem.getId());
-            map.put("type", spmApproveitem.getType() == null ? "" : spmApproveitem.getType());
+        Item item = itemRepository.findById(itemId).orElse(null);
+        if (item != null) {
+            map.put("processDefinitionKey", item.getWorkflowGuid());
+            map.put("itemId", item.getId());
+            map.put("type", item.getType() == null ? "" : item.getType());
         }
         return map;
     }

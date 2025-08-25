@@ -19,15 +19,12 @@ import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
-import net.risesoft.api.itemadmin.core.ProcessParamApi;
-import net.risesoft.api.itemadmin.form.FormDataApi;
-import net.risesoft.api.itemadmin.worklist.ItemDoneApi;
 import net.risesoft.consts.processadmin.SysVariables;
-import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoneService;
+import net.risesoft.service.HandleFormDataService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @RequiredArgsConstructor
@@ -40,15 +37,11 @@ public class DoneServiceImpl implements DoneService {
 
     private final ChaoSongApi chaoSongApi;
 
-    private final FormDataApi formDataApi;
-
     private final OfficeDoneInfoApi officeDoneInfoApi;
 
     private final OfficeFollowApi officeFollowApi;
 
-    private final ItemDoneApi itemDoneApi;
-
-    private final ProcessParamApi processParamApi;
+    private final HandleFormDataService handleFormDataService;
 
     @Override
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
@@ -63,20 +56,23 @@ public class DoneServiceImpl implements DoneService {
         List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
         int serialNumber = (page - 1) * rows;
         Map<String, Object> mapTemp;
-        Map<String, Object> formDataMap;
-        ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
+        List<String> processSerialNumbers = new ArrayList<>();
         String processInstanceId;
-        for (OfficeDoneInfoModel hpim : hpiModelList) {
+        for (OfficeDoneInfoModel officeDoneInfo : hpiModelList) {
             mapTemp = new HashMap<>(16);
-            processInstanceId = hpim.getProcessInstanceId();
+            processInstanceId = officeDoneInfo.getProcessInstanceId();
             try {
-                String processDefinitionId = hpim.getProcessDefinitionId();
-                String startTime = hpim.getStartTime().substring(0, 16), endTime = hpim.getEndTime().substring(0, 16);
-                String processSerialNumber = hpim.getProcessSerialNumber();
-                String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                String level = hpim.getUrgency();
-                String number = hpim.getDocNumber();
-                String completer = StringUtils.isBlank(hpim.getUserComplete()) ? "无" : hpim.getUserComplete();
+                String processDefinitionId = officeDoneInfo.getProcessDefinitionId();
+                String startTime = officeDoneInfo.getStartTime().substring(0, 16),
+                    endTime = officeDoneInfo.getEndTime().substring(0, 16);
+                String processSerialNumber = officeDoneInfo.getProcessSerialNumber();
+                processSerialNumbers.add(processSerialNumber);
+                String documentTitle =
+                    StringUtils.isBlank(officeDoneInfo.getTitle()) ? "无标题" : officeDoneInfo.getTitle();
+                String level = officeDoneInfo.getUrgency();
+                String number = officeDoneInfo.getDocNumber();
+                String completer =
+                    StringUtils.isBlank(officeDoneInfo.getUserComplete()) ? "无" : officeDoneInfo.getUserComplete();
                 mapTemp.put("itemName", itemName);
                 mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                 mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
@@ -92,19 +88,7 @@ public class DoneServiceImpl implements DoneService {
                 int chaosongNum =
                     chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
                 mapTemp.put("chaosongNum", chaosongNum);
-                formDataMap = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                if (formDataMap.get("leaveType") != null) {
-                    String leaveType = (String)formDataMap.get("leaveType");
-                    for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
-                        if (leaveType.equals(leaveTypeEnum.getValue())) {
-                            formDataMap.put("leaveType", leaveTypeEnum.getName());
-                            break;
-                        }
-                    }
-                }
-                mapTemp.putAll(formDataMap);
                 mapTemp.put("processInstanceId", processInstanceId);
-
                 int countFollow =
                     officeFollowApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
                 mapTemp.put("follow", countFollow > 0);
@@ -115,6 +99,7 @@ public class DoneServiceImpl implements DoneService {
             serialNumber += 1;
             items.add(mapTemp);
         }
+        handleFormDataService.execute(itemId, items, processSerialNumbers);
         return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
     }
 

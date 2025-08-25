@@ -47,12 +47,20 @@ public interface FormDataService {
     /**
      * 根据事项id和流程编号获取数据
      *
-     * @param tenantId
      * @param itemId
      * @param processSerialNumber
      * @return
      */
-    Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber);
+    Map<String, Object> getData(String itemId, String processSerialNumber);
+
+    /**
+     * 根据事项id和流程编号获取数据
+     *
+     * @param itemId
+     * @param processSerialNumbers
+     * @return
+     */
+    Map<String, Map<String, Object>> getDataByProcessSerialNumbers(String itemId, List<String> processSerialNumbers);
 
     /**
      * 获取字段权限

@@ -4,6 +4,7 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -192,13 +193,14 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
-    public Map<String, Object> getData(String tenantId, String itemId, String processSerialNumber) {
+    public Map<String, Object> getData(String itemId, String processSerialNumber) {
         Map<String, Object> retMap = new HashMap<>(16);
         try {
             Item item = itemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey)
+                    .getData();
             List<Y9FormItemBind> formList =
                 y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             formList.forEach(bind -> {
@@ -219,6 +221,82 @@ public class FormDataServiceImpl implements FormDataService {
             e.printStackTrace();
         }
         return retMap;
+    }
+
+    @Override
+    public Map<String, Map<String, Object>> getDataByProcessSerialNumbers(String itemId,
+        List<String> processSerialNumbers) {
+        Map<String, Map<String, Object>> retMap = new HashMap<>();
+        try {
+            Item item = itemService.findById(itemId);
+            String processDefineKey = item.getWorkflowGuid();
+            ProcessDefinitionModel processDefinition =
+                repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey)
+                    .getData();
+            List<Y9FormItemBind> formList =
+                y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+            List<Map<String, Object>> mapList = new ArrayList<>();
+            formList.forEach(bind -> {
+                String formId = bind.getFormId();
+                List<String> tableNameList = y9FormRepository.findBindTableName(formId);
+                tableNameList.forEach(tableName -> {
+                    Y9Table y9Table = y9TableService.findByTableName(tableName);
+                    if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN)) {
+                        String placeholders = String.join(",", Collections.nCopies(processSerialNumbers.size(), "?"));
+                        String sql =
+                            "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID IN (" + placeholders + ")";
+                        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, processSerialNumbers.toArray());
+                        mapList.addAll(list);
+                    }
+                });
+            });
+            retMap = mergeMapsByKeyValueNonNullPriority(mapList, "guid");
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+        return retMap;
+    }
+
+    /**
+     * 合并具有相同key的Map，对于相同字段，优先保留非null值
+     * 
+     * @param listMap 要合并的Map列表
+     * @param key 用于判断相等的键名
+     * @return 合并后的Map
+     */
+    public Map<String, Map<String, Object>> mergeMapsByKeyValueNonNullPriority(List<Map<String, Object>> listMap,
+        String key) {
+        Map<String, Map<String, Object>> mergedMap = new HashMap<>();
+        for (Map<String, Object> map : listMap) {
+            String keyValue = findValueIgnoreCase(map, key);
+            if (keyValue != null) {
+                if (mergedMap.containsKey(keyValue)) {
+                    // 如果已存在该key值，合并两个map，优先保留非null值
+                    Map<String, Object> existingMap = mergedMap.get(keyValue);
+                    for (Map.Entry<String, Object> entry : map.entrySet()) {
+                        String entryKey = entry.getKey();
+                        Object entryValue = entry.getValue();
+                        // 如果新值不为null，或者原值为null，则更新
+                        if (entryValue != null || existingMap.get(entryKey) == null) {
+                            existingMap.put(entryKey, entryValue);
+                        }
+                    }
+                } else {
+                    // 如果不存在该key值，添加新的map
+                    mergedMap.put(keyValue, new HashMap<>(map));
+                }
+            }
+        }
+        return mergedMap;
+    }
+
+    private String findValueIgnoreCase(Map<String, Object> map, String key) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(key)) {
+                return entry.getValue() != null ? entry.getValue().toString() : null;
+            }
+        }
+        return null;
     }
 
     @Override
