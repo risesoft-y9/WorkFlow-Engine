@@ -14,6 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormItemMobileBind;
@@ -26,7 +27,6 @@ import net.risesoft.repository.form.Y9FormItemBindRepository;
 import net.risesoft.repository.form.Y9FormItemMobileBindRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.config.Y9FormItemBindService;
-import net.risesoft.util.SysVariables;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
