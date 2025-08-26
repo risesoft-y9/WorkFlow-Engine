@@ -67,7 +67,7 @@ public interface Y9WordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
-     * @return {@code Y9Result<TransactionHistoryWordModel>} 通用请求返回对象 - data 是历史正文文件信息对象
+     * @return {@code Y9Result<Y9WordHistoryModel>} 通用请求返回对象 - data 是历史正文文件信息对象
      * @since 9.6.6
      */
     @GetMapping(value = "/findHistoryVersionDoc")
@@ -141,19 +141,6 @@ public interface Y9WordApi {
         @RequestParam("userId") String userId, @RequestParam("templateGuid") String templateGuid);
 
     /**
-     * 打开历史文件
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param taskId 任务id
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @GetMapping(value = "/openHistoryVersionDoc")
-    Y9Result<Object> openHistoryVersionDoc(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("taskId") String taskId);
-
-    /**
      * 打开PDF
      *
      * @param tenantId 租户id
@@ -199,15 +186,14 @@ public interface Y9WordApi {
      *
      * @param tenantId 租户Id
      * @param userId 人员Id
-     * @param docjson 正文json信息
+     * @param docJson 正文json信息
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 是保存是否成功的信息
      * @since 9.6.6
      */
-    @PostMapping(value = "/saveImportTransationWord")
-    Y9Result<Boolean> saveImportTransationWord(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("docjson") String docjson,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    @PostMapping(value = "/importY9Word")
+    Y9Result<Boolean> importY9Word(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam("docJson") String docJson, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取正文
@@ -216,7 +202,7 @@ public interface Y9WordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
-     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
+     * @param itembox 办件状态，{@link net.risesoft.enums.ItemBoxTypeEnum}
      * @param taskId 任务id
      * @param bindValue 绑定值
      * @return {@code Y9Result<WordInfo>} 通用请求返回对象 - data 是正文详情

@@ -30,17 +30,17 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
 
-    private final Y9WordHistoryRepository transactionHistoryWordRepository;
+    private final Y9WordHistoryRepository y9WordHistoryRepository;
 
     private final Y9FileStoreService y9FileStoreService;
 
     @Override
     @Transactional
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
-        List<Y9WordHistory> list = transactionHistoryWordRepository.findByProcessSerialNumbers(processSerialNumbers);
+        List<Y9WordHistory> list = y9WordHistoryRepository.findByProcessSerialNumbers(processSerialNumbers);
         for (Y9WordHistory file : list) {
             try {
-                transactionHistoryWordRepository.delete(file);
+                y9WordHistoryRepository.delete(file);
                 y9FileStoreService.deleteFile(file.getFileStoreId());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -54,11 +54,10 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
     public void deleteHistoryWordByIsTaoHong(String processSerialNumber, String isTaoHong) {
         List<Y9WordHistory> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
-            list =
-                transactionHistoryWordRepository.findByProcessSerialNumberAndIsTaoHong(processSerialNumber, isTaoHong);
+            list = y9WordHistoryRepository.findByProcessSerialNumberAndIsTaoHong(processSerialNumber, isTaoHong);
         }
         for (Y9WordHistory historyWord : list) {
-            transactionHistoryWordRepository.delete(historyWord);
+            y9WordHistoryRepository.delete(historyWord);
             try {
                 y9FileStoreService.deleteFile(historyWord.getFileStoreId());
             } catch (Exception e) {
@@ -71,7 +70,7 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
     public Y9WordHistory getByProcessSerialNumber(String processSerialNumber) {
         Y9WordHistory fileDocument = new Y9WordHistory();
         if (StringUtils.isNotBlank(processSerialNumber)) {
-            List<Y9WordHistory> list = transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
+            List<Y9WordHistory> list = y9WordHistoryRepository.findByProcessSerialNumber(processSerialNumber);
             if (!list.isEmpty()) {
                 fileDocument = list.get(0);
             }
@@ -80,8 +79,8 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
     }
 
     @Override
-    public Y9WordHistory getTransactionHistoryWordByTaskId(String taskId) {
-        List<Y9WordHistory> list = transactionHistoryWordRepository.getTransactionHistoryWordByTaskId(taskId);
+    public Y9WordHistory findByTaskId(String taskId) {
+        List<Y9WordHistory> list = y9WordHistoryRepository.findByTaskId(taskId);
         if (!list.isEmpty()) {
             return list.get(0);
         }
@@ -90,43 +89,42 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
 
     @Override
     public List<Y9WordHistory> listByProcessSerialNumber(String processSerialNumber) {
-        return transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
+        return y9WordHistoryRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
     public List<Y9WordHistory> listByTaskId(String taskId) {
-        return transactionHistoryWordRepository.findListByTaskId(taskId);
+        return y9WordHistoryRepository.findListByTaskId(taskId);
     }
 
     @Transactional
     @Override
-    public void saveTransactionHistoryWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
+    public void save(String fileStoreId, String fileSize, String documentTitle, String fileType,
         String processSerialNumber, String isTaoHong, String taskId, String docCategory) {
-        SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Y9WordHistory transactionHistoryWord = new Y9WordHistory();
-        transactionHistoryWord.setDeleted("0");
-        transactionHistoryWord.setFileType(fileType);
-        transactionHistoryWord.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        transactionHistoryWord.setIstaohong(isTaoHong);
-        transactionHistoryWord.setTaskId(taskId);
-        Integer version = transactionHistoryWordRepository.getMaxHistoryVersion(processSerialNumber);
-        transactionHistoryWord.setVersion(version != null ? version + 1 : 1);
-        transactionHistoryWord.setSaveDate(sdfymdhms.format(new Date()));
-        transactionHistoryWord.setTenantId(tenantId);
-        transactionHistoryWord.setTitle(documenttitle);
-        transactionHistoryWord
-            .setFileName(StringUtils.isNotBlank(documenttitle) ? documenttitle + fileType : "正文" + fileType);
-        transactionHistoryWord.setFileStoreId(fileStoreId);
-        transactionHistoryWord.setFileSize(fileSize);
-        transactionHistoryWord.setUserId(userId);
-        transactionHistoryWord.setProcessSerialNumber(processSerialNumber);
+        Y9WordHistory y9WordHistory = new Y9WordHistory();
+        y9WordHistory.setDeleted("0");
+        y9WordHistory.setFileType(fileType);
+        y9WordHistory.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        y9WordHistory.setIstaohong(isTaoHong);
+        y9WordHistory.setTaskId(taskId);
+        Integer version = y9WordHistoryRepository.getMaxHistoryVersion(processSerialNumber);
+        y9WordHistory.setVersion(version != null ? version + 1 : 1);
+        y9WordHistory.setSaveDate(sdf.format(new Date()));
+        y9WordHistory.setTenantId(tenantId);
+        y9WordHistory.setTitle(documentTitle);
+        y9WordHistory.setFileName(StringUtils.isNotBlank(documentTitle) ? documentTitle + fileType : "正文" + fileType);
+        y9WordHistory.setFileStoreId(fileStoreId);
+        y9WordHistory.setFileSize(fileSize);
+        y9WordHistory.setUserId(userId);
+        y9WordHistory.setProcessSerialNumber(processSerialNumber);
         if (StringUtils.isNotBlank(docCategory)) {
-            transactionHistoryWord.setDocCategory(docCategory);
+            y9WordHistory.setDocCategory(docCategory);
         }
-        transactionHistoryWordRepository.save(transactionHistoryWord);
+        y9WordHistoryRepository.save(y9WordHistory);
     }
 
     @Transactional
@@ -134,10 +132,9 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
     public int update(String taskId, String processSerialNumber) {
         try {
             if (StringUtils.isNotBlank(processSerialNumber)) {
-                List<Y9WordHistory> list =
-                    transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
+                List<Y9WordHistory> list = y9WordHistoryRepository.findByProcessSerialNumber(processSerialNumber);
                 if (!list.isEmpty() && StringUtils.isNotBlank(taskId)) {
-                    transactionHistoryWordRepository.update(taskId, processSerialNumber);
+                    y9WordHistoryRepository.update(taskId, processSerialNumber);
                     return 1;
                 }
             }
@@ -150,12 +147,12 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
 
     @Transactional
     @Override
-    public void updateTransactionHistoryWordById(String fileStoreId, String fileType, String fileName, String fileSize,
-        String isTaoHong, String docCategory, String userId, String id) {
-        SimpleDateFormat sdfymdhms = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+    public void updateById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong,
+        String docCategory, String userId, String id) {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
-            transactionHistoryWordRepository.updateTransactionHistoryWordById(fileStoreId, fileSize, isTaoHong,
-                docCategory, sdfymdhms.format(new Date()), userId, id);
+            y9WordHistoryRepository.updateById(fileStoreId, fileSize, isTaoHong, docCategory, sdf.format(new Date()),
+                userId, id);
         }
     }
 
