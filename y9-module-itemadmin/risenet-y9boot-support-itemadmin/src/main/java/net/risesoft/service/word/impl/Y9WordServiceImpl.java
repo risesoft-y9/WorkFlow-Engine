@@ -11,12 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.documentword.TransactionWord;
+import net.risesoft.entity.documentword.Y9Word;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.documentword.TransactionWordRepository;
-import net.risesoft.service.word.TransactionWordService;
+import net.risesoft.repository.documentword.Y9WordRepository;
+import net.risesoft.service.word.Y9WordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -29,19 +29,19 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public class TransactionWordServiceImpl implements TransactionWordService {
+public class Y9WordServiceImpl implements Y9WordService {
 
-    private final TransactionWordRepository transactionWordRepository;
+    private final Y9WordRepository y9WordRepository;
 
     private final Y9FileStoreService y9FileStoreService;
 
     @Override
     @Transactional
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
-        List<TransactionWord> list = transactionWordRepository.findByProcessSerialNumbers(processSerialNumbers);
-        for (TransactionWord file : list) {
+        List<Y9Word> list = y9WordRepository.findByProcessSerialNumbers(processSerialNumbers);
+        for (Y9Word file : list) {
             try {
-                transactionWordRepository.delete(file);
+                y9WordRepository.delete(file);
                 y9FileStoreService.deleteFile(file.getFileStoreId());
             } catch (Exception e) {
                 e.printStackTrace();
@@ -50,10 +50,10 @@ public class TransactionWordServiceImpl implements TransactionWordService {
     }
 
     @Override
-    public TransactionWord getByProcessSerialNumber(String processSerialNumber) {
-        TransactionWord fileDocument = new TransactionWord();
+    public Y9Word getByProcessSerialNumber(String processSerialNumber) {
+        Y9Word fileDocument = new Y9Word();
         if (StringUtils.isNotBlank(processSerialNumber)) {
-            List<TransactionWord> list = transactionWordRepository.findByProcessSerialNumber(processSerialNumber);
+            List<Y9Word> list = y9WordRepository.findByProcessSerialNumber(processSerialNumber);
             if (!list.isEmpty()) {
                 fileDocument = list.get(0);
             }
@@ -62,52 +62,51 @@ public class TransactionWordServiceImpl implements TransactionWordService {
     }
 
     @Override
-    public List<TransactionWord> listByProcessSerialNumber(String processSerialNumber) {
-        return transactionWordRepository.findByProcessSerialNumber(processSerialNumber);
+    public List<Y9Word> listByProcessSerialNumber(String processSerialNumber) {
+        return y9WordRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
-    public List<TransactionWord> listByProcessSerialNumberAndDocCategory(String processSerialNumber,
-        String docCategory) {
-        return transactionWordRepository.findByProcessSerialNumberAndDocCategory(processSerialNumber, docCategory);
+    public List<Y9Word> listByProcessSerialNumberAndDocCategory(String processSerialNumber, String docCategory) {
+        return y9WordRepository.findByProcessSerialNumberAndDocCategory(processSerialNumber, docCategory);
     }
 
     @Override
-    public List<TransactionWord> listByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong) {
-        return transactionWordRepository.findByProcessSerialNumberAndIstaohong(processSerialNumber, taohong);
+    public List<Y9Word> listByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong) {
+        return y9WordRepository.findByProcessSerialNumberAndIstaohong(processSerialNumber, taohong);
     }
 
     @Override
     @Transactional
-    public void save(TransactionWord tw) {
-        transactionWordRepository.save(tw);
+    public void save(Y9Word tw) {
+        y9WordRepository.save(tw);
     }
 
     @Transactional
     @Override
-    public void saveTransactionWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
+    public void saveWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
         String processSerialNumber, String istaohong, String docCategory) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TransactionWord transactionWord = new TransactionWord();
-        transactionWord.setDeleted("0");
-        transactionWord.setFileType(fileType);
-        transactionWord.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        transactionWord.setIstaohong(istaohong);
-        transactionWord.setSaveDate(sdf.format(new Date()));
-        transactionWord.setTenantId(tenantId);
-        transactionWord.setTitle(documenttitle);
-        transactionWord.setFileName(StringUtils.isNotBlank(documenttitle) ? documenttitle + fileType : "正文" + fileType);
-        transactionWord.setFileStoreId(fileStoreId);
-        transactionWord.setFileSize(fileSize);
-        transactionWord.setUserId(userId);
-        transactionWord.setProcessSerialNumber(processSerialNumber);
+        Y9Word y9Word = new Y9Word();
+        y9Word.setDeleted("0");
+        y9Word.setFileType(fileType);
+        y9Word.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        y9Word.setIstaohong(istaohong);
+        y9Word.setSaveDate(sdf.format(new Date()));
+        y9Word.setTenantId(tenantId);
+        y9Word.setTitle(documenttitle);
+        y9Word.setFileName(StringUtils.isNotBlank(documenttitle) ? documenttitle + fileType : "正文" + fileType);
+        y9Word.setFileStoreId(fileStoreId);
+        y9Word.setFileSize(fileSize);
+        y9Word.setUserId(userId);
+        y9Word.setProcessSerialNumber(processSerialNumber);
         if (StringUtils.isNotBlank(docCategory)) {
-            transactionWord.setDocCategory(docCategory);
+            y9Word.setDocCategory(docCategory);
         }
-        transactionWordRepository.save(transactionWord);
+        y9WordRepository.save(y9Word);
     }
 
     @SuppressWarnings("unchecked")
@@ -120,7 +119,7 @@ public class TransactionWordServiceImpl implements TransactionWordService {
             Map<String, Object> documentMap = Y9JsonUtil.readValue(docjson, Map.class);
             List<Map<String, Object>> documentList = (List<Map<String, Object>>)documentMap.get("document");
             for (Map<String, Object> dMap : documentList) {
-                TransactionWord tw = new TransactionWord();
+                Y9Word tw = new Y9Word();
                 tw.setId(dMap.get("id").toString());
                 tw.setFileName(dMap.get("fileName").toString());
                 tw.setFileStoreId(dMap.get("filePath").toString());
@@ -130,7 +129,7 @@ public class TransactionWordServiceImpl implements TransactionWordService {
                 tw.setTenantId(dMap.get("tenantId").toString());
                 tw.setUserId(dMap.get("userId").toString());
                 tw.setTitle(dMap.get("title") == null ? "" : dMap.get("title").toString());
-                transactionWordRepository.save(tw);
+                y9WordRepository.save(tw);
                 checkSave = true;
             }
         } catch (Exception e) {
@@ -142,12 +141,12 @@ public class TransactionWordServiceImpl implements TransactionWordService {
 
     @Transactional
     @Override
-    public void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize,
-        String isTaoHong, String userId, String id) {
+    public void updateById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong,
+        String userId, String id) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
-            transactionWordRepository.updateTransactionWordById(fileStoreId, fileType, fileName, fileSize,
-                sdf.format(new Date()), isTaoHong, userId, id);
+            y9WordRepository.updateById(fileStoreId, fileType, fileName, fileSize, sdf.format(new Date()), isTaoHong,
+                userId, id);
         }
     }
 

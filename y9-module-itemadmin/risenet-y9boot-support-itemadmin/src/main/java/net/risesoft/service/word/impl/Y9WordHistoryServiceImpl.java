@@ -11,12 +11,12 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.entity.documentword.TransactionHistoryWord;
+import net.risesoft.entity.documentword.Y9WordHistory;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.repository.documentword.TransactionHistoryWordRepository;
-import net.risesoft.service.word.TransactionHistoryWordService;
+import net.risesoft.repository.documentword.Y9WordHistoryRepository;
+import net.risesoft.service.word.Y9WordHistoryService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
@@ -28,18 +28,17 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
-public class TransactionHistoryWordServiceImpl implements TransactionHistoryWordService {
+public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
 
-    private final TransactionHistoryWordRepository transactionHistoryWordRepository;
+    private final Y9WordHistoryRepository transactionHistoryWordRepository;
 
     private final Y9FileStoreService y9FileStoreService;
 
     @Override
     @Transactional
     public void delBatchByProcessSerialNumbers(List<String> processSerialNumbers) {
-        List<TransactionHistoryWord> list =
-            transactionHistoryWordRepository.findByProcessSerialNumbers(processSerialNumbers);
-        for (TransactionHistoryWord file : list) {
+        List<Y9WordHistory> list = transactionHistoryWordRepository.findByProcessSerialNumbers(processSerialNumbers);
+        for (Y9WordHistory file : list) {
             try {
                 transactionHistoryWordRepository.delete(file);
                 y9FileStoreService.deleteFile(file.getFileStoreId());
@@ -53,12 +52,12 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     @Transactional
     @Override
     public void deleteHistoryWordByIsTaoHong(String processSerialNumber, String isTaoHong) {
-        List<TransactionHistoryWord> list = new ArrayList<>();
+        List<Y9WordHistory> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
             list =
                 transactionHistoryWordRepository.findByProcessSerialNumberAndIsTaoHong(processSerialNumber, isTaoHong);
         }
-        for (TransactionHistoryWord historyWord : list) {
+        for (Y9WordHistory historyWord : list) {
             transactionHistoryWordRepository.delete(historyWord);
             try {
                 y9FileStoreService.deleteFile(historyWord.getFileStoreId());
@@ -69,11 +68,10 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     }
 
     @Override
-    public TransactionHistoryWord getByProcessSerialNumber(String processSerialNumber) {
-        TransactionHistoryWord fileDocument = new TransactionHistoryWord();
+    public Y9WordHistory getByProcessSerialNumber(String processSerialNumber) {
+        Y9WordHistory fileDocument = new Y9WordHistory();
         if (StringUtils.isNotBlank(processSerialNumber)) {
-            List<TransactionHistoryWord> list =
-                transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
+            List<Y9WordHistory> list = transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
             if (!list.isEmpty()) {
                 fileDocument = list.get(0);
             }
@@ -82,8 +80,8 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     }
 
     @Override
-    public TransactionHistoryWord getTransactionHistoryWordByTaskId(String taskId) {
-        List<TransactionHistoryWord> list = transactionHistoryWordRepository.getTransactionHistoryWordByTaskId(taskId);
+    public Y9WordHistory getTransactionHistoryWordByTaskId(String taskId) {
+        List<Y9WordHistory> list = transactionHistoryWordRepository.getTransactionHistoryWordByTaskId(taskId);
         if (!list.isEmpty()) {
             return list.get(0);
         }
@@ -91,12 +89,12 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     }
 
     @Override
-    public List<TransactionHistoryWord> listByProcessSerialNumber(String processSerialNumber) {
+    public List<Y9WordHistory> listByProcessSerialNumber(String processSerialNumber) {
         return transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
     }
 
     @Override
-    public List<TransactionHistoryWord> listByTaskId(String taskId) {
+    public List<Y9WordHistory> listByTaskId(String taskId) {
         return transactionHistoryWordRepository.findListByTaskId(taskId);
     }
 
@@ -108,7 +106,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TransactionHistoryWord transactionHistoryWord = new TransactionHistoryWord();
+        Y9WordHistory transactionHistoryWord = new Y9WordHistory();
         transactionHistoryWord.setDeleted("0");
         transactionHistoryWord.setFileType(fileType);
         transactionHistoryWord.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -136,7 +134,7 @@ public class TransactionHistoryWordServiceImpl implements TransactionHistoryWord
     public int update(String taskId, String processSerialNumber) {
         try {
             if (StringUtils.isNotBlank(processSerialNumber)) {
-                List<TransactionHistoryWord> list =
+                List<Y9WordHistory> list =
                     transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
                 if (!list.isEmpty() && StringUtils.isNotBlank(taskId)) {
                     transactionHistoryWordRepository.update(taskId, processSerialNumber);

@@ -26,7 +26,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.documentword.DocumentWpsApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
@@ -128,7 +128,7 @@ public class DocumentWpsController {
     private final ProcessParamApi processParamApi;
     private final DocumentWpsApi documentWpsApi;
     private final Y9FileStoreService y9FileStoreService;
-    private final TransactionWordApi transactionWordApi;
+    private final Y9WordApi y9WordApi;
 
     public static void main(String[] args) throws Exception {
         String destDocx = "C:\\Users\\10858\\Desktop\\套红.docx";
@@ -206,8 +206,7 @@ public class DocumentWpsController {
         map.put("fileUrl", "");
         map.put("y9FileStoreId", "");
         try {
-            String y9FileStoreId =
-                transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId, "").getData();
+            String y9FileStoreId = y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, "").getData();
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileUrl = y9FileStore.getUrl();
             map.put("y9FileStoreId", y9FileStoreId);
@@ -226,8 +225,9 @@ public class DocumentWpsController {
      */
     @RequestMapping(value = "/openTaoHong")
     public String openTaoHong(Model model) {
-        OrgUnit currentBureau = orgUnitApi
-            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
+        OrgUnit currentBureau =
+            orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId())
+                .getData();
         model.addAttribute("currentBureauGuid", currentBureau.getId());
         model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());
         model.addAttribute("userId", Y9LoginUserHolder.getUserInfo().getPersonId());

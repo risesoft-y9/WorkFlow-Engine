@@ -19,7 +19,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
-import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.consts.processadmin.SysVariables;
@@ -49,7 +49,7 @@ public class MonitorRestController {
 
     private final HistoricProcessApi historicProcessApi;
 
-    private final TransactionWordApi transactionWordApi;
+    private final Y9WordApi y9WordApi;
 
     private final AttachmentApi attachmentApi;
 
@@ -175,7 +175,7 @@ public class MonitorRestController {
                 // 批量删除附件表
                 attachmentApi.delBatchByProcessSerialNumbers(tenantId, list);
                 // 批量删除正文表
-                transactionWordApi.delBatchByProcessSerialNumbers(tenantId, list);
+                y9WordApi.delBatchByProcessSerialNumbers(tenantId, list);
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {

@@ -201,7 +201,7 @@ public class TodoServiceImpl implements TodoService {
                         LOGGER.error("收回件异常", e);
                     }
                 } catch (Exception e) {
-                    LOGGER.error("获取待办异常" + taskId, e);
+                    LOGGER.error("获取待办异常taskId:{}", taskId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
@@ -317,7 +317,7 @@ public class TodoServiceImpl implements TodoService {
                      */
                     mapTemp.put("status", 1);
                 } catch (Exception e) {
-                    LOGGER.error("查询待办任务出错" + taskId, e);
+                    LOGGER.error("查询待办任务出错taskId:{}", taskId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;

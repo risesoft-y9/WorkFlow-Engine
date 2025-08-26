@@ -17,36 +17,36 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.Item;
-import net.risesoft.entity.documentword.TransactionHistoryWord;
-import net.risesoft.entity.documentword.TransactionWord;
+import net.risesoft.entity.documentword.Y9Word;
+import net.risesoft.entity.documentword.Y9WordHistory;
 import net.risesoft.entity.template.ItemWordTemplateBind;
 import net.risesoft.entity.template.TaoHongTemplate;
 import net.risesoft.entity.template.WordTemplate;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemWordTypeEnum;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
-import net.risesoft.model.itemadmin.TransactionHistoryWordModel;
-import net.risesoft.model.itemadmin.TransactionWordModel;
+import net.risesoft.model.itemadmin.Y9WordHistoryModel;
 import net.risesoft.model.itemadmin.Y9WordInfo;
+import net.risesoft.model.itemadmin.Y9WordModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Person;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.documentword.TransactionHistoryWordRepository;
-import net.risesoft.repository.documentword.TransactionWordRepository;
+import net.risesoft.repository.documentword.Y9WordHistoryRepository;
+import net.risesoft.repository.documentword.Y9WordRepository;
 import net.risesoft.repository.template.ItemWordTemplateBindRepository;
 import net.risesoft.repository.template.WordTemplateRepository;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.template.TaoHongTemplateService;
-import net.risesoft.service.word.TransactionHistoryWordService;
-import net.risesoft.service.word.TransactionWordService;
+import net.risesoft.service.word.Y9WordHistoryService;
+import net.risesoft.service.word.Y9WordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -61,16 +61,16 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @Slf4j
 @RestController
 @RequiredArgsConstructor
-@RequestMapping(value = "/services/rest/transactionWord", produces = MediaType.APPLICATION_JSON_VALUE)
-public class TransactionWordApiImpl implements TransactionWordApi {
+@RequestMapping(value = "/services/rest/y9Word", produces = MediaType.APPLICATION_JSON_VALUE)
+public class Y9WordApiImpl implements Y9WordApi {
 
-    private final TransactionWordRepository transactionWordRepository;
+    private final Y9WordRepository y9WordRepository;
 
-    private final TransactionWordService transactionWordService;
+    private final Y9WordService y9WordService;
 
-    private final TransactionHistoryWordService transactionHistoryWordService;
+    private final Y9WordHistoryService y9WordHistoryService;
 
-    private final TransactionHistoryWordRepository transactionHistoryWordRepository;
+    private final Y9WordHistoryRepository y9WordHistoryRepository;
 
     private final TaoHongTemplateService taoHongTemplateService;
 
@@ -102,8 +102,8 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     public Y9Result<Object> delBatchByProcessSerialNumbers(@RequestParam String tenantId,
         @RequestBody List<String> processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        transactionWordService.delBatchByProcessSerialNumbers(processSerialNumbers);
-        transactionHistoryWordService.delBatchByProcessSerialNumbers(processSerialNumbers);
+        y9WordService.delBatchByProcessSerialNumbers(processSerialNumbers);
+        y9WordHistoryService.delBatchByProcessSerialNumbers(processSerialNumbers);
         return Y9Result.success();
     }
 
@@ -120,20 +120,20 @@ public class TransactionWordApiImpl implements TransactionWordApi {
     @Override
     public Y9Result<Object> deleteByIsTaoHong(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String isTaoHong) {
-        List<TransactionWord> list = new ArrayList<>();
+        List<Y9Word> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
-            list = transactionWordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
+            list = y9WordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
         }
-        for (TransactionWord transactionWord : list) {
-            transactionWordRepository.delete(transactionWord);
+        for (Y9Word y9Word : list) {
+            y9WordRepository.delete(y9Word);
             try {
-                y9FileStoreService.deleteFile(transactionWord.getFileStoreId());
+                y9FileStoreService.deleteFile(y9Word.getFileStoreId());
             } catch (Exception e) {
                 LOGGER.error("删除文件失败", e);
             }
         }
         if (ItemWordTypeEnum.PDF1.getValue().equals(isTaoHong)) {
-            transactionHistoryWordService.deleteHistoryWordByIsTaoHong(processSerialNumber, "3");
+            y9WordHistoryService.deleteHistoryWordByIsTaoHong(processSerialNumber, "3");
         }
         return Y9Result.success();
     }
@@ -144,23 +144,23 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<TransactionWordModel>} 通用请求返回对象 - data 是正文文件信息
+     * @return {@code Y9Result<Y9WordModel>} 通用请求返回对象 - data 是正文文件信息
      * @since 9.6.6
      */
     @Override
-    public Y9Result<TransactionWordModel> exchangeFindWordByProcessSerialNumber(@RequestParam String tenantId,
+    public Y9Result<Y9WordModel> exchangeFindWordByProcessSerialNumber(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processSerialNumber) {
-        TransactionWordModel word = new TransactionWordModel();
+        Y9WordModel word = new Y9WordModel();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            List<TransactionWord> list = transactionWordService.listByProcessSerialNumber(processSerialNumber);
+            List<Y9Word> list = y9WordService.listByProcessSerialNumber(processSerialNumber);
             if (list != null && !list.isEmpty()) {
-                TransactionWord transactionWord = list.get(0);
-                Person user = personApi.get(tenantId, transactionWord.getUserId()).getData();
-                word = getTransactionWord(transactionWord);
-                word.setFileName(transactionWord.getTitle() + transactionWord.getFileType());
+                Y9Word y9Word = list.get(0);
+                Person user = personApi.get(tenantId, y9Word.getUserId()).getData();
+                word = getY9Word(y9Word);
+                word.setFileName(y9Word.getTitle() + y9Word.getFileType());
                 word.setUserName(user.getName());
             }
         } catch (Exception e) {
@@ -180,15 +180,15 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<TransactionHistoryWordModel> findHistoryVersionDoc(@RequestParam String tenantId,
+    public Y9Result<Y9WordHistoryModel> findHistoryVersionDoc(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<TransactionHistoryWord> historyWordList = transactionHistoryWordService.listByTaskId(taskId);
-        TransactionHistoryWordModel history = new TransactionHistoryWordModel();
+        List<Y9WordHistory> historyWordList = y9WordHistoryService.listByTaskId(taskId);
+        Y9WordHistoryModel history = new Y9WordHistoryModel();
         if (null != historyWordList && !historyWordList.isEmpty()) {
-            TransactionHistoryWord historyWord = historyWordList.get(0);
+            Y9WordHistory historyWord = historyWordList.get(0);
             if (StringUtils.isNotEmpty(historyWord.getIstaohong())) {
                 if (ItemWordTypeEnum.PDF.getValue().equals(historyWord.getIstaohong())
                     || ItemWordTypeEnum.PDF1.getValue().equals(historyWord.getIstaohong())
@@ -223,21 +223,21 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<TransactionWordModel>} 通用请求返回对象 - data 是正文文件信息
+     * @return {@code Y9Result<Y9WordModel>} 通用请求返回对象 - data 是正文文件信息
      * @since 9.6.6
      */
     @Override
-    public Y9Result<TransactionWordModel> findWordByProcessSerialNumber(@RequestParam String tenantId,
+    public Y9Result<Y9WordModel> findWordByProcessSerialNumber(@RequestParam String tenantId,
         @RequestParam String processSerialNumber) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            List<TransactionWord> list = transactionWordService.listByProcessSerialNumber(processSerialNumber);
+            List<Y9Word> list = y9WordService.listByProcessSerialNumber(processSerialNumber);
             if (list != null && !list.isEmpty()) {
-                TransactionWord transactionWord = list.get(0);
-                TransactionWordModel word = getTransactionWord(transactionWord);
-                word.setFileName(transactionWord.getTitle() + transactionWord.getFileType());
+                Y9Word y9Word = list.get(0);
+                Y9WordModel word = getY9Word(y9Word);
+                word.setFileName(y9Word.getTitle() + y9Word.getFileType());
 
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, transactionWord.getUserId()).getData();
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, y9Word.getUserId()).getData();
                 word.setUserName(orgUnit.getName());
                 return Y9Result.success(word);
             }
@@ -248,18 +248,18 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         return Y9Result.success(null);
     }
 
-    private TransactionWordModel getTransactionWord(TransactionWord transactionWord) {
-        TransactionWordModel wordModel = new TransactionWordModel();
-        wordModel.setId(transactionWord.getId());
-        wordModel.setTitle(transactionWord.getTitle());
-        wordModel.setFileStoreId(transactionWord.getFileStoreId());
-        wordModel.setFileSize(transactionWord.getFileSize());
-        wordModel.setFileName(transactionWord.getFileName());
-        wordModel.setProcessSerialNumber(transactionWord.getProcessSerialNumber());
-        wordModel.setSaveDate(transactionWord.getSaveDate());
-        wordModel.setUserId(transactionWord.getUserId());
-        wordModel.setIsTaoHong(transactionWord.getIstaohong());
-        wordModel.setFileType(transactionWord.getFileType());
+    private Y9WordModel getY9Word(Y9Word y9Word) {
+        Y9WordModel wordModel = new Y9WordModel();
+        wordModel.setId(y9Word.getId());
+        wordModel.setTitle(y9Word.getTitle());
+        wordModel.setFileStoreId(y9Word.getFileStoreId());
+        wordModel.setFileSize(y9Word.getFileSize());
+        wordModel.setFileName(y9Word.getFileName());
+        wordModel.setProcessSerialNumber(y9Word.getProcessSerialNumber());
+        wordModel.setSaveDate(y9Word.getSaveDate());
+        wordModel.setUserId(y9Word.getUserId());
+        wordModel.setIsTaoHong(y9Word.getIstaohong());
+        wordModel.setFileType(y9Word.getFileType());
         return wordModel;
     }
 
@@ -269,20 +269,20 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<List<TransactionWordModel>>} 通用请求返回对象 - data 是正文文件信息列表
+     * @return {@code Y9Result<List<Y9WordModel>>} 通用请求返回对象 - data 是正文文件信息列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<TransactionWordModel>> getWordList(@RequestParam String tenantId, @RequestParam String userId,
+    public Y9Result<List<Y9WordModel>> getWordList(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber) {
-        List<TransactionWordModel> retList = new ArrayList<>();
+        List<Y9WordModel> retList = new ArrayList<>();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            List<TransactionWord> list = transactionWordRepository.findByProcessSerialNumber(processSerialNumber);
-            for (TransactionWord word : list) {
-                TransactionWordModel model = getTransactionWord(word);
+            List<Y9Word> list = y9WordRepository.findByProcessSerialNumber(processSerialNumber);
+            for (Y9Word word : list) {
+                Y9WordModel model = getY9Word(word);
                 retList.add(model);
             }
         } catch (Exception e) {
@@ -309,20 +309,20 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<TransactionWord> list = new ArrayList<>();
+        List<Y9Word> list = new ArrayList<>();
 
         if (StringUtils.isNotBlank(processSerialNumber)) {
             if (StringUtils.isNotBlank(bindValue) && !"null".equals(bindValue)) {
-                list = transactionWordService.listByProcessSerialNumberAndDocCategory(processSerialNumber, bindValue);
+                list = y9WordService.listByProcessSerialNumberAndDocCategory(processSerialNumber, bindValue);
             } else {
-                list = transactionWordService.listByProcessSerialNumber(processSerialNumber);
+                list = y9WordService.listByProcessSerialNumber(processSerialNumber);
             }
         }
-        TransactionWord transactionWord;
+        Y9Word y9Word;
         if (!list.isEmpty()) {
-            transactionWord = list.get(0);
-            if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
-                return Y9Result.success(transactionWord.getFileStoreId());
+            y9Word = list.get(0);
+            if (StringUtils.isNotBlank(y9Word.getFileStoreId())) {
+                return Y9Result.success(y9Word.getFileStoreId());
             } else {
                 return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
             }
@@ -376,18 +376,17 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         // 获取套红文档
-        List<TransactionWord> list =
-            transactionWordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, "1");
+        List<Y9Word> list = y9WordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, "1");
         /*
          * 套红文档不存在,则获取未套红文档
          */
         if (list.isEmpty()) {
-            list = transactionWordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, "0");
+            list = y9WordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, "0");
         }
         if (!list.isEmpty()) {
-            TransactionWord transactionWord = list.get(0);
-            if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
-                return Y9Result.success(transactionWord.getFileStoreId());
+            Y9Word y9Word = list.get(0);
+            if (StringUtils.isNotBlank(y9Word.getFileStoreId())) {
+                return Y9Result.success(y9Word.getFileStoreId());
             } else {
                 return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
             }
@@ -445,7 +444,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         @RequestParam String taskId) {
         /*
          * Runtime runtime = Runtime.getRuntime(); TransactionHistoryWord hword =
-         * transactionHistoryWordService.getTransactionHistoryWordByTaskId( taskId);
+         * y9WordHistoryService.getTransactionHistoryWordByTaskId( taskId);
          * //保存至系统临时存储的文件夹 String filePath = System.getProperty("java.io.tmpdir");
          * BufferedOutputStream bos = null; FileOutputStream fos = null; File file =
          * null; try { File dir = new File(filePath); if (!dir.exists() &&
@@ -477,14 +476,14 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<TransactionWord> list = new ArrayList<>();
+        List<Y9Word> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber)) {
-            list = transactionWordService.listByProcessSerialNumber(processSerialNumber);
+            list = y9WordService.listByProcessSerialNumber(processSerialNumber);
         }
         if (!list.isEmpty()) {
-            TransactionWord transactionWord = list.get(0);
-            if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
-                return Y9Result.success(transactionWord.getFileStoreId());
+            Y9Word y9Word = list.get(0);
+            if (StringUtils.isNotBlank(y9Word.getFileStoreId())) {
+                return Y9Result.success(y9Word.getFileStoreId());
             } else {
                 return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
             }
@@ -508,15 +507,15 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<TransactionWord> list = new ArrayList<>();
+        List<Y9Word> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
-            list = transactionWordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
+            list = y9WordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
         }
-        TransactionWord transactionWord;
+        Y9Word y9Word;
         if (!list.isEmpty()) {
-            transactionWord = list.get(0);
-            if (StringUtils.isNotBlank(transactionWord.getFileStoreId())) {
-                return Y9Result.success(transactionWord.getFileStoreId());
+            y9Word = list.get(0);
+            if (StringUtils.isNotBlank(y9Word.getFileStoreId())) {
+                return Y9Result.success(y9Word.getFileStoreId());
             } else {// 从数据库读取正文
                 LOGGER.error("fileStoreId为空，保存正文的时候出错");
                 return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
@@ -570,7 +569,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             assert documentMap != null;
             List<Map<String, Object>> documentList = (List<Map<String, Object>>)documentMap.get("document");
             for (Map<String, Object> dMap : documentList) {
-                TransactionWord tw = new TransactionWord();
+                Y9Word tw = new Y9Word();
                 tw.setId(dMap.get("id").toString());
                 tw.setFileName(dMap.get("fileName").toString());
                 tw.setFileStoreId(dMap.get("filePath").toString());
@@ -580,7 +579,7 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                 tw.setTenantId(dMap.get("tenantId").toString());
                 tw.setUserId(dMap.get("userId").toString());
                 tw.setTitle(dMap.get("title") == null ? "" : dMap.get("title").toString());
-                transactionWordService.save(tw);
+                y9WordService.save(tw);
                 checkSave = true;
             }
             return Y9Result.success(checkSave);
@@ -626,16 +625,16 @@ public class TransactionWordApiImpl implements TransactionWordApi {
             wordReadOnly = "YES";
         }
         String saveDate = "";
-        List<TransactionWord> list = new ArrayList<>();
+        List<Y9Word> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber)) {
             if (StringUtils.isNotBlank(bindValue)) {
-                list = transactionWordService.listByProcessSerialNumberAndDocCategory(processSerialNumber, bindValue);
+                list = y9WordService.listByProcessSerialNumberAndDocCategory(processSerialNumber, bindValue);
             } else {
-                list = transactionWordService.listByProcessSerialNumber(processSerialNumber);
+                list = y9WordService.listByProcessSerialNumber(processSerialNumber);
             }
         }
         if (list != null && !list.isEmpty()) {
-            TransactionWord d = list.get(0);
+            Y9Word d = list.get(0);
             fileDocumentId = d.getId();
             saveDate = d.getSaveDate();
             if (d.getIstaohong().equals(ItemWordTypeEnum.PDF2.getValue())) {
@@ -776,12 +775,11 @@ public class TransactionWordApiImpl implements TransactionWordApi {
         Y9LoginUserHolder.setPerson(person);
         try {
             if (StringUtils.isNotBlank(processSerialNumber)) {
-                List<TransactionWord> list =
-                    transactionWordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
+                List<Y9Word> list = y9WordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
                 if (list.isEmpty()) {
-                    transactionWordService.saveTransactionWord(fileStoreId, fileSizeString, documentTitle, fileType,
-                        processSerialNumber, isTaoHong, docCategory);
-                    transactionHistoryWordService.saveTransactionHistoryWord(fileStoreId, fileSizeString, documentTitle,
+                    y9WordService.saveWord(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber,
+                        isTaoHong, docCategory);
+                    y9WordHistoryService.saveTransactionHistoryWord(fileStoreId, fileSizeString, documentTitle,
                         fileType, processSerialNumber, isTaoHong, taskId, docCategory);
                 } else {
                     if (StringUtils.isNotEmpty(list.get(0).getTitle())) {
@@ -789,27 +787,27 @@ public class TransactionWordApiImpl implements TransactionWordApi {
                     } else {
                         documentTitle = "正文";
                     }
-                    transactionWordService.updateTransactionWordById(fileStoreId, fileType, documentTitle + fileType,
-                        fileSizeString, isTaoHong, userId, list.get(0).getId());
+                    y9WordService.updateById(fileStoreId, fileType, documentTitle + fileType, fileSizeString, isTaoHong,
+                        userId, list.get(0).getId());
 
-                    List<TransactionHistoryWord> thwlist;
+                    List<Y9WordHistory> thwlist;
                     if (StringUtils.isNotBlank(taskId)) {
-                        thwlist = transactionHistoryWordRepository
+                        thwlist = y9WordHistoryRepository
                             .getByProcessSerialNumberAndIsTaoHongAndTaskId(processSerialNumber, isTaoHong, taskId);
                     } else {
                         /*
                          * 流程刚启动的时候taskId为空
                          */
-                        thwlist = transactionHistoryWordRepository.findByProcessSerialNumber(processSerialNumber);
+                        thwlist = y9WordHistoryRepository.findByProcessSerialNumber(processSerialNumber);
                     }
                     if (thwlist.isEmpty()) {
                         /*
                          * 在当前任务还没有保存过正文
                          */
-                        transactionHistoryWordService.saveTransactionHistoryWord(fileStoreId, fileSizeString,
-                            documentTitle, fileType, processSerialNumber, isTaoHong, taskId, docCategory);
+                        y9WordHistoryService.saveTransactionHistoryWord(fileStoreId, fileSizeString, documentTitle,
+                            fileType, processSerialNumber, isTaoHong, taskId, docCategory);
                     } else {
-                        transactionHistoryWordService.updateTransactionHistoryWordById(fileStoreId, fileType,
+                        y9WordHistoryService.updateTransactionHistoryWordById(fileStoreId, fileType,
                             documentTitle + fileType, fileSizeString, isTaoHong, docCategory, userId,
                             thwlist.get(0).getId());
                     }
@@ -833,10 +831,10 @@ public class TransactionWordApiImpl implements TransactionWordApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<TransactionWordModel> wordDownload(@RequestParam String tenantId, @RequestParam String id) {
-        TransactionWord transactionWord = transactionWordRepository.findById(id).orElse(null);
-        assert transactionWord != null;
-        TransactionWordModel model = getTransactionWord(transactionWord);
+    public Y9Result<Y9WordModel> wordDownload(@RequestParam String tenantId, @RequestParam String id) {
+        Y9Word y9Word = y9WordRepository.findById(id).orElse(null);
+        assert y9Word != null;
+        Y9WordModel model = getY9Word(y9Word);
         return Y9Result.success(model);
     }
 }

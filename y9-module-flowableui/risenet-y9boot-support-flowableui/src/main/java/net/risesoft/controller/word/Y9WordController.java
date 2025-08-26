@@ -31,7 +31,7 @@ import org.springframework.web.multipart.MultipartHttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -40,9 +40,9 @@ import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
-import net.risesoft.model.itemadmin.TransactionHistoryWordModel;
-import net.risesoft.model.itemadmin.TransactionWordModel;
+import net.risesoft.model.itemadmin.Y9WordHistoryModel;
 import net.risesoft.model.itemadmin.Y9WordInfo;
+import net.risesoft.model.itemadmin.Y9WordModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
@@ -62,12 +62,12 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RequiredArgsConstructor
 @RestController
 @Slf4j
-@RequestMapping(value = "/transactionWord", produces = MediaType.APPLICATION_JSON_VALUE)
-public class TransactionWordController {
+@RequestMapping(value = "/y9Word", produces = MediaType.APPLICATION_JSON_VALUE)
+public class Y9WordController {
 
     private final Y9FileStoreService y9FileStoreService;
 
-    private final TransactionWordApi transactionWordApi;
+    private final Y9WordApi y9WordApi;
 
     private final DraftApi draftApi;
 
@@ -87,7 +87,7 @@ public class TransactionWordController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, isTaoHong);
+        y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, isTaoHong);
     }
 
     /**
@@ -107,7 +107,7 @@ public class TransactionWordController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TransactionHistoryWordModel map = transactionWordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        Y9WordHistoryModel map = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
         String fileStoreId = map.getFileStoreId();
 
         try (ServletOutputStream out = response.getOutputStream()) {
@@ -222,8 +222,7 @@ public class TransactionWordController {
         HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            TransactionWordModel map =
-                transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            Y9WordModel map = y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String fileStoreId = map.getFileStoreId();
             String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
@@ -275,9 +274,9 @@ public class TransactionWordController {
      * @return Y9Result<Map < String, Object>>
      */
     @RequestMapping(value = "/getUpdateWord")
-    public TransactionWordModel getUpdateWord(@RequestParam String processSerialNumber) {
+    public Y9WordModel getUpdateWord(@RequestParam String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return transactionWordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+        return y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
     }
 
     /**
@@ -345,7 +344,7 @@ public class TransactionWordController {
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String y9FileStoreId =
-            transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
+            y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
 
         ServletOutputStream out = null;
         try {
@@ -404,8 +403,8 @@ public class TransactionWordController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");// 删除未套红的正文
-        String content = transactionWordApi.openDocumentTemplate(tenantId, userId, templateGUID).getData();
+        y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");// 删除未套红的正文
+        String content = y9WordApi.openDocumentTemplate(tenantId, userId, templateGUID).getData();
         ServletOutputStream out = null;
         try {
             byte[] result;
@@ -443,8 +442,8 @@ public class TransactionWordController {
         HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
-        TransactionHistoryWordModel history =
-            transactionWordApi.findHistoryVersionDoc(Y9LoginUserHolder.getTenantId(), userId, taskId).getData();
+        Y9WordHistoryModel history =
+            y9WordApi.findHistoryVersionDoc(Y9LoginUserHolder.getTenantId(), userId, taskId).getData();
         String fileStoreId = history.getFileStoreId();
         ServletOutputStream out = null;
         try {
@@ -503,7 +502,7 @@ public class TransactionWordController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String y9FileStoreId = transactionWordApi.openPdf(tenantId, userId, processSerialNumber).getData();
+        String y9FileStoreId = y9WordApi.openPdf(tenantId, userId, processSerialNumber).getData();
 
         try (ServletOutputStream out = response.getOutputStream()) {
             byte[] buf = null;
@@ -547,9 +546,9 @@ public class TransactionWordController {
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         // 删除转PDF的文件
-        transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "3");
+        y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "3");
         String y9FileStoreId =
-            transactionWordApi.openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong).getData();
+            y9WordApi.openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong).getData();
 
         try (ServletOutputStream out = response.getOutputStream()) {
             String agent = request.getHeader("USER-AGENT");
@@ -643,7 +642,7 @@ public class TransactionWordController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             Boolean result2 =
-                transactionWordApi
+                y9WordApi
                     .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
                         y9FileStore.getDisplayFileSize(), y9FileStore.getId())
                     .getData();
@@ -675,7 +674,7 @@ public class TransactionWordController {
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9WordInfo map =
-            transactionWordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, "").getData();
+            y9WordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, "").getData();
         model.addAttribute("word", map);
         Object documentTitle;
         if (StringUtils.isBlank(processInstanceId)) {
@@ -715,7 +714,7 @@ public class TransactionWordController {
                 currentBureauGuid = choiceDeptId;
             }
         }
-        return transactionWordApi.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();
+        return y9WordApi.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();
     }
 
     /**
@@ -774,7 +773,7 @@ public class TransactionWordController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
             Boolean result =
-                transactionWordApi
+                y9WordApi
                     .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
                         y9FileStore.getDisplayFileSize(), y9FileStore.getId())
                     .getData();
@@ -831,7 +830,7 @@ public class TransactionWordController {
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
             Boolean result2 =
-                transactionWordApi
+                y9WordApi
                     .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, docCategory, taskId,
                         y9FileStore.getDisplayFileSize(), y9FileStore.getId())
                     .getData();

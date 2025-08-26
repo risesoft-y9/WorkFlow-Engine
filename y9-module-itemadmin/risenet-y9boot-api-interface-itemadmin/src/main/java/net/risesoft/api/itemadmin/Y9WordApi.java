@@ -8,9 +8,9 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
-import net.risesoft.model.itemadmin.TransactionHistoryWordModel;
-import net.risesoft.model.itemadmin.TransactionWordModel;
+import net.risesoft.model.itemadmin.Y9WordHistoryModel;
 import net.risesoft.model.itemadmin.Y9WordInfo;
+import net.risesoft.model.itemadmin.Y9WordModel;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -20,7 +20,7 @@ import net.risesoft.pojo.Y9Result;
  * @author zhangchongjie
  * @date 2022/12/19
  */
-public interface TransactionWordApi {
+public interface Y9WordApi {
 
     /**
      * 根据流程编号删除正文，同时删除文件系统的文件
@@ -54,11 +54,11 @@ public interface TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<TransactionWordModel>} 通用请求返回对象 - data 是正文文件信息
+     * @return {@code Y9Result<Y9WordModel>} 通用请求返回对象 - data 是正文文件信息
      * @since 9.6.6
      */
     @GetMapping(value = "/exchangeFindWordByProcessSerialNumber")
-    Y9Result<TransactionWordModel> exchangeFindWordByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+    Y9Result<Y9WordModel> exchangeFindWordByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
@@ -71,7 +71,7 @@ public interface TransactionWordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/findHistoryVersionDoc")
-    Y9Result<TransactionHistoryWordModel> findHistoryVersionDoc(@RequestParam("tenantId") String tenantId,
+    Y9Result<Y9WordHistoryModel> findHistoryVersionDoc(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("taskId") String taskId);
 
     /**
@@ -79,11 +79,11 @@ public interface TransactionWordApi {
      *
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<TransactionWordModel>} 通用请求返回对象 - data 是正文文件信息
+     * @return {@code Y9Result<Y9WordModel>} 通用请求返回对象 - data 是正文文件信息
      * @since 9.6.6
      */
     @GetMapping(value = "/findWordByProcessSerialNumber")
-    Y9Result<TransactionWordModel> findWordByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
+    Y9Result<Y9WordModel> findWordByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
         @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
@@ -92,11 +92,11 @@ public interface TransactionWordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<List<TransactionWordModel>>} 通用请求返回对象 - data 是正文文件信息列表
+     * @return {@code Y9Result<List<Y9WordModel>>} 通用请求返回对象 - data 是正文文件信息列表
      * @since 9.6.6
      */
     @GetMapping(value = "/getWordList")
-    Y9Result<List<TransactionWordModel>> getWordList(@RequestParam("tenantId") String tenantId,
+    Y9Result<List<Y9WordModel>> getWordList(@RequestParam("tenantId") String tenantId,
         @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
@@ -275,6 +275,5 @@ public interface TransactionWordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/wordDownload")
-    Y9Result<TransactionWordModel> wordDownload(@RequestParam("tenantId") String tenantId,
-        @RequestParam("id") String id);
+    Y9Result<Y9WordModel> wordDownload(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
 }

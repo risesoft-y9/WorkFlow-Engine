@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
-import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -46,7 +46,7 @@ public class VueNTKOController {
 
     private final DraftApi draftApi;
 
-    private final TransactionWordApi transactionWordApi;
+    private final Y9WordApi y9WordApi;
 
     private final PersonApi personApi;
 
@@ -121,8 +121,8 @@ public class VueNTKOController {
         @RequestParam(required = false) String positionId, @RequestParam String tenantId, @RequestParam String userId,
         Model model) {
         try {
-            Y9WordInfo wordInfo = transactionWordApi
-                .showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, bindValue).getData();
+            Y9WordInfo wordInfo =
+                y9WordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, bindValue).getData();
             String documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();

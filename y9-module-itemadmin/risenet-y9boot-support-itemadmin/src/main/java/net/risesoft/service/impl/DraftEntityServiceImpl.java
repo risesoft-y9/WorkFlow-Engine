@@ -38,7 +38,7 @@ import net.risesoft.service.core.DocumentService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.form.FormDataService;
-import net.risesoft.service.word.TransactionWordService;
+import net.risesoft.service.word.Y9WordService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 import jodd.util.StringUtil;
@@ -66,7 +66,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     private final AttachmentService attachmentService;
 
-    private final TransactionWordService transactionWordService;
+    private final Y9WordService y9WordService;
 
     private final ItemStartNodeRoleService itemStartNodeRoleService;
 
@@ -98,7 +98,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                     List<String> list = new ArrayList<>();
                     list.add(processSerialNumber);
                     attachmentService.delBatchByProcessSerialNumbers(list);
-                    transactionWordService.delBatchByProcessSerialNumbers(list);
+                    y9WordService.delBatchByProcessSerialNumbers(list);
                 } catch (Exception e) {
                     LOGGER.error("删除流程参数失败", e);
                 }

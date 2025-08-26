@@ -7,7 +7,7 @@ import lombok.Data;
 
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
-import net.risesoft.model.itemadmin.TransactionWordModel;
+import net.risesoft.model.itemadmin.Y9WordModel;
 
 /**
  * 流程详情数据
@@ -32,5 +32,5 @@ public class DocumentDetailMobileModel extends DocumentDetailBaseModel implement
     /**
      * 正文信息
      */
-    private TransactionWordModel transactionWord;
+    private Y9WordModel y9WordModel;
 }

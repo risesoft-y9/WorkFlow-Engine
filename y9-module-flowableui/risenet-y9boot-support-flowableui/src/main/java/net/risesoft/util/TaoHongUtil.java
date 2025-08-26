@@ -15,7 +15,7 @@ import com.deepoove.poi.xwpf.NiceXWPFDocument;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.y9.Y9Context;
 
 import cn.wps.yun.api.AppFilesApi;
@@ -101,9 +101,10 @@ public class TaoHongUtil {
             // 模板文件 参数填写
             // model = Y9Context.getWebRootRealPath() + "static" + File.separator +
             // "official_doc_model.docx";
-            String contentStr =
-                Y9Context.getBean(TransactionWordApi.class).openDocumentTemplate("c425281829dc4d4496ddddf7fc0198d0",
-                    "3cfe10631fb348bfaadd21045f0f0659", "67ea3abfc53b4ca88de409d2a7744a1a").getData();
+            String contentStr = Y9Context.getBean(Y9WordApi.class)
+                .openDocumentTemplate("c425281829dc4d4496ddddf7fc0198d0", "3cfe10631fb348bfaadd21045f0f0659",
+                    "67ea3abfc53b4ca88de409d2a7744a1a")
+                .getData();
             ByteArrayInputStream bin = null;
             BufferedOutputStream bos = null;
             FileOutputStream fos = null;

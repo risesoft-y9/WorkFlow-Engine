@@ -52,7 +52,7 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.TaskVariable;
 import net.risesoft.entity.button.ItemButtonBind;
-import net.risesoft.entity.documentword.TransactionWord;
+import net.risesoft.entity.documentword.Y9Word;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormItemMobileBind;
@@ -129,7 +129,7 @@ import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.event.Y9TodoUpdateEvent;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.service.impl.ActivitiOptServiceImpl;
-import net.risesoft.service.word.TransactionWordService;
+import net.risesoft.service.word.Y9WordService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.util.ItemButton;
 import net.risesoft.util.ListUtil;
@@ -231,7 +231,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final AttachmentService attachmentService;
 
-    private final TransactionWordService transactionWordService;
+    private final Y9WordService y9WordService;
 
     private final AssociatedFileService associatedFileService;
     private final SpeakInfoService speakInfoService;
@@ -781,15 +781,14 @@ public class DocumentServiceImpl implements DocumentService {
 
     private void setNum(DocumentDetailModel model) {
         Integer fileNum = attachmentService.fileCounts(model.getProcessSerialNumber());
-        TransactionWord transactionWord =
-            transactionWordService.getByProcessSerialNumber(model.getProcessSerialNumber());
+        Y9Word y9Word = y9WordService.getByProcessSerialNumber(model.getProcessSerialNumber());
         int speakInfoNum =
             speakInfoService.getNotReadCount(Y9LoginUserHolder.getPersonId(), model.getProcessInstanceId());
         int associatedFileNum = associatedFileService.countAssociatedFile(model.getProcessSerialNumber());
         int follow = officeFollowService.countByProcessInstanceId(model.getProcessInstanceId());
         model.setFileNum(fileNum);
         model.setAssociatedFileNum(associatedFileNum);
-        model.setDocNum(transactionWord != null && transactionWord.getId() != null ? 1 : 0);
+        model.setDocNum(y9Word != null && y9Word.getId() != null ? 1 : 0);
         model.setFollow(follow > 0);
         model.setSpeakInfoNum(speakInfoNum);
     }

@@ -23,7 +23,7 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -54,7 +54,7 @@ public class WpsRestController {
 
     private final Y9FileStoreService y9FileStoreService;
 
-    private final TransactionWordApi transactionWordApi;
+    private final Y9WordApi y9WordApi;
 
     /**
      * 下载正文
@@ -71,8 +71,7 @@ public class WpsRestController {
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             documentTitle = processModel.getTitle();
             String title = documentTitle != null ? documentTitle : "正文";
-            String y9FileStoreId =
-                transactionWordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            String y9FileStoreId = y9WordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber).getData();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
@@ -114,7 +113,7 @@ public class WpsRestController {
     @RequestMapping(value = "/getTaoHongTemplate")
     public void getTaoHongTemplate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String templateGuid, HttpServletResponse response) {
-        String content = transactionWordApi.openDocumentTemplate(tenantId, userId, templateGuid).getData();
+        String content = y9WordApi.openDocumentTemplate(tenantId, userId, templateGuid).getData();
         ServletOutputStream out = null;
         try {
             byte[] result;
@@ -158,9 +157,8 @@ public class WpsRestController {
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             documentTitle = processModel.getTitle();
             String title = documentTitle != null ? documentTitle : "正文";
-            transactionWordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "1");
-            String y9FileStoreId =
-                transactionWordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "1");
+            String y9FileStoreId = y9WordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber).getData();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
@@ -207,7 +205,7 @@ public class WpsRestController {
         if (StringUtils.isBlank(currentBureauGuid)) {
             currentBureauGuid = person.getParentId();
         }
-        return transactionWordApi.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();
+        return y9WordApi.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();
     }
 
     /**
@@ -270,8 +268,11 @@ public class WpsRestController {
             String title = documentTitle != null ? (String)documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
-            Boolean result = transactionWordApi.uploadWord(tenantId, userId, title, fileType, processSerialNumber,
-                isTaoHong, "", taskId, y9FileStore.getDisplayFileSize(), y9FileStore.getId()).getData();
+            Boolean result =
+                y9WordApi
+                    .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
+                        y9FileStore.getDisplayFileSize(), y9FileStore.getId())
+                    .getData();
             if (Boolean.TRUE.equals(result)) {
                 map.put(UtilConsts.SUCCESS, true);
                 if (fileType.equals(".pdf") || fileType.equals(".tif")) {

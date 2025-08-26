@@ -11,7 +11,7 @@ import lombok.Data;
  * @date 2024/06/24
  */
 @Data
-public class TransactionWordModel implements Serializable {
+public class Y9WordModel implements Serializable {
     private static final long serialVersionUID = -3649708329591414562L;
 
     /**

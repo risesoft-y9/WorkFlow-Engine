@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.template.PrintApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
@@ -54,7 +54,7 @@ public class FormNTKOPrintController {
 
     private final DraftApi draftApi;
 
-    private final TransactionWordApi transactionWordApi;
+    private final Y9WordApi y9WordApi;
 
     /**
      * 下载正文文件
@@ -138,7 +138,7 @@ public class FormNTKOPrintController {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         String y9FileStoreId =
-            transactionWordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
+            y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
 
         ServletOutputStream out = null;
         try {
