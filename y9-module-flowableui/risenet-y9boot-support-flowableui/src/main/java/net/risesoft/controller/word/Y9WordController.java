@@ -19,7 +19,6 @@ import javax.validation.constraints.NotBlank;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
-import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -34,17 +33,14 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.itemadmin.Y9WordHistoryModel;
-import net.risesoft.model.itemadmin.Y9WordInfo;
 import net.risesoft.model.itemadmin.Y9WordModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.ToolUtil;
 import net.risesoft.y9.Y9Context;
@@ -70,8 +66,6 @@ public class Y9WordController {
     private final Y9WordApi y9WordApi;
 
     private final DraftApi draftApi;
-
-    private final OrgUnitApi orgUnitApi;
 
     private final ProcessParamApi processParamApi;
 
@@ -124,30 +118,47 @@ public class Y9WordController {
             }
             title = documentTitle != null ? documentTitle : "正文";
             title = ToolUtil.replaceSpecialStr(title);
+            title = encodeFileName(title, userAgent);
+
+            response.reset();
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
             } else {
-                if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
-                        + "?=";
-                } else {
-                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
             }
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
             out.flush();
         } catch (Exception e) {
             LOGGER.error("下载正文异常", e);
+        }
+    }
+
+    /**
+     * 根据浏览器类型对文件名进行编码
+     *
+     * @param fileName 原始文件名
+     * @param userAgent 用户代理字符串
+     * @return 编码后的文件名
+     */
+    private String encodeFileName(String fileName, String userAgent) {
+        try {
+            if (userAgent.contains("Firefox")) {
+                return "=?UTF-8?B?"
+                    + new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8)))
+                    + "?=";
+            } else if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0")
+                || userAgent.contains("MSIE 7.0")) {
+                return java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+            } else {
+                String encodedName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+                return StringUtils.replace(encodedName, "+", "%20"); // 替换空格
+            }
+        } catch (Exception e) {
+            LOGGER.error("文件名编码异常", e);
+            return fileName;
         }
     }
 
@@ -173,30 +184,17 @@ public class Y9WordController {
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? documentTitle : "正文";
-            // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
-            // String fileName = y9FileStore.getFileName();
-            title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
+            String title = documentTitle != null ? documentTitle : "正文";
+            title = ToolUtil.replaceSpecialStr(title);
+            title = encodeFileName(title, userAgent);
+            response.reset();
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
             } else {
-                if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
-                        + "?=";
-                } else {
-                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
             }
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(id, out);
@@ -233,30 +231,17 @@ public class Y9WordController {
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-            String title = documentTitle != null ? documentTitle : "正文";
-            // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
-            // String fileName = y9FileStore.getFileName();
-            title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
+            String title = documentTitle != null ? documentTitle : "正文";
+            title = ToolUtil.replaceSpecialStr(title);
+            title = encodeFileName(title, userAgent);
+            response.reset();
+            response.setContentType("application/octet-stream");
+            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
             } else {
-                if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
-                        + "?=";
-                } else {
-                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
                 response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
             }
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
@@ -293,15 +278,7 @@ public class Y9WordController {
             File file = new File(filePath);
             String fileName = file.getName();
             String agent = request.getHeader("USER-AGENT");
-            if (agent.contains("Firefox")) {
-                fileName = "=?UTF-8?B?"
-                    + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
-                    + "?=";
-            } else {
-                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-                fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
-            }
+            fileName = encodeFileName(fileName, agent);
             response.reset();
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
 
@@ -339,27 +316,16 @@ public class Y9WordController {
      */
     @RequestMapping(value = "/openDocument")
     public void openDocument(@RequestParam String processSerialNumber, @RequestParam String itemId,
-        @RequestParam(required = false) String bindValue, HttpServletResponse response, HttpServletRequest request) {
+        @RequestParam(required = false) String bindValue, HttpServletResponse response) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String y9FileStoreId =
             y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
-
         ServletOutputStream out = null;
         try {
-            String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
-            String fileName = y9FileStore.getFileName();
-            if (agent.contains("Firefox")) {
-                org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
-            } else {
-                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-                StringUtils.replace(fileName, "+", "%20");
-            }
             response.reset();
-            // response.setHeader("Content-Type", "application/msword");
-            // response.setHeader("Content-Length", String.valueOf(buf.length));
             response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
             out = response.getOutputStream();
             byte[] buf = null;
@@ -438,8 +404,7 @@ public class Y9WordController {
      * @param taskId 任务id
      */
     @RequestMapping(value = "/openHistoryVersionDoc")
-    public void openHistoryVersionDoc(@RequestParam String taskId, HttpServletResponse response,
-        HttpServletRequest request) {
+    public void openHistoryVersionDoc(@RequestParam String taskId, HttpServletResponse response) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         Y9WordHistoryModel history =
@@ -447,18 +412,8 @@ public class Y9WordController {
         String fileStoreId = history.getFileStoreId();
         ServletOutputStream out = null;
         try {
-            String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
-            String fileName = y9FileStore.getFileName();
-            if (agent.contains("Firefox")) {
-                org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
-            } else {
-                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-                StringUtils.replace(fileName, "+", "%20");
-            }
             response.reset();
-            // response.setHeader("Content-Type", "application/msword");
-            // response.setHeader("Content-Length", String.valueOf(buf.length));
             response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
 
             out = response.getOutputStream();
@@ -554,20 +509,11 @@ public class Y9WordController {
             String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
-            if (agent.contains("Firefox")) {
-                fileName = "=?UTF-8?B?"
-                    + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8))))
-                    + "?=";
-            } else {
-                fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-                fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
-            }
+            fileName = encodeFileName(fileName, agent);
             response.reset();
             // response.setHeader("Content-Type", "application/msword");
             // response.setHeader("Content-Length", String.valueOf(buf.length));
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
@@ -588,21 +534,6 @@ public class Y9WordController {
         } catch (IOException e) {
             LOGGER.error("下载正文异常", e);
         }
-    }
-
-    /**
-     * 选择套红模板
-     *
-     * @param activitiUser 人员id
-     * @return String
-     */
-    @RequestMapping(value = "/openTaoHong")
-    public String openTaoHong(@RequestParam(required = false) String activitiUser, Model model) {
-        OrgUnit currentBureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser).getData();
-        model.addAttribute("currentBureauGuid", currentBureau.getId());
-        model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());
-        model.addAttribute("userId", Y9LoginUserHolder.getPersonId());
-        return "intranet/taohongNTKO";
     }
 
     /**
@@ -653,46 +584,6 @@ public class Y9WordController {
             LOGGER.error("保存正文异常", e);
         }
         return result;
-    }
-
-    @RequestMapping("/showDownPdfTool")
-    public String showDownPdfTool() {
-        return "intranet/downPdfTool";
-    }
-
-    /**
-     * 获取正文详细信息
-     *
-     * @return String
-     */
-    @RequestMapping("/showWord")
-    public String showWord(@RequestParam String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam String itemId,
-        @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String browser, Model model) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        Y9WordInfo map =
-            y9WordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, "").getData();
-        model.addAttribute("word", map);
-        Object documentTitle;
-        if (StringUtils.isBlank(processInstanceId)) {
-            DraftModel model1 = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            documentTitle = model1.getTitle();
-        } else {
-            String[] pInstanceId = processInstanceId.split(",");
-            ProcessParamModel processModel =
-                processParamApi.findByProcessInstanceId(tenantId, pInstanceId[0]).getData();
-            documentTitle = processModel.getTitle();
-            processInstanceId = pInstanceId[0];
-        }
-        model.addAttribute("documentTitle", documentTitle != null ? documentTitle : "正文");
-        model.addAttribute("browser", browser);
-        model.addAttribute("processInstanceId", processInstanceId);
-        model.addAttribute("tenantId", tenantId);
-        model.addAttribute("userId", userId);
-        return "intranet/webOfficeNTKO";
     }
 
     /**
@@ -825,7 +716,6 @@ public class Y9WordController {
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
-
             title = documentTitle != null ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
@@ -837,11 +727,9 @@ public class Y9WordController {
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
             }
-
         } catch (Exception e) {
             LOGGER.error("上传正文失败", e);
         }
         return result;
     }
-
 }

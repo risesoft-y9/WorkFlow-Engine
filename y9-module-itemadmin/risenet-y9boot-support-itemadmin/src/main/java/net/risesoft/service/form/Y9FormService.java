@@ -42,7 +42,6 @@ public interface Y9FormService {
     Y9Result<Object> delete(String id);
 
     /**
-     * Description:
      *
      * @param y9TableId
      * @param guid
@@ -101,7 +100,7 @@ public interface Y9FormService {
     List<Y9Form> listAll();
 
     /**
-     * Description: 获取子表数据，一个表单是一个子表
+     * 获取子表数据，一个表单是一个子表
      *
      * @param formId
      * @param parentProcessSerialNumber
@@ -111,7 +110,7 @@ public interface Y9FormService {
     List<Map<String, Object>> listChildFormData(String formId, String parentProcessSerialNumber);
 
     /**
-     * Description: 获取子表数据
+     * 获取子表数据
      *
      * @param formId
      * @param tableId
@@ -132,7 +131,7 @@ public interface Y9FormService {
 
     /**
      *
-     * Description: 根据应用id分页获取表单列表
+     * 根据应用id分页获取表单列表
      *
      * @param systemName
      * @param page
@@ -164,10 +163,10 @@ public interface Y9FormService {
     /**
      * 保存表单数据
      *
-     * @param formdata
+     * @param formData
      * @return
      */
-    Y9Result<Object> saveFormData(String formdata);
+    Y9Result<Object> saveFormData(String formData);
 
     /**
      * 保存绑定表单字段信息

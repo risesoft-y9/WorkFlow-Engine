@@ -33,7 +33,7 @@ public interface SearchService {
      * @param year 年度
      * @param page 页码
      * @param rows 每页条数
-     * @return Y9Page<Map < String, Object>>
+     * @return Y9Page<ChaoSongModel>
      */
     Y9Page<ChaoSongModel> pageYuejianList(String searchName, String itemId, String userName, String state, String year,
         Integer page, Integer rows);

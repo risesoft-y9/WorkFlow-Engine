@@ -65,7 +65,7 @@ public class AttachmentType implements Serializable {
      * 录入附件类型的人员的Id
      */
     @Comment("人员id")
-    @Column(name = "USERID", length = 50, nullable = true)
+    @Column(name = "USERID", length = 50)
     private String userId;
 
     /**

@@ -19,10 +19,8 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
-import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
-import net.risesoft.api.processadmin.MonitorApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -44,15 +42,11 @@ import net.risesoft.y9.util.Y9Util;
 @Transactional(readOnly = true)
 public class MonitorServiceImpl implements MonitorService {
 
-    private final MonitorApi monitorApi;
-
     private final TaskApi taskApi;
 
     private final ItemApi itemApi;
 
     private final OrgUnitApi orgUnitApi;
-
-    private final ProcessParamApi processParamApi;
 
     private final OfficeDoneInfoApi officeDoneInfoApi;
 
@@ -275,7 +269,7 @@ public class MonitorServiceImpl implements MonitorService {
                         mapTemp.put("itembox", new HashMap<String, String>(16));
                     }
                 } catch (Exception e) {
-                    LOGGER.error("获取列表失败" + processInstanceId, e);
+                    LOGGER.error("获取列表失败{}", processInstanceId, e);
                 }
                 items.add(mapTemp);
             }

@@ -119,5 +119,4 @@ public class SignDeptController {
         return signDeptInfoApi.updateSignDept(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
             processSerialNumber, type, tzsDeptId);
     }
-
 }

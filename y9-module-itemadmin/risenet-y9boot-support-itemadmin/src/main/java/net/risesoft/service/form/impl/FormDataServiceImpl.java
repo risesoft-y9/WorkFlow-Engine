@@ -303,7 +303,7 @@ public class FormDataServiceImpl implements FormDataService {
     public Y9Result<Map<String, Object>> getData4TableAlias(String guid, String tableAlias) {
         Y9Table y9Table = y9TableService.findByTableAlias(tableAlias);
         if (null == y9Table) {
-            LOGGER.error("表简称[" + tableAlias + "]对应的字段不存在");
+            LOGGER.error("表简称[{}]对应的字段不存在", tableAlias);
             return Y9Result.failure("表简称[" + tableAlias + "]对应的字段不存在");
         }
         String selectSql = "SELECT * FROM " + y9Table.getTableName() + " WHERE GUID ='" + guid + "'";
@@ -330,7 +330,7 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     /**
-     * 解析权限 Description:
+     * 解析权限
      *
      * @param y9FieldPerm
      * @return

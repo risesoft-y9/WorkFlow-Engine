@@ -266,7 +266,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 hisTaskModel.getTaskDefinitionKey(), List.of(positionId), desc, "");
             return Y9Result.successMsg(desc + "成功");
         } catch (Exception e) {
-            LOGGER.error(desc + "异常", e);
+            LOGGER.error("{}异常", desc, e);
         }
         return Y9Result.failure(desc + "失败");
     }
@@ -315,7 +315,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         int total = processSerialNumbers.length;
         AtomicInteger success = new AtomicInteger();
         AtomicInteger error = new AtomicInteger();
-        List<TargetModel> nodeList = new ArrayList<>();
         for (String processSerialNumber : processSerialNumbers) {
             try {
                 if (actRuDetailApi.deleteByProcessSerialNumber(tenantId, processSerialNumber).isSuccess()) {

@@ -153,8 +153,8 @@ public class OrganWordRestController {
      * @return
      */
     @GetMapping(value = "/getTempNumber")
-    public Y9Result<String> getTempNumber(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String custom, @RequestParam @NotBlank String processSerialNumber) {
+    public Y9Result<String> getTempNumber(@RequestParam String itemId, @RequestParam String custom,
+        @RequestParam @NotBlank String processSerialNumber) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
         try {
@@ -190,5 +190,4 @@ public class OrganWordRestController {
         }
         return Y9Result.failure("保存编号失败");
     }
-
 }

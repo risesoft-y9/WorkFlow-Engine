@@ -16,7 +16,7 @@ public interface EntrustHistoryService {
 
     /**
      *
-     * Description: 获取某个用户的委托历史对象集合
+     * 获取某个用户的委托历史对象集合
      *
      * @param ownerId
      * @return
@@ -24,7 +24,7 @@ public interface EntrustHistoryService {
     List<EntrustHistory> listByOwnerId(String ownerId);
 
     /**
-     * Description: 获取某个用户的某个事项委托历史对象集合
+     * 获取某个用户的某个事项委托历史对象集合
      *
      * @param ownerId
      * @param itemId
@@ -34,7 +34,7 @@ public interface EntrustHistoryService {
 
     /**
      *
-     * Description: 获取某个用户的委托历史对象集合
+     * 获取某个用户的委托历史对象集合
      *
      * @param page
      * @param rows
@@ -44,7 +44,7 @@ public interface EntrustHistoryService {
 
     /**
      *
-     * Description: 获取某个用户的委托历史对象集合
+     * 获取某个用户的委托历史对象集合
      *
      * @param assigneeId
      * @param page
@@ -54,7 +54,7 @@ public interface EntrustHistoryService {
     Page<EntrustHistory> pageByAssigneeId(String assigneeId, int page, int rows);
 
     /**
-     * Description: 获取某个用户的委托历史对象集合
+     * 获取某个用户的委托历史对象集合
      *
      * @param ownerId
      * @param page
@@ -65,7 +65,7 @@ public interface EntrustHistoryService {
 
     /**
      *
-     * Description: 保存委托历史对象
+     * 保存委托历史对象
      *
      * @param entrustHistory
      * @return

@@ -31,7 +31,6 @@ public interface Y9FormFieldService {
     Y9Result<String> deleteByFormId(String formId);
 
     /**
-     * Description:
      *
      * @param id
      * @return
@@ -74,7 +73,6 @@ public interface Y9FormFieldService {
     Page<Y9FormField> pageByFormId(String formId, Integer page, Integer rows);
 
     /**
-     * Description:
      *
      * @param formField
      * @return

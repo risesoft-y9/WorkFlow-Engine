@@ -18,22 +18,6 @@ public interface EntrustDetailService {
     EntrustDetail findByTaskId(String taskId);
 
     /**
-     * 获取任务委托人id
-     *
-     * @param taskId
-     * @return
-     */
-    String getEntrustOwnerId(String taskId);
-
-    /**
-     * 判断该任务是否存在出差委托
-     *
-     * @param taskId
-     * @return
-     */
-    boolean haveEntrustDetailByTaskId(String taskId);
-
-    /**
      * 保存委托信息
      *
      * @param processInstanceId
