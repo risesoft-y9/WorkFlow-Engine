@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.service.ExcelHandlerService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 import cn.idev.excel.EasyExcel;
 
@@ -35,7 +34,6 @@ public class ExcelHandlerServiceImpl implements ExcelHandlerService {
             EasyExcel.write(outStream).head(headName).sheet("Sheet1").doWrite(headName);
             return;
         }
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<List<String>> headKey = new ArrayList<>();
         // 准备表头
         Arrays.stream(columns).forEach(column -> {
@@ -47,9 +45,7 @@ public class ExcelHandlerServiceImpl implements ExcelHandlerService {
         List<List<String>> data = new ArrayList<>();
         mapList.forEach(map -> {
             List<String> list = new ArrayList<>();
-            headKey.forEach(key -> {
-                list.add(null == map.get(key.get(0)) ? "" : map.get(key.get(0)).toString());
-            });
+            headKey.forEach(key -> list.add(null == map.get(key.get(0)) ? "" : map.get(key.get(0)).toString()));
             data.add(list);
         });
         // 写入数据到 Excel 文件

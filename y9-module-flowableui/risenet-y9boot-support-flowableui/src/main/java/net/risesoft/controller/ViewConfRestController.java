@@ -39,7 +39,7 @@ public class ViewConfRestController {
      *
      * @param itemId 事项id
      * @param viewType 视图类型
-     * @return Y9Result<List < ItemViewConfModel>>
+     * @return Y9Result<List<ItemViewConfModel>>
      */
     @GetMapping(value = "/list")
     public Y9Result<List<ItemViewConfModel>> list(@RequestParam @NotBlank String itemId,

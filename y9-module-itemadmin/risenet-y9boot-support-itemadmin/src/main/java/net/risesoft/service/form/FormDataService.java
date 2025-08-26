@@ -101,7 +101,7 @@ public interface FormDataService {
     List<FieldPermModel> listAllFieldPerm(String formId, String taskDefKey, String processDefinitionId);
 
     /**
-     * Description: 获取子表数据，一个表单是一个子表
+     * 获取子表数据，一个表单是一个子表
      *
      * @param formId
      * @param parentProcessSerialNumber
@@ -111,7 +111,7 @@ public interface FormDataService {
     List<Map<String, Object>> listChildFormData(String formId, String parentProcessSerialNumber) throws Exception;
 
     /**
-     * Description: 获取子表数据
+     * 获取子表数据
      *
      * @param formId
      * @param tableId
@@ -150,13 +150,13 @@ public interface FormDataService {
      * 保存前置表单数据
      *
      * @param itemId
-     * @param formdata
+     * @param formData
      * @param formId
      */
-    String saveAFormData(String itemId, String formdata, String formId) throws Exception;
+    String saveAFormData(String itemId, String formData, String formId) throws Exception;
 
     /**
-     * Description: 保存子表数据
+     * 保存子表数据
      *
      * @param formId
      * @param tableId
@@ -168,7 +168,7 @@ public interface FormDataService {
         throws Exception;
 
     /**
-     * Description: 保存子表数据，一个表单是一个子表
+     * 保存子表数据，一个表单是一个子表
      *
      * @param formId
      * @param jsonData
@@ -179,11 +179,11 @@ public interface FormDataService {
     /**
      * 保存表单数据
      *
-     * @param formdata
+     * @param formData
      * @param formId
      * @throws Exception
      */
-    void saveFormData(String formdata, String formId) throws Exception;
+    void saveFormData(String formData, String formId) throws Exception;
 
     Y9Result<String> updateFormData(String guid, String formData);
 

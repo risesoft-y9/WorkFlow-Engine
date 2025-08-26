@@ -159,7 +159,7 @@ public class RoleRestController {
      * @param roleId 角色id
      * @param principalType 选人类型
      * @param id 父节点id
-     * @return Y9Result<List < Map < String, Object>>>
+     * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
     @GetMapping(value = "/findByRoleId")
     public Y9Result<List<ItemRoleOrgUnitModel>> findByRoleId(@RequestParam @NotBlank String roleId,

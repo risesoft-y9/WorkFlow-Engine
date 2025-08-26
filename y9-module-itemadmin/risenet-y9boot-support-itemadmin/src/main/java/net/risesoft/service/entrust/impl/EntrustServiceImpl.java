@@ -120,9 +120,9 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setUsed(Entrust.NOTUSED);
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
-            Date startTime4Date = null;
-            Date endTime4Date = null;
-            Date currentDate = null;
+            Date startTime4Date;
+            Date endTime4Date;
+            Date currentDate;
             try {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
@@ -178,9 +178,9 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setUsed(Entrust.NOTUSED);
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
-            Date startTime4Date = null;
-            Date endTime4Date = null;
-            Date currentDate = null;
+            Date startTime4Date;
+            Date endTime4Date;
+            Date currentDate;
             try {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);
@@ -210,8 +210,8 @@ public class EntrustServiceImpl implements EntrustService {
         SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll(ownerId);
-        OrgUnit pTemp = null;
-        Item itemTemp = null;
+        OrgUnit pTemp;
+        Item itemTemp;
         for (Entrust entrust : entrustList) {
             pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
@@ -234,9 +234,9 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setUsed(Entrust.NOTUSED);
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
-            Date startTime4Date = null;
-            Date endTime4Date = null;
-            Date currentDate = null;
+            Date startTime4Date;
+            Date endTime4Date;
+            Date currentDate;
             try {
                 startTime4Date = sdf2.parse(startTime);
                 endTime4Date = sdf2.parse(endTime);

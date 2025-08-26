@@ -29,18 +29,6 @@ public class EntrustDetailServiceImpl implements EntrustDetailService {
     }
 
     @Override
-    public String getEntrustOwnerId(String taskId) {
-        EntrustDetail ed = this.findByTaskId(taskId);
-        return null == ed ? "" : ed.getOwnerId();
-    }
-
-    @Override
-    public boolean haveEntrustDetailByTaskId(String taskId) {
-        EntrustDetail ed = this.findByTaskId(taskId);
-        return null != ed;
-    }
-
-    @Override
     @Transactional
     public void save(String processInstanceId, String taskId, String ownerId, String assigneeId) {
         EntrustDetail entrustDetail = entrustDetailRepository.findByTaskId(taskId);

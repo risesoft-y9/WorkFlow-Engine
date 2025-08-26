@@ -1,6 +1,5 @@
 package net.risesoft.service.entrust;
 
-import java.text.ParseException;
 import java.util.List;
 
 import net.risesoft.entity.entrust.Entrust;
@@ -15,7 +14,7 @@ import net.risesoft.model.itemadmin.EntrustModel;
 public interface EntrustService {
 
     /**
-     * Description: 销假:删除ownerId所有的正在使用中的、或者已经过期的出差委托，并放入委托历史表
+     * 销假:删除ownerId所有的正在使用中的、或者已经过期的出差委托，并放入委托历史表
      *
      * @param id
      */
@@ -37,7 +36,6 @@ public interface EntrustService {
     void destroyEntrustById(String id);
 
     /**
-     * Description:
      *
      * @param ownerId
      * @param itemId
@@ -46,8 +44,6 @@ public interface EntrustService {
     Entrust findOneByOwnerIdAndItemId(String ownerId, String itemId);
 
     /**
-     * Description:
-     *
      * @param ownerId
      * @param itemId
      * @param dateTime
@@ -73,8 +69,6 @@ public interface EntrustService {
     Integer getCountByOwnerIdAndItemId(String ownerId, String itemId);
 
     /**
-     * Description:
-     *
      * @param ownerId
      * @return
      */
@@ -88,7 +82,7 @@ public interface EntrustService {
     List<Entrust> listAll();
 
     /**
-     * Description: 获取某个用户没有删除的委托对象
+     * 获取某个用户没有删除的委托对象
      *
      * @param ownerId
      * @return
@@ -133,7 +127,6 @@ public interface EntrustService {
      *
      * @param entrust
      * @return
-     * @throws ParseException
      */
     Entrust saveOrUpdate(Entrust entrust);
 }

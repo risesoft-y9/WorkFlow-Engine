@@ -52,8 +52,10 @@ public class TableManagerService {
 
     private String[] allFieldName = null;
 
-    public TableManagerService(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
-        Y9TableRepository y9TableRepository, Y9TableFieldRepository y9TableFieldRepository) {
+    public TableManagerService(
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
+        Y9TableRepository y9TableRepository,
+        Y9TableFieldRepository y9TableFieldRepository) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9TableRepository = y9TableRepository;
         this.y9TableFieldRepository = y9TableFieldRepository;
@@ -120,7 +122,7 @@ public class TableManagerService {
             LOGGER.info("修改字段正常");
             return Y9Result.successMsg("操作成功");
         } catch (Exception ex) {
-            LOGGER.warn("操作失败：{}", ex);
+            LOGGER.warn("操作失败", ex);
             return Y9Result.failure("操作失败");
         }
     }

@@ -116,17 +116,20 @@ public class DoneServiceImpl implements DoneService {
         List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
         int serialNumber = (page - 1) * rows;
         Map<String, Object> mapTemp;
-        for (OfficeDoneInfoModel hpim : hpiList) {
+        for (OfficeDoneInfoModel officeDoneInfoModel : hpiList) {
             mapTemp = new HashMap<>(16);
             try {
-                String processInstanceId = hpim.getProcessInstanceId();
-                String processDefinitionId = hpim.getProcessDefinitionId();
-                String startTime = hpim.getStartTime().substring(0, 16), endTime = hpim.getEndTime().substring(0, 16);
-                String processSerialNumber = hpim.getProcessSerialNumber();
-                String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                String level = hpim.getUrgency();
-                String number = hpim.getDocNumber();
-                String completer = StringUtils.isBlank(hpim.getUserComplete()) ? "无" : hpim.getUserComplete();
+                String processInstanceId = officeDoneInfoModel.getProcessInstanceId();
+                String processDefinitionId = officeDoneInfoModel.getProcessDefinitionId();
+                String startTime = officeDoneInfoModel.getStartTime().substring(0, 16),
+                    endTime = officeDoneInfoModel.getEndTime().substring(0, 16);
+                String processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
+                String documentTitle =
+                    StringUtils.isBlank(officeDoneInfoModel.getTitle()) ? "无标题" : officeDoneInfoModel.getTitle();
+                String level = officeDoneInfoModel.getUrgency();
+                String number = officeDoneInfoModel.getDocNumber();
+                String completer = StringUtils.isBlank(officeDoneInfoModel.getUserComplete()) ? "无"
+                    : officeDoneInfoModel.getUserComplete();
                 mapTemp.put("itemName", itemName);
                 mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                 mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
