@@ -83,7 +83,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
 
     private final OpinionRepository opinionRepository;
 
-    private final Y9WordHistoryService transactionHistoryWordService;
+    private final Y9WordHistoryService y9WordHistoryService;
 
     private final HistoricVariableApi historicVariableApi;
 
@@ -386,9 +386,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             model.setOpinion("");
 
             // 历史正文版本
-            Y9WordHistory hword = this.transactionHistoryWordService.getTransactionHistoryWordByTaskId(taskId);
-            if (null != hword) {
-                model.setHistoryVersion(hword.getVersion());
+            Y9WordHistory y9WordHistory = this.y9WordHistoryService.findByTaskId(taskId);
+            if (null != y9WordHistory) {
+                model.setHistoryVersion(y9WordHistory.getVersion());
             }
             model.setTaskId(taskId);
             // 收件人

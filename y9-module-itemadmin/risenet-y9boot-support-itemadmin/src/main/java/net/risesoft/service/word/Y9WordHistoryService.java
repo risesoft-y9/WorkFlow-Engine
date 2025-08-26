@@ -40,7 +40,7 @@ public interface Y9WordHistoryService {
      * @param taskId
      * @return
      */
-    Y9WordHistory getTransactionHistoryWordByTaskId(String taskId);
+    Y9WordHistory findByTaskId(String taskId);
 
     /**
      * 根据流程编号获取正文
@@ -70,8 +70,8 @@ public interface Y9WordHistoryService {
      * @param taskId
      * @param docCategory
      */
-    void saveTransactionHistoryWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
-        String processSerialNumber, String isTaoHong, String taskId, String docCategory);
+    void save(String fileStoreId, String fileSize, String documentTitle, String fileType, String processSerialNumber,
+        String isTaoHong, String taskId, String docCategory);
 
     /**
      * 如果用户在启动流程之前先保存了正文，这时意见数据表中之前保存的数据的taskId仍为空， 此时需要根据processSerialNumber给历史正文表的taskId赋值
@@ -94,6 +94,6 @@ public interface Y9WordHistoryService {
      * @param userId
      * @param id
      */
-    void updateTransactionHistoryWordById(String fileStoreId, String fileType, String fileName, String fileSize,
-        String isTaoHong, String docCategory, String userId, String id);
+    void updateById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong,
+        String docCategory, String userId, String id);
 }

@@ -83,8 +83,7 @@ public interface Y9WordHistoryRepository
     @Query("select max(h.version) from Y9WordHistory h where h.processSerialNumber=?1")
     Integer getMaxHistoryVersion(String processSerialNumber);
 
-    @Query("From Y9WordHistory h where h.taskId=?1")
-    List<Y9WordHistory> getTransactionHistoryWordByTaskId(String taskId);
+    List<Y9WordHistory> findByTaskId(String taskId);
 
     @Transactional(readOnly = false)
     @Modifying
@@ -93,7 +92,7 @@ public interface Y9WordHistoryRepository
 
     /**
      * 更新word
-     * 
+     *
      * @param fileStoreId
      * @param fileSize
      * @param isTaoHong
@@ -102,9 +101,9 @@ public interface Y9WordHistoryRepository
      * @param userId
      * @param id
      */
-    @Transactional(readOnly = false)
+    @Transactional()
     @Modifying
     @Query("update Y9WordHistory t set t.fileStoreId=?1,t.fileSize=?2,t.istaohong=?3,t.docCategory=?4,t.saveDate=?5,t.userId=?6 where t.id=?7")
-    void updateTransactionHistoryWordById(String fileStoreId, String fileSize, String isTaoHong, String docCategory,
-        String saveDate, String userId, String id);
+    void updateById(String fileStoreId, String fileSize, String isTaoHong, String docCategory, String saveDate,
+        String userId, String id);
 }

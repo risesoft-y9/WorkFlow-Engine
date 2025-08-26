@@ -176,7 +176,7 @@ public class Y9WordApiImpl implements Y9WordApi {
      * @param tenantId 租户id
      * @param userId 人员id
      * @param taskId 任务id
-     * @return {@code Y9Result<TransactionHistoryWordModel>} 通用请求返回对象 - data 是历史正文文件信息对象
+     * @return {@code Y9Result<Y9WordHistoryModel>} 通用请求返回对象 - data 是历史正文文件信息对象
      * @since 9.6.6
      */
     @Override
@@ -430,38 +430,6 @@ public class Y9WordApiImpl implements Y9WordApi {
     }
 
     /**
-     * 打开历史文件
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param taskId 任务id
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @Override
-    @Deprecated
-    public Y9Result<Object> openHistoryVersionDoc(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String taskId) {
-        /*
-         * Runtime runtime = Runtime.getRuntime(); TransactionHistoryWord hword =
-         * y9WordHistoryService.getTransactionHistoryWordByTaskId( taskId);
-         * //保存至系统临时存储的文件夹 String filePath = System.getProperty("java.io.tmpdir");
-         * BufferedOutputStream bos = null; FileOutputStream fos = null; File file =
-         * null; try { File dir = new File(filePath); if (!dir.exists() &&
-         * dir.isDirectory()) {//判断文件目录是否存在 dir.mkdirs(); } file = new File(filePath +
-         * "正文" + hword.getVersion() + ".doc"); fos = new FileOutputStream(file); bos =
-         * new BufferedOutputStream(fos); bos.write(hword.getContent());
-         *
-         * runtime.exec("rundll32 url.dll FileProtocolHandler " + filePath + "正文" +
-         * hword.getVersion() + ".doc"); } catch (Exception e) { e.printStackTrace(); }
-         * finally { if (bos != null) { try { bos.close(); } catch (IOException e1) {
-         * e1.printStackTrace(); } } if (fos != null) { try { fos.close(); } catch
-         * (IOException e1) { e1.printStackTrace(); } } }
-         */
-        return Y9Result.success();
-    }
-
-    /**
      * 获取PDF文件存储信息（打开PDF使用）
      *
      * @param tenantId 租户id
@@ -550,22 +518,22 @@ public class Y9WordApiImpl implements Y9WordApi {
      *
      * @param tenantId 租户Id
      * @param userId 人员Id
-     * @param docjson 正文json信息
+     * @param docJson 正文json信息
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 是保存是否成功的信息
      * @since 9.6.6
      */
     @SuppressWarnings("unchecked")
     @Override
-    public Y9Result<Boolean> saveImportTransationWord(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String docjson, @RequestParam String processSerialNumber) {
+    public Y9Result<Boolean> importY9Word(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String docJson, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         boolean checkSave = false;
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            Map<String, Object> documentMap = Y9JsonUtil.readValue(docjson, Map.class);
+            Map<String, Object> documentMap = Y9JsonUtil.readValue(docJson, Map.class);
             assert documentMap != null;
             List<Map<String, Object>> documentList = (List<Map<String, Object>>)documentMap.get("document");
             for (Map<String, Object> dMap : documentList) {
@@ -596,7 +564,7 @@ public class Y9WordApiImpl implements Y9WordApi {
      * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
-     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
+     * @param itembox 办件状态 {@link net.risesoft.enums.ItemBoxTypeEnum}
      * @param taskId 任务id
      * @param bindValue 绑定值
      * @return {@code Y9Result<WordInfo>} 通用请求返回对象 - data 是正文详情
@@ -779,8 +747,8 @@ public class Y9WordApiImpl implements Y9WordApi {
                 if (list.isEmpty()) {
                     y9WordService.saveWord(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber,
                         isTaoHong, docCategory);
-                    y9WordHistoryService.saveTransactionHistoryWord(fileStoreId, fileSizeString, documentTitle,
-                        fileType, processSerialNumber, isTaoHong, taskId, docCategory);
+                    y9WordHistoryService.save(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber,
+                        isTaoHong, taskId, docCategory);
                 } else {
                     if (StringUtils.isNotEmpty(list.get(0).getTitle())) {
                         documentTitle = list.get(0).getTitle();
@@ -804,12 +772,11 @@ public class Y9WordApiImpl implements Y9WordApi {
                         /*
                          * 在当前任务还没有保存过正文
                          */
-                        y9WordHistoryService.saveTransactionHistoryWord(fileStoreId, fileSizeString, documentTitle,
-                            fileType, processSerialNumber, isTaoHong, taskId, docCategory);
+                        y9WordHistoryService.save(fileStoreId, fileSizeString, documentTitle, fileType,
+                            processSerialNumber, isTaoHong, taskId, docCategory);
                     } else {
-                        y9WordHistoryService.updateTransactionHistoryWordById(fileStoreId, fileType,
-                            documentTitle + fileType, fileSizeString, isTaoHong, docCategory, userId,
-                            thwlist.get(0).getId());
+                        y9WordHistoryService.updateById(fileStoreId, fileType, documentTitle + fileType, fileSizeString,
+                            isTaoHong, docCategory, userId, thwlist.get(0).getId());
                     }
                 }
                 return Y9Result.success(true);

@@ -88,7 +88,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
 
     private final DraftEntityRepository draftEntityRepository;
 
-    private final Y9WordHistoryService transactionHistoryWordService;
+    private final Y9WordHistoryService y9WordHistoryService;
 
     private final AttachmentService attachmentService;
 
@@ -509,7 +509,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
             }
             opinionRepository.update(processInstanceId, taskId, processSerialNumber);
             attachmentService.update(processSerialNumber, processInstanceId, taskId);
-            transactionHistoryWordService.update(taskId, processSerialNumber);
+            y9WordHistoryService.update(taskId, processSerialNumber);
             draftEntityRepository.deleteByProcessSerialNumber(processSerialNumber);
         } catch (Exception e) {
             LOGGER.warn("*****startProcessSave发生异常*****", e);
