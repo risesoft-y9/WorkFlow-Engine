@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_DOCUMENTWORD_HIS")
 @Comment("历史正文表")
-public class TransactionHistoryWord implements Serializable {
+public class Y9WordHistory implements Serializable {
 
     private static final long serialVersionUID = -8485514305692770264L;
 

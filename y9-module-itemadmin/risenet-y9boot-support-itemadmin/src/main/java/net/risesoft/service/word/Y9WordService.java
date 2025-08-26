@@ -2,14 +2,14 @@ package net.risesoft.service.word;
 
 import java.util.List;
 
-import net.risesoft.entity.documentword.TransactionWord;
+import net.risesoft.entity.documentword.Y9Word;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface TransactionWordService {
+public interface Y9WordService {
 
     /**
      * 根据流程编号删除正文，同时删除文件系统的文件
@@ -24,7 +24,7 @@ public interface TransactionWordService {
      * @param processSerialNumber
      * @return
      */
-    TransactionWord getByProcessSerialNumber(String processSerialNumber);
+    Y9Word getByProcessSerialNumber(String processSerialNumber);
 
     /**
      * 根据流程编号获取正文
@@ -32,7 +32,7 @@ public interface TransactionWordService {
      * @param processSerialNumber
      * @return
      */
-    List<TransactionWord> listByProcessSerialNumber(String processSerialNumber);
+    List<Y9Word> listByProcessSerialNumber(String processSerialNumber);
 
     /**
      * 根据流程编号和文档类别获取正文
@@ -41,7 +41,7 @@ public interface TransactionWordService {
      * @param docCategory
      * @return
      */
-    List<TransactionWord> listByProcessSerialNumberAndDocCategory(String processSerialNumber, String docCategory);
+    List<Y9Word> listByProcessSerialNumberAndDocCategory(String processSerialNumber, String docCategory);
 
     /**
      * 根据processSerialNumber和taohong获取套红正文
@@ -50,17 +50,17 @@ public interface TransactionWordService {
      * @param taohong
      * @return
      */
-    List<TransactionWord> listByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong);
+    List<Y9Word> listByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong);
 
     /**
      * Description:
      *
      * @param tw
      */
-    void save(TransactionWord tw);
+    void save(Y9Word tw);
 
     /**
-     * Description: 保存word正文
+     * 保存word正文
      *
      * @param fileStoreId
      * @param fileSize
@@ -70,11 +70,11 @@ public interface TransactionWordService {
      * @param isTaoHong
      * @param docCategory 文档类别
      */
-    void saveTransactionWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
+    void saveWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
         String processSerialNumber, String isTaoHong, String docCategory);
 
     /**
-     * Description: 保存正文信息
+     * 保存正文信息
      *
      * @param docjson
      * @param processSerialNumber
@@ -93,7 +93,7 @@ public interface TransactionWordService {
      * @param userId
      * @param id
      */
-    void updateTransactionWordById(String fileStoreId, String fileType, String fileName, String fileSize,
-        String isTaoHong, String userId, String id);
+    void updateById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong,
+        String userId, String id);
 
 }

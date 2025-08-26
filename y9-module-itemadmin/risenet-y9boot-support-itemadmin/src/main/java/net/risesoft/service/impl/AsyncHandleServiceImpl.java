@@ -59,7 +59,7 @@ import net.risesoft.service.attachment.AttachmentService;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.event.Y9TodoUpdateEvent;
-import net.risesoft.service.word.TransactionHistoryWordService;
+import net.risesoft.service.word.Y9WordHistoryService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -88,7 +88,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
 
     private final DraftEntityRepository draftEntityRepository;
 
-    private final TransactionHistoryWordService transactionHistoryWordService;
+    private final Y9WordHistoryService transactionHistoryWordService;
 
     private final AttachmentService attachmentService;
 

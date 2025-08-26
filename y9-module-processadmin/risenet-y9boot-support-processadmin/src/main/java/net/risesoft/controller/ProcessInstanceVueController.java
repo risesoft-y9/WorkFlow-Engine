@@ -27,7 +27,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
-import net.risesoft.api.itemadmin.TransactionWordApi;
+import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.processadmin.SysVariables;
@@ -61,7 +61,7 @@ public class ProcessInstanceVueController {
 
     private final OrgUnitApi orgUnitApi;
 
-    private final TransactionWordApi transactionWordApi;
+    private final Y9WordApi y9WordApi;
 
     private final AttachmentApi attachmentApi;
 
@@ -96,7 +96,7 @@ public class ProcessInstanceVueController {
                 // 批量删除附件表
                 attachmentApi.delBatchByProcessSerialNumbers(tenantId, list);
                 // 批量删除正文表
-                transactionWordApi.delBatchByProcessSerialNumbers(tenantId, list);
+                y9WordApi.delBatchByProcessSerialNumbers(tenantId, list);
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
@@ -134,8 +134,9 @@ public class ProcessInstanceVueController {
                             int j = 0;
                             for (IdentityLink identityLink : iList) {
                                 String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser = orgUnitApi
-                                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                                OrgUnit ownerUser =
+                                    orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
+                                        .getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
                                     assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
@@ -285,8 +286,11 @@ public class ProcessInstanceVueController {
                 runtimeService.createProcessInstanceQuery().orderByStartTime().desc().listPage((page - 1) * rows, rows);
         } else {
             totalCount = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).count();
-            processInstanceList = runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId)
-                .orderByStartTime().desc().listPage((page - 1) * rows, rows);
+            processInstanceList = runtimeService.createProcessInstanceQuery()
+                .processInstanceId(processInstanceId)
+                .orderByStartTime()
+                .desc()
+                .listPage((page - 1) * rows, rows);
         }
         OrgUnit orgUnit;
         OrgUnit parent;
@@ -302,8 +306,13 @@ public class ProcessInstanceVueController {
                 processInstance.getStartTime() == null ? "" : sdf.format(processInstance.getStartTime()));
             try {
                 map.put("activityName",
-                    runtimeService.createActivityInstanceQuery().processInstanceId(processInstanceId)
-                        .orderByActivityInstanceStartTime().desc().list().get(0).getActivityName());
+                    runtimeService.createActivityInstanceQuery()
+                        .processInstanceId(processInstanceId)
+                        .orderByActivityInstanceStartTime()
+                        .desc()
+                        .list()
+                        .get(0)
+                        .getActivityName());
                 map.put("suspended", processInstance.isSuspended());
                 map.put("startUserName", "无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {

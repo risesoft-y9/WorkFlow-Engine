@@ -2,14 +2,14 @@ package net.risesoft.service.word;
 
 import java.util.List;
 
-import net.risesoft.entity.documentword.TransactionHistoryWord;
+import net.risesoft.entity.documentword.Y9WordHistory;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
-public interface TransactionHistoryWordService {
+public interface Y9WordHistoryService {
 
     /**
      * 根据流程编号删除历史正文，同时删除文件系统的文件
@@ -32,7 +32,7 @@ public interface TransactionHistoryWordService {
      * @param processSerialNumber
      * @return
      */
-    TransactionHistoryWord getByProcessSerialNumber(String processSerialNumber);
+    Y9WordHistory getByProcessSerialNumber(String processSerialNumber);
 
     /**
      * 根据taskId找历史正文
@@ -40,7 +40,7 @@ public interface TransactionHistoryWordService {
      * @param taskId
      * @return
      */
-    TransactionHistoryWord getTransactionHistoryWordByTaskId(String taskId);
+    Y9WordHistory getTransactionHistoryWordByTaskId(String taskId);
 
     /**
      * 根据流程编号获取正文
@@ -48,7 +48,7 @@ public interface TransactionHistoryWordService {
      * @param processSerialNumber
      * @return
      */
-    List<TransactionHistoryWord> listByProcessSerialNumber(String processSerialNumber);
+    List<Y9WordHistory> listByProcessSerialNumber(String processSerialNumber);
 
     /**
      * 根据taskId找历史正文
@@ -56,7 +56,7 @@ public interface TransactionHistoryWordService {
      * @param taskId
      * @return List
      */
-    List<TransactionHistoryWord> listByTaskId(String taskId);
+    List<Y9WordHistory> listByTaskId(String taskId);
 
     /**
      * Description: 保存word正文
