@@ -85,15 +85,15 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
         }
     }
 
-    private void createSystem(String systemName) {
+    private void createSystem() {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            String sql = "select * from y9_common_system where NAME = '" + systemName + "'";
+            String sql = "select * from y9_common_system where NAME = 'itemAdmin'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
-            if (list.size() == 0) {
+            if (list.isEmpty()) {
                 sql =
                     "INSERT INTO y9_common_system (ID, CONTEXT_PATH, NAME, CN_NAME, TAB_INDEX,ENABLED,AUTO_INIT,CREATE_TIME) VALUES ('"
-                        + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', 'itemAdmin', '" + systemName
+                        + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', 'itemAdmin', '" + "itemAdmin"
                         + "', '事项管理', 100,1,1,'" + sdf.format(new Date()) + "')";
                 jdbcTemplate.execute(sql);
             }
@@ -102,9 +102,9 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
         }
     }
 
-    private void createTenantApp(String systemName, Tenant tenant) {
+    private void createTenantApp(Tenant tenant) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        String sql = "select * from y9_common_system where NAME = '" + systemName + "'";
+        String sql = "select * from y9_common_system where NAME = '" + "itemAdmin" + "'";
         List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
         if (list.size() == 1) {
             Map<String, Object> smap = list.get(0);
@@ -116,7 +116,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                 sql = "select ID from y9_common_tenant_app where TENANT_ID = '" + tenant.getId() + "' and APP_ID = '"
                     + amap.get("ID").toString() + "'";
                 List<Map<String, Object>> qlist = jdbcTemplate.queryForList(sql);
-                if (qlist.size() == 0) {
+                if (qlist.isEmpty()) {
                     String sql1 =
                         "INSERT INTO y9_common_tenant_app (ID, TENANT_ID, TENANT_NAME, SYSTEM_ID, APP_ID,APP_NAME,CREATE_TIME,APPLY_NAME,APPLY_ID,APPLY_REASON,VERIFY_STATUS,TENANCY) VALUES ('"
                             + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + tenant.getId() + "', '"
@@ -130,17 +130,17 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
 
     }
 
-    private void createTenantSystem(String systemName, Tenant tenant) {
+    private void createTenantSystem(Tenant tenant) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            String sql = "select * from y9_common_system where NAME = '" + systemName + "'";
+            String sql = "select * from y9_common_system where NAME = 'itemAdmin'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list.size() == 1) {
                 Map<String, Object> smap = list.get(0);
                 sql = "select * from y9_common_tenant_system where TENANT_ID = '" + tenant.getId()
                     + "' and SYSTEM_ID = '" + smap.get("ID").toString() + "'";
                 List<Map<String, Object>> qlist = jdbcTemplate.queryForList(sql);
-                if (qlist.size() == 0) {
+                if (qlist.isEmpty()) {
                     String sql1 =
                         "INSERT INTO y9_common_tenant_system (ID, SYSTEM_ID, TENANT_ID, TENANT_DATA_SOURCE, CREATE_TIME) VALUES ('"
                             + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + smap.get("ID").toString() + "', '"
@@ -158,28 +158,34 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
     public void onApplicationEvent(ApplicationReadyEvent event) {
         LOGGER.info("itemAdmin ApplicationReady...");
         try {
-            createSystem("itemAdmin");// 创建系统
-            creatApp();// 创建应用
+            createSystem();
+            creatApp();
 
             String sql = "select * from Y9_COMMON_TENANT";
             List<Map<String, Object>> tlist = jdbcTemplate.queryForList(sql);
-            for (Map<String, Object> map : tlist) {
-                Tenant tenant = new Tenant();
-                tenant.setId(map.get("ID").toString());
-                tenant.setDefaultDataSourceId(map.get("DEFAULT_DATA_SOURCE_ID").toString());
-                tenant.setName(map.get("NAME").toString());
+            /*
+             * 在一个环境中，如果只有一个租户，则初始化该租户的数据库表结构，并初始化该租户的数据库数据
+             * 后续添加的租户，如果租用该系统，则走ItemMultiTenantListener初始化该租户的数据库数据
+             */
+            if (1 == tlist.size()) {
+                for (Map<String, Object> map : tlist) {
+                    Tenant tenant = new Tenant();
+                    tenant.setId(map.get("ID").toString());
+                    tenant.setDefaultDataSourceId(map.get("DEFAULT_DATA_SOURCE_ID").toString());
+                    tenant.setName(map.get("NAME").toString());
 
-                createTenantSystem("itemAdmin", tenant);// 创建租户系统
-                createTenantApp("itemAdmin", tenant);// 创建租户应用
-            }
-            try {
-                // 更新租户数据库里的表结构
-                // updateTenantSchema();
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            for (Map<String, Object> map : tlist) {
-                initTableDataService.init(map.get("ID").toString());
+                    createTenantSystem(tenant);
+                    createTenantApp(tenant);
+                }
+                try {
+                    // 更新租户数据库里的表结构
+                    // updateTenantSchema();
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+                for (Map<String, Object> map : tlist) {
+                    initTableDataService.init(map.get("ID").toString());
+                }
             }
         } catch (Exception e) {
             e.printStackTrace();

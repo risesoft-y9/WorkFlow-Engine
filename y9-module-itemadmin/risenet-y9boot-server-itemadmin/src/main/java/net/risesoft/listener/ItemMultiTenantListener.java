@@ -7,6 +7,7 @@ import java.util.Map;
 
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.stereotype.Component;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -30,6 +31,7 @@ import net.risesoft.y9.configuration.Y9Properties;
  * @date 2023/01/03
  */
 @Slf4j
+@Component
 public class ItemMultiTenantListener implements TenantDataInitializer {
 
     /**
@@ -114,7 +116,7 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
         creatApp();
         createTenantApp("itemAdmin", tenant);
         initTableDataService.init(tenantId);
-        LOGGER.info(Y9Context.getSystemName() + ", 同步租户数据源信息, 成功！");
+        LOGGER.info("{}, 同步租户数据源信息, 成功！", Y9Context.getSystemName());
     }
 
 }
