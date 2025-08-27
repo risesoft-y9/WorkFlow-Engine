@@ -28,9 +28,6 @@ public interface AttachmentRepository extends JpaRepository<Attachment, String>,
     @Query("from Attachment t where t.processSerialNumber=?1 order by t.uploadTime desc")
     List<Attachment> findByProcessSerialNumber(String processSerialNumber);
 
-    @Query("from Attachment t where t.processSerialNumber=?1 and t.fileSource=?2 order by t.uploadTime desc")
-    List<Attachment> findByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource);
-
     @Query("from Attachment t where t.processSerialNumber in (?1)")
     List<Attachment> findByProcessSerialNumbers(List<String> processSerialNumbers);
 
@@ -55,11 +52,11 @@ public interface AttachmentRepository extends JpaRepository<Attachment, String>,
     @Query("select count(*) from Attachment t where t.processSerialNumber=?1 and t.fileSource = ?2 and t.fileType = ?3")
     Integer getAttachmentCountByFileType(String processSerialNumber, String fileSource, String fileType);
 
-    @Query("from Attachment t where t.tabIndex=?1 and t.processSerialNumber=?2 order by t.tabIndex asc")
-    Attachment getUpFileInfoByTabIndexOrProcessSerialNumber(Integer tabIndex, String processSerialNumber);
+    @Query("select max(t.tabIndex) from Attachment t where t.processSerialNumber=?1")
+    Integer getMaxTabIndex(String processSerialNumber);
 
     @Modifying
-    @Transactional(readOnly = false)
+    @Transactional
     @Query("update Attachment t set t.processInstanceId=?1,t.taskId=?2 where t.processSerialNumber=?3")
     int update(String processInstanceId, String taskId, String processSerialNumber);
 }

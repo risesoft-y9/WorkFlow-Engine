@@ -26,7 +26,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.attachment.AttachmentRepository;
 import net.risesoft.service.attachment.AttachmentService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
+import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
 /**
@@ -45,8 +45,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     private final Y9FileStoreService y9FileStoreService;
 
     private final OrgUnitApi orgUnitApi;
-
-    private final Y9Properties y9Config;
 
     @Override
     @Transactional
@@ -100,29 +98,8 @@ public class AttachmentServiceImpl implements AttachmentService {
     }
 
     @Override
-    public Attachment getUpFileInfoByTabIndexOrProcessSerialNumber(Integer tabIndex, String processSerialNumber) {
-        return attachmentRepository.getUpFileInfoByTabIndexOrProcessSerialNumber(tabIndex, processSerialNumber);
-    }
-
-    @Override
     public List<Attachment> listByProcessSerialNumber(String processSerialNumber) {
         return attachmentRepository.findByProcessSerialNumber(processSerialNumber);
-    }
-
-    @Override
-    public List<Attachment> listByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource) {
-        return attachmentRepository.findByProcessSerialNumberAndFileSource(processSerialNumber, fileSource);
-    }
-
-    @Override
-    public List<Attachment> listSearchByProcessSerialNumber(String processSerialNumber, String fileSource) {
-        List<Attachment> attachmentList;
-        if (StringUtils.isBlank(fileSource)) {
-            attachmentList = attachmentRepository.getAttachmentList(processSerialNumber);
-        } else {
-            attachmentList = attachmentRepository.getAttachmentList(processSerialNumber, fileSource);
-        }
-        return attachmentList;
     }
 
     @Override
@@ -134,44 +111,18 @@ public class AttachmentServiceImpl implements AttachmentService {
             SimpleDateFormat source = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             SimpleDateFormat target = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             PageRequest pageable =
-                PageRequest.of(page < 1 ? 0 : page - 1, rows, Sort.by(Sort.Direction.DESC, "uploadTime"));
+                PageRequest.of(page < 1 ? 0 : page - 1, rows, Sort.by(Sort.Direction.ASC, "tabIndex"));
             Page<Attachment> attachmentList;
             if (StringUtils.isBlank(fileSource)) {
                 attachmentList = attachmentRepository.getAttachmentList(processSerialNumber, pageable);
             } else {
                 attachmentList = attachmentRepository.getAttachmentList(processSerialNumber, fileSource, pageable);
             }
-            int number = (page - 1) * rows;
             for (Attachment attachment : attachmentList) {
                 AttachmentModel model = new AttachmentModel();
-                model.setSerialNumber(number + 1);
-                model.setName(attachment.getName());
-                model.setFileSize(attachment.getFileSize());
-                model.setId(attachment.getId());
-                model.setPersonId(attachment.getPersonId());
-                model.setPersonName(attachment.getPersonName());
-                model.setPositionId(attachment.getPositionId());
-                OrgUnit user =
-                    orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), attachment.getPositionId())
-                        .getData();
-                model.setPositionName(user != null ? user.getName() : "");
-                model.setDeptId(attachment.getDeptId());
-                model.setDeptName(attachment.getDeptName());
-                model.setDescribes(attachment.getDescribes());
+                Y9BeanUtil.copyProperties(attachment, model);
                 model.setUploadTime(target.format(source.parse(attachment.getUploadTime())));
-                model.setFileType(attachment.getFileType());
-                model.setFileSource(attachment.getFileSource());
-                model.setFileStoreId(attachment.getFileStoreId());
-                model.setFilePath(attachment.getFileStoreId());
-                String downloadUrl = y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + attachment.getFileStoreId()
-                    + "." + attachment.getFileType();
-                model.setDownloadUrl(downloadUrl);
-                model.setProcessInstanceId(attachment.getProcessInstanceId());
-                model.setProcessSerialNumber(attachment.getProcessSerialNumber());
-                model.setTaskId(attachment.getTaskId());
-                model.setJodconverterURL(y9Config.getCommon().getJodconverterBaseUrl());
                 item.add(model);
-                number += 1;
             }
             return Y9Page.success(page, attachmentList.getTotalPages(), attachmentList.getTotalElements(), item);
         } catch (Exception e) {
@@ -215,23 +166,25 @@ public class AttachmentServiceImpl implements AttachmentService {
         attachment.setDescribes(describes);
         attachment.setPersonName(Y9LoginUserHolder.getUserInfo().getName());
         attachment.setPersonId(Y9LoginUserHolder.getPersonId());
-        attachment.setPositionId(Y9LoginUserHolder.getOrgUnitId());
         OrgUnit department =
-            orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnit().getParentId())
+            orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getParentId())
                 .getData();
         attachment.setDeptId(department != null ? department.getId() : "");
         attachment.setDeptName(department != null ? department.getName() : "");
         attachment.setFileStoreId(y9FileStoreId);
         attachment.setFileType(type);
+        Integer index = attachmentRepository.getMaxTabIndex(processSerialNumber);
+        attachment.setTabIndex(index == null ? 1 : index + 1);
         attachmentRepository.save(attachment);
     }
 
     @Transactional
     @Override
-    public Attachment uploadRestModel(Attachment attachment) {
+    public void uploadRestModel(Attachment attachment) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         attachment.setUploadTime(sdf.format(new Date()));
+        Integer index = attachmentRepository.getMaxTabIndex(attachment.getProcessSerialNumber());
+        attachment.setTabIndex(index == null ? 1 : index + 1);
         attachmentRepository.save(attachment);
-        return attachment;
     }
 }

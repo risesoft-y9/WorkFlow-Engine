@@ -10,7 +10,6 @@ import javax.persistence.Table;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.data.annotation.Transient;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -35,13 +34,13 @@ public class Attachment implements Serializable {
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
-    @Comment("流程实例编号")
-    @Column(name = "PROCESSSERIALNUMBER", length = 50)
-    private String processSerialNumber;
-
     @Comment("文件仓库Id")
     @Column(name = "FILESTOREID", length = 50)
     private String fileStoreId;
+
+    @Comment("流程实例编号")
+    @Column(name = "PROCESSSERIALNUMBER", length = 50)
+    private String processSerialNumber;
 
     @Comment("流程实例id")
     @Column(name = "PROCESSINSTANCEID", length = 38)
@@ -87,43 +86,13 @@ public class Attachment implements Serializable {
     @Column(name = "DEPTNAME", length = 100)
     private String deptName;
 
-    @Comment("岗位id")
-    @Column(name = "POSITIONID", length = 50)
-    private String positionId;
-
-    @Transient
-    private String positionName;
-
     @Comment("文件描述")
-    @Column(name = "DESCRIBES", length = 255)
+    @Column(name = "DESCRIBES")
     private String describes;
 
     @Comment("文件索引")
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
-
-    @Comment("软删除标记")
-    @Column
-    private Integer deleted = 0;
-
-    @Comment("删除时间")
-    @Column(name = "DELETETIME", length = 100)
-    private String deleteTime;
-
-    @Comment("删除操作的人员id")
-    @Column(name = "DETELEUSERID", length = 38)
-    private String deteleUserId = "";
-
-    @Column(name = "FULLPATH", length = 255)
-    @Comment("绝对路径")
-    private String fullPath;
-
-    @Column(name = "REALFILENAME", length = 100)
-    @Comment("存放的文件名称")
-    private String realFileName;
-
-    @Transient
-    private Integer serialNumber;
 
     @Column(name = "FIELDONE", length = 300)
     @Comment("备用字段一")

@@ -102,20 +102,6 @@ public interface AttachmentApi {
         @RequestParam("rows") int rows);
 
     /**
-     * 获取附件列表(model)
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @param fileSource 附件来源
-     * @return {@code Y9Result<List<AttachmentModel>>} 通用请求返回对象 - data是附件列表
-     * @since 9.6.6
-     */
-    @GetMapping("/getAttachmentModelList")
-    Y9Result<List<AttachmentModel>> getAttachmentModelList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam(value = "fileSource", required = false) String fileSource);
-
-    /**
      * 获取附件
      *
      * @param tenantId 租户id

@@ -79,9 +79,8 @@ public class AttachmentRestController {
      * @param id 附件id
      */
     @FlowableLog(operationName = "附件下载", operationType = FlowableOperationTypeEnum.DOWNLOAD)
-    @GetMapping(value = "/attachmentDownload")
-    public void attachmentDownload(@RequestParam @NotBlank String id, HttpServletResponse response,
-        HttpServletRequest request) {
+    @GetMapping(value = "/download")
+    public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             AttachmentModel model = attachmentApi.findById(tenantId, id).getData();
@@ -236,11 +235,12 @@ public class AttachmentRestController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            if (StringUtils.isNotEmpty(describes)) {
+            if (StringUtils.isNotBlank(describes)) {
                 describes = URLDecoder.decode(describes, StandardCharsets.UTF_8);
             }
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
+            System.out.println("fileName:" + fileName);
             String fullPath =
                 "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
@@ -302,6 +302,7 @@ public class AttachmentRestController {
             attachmentModel.setFileSize(fileSize);
             attachmentModel.setFileStoreId(storeId);
             attachmentModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            assert fileName != null;
             String[] types = fileName.split("\\.");
             String type = types[types.length - 1].toLowerCase();
             attachmentModel.setFileType(type);
@@ -312,7 +313,6 @@ public class AttachmentRestController {
             attachmentModel.setDeptName(department != null ? department.getName() : "");
             attachmentModel.setPersonId(userId);
             attachmentModel.setPersonName(userName);
-            attachmentModel.setPositionId(positionId);
             return attachmentApi.uploadModel(tenantId, userId, attachmentModel);
         } catch (Exception e) {
             LOGGER.error("上传失败", e);
