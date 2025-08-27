@@ -6,7 +6,6 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import org.springframework.transaction.annotation.Transactional;
@@ -54,9 +53,4 @@ public interface AttachmentRepository extends JpaRepository<Attachment, String>,
 
     @Query("select max(t.tabIndex) from Attachment t where t.processSerialNumber=?1")
     Integer getMaxTabIndex(String processSerialNumber);
-
-    @Modifying
-    @Transactional
-    @Query("update Attachment t set t.processInstanceId=?1,t.taskId=?2 where t.processSerialNumber=?3")
-    int update(String processInstanceId, String taskId, String processSerialNumber);
 }
