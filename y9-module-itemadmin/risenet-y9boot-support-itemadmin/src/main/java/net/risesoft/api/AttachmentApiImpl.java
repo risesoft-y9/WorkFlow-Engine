@@ -31,7 +31,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.attachment.AttachmentConfRepository;
 import net.risesoft.repository.attachment.AttachmentRepository;
 import net.risesoft.service.attachment.AttachmentService;
-import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -160,25 +159,6 @@ public class AttachmentApiImpl implements AttachmentApi {
         @RequestParam String processSerialNumber, String fileSource, @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return attachmentService.pageByProcessSerialNumber(processSerialNumber, fileSource, page, rows);
-    }
-
-    /**
-     * 获取附件列表
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @param fileSource 附件来源
-     * @return {@code Y9Result<List<AttachmentModel>>} 通用请求返回对象 - data是附件列表
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<List<AttachmentModel>> getAttachmentModelList(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber, String fileSource) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        List<Attachment> attachmentList =
-            attachmentService.listSearchByProcessSerialNumber(processSerialNumber, fileSource);
-        List<AttachmentModel> list = ItemAdminModelConvertUtil.attachmentList2ModelList(attachmentList);
-        return Y9Result.success(list);
     }
 
     /**

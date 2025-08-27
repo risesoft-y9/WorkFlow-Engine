@@ -64,15 +64,6 @@ public interface AttachmentService {
     Integer getAttachmentCount(String processSerialNumber, String fileSource, String fileType);
 
     /**
-     * (软航附件控件) 获取下一个附件控件
-     *
-     * @param nextTabIndex
-     * @param processSerialNumber
-     * @return
-     */
-    Attachment getUpFileInfoByTabIndexOrProcessSerialNumber(Integer nextTabIndex, String processSerialNumber);
-
-    /**
      * 根据processSerialNumber获取
      *
      * @param processSerialNumber
@@ -81,25 +72,7 @@ public interface AttachmentService {
     List<Attachment> listByProcessSerialNumber(String processSerialNumber);
 
     /**
-     * 根据流程实例id和附件来源获取附件列表
-     *
-     * @param processSerialNumber
-     * @param fileSource
-     * @return
-     */
-    List<Attachment> listByProcessSerialNumberAndFileSource(String processSerialNumber, String fileSource);
-
-    /**
-     * Description: 获取附件列表
-     *
-     * @param processSerialNumber
-     * @param fileSource
-     * @return
-     */
-    List<Attachment> listSearchByProcessSerialNumber(String processSerialNumber, String fileSource);
-
-    /**
-     * Description: 获取附件列表
+     * 获取附件列表
      *
      * @param processSerialNumber
      * @param fileSource
@@ -111,7 +84,7 @@ public interface AttachmentService {
         int rows);
 
     /**
-     * Description: 保存附件
+     * 保存附件
      *
      * @param file
      */
@@ -127,7 +100,7 @@ public interface AttachmentService {
     void update(String processSerialNumber, String processInstanceId, String taskId);
 
     /**
-     * Description: 上传附件
+     * 上传附件
      *
      * @param fileName
      * @param fileSize
@@ -143,10 +116,9 @@ public interface AttachmentService {
         String processSerialNumber, String describes, String fileSource, String y9FileStoreId);
 
     /**
-     * Description: 上传附件
+     * 上传附件
      *
      * @param attachment
-     * @return
      */
-    Attachment uploadRestModel(Attachment attachment);
+    void uploadRestModel(Attachment attachment);
 }

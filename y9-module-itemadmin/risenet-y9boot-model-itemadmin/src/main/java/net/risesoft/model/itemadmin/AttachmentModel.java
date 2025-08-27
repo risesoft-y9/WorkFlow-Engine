@@ -62,16 +62,6 @@ public class AttachmentModel implements Serializable {
     private String fileStoreId;
 
     /**
-     * 文件路径
-     */
-    private String filePath;
-
-    /**
-     * 下载url
-     */
-    private String downloadUrl;
-
-    /**
      * 上传时间
      */
     private String uploadTime;
@@ -87,16 +77,6 @@ public class AttachmentModel implements Serializable {
     private String personId;
 
     /**
-     * 上传岗位Id
-     */
-    private String positionId;
-
-    /**
-     * 上传岗位名称
-     */
-    private String positionName;
-
-    /**
      * 上传人部门id
      */
     private String deptId;
@@ -110,16 +90,6 @@ public class AttachmentModel implements Serializable {
      * 文件描述
      */
     private String describes;
-
-    /**
-     * 序号
-     */
-    private Integer serialNumber;
-
-    /**
-     * 预览地址
-     */
-    private String jodconverterURL;
 
     /**
      * 备用字段一
