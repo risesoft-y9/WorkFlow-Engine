@@ -108,8 +108,6 @@ public class AttachmentServiceImpl implements AttachmentService {
         int rows) {
         List<AttachmentModel> item = new ArrayList<>();
         try {
-            SimpleDateFormat source = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat target = new SimpleDateFormat("yyyy/MM/dd HH:mm");
             PageRequest pageable =
                 PageRequest.of(page < 1 ? 0 : page - 1, rows, Sort.by(Sort.Direction.ASC, "tabIndex"));
             Page<Attachment> attachmentList;
@@ -118,12 +116,11 @@ public class AttachmentServiceImpl implements AttachmentService {
             } else {
                 attachmentList = attachmentRepository.getAttachmentList(processSerialNumber, fileSource, pageable);
             }
-            for (Attachment attachment : attachmentList) {
+            attachmentList.forEach(attachment -> {
                 AttachmentModel model = new AttachmentModel();
                 Y9BeanUtil.copyProperties(attachment, model);
-                model.setUploadTime(target.format(source.parse(attachment.getUploadTime())));
                 item.add(model);
-            }
+            });
             return Y9Page.success(page, attachmentList.getTotalPages(), attachmentList.getTotalElements(), item);
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
