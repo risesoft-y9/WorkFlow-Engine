@@ -128,22 +128,6 @@ public class AttachmentServiceImpl implements AttachmentService {
         return Y9Page.failure(page, 0, 0, new ArrayList<>(), "获取失败", GlobalErrorCodeEnum.FAILURE.getCode());
     }
 
-    @Override
-    @Transactional
-    public void save(Attachment file) {
-        attachmentRepository.save(file);
-    }
-
-    @Transactional
-    @Override
-    public void update(String processSerialNumber, String processInstanceId, String taskId) {
-        try {
-            attachmentRepository.update(processInstanceId, taskId, processSerialNumber);
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
-    }
-
     @Transactional
     @Override
     public void uploadRest(String fileName, String fileSize, String processInstanceId, String taskId,

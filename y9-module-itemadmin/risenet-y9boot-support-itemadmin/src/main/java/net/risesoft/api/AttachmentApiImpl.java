@@ -215,7 +215,7 @@ public class AttachmentApiImpl implements AttachmentApi {
             file.setPersonName(map.get("personName") == null ? "" : map.get("personName").toString());
             file.setProcessSerialNumber(processSerialNumber);
             file.setUploadTime(sdf.format(new Date()));
-            attachmentService.save(file);
+            attachmentRepository.save(file);
         }
         return Y9Result.success();
     }

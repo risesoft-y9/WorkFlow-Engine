@@ -84,22 +84,6 @@ public interface AttachmentService {
         int rows);
 
     /**
-     * 保存附件
-     *
-     * @param file
-     */
-    void save(Attachment file);
-
-    /**
-     * 更新附件
-     *
-     * @param processSerialNumber
-     * @param processInstanceId
-     * @param taskId
-     */
-    void update(String processSerialNumber, String processInstanceId, String taskId);
-
-    /**
      * 上传附件
      *
      * @param fileName

@@ -508,7 +508,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 e.printStackTrace();
             }
             opinionRepository.update(processInstanceId, taskId, processSerialNumber);
-            attachmentService.update(processSerialNumber, processInstanceId, taskId);
             y9WordHistoryService.update(taskId, processSerialNumber);
             draftEntityRepository.deleteByProcessSerialNumber(processSerialNumber);
         } catch (Exception e) {
