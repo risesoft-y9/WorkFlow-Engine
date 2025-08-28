@@ -223,4 +223,16 @@ public interface AttachmentApi {
     @GetMapping("/findByAttachmentType")
     Y9Result<List<AttachmentConfModel>> findByAttachmentType(@RequestParam("tenantId") String tenantId,
         @RequestParam("attachmentType") String attachmentType);
+
+    /**
+     * 保存附件排序
+     *
+     * @param tenantId
+     * @param userId
+     * @param idAndTabIndexs
+     * @return
+     */
+    @PostMapping("/saveOrder")
+    Y9Result<Object> saveOrder(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
+        @RequestParam String[] idAndTabIndexs);
 }
