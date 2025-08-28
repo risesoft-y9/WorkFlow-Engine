@@ -1,8 +1,9 @@
 package net.risesoft.service.core.impl;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
+import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -25,6 +26,7 @@ import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.platform.resource.App;
 import net.risesoft.model.platform.resource.System;
@@ -136,22 +138,22 @@ public class ItemServiceImpl implements ItemService {
                 newItem.setTabIndex(null != tabIndex ? tabIndex + 1 : 1);
                 itemRepository.save(newItem);
                 String proDefKey = item.getWorkflowGuid();
-                ProcessDefinitionModel latestpd =
+                ProcessDefinitionModel processDefinition =
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
-                String latestpdId = latestpd.getId();
+                String processDefinitionId = processDefinition.getId();
                 @SuppressWarnings("unused")
-                List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId).getData();
+                List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
                 // 复制表单绑定信息
-                y9FormItemBindService.copyBindInfo(id, newItemId, latestpdId);
+                y9FormItemBindService.copyBindInfo(id, newItemId, processDefinitionId);
 
                 // 复制意见框绑定信息
-                itemOpinionFrameBindService.copyBindInfo(id, newItemId, latestpdId);
+                itemOpinionFrameBindService.copyBindInfo(id, newItemId, processDefinitionId);
 
                 // 复制前置表单绑定信息
                 y9PreFormItemBindService.copyBindInfo(id, newItemId);
 
                 // 复制编号绑定信息
-                itemOrganWordBindService.copyBindInfo(id, newItemId, latestpdId);
+                itemOrganWordBindService.copyBindInfo(id, newItemId, processDefinitionId);
 
                 // 复制关联事项绑定信息
                 relatedProcessService.copyBindInfo(id, newItemId);
@@ -160,19 +162,19 @@ public class ItemServiceImpl implements ItemService {
                 itemInterfaceBindService.copyBindInfo(id, newItemId);
 
                 // 复制正文模板绑定信息
-                itemWordTemplateBindService.copyBindInfo(id, newItemId, latestpdId);
+                itemWordTemplateBindService.copyBindInfo(id, newItemId, processDefinitionId);
 
                 // 复制打印模板绑定信息
                 printTemplateService.copyBindInfo(id, newItemId);
 
                 // 复制签收配置绑定信息
-                itemTaskConfService.copyBindInfo(id, newItemId, latestpdId);
+                itemTaskConfService.copyBindInfo(id, newItemId, processDefinitionId);
 
                 // 复制任务时间配置
-                taskTimeConfService.copyBindInfo(id, newItemId, latestpdId);
+                taskTimeConfService.copyBindInfo(id, newItemId, processDefinitionId);
 
                 // 复制按钮配置的绑定信息
-                itemButtonBindService.copyBindInfo(id, newItemId, latestpdId);
+                itemButtonBindService.copyBindInfo(id, newItemId, processDefinitionId);
 
                 // 复制视图配置绑定信息
                 itemViewConfService.copyBindInfo(id, newItemId);
@@ -236,17 +238,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Map<String, Object> findById(String itemId, Map<String, Object> map) {
-        Item item = itemRepository.findById(itemId).orElse(null);
-        if (item != null) {
-            map.put("processDefinitionKey", item.getWorkflowGuid());
-            map.put("itemId", item.getId());
-            map.put("type", item.getType() == null ? "" : item.getType());
-        }
-        return map;
-    }
-
-    @Override
     public ItemModel findByProcessDefinitionKey(String tenantId, String processDefinitionKey) {
         ItemModel itemModel = new ItemModel();
         Item sa = itemRepository.findItemByKey(processDefinitionKey);
@@ -272,23 +263,33 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public List<ItemSystemListModel> getItemSystem() {
+        List<Item> list = this.list();
+        List<ItemSystemListModel> itemList = new ArrayList<>();
+        list.forEach(item -> {
+            ItemSystemListModel model = new ItemSystemListModel();
+            model.setSystemName(item.getSystemName());
+            model.setSysLevel(item.getSysLevel());
+            if (!itemList.contains(model)) {
+                itemList.add(model);
+            }
+        });
+        return itemList;
+    }
+
+    @Override
     public List<Item> list() {
-        return itemRepository.findAll();
+        return itemRepository.findAll(Sort.by(Sort.Direction.ASC, "tabIndex"));
     }
 
     @Override
-    public List<Item> listByIdNotAndNameLike(String id, String name) {
-        return itemRepository.findByIdNotAndNameLike(id, "%" + name + "%");
-    }
-
-    @Override
-    public List<Item> listBySystemName(String systemName) {
-        return itemRepository.findAll(systemName);
+    public List<Item> findBySystemName(String systemName) {
+        return itemRepository.findBySystemName(systemName, Sort.by(Sort.Direction.ASC, "tabIndex"));
     }
 
     @Override
     public Page<Item> page(Integer page, Integer rows) {
-        PageRequest pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "createDate"));
+        PageRequest pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.ASC, "tabIndex"));
         return itemRepository.findAll(pageable);
     }
 
@@ -302,7 +303,7 @@ public class ItemServiceImpl implements ItemService {
                 return Y9Result.failure("发布为系统[" + Y9Context.getSystemName() + "]的应用失败:没有找到英文名为["
                     + Y9Context.getSystemName() + "]的系统,请先创建系统后再发布");
             }
-            /**
+            /*
              * 1、判断应用是否存在，不存在则创建应用，存在则修改应用
              */
             String systemId = system.getId();
@@ -380,13 +381,15 @@ public class ItemServiceImpl implements ItemService {
     @Transactional
     public void updateOrder(String[] idAndTabIndexs) {
         List<String> list = Lists.newArrayList(idAndTabIndexs);
-        try {
-            for (String s : list) {
-                String[] arr = s.split(SysVariables.COLON);
-                itemRepository.updateOrder(Integer.parseInt(arr[1]), arr[0]);
+        list.forEach(s -> {
+            LOGGER.error("s:{}", s);
+            String[] arr = s.split(SysVariables.COLON);
+            Optional<Item> itemOptional = itemRepository.findById(arr[0]);
+            if (itemOptional.isPresent()) {
+                Item item = itemOptional.get();
+                item.setTabIndex(Integer.parseInt(arr[1]));
+                itemRepository.save(item);
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        });
     }
 }

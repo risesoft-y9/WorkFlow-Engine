@@ -8,6 +8,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 import javax.sql.DataSource;
 
@@ -29,13 +31,14 @@ import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
-import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.ItemWorkDayService;
+import net.risesoft.service.core.ItemService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.form.Y9FormDbMetaDataUtil;
@@ -61,20 +64,24 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     private final TableManagerService tableManagerService;
 
-    private final ItemRepository approveItemRepository;
+    private final ItemService itemService;
 
     private final ItemWorkDayService itemWorkDayService;
 
-    public Y9TableServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
-        Y9TableRepository y9TableRepository, Y9TableFieldRepository y9TableFieldRepository,
-        Y9FormFieldRepository y9FormFieldRepository, TableManagerService tableManagerService,
-        ItemRepository approveItemRepository, ItemWorkDayService itemWorkDayService) {
+    public Y9TableServiceImpl(
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
+        Y9TableRepository y9TableRepository,
+        Y9TableFieldRepository y9TableFieldRepository,
+        Y9FormFieldRepository y9FormFieldRepository,
+        TableManagerService tableManagerService,
+        ItemService itemService,
+        ItemWorkDayService itemWorkDayService) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9TableRepository = y9TableRepository;
         this.y9TableFieldRepository = y9TableFieldRepository;
         this.y9FormFieldRepository = y9FormFieldRepository;
         this.tableManagerService = tableManagerService;
-        this.approveItemRepository = approveItemRepository;
+        this.itemService = itemService;
         this.itemWorkDayService = itemWorkDayService;
     }
 
@@ -209,8 +216,12 @@ public class Y9TableServiceImpl implements Y9TableService {
                     if (null == y9Table) {
                         return List.of();
                     }
-                    innerSql.append("INNER JOIN ").append(y9Table.getTableName().toUpperCase()).append(" ")
-                        .append(alias.toUpperCase()).append(" ON T.PROCESSSERIALNUMBER = ").append(alias.toUpperCase())
+                    innerSql.append("INNER JOIN ")
+                        .append(y9Table.getTableName().toUpperCase())
+                        .append(" ")
+                        .append(alias.toUpperCase())
+                        .append(" ON T.PROCESSSERIALNUMBER = ")
+                        .append(alias.toUpperCase())
                         .append(".GUID ");
                 }
                 switch (aliasColumnNameType.length) {
@@ -218,16 +229,28 @@ public class Y9TableServiceImpl implements Y9TableService {
                         if ("dbsx".equalsIgnoreCase(aliasColumnNameType[1])) {
                             int days = Integer.parseInt(searchMap.get(key).toString());
                             List<String> start_end = itemWorkDayService.getDb(days);
-                            whereSql.append(" AND ").append(key.toUpperCase()).append(" >='").append(start_end.get(0))
-                                .append("' AND ").append(key.toUpperCase()).append(" <='").append(start_end.get(1))
+                            whereSql.append(" AND ")
+                                .append(key.toUpperCase())
+                                .append(" >='")
+                                .append(start_end.get(0))
+                                .append("' AND ")
+                                .append(key.toUpperCase())
+                                .append(" <='")
+                                .append(start_end.get(1))
                                 .append("'");
                         } else {
                             if (null != searchMap.get(key) && StringUtils.isNotBlank(searchMap.get(key).toString())) {
-                                whereSql.append(" AND ").append(key.toUpperCase()).append(" LIKE '%")
-                                    .append(searchMap.get(key).toString()).append("%'");
+                                whereSql.append(" AND ")
+                                    .append(key.toUpperCase())
+                                    .append(" LIKE '%")
+                                    .append(searchMap.get(key).toString())
+                                    .append("%'");
                             } else {
-                                whereSql.append(" AND (").append(key.toUpperCase()).append("= '' OR ")
-                                    .append(key.toUpperCase()).append(" IS NULL)");
+                                whereSql.append(" AND (")
+                                    .append(key.toUpperCase())
+                                    .append("= '' OR ")
+                                    .append(key.toUpperCase())
+                                    .append(" IS NULL)");
                             }
                         }
                         break;
@@ -235,27 +258,43 @@ public class Y9TableServiceImpl implements Y9TableService {
                         String aliasColumnName = aliasColumnNameType[0] + "." + aliasColumnNameType[1];
                         String type = aliasColumnNameType[2];
                         if ("equal".equals(type)) {
-                            whereSql.append(" AND ").append(aliasColumnName.toUpperCase()).append("='")
-                                .append(searchMap.get(key).toString()).append("' ");
+                            whereSql.append(" AND ")
+                                .append(aliasColumnName.toUpperCase())
+                                .append("='")
+                                .append(searchMap.get(key).toString())
+                                .append("' ");
                         } else if ("date".equals(type)) {
                             ArrayList<String> list = (ArrayList<String>)searchMap.get(key);
-                            whereSql.append(" AND ").append(aliasColumnName.toUpperCase()).append(" >='")
-                                .append(list.get(0)).append("' AND ").append(aliasColumnName.toUpperCase())
-                                .append(" <='").append(list.get(1)).append("'");
+                            whereSql.append(" AND ")
+                                .append(aliasColumnName.toUpperCase())
+                                .append(" >='")
+                                .append(list.get(0))
+                                .append("' AND ")
+                                .append(aliasColumnName.toUpperCase())
+                                .append(" <='")
+                                .append(list.get(1))
+                                .append("'");
                         }
                         break;
                 }
             } else {
                 // 已办件查询条件#已办类型
                 if ("ended".equals(key)) {
-                    whereSql.append(" AND ").append("T.").append(key.toUpperCase()).append("=")
+                    whereSql.append(" AND ")
+                        .append("T.")
+                        .append(key.toUpperCase())
+                        .append("=")
                         .append((boolean)searchMap.get(key));
                 } else if ("assigneeName".equals(key)) {
                     // 查询条件#当前办理人
                     assigneeNameInnerSql
                         .append(" JOIN FF_ACT_RU_DETAIL TT ON T.PROCESSSERIALNUMBER = TT.PROCESSSERIALNUMBER");
-                    assigneeNameWhereSql.append(" AND INSTR(TT.").append(key.toUpperCase()).append(",'")
-                        .append(searchMap.get(key).toString()).append("') > 0 ").append(" AND TT.STATUS = 0 ");
+                    assigneeNameWhereSql.append(" AND INSTR(TT.")
+                        .append(key.toUpperCase())
+                        .append(",'")
+                        .append(searchMap.get(key).toString())
+                        .append("') > 0 ")
+                        .append(" AND TT.STATUS = 0 ");
                 }
             }
         }
@@ -317,17 +356,17 @@ public class Y9TableServiceImpl implements Y9TableService {
     @Override
     public List<Map<String, Object>> listApps() {
         List<Map<String, Object>> tree = new ArrayList<>();
-        List<Item> list = approveItemRepository.findAll();
+        List<Item> list = itemService.list();
         Map<String, Object> pNode = new HashMap<>(16);
         String parentId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
         pNode.put("id", parentId);
         pNode.put("systemName", "");
         pNode.put("name", "系统列表");
         tree.add(pNode);
-        for (Item approveItem : list) {
+        for (Item item : list) {
             pNode = new HashMap<>(16);
-            String systemName = approveItem.getSystemName();
-            String sysLevel = approveItem.getSysLevel();
+            String systemName = item.getSystemName();
+            String sysLevel = item.getSysLevel();
             pNode.put("id", systemName);
             pNode.put("parentID", parentId);
             pNode.put("systemName", systemName);
@@ -359,15 +398,15 @@ public class Y9TableServiceImpl implements Y9TableService {
         }
         List<Y9Table> list = pageList.getContent();
         Map<String, Object> map = tableManagerService.getDataSourceTableNames();
-        List<Map<String, Object>> slist = approveItemRepository.getItemSystem();
-        String systemCnName = "";
-        for (Map<String, Object> m : slist) {
-            if (m.get("systemName").equals(systemName)) {
-                systemCnName = m.get("sysLevel").toString();
-            }
-        }
+        List<ItemSystemListModel> systemList = itemService.getItemSystem();
+        systemList = systemList.stream()
+            .filter(system -> system.getSystemName().equals(systemName))
+            .collect(Collectors.toList());
+        Optional<ItemSystemListModel> optional =
+            systemList.stream().filter(system -> system.getSystemName().equals(systemName)).findFirst();
+        String systemCnName = optional.isPresent() ? optional.get().getSysLevel() : "";
         for (Y9Table y9Table : list) {
-            y9Table.setSystemCnName(systemCnName.equals("") ? y9Table.getSystemCnName() : systemCnName);
+            y9Table.setSystemCnName(systemCnName.isEmpty() ? y9Table.getSystemCnName() : systemCnName);
             y9Table.setTableMemo("0");
             if (map.get(y9Table.getTableName().toLowerCase()) != null) {
                 // 数据库是否存在物理表,1为是，0为否

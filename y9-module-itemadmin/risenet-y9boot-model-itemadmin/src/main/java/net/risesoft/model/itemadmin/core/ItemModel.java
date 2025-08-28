@@ -25,13 +25,9 @@ public class ItemModel implements Serializable {
      */
     private String name;
     /**
-     * 事项类型
+     * 事项类型 {@link net.risesoft.enums.ItemTypeEnum}
      */
     private String type;
-    /**
-     * 事项责任制
-     */
-    private String accountability;
     /**
      * 事项管理员
      */
@@ -41,21 +37,9 @@ public class ItemModel implements Serializable {
      */
     private String sysLevel;
     /**
-     * 法定期限
-     */
-    private Integer legalLimit;
-    /**
-     * 承诺时限
-     */
-    private Integer expired;
-    /**
      * 工作流GUID
      */
     private String workflowGuid;
-    /**
-     * 是否网上申办，1“是”、0“否”
-     */
-    private String isOnline;
     /**
      * 是否对接，1“是”、0“否”
      */
@@ -84,5 +68,8 @@ public class ItemModel implements Serializable {
      * 是否可定制事项
      */
     private Boolean customItem;
-
+    /**
+     * 排序号
+     */
+    private Integer tabIndex;
 }

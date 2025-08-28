@@ -1119,7 +1119,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
 
     @Override
     public void dataCopy4System(String sourceTenantId, String targetTenantId, String systemName) throws Exception {
-        List<Item> itemList = itemService.listBySystemName(systemName);
+        List<Item> itemList = itemService.findBySystemName(systemName);
         for (Item item : itemList) {
             this.dataCopy(sourceTenantId, targetTenantId, item.getId());
         }

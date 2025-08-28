@@ -3,7 +3,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.26.xsd"
+                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.26.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
     <changeSet id="1704700546666-1" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
@@ -45,5 +45,19 @@
             <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
         </createTable>
+    </changeSet>
+
+    <changeSet id="1704700546666-3" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_APPROVEITEM" columnName="ISONLINE"/>
+        </preConditions>
+        <dropColumn tableName="FF_PROCESS_PARAM">
+            <column name="ISONLINE"/>
+            <column name="ACCOUNTABILITY"/>
+            <column name="LEGALLIMIT"/>
+            <column name="EXPIRED"/>
+            <column name="DEPARTMENTID"/>
+            <column name="DEPARTMENTNAME"/>
+        </dropColumn>
     </changeSet>
 </databaseChangeLog>
