@@ -139,6 +139,7 @@ y9:
             smsSwitch: false
             weiXinSwitch: true
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
+            todoTaskUrlPrefix: https://test.youshengyun.com/flowableUI/todoIndex
     service:
         processAdmin:
             directUrl: http://localhost:7056
