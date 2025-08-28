@@ -2,7 +2,6 @@ package net.risesoft.api;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -23,7 +22,6 @@ import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
-import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.core.DocumentService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -46,8 +44,6 @@ public class ItemApiImpl implements ItemApi {
 
     private final ItemService itemService;
 
-    private final ItemRepository itemRepository;
-
     private final OrgUnitApi orgUnitApi;
 
     private final ItemMappingConfRepository itemMappingConfRepository;
@@ -63,7 +59,7 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemModel>> findAll(@RequestParam String tenantId, @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Item> list = itemRepository.findAll(systemName);
+        List<Item> list = itemService.findBySystemName(systemName);
         List<ItemModel> itemModelList = new ArrayList<>();
         for (Item item : list) {
             ItemModel itemModel = new ItemModel();
@@ -99,7 +95,7 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemModel>> getAllItem(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Item> list = itemRepository.findAll();
+        List<Item> list = itemService.list();
         List<ItemModel> itemModelList = new ArrayList<>();
         for (Item item : list) {
             ItemModel itemModel = new ItemModel();
@@ -235,15 +231,7 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemSystemListModel>> getItemSystem(@RequestParam String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Map<String, Object>> list = itemRepository.getItemSystem();
-        List<ItemSystemListModel> itemList = new ArrayList<>();
-        for (Map<String, Object> map : list) {
-            ItemSystemListModel itemSystemListModel = new ItemSystemListModel();
-            itemSystemListModel.setSystemName(map.get("systemName").toString());
-            itemSystemListModel.setSysLevel(map.get("sysLevel").toString());
-            itemList.add(itemSystemListModel);
-        }
-        return Y9Result.success(itemList);
+        return Y9Result.success(itemService.getItemSystem());
     }
 
     /**

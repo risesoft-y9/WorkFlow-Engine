@@ -56,21 +56,12 @@ public class Item implements Serializable {
     @Column(name = "ICONDATA")
     private String iconData;
 
-    @Comment("部门id")
-    @Column(name = "DEPARTMENTID")
-    private String departmentId;
-
-    @Comment("部门名称")
-    @Column(name = "DEPARTMENTNAME")
-    private String departmentName;
-
+    /**
+     * {@link net.risesoft.enums.ItemTypeEnum}
+     */
     @Comment("事项类型")
     @Column(name = "TYPE", length = 50)
     private String type;
-
-    @Comment("事项责任制")
-    @Column(name = "ACCOUNTABILITY", length = 200)
-    private String accountability;
 
     @Comment("事项管理员")
     @Column(name = "NATURE", length = 200)
@@ -108,21 +99,9 @@ public class Item implements Serializable {
     @Column(name = "SYSLEVEL", length = 50)
     private String sysLevel;
 
-    @Comment("法定期限")
-    @Column(name = "LEGALLIMIT")
-    private Integer legalLimit;
-
-    @Comment("承诺时限")
-    @Column(name = "EXPIRED")
-    private Integer expired;
-
     @Comment("工作流GUID")
     @Column(name = "WORKFLOWGUID", length = 100)
     private String workflowGuid;
-
-    @Comment("是否网上申办")
-    @Column(name = "ISONLINE", length = 50)
-    private String isOnline;
 
     @Comment("是否对接")
     @Column(name = "ISDOCKING", length = 50)
