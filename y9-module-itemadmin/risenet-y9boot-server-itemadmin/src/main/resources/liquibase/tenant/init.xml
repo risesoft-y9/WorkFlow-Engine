@@ -3,7 +3,7 @@
         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
-                      http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd"
+                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.24.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
     <changeSet id="1704700547152-1" author="mengjuhua" runOnChange="true">
         <preConditions onFail="MARK_RAN">
@@ -93,7 +93,6 @@
             <column name="ID" remarks="主键" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="ACCOUNTABILITY" remarks="事项责任制" type="VARCHAR(200)"/>
             <column name="APPURL" remarks="应用url" type="VARCHAR(200)"/>
             <column name="CREATEDATE" remarks="创建时间" type="datetime"/>
             <column name="CREATERID" remarks="创建人id" type="VARCHAR(255)"/>
@@ -101,16 +100,11 @@
             <column defaultValueNumeric="0" name="CUSTOMITEM" remarks="是否可定制事项" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="DEPARTMENTID" remarks="部门id" type="VARCHAR(255)"/>
-            <column name="DEPARTMENTNAME" remarks="部门名称" type="VARCHAR(255)"/>
             <column name="DOCKINGITEMID" remarks="对接事项id" type="VARCHAR(50)"/>
             <column name="DOCKINGSYSTEM" remarks="对接外部系统标识" type="VARCHAR(50)"/>
-            <column name="EXPIRED" remarks="承诺时限" type="INT"/>
             <column name="ICONDATA" remarks="图标内容" type="LONGTEXT"/>
             <column name="ICONID" remarks="事项图标" type="VARCHAR(200)"/>
             <column name="ISDOCKING" remarks="是否对接" type="VARCHAR(50)"/>
-            <column name="ISONLINE" remarks="是否网上申办" type="VARCHAR(50)"/>
-            <column name="LEGALLIMIT" remarks="法定期限" type="INT"/>
             <column name="NAME" remarks="事项名称" type="VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
