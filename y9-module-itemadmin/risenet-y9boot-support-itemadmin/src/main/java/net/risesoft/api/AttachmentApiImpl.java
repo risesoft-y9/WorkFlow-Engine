@@ -12,12 +12,15 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import com.google.common.collect.Lists;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.entity.attachment.AttachmentConf;
 import net.risesoft.id.IdType;
@@ -391,5 +394,31 @@ public class AttachmentApiImpl implements AttachmentApi {
             attachmentConfModelList.add(attachmentConfModel);
         }
         return Y9Result.success(attachmentConfModelList);
+    }
+
+    /**
+     * 保存附件排序
+     * 
+     * @param tenantId
+     * @param userId
+     * @param idAndTabIndexs
+     * @return
+     */
+    @Override
+    public Y9Result<Object> saveOrder(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String[] idAndTabIndexs) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+        List<String> list = Lists.newArrayList(idAndTabIndexs);
+        try {
+            for (String str : idAndTabIndexs) {
+                String[] arr = str.split(SysVariables.COLON);
+                attachmentRepository.updateAttachmentOrder(Integer.parseInt(arr[1]), arr[0]);
+            }
+        } catch (Exception e) {
+            LOGGER.error("saveOrder error", e);
+        }
+        return Y9Result.success();
     }
 }

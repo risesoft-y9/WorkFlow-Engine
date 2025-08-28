@@ -92,6 +92,11 @@ public class AttachmentModel implements Serializable {
     private String describes;
 
     /**
+     * 排序字段
+     */
+    private Integer tabIndex;
+
+    /**
      * 备用字段一
      */
     private String fieldOne;
