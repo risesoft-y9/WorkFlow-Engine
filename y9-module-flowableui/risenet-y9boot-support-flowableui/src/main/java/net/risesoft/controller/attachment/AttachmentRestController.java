@@ -320,4 +320,19 @@ public class AttachmentRestController {
         return Y9Result.failure("上传失败");
     }
 
+    /**
+     * 保存附件排序
+     * 
+     * @param idAndTabIndexs
+     * @return
+     */
+    @FlowableLog(operationName = "保存附件排序", operationType = FlowableOperationTypeEnum.SAVE)
+    @PostMapping(value = "/saveOrder")
+    public Y9Result<Object> saveOrder(@RequestParam String[] idAndTabIndexs) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
+        attachmentApi.saveOrder(tenantId, userId, idAndTabIndexs);
+        return Y9Result.successMsg("保存附件排序成功！");
+    }
+
 }
