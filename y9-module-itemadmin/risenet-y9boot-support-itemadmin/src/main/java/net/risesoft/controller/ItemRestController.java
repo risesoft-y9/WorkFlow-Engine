@@ -134,19 +134,6 @@ public class ItemRestController {
     }
 
     /**
-     * 获取绑定的事项列表(不包含选择的事项)
-     *
-     * @param itemId 事项id
-     * @return
-     */
-    @GetMapping(value = "/getBindItemList")
-    public Y9Result<List<Item>> getBindItemList(@RequestParam(required = true) String itemId,
-        @RequestParam(required = true) String itemName) {
-        List<Item> itemList = itemService.listByIdNotAndNameLike(itemId, itemName);
-        return Y9Result.success(itemList, "获取成功");
-    }
-
-    /**
      * 获取部门
      *
      * @param id 部门id
@@ -168,8 +155,14 @@ public class ItemRestController {
                 for (Department dept : deptList) {
                     List<Department> subDeptList = departmentApi.listByParentId(tenantId, dept.getId()).getData();
                     boolean isParent = subDeptList != null && !subDeptList.isEmpty();
-                    sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(orgList.get(0).getId())
-                        .append("', name:'").append(dept.getName()).append("', isParent: ").append(isParent)
+                    sb.append("{ id:'")
+                        .append(dept.getId())
+                        .append("', pId:'")
+                        .append(orgList.get(0).getId())
+                        .append("', name:'")
+                        .append(dept.getName())
+                        .append("', isParent: ")
+                        .append(isParent)
                         .append("},");
                 }
             }
@@ -178,8 +171,15 @@ public class ItemRestController {
             for (Department dept : deptList) {
                 List<Department> subDeptList = departmentApi.listByParentId(tenantId, dept.getId()).getData();
                 boolean isParent = subDeptList != null && !subDeptList.isEmpty();
-                sb.append("{ id:'").append(dept.getId()).append("', pId:'").append(deptId).append("', name:'")
-                    .append(dept.getName()).append("', isParent: ").append(isParent).append("},");
+                sb.append("{ id:'")
+                    .append(dept.getId())
+                    .append("', pId:'")
+                    .append(deptId)
+                    .append("', name:'")
+                    .append(dept.getName())
+                    .append("', isParent: ")
+                    .append(isParent)
+                    .append("},");
             }
         }
     }

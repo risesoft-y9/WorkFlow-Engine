@@ -1,11 +1,11 @@
 package net.risesoft.service.core;
 
 import java.util.List;
-import java.util.Map;
 
 import org.springframework.data.domain.Page;
 
 import net.risesoft.entity.Item;
+import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -17,7 +17,7 @@ import net.risesoft.pojo.Y9Result;
 public interface ItemService {
 
     /**
-     * Description:复制事项
+     * 复制事项
      *
      * @param id
      * @return
@@ -34,7 +34,7 @@ public interface ItemService {
     Y9Result<String> copyAllBind(String itemId, String processDefinitionId);
 
     /**
-     * Description:
+     *
      *
      * @param ids
      * @return
@@ -42,21 +42,12 @@ public interface ItemService {
     Y9Result<String> delete(String ids);
 
     /**
-     * Description:
+     *
      *
      * @param id
      * @return
      */
     Item findById(String id);
-
-    /**
-     * Description:
-     *
-     * @param itemId
-     * @param map
-     * @return
-     */
-    Map<String, Object> findById(String itemId, Map<String, Object> map);
 
     /**
      * 根据流程定义Key查找对应的事项
@@ -76,28 +67,25 @@ public interface ItemService {
     Boolean hasProcessDefinitionByKey(String processDefinitionKey);
 
     /**
-     * Description:
+     * 获取所有系统
+     * 
+     * @return List<ItemSystemListModel>
+     */
+    List<ItemSystemListModel> getItemSystem();
+
+    /**
+     *
      *
      * @return
      */
     List<Item> list();
 
     /**
-     * Description: 查询不包含当前事项id和事项name模糊匹配的事项列表
-     *
-     * @param id
-     * @param name
-     * @return
-     */
-    List<Item> listByIdNotAndNameLike(String id, String name);
-
-    /**
-     * Description:
      *
      * @param systemName
      * @return
      */
-    List<Item> listBySystemName(String systemName);
+    List<Item> findBySystemName(String systemName);
 
     /**
      * 分页获取事项列表
@@ -117,7 +105,7 @@ public interface ItemService {
     Y9Result<String> publishToSystemApp(String itemId);
 
     /**
-     * Description:
+     *
      *
      * @param item
      * @return

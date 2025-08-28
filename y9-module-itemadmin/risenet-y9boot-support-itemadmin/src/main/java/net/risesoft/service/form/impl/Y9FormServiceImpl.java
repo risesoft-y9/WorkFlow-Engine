@@ -61,17 +61,17 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     private final Y9TableFieldRepository y9TableFieldRepository;
 
-    private final ItemRepository approveItemRepository;
+    private final ItemRepository itemRepository;
 
     public Y9FormServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
         Y9FormRepository y9FormRepository, Y9TableService y9TableService, Y9FormFieldRepository y9FormFieldRepository,
-        Y9TableFieldRepository y9TableFieldRepository, ItemRepository approveItemRepository) {
+        Y9TableFieldRepository y9TableFieldRepository, ItemRepository itemRepository) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9FormRepository = y9FormRepository;
         this.y9TableService = y9TableService;
         this.y9FormFieldRepository = y9FormFieldRepository;
         this.y9TableFieldRepository = y9TableFieldRepository;
-        this.approveItemRepository = approveItemRepository;
+        this.itemRepository = itemRepository;
     }
 
     @Override
@@ -392,7 +392,7 @@ public class Y9FormServiceImpl implements Y9FormService {
         List<Y9Form> list = pageList.getContent();
         List<Map<String, Object>> listMap = new ArrayList<>();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<Map<String, Object>> slist = approveItemRepository.getItemSystem();
+        List<Map<String, Object>> slist = itemRepository.getItemSystem();
         String systemCnName = "";
         for (Map<String, Object> m : slist) {
             if (m.get("systemName").equals(systemName)) {
