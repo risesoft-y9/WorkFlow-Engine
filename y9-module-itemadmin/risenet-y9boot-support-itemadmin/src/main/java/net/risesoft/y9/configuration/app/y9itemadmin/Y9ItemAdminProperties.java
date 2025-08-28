@@ -7,8 +7,12 @@ import lombok.Setter;
 
 @Getter
 @Setter
-@ConfigurationProperties(prefix = "y9.app.item-admin", ignoreInvalidFields = true, ignoreUnknownFields = true)
+@ConfigurationProperties(prefix = "y9.app.item-admin", ignoreInvalidFields = true)
 public class Y9ItemAdminProperties {
+
+    public static String todoTaskUrlPrefix = "https://vue.youshengyun.com/flowableUI/todoIndex";
+
+    public static boolean opinionOrderBy = false;
 
     private String comment;
 
