@@ -28,6 +28,9 @@ public class ConfSetting extends AbstractSetting implements Serializable {
     /** 统一待办开关 */
     private boolean todoSwitch = Y9ItemAdminProperties.todoSwitch;
 
+    /** 消息提醒开关 */
+    private boolean msgSwitch = Y9ItemAdminProperties.msgSwitch;
+
     @Override
     public String getPrefix() {
         return "y9.app.itemAdmin.";

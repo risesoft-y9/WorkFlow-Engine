@@ -18,8 +18,6 @@ public class Y9ProcessAdminProperties {
 
     private Boolean cooperationStateSwitch = false;// 协作状态开关
 
-    private Boolean msgSwitch = false;// 消息提醒开关
-
     private Boolean entrustSwitch = false;
 
     private Boolean messagePushSwitch = false;
