@@ -132,12 +132,10 @@ y9:
     internalIp: 192.168.x.x,10.x.x.x,172.20.x.x
     app:
         itemAdmin:
-            comment: 知悉。,同意。,已阅。,已核。,如拟。,呈XX同志阅示。,呈XX同志审签。,请XX研究办理。,请XX传阅。,请抓紧办理。,请速办。,不同意。,供参考。
-            freeFlowKey: ziyouliucheng
             systemCnName: 事项管理
             systemName: itemAdmin
-            smsSwitch: false
             todoTaskUrlPrefix: https://test.youshengyun.com/flowableUI/todoIndex
+            comment: 知悉。,同意。,已阅。,已核。,如拟。,呈XX同志阅示。,呈XX同志审签。,请XX研究办理。,请XX传阅。,请抓紧办理。,请速办。,不同意。,供参考。
     service:
         processAdmin:
             directUrl: http://localhost:7056
