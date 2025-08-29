@@ -339,9 +339,6 @@ public class ItemServiceImpl implements ItemService {
             item.setCreateDate(new Date());
             item.setCreaterId(person.getPersonId());
             item.setCreaterName(person.getName());
-            if (StringUtils.isNotEmpty(item.getAppUrl())) {
-                item.setTodoTaskUrlPrefix(item.getAppUrl().split("\\?")[0]);
-            }
             Item olditem = itemRepository.findById(item.getId()).orElse(null);
             if (olditem == null) {
                 Integer tabIndex = itemRepository.getMaxTabIndex();

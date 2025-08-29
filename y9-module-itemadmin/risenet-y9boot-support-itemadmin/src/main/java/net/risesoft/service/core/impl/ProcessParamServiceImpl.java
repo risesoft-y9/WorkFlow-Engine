@@ -17,7 +17,6 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ProcessParamRepository;
-import net.risesoft.service.core.ItemService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -35,8 +34,6 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     private final ProcessParamRepository processParamRepository;
 
     private final VariableApi variableApi;
-
-    private final ItemService itemService;
 
     @Override
     @Transactional
@@ -93,7 +90,6 @@ public class ProcessParamServiceImpl implements ProcessParamService {
                 oldProcessParam.setTitle(processParam.getTitle());
             }
             oldProcessParam.setSearchTerm(processParam.getSearchTerm());
-            oldProcessParam.setTodoTaskUrlPrefix(processParam.getTodoTaskUrlPrefix());
             oldProcessParam.setSystemCnName(processParam.getSystemCnName());
             if (StringUtils.isNotBlank(processParam.getBureauIds())) {
                 oldProcessParam.setBureauIds(processParam.getBureauIds());
@@ -148,7 +144,6 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         newProcessParam.setSystemCnName(processParam.getSystemCnName());
         newProcessParam.setTitle(StringUtils.isBlank(processParam.getTitle()) ? "暂无标题" : processParam.getTitle());
         newProcessParam.setSearchTerm(processParam.getSearchTerm());
-        newProcessParam.setTodoTaskUrlPrefix(processParam.getTodoTaskUrlPrefix());
         newProcessParam.setCompleter(processParam.getCompleter());
         newProcessParam.setStartor(processParam.getStartor());
         newProcessParam.setStartorName(processParam.getStartorName());

@@ -95,10 +95,6 @@ public class ProcessParam implements Serializable {
     @Column(name = "COMPLETER", length = 50)
     private String completer;
 
-    @Comment("统一待办url前缀")
-    @Column(name = "TODOTASKURLPREFIX", length = 200)
-    private String todoTaskUrlPrefix;
-
     @Comment("搜索词")
     @Lob
     @Column(name = "SEARCHTERM", nullable = false)

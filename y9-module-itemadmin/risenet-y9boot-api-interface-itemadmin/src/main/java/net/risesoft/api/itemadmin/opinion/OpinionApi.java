@@ -113,7 +113,6 @@ public interface OpinionApi {
      * @param opinionFrameMark 意见框标识
      * @param itemId 事项id
      * @param taskDefinitionKey 任务定义key
-     * @param orderByUser 是否根据人员排序
      * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
      * @since 9.6.6
      */
@@ -122,8 +121,7 @@ public interface OpinionApi {
         @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("itembox") String itembox,
         @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
-        @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey,
-        @RequestParam(value = "orderByUser", required = false) String orderByUser);
+        @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey);
 
     /**
      * 获取个人意见列表
@@ -136,7 +134,6 @@ public interface OpinionApi {
      * @param opinionFrameMark 意见框标识
      * @param itemId 事项id
      * @param taskDefinitionKey 任务定义key
-     * @param orderByUser 是否根据人员排序
      * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
      * @since 9.6.6
      */
@@ -145,8 +142,7 @@ public interface OpinionApi {
         @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("itembox") String itembox,
         @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
-        @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey,
-        @RequestParam(value = "orderByUser", required = false) String orderByUser);
+        @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey);
 
     /**
      * 保存意见

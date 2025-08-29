@@ -73,11 +73,6 @@ public class ProcessParamModel implements Serializable {
     private String completer;
 
     /**
-     * 统一待办url前缀
-     */
-    private String todoTaskUrlPrefix;
-
-    /**
      * 搜索词
      */
     private String searchTerm;

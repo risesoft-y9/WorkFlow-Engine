@@ -242,11 +242,11 @@ public class OpinionRestController {
     public Y9Result<OpinionFrameModel> personCommentList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String itembox,
         @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
-        @RequestParam(required = false) String taskDefinitionKey, @RequestParam(required = false) String orderByUser) {
+        @RequestParam(required = false) String taskDefinitionKey) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
         return opinionApi.personCommentListNew(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark,
-            itemId, taskDefinitionKey, orderByUser);
+            itemId, taskDefinitionKey);
     }
 
     /**

@@ -443,7 +443,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 LOGGER.info("*****意见填写提醒*****");
                 String title = processParam.getTitle();
                 String itemId = processParam.getItemId();
-                String todoTaskUrlPrefix = processParam.getTodoTaskUrlPrefix();
+                String todoTaskUrlPrefix = itemSettingApi.getConfSetting(tenantId).getData().getTodoTaskUrlPrefix();
                 String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId="
                     + processParam.getProcessInstanceId() + "&type=fromCplane";
                 Date date = new Date();

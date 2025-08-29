@@ -57,6 +57,7 @@ import net.risesoft.service.core.ItemService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
 import net.risesoft.service.opinion.OpinionService;
+import net.risesoft.service.setting.ItemSettingService;
 import net.risesoft.util.CommentUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -105,6 +106,8 @@ public class OpinionServiceImpl implements OpinionService {
     private final PositionApi positionApi;
 
     private final VariableApi variableApi;
+
+    private final ItemSettingService itemSettingService;
 
     @Override
     public Boolean checkSignOpinion(String processSerialNumber, String taskId) {
@@ -251,7 +254,7 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public List<OpinionListModel> listPersonComment(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey, String orderByUser) {
+        String opinionFrameMark, String itemId, String taskDefinitionKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         OpinionListModel opinionListModel = new OpinionListModel();
         opinionListModel.setAddable(true);
@@ -260,7 +263,8 @@ public class OpinionServiceImpl implements OpinionService {
         List<Opinion> opinionList =
             opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
         // 按岗位排序号排序
-        if (StringUtils.isNotBlank(orderByUser) && orderByUser.equals("1") && opinionList.size() > 1) {
+        boolean opinionOrderBy = itemSettingService.getConfSetting().isOpinionOrderBy();
+        if (opinionOrderBy && opinionList.size() > 1) {
             for (Opinion opinion : opinionList) {
                 String positionId = opinion.getPositionId();
                 Position position = positionApi.get(tenantId, positionId).getData();
@@ -286,29 +290,30 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public OpinionFrameModel listPersonCommentNew(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey, String orderByUser) {
+        String opinionFrameMark, String itemId, String taskDefinitionKey) {
         OpinionFrameModel opinionFrameModel = new OpinionFrameModel();
         opinionFrameModel.setAddable(true);
         opinionFrameModel.setMark(opinionFrameMark);
         opinionFrameModel.setOneClickSetList(new ArrayList<>());
+        boolean opinionOrderBy = itemSettingService.getConfSetting().isOpinionOrderBy();
         List<Opinion> opinionList =
             opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
         switch (ItemBoxTypeEnum.fromString(itembox)) {
             case DRAFT:
             case ADD:
                 this.listPersonComment4AddOrDraftNew(itemId, opinionFrameModel, opinionList, opinionFrameMark,
-                    taskDefinitionKey, orderByUser);
+                    taskDefinitionKey, opinionOrderBy);
                 break;
             case TODO:
                 this.listPersonComment4TodoNew(itemId, opinionFrameModel, opinionList, opinionFrameMark, taskId,
-                    orderByUser);
+                    opinionOrderBy);
                 break;
             case YUE_JIAN:
                 this.listPersonComment4ChaoSongNew(processSerialNumber, itemId, opinionFrameModel, opinionList,
-                    opinionFrameMark, taskId, taskDefinitionKey, orderByUser);
+                    opinionFrameMark, taskId, taskDefinitionKey, opinionOrderBy);
                 break;
             default:
-                this.listPersonComment4OtherNew(opinionFrameModel, opinionList, orderByUser);
+                this.listPersonComment4OtherNew(opinionFrameModel, opinionList, opinionOrderBy);
                 break;
         }
         return opinionFrameModel;
@@ -349,7 +354,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     private void listPersonComment4AddOrDraftNew(String itemId, OpinionFrameModel opinionFrameModel,
-        List<Opinion> opinionList, String opinionFrameMark, String taskDefKey, String orderByUser) {
+        List<Opinion> opinionList, String opinionFrameMark, String taskDefKey, boolean opinionOrderBy) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
         if (!opinionList.isEmpty()) {
@@ -360,7 +365,7 @@ public class OpinionServiceImpl implements OpinionService {
                 model.setEditable(opinion.getUserId().equals(personId));
                 modelList.add(this.getOpinionModelNew(opinion, model));
             }
-            modelList = this.order(modelList, orderByUser);
+            modelList = this.order(modelList, opinionOrderBy);
             opinionFrameModel.setOpinionList(modelList);
             opinionFrameModel.setAddable(modelList.stream().noneMatch(model -> model.getUserId().equals(personId)));
         } else {
@@ -379,9 +384,9 @@ public class OpinionServiceImpl implements OpinionService {
         }
     }
 
-    private List<OpinionModel> order(List<OpinionModel> modelList, String orderByUser) {
+    private List<OpinionModel> order(List<OpinionModel> modelList, boolean opinionOrderBy) {
         // 按岗位排序号排序
-        if (StringUtils.isNotBlank(orderByUser) && orderByUser.equals("1") && modelList.size() > 1) {
+        if (opinionOrderBy && modelList.size() > 1) {
             for (OpinionModel model : modelList) {
                 String positionId = model.getPositionId();
                 Position position = positionApi.get(Y9LoginUserHolder.getTenantId(), positionId).getData();
@@ -475,7 +480,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     private void listPersonComment4TodoNew(String itemId, OpinionFrameModel opinionFrameModel,
-        List<Opinion> opinionList, String opinionFrameMark, String taskId, String orderByUser) {
+        List<Opinion> opinionList, String opinionFrameMark, String taskId, boolean opinionOrderBy) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
         List<OpinionModel> modelList = new ArrayList<>();
@@ -491,7 +496,7 @@ public class OpinionServiceImpl implements OpinionService {
                 model.setEditable(false);
                 modelList.add(this.getOpinionModelNew(opinion, model));
             }
-            modelList = this.order(modelList, orderByUser);
+            modelList = this.order(modelList, opinionOrderBy);
             opinionFrameModel.setOpinionList(modelList);
         } else {
             opinionFrameModel.setAddable(true);
@@ -536,7 +541,7 @@ public class OpinionServiceImpl implements OpinionService {
                 }
             }
             this.setAddableNew(opinionFrameModel, itemOpinionFrameBind);
-            modelList = this.order(modelList, orderByUser);
+            modelList = this.order(modelList, opinionOrderBy);
             opinionFrameModel.setOpinionList(modelList);
         }
     }
@@ -623,7 +628,7 @@ public class OpinionServiceImpl implements OpinionService {
 
     private void listPersonComment4ChaoSongNew(String processSerialNumber, String itemId,
         OpinionFrameModel opinionFrameModel, List<Opinion> opinionList, String opinionFrameMark, String taskId,
-        String taskDefinitionKey, String orderByUser) {
+        String taskDefinitionKey, boolean opinionOrderBy) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
         List<OpinionModel> modelList = new ArrayList<>();
@@ -649,7 +654,7 @@ public class OpinionServiceImpl implements OpinionService {
             }
             modelList.add(this.getOpinionModelNew(opinion, model));
         }
-        modelList = this.order(modelList, orderByUser);
+        modelList = this.order(modelList, opinionOrderBy);
         opinionFrameModel.setOpinionList(modelList);
         /*
          * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
@@ -763,7 +768,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     private void listPersonComment4OtherNew(OpinionFrameModel opinionFrameModel, List<Opinion> opinionList,
-        String orderByUser) {
+        boolean opinionOrderBy) {
         List<OpinionModel> modelList = new ArrayList<>();
         opinionFrameModel.setAddable(false);
         for (Opinion opinion : opinionList) {
@@ -772,7 +777,7 @@ public class OpinionServiceImpl implements OpinionService {
             model.setEditable(false);
             modelList.add(this.getOpinionModelNew(opinion, model));
         }
-        modelList = this.order(modelList, orderByUser);
+        modelList = this.order(modelList, opinionOrderBy);
         opinionFrameModel.setOpinionList(modelList);
     }
 

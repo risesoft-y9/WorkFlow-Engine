@@ -110,7 +110,7 @@ public interface OpinionService {
      * @return
      */
     List<OpinionListModel> listPersonComment(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey, String orderByUser);
+        String opinionFrameMark, String itemId, String taskDefinitionKey);
 
     /**
      *
@@ -124,7 +124,7 @@ public interface OpinionService {
      * @return
      */
     OpinionFrameModel listPersonCommentNew(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey, String orderByUser);
+        String opinionFrameMark, String itemId, String taskDefinitionKey);
 
     /**
      * 保存多条意见

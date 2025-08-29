@@ -123,10 +123,6 @@ public class Item implements Serializable {
     @Column(name = "APPURL", length = 200)
     private String appUrl;
 
-    @Comment("统一待办url前缀")
-    @Column(name = "TODOTASKURLPREFIX", length = 200)
-    private String todoTaskUrlPrefix;
-
     @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否可定制事项")
     @Column(name = "CUSTOMITEM", nullable = false)
