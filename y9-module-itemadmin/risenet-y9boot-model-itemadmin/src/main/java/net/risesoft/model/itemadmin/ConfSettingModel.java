@@ -25,4 +25,10 @@ public class ConfSettingModel implements Serializable {
 
     /** 消息提醒开关 */
     private boolean msgSwitch;
+
+    /** 短信通知开关 **/
+    private boolean smsSwitch;
+
+    /** 意见常用语 **/
+    private String defaultOpinion;
 }
