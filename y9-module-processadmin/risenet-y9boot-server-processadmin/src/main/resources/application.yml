@@ -180,14 +180,9 @@ y9:
     internalIp: 192.168.x.x,10.x.x.x,172.20.x.x
     app:
         processAdmin:
-            cooperationStateSwitch: false
             dataCenterSwitch: false
-            entrustSwitch: true
-            messagePushSwitch: false
             pushSwitch: false
-            smsSwitch: false
             interfaceSwitch: false
-            imageCountUrl: http://localhost:8081/imageCount
     service:
         itemAdmin:
             directUrl: http://localhost:7057

@@ -14,12 +14,6 @@ public class Y9ProcessAdminProperties {
 
     private Boolean dataCenterSwitch = false;// 数据中心开关
 
-    private Boolean cooperationStateSwitch = false;// 协作状态开关
-
-    private Boolean entrustSwitch = false;
-
-    private Boolean messagePushSwitch = false;
-
     private Boolean pushSwitch = false;
 
     private Boolean interfaceSwitch = false;// 接口调用开关
