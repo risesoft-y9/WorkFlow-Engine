@@ -24,8 +24,6 @@ public class Y9ItemAdminProperties {
 
     private String comment;
 
-    private String freeFlowKey = "ziyouliucheng";
-
     private Boolean smsSwitch = false;
 
 }
