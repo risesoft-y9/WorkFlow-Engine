@@ -137,8 +137,6 @@ y9:
             systemCnName: 事项管理
             systemName: itemAdmin
             smsSwitch: false
-            weiXinSwitch: true
-            weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage
             todoTaskUrlPrefix: https://test.youshengyun.com/flowableUI/todoIndex
     service:
         processAdmin:

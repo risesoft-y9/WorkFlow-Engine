@@ -16,8 +16,6 @@ public class Y9ProcessAdminProperties {
 
     private Boolean dataCenterSwitch = false;// 数据中心开关
 
-    private Boolean weiXinSwitch = false;// 微信提醒开关
-
     private Boolean cooperationStateSwitch = false;// 协作状态开关
 
     private Boolean msgSwitch = false;// 消息提醒开关
@@ -31,7 +29,4 @@ public class Y9ProcessAdminProperties {
     private Boolean smsSwitch = false;
 
     private Boolean interfaceSwitch = false;// 接口调用开关
-
-    private String weiXinUrl;
-
 }

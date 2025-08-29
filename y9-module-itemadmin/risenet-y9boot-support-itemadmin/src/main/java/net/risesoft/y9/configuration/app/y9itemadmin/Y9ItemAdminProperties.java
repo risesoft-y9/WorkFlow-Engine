@@ -23,9 +23,4 @@ public class Y9ItemAdminProperties {
     private Boolean smsSwitch = false;
 
     private Boolean msgSwitch = false;// 消息提醒开关
-
-    private Boolean weiXinSwitch = false;// 微信提醒开关
-
-    private String weiXinUrl;
-
 }
