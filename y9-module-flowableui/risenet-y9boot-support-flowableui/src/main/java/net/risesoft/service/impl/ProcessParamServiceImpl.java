@@ -69,7 +69,6 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             pp.setSended(processParamModel != null ? processParamModel.getSended() : "");
             pp.setStartor(processParamModel != null ? processParamModel.getStartor() : "");
             pp.setStartorName(processParamModel != null ? processParamModel.getStartorName() : "");
-            pp.setTodoTaskUrlPrefix(item.getTodoTaskUrlPrefix());
             pp.setCustomItem(processParamModel != null ? processParamModel.getCustomItem() : customItem);
             pp.setSearchTerm(documentTitle + "|" + number + "|" + level + "|" + item.getName());
             processParamApi.saveOrUpdate(tenantId, pp);
@@ -107,7 +106,6 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             pp.setSystemName(item.getSystemName());
             pp.setSystemCnName(item.getSysLevel());
             pp.setTitle(documentTitle);
-            pp.setTodoTaskUrlPrefix(item.getTodoTaskUrlPrefix());
             pp.setSearchTerm(documentTitle + "|" + number + "|" + level + "|" + item.getName());
             if (null != oldProcessParam) {
                 pp.setSponsorGuid(oldProcessParam.getSponsorGuid());

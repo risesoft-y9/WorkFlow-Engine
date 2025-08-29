@@ -57,10 +57,6 @@ public class ItemModel implements Serializable {
      */
     private String systemName;
     /**
-     * 待办任务链接前缀
-     */
-    private String todoTaskUrlPrefix;
-    /**
      * 图标内容
      */
     private String iconData;
