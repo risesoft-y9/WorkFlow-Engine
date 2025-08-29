@@ -117,7 +117,6 @@
             </column>
             <column name="SYSLEVEL" remarks="系统级别" type="VARCHAR(50)"/>
             <column name="SYSTEMNAME" remarks="系统名称" type="VARCHAR(50)"/>
-            <column name="TODOTASKURLPREFIX" remarks="统一待办url前缀" type="VARCHAR(200)"/>
             <column name="TYPE" remarks="事项类型" type="VARCHAR(50)"/>
             <column name="WORKFLOWGUID" remarks="工作流GUID" type="VARCHAR(100)"/>
         </createTable>
@@ -1515,7 +1514,6 @@
             <column name="TITLE" remarks="标题" type="VARCHAR(1000)">
                 <constraints nullable="false"/>
             </column>
-            <column name="TODOTASKURLPREFIX" remarks="统一待办url前缀" type="VARCHAR(200)"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-55" author="mengjuhua" runOnChange="true">

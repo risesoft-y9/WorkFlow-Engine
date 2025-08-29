@@ -76,4 +76,21 @@
             <column name="UPDATE_TIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
+
+    <changeSet id="1704700546666-5" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_APPROVEITEM" columnName="TODOTASKURLPREFIX"/>
+        </preConditions>
+        <dropColumn tableName="FF_APPROVEITEM">
+            <column name="TODOTASKURLPREFIX"/>
+        </dropColumn>
+    </changeSet>
+    <changeSet id="1704700546666-6" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_PROCESS_PARAM" columnName="TODOTASKURLPREFIX"/>
+        </preConditions>
+        <dropColumn tableName="FF_PROCESS_PARAM">
+            <column name="TODOTASKURLPREFIX"/>
+        </dropColumn>
+    </changeSet>
 </databaseChangeLog>
