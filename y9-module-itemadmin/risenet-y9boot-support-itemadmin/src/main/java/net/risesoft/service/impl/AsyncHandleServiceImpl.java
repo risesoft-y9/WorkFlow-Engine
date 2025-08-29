@@ -55,10 +55,10 @@ import net.risesoft.service.AsyncHandleService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.Process4SearchService;
 import net.risesoft.service.SignDeptDetailService;
-import net.risesoft.service.attachment.AttachmentService;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.event.Y9TodoUpdateEvent;
+import net.risesoft.service.setting.ItemSettingService;
 import net.risesoft.service.word.Y9WordHistoryService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -90,8 +90,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
 
     private final Y9WordHistoryService y9WordHistoryService;
 
-    private final AttachmentService attachmentService;
-
     private final OpinionRepository opinionRepository;
 
     private final VariableApi variableApi;
@@ -111,6 +109,8 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
     private final SignDeptDetailService signDeptDetailService;
 
     private final ProcessDefinitionApi processDefinitionApi;
+
+    private final ItemSettingService itemSettingService;
 
     /**
      * 异步发送
@@ -431,8 +431,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
     public void sendMsgRemind(final String tenantId, final String userId, final String processSerialNumber,
         final String content) {
         /*try {
-            Boolean msgSwitch = y9ItemAdminProperties.getMsgSwitch();
-            if (msgSwitch == null || !msgSwitch) {
+            if (!itemSettingService.getConfSetting().isMsgSwitch()) {
                 return;
             }
             Y9LoginUserHolder.setTenantId(tenantId);

@@ -10,11 +10,17 @@ import lombok.Setter;
 @ConfigurationProperties(prefix = "y9.app.item-admin", ignoreInvalidFields = true)
 public class Y9ItemAdminProperties {
 
+    /** 从统一待办打开办件的前缀地址 */
     public static String todoTaskUrlPrefix = "https://vue.youshengyun.com/flowableUI/todoIndex";
 
+    /** 意见排序方式，设置为true,则按照岗位的orderedPath排序 */
     public static boolean opinionOrderBy = false;
 
+    /** 统一待办开关 */
     public static boolean todoSwitch = true;
+
+    /** 消息提醒开关 **/
+    public static boolean msgSwitch = false;
 
     private String comment;
 
@@ -22,5 +28,4 @@ public class Y9ItemAdminProperties {
 
     private Boolean smsSwitch = false;
 
-    private Boolean msgSwitch = false;// 消息提醒开关
 }

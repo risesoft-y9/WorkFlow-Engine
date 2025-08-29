@@ -22,4 +22,7 @@ public class ConfSettingModel implements Serializable {
 
     /** 统一待办开关 */
     private boolean todoSwitch;
+
+    /** 消息提醒开关 */
+    private boolean msgSwitch;
 }
