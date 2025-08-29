@@ -186,7 +186,6 @@ y9:
             messagePushSwitch: false
             pushSwitch: false
             smsSwitch: false
-            todoSwitch: false
             interfaceSwitch: false
             weiXinSwitch: false
             weiXinUrl: https://www.youshengyun.com/Youshengyun/Api/pushTempMessage

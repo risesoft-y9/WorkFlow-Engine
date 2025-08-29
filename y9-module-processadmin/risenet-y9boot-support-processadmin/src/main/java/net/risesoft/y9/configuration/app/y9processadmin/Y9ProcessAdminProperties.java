@@ -14,8 +14,6 @@ public class Y9ProcessAdminProperties {
 
     private String freeFlowKey = "ziyouliucheng";
 
-    private Boolean todoSwitch = false;// 统一待办开关
-
     private Boolean dataCenterSwitch = false;// 数据中心开关
 
     private Boolean weiXinSwitch = false;// 微信提醒开关
