@@ -31,6 +31,12 @@ public class ConfSetting extends AbstractSetting implements Serializable {
     /** 消息提醒开关 */
     private boolean msgSwitch = Y9ItemAdminProperties.msgSwitch;
 
+    /** 短信通知开关 **/
+    private boolean smsSwitch = Y9ItemAdminProperties.smsSwitch;
+
+    /** 意见常用语 **/
+    private String defaultOpinion = "知悉。,同意。,已阅。";
+
     @Override
     public String getPrefix() {
         return "y9.app.itemAdmin.";

@@ -22,8 +22,10 @@ public class Y9ItemAdminProperties {
     /** 消息提醒开关 **/
     public static boolean msgSwitch = false;
 
-    private String comment;
+    /** 短信通知开关 **/
+    public static boolean smsSwitch = false;
 
-    private Boolean smsSwitch = false;
+    /** 意见常用语 **/
+    private String defaultOpinion = "知悉。,同意。,已阅。";
 
 }

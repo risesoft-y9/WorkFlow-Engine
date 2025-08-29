@@ -22,7 +22,5 @@ public class Y9ProcessAdminProperties {
 
     private Boolean pushSwitch = false;
 
-    private Boolean smsSwitch = false;
-
     private Boolean interfaceSwitch = false;// 接口调用开关
 }

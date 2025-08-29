@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.commonsentences.CommonSentences;
 import net.risesoft.entity.commonsentences.CommonSentencesInit;
 import net.risesoft.id.IdType;
@@ -17,6 +18,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.commonsentences.CommonSentencesInitRepository;
 import net.risesoft.repository.commonsentences.CommonSentencesRepository;
 import net.risesoft.service.opinion.CommonSentencesService;
+import net.risesoft.service.setting.ItemSettingService;
 import net.risesoft.util.CommentUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -33,6 +35,8 @@ public class CommonSentencesServiceImpl implements CommonSentencesService {
     private final CommonSentencesRepository commonSentencesRepository;
 
     private final CommonSentencesInitRepository commonSentencesInitRepository;
+
+    private final ItemSettingService itemSettingService;
 
     @Transactional
     @Override
@@ -57,14 +61,16 @@ public class CommonSentencesServiceImpl implements CommonSentencesService {
         List<CommonSentences> list = commonSentencesRepository.findAllByUserId(userId);
         List<CommonSentencesInit> listInit = commonSentencesInitRepository.findByUserId(userId);
         if (list.isEmpty() && listInit.isEmpty()) {
-            String[] comment = CommentUtil.getComment();
+            String defaultOpinion = itemSettingService.getConfSetting().getDefaultOpinion();
+            defaultOpinion = CommentUtil.unicodeToCn(defaultOpinion);
+            String[] opinionArray = defaultOpinion.split(SysVariables.COMMA);
             // 保存初始化记录，用户已经初始化过常用语
             CommonSentencesInit commonSentencesInit = new CommonSentencesInit();
             commonSentencesInit.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             commonSentencesInit.setUserId(userId);
             commonSentencesInitRepository.save(commonSentencesInit);
             int i = 0;
-            for (String option : comment) {
+            for (String option : opinionArray) {
                 CommonSentences commonSentences = saveCommonSentences(userId, option, i);
                 i = i + 1;
                 resList.add(commonSentences);
