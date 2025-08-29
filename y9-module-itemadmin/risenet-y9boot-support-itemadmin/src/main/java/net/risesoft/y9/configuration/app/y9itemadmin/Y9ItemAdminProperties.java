@@ -14,6 +14,8 @@ public class Y9ItemAdminProperties {
 
     public static boolean opinionOrderBy = false;
 
+    public static boolean todoSwitch = true;
+
     private String comment;
 
     private String freeFlowKey = "ziyouliucheng";

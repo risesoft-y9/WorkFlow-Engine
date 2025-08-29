@@ -25,6 +25,9 @@ public class ConfSetting extends AbstractSetting implements Serializable {
     /** 意见排序方式，设置为true,则按照岗位的orderedPath排序 */
     private boolean opinionOrderBy = Y9ItemAdminProperties.opinionOrderBy;
 
+    /** 统一待办开关 */
+    private boolean todoSwitch = Y9ItemAdminProperties.todoSwitch;
+
     @Override
     public String getPrefix() {
         return "y9.app.itemAdmin.";
