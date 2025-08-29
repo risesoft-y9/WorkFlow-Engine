@@ -28,20 +28,14 @@ public interface AttachmentRepository extends JpaRepository<Attachment, String>,
     @Query("select count(*) from Attachment t where t.processSerialNumber=?1")
     Integer fileCounts(String processSerialNumber);
 
-    @Query("from Attachment t where t.processSerialNumber=?1 order by t.uploadTime desc")
+    @Query("from Attachment t where t.processSerialNumber=?1 order by t.tabIndex asc")
     List<Attachment> findByProcessSerialNumber(String processSerialNumber);
 
     @Query("from Attachment t where t.processSerialNumber in (?1)")
     List<Attachment> findByProcessSerialNumbers(List<String> processSerialNumbers);
 
     @Query("from Attachment t where t.processSerialNumber=?1")
-    List<Attachment> getAttachmentList(String processSerialNumber);
-
-    @Query("from Attachment t where t.processSerialNumber=?1")
     Page<Attachment> getAttachmentList(String processSerialNumber, Pageable pageable);
-
-    @Query("from Attachment t where t.processSerialNumber=?1 and t.fileSource=?2")
-    List<Attachment> getAttachmentList(String processSerialNumber, String fileSource);
 
     @Query("from Attachment t where t.processSerialNumber=?1 and t.fileSource=?2")
     Page<Attachment> getAttachmentList(String processSerialNumber, String fileSource, Pageable pageable);
