@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ItemPermission;
@@ -78,11 +79,10 @@ public class ItemPermissionRestController {
         @RequestParam String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
-        String freeFlowKey = y9ItemAdminProperties.getFreeFlowKey();
         /*
          * 自由流程额外添加一个办结角色，规定自由流的办结按钮控制
          */
-        if (processDefinitionId.startsWith(freeFlowKey)) {
+        if (processDefinitionId.startsWith(ItemConsts.freeFlowKey)) {
             TargetModel targetModel = new TargetModel();
             targetModel.setTaskDefKey(SysVariables.FREE_FLOW_END_ROLE);
             targetModel.setTaskDefName("办结");

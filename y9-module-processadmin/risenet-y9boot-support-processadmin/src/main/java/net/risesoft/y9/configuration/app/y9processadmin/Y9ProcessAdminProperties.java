@@ -12,8 +12,6 @@ public class Y9ProcessAdminProperties {
 
     private String baseUrl = "http://127.0.0.1:7055/processAdmin";
 
-    private String freeFlowKey = "ziyouliucheng";
-
     private Boolean dataCenterSwitch = false;// 数据中心开关
 
     private Boolean cooperationStateSwitch = false;// 协作状态开关
