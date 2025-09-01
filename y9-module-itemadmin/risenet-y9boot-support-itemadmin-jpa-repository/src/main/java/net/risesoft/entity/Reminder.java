@@ -50,7 +50,7 @@ public class Reminder implements Serializable {
 
     @Comment("提醒类型")
     @Column(name = "REMINDER_MAKE_TYPE", length = 2, nullable = false)
-    private Integer reminderMakeTyle;
+    private Integer reminderMakeType;
 
     @Comment("流程实例id")
     @Column(name = "PROCINSTID", length = 64, nullable = false)

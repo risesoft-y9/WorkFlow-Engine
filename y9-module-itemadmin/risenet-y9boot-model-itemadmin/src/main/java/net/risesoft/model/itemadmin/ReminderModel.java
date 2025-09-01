@@ -24,7 +24,7 @@ public class ReminderModel implements Serializable {
     private String reminderSendType;
 
     /** 提醒类型 */
-    private Integer reminderMakeTyle;
+    private Integer reminderMakeType;
 
     /** 流程实例id */
     private String procInstId;

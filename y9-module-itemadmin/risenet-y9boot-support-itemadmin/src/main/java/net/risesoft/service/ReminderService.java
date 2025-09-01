@@ -1,7 +1,5 @@
 package net.risesoft.service;
 
-import java.util.Collection;
-import java.util.Date;
 import java.util.List;
 
 import net.risesoft.entity.Reminder;
@@ -23,7 +21,7 @@ public interface ReminderService {
     void deleteList(String[] ids);
 
     /**
-     * Description:
+     * 
      *
      * @param id
      * @return
@@ -48,7 +46,7 @@ public interface ReminderService {
     Reminder findByTaskIdAndSenderId(String taskId, String senderId);
 
     /**
-     * Description:
+     * 
      *
      * @param msgContent
      * @param procInstId
@@ -63,33 +61,7 @@ public interface ReminderService {
         String taskId, String taskAssigneeId, String documentTitle);
 
     /**
-     * 根据TaskId查询Reminder
-     *
-     * @param taskIds
-     * @return
-     */
-    List<Reminder> listByTaskId(Collection<String> taskIds);
-
-    /**
-     * 根据taskId和催办人Id查找Reminder
-     *
-     * @param taskIds
-     * @param senderId
-     * @return
-     */
-    List<Reminder> listByTaskIdsAndSenderId(Collection<String> taskIds, String senderId);
-
-    /**
-     * Description:
-     *
-     * @param taskId
-     * @param reminderSendType
-     * @return
-     */
-    List<Reminder> listByTastIdAndReminderSendType(String taskId, String reminderSendType);
-
-    /**
-     * Description:
+     * 
      *
      * @param processInstanceId
      * @param page
@@ -99,7 +71,7 @@ public interface ReminderService {
     Y9Page<ReminderModel> pageByProcessInstanceId(String processInstanceId, int page, int rows);
 
     /**
-     * Description:
+     * 
      *
      * @param senderId
      * @param processInstanceId
@@ -111,7 +83,7 @@ public interface ReminderService {
         int page, int rows);
 
     /**
-     * Description:
+     * 
      *
      * @param taskId
      * @param page
@@ -136,23 +108,7 @@ public interface ReminderService {
     void saveReminder(List<Reminder> list);
 
     /**
-     * 保存催办信息
-     *
-     * @param reminder
-     */
-    void saveReminder(Reminder reminder);
-
-    /**
-     * Description:
-     *
-     * @param readTime
-     * @param taskId
-     * @param type
-     */
-    void setReadTime(Date readTime, String taskId, String type);
-
-    /**
-     * Description:
+     * 
      *
      * @param ids
      */
