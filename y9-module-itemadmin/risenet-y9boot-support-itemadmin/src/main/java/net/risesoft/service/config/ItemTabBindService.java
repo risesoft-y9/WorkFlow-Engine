@@ -59,7 +59,7 @@ public interface ItemTabBindService {
     void saveOrder(String[] idAndTabIndexs);
 
     /**
-     * Description: 保存绑定关系
+     * 保存绑定关系
      *
      * @param tabId
      * @param itemId

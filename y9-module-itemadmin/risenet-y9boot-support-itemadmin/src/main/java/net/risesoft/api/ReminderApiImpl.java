@@ -79,7 +79,7 @@ public class ReminderApiImpl implements ReminderApi {
         if (reminder != null && reminder.getId() != null) {
             ReminderModel model = new ReminderModel();
             model.setId(reminder.getId());
-            model.setReminderMakeTyle(reminder.getReminderMakeTyle());
+            model.setReminderMakeType(reminder.getReminderMakeType());
             model.setReminderSendType(reminder.getReminderSendType());
             model.setSenderId(reminder.getSenderId());
             model.setSenderName(reminder.getSenderName());
@@ -172,7 +172,7 @@ public class ReminderApiImpl implements ReminderApi {
             model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
             model.setModifyTime(
                 reminder.getModifyTime() != null ? DATE_TIME_FORMAT.format(reminder.getModifyTime()) : "");
-            model.setReminderMakeTyle(reminder.getReminderMakeTyle());
+            model.setReminderMakeType(reminder.getReminderMakeType());
             model.setReminderSendType(reminder.getReminderSendType());
             model.setSenderId(reminder.getSenderId());
             model.setSenderName(reminder.getSenderName());
