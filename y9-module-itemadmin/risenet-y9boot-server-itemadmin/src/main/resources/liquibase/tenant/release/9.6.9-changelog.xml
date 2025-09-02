@@ -93,4 +93,13 @@
             <column name="TODOTASKURLPREFIX"/>
         </dropColumn>
     </changeSet>
+    <changeSet id="1704700546666-7" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_REMINDER" columnName="REMINDER_SEND_TYPE"/>
+        </preConditions>
+        <dropColumn tableName="FF_REMINDER">
+            <column name="REMINDER_SEND_TYPE"/>
+            <column name="REMINDER_MAKE_TYPE"/>
+        </dropColumn>
+    </changeSet>
 </databaseChangeLog>
