@@ -83,20 +83,19 @@ public class DoingServiceImpl implements DoingService {
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 ProcessParamModel processParam;
-                String processInstanceId = "", processSerialNumber = "", documentTitle, level = "", number = "";
+                String processDefinitionId = "", processInstanceId = "", processSerialNumber = "", documentTitle,
+                    level = "", number = "";
                 for (ProcessInstanceModel piModel : hpiModelList) {// 以办理时间排序
                     mapTemp = new HashMap<>(16);
                     try {
                         processInstanceId = piModel.getId();
-                        String processDefinitionId = piModel.getProcessDefinitionId();
+                        processDefinitionId = piModel.getProcessDefinitionId();
                         Date endTime = piModel.getEndTime();
-                        // endTime.setTime(endTime.getTime() + 8 * 60 * 60 * 1000);
                         String taskCreateTime = piModel.getEndTime() != null ? sdf.format(endTime) : "";
                         List<TaskModel> taskList =
                             this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = this.getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0);
-                        String assigneeIds = listTemp.get(1);
                         String assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                         processParam =
@@ -122,7 +121,6 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("taskName", taskList.get(0).getName());
                         mapTemp.put("taskCreateTime", taskCreateTime);
                         mapTemp.put("taskId", taskIds);
-                        mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put(SysVariables.ITEM_ID, itemId);
                         mapTemp.put("isReminder", isReminder);
@@ -164,17 +162,17 @@ public class DoingServiceImpl implements DoingService {
                 int serialNumber = (page - 1) * rows;
                 Map<String, Object> mapTemp;
                 ProcessParamModel processParam;
-                String processInstanceId = "", processSerialNumber = "", documentTitle, level = "", number = "";
+                String processDefinitionId, processInstanceId, processSerialNumber = "", documentTitle, level = "",
+                    number = "";
                 for (ProcessInstanceModel piModel : hpiModelList) {
                     mapTemp = new HashMap<>(16);
+                    processInstanceId = piModel.getId();
+                    processDefinitionId = piModel.getProcessDefinitionId();
                     try {
-                        processInstanceId = piModel.getId();
-                        String processDefinitionId = piModel.getProcessDefinitionId();
                         List<TaskModel> taskList =
                             this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = this.getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                         processParam =
                             this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -201,7 +199,6 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("taskName", taskList.get(0).getName());
                         mapTemp.put("taskCreateTime", sdf.format(taskList.get(0).getCreateTime()));
                         mapTemp.put("taskId", taskIds);
-                        mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put(SysVariables.ITEM_ID, itemId);
 
@@ -218,7 +215,7 @@ public class DoingServiceImpl implements DoingService {
                             .getData();
                         mapTemp.put("speakInfoNum", speakInfoNum);
                     } catch (Exception e) {
-                        LOGGER.error("获取在办列表失败" + processInstanceId, e);
+                        LOGGER.error("获取在办列表失败{}", processInstanceId, e);
                     }
                     mapTemp.put("serialNumber", serialNumber + 1);
                     serialNumber += 1;
@@ -340,7 +337,6 @@ public class DoingServiceImpl implements DoingService {
                             this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = this.getAssigneeIdsAndAssigneeNames(taskList);
                         String taskIds = listTemp.get(0);
-                        String assigneeIds = listTemp.get(1);
                         String assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                         processParam =
@@ -360,7 +356,6 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("taskName", taskList.get(0).getName());
                         mapTemp.put("taskCreateTime", taskCreateTime);
                         mapTemp.put("taskId", taskIds);
-                        mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put(SysVariables.ITEM_ID, itemId);
                         mapTemp.put(SysVariables.LEVEL, level);
@@ -394,8 +389,7 @@ public class DoingServiceImpl implements DoingService {
                         List<TaskModel> taskList =
                             this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = this.getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(2);
                         Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                         processParam =
                             this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -414,7 +408,6 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("taskName", taskList.get(0).getName());
                         mapTemp.put("taskCreateTime", sdf.format(taskList.get(0).getCreateTime()));
                         mapTemp.put("taskId", taskIds);
-                        mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put(SysVariables.ITEM_ID, itemId);
                         mapTemp.put(SysVariables.LEVEL, level);

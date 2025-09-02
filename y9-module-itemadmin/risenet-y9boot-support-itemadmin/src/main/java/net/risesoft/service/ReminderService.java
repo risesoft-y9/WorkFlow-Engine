@@ -29,23 +29,6 @@ public interface ReminderService {
     Reminder findById(String id);
 
     /**
-     * 根据taskId查找是否存在催办
-     *
-     * @param taskId
-     * @return
-     */
-    Reminder findByTaskId(String taskId);
-
-    /**
-     * 根据TaskId和催办人查找催办
-     *
-     * @param taskId
-     * @param senderId
-     * @return
-     */
-    Reminder findByTaskIdAndSenderId(String taskId, String senderId);
-
-    /**
      * 
      *
      * @param msgContent
@@ -53,12 +36,11 @@ public interface ReminderService {
      * @param reminderAutomatic
      * @param remType
      * @param taskId
-     * @param taskAssigneeId
      * @param documentTitle
      * @return
      */
     String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType,
-        String taskId, String taskAssigneeId, String documentTitle);
+        String taskId, String documentTitle);
 
     /**
      * 

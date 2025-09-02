@@ -259,12 +259,10 @@ public class MonitorServiceImpl implements MonitorService {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(2);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                         mapTemp.put("taskId",
                             listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                        mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", new HashMap<String, String>(16));
                     }
@@ -325,12 +323,10 @@ public class MonitorServiceImpl implements MonitorService {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(2);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                         mapTemp.put("taskId",
                             listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                        mapTemp.put("taskAssigneeId", assigneeIds);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
                     }
@@ -415,14 +411,13 @@ public class MonitorServiceImpl implements MonitorService {
 
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                    String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1), assigneeNames = listTemp.get(2);
+                    String taskIds = listTemp.get(0), assigneeNames = listTemp.get(2);
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                     mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                     mapTemp.put("taskName", taskList.get(0).getName());
                     mapTemp.put("taskCreateTime",
                         taskList.get(0).getCreateTime() == null ? "" : sdf.format(taskList.get(0).getCreateTime()));
                     mapTemp.put("taskId", taskIds);
-                    mapTemp.put("taskAssigneeId", assigneeIds);
                     mapTemp.put("taskAssignee", assigneeNames);
                     mapTemp.put("isReminder", isReminder);
                 } catch (Exception e) {

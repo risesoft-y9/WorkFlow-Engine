@@ -16,9 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ReminderApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Reminder;
-import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ReminderModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
@@ -79,8 +77,6 @@ public class ReminderApiImpl implements ReminderApi {
         if (reminder != null && reminder.getId() != null) {
             ReminderModel model = new ReminderModel();
             model.setId(reminder.getId());
-            model.setReminderMakeType(reminder.getReminderMakeType());
-            model.setReminderSendType(reminder.getReminderSendType());
             model.setSenderId(reminder.getSenderId());
             model.setSenderName(reminder.getSenderName());
             model.setTaskId(reminder.getTaskId());
@@ -145,47 +141,6 @@ public class ReminderApiImpl implements ReminderApi {
     }
 
     /**
-     * 查看催办信息
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param taskId 任务id
-     * @param type 类型，todo（待办），doing（在办），done（办结）
-     * @return {@code Y9Result<ReminderModel>} 通用请求返回对象 -data 是催办信息
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<ReminderModel> getReminder(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String taskId, @RequestParam String type) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        taskId = taskId.contains(SysVariables.COMMA) ? taskId.split(SysVariables.COMMA)[0] : taskId;
-        Reminder reminder = new Reminder();
-        if (ItemBoxTypeEnum.DOING.getValue().equals(type)) {
-            reminder = reminderService.findByTaskIdAndSenderId(taskId, userId);
-        }
-        if (ItemBoxTypeEnum.TODO.getValue().equals(type)) {
-            reminder = reminderService.findByTaskId(taskId);
-        }
-        if (reminder != null && reminder.getId() != null) {
-            ReminderModel model = new ReminderModel();
-            model.setId(reminder.getId());
-            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
-            model.setModifyTime(
-                reminder.getModifyTime() != null ? DATE_TIME_FORMAT.format(reminder.getModifyTime()) : "");
-            model.setReminderMakeType(reminder.getReminderMakeType());
-            model.setReminderSendType(reminder.getReminderSendType());
-            model.setSenderId(reminder.getSenderId());
-            model.setSenderName(reminder.getSenderName());
-            model.setTenantId(reminder.getTenantId());
-            model.setTaskId(reminder.getTaskId());
-            model.setProcInstId(reminder.getProcInstId());
-            model.setMsgContent(reminder.getMsgContent());
-            return Y9Result.success(model);
-        }
-        return Y9Result.failure("查询失败，没有对应的催办信息");
-    }
-
-    /**
      * 保存催办信息
      *
      * @param tenantId 租户id
@@ -233,7 +188,6 @@ public class ReminderApiImpl implements ReminderApi {
      * @param processInstanceId 流程实例id
      * @param documentTitle 文档标题
      * @param taskId 任务id
-     * @param taskAssigneeId 任务受让人Id
      * @param msgContent 催办信息
      * @return {@code Y9Result<String>} 通用请求返回对象
      * @since 9.6.6
@@ -241,16 +195,14 @@ public class ReminderApiImpl implements ReminderApi {
     @Override
     public Y9Result<String> sendReminderMessage(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String remType, @RequestParam String procInstId, @RequestParam String processInstanceId,
-        @RequestParam String documentTitle, @RequestParam String taskId, @RequestParam String taskAssigneeId,
-        @RequestParam String msgContent) {
+        @RequestParam String documentTitle, @RequestParam String taskId, @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
         try {
             // 催办信息处理
-            String err =
-                reminderService.handleReminder(URLDecoder.decode(msgContent, StandardCharsets.UTF_8), procInstId, 1,
-                    remType, taskId, taskAssigneeId, URLDecoder.decode(documentTitle, StandardCharsets.UTF_8));
+            String err = reminderService.handleReminder(URLDecoder.decode(msgContent, StandardCharsets.UTF_8),
+                procInstId, 1, remType, taskId, URLDecoder.decode(documentTitle, StandardCharsets.UTF_8));
             if ("".equals(err)) {
 
                 return Y9Result.successMsg("催办发送成功!");

@@ -242,7 +242,6 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                             model.setTaskDefinitionKey(taskList.get(0).getTaskDefinitionKey());
                             model.setTaskId(
                                 listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                            model.setTaskAssigneeId(assigneeIds);
                             model.setTaskAssignee(assigneeNames);
                             model.setItembox(listTemp.get(3));
                         }
