@@ -22,7 +22,6 @@ import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Reminder;
-import net.risesoft.enums.ItemUrgeTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ReminderModel;
@@ -70,31 +69,18 @@ public class ReminderServiceImpl implements ReminderService {
     }
 
     @Override
-    public Reminder findByTaskId(String taskId) {
-        return reminderRepository.findByTaskId(taskId);
-    }
-
-    @Override
-    public Reminder findByTaskIdAndSenderId(String taskId, String senderId) {
-        return reminderRepository.findByTaskIdAndSenderId(taskId, senderId);
-    }
-
-    @Override
     @Transactional
     public String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType,
-        String taskId, String taskAssigneeId, String documentTitle) {
+        String taskId, String documentTitle) {
         OrgUnit person = Y9LoginUserHolder.getOrgUnit();
         String[] procInstIds = procInstId.split(SysVariables.COMMA);
         String[] taskIds = taskId.split(SysVariables.COMMA);
-        // String[] taskAssigneeIds = taskAssigneeId.split(SysVariables.COMMA);
         List<Reminder> list = new ArrayList<>();
         for (int i = 0; i < procInstIds.length; i++) {
             Reminder reminder = new Reminder();
             reminder.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             reminder.setMsgContent(msgContent);
             reminder.setProcInstId(procInstIds[i]);
-            reminder.setReminderMakeType(reminderAutomatic);
-            reminder.setReminderSendType(ItemUrgeTypeEnum.TODOINFO.getValue());
             reminder.setSenderId(person.getId());
             reminder.setSenderName(person.getName());
             reminder.setTaskId(taskIds[i]);
@@ -111,7 +97,7 @@ public class ReminderServiceImpl implements ReminderService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        Page<Reminder> pageList = reminderRepository.findByprocInstId(processInstanceId, pageable);
+        Page<Reminder> pageList = reminderRepository.findByProcInstId(processInstanceId, pageable);
         List<Reminder> reminderList = pageList.getContent();
         int num = (page - 1) * rows;
         List<ReminderModel> listMap = new ArrayList<>();
@@ -122,11 +108,7 @@ public class ReminderServiceImpl implements ReminderService {
             model.setId(reminder.getId());
             model.setMsgContent(reminder.getMsgContent());
             model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
-            if (null == reminder.getReadTime()) {
-                model.setReadTime("");
-            } else {
-                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
-            }
+            model.setReadTime(null == reminder.getReadTime() ? "" : DATE_TIME_FORMAT.format(reminder.getReadTime()));
             model.setSenderName(reminder.getSenderName());
             model.setUserName("无");
             model.setTaskName("无");
@@ -170,11 +152,7 @@ public class ReminderServiceImpl implements ReminderService {
             model.setId(reminder.getId());
             model.setMsgContent(reminder.getMsgContent());
             model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
-            if (null == reminder.getReadTime()) {
-                model.setReadTime("");
-            } else {
-                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
-            }
+            model.setReadTime(null == reminder.getReadTime() ? "" : DATE_TIME_FORMAT.format(reminder.getReadTime()));
             model.setSenderName(reminder.getSenderName());
             model.setUserName("无");
             model.setTaskName("无");
@@ -189,7 +167,6 @@ public class ReminderServiceImpl implements ReminderService {
                 }
             }
             model.setSerialNumber(num + 1);
-
             num += 1;
             listMap.add(model);
         }
@@ -212,11 +189,7 @@ public class ReminderServiceImpl implements ReminderService {
             model.setId(reminder.getId());
             model.setMsgContent(reminder.getMsgContent());
             model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
-            if (null == reminder.getReadTime()) {
-                model.setReadTime("");
-            } else {
-                model.setReadTime(DATE_TIME_FORMAT.format(reminder.getReadTime()));
-            }
+            model.setReadTime(null == reminder.getReadTime() ? "" : DATE_TIME_FORMAT.format(reminder.getReadTime()));
             model.setSenderName(reminder.getSenderName());
             model.setUserName(pTemp.getName());
             model.setTaskName(taskTemp.getName());
@@ -245,8 +218,6 @@ public class ReminderServiceImpl implements ReminderService {
         r.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         r.setCreateTime(new Date());
         r.setModifyTime(new Date());
-        r.setReminderMakeType(1);
-        r.setReminderSendType(ItemUrgeTypeEnum.TODOINFO.getValue());
         r.setSenderId(orgUnit.getId());
         r.setSenderName(orgUnit.getName());
         r.setTenantId(tenantId);

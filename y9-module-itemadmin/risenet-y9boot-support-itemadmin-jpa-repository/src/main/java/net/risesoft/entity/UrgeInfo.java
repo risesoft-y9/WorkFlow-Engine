@@ -33,6 +33,8 @@ import lombok.NoArgsConstructor;
 @Table(name = "FF_URGEINFO", indexes = {@Index(name = "ff_urgeinfo_index_001", columnList = "processSerialNumber")})
 public class UrgeInfo implements Serializable {
 
+    private static final long serialVersionUID = -4825747252393459230L;
+
     @Id
     @Comment("主键")
     @Column(name = "ID", length = 38)

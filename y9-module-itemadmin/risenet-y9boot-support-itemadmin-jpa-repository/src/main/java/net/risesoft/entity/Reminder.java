@@ -44,14 +44,6 @@ public class Reminder implements Serializable {
     @Column(name = "TENANTID", length = 50, nullable = false)
     private String tenantId;
 
-    @Comment("催办发送类型")
-    @Column(name = "REMINDER_SEND_TYPE", length = 50, nullable = false)
-    private String reminderSendType;
-
-    @Comment("提醒类型")
-    @Column(name = "REMINDER_MAKE_TYPE", length = 2, nullable = false)
-    private Integer reminderMakeType;
-
     @Comment("流程实例id")
     @Column(name = "PROCINSTID", length = 64, nullable = false)
     private String procInstId;

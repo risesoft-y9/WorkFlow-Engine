@@ -117,10 +117,8 @@ public class ReminderRestController {
      */
     @FlowableLog(operationName = "批量设置催办阅读时间", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/setReadTime")
-    public Y9Result<String> setReadTime(@RequestParam String[] ids) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        reminderApi.setReadTime(tenantId, ids);
-        return Y9Result.successMsg("操作成功");
+    public Y9Result<Object> setReadTime(@RequestParam String[] ids) {
+        return reminderApi.setReadTime(Y9LoginUserHolder.getTenantId(), ids);
     }
 
     /**

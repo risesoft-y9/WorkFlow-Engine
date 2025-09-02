@@ -67,15 +67,12 @@ public class CommentUtil {
 
         for (Field field : fields) {
             Map<String, Object> map = new HashMap<>(16);
-            // 打印字段名称
-            System.out.println("字段名称: " + field.getName());
             // 获取字段上的 @Comment 注解
             Comment comment = field.getAnnotation(Comment.class);
             // 获取字段类型
             String fieldType = field.getType().getSimpleName();
             if (comment != null) {
                 // 打印注解值
-                System.out.println("注解值: " + comment.value());
                 map.put("fieldName", field.getName());
                 map.put("fieldType", fieldType);
                 map.put("comment", comment.value());

@@ -105,11 +105,6 @@ public class AssociatedFileModel implements Serializable, Comparable<AssociatedF
      */
     private String taskId;
 
-    /**
-     * 办理人id
-     */
-    private String taskAssigneeId;
-
     @Override
     public int compareTo(AssociatedFileModel o) {
         return this.startTimes.compareTo(o.getStartTimes());
