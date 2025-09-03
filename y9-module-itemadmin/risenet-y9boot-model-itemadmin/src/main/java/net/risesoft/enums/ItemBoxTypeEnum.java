@@ -26,6 +26,8 @@ public enum ItemBoxTypeEnum {
     DONE("done", "办结"),
     /** 办结 */
     ALL("all", "所有件"),
+    /** 综合查询 */
+    QUERY("query", "综合查询"),
     /** 回收站 */
     RECYCLE("recycle", "回收站"),
     /** 回收站 */

@@ -17,14 +17,15 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
-import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoneService;
 import net.risesoft.service.HandleFormDataService;
+import net.risesoft.service.UtilService;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @RequiredArgsConstructor
@@ -39,9 +40,9 @@ public class DoneServiceImpl implements DoneService {
 
     private final OfficeDoneInfoApi officeDoneInfoApi;
 
-    private final OfficeFollowApi officeFollowApi;
-
     private final HandleFormDataService handleFormDataService;
+
+    private final UtilService utilService;
 
     @Override
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
@@ -73,25 +74,17 @@ public class DoneServiceImpl implements DoneService {
                 String number = officeDoneInfo.getDocNumber();
                 String completer =
                     StringUtils.isBlank(officeDoneInfo.getUserComplete()) ? "无" : officeDoneInfo.getUserComplete();
-                mapTemp.put("itemName", itemName);
                 mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-                mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
+                mapTemp.put("processInstanceId", processInstanceId);
                 mapTemp.put("processDefinitionId", processDefinitionId);
-                mapTemp.put("processDefinitionKey", processDefinitionKey);
                 mapTemp.put("startTime", startTime);
                 mapTemp.put("endTime", endTime);
-                mapTemp.put("taskDefinitionKey", "");
                 mapTemp.put("user4Complete", completer);
-                mapTemp.put("itemId", itemId);
-                mapTemp.put("level", level);
-                mapTemp.put("number", number);
-                int chaosongNum =
-                    chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
-                mapTemp.put("chaosongNum", chaosongNum);
-                mapTemp.put("processInstanceId", processInstanceId);
-                int countFollow =
-                    officeFollowApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
-                mapTemp.put("follow", countFollow > 0);
+                mapTemp.put("itemName", itemName);
+                mapTemp.put(SysVariables.LEVEL, level);
+                mapTemp.put(SysVariables.NUMBER, number);
+                mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
+                utilService.setPublicData(mapTemp, processInstanceId, List.of(), ItemBoxTypeEnum.DONE);
             } catch (Exception e) {
                 LOGGER.error("获取列表失败{}", processInstanceId, e);
             }
@@ -108,7 +101,7 @@ public class DoneServiceImpl implements DoneService {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-        String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
+        String itemName = item.getName();
         y9Page = officeDoneInfoApi.searchByUserId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
         List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
@@ -130,22 +123,17 @@ public class DoneServiceImpl implements DoneService {
                 String number = officeDoneInfoModel.getDocNumber();
                 String completer = StringUtils.isBlank(officeDoneInfoModel.getUserComplete()) ? "无"
                     : officeDoneInfoModel.getUserComplete();
-                mapTemp.put("itemName", itemName);
                 mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-                mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                 mapTemp.put("processInstanceId", processInstanceId);
                 mapTemp.put("processDefinitionId", processDefinitionId);
-                mapTemp.put("processDefinitionKey", processDefinitionKey);
                 mapTemp.put("startTime", startTime);
                 mapTemp.put("endTime", endTime);
-                mapTemp.put("taskDefinitionKey", "");
                 mapTemp.put("user4Complete", completer);
-                mapTemp.put("itemId", itemId);
-                mapTemp.put("level", level);
-                mapTemp.put("number", number);
-                int chaosongNum =
-                    chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, userId, processInstanceId).getData();
-                mapTemp.put("chaosongNum", chaosongNum);
+                mapTemp.put("itemName", itemName);
+                mapTemp.put(SysVariables.LEVEL, level);
+                mapTemp.put(SysVariables.NUMBER, number);
+                mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
+                utilService.setPublicData(mapTemp, processInstanceId, List.of(), ItemBoxTypeEnum.DONE);
             } catch (Exception e) {
                 LOGGER.error("获取列表失败", e);
             }
