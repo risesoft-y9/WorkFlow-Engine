@@ -61,7 +61,7 @@ public class MonitorServiceImpl implements MonitorService {
      */
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "";
+        String taskIds = "", assigneeNames = "";
         List<String> list = new ArrayList<>();
         int i = 0;
         if (!taskList.isEmpty()) {
@@ -70,13 +70,13 @@ public class MonitorServiceImpl implements MonitorService {
                     taskIds = task.getId();
                     String assignee = task.getAssignee();
                     if (StringUtils.isNotBlank(assignee)) {
-                        assigneeIds = assignee;
                         OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = personTemp.getName();
                             i += 1;
                         }
-                    } else {// 处理单实例未签收的当前办理人显示
+                    } else {
+                        // 处理单实例未签收的当前办理人显示
                         List<IdentityLinkModel> iList =
                             identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
                         if (!iList.isEmpty()) {
@@ -88,7 +88,6 @@ public class MonitorServiceImpl implements MonitorService {
                                         .getData();
                                 if (j < 5) {
                                     assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-                                    assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
                                 } else {
                                     assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
                                     break;
@@ -103,7 +102,6 @@ public class MonitorServiceImpl implements MonitorService {
                     if (i < 5) {
                         if (StringUtils.isNotBlank(assignee)) {
                             // 并行时，领导选取时存在顺序，因此这里也存在顺序
-                            assigneeIds = Y9Util.genCustomStr(assigneeIds, task.getAssignee(), SysVariables.COMMA);
                             OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                             if (personTemp != null) {
                                 // 并行时，领导选取时存在顺序，因此这里也存在顺序
@@ -129,7 +127,6 @@ public class MonitorServiceImpl implements MonitorService {
              */
         }
         list.add(taskIds);
-        list.add(assigneeIds);
         list.add(assigneeNames);
         return list;
     }
@@ -146,64 +143,62 @@ public class MonitorServiceImpl implements MonitorService {
             taskId = "";
         List<String> list = new ArrayList<>();
         int i = 0;
-        if (!taskList.isEmpty()) {
-            for (TaskModel task : taskList) {
-                if (StringUtils.isEmpty(taskIds)) {
-                    taskIds = task.getId();
-                    String assignee = task.getAssignee();
-                    if (StringUtils.isNotBlank(assignee)) {
-                        assigneeIds = assignee;
-                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                        if (personTemp != null) {
-                            assigneeNames = personTemp.getName();
-                        }
-                        i += 1;
-                        if (assignee.contains(userId)) {
-                            itembox = ItemBoxTypeEnum.TODO.getValue();
-                            taskId = task.getId();
-                        }
-                    } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList =
-                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
-                        if (!iList.isEmpty()) {
-                            int j = 0;
-                            for (IdentityLinkModel identityLink : iList) {
-                                String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser =
-                                    orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
-                                        .getData();
-                                if (j < 5) {
-                                    assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-                                    assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
-                                } else {
-                                    assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
-                                    break;
-                                }
-                                j++;
-                            }
-                        }
+        for (TaskModel task : taskList) {
+            if (StringUtils.isEmpty(taskIds)) {
+                taskIds = task.getId();
+                String assignee = task.getAssignee();
+                if (StringUtils.isNotBlank(assignee)) {
+                    assigneeIds = assignee;
+                    OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                    if (personTemp != null) {
+                        assigneeNames = personTemp.getName();
                     }
-                } else {
-                    String assignee = task.getAssignee();
-                    if (StringUtils.isNotBlank(assignee)) {
-                        if (i < 5) {
-                            assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                            if (personTemp != null) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
+                    i += 1;
+                    if (assignee.contains(userId)) {
+                        itembox = ItemBoxTypeEnum.TODO.getValue();
+                        taskId = task.getId();
+                    }
+                } else {// 处理单实例未签收的当前办理人显示
+                    List<IdentityLinkModel> iList =
+                        identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                    if (!iList.isEmpty()) {
+                        int j = 0;
+                        for (IdentityLinkModel identityLink : iList) {
+                            String assigneeId = identityLink.getUserId();
+                            OrgUnit ownerUser =
+                                orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
+                                    .getData();
+                            if (j < 5) {
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
+                                assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
+                            } else {
+                                assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
+                                break;
                             }
-                            i += 1;
-                        }
-                        if (assignee.contains(userId)) {
-                            itembox = ItemBoxTypeEnum.TODO.getValue();
-                            taskId = task.getId();
+                            j++;
                         }
                     }
                 }
+            } else {
+                String assignee = task.getAssignee();
+                if (StringUtils.isNotBlank(assignee)) {
+                    if (i < 5) {
+                        assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        if (personTemp != null) {
+                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
+                        }
+                        i += 1;
+                    }
+                    if (assignee.contains(userId)) {
+                        itembox = ItemBoxTypeEnum.TODO.getValue();
+                        taskId = task.getId();
+                    }
+                }
             }
-            if (taskList.size() > 5) {
-                assigneeNames += "等，共" + taskList.size() + "人";
-            }
+        }
+        if (taskList.size() > 5) {
+            assigneeNames += "等，共" + taskList.size() + "人";
         }
         list.add(taskIds);
         list.add(assigneeIds);
@@ -227,35 +222,35 @@ public class MonitorServiceImpl implements MonitorService {
             ObjectMapper objectMapper = new ObjectMapper();
             List<OfficeDoneInfoModel> hpiModelList = objectMapper.convertValue(list, new TypeReference<>() {});
             Map<String, Object> mapTemp;
-            String processInstanceId;
-            for (OfficeDoneInfoModel hpim : hpiModelList) {
+            String processInstanceId, processDefinitionId, processSerialNumber, documentTitle, level, number;
+            for (OfficeDoneInfoModel model : hpiModelList) {
                 mapTemp = new HashMap<>(16);
-                processInstanceId = hpim.getProcessInstanceId();
+                processInstanceId = model.getProcessInstanceId();
                 try {
-                    String processDefinitionId = hpim.getProcessDefinitionId();
-                    String startTime = hpim.getStartTime().substring(0, 16);
-                    String processSerialNumber = hpim.getProcessSerialNumber();
-                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                    String level = hpim.getUrgency();
-                    String number = hpim.getDocNumber();
-                    String completer = hpim.getUserComplete();
-                    mapTemp.put("itemName", hpim.getItemName());
+                    processDefinitionId = model.getProcessDefinitionId();
+                    String startTime = model.getStartTime().substring(0, 16);
+                    processSerialNumber = model.getProcessSerialNumber();
+                    documentTitle = StringUtils.isBlank(model.getTitle()) ? "无标题" : model.getTitle();
+                    level = model.getUrgency();
+                    number = model.getDocNumber();
+                    String completer = model.getUserComplete();
+                    mapTemp.put("itemName", model.getItemName());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                    mapTemp.put("processDefinitionKey", model.getProcessDefinitionKey());
                     mapTemp.put("startTime", startTime);
                     mapTemp.put("endTime",
-                        StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                        StringUtils.isBlank(model.getEndTime()) ? "--" : model.getEndTime().substring(0, 16));
                     mapTemp.put("taskDefinitionKey", "");
                     mapTemp.put("taskAssignee", completer);
-                    mapTemp.put("creatUserName", hpim.getCreatUserName());
-                    mapTemp.put("itemId", hpim.getItemId());
-                    mapTemp.put("level", level == null ? "" : level);
-                    mapTemp.put("number", number == null ? "" : number);
+                    mapTemp.put("creatUserName", model.getCreatUserName());
+                    mapTemp.put("itemId", model.getItemId());
+                    mapTemp.put("level", StringUtils.defaultString(level));
+                    mapTemp.put("number", StringUtils.defaultString(number));
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
-                    if (StringUtils.isBlank(hpim.getEndTime())) {
+                    if (StringUtils.isBlank(model.getEndTime())) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
@@ -386,20 +381,20 @@ public class MonitorServiceImpl implements MonitorService {
             Map<String, Object> mapTemp;
             String processInstanceId;
             // ProcessParamModel processParam = null;
-            for (OfficeDoneInfoModel hpim : hpiList) {
+            for (OfficeDoneInfoModel model : hpiList) {
                 mapTemp = new HashMap<>(16);
-                processInstanceId = hpim.getProcessInstanceId();
+                processInstanceId = model.getProcessInstanceId();
                 try {
-                    String processDefinitionId = hpim.getProcessDefinitionId();
+                    String processDefinitionId = model.getProcessDefinitionId();
                     mapTemp.put("itemName", itemName);
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("processDefinitionKey", processDefinitionKey);
                     // processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
-                    String processSerialNumber = hpim.getProcessSerialNumber();
-                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                    String level = hpim.getUrgency();
-                    String number = hpim.getDocNumber();
-                    mapTemp.put("creatUserName", hpim.getCreatUserName());
+                    String processSerialNumber = model.getProcessSerialNumber();
+                    String documentTitle = StringUtils.isBlank(model.getTitle()) ? "无标题" : model.getTitle();
+                    String level = model.getUrgency();
+                    String number = model.getDocNumber();
+                    mapTemp.put("creatUserName", model.getCreatUserName());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put("processDefinitionId", processDefinitionId);
                     mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
@@ -411,7 +406,7 @@ public class MonitorServiceImpl implements MonitorService {
 
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                    String taskIds = listTemp.get(0), assigneeNames = listTemp.get(2);
+                    String taskIds = listTemp.get(0), assigneeNames = listTemp.get(1);
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                     mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                     mapTemp.put("taskName", taskList.get(0).getName());
@@ -421,7 +416,7 @@ public class MonitorServiceImpl implements MonitorService {
                     mapTemp.put("taskAssignee", assigneeNames);
                     mapTemp.put("isReminder", isReminder);
                 } catch (Exception e) {
-                    LOGGER.error("获取列表失败" + processInstanceId, e);
+                    LOGGER.error("获取列表失败{}", processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
