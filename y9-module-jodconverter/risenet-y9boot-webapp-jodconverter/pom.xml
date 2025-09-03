@@ -50,21 +50,7 @@
 
     <repositories>
         <repository>
-            <id>jai-codec-maven</id>
-            <url>https://maven.geotoolkit.org/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>jai-core-maven</id>
-            <url>https://repository.jboss.org/nexus/content/repositories/thirdparty-releases/</url>
-            <snapshots>
-                <enabled>false</enabled>
-            </snapshots>
-        </repository>
-        <repository>
-            <id>aspose-maven-repository</id>
+            <id>aspose</id>
             <url>https://repository.aspose.com/repo</url>
             <snapshots>
                 <enabled>false</enabled>
