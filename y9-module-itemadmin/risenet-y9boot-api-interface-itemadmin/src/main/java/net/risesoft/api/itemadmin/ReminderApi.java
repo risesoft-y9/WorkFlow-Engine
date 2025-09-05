@@ -88,21 +88,6 @@ public interface ReminderApi {
         @RequestParam("page") int page, @RequestParam("rows") int rows);
 
     /**
-     * 查看催办信息
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param taskId 任务id
-     * @param type 类型，todo（待办），doing（在办），done（办结）
-     * @return {@code Y9Result<ReminderModel>} 通用请求返回对象 -data 是催办信息
-     * @since 9.6.6
-     */
-    @GetMapping("/getReminder")
-    Y9Result<ReminderModel> getReminder(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("taskId") String taskId,
-        @RequestParam("type") String type);
-
-    /**
      * 保存催办信息
      *
      * @param tenantId 租户id
@@ -128,7 +113,6 @@ public interface ReminderApi {
      * @param processInstanceId 流程实例id
      * @param documentTitle 文档标题
      * @param taskId 任务id
-     * @param taskAssigneeId 任务受让人Id
      * @param msgContent 催办信息
      * @return {@code Y9Result<String>} 通用请求返回对象
      * @since 9.6.6
@@ -138,7 +122,7 @@ public interface ReminderApi {
         @RequestParam("userId") String userId, @RequestParam("remType") String remType,
         @RequestParam("procInstId") String procInstId, @RequestParam("processInstanceId") String processInstanceId,
         @RequestParam("documentTitle") String documentTitle, @RequestParam("taskId") String taskId,
-        @RequestParam("taskAssigneeId") String taskAssigneeId, @RequestParam("msgContent") String msgContent);
+        @RequestParam("msgContent") String msgContent);
 
     /**
      * 设置为查看状态

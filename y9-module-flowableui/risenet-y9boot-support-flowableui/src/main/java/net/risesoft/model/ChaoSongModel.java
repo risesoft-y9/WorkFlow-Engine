@@ -147,8 +147,6 @@ public class ChaoSongModel implements Serializable {
 
     private String taskId;
 
-    private String taskAssigneeId;
-
     private String taskAssignee;
 
     private String url;

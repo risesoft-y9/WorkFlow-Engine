@@ -12,8 +12,6 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.google.common.collect.Lists;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -399,10 +397,10 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 保存附件排序
      * 
-     * @param tenantId
-     * @param userId
-     * @param idAndTabIndexs
-     * @return
+     * @param tenantId 租户id
+     * @param userId 人员id
+     * @param idAndTabIndexs idAndTabIndexs
+     * @return Y9Result<Object>
      */
     @Override
     public Y9Result<Object> saveOrder(@RequestParam String tenantId, @RequestParam String userId,
@@ -410,14 +408,9 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<String> list = Lists.newArrayList(idAndTabIndexs);
-        try {
-            for (String str : idAndTabIndexs) {
-                String[] arr = str.split(SysVariables.COLON);
-                attachmentRepository.updateAttachmentOrder(Integer.parseInt(arr[1]), arr[0]);
-            }
-        } catch (Exception e) {
-            LOGGER.error("saveOrder error", e);
+        for (String str : idAndTabIndexs) {
+            String[] arr = str.split(SysVariables.COLON);
+            attachmentRepository.updateAttachmentOrder(Integer.parseInt(arr[1]), arr[0]);
         }
         return Y9Result.success();
     }

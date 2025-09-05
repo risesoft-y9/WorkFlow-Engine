@@ -204,7 +204,6 @@ public class InitTableDataService {
             item.setSysLevel(SYSTEMCNNAME);
             item.setSystemName(SYSTEMNAME);
             item.setCreateDate(new Date());
-            item.setTodoTaskUrlPrefix(y9Config.getCommon().getFlowableBaseUrl());
             itemRepository.save(item);
         }
     }

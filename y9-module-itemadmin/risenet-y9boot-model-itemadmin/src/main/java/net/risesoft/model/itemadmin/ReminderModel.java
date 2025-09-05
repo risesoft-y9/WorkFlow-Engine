@@ -20,12 +20,6 @@ public class ReminderModel implements Serializable {
     /** 租户Id */
     private String tenantId;
 
-    /** 催办发送类型 */
-    private String reminderSendType;
-
-    /** 提醒类型 */
-    private Integer reminderMakeTyle;
-
     /** 流程实例id */
     private String procInstId;
 

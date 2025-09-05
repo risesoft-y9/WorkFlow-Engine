@@ -51,13 +51,55 @@
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="FF_APPROVEITEM" columnName="ISONLINE"/>
         </preConditions>
-        <dropColumn tableName="FF_PROCESS_PARAM">
+        <dropColumn tableName="FF_APPROVEITEM">
             <column name="ISONLINE"/>
             <column name="ACCOUNTABILITY"/>
             <column name="LEGALLIMIT"/>
             <column name="EXPIRED"/>
             <column name="DEPARTMENTID"/>
             <column name="DEPARTMENTNAME"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet id="1704700546666-4" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_ITEM_SETTING"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项配置信息表" tableName="FF_ITEM_SETTING">
+            <column name="SETTING_KEY" remarks="配置key" type="VARCHAR(255)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="SETTING_VALUE" remarks="配置value" type="VARCHAR(255)"/>
+            <column name="CREATE_TIME" remarks="创建时间" type="datetime"/>
+            <column name="UPDATE_TIME" remarks="更新时间" type="datetime"/>
+        </createTable>
+    </changeSet>
+
+    <changeSet id="1704700546666-5" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_APPROVEITEM" columnName="TODOTASKURLPREFIX"/>
+        </preConditions>
+        <dropColumn tableName="FF_APPROVEITEM">
+            <column name="TODOTASKURLPREFIX"/>
+        </dropColumn>
+    </changeSet>
+    <changeSet id="1704700546666-6" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_PROCESS_PARAM" columnName="TODOTASKURLPREFIX"/>
+        </preConditions>
+        <dropColumn tableName="FF_PROCESS_PARAM">
+            <column name="TODOTASKURLPREFIX"/>
+        </dropColumn>
+    </changeSet>
+    <changeSet id="1704700546666-7" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_REMINDER" columnName="REMINDER_SEND_TYPE"/>
+        </preConditions>
+        <dropColumn tableName="FF_REMINDER">
+            <column name="REMINDER_SEND_TYPE"/>
+            <column name="REMINDER_MAKE_TYPE"/>
         </dropColumn>
     </changeSet>
 </databaseChangeLog>

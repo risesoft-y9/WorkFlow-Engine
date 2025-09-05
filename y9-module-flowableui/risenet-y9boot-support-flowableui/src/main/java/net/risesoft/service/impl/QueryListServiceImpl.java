@@ -61,71 +61,64 @@ public class QueryListServiceImpl implements QueryListService {
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
-            taskId = "";
+        String taskIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
         List<String> list = new ArrayList<>();
         int i = 0;
-        if (!taskList.isEmpty()) {
-            for (TaskModel task : taskList) {
-                if (StringUtils.isEmpty(taskIds)) {
-                    taskIds = task.getId();
-                    String assignee = task.getAssignee();
-                    if (StringUtils.isNotBlank(assignee)) {
-                        assigneeIds = assignee;
-                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                        if (personTemp != null) {
-                            assigneeNames = personTemp.getName();
-                        }
-                        i += 1;
-                        if (assignee.contains(userId)) {
-                            itembox = ItemBoxTypeEnum.TODO.getValue();
-                            taskId = task.getId();
-                        }
-                    } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList =
-                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
-                        if (!iList.isEmpty()) {
-                            int j = 0;
-                            for (IdentityLinkModel identityLink : iList) {
-                                String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser =
-                                    orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
-                                        .getData();
-                                if (j < 5) {
-                                    assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-                                    assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
-                                } else {
-                                    assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
-                                    break;
-                                }
-                                j++;
-                            }
-                        }
+        for (TaskModel task : taskList) {
+            if (StringUtils.isEmpty(taskIds)) {
+                taskIds = task.getId();
+                String assignee = task.getAssignee();
+                if (StringUtils.isNotBlank(assignee)) {
+                    OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                    if (personTemp != null) {
+                        assigneeNames = personTemp.getName();
                     }
-                } else {
-                    String assignee = task.getAssignee();
-                    if (StringUtils.isNotBlank(assignee)) {
-                        if (i < 5) {
-                            assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                            if (personTemp != null) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
+                    i += 1;
+                    if (assignee.contains(userId)) {
+                        itembox = ItemBoxTypeEnum.TODO.getValue();
+                        taskId = task.getId();
+                    }
+                } else {// 处理单实例未签收的当前办理人显示
+                    List<IdentityLinkModel> iList =
+                        identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                    if (!iList.isEmpty()) {
+                        int j = 0;
+                        for (IdentityLinkModel identityLink : iList) {
+                            String assigneeId = identityLink.getUserId();
+                            OrgUnit ownerUser =
+                                orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
+                                    .getData();
+                            if (j < 5) {
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
+                            } else {
+                                assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
+                                break;
                             }
-                            i += 1;
-                        }
-                        if (assignee.contains(userId)) {
-                            itembox = ItemBoxTypeEnum.TODO.getValue();
-                            taskId = task.getId();
+                            j++;
                         }
                     }
                 }
-            }
-            if (taskList.size() > 5) {
-                assigneeNames += "等，共" + taskList.size() + "人";
+            } else {
+                String assignee = task.getAssignee();
+                if (StringUtils.isNotBlank(assignee)) {
+                    if (i < 5) {
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        if (personTemp != null) {
+                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
+                        }
+                        i += 1;
+                    }
+                    if (assignee.contains(userId)) {
+                        itembox = ItemBoxTypeEnum.TODO.getValue();
+                        taskId = task.getId();
+                    }
+                }
             }
         }
+        if (taskList.size() > 5) {
+            assigneeNames += "等，共" + taskList.size() + "人";
+        }
         list.add(taskIds);
-        list.add(assigneeIds);
         list.add(assigneeNames);
         list.add(itembox);
         list.add(taskId);
@@ -170,21 +163,19 @@ public class QueryListServiceImpl implements QueryListService {
                     mapTemp.put("itemId", actRuDetail.getItemId());
                     String level = officeDoneInfo.getUrgency();
                     String number = officeDoneInfo.getDocNumber();
-                    mapTemp.put("level", level == null ? "" : level);
-                    mapTemp.put("number", number == null ? "" : number);
+                    mapTemp.put("level", StringUtils.defaultString(level));
+                    mapTemp.put("number", StringUtils.defaultString(number));
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(1);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                         mapTemp.put("taskId",
-                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                        mapTemp.put("taskAssigneeId", assigneeIds);
+                            listTemp.get(2).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(3));
                         mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put("itembox", listTemp.get(3));
+                        mapTemp.put("itembox", listTemp.get(2));
                     }
                     mapTemp.put("processInstanceId", processInstanceId);
                     int countFollow =

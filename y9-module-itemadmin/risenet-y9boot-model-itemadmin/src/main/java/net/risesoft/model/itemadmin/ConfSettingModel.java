@@ -1,0 +1,34 @@
+package net.risesoft.model.itemadmin;
+
+import java.io.Serializable;
+
+import lombok.Data;
+
+/**
+ * 系统配置
+ *
+ * @author qinman
+ * @date 2025/08/28
+ */
+@Data
+public class ConfSettingModel implements Serializable {
+
+    private static final long serialVersionUID = -6731490905478236345L;
+    /** 从统一待办打开办件的前缀地址 */
+    private String todoTaskUrlPrefix;
+
+    /** 意见排序方式，设置为true,则按照岗位的orderedPath排序 */
+    private boolean opinionOrderBy;
+
+    /** 统一待办开关 */
+    private boolean todoSwitch;
+
+    /** 消息提醒开关 */
+    private boolean msgSwitch;
+
+    /** 短信通知开关 **/
+    private boolean smsSwitch;
+
+    /** 意见常用语 **/
+    private String defaultOpinion;
+}

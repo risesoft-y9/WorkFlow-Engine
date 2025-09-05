@@ -5,6 +5,7 @@ import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -37,7 +38,7 @@ public class TabEntityServiceImpl implements TabEntityService {
 
     @Override
     public List<TabEntity> listAll() {
-        return tabEntityRepository.findAll();
+        return tabEntityRepository.findAll(Sort.by(Sort.Direction.ASC, "createTime"));
     }
 
     @Override
@@ -56,29 +57,28 @@ public class TabEntityServiceImpl implements TabEntityService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = tabEntity.getId();
         if (StringUtils.isNotEmpty(id)) {
-            TabEntity oldte = this.getById(id);
-            if (null != oldte) {
-                oldte.setName(tabEntity.getName());
-                oldte.setUrl(tabEntity.getUrl());
-                oldte.setUpdateTime(sdf.format(new Date()));
-                oldte.setUserId(userId);
-                oldte.setUserName(userName);
-
-                return tabEntityRepository.save(oldte);
+            TabEntity oldTabEntity = this.getById(id);
+            if (null != oldTabEntity) {
+                oldTabEntity.setName(tabEntity.getName());
+                oldTabEntity.setUrl(tabEntity.getUrl());
+                oldTabEntity.setUpdateTime(sdf.format(new Date()));
+                oldTabEntity.setUserId(userId);
+                oldTabEntity.setUserName(userName);
+                return tabEntityRepository.save(oldTabEntity);
             } else {
                 return tabEntityRepository.save(tabEntity);
             }
         }
 
-        TabEntity newte = new TabEntity();
-        newte.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newte.setName(tabEntity.getName());
-        newte.setUrl(tabEntity.getUrl());
-        newte.setUserId(userId);
-        newte.setUserName(userName);
-        newte.setTenantId(tenantId);
-        newte.setCreateTime(sdf.format(new Date()));
-        newte.setUpdateTime(sdf.format(new Date()));
-        return tabEntityRepository.save(newte);
+        TabEntity newTabEntity = new TabEntity();
+        newTabEntity.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newTabEntity.setName(tabEntity.getName());
+        newTabEntity.setUrl(tabEntity.getUrl());
+        newTabEntity.setUserId(userId);
+        newTabEntity.setUserName(userName);
+        newTabEntity.setTenantId(tenantId);
+        newTabEntity.setCreateTime(sdf.format(new Date()));
+        newTabEntity.setUpdateTime(sdf.format(new Date()));
+        return tabEntityRepository.save(newTabEntity);
     }
 }

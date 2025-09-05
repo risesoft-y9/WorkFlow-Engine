@@ -170,7 +170,6 @@ public class OpinionApiImpl implements OpinionApi {
      * @param opinionFrameMark 意见框标识
      * @param itemId 事项id
      * @param taskDefinitionKey 任务定义key
-     * @param orderByUser 是否根据岗位排序 1：按岗位排序号排序
      * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
      * @since 9.6.6
      */
@@ -178,12 +177,12 @@ public class OpinionApiImpl implements OpinionApi {
     public Y9Result<List<OpinionListModel>> personCommentList(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processSerialNumber, String taskId,
         @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId,
-        String taskDefinitionKey, String orderByUser) {
+        String taskDefinitionKey) {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         List<OpinionListModel> opinionList = opinionService.listPersonComment(processSerialNumber, taskId, itembox,
-            opinionFrameMark, itemId, taskDefinitionKey, orderByUser);
+            opinionFrameMark, itemId, taskDefinitionKey);
         return Y9Result.success(opinionList);
     }
 
@@ -198,20 +197,18 @@ public class OpinionApiImpl implements OpinionApi {
      * @param opinionFrameMark 意见框标识
      * @param itemId 事项id
      * @param taskDefinitionKey 任务定义key
-     * @param orderByUser 是否根据岗位排序 1：按岗位排序号排序
      * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
      * @since 9.6.6
      */
     @Override
     public Y9Result<OpinionFrameModel> personCommentListNew(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, String taskId, @RequestParam String itembox,
-        @RequestParam String opinionFrameMark, @RequestParam String itemId, String taskDefinitionKey,
-        String orderByUser) {
+        @RequestParam String opinionFrameMark, @RequestParam String itemId, String taskDefinitionKey) {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setPerson(person);
         OpinionFrameModel opinionFrameModel = opinionService.listPersonCommentNew(processSerialNumber, taskId, itembox,
-            opinionFrameMark, itemId, taskDefinitionKey, orderByUser);
+            opinionFrameMark, itemId, taskDefinitionKey);
         return Y9Result.success(opinionFrameModel);
     }
 

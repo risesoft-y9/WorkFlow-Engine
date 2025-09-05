@@ -57,71 +57,64 @@ public class SearchServiceImpl implements SearchService {
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPositionId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
-            taskId = "";
+        String taskIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
         List<String> list = new ArrayList<>();
         int i = 0;
-        if (!taskList.isEmpty()) {
-            for (TaskModel task : taskList) {
-                if (StringUtils.isEmpty(taskIds)) {
-                    taskIds = task.getId();
-                    String assignee = task.getAssignee();
-                    if (StringUtils.isNotBlank(assignee)) {
-                        assigneeIds = assignee;
-                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                        if (personTemp != null) {
-                            assigneeNames = personTemp.getName();
-                        }
-                        i += 1;
-                        if (assignee.contains(userId)) {
-                            itembox = ItemBoxTypeEnum.TODO.getValue();
-                            taskId = task.getId();
-                        }
-                    } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList =
-                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
-                        if (!iList.isEmpty()) {
-                            int j = 0;
-                            for (IdentityLinkModel identityLink : iList) {
-                                String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser =
-                                    orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
-                                        .getData();
-                                if (j < 5) {
-                                    assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-                                    assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
-                                } else {
-                                    assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
-                                    break;
-                                }
-                                j++;
-                            }
-                        }
+        for (TaskModel task : taskList) {
+            if (StringUtils.isEmpty(taskIds)) {
+                taskIds = task.getId();
+                String assignee = task.getAssignee();
+                if (StringUtils.isNotBlank(assignee)) {
+                    OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                    if (personTemp != null) {
+                        assigneeNames = personTemp.getName();
                     }
-                } else {
-                    String assignee = task.getAssignee();
-                    if (StringUtils.isNotBlank(assignee)) {
-                        if (i < 5) {
-                            assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                            if (personTemp != null) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
+                    i += 1;
+                    if (assignee.contains(userId)) {
+                        itembox = ItemBoxTypeEnum.TODO.getValue();
+                        taskId = task.getId();
+                    }
+                } else {// 处理单实例未签收的当前办理人显示
+                    List<IdentityLinkModel> iList =
+                        identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+                    if (!iList.isEmpty()) {
+                        int j = 0;
+                        for (IdentityLinkModel identityLink : iList) {
+                            String assigneeId = identityLink.getUserId();
+                            OrgUnit ownerUser =
+                                orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
+                                    .getData();
+                            if (j < 5) {
+                                assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
+                            } else {
+                                assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
+                                break;
                             }
-                            i += 1;
-                        }
-                        if (assignee.contains(userId)) {
-                            itembox = ItemBoxTypeEnum.TODO.getValue();
-                            taskId = task.getId();
+                            j++;
                         }
                     }
                 }
-            }
-            if (taskList.size() > 5) {
-                assigneeNames += "等，共" + taskList.size() + "人";
+            } else {
+                String assignee = task.getAssignee();
+                if (StringUtils.isNotBlank(assignee)) {
+                    if (i < 5) {
+                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                        if (personTemp != null) {
+                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
+                        }
+                        i += 1;
+                    }
+                    if (assignee.contains(userId)) {
+                        itembox = ItemBoxTypeEnum.TODO.getValue();
+                        taskId = task.getId();
+                    }
+                }
             }
         }
+        if (taskList.size() > 5) {
+            assigneeNames += "等，共" + taskList.size() + "人";
+        }
         list.add(taskIds);
-        list.add(assigneeIds);
         list.add(assigneeNames);
         list.add(itembox);
         list.add(taskId);
@@ -143,51 +136,49 @@ public class SearchServiceImpl implements SearchService {
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             String processInstanceId;
-            for (OfficeDoneInfoModel hpim : hpiList) {
+            for (OfficeDoneInfoModel model : hpiList) {
                 mapTemp = new HashMap<>(16);
-                processInstanceId = hpim.getProcessInstanceId();
+                processInstanceId = model.getProcessInstanceId();
                 try {
-                    String processDefinitionId = hpim.getProcessDefinitionId();
-                    String startTime = hpim.getStartTime().substring(0, 16);
-                    String processSerialNumber = hpim.getProcessSerialNumber();
-                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                    String level = hpim.getUrgency();
-                    String number = hpim.getDocNumber();
-                    String completer = hpim.getUserComplete();
-                    mapTemp.put("itemName", hpim.getItemName());
+                    String processDefinitionId = model.getProcessDefinitionId();
+                    String startTime = model.getStartTime().substring(0, 16);
+                    String processSerialNumber = model.getProcessSerialNumber();
+                    String documentTitle = StringUtils.isBlank(model.getTitle()) ? "无标题" : model.getTitle();
+                    String level = model.getUrgency();
+                    String number = model.getDocNumber();
+                    String completer = model.getUserComplete();
+                    mapTemp.put("itemName", model.getItemName());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                     mapTemp.put("processInstanceId", processInstanceId);
                     mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
+                    mapTemp.put("processDefinitionKey", model.getProcessDefinitionKey());
                     mapTemp.put("startTime", startTime);
                     mapTemp.put("endTime",
-                        StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                        StringUtils.isBlank(model.getEndTime()) ? "--" : model.getEndTime().substring(0, 16));
                     mapTemp.put("taskDefinitionKey", "");
                     mapTemp.put("taskAssignee", completer);
-                    mapTemp.put("creatUserName", hpim.getCreatUserName());
-                    mapTemp.put("itemId", hpim.getItemId());
+                    mapTemp.put("creatUserName", model.getCreatUserName());
+                    mapTemp.put("itemId", model.getItemId());
                     mapTemp.put("level", level == null ? "" : level);
                     mapTemp.put("number", number == null ? "" : number);
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
-                    if (StringUtils.isBlank(hpim.getEndTime())) {
+                    if (StringUtils.isBlank(model.getEndTime())) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                            assigneeNames = listTemp.get(2);
+                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(1);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                         mapTemp.put("taskId",
-                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                        mapTemp.put("taskAssigneeId", assigneeIds);
+                            listTemp.get(2).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(3));
                         mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put("itembox", listTemp.get(3));
+                        mapTemp.put("itembox", listTemp.get(2));
                     }
                     int countFollow =
                         officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
-                    LOGGER.error("获取任务信息失败" + processInstanceId, e);
+                    LOGGER.error("获取任务信息失败{}", processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;
