@@ -8,6 +8,8 @@ import org.apache.poi.EncryptedDocumentException;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
 import net.risesoft.model.ReturnResponse;
@@ -19,6 +21,7 @@ import net.risesoft.utils.WebUtils;
 /**
  * Content :处理pdf文件
  */
+@Slf4j
 @Service
 public class PdfFilePreviewImpl implements FilePreview {
 
@@ -62,14 +65,16 @@ public class PdfFilePreviewImpl implements FilePreview {
                     if (throwable instanceof IOException || throwable instanceof EncryptedDocumentException) {
                         if (e.getMessage().toLowerCase().contains(PDF_PASSWORD_MSG)) {
                             model.addAttribute("needFilePassword", true);
+                            LOGGER.error("pdf转图片异常，请联系管理员，needFilePassword");
                             return EXEL_FILE_PREVIEW_PAGE;
                         }
                     }
                 }
-                return otherFilePreview.notSupportedFile(model, fileAttribute, "pdf转图片异常，请联系管理员");
+                return otherFilePreview.notSupportedFile(model, fileAttribute, "pdf转图片异常，请联系管理员。");
             }
             if (imageUrls == null || imageUrls.size() < 1) {
-                return otherFilePreview.notSupportedFile(model, fileAttribute, "pdf转图片异常，请联系管理员");
+                LOGGER.error("pdf转图片异常，请联系管理员，imageUrls为空");
+                return otherFilePreview.notSupportedFile(model, fileAttribute, "pdf转图片异常，请联系管理员！");
             }
             model.addAttribute("imgUrls", imageUrls);
             model.addAttribute("currentUrl", imageUrls.get(0));
