@@ -2,17 +2,17 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Lob;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Lob;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -25,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_SMS_DETAIL")
-@org.hibernate.annotations.Table(comment = "短信详情", appliesTo = "FF_SMS_DETAIL")
+@Comment("短信详情")
 public class SmsDetail implements Serializable {
 
     private static final long serialVersionUID = 8594290794735213206L;
@@ -49,13 +49,13 @@ public class SmsDetail implements Serializable {
     @Column(name = "POSITIONNAME", length = 50, nullable = false)
     private String positionName;
 
-    @Type(type = "numeric_boolean")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @ColumnDefault("0")
     @Comment("是否发送短信")
     @Column(name = "SEND", length = 50)
     private boolean send;
 
-    @Type(type = "numeric_boolean")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @ColumnDefault("0")
     @Comment("是否署名")
     @Column(name = "SIGN", length = 50)

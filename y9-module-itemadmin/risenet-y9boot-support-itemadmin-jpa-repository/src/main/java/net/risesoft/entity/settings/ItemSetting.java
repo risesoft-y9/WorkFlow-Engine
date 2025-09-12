@@ -1,9 +1,9 @@
 package net.risesoft.entity.settings;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.DynamicUpdate;
@@ -22,7 +22,7 @@ import net.risesoft.base.BaseEntity;
 @Entity
 @Table(name = "FF_ITEM_SETTING")
 @DynamicUpdate
-@org.hibernate.annotations.Table(comment = "事项管理系统配置", appliesTo = "FF_ITEM_SETTING")
+@Comment("事项管理系统配置")
 @NoArgsConstructor
 @Data
 public class ItemSetting extends BaseEntity {
