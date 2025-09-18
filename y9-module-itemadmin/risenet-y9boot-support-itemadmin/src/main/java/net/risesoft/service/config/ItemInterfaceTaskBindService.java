@@ -10,20 +10,20 @@ public interface ItemInterfaceTaskBindService {
     /**
      * 复制绑定
      *
-     * @param itemId
-     * @param interfaceId
-     * @param processDefinitionId
+     * @param itemId 事项id
+     * @param interfaceId 接口id
+     * @param processDefinitionId 流程定义id
      */
     void copyBind(String itemId, String interfaceId, String processDefinitionId);
 
     /**
      * 保存绑定
      *
-     * @param itemId
-     * @param interfaceId
-     * @param processDefinitionId
-     * @param elementKey
-     * @param condition
+     * @param itemId 事项id
+     * @param interfaceId 接口id
+     * @param processDefinitionId 流程定义id
+     * @param elementKey 元素key
+     * @param condition 条件
      */
     void saveBind(String itemId, String interfaceId, String processDefinitionId, String elementKey, String condition);
 }

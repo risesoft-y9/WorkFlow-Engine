@@ -12,26 +12,25 @@ import net.risesoft.entity.ItemMappingConf;
 public interface ItemMappingConfService {
 
     /**
-     * Description: 删除映射
+     * 删除映射
      *
-     * @param ids
+     * @param ids 唯一标识集合
      */
     void delItemMappingConf(String[] ids);
 
     /**
      * 获取映射字段列表
      *
-     * @param itemId
-     * @param mappingId
-     * @return
+     * @param itemId 事项id
+     * @param mappingId 映射id
+     * @return List<ItemMappingConf>
      */
     List<ItemMappingConf> listByItemIdAndMappingId(String itemId, String mappingId);
 
     /**
      * 保存映射信息
      *
-     * @param itemMappingConf
-     * @return
+     * @param itemMappingConf 映射信息
      */
     void saveItemMappingConf(ItemMappingConf itemMappingConf);
 }
