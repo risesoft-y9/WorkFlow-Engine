@@ -14,46 +14,46 @@ public interface ItemOrganWordRoleService {
     /**
      * 根据唯一标示删除
      *
-     * @param id
+     * @param id 唯一标识
      */
     void deleteById(String id);
 
     /**
-     * Description: 根据事项和编号框绑定的唯一标示查找绑定的角色
+     * 根据事项和编号框绑定的唯一标示查找绑定的角色
      *
-     * @param itemOrganWordBindId
-     * @return
+     * @param itemOrganWordBindId 绑定唯一标识
+     * @return List<ItemOrganWordRole>
      */
     List<ItemOrganWordRole> listByItemOrganWordBindId(String itemOrganWordBindId);
 
     /**
-     * Description: 根据事项和编号框绑定的唯一标示查找绑定的角色（包含角色名称）
+     * 根据事项和编号框绑定的唯一标示查找绑定的角色（包含角色名称）
      *
-     * @param itemOrganWordBindId
-     * @return
+     * @param itemOrganWordBindId 绑定唯一标识
+     * @return List<ItemOrganWordRole>
      */
     List<ItemOrganWordRole> listByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId);
 
     /**
-     * Description: 删除多个
+     * 删除多个
      *
-     * @param ids
+     * @param ids 绑定唯一标识
      */
     void remove(String[] ids);
 
     /**
      * 删除绑定对应的角色
      *
-     * @param itemOrganWordBindId
+     * @param itemOrganWordBindId 绑定唯一标识
      */
     void removeByItemOrganWordBindId(String itemOrganWordBindId);
 
     /**
-     * Description: 保存或者更新
+     * 保存或者更新
      *
-     * @param itemOrganWordBindId
-     * @param roleId
-     * @return
+     * @param itemOrganWordBindId 绑定唯一标识
+     * @param roleId 角色唯一标识
+     * @return ItemOrganWordRole
      */
     ItemOrganWordRole saveOrUpdate(String itemOrganWordBindId, String roleId);
 }
