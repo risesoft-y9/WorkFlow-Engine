@@ -14,14 +14,14 @@ public interface ItemOpinionFrameRoleService {
     /**
      * 根据唯一标示删除
      *
-     * @param id
+     * @param id 唯一标示
      */
     void deleteById(String id);
 
     /**
      * 根据事项和意见框绑定的唯一标示查找绑定的角色
      *
-     * @param itemOpinionFrameId
+     * @param itemOpinionFrameId 事项和意见框绑定的唯一标示
      * @return
      */
     List<ItemOpinionFrameRole> listByItemOpinionFrameId(String itemOpinionFrameId);
@@ -29,32 +29,32 @@ public interface ItemOpinionFrameRoleService {
     /**
      * 根据事项和意见框绑定的唯一标示查找绑定的角色（包含角色名称）
      *
-     * @param itemOpinionFrameId
-     * @return
+     * @param itemOpinionFrameId 事项和意见框绑定的唯一标示
+     * @return List<ItemOpinionFrameRole>
      */
     List<ItemOpinionFrameRole> listByItemOpinionFrameIdContainRoleName(String itemOpinionFrameId);
 
     /**
-     * Description: 删除多个
+     * 删除多个
      *
-     * @param ids
+     * @param ids 唯一标识集合
      */
     void remove(String[] ids);
 
     /**
      *
-     * Description: 删除绑定对应的角色
+     * 删除绑定对应的角色
      *
-     * @param itemOpinionFrameId
+     * @param itemOpinionFrameId 事项和意见框绑定的唯一标示
      */
     void removeByItemOpinionFrameId(String itemOpinionFrameId);
 
     /**
      * 保存或者更新
      *
-     * @param itemOpinionFrameId
-     * @param roleId
-     * @return
+     * @param itemOpinionFrameId 事项和意见框绑定的唯一标示
+     * @param roleId 角色id
+     * @return ItemOpinionFrameRole
      */
     ItemOpinionFrameRole saveOrUpdate(String itemOpinionFrameId, String roleId);
 }

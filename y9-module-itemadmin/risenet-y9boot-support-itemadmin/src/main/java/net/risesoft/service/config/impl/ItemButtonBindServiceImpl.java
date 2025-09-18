@@ -62,7 +62,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
     @Override
     @Transactional
-    public ItemButtonBind bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey,
+    public void bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey,
         ItemButtonTypeEnum buttonType) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -87,7 +87,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
             bib.setTabIndex(index + 1);
         }
         buttonItemBindRepository.save(bib);
-        return bib;
     }
 
     @Override

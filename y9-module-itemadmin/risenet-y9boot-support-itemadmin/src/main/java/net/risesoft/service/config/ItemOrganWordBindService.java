@@ -12,73 +12,72 @@ import net.risesoft.entity.organword.ItemOrganWordBind;
 public interface ItemOrganWordBindService {
 
     /**
-     * Description: 复制当前事项绑定的流程定义上一个版本流程定义对应的编号绑定
+     * 复制当前事项绑定的流程定义上一个版本流程定义对应的编号绑定
      *
-     * @param itemId
-     * @param processDefinitionId
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
      */
     void copyBind(String itemId, String processDefinitionId);
 
     /**
-     * Description: 复制编号绑定信息
+     * 复制编号绑定信息
      *
-     * @param itemId
-     * @param newItemId
-     * @param lastVersionPid
+     * @param itemId 事项id
+     * @param newItemId 新事项id
+     * @param lastVersionPid 上一个版本流程定义id
      */
     void copyBindInfo(String itemId, String newItemId, String lastVersionPid);
 
     /**
-     * Description: 删除编号绑定信息
+     * 删除编号绑定信息
      *
-     * @param itemId
+     * @param itemId 事项id
      */
     void deleteBindInfo(String itemId);
 
     /**
      * 根据id查询一条数据
      *
-     * @param id
-     * @return
+     * @param id 唯一标识
+     * @return ItemOrganWordBind
      */
     ItemOrganWordBind findById(String id);
 
     /**
-     * Description: 查询一条数据
+     * 查询一条数据
      *
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @param custom
-     * @return
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务定义key
+     * @param custom 自定义字段
+     * @return ItemOrganWordBind
      */
     ItemOrganWordBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(String itemId,
         String processDefinitionId, String taskDefKey, String custom);
 
     /**
-     * Description:
      *
-     * @param itemId
-     * @return
+     * @param itemId 事项id
+     * @return List<ItemOrganWordBind>
      */
     List<ItemOrganWordBind> listByItemId(String itemId);
 
     /**
-     * Description: 根据事项Id、流程定义Id查找
+     * 根据事项Id、流程定义Id查找
      *
-     * @param itemId
-     * @param processDefinitionId
-     * @return
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @return List<ItemOrganWordBind>
      */
     List<ItemOrganWordBind> listByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId);
 
     /**
-     * Description: 根据事项Id、流程定义Id、任务定义key查找
+     * 根据事项Id、流程定义Id、任务定义key查找
      *
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务定义key
+     * @return List<ItemOrganWordBind>
      */
     List<ItemOrganWordBind> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
         String taskDefKey);
@@ -86,40 +85,40 @@ public interface ItemOrganWordBindService {
     /**
      * 移除单个
      *
-     * @param id
+     * @param id 唯一标识
      */
     void remove(String id);
 
     /**
      * 批量移除
      *
-     * @param ids
+     * @param ids 唯一标识
      */
     void remove(String[] ids);
 
     /**
      * 保存一条数据
      *
-     * @param taskRoleBind
+     * @param taskRoleBind 实体对象
      */
     void save(ItemOrganWordBind taskRoleBind);
 
     /**
-     * Description: 保存
+     * 保存
      *
-     * @param id
-     * @param name
-     * @param custom
+     * @param id 唯一标识
+     * @param name 名称
+     * @param custom 自定义字段
      */
     void save(String id, String name, String custom);
 
     /**
-     * Description: 保存数据
+     * 保存数据
      *
-     * @param custom
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
+     * @param custom 自定义字段
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefKey 任务定义key
      */
     void save(String custom, String itemId, String processDefinitionId, String taskDefKey);
 }

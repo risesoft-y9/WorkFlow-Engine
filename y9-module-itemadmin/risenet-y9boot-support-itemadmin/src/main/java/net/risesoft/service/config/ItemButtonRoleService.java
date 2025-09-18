@@ -12,40 +12,39 @@ import net.risesoft.entity.button.ItemButtonRole;
 public interface ItemButtonRoleService {
 
     /**
-     * Description:
-     *
-     * @param itemButtonId
+     * 
+     * @param itemButtonId 绑定唯一标识
      */
     void deleteByItemButtonId(String itemButtonId);
 
     /**
-     * Description:
+     * 
      *
-     * @param itemButtonId
-     * @return
+     * @param itemButtonId 绑定唯一标识
+     * @return List<ItemButtonRole>
      */
     List<ItemButtonRole> listByItemButtonId(String itemButtonId);
 
     /**
-     * Description:
+     * 
      *
-     * @param itemButtonId
-     * @return
+     * @param itemButtonId 绑定唯一标识
+     * @return List<ItemButtonRole>
      */
     List<ItemButtonRole> listByItemButtonIdContainRoleName(String itemButtonId);
 
     /**
-     * Description: 删除多个
+     * 删除多个
      *
-     * @param ids
+     * @param ids 唯一标识集合
      */
     void remove(String[] ids);
 
     /**
-     * Description:
+     * 
      *
-     * @param itemButtonId
-     * @param roleId
+     * @param itemButtonId 绑定唯一标识
+     * @param roleId 角色唯一标识
      */
     void saveOrUpdate(String itemButtonId, String roleId);
 }
