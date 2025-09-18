@@ -14,49 +14,47 @@ import net.risesoft.enums.ItemPermissionEnum;
 public interface ItemPermissionService {
 
     /**
-     * Description:
-     *
-     * @param itemId
-     * @param processDefinitionId
+     * 
+     * @param itemId 事项Id
+     * @param processDefinitionId 流程定义Id
      */
     void copyPerm(String itemId, String processDefinitionId);
 
     /**
      * 根据唯一标示查找
      *
-     * @param id
+     * @param id 唯一标识
      */
     void delete(String id);
 
     /**
      * 根据事项Id删除所有授权
      *
-     * @param itemId
+     * @param itemId 事项Id
      */
     void deleteBindInfo(String itemId);
 
     /**
      * 根据事项Id,流程定义Id,任务节点Key,角色Id查找授权
      *
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskdefKey
-     * @param roleId
-     * @return
+     * @param itemId 事项Id
+     * @param processDefinitionId 流程定义Id
+     * @param taskdefKey 任务节点Key
+     * @param roleId 角色Id
+     * @return ItemPermission
      */
     ItemPermission findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(String itemId, String processDefinitionId,
         String taskdefKey, String roleId);
 
     /**
-     *
-     * Description: 判断当前taskDefKey所拥有的权限角色主体是否包含人员、部门、角色、岗位
-     *
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @param processInstanceId
-     * @param taskId
-     * @return
+     * TODO 判断当前taskDefKey所拥有的权限角色主体是否包含人员、部门、角色、岗位
+     * 
+     * @param itemId 事项Id
+     * @param processDefinitionId 流程定义Id
+     * @param taskDefKey 任务节点Key
+     * @param processInstanceId 流程实例Id
+     * @param taskId 任务Id
+     * @return Map<String, Object>
      */
     Map<String, Object> getTabMap(String itemId, String processDefinitionId, String taskDefKey,
         String processInstanceId, String taskId);
@@ -64,10 +62,10 @@ public interface ItemPermissionService {
     /**
      * 根据事项Id，流程定义Id,和任务节点Key查找授权
      *
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
+     * @param itemId 事项Id
+     * @param processDefinitionId 流程定义Id
+     * @param taskDefKey 任务节点Key
+     * @return List<ItemPermission>
      */
     List<ItemPermission> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
         String taskDefKey);
@@ -75,32 +73,32 @@ public interface ItemPermissionService {
     /**
      * 根据事项Id，流程定义Id,和任务节点Key查找授权,如果任务节点key没有绑定权限，则查找流程节点绑定的权限
      *
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskDefKey
-     * @return
+     * @param itemId 事项Id
+     * @param processDefinitionId 流程定义Id
+     * @param taskDefKey 任务节点Key
+     * @return List<ItemPermission>
      */
     List<ItemPermission> listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(String itemId, String processDefinitionId,
         String taskDefKey);
 
     /**
-     * Description: 删除当前事项绑定的流程对应的最新流程定义的所有权限
+     * 删除当前事项绑定的流程对应的最新流程定义的所有权限
      *
-     * @param itemId
-     * @param processDefinitionId
+     * @param itemId 事项Id
+     * @param processDefinitionId 流程定义Id
      */
     void removePerm(String itemId, String processDefinitionId);
 
     /**
      *
-     * Description: 将值设置到ItemPermission中
+     * 将值设置到ItemPermission中
      *
-     * @param itemId
-     * @param processDefinitionId
-     * @param taskdefKey
-     * @param roleId
-     * @param roleType
-     * @return
+     * @param itemId 事项Id
+     * @param processDefinitionId 流程定义Id
+     * @param taskdefKey 任务节点Key
+     * @param roleId 角色Id
+     * @param roleType 角色类型
+     * @return ItemPermission
      */
     ItemPermission save(String itemId, String processDefinitionId, String taskdefKey, String roleId,
         ItemPermissionEnum roleType);
