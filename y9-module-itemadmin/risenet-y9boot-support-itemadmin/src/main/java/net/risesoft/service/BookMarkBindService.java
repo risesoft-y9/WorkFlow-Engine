@@ -13,41 +13,36 @@ public interface BookMarkBindService {
 
     /**
      * 
-     *
-     * @param wordTemplateId
-     * @param bookMarkName
+     * @param wordTemplateId 正文模版id
+     * @param bookMarkName 书签名称
      */
     void deleteBind(String wordTemplateId, String bookMarkName);
 
     /**
-     * 
      *
-     * @param id
-     * @return
+     * @param id 唯一标识
+     * @return BookMarkBind
      */
     BookMarkBind findById(String id);
 
     /**
      * 
-     *
-     * @param wordTemplateId
-     * @param bookMarkName
-     * @return
+     * @param wordTemplateId 正文模版id
+     * @param bookMarkName 书签名称
+     * @return BookMarkBind
      */
     BookMarkBind findByWordTemplateIdAndBookMarkName(String wordTemplateId, String bookMarkName);
 
     /**
      * 
-     *
-     * @param wordTemplateId
-     * @return
+     * @param wordTemplateId 正文模版id
+     * @return List<BookMarkBind>
      */
     List<BookMarkBind> listByWordTemplateId(String wordTemplateId);
 
     /**
      * 
-     *
-     * @param bookMarkBind
+     * @param bookMarkBind 书签绑定信息
      */
     void saveOrUpdate(BookMarkBind bookMarkBind);
 }

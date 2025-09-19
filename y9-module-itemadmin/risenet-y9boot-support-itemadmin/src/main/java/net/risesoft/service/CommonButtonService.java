@@ -14,38 +14,38 @@ public interface CommonButtonService {
     /**
      * 新增的时候，判断传进来的customId是否已经存在
      *
-     * @param customId
-     * @return
+     * @param customId 自定义id
+     * @return boolean
      */
     boolean checkCustomId(String customId);
 
     /**
      * 根据唯一标示查找
      *
-     * @param id
-     * @return
+     * @param id 唯一标识
+     * @return CommonButton
      */
     CommonButton getById(String id);
 
     /**
-     * 查找所有
+     * 查找所有按钮
      *
-     * @return
+     * @return List<CommonButton>
      */
     List<CommonButton> listAll();
 
     /**
      * 根据传进来的Id集合删除
      *
-     * @param commonButtonIds
+     * @param commonButtonIds Id集合
      */
     void removeCommonButtons(String[] commonButtonIds);
 
     /**
      * 保存或者更新
      *
-     * @param commonButton
-     * @return
+     * @param commonButton 按钮实体
+     * @return CommonButton
      */
     CommonButton saveOrUpdate(CommonButton commonButton);
 }

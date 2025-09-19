@@ -69,7 +69,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
 
     @Transactional
     @Override
-    public boolean deleteAllAssociatedFile(String processSerialNumber, String delIds) {
+    public void deleteAllAssociatedFile(String processSerialNumber, String delIds) {
         AssociatedFile associatedFile = associatedFileRepository.findByProcessSerialNumber(processSerialNumber);
         if (associatedFile != null && associatedFile.getId() != null) {
             String newAssociatedId = getAssociatedId(delIds, associatedFile);
@@ -77,12 +77,11 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             associatedFile.setAssociatedId(newAssociatedId);
             associatedFileRepository.save(associatedFile);
         }
-        return true;
     }
 
     @Transactional
     @Override
-    public boolean deleteAssociatedFile(String processSerialNumber, String delId) {
+    public void deleteAssociatedFile(String processSerialNumber, String delId) {
         AssociatedFile associatedFile = associatedFileRepository.findByProcessSerialNumber(processSerialNumber);
         if (associatedFile != null && associatedFile.getId() != null) {
             String associatedId = associatedFile.getAssociatedId();
@@ -97,7 +96,6 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             associatedFile.setAssociatedId(newAssociatedId);
             associatedFileRepository.save(associatedFile);
         }
-        return true;
     }
 
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
@@ -258,7 +256,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
 
     @Transactional
     @Override
-    public boolean saveAssociatedFile(String processSerialNumber, String processInstanceIds) {
+    public void saveAssociatedFile(String processSerialNumber, String processInstanceIds) {
         AssociatedFile associatedFile = associatedFileRepository.findByProcessSerialNumber(processSerialNumber);
         if (associatedFile == null || associatedFile.getId() == null) {
             associatedFile = new AssociatedFile();
@@ -289,7 +287,6 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             associatedFile.setAssociatedId(newAssociatedId);
         }
         associatedFileRepository.save(associatedFile);
-        return true;
     }
 
 }
