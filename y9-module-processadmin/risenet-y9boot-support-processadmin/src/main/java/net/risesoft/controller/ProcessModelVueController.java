@@ -186,8 +186,10 @@ public class ProcessModelVueController {
             mapTemp.setKey(model.getKey());
             mapTemp.setName(model.getName());
             mapTemp.setVersion(0);
-            processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey())
-                .latestVersion().singleResult();
+            processDefinition = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionKey(model.getKey())
+                .latestVersion()
+                .singleResult();
             if (null != processDefinition) {
                 mapTemp.setVersion(processDefinition.getVersion());
             }
@@ -304,6 +306,7 @@ public class ProcessModelVueController {
     public Y9Result<String> saveModelXml(MultipartFile file, ModelRepresentation model) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
+            LOGGER.error("租户id:{}", tenantId);
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
             InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
