@@ -14,43 +14,40 @@ public interface AssociatedFileService {
     /**
      * 关联流程计数
      *
-     * @param processSerialNumber
-     * @return
+     * @param processSerialNumber 流程序列号
+     * @return int
      */
     int countAssociatedFile(String processSerialNumber);
 
     /**
      * 删除多个关联流程
      *
-     * @param processSerialNumber
-     * @param delIds
-     * @return
+     * @param processSerialNumber 流程序列号
+     * @param delIds 删除的关联流程ID
      */
-    boolean deleteAllAssociatedFile(String processSerialNumber, String delIds);
+    void deleteAllAssociatedFile(String processSerialNumber, String delIds);
 
     /**
      * 删除关联流程
      *
-     * @param processSerialNumber
-     * @param delId
-     * @return
+     * @param processSerialNumber 流程序列号
+     * @param delId 删除的关联流程ID
      */
-    boolean deleteAssociatedFile(String processSerialNumber, String delId);
+    void deleteAssociatedFile(String processSerialNumber, String delId);
 
     /**
      * 获取关联流程列表，包括未办结件
      *
-     * @param processSerialNumber
-     * @return
+     * @param processSerialNumber 流程序列号
+     * @return List<AssociatedFileModel>
      */
     List<AssociatedFileModel> listAssociatedFileAll(String processSerialNumber);
 
     /**
      * 保存关联流程
      *
-     * @param processSerialNumber
-     * @param processInstanceIds
-     * @return
+     * @param processSerialNumber 流程序列号
+     * @param processInstanceIds 流程实例ID
      */
-    boolean saveAssociatedFile(String processSerialNumber, String processInstanceIds);
+    void saveAssociatedFile(String processSerialNumber, String processInstanceIds);
 }

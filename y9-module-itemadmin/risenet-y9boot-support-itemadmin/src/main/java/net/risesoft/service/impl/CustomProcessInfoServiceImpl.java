@@ -91,7 +91,7 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
 
     @Override
     @Transactional
-    public boolean updateCurrentTask(String processSerialNumber) {
+    public void updateCurrentTask(String processSerialNumber) {
         List<CustomProcessInfo> taskList =
             customProcessInfoRepository.findByProcessSerialNumberOrderByTabIndexAsc(processSerialNumber);
         boolean isSet = false;
@@ -110,7 +110,6 @@ public class CustomProcessInfoServiceImpl implements CustomProcessInfoService {
                 customProcessInfoRepository.save(info);
             }
         }
-        return true;
     }
 
 }
