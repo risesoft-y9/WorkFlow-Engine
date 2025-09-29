@@ -1,4 +1,5 @@
 import Request from '@/api/lib/request';
+import qs from 'qs';
 
 var flowableRequest = new Request();
 
@@ -157,11 +158,14 @@ export function viewConf(itemId, viewType) {
         viewType
     };
     return flowableRequest({
-        url: '/vue/workList/viewConf',
+        url: '/vue/viewConf/list',
         method: 'get',
         params: params
     });
 }
+
+
+
 
 /**
  *
@@ -176,17 +180,30 @@ export function viewConf(itemId, viewType) {
  */
 export function getQueryList(itemId, state, createDate, tableName, searchMapStr, page, rows) {
     const params = {
-        itemId,
-        state,
-        createDate,
-        tableName,
-        searchMapStr,
-        page,
-        rows
+        itemId: itemId,
+        state: state,
+        createDate: createDate,
+        tableName: tableName,
+        // searchMapStr: searchMapStr,
+        page: page,
+        rows: rows
     };
+    const data = qs.stringify(params);
+    let formData = new FormData();
+    formData.append("itemId", itemId);
+    formData.append("state", state);
+    formData.append("createDate", createDate);
+    formData.append("tableName", tableName);
+    formData.append("searchMapStr", searchMapStr);
+    formData.append("page", page);
+    formData.append("rows", rows);
     return flowableRequest({
-        url: '/vue/workList/queryList',
-        method: 'get',
-        params: params
+        url: "/vue/workList/queryList",
+        method: 'post',
+        cType: false,
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        data: formData
     });
 }
