@@ -98,8 +98,8 @@
                 </div>
 
                 <!-- <div :class="opinion_content" style="height: 94%;overflow-y: auto;">
-                    <opinion ref="opinionRef" @childFunction="initOpinion" />
-                </div> -->
+            <opinion ref="opinionRef" @childFunction="initOpinion" />
+        </div> -->
             </el-card>
         </div>
 
@@ -206,7 +206,7 @@
 
 <script lang="ts" setup>
     import ProcessStatus from '@/components/Handling/ProcessStatus.vue';
-    import { computed, inject, onMounted, reactive } from 'vue';
+    import { computed, h, inject, onMounted, reactive } from 'vue';
     import { ElMessage, ElMessageBox } from 'element-plus';
     import myFormRef from '@/views/workForm/newForm.vue';
     import fileList from '@/views/file/fileList.vue';
@@ -220,7 +220,6 @@
     import multiInstance from '@/views/multiInstance/list.vue';
     import customProcessCom from '@/views/workForm/customProcess.vue';
     import flowChart from '@/views/flowchart/index.vue';
-    import { addData, getTodoData } from '@/api/flowableUI/index';
     import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
     import { openDraft } from '@/api/flowableUI/draft';
     import { buttonApi, forwarding } from '@/api/flowableUI/buttonOpt';
@@ -232,6 +231,14 @@
     import { useSettingStore } from '@/store/modules/settingStore';
     import { chaoSongSave } from '@/api/flowableUI/chaoSong';
     import { useI18n } from 'vue-i18n';
+    import {
+        addData,
+        getDoingData,
+        getDoneData,
+        getMonitorDoingData,
+        getMonitorDoneData,
+        getTodoData
+    } from '@/api/flowableUI/index';
 
     const { t } = useI18n();
     const settingStore = useSettingStore();
@@ -435,8 +442,12 @@
         loading.value = false;
         if (res.success) {
             addInitData.value = res.data;
-            menuMap.value = addInitData.value.menuMap.reverse(); //将menuMap.reverse()倒序
-            sendMap.value = addInitData.value.sendMap;
+            menuMap.value = addInitData.value.buttonList.filter((item) => {
+                return item.buttonType !== undefined && item.buttonType !== null && item.buttonType === 1;
+            });
+            sendMap.value = addInitData.value.buttonList.filter((item) => {
+                return item.buttonType !== undefined && item.buttonType !== null && item.buttonType === 2;
+            });
             formList.value = addInitData.value.formList;
             showOtherFlag.value = addInitData.value.showOtherFlag;
             processSerialNumber.value = addInitData.value.processSerialNumber;
@@ -461,6 +472,10 @@
             dataList.value.push({ label: item.formName, name: 'y9form' + item.formId });
         }
         activeName.value = 'y9form' + formList.value[0].formId;
+        if (showOtherFlag.value.includes('showDocumentTab')) {
+            let name = docNum.value == 0 ? '正文' : '正文(有)';
+            dataList.value.push({ label: name, name: 'word' });
+        }
         if (showOtherFlag.value.includes('showFileTab')) {
             dataList.value.push({ label: fileLabel.value, name: 'attach' });
         }
@@ -474,12 +489,19 @@
         }
 
         operationBtnList.value = [];
+        operationBtnList.value.push({
+            name: '返回',
+            icon: 'ri-arrow-go-back-fill',
+            onClick: () => {
+                backToList();
+            }
+        });
         for (let item of menuMap.value) {
-            if (listType.value == 'draftRecycle' && item.menuKey != '03') {
-                //回收站只显示返回按钮
+            //回收站只显示返回按钮
+            if (listType.value == 'draftRecycle') {
                 continue;
             }
-            if (item.menuKey.indexOf('follow') > -1 && follow.value) {
+            if (item.key.indexOf('follow') > -1 && follow.value) {
                 //关注按钮：取消关注
                 operationBtnList.value.push({
                     name: '取消关注',
@@ -488,10 +510,10 @@
                         delFollow();
                     }
                 });
-            } else if (!customItem.value && item.menuKey == '02') {
+            } else if (!customItem.value && item.key == '02') {
                 //发送按钮
                 operationBtnList.value.push({
-                    name: item.menuName,
+                    name: item.name,
                     icon: 'ri-send-plane-fill',
                     render: () => {
                         let sbnArr: any = [];
@@ -501,17 +523,17 @@
                                     'span',
                                     {
                                         onclick: () => {
-                                            sendEvent(item.sendKey);
+                                            sendEvent(item.key);
                                         }
                                     },
-                                    t(item.sendName)
+                                    t(item.name)
                                 )
                             );
                         });
                         return h('div', {}, sbnArr);
                     }
                 });
-            } else if (item.menuKey.indexOf('follow') > -1 && !follow.value) {
+            } else if (item.key.indexOf('follow') > -1 && !follow.value) {
                 //关注按钮：点击关注
                 operationBtnList.value.push({
                     name: '关注',
@@ -520,10 +542,10 @@
                         saveFollow();
                     }
                 });
-            } else if (item.menuKey == '16') {
+            } else if (item.key == '16') {
                 //重定位按钮
                 operationBtnList.value.push({
-                    name: item.menuName,
+                    name: item.name,
                     icon: 'ri-gps-line',
                     render: () => {
                         let rArr: any = [];
@@ -533,129 +555,126 @@
                                     'span',
                                     {
                                         onclick: () => {
-                                            repositionEvent(ritem.repositionKey);
+                                            repositionEvent(ritem.key);
                                         }
                                     },
-                                    t(ritem.repositionName)
+                                    t(ritem.name)
                                 )
                             );
                         });
                         return h('div', {}, rArr);
                     }
                 });
-            } else if (item.menuKey == '12') {
+            } else if (item.key == '12') {
                 //办结按钮
                 operationBtnList.value.push({
-                    name: item.menuName,
+                    name: item.name,
                     icon: 'ri-radio-button-line',
                     onClick: () => {
-                        buttonEvent(item.menuKey);
+                        buttonEvent(item.key);
                     }
                 });
-            } else if (item.menuKey == '20') {
+            } else if (item.key == '20') {
                 //恢复待办按钮
                 if (listType.value.indexOf('monitor') == -1 || settings.huifudaiban) {
                     operationBtnList.value.push({
-                        name: item.menuName,
+                        name: item.name,
                         icon: 'ri-device-recover-line',
                         onClick: () => {
-                            buttonEvent(item.menuKey);
+                            buttonEvent(item.key);
                         }
                     });
                 }
-            } else if (item.menuKey == '18') {
+            } else if (item.key == '18') {
                 //抄送按钮
                 operationBtnList.value.push({
-                    name: item.menuName,
+                    name: item.name,
                     icon: 'ri-file-copy-2-line',
                     onClick: () => {
-                        buttonEvent(item.menuKey);
+                        buttonEvent(item.key);
                     }
                 });
-            } else if (item.menuKey == '17') {
+            } else if (item.key == '17') {
                 //打印按钮
                 if (itembox.value != 'add') {
                     //新建不显示打印按钮
                     operationBtnList.value.push({
-                        name: item.menuName,
+                        name: item.name,
                         icon: 'ri-printer-line',
                         onClick: () => {
-                            buttonEvent(item.menuKey);
+                            buttonEvent(item.key);
                         }
                     });
                 }
             } else if (
-                item.menuKey != '02' &&
-                item.menuKey != '17' &&
-                item.menuKey != '18' &&
-                item.menuKey != '12' &&
-                item.menuKey != '16' &&
-                item.menuKey != '20' &&
-                item.menuKey.indexOf('follow') == -1
+                item.key != '02' &&
+                item.key != '17' &&
+                item.key != '18' &&
+                item.key != '12' &&
+                item.key != '16' &&
+                item.key != '20' &&
+                item.key.indexOf('follow') == -1
             ) {
                 //其他按钮
                 let iconName = 'ri-mouse-line';
-                if (item.menuKey == '01') {
+                if (item.key == '01') {
                     //保存
                     iconName = 'ri-save-line';
-                } else if (item.menuKey == '03') {
-                    //返回
-                    iconName = 'ri-arrow-go-back-fill';
-                } else if (item.menuKey == '04') {
+                } else if (item.key == '04') {
                     //退回
                     iconName = 'ri-reply-line';
-                } else if (item.menuKey == '05') {
+                } else if (item.key == '05') {
                     //委托
                     iconName = 'ri-hand-heart-line';
-                } else if (item.menuKey == '06') {
+                } else if (item.key == '06') {
                     //协商
                     iconName = 'ri-wechat-2-line';
-                } else if (item.menuKey == '07') {
+                } else if (item.key == '07') {
                     //完成
                     iconName = 'ri-check-line';
-                } else if (item.menuKey == '08') {
+                } else if (item.key == '08') {
                     //送下一人
                     iconName = 'ri-user-shared-2-line';
-                } else if (item.menuKey == '09') {
+                } else if (item.key == '09') {
                     //办理完成
                     iconName = 'ri-check-line';
-                } else if (item.menuKey == '10') {
+                } else if (item.key == '10') {
                     //签收
                     iconName = 'ri-mail-check-line';
-                } else if (item.menuKey == '11') {
+                } else if (item.key == '11') {
                     //撤销签收
                     iconName = 'ri-mail-close-line';
-                } else if (item.menuKey == '13') {
+                } else if (item.key == '13') {
                     //收回
                     iconName = 'ri-folder-received-line';
-                } else if (item.menuKey == '14') {
+                } else if (item.key == '14') {
                     //拒签
                     iconName = 'ri-mail-forbid-line';
-                } else if (item.menuKey == '15') {
+                } else if (item.key == '15') {
                     //特殊办结
                     iconName = 'ri-radio-button-line';
-                } else if (item.menuKey == '19') {
+                } else if (item.key == '19') {
                     //加减签
                     iconName = 'ri-user-add-line';
-                } else if (item.menuKey == 'common_fasongren') {
+                } else if (item.key == 'common_fasongren') {
                     //返回发送人
                     iconName = 'ri-arrow-left-line';
-                } else if (item.menuKey == '21') {
+                } else if (item.key == '21') {
                     //提交
                     iconName = 'ri-check-line';
                 }
 
                 operationBtnList.value.push({
-                    name: item.menuName,
+                    name: item.name,
                     icon: iconName,
                     onClick: () => {
-                        buttonEvent(item.menuKey);
+                        buttonEvent(item.key);
                     }
                 });
             } else if (customItem.value) {
                 //流程定制按钮
                 operationBtnList.value.push({
-                    name: item.menuName,
+                    name: item.name,
                     icon: 'ri-node-tree',
                     onClick: () => {
                         customProcess();
@@ -673,7 +692,7 @@
             let index = 0;
             for (let item of rows) {
                 index++;
-                let obj = {};
+                let obj = {} as any;
                 obj.content = item.name;
                 if (item.assignee.indexOf('（') != -1) {
                     let nameArr = [];
@@ -736,8 +755,12 @@
             flowableStore.$patch({
                 customItem: customItem.value
             });
-            menuMap.value = draftData.menuMap.reverse(); //将menuMap.reverse()倒序
-            sendMap.value = draftData.sendMap;
+            menuMap.value = draftData.buttonList.filter((item) => {
+                return item.buttonType !== undefined && item.buttonType !== null && item.buttonType === 1;
+            });
+            sendMap.value = draftData.buttonList.filter((item) => {
+                return item.buttonType !== undefined && item.buttonType !== null && item.buttonType === 2;
+            });
             formList.value = draftData.formList;
             formId.value = draftData.formList[0].formId;
             showOtherFlag.value = draftData.showOtherFlag;
@@ -765,34 +788,52 @@
 
     async function getOpenTodoData() {
         //获取办件数据
+        //获取办件数据
         loading.value = true;
-        let res = await getTodoData(processInstanceId.value, taskId.value, itemId.value, itembox.value);
+        let res;
+        if (itembox.value === 'todo') {
+            res = await getTodoData(taskId.value);
+        } else if (itembox.value === 'doing') {
+            res = await getDoingData(processSerialNumber.value, processInstanceId.value);
+        } else if (itembox.value === 'done') {
+            res = await getDoneData(processSerialNumber.value, processInstanceId.value);
+        } else if (itembox.value === 'monitorDoing') {
+            res = await getMonitorDoingData(processSerialNumber.value, processInstanceId.value);
+        } else if (itembox.value === 'monitorDone') {
+            res = await getMonitorDoneData(processSerialNumber.value, processInstanceId.value);
+        }
         loading.value = false;
         if (res.success) {
-            let todoData = res.data;
-            menuMap.value = todoData.menuMap.reverse(); //将menuMap.reverse()倒序
-            sendMap.value = todoData.sendMap;
-            formList.value = todoData.formList;
-            formId.value = todoData.formList[0].formId;
-            showOtherFlag.value = todoData.showOtherFlag;
-            processInstanceId.value = todoData.processInstanceId;
-            follow.value = todoData.follow;
+            let resData = res.data;
+            menuMap.value = resData.buttonList.filter((item) => {
+                return item.buttonType !== undefined && item.buttonType !== null && item.buttonType === 1;
+            });
+            sendMap.value = resData.buttonList.filter((item) => {
+                return item.buttonType !== undefined && item.buttonType !== null && item.buttonType === 2;
+            });
+            repositionMap.value = resData.buttonList.filter((item) => {
+                return item.buttonType !== undefined && item.buttonType !== null && item.buttonType === 4;
+            });
+            formList.value = resData.formList;
+            formId.value = resData.formList[0].formId;
+            showOtherFlag.value = resData.showOtherFlag;
+            processInstanceId.value = resData.processInstanceId;
+            follow.value = resData.follow;
             fileLabel.value = '';
-            fileLabel.value = todoData.fileNum == 0 ? '附件' : '附件(' + todoData.fileNum + ')';
-            docNum.value = todoData.docNum;
+            fileLabel.value = resData.fileNum == 0 ? '附件' : '附件(' + resData.fileNum + ')';
+            docNum.value = resData.docNum;
             associatedFileLabel.value =
-                todoData.associatedFileNum == 0 ? '关联流程' : '关联流程(' + todoData.associatedFileNum + ')';
-            speakInfoLabel.value = todoData.speakInfoNum == 0 ? '沟通交流' : '沟通交流(' + todoData.speakInfoNum + ')';
-            printFormType.value = todoData.printFormType;
-            repositionMap.value = todoData.repositionMap;
+                resData.associatedFileNum == 0 ? '关联流程' : '关联流程(' + resData.associatedFileNum + ')';
+            speakInfoLabel.value = resData.speakInfoNum == 0 ? '沟通交流' : '沟通交流(' + resData.speakInfoNum + ')';
+            printFormType.value = resData.printFormType;
             //修改标题数据
             flowableStore.$patch({
-                documentTitle: todoData.title
+                documentTitle: resData.title
             });
-            multiInstanceType.value = todoData.multiInstance;
-            nextNode.value = todoData.nextNode;
-            doneManage.value = todoData.doneManage;
-            setBasicData(todoData);
+            multiInstanceType.value = resData.multiInstance;
+            nextNode.value = resData.nextNode;
+            doneManage.value = resData.doneManage;
+            setBasicData(resData);
             myForm.value.show(formId.value);
         }
     }
