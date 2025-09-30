@@ -410,8 +410,7 @@ public class MonitorServiceImpl implements MonitorService {
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                     mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                     mapTemp.put("taskName", taskList.get(0).getName());
-                    mapTemp.put("taskCreateTime",
-                        taskList.get(0).getCreateTime() == null ? "" : sdf.format(taskList.get(0).getCreateTime()));
+                    mapTemp.put("taskCreateTime", model.getStartTime().substring(0, 16));
                     mapTemp.put("taskId", taskIds);
                     mapTemp.put("taskAssignee", assigneeNames);
                     mapTemp.put("isReminder", isReminder);
