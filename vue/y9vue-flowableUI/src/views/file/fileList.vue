@@ -1,8 +1,8 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-01-29 18:33:52
- * @LastEditors: zhangchongjie
+ * @LastEditTime: 2025-09-30 10:53:09
+ * @LastEditors: mengjuhua
  * @Description:  附件列表
 -->
 <template>
@@ -45,8 +45,25 @@
                         :size="fontSizeObj.buttonSize"
                         :style="{ fontSize: fontSizeObj.baseFontSize }"
                         type="primary"
+                        plain
                         @click="delFile"
                         ><i class="ri-delete-bin-line"></i>{{ $t('删除') }}
+                    </el-button>
+                    <el-button
+                        :size="fontSizeObj.buttonSize"
+                        :style="{ fontSize: fontSizeObj.baseFontSize }"
+                        plain
+                        type="primary"
+                        @click="moveUp"
+                        ><i class="ri-arrow-up-line"></i>{{ $t('上移') }}
+                    </el-button>
+                    <el-button
+                        :size="fontSizeObj.buttonSize"
+                        :style="{ fontSize: fontSizeObj.baseFontSize }"
+                        plain
+                        type="primary"
+                        @click="moveDown"
+                        ><i class="ri-arrow-down-line"></i>{{ $t('下移') }}
                     </el-button>
                 </div>
                 <div
@@ -78,6 +95,7 @@
                     @select-all="handleSelectionChange"
                     @on-curr-page-change="onCurrPageChange"
                     @on-page-size-change="onPageSizeChange"
+                    @on-current-change="handleCurrentChange"
                 >
                     <template #name="{ row, column, index }">
                         <el-link
@@ -129,7 +147,7 @@
 <script lang="ts" setup>
     import { computed, defineProps, inject, onMounted, reactive, ref, toRefs } from 'vue';
     import { ElMessage, ElMessageBox } from 'element-plus';
-    import { delAttachment, getAttachmentList } from '@/api/flowableUI/attachment';
+    import { delAttachment, getAttachmentList, saveOrder } from '@/api/flowableUI/attachment';
     import settings from '@/settings';
     import y9_storage from '@/utils/storage';
     import { useSettingStore } from '@/store/modules/settingStore';
@@ -215,7 +233,8 @@
         loading: false,
         downloadUrl: '',
         downloadZipUrl: '',
-        downloadZipShow: false
+        downloadZipShow: false,
+        currentRow: []
     });
 
     let {
@@ -228,18 +247,19 @@
         upload,
         downloadUrl,
         downloadZipUrl,
-        downloadZipShow
+        downloadZipShow,
+        currentRow
     } = toRefs(data);
 
     onMounted(() => {
         y9UserInfo.value = y9_storage.getObjectItem('ssoUserInfo');
         downloadUrl.value =
             import.meta.env.VUE_APP_CONTEXT +
-            '/vue/attachment/attachmentDownload?access_token=' +
+            'vue/attachment/download?access_token=' +
             y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');
         downloadZipUrl.value =
             import.meta.env.VUE_APP_CONTEXT +
-            '/vue/attachment/packDownload?access_token=' +
+            'vue/attachment/packDownload?access_token=' +
             y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');
         if (
             props.basicData.itembox == 'add' ||
@@ -284,15 +304,10 @@
         getAttachmentList(props.basicData.processSerialNumber, page, rows).then((res) => {
             let fileList = res.rows;
             for (let i in fileList) {
+                fileList[i].downloadUrl =
+                    import.meta.env.VUE_APP_CONTEXT + 's/' + fileList[i].fileStoreId + '.' + fileList[i].fileType;
                 fileList[i].jodconverterURL = import.meta.env.VUE_APP_JODCONVERTERURL + fileList[i].downloadUrl;
-                let arr = fileList[i].downloadUrl.split('.');
-                let type = arr[arr.length - 1];
-                if (png.indexOf(type) > -1) {
-                    //图片使用外网地址，使用前端配置
-                    fileList[i].downloadUrl =
-                        import.meta.env.VUE_APP_CONTEXT + 's/' + fileList[i].fileStoreId + '.' + fileList[i].fileType;
-                    fileList[i].jodconverterURL = import.meta.env.VUE_APP_JODCONVERTERURL + fileList[i].downloadUrl;
-                }
+                fileList[i].uploadTime = fileList[i].uploadTime.substring(0, 16);
             }
             fileTableConfig.value.tableData = fileList;
             fileTableConfig.value.pageConfig.total = res.total;
@@ -305,7 +320,7 @@
     function download(row) {
         window.open(
             import.meta.env.VUE_APP_CONTEXT +
-                '/vue/attachment/attachmentDownload?id=' +
+                'vue/attachment/download?id=' +
                 row.id +
                 '&access_token=' +
                 y9_storage.getObjectItem(settings.siteTokenKey, 'access_token')
@@ -322,7 +337,7 @@
         };
         upload.value.url =
             import.meta.env.VUE_APP_CONTEXT +
-            '/vue/attachment/upload?access_token=' +
+            'vue/attachment/upload?access_token=' +
             y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');
         Object.assign(dialogConfig.value, {
             show: true,
@@ -336,7 +351,7 @@
         if (multipleSelection.value.length === 0) {
             ElMessage({ type: 'error', message: t('请选择附件'), offset: 65, appendTo: '.filecontainer' });
         } else {
-            let ids = [];
+            let ids: any = [];
             for (let item of multipleSelection.value) {
                 ids.push(item.id);
                 if (y9UserInfo.value.personId != item.personId) {
@@ -369,6 +384,101 @@
                     ElMessage({ type: 'info', message: t('已取消删除'), offset: 65, appendTo: '.filecontainer' });
                 });
         }
+    }
+
+    function handleCurrentChange(val) {
+        currentRow.value = val;
+    }
+
+    const moveUp = () => {
+        //上移
+        if (currentRow.value.length == 0) {
+            ElNotification({
+                title: '操作提示',
+                message: '请点击选中一条数据',
+                type: 'error',
+                duration: 2000,
+                offset: 80
+            });
+            return;
+        }
+
+        let index = 0;
+        for (let i = 0; i < fileTableConfig.value.tableData.length; i++) {
+            if (currentRow.value.id == fileTableConfig.value.tableData[i].id) {
+                index = i;
+                break;
+            }
+        }
+        if (index > 0) {
+            let upRow = fileTableConfig.value.tableData[index - 1];
+            let currRow = fileTableConfig.value.tableData[index];
+            let tabIndex = upRow.tabIndex;
+            upRow.tabIndex = currRow.tabIndex;
+            currRow.tabIndex = tabIndex;
+            fileTableConfig.value.tableData.splice(index - 1, 1);
+            fileTableConfig.value.tableData.splice(index, 0, upRow);
+            saveFileOrder();
+        } else {
+            ElNotification({
+                title: '操作提示',
+                message: '已经是第一条，不可上移',
+                type: 'error',
+                duration: 2000,
+                offset: 80
+            });
+        }
+    };
+
+    const moveDown = () => {
+        //下移
+        if (currentRow.value.length == 0) {
+            ElNotification({ title: '操作提示', message: '请选择数据', type: 'error', duration: 2000, offset: 80 });
+            return;
+        }
+
+        let index = 0;
+        for (let i = 0; i < fileTableConfig.value.tableData.length; i++) {
+            if (currentRow.value.id == fileTableConfig.value.tableData[i].id) {
+                index = i;
+                break;
+            }
+        }
+        if (index + 1 == fileTableConfig.value.tableData.length) {
+            ElNotification({
+                title: '操作提示',
+                message: '已经是最后一条，不可下移',
+                type: 'error',
+                duration: 2000,
+                offset: 80
+            });
+        } else {
+            let downRow = fileTableConfig.value.tableData[index + 1];
+            let currRow = fileTableConfig.value.tableData[index];
+            let tabIndex = downRow.tabIndex;
+            downRow.tabIndex = currRow.tabIndex;
+            currRow.tabIndex = tabIndex;
+            fileTableConfig.value.tableData.splice(index + 1, 1);
+            fileTableConfig.value.tableData.splice(index, 0, downRow);
+            saveFileOrder();
+        }
+    };
+
+    function saveFileOrder() {
+        let ids = [];
+        for (let item of fileTableConfig.value.tableData) {
+            ids.push(item.id + ':' + item.tabIndex);
+        }
+        //const loading = ElLoading.service({ lock: true, text: '正在处理中', background: 'rgba(0, 0, 0, 0.3)' });
+        saveOrder(ids.toString()).then((res) => {
+            //loading.close();
+            if (res.success) {
+                //ElNotification({ title: '操作提示', message: res.msg, type: 'success', duration: 2000, offset: 80 });
+                //getViewConfigList();
+            } else {
+                ElNotification({ title: '操作提示', message: '移动失败', type: 'error', duration: 2000, offset: 80 });
+            }
+        });
     }
 </script>
 

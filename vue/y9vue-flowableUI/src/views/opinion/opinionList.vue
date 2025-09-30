@@ -1,13 +1,13 @@
 <!--
  * @Author: qinman
  * @Date: 2023-11-10 09:17:03
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-06-12 15:34:20
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-09-30 10:14:24
  * @Description: 
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-flowableUI\src\views\opinion\opinionList.vue
+ * @FilePath: \vue\y9vue-flowableUI\src\views\opinion\opinionList.vue
 -->
 <template>
-    <el-container class="opinionList-container" style="height: 100%; width: 100%; padding: 0 0px">
+    <el-container class="opinionList-container" style="height: 100%; width: 100%; padding: 0 5px">
         <el-header :height="headerheight" style="line-height: 25px; padding: 0">
             <el-link
                 v-if="historyShow"
@@ -21,10 +21,10 @@
         <el-main style="background-color: #fff; padding: 0">
             <div :style="suggeststyle" class="suggest">
                 <ul :style="ulstyle">
-                    <template v-for="item in opinionList">
-                        <li v-if="item.editable" :key="item.opinion.id"
+                    <template v-for="item in opinionArray">
+                        <li v-if="item.editable" :key="item.id"
                             ><!-- 个人意见 -->
-                            <div v-html="item.opinion.showContent"></div
+                            <div v-html="item.showContent"></div
                             ><!-- 使用v-html -->
                             <a style="color: #586cb1"
                                 ><i
@@ -32,62 +32,76 @@
                                     :style="{ fontSize: fontSizeObj.largeFontSize, marginRight: '0.3vw' }"
                                     :title="$t('编辑个人意见')"
                                     class="ri-edit-box-line pencil2"
-                                    @click="editOpinion(item.opinion)"
+                                    @click="editOpinion(item)"
                                 ></i>
                                 <i
                                     v-if="opinionOptShow"
                                     :style="{ fontSize: fontSizeObj.largeFontSize, marginRight: '0.3vw', color: 'red' }"
                                     :title="$t('删除个人意见')"
                                     class="ri-delete-bin-line pencil2"
-                                    @click="deleteOpinion(item.opinion.id)"
+                                    @click="deleteOpinion(item.id)"
                                 ></i>
-                                <font style="margin-right: 0.5vw">{{ item.opinion.deptName }}</font>
+                                <font style="margin-right: 0.5vw">{{ item.deptName }}</font>
                                 <font style="margin-right: 0.5vw">
-                                    <font v-if="item.opinion.positionName == ''">{{ item.opinion.userName }}</font>
+                                    <font v-if="item.positionName == ''">{{ item.userName }}</font>
                                     <font
                                         v-else-if="
-                                            item.opinion.positionName != '' &&
-                                            item.opinion.positionName.indexOf(item.opinion.userName) > -1
+                                            item.positionName != '' && item.positionName.indexOf(item.userName) > -1
                                         "
-                                        >{{ item.opinion.positionName }}</font
+                                        >{{ item.positionName }}</font
                                     >
-                                    <font v-else>{{ item.opinion.userName }}[{{ item.opinion.positionName }}]</font>
+                                    <font v-else>{{ item.userName }}[{{ item.positionName }}]</font>
                                 </font>
-                                {{ item.opinion.modifyDate }}
-                                <!-- <font v-if="item.isEdit">&nbsp;于&nbsp;{{item.opinion.modifyDate}}修改</font> -->
+                                {{ item.modifyDate }}
                             </a>
                         </li>
-                        <li v-else :key="item.opinion.id"
+                        <li v-else :key="item.id"
                             ><!-- 只读意见 -->
-                            <div v-html="item.opinion.showContent"></div>
+                            <div v-html="item.showContent"></div>
                             <a style="color: #586cb1">
-                                <font style="margin-right: 0.5vw">{{ item.opinion.deptName }}</font>
+                                <font style="margin-right: 0.5vw">{{ item.deptName }}</font>
                                 <font style="margin-right: 0.5vw">
-                                    <font v-if="item.opinion.positionName == ''">{{ item.opinion.userName }}</font>
+                                    <font v-if="item.positionName == ''">{{ item.userName }}</font>
                                     <font
                                         v-else-if="
-                                            item.opinion.positionName != '' &&
-                                            item.opinion.positionName.indexOf(item.opinion.userName) > -1
+                                            item.positionName != '' && item.positionName.indexOf(item.userName) > -1
                                         "
-                                        >{{ item.opinion.positionName }}</font
+                                        >{{ item.positionName }}</font
                                     >
-                                    <font v-else>{{ item.opinion.userName }}[{{ item.opinion.positionName }}]</font>
+                                    <font v-else>{{ item.userName }}[{{ item.positionName }}]</font>
                                 </font>
-                                {{ item.opinion.modifyDate }}
-                                <!-- <font v-if="item.isEdit">&nbsp;于&nbsp;{{item.opinion.modifyDate}}修改</font> -->
+                                {{ item.modifyDate }}
                             </a>
                         </li>
                     </template>
                     <template v-if="addable.addable"
                         ><!-- 新建个人意见 -->
-                        <li v-if="opinionImgShow">
-                            <div
-                                ><img
+                        <li v-if="opinionImgShow" style="display: inline-flex">
+                            <div>
+                                <img
                                     :title="$t('新建个人意见')"
                                     class="pencil"
                                     src="@/assets/addOpinion.png"
                                     @click="addOpinion()"
-                            /></div>
+                                />
+                                <span class="addOpinion" @click="addOpinion()">请点击填写意见</span>
+                            </div>
+                            <template v-for="oneItem in addable.oneClickSetList">
+                                <div v-if="hiddenDiv" :key="oneItem.id" style="margin-left: 15px">
+                                    <img
+                                        :title="oneItem.description"
+                                        class="pencil"
+                                        src="@/assets/Pencil.png"
+                                        @click="oneClickSet(oneItem)"
+                                    />
+                                    <span
+                                        :title="oneItem.description"
+                                        class="addOpinion"
+                                        @click="oneClickSet(oneItem)"
+                                        >{{ oneItem.oneSetTypeName }}</span
+                                    >
+                                </div>
+                            </template>
                         </li>
                     </template>
 
@@ -189,7 +203,7 @@
         opinionName: '',
         opinionContent: '',
         oldContent: '',
-        opinionList: [],
+        opinionArray: [],
         basicData: {},
         historyShow: false,
         headerheight: '0px',
@@ -206,7 +220,8 @@
                 return new Promise(async (resolve, reject) => {});
             },
             visibleChange: (visible) => {}
-        }
+        },
+        hiddenDiv: true
     });
 
     let {
@@ -227,7 +242,7 @@
         opinionName,
         opinionContent,
         oldContent,
-        opinionList,
+        opinionArray,
         basicData,
         opinionOptShow,
         historyShow,
@@ -237,7 +252,8 @@
         ulstyle,
         opinionHistoryRef,
         dialogConfig,
-        commonList
+        commonList,
+        hiddenDiv
     } = toRefs(data);
 
     defineExpose({ initOpinion, addable, opinionName });
@@ -249,7 +265,7 @@
             ulstyle.value = 'min-height:' + props.minHeight;
         }
         basicData.value = data;
-        opinionList.value = [];
+        opinionArray.value = [];
         addable.value = {};
         opinionName.value = props.opinionName;
         getOpinionList(
@@ -258,28 +274,25 @@
             basicData.value.itembox,
             props.opinionframemark,
             basicData.value.itemId,
-            basicData.value.taskDefKey,
-            basicData.value.activitiUser
+            basicData.value.taskDefKey
         ).then((res) => {
             if (res.success) {
                 let resdata = res.data;
-                if (resdata.length == 1) {
-                    addable.value = resdata[0];
-                } else {
-                    addable.value = resdata[resdata.length - 1];
-                    for (let i = 0; i < resdata.length - 1; i++) {
-                        resdata[i].opinion.showContent = resdata[i].opinion.content;
+                addable.value = resdata;
+                opinionArray.value = resdata.opinionList;
+                if (null != opinionArray.value) {
+                    for (let i = 0; i < opinionArray.value.length; i++) {
+                        opinionArray.value[i].showContent = opinionArray.value[i].content;
                         if (
-                            resdata[i].opinion.tenantId != 'null' &&
-                            resdata[i].opinion.tenantId != null &&
-                            resdata[i].opinion.tenantId.indexOf('mobile') > -1
+                            opinionArray.value[i].tenantId != 'null' &&
+                            opinionArray.value[i].tenantId != null &&
+                            opinionArray.value[i].tenantId.indexOf('mobile') > -1
                         ) {
-                            resdata[i].opinion.showContent +=
+                            opinionArray.value[i].showContent +=
                                 '<img class="pencil2" style="height: 23px;width: 25px;" :title="$t(`移动端签阅`)" src="' +
                                 phone.value +
                                 '" />';
                         }
-                        opinionList.value.push(resdata[i]);
                     }
                 }
             }
@@ -310,6 +323,43 @@
     }
 
     const emits = defineEmits(['opinion_click']);
+
+    function oneClickSet(row) {
+        hiddenDiv.value = false;
+        setTimeout(() => {
+            hiddenDiv.value = true;
+        }, 1000);
+        if (opinionContent.value == '') {
+            setOpinion(row, false);
+        } else {
+            ElMessageBox.confirm('当前已经签写意见，使用一键签批会覆盖当前填写的意见，您是否继续操作?', '提示', {
+                confirmButtonText: '覆盖',
+                cancelButtonText: '不覆盖，使用签好的意见',
+                type: 'warning'
+            })
+                .then(async () => {
+                    setOpinion(row, false);
+                })
+                .catch(() => {
+                    setOpinion(row, true);
+                });
+        }
+    }
+
+    function setOpinion(row, useCurrentOpinion) {
+        if (!useCurrentOpinion) {
+            opinionContent.value = '同意。';
+            if (row.oneSetType == 'oneClickRead' || row.oneSetType == 'oneClickAlreadyRead') {
+                opinionContent.value = '已阅。';
+            }
+        }
+        saveOrUpdateOpinion();
+        let data = {};
+        data.clickType = row.executeAction;
+        data.type = row.executeAction;
+        data.opinionFrameMark = opinionframemark.value;
+        emits('opinion_click', data);
+    }
 
     function addOpinion(type) {
         opinionShow.value = true;
@@ -461,7 +511,6 @@
         resize: none;
         width: 99.9%;
         border: 0;
-        padding: 10px;
     }
 
     .suggest ul {
@@ -479,6 +528,7 @@
 
     .suggest ul li div {
         line-height: 25px;
+        cursor: pointer;
     }
 
     .suggest ul li a {
@@ -519,7 +569,7 @@
         display: inline-block;
         height: 16px;
         margin-right: 0.3vw;
-        vertical-align: top;
+        vertical-align: middle;
         width: 15px;
     }
 

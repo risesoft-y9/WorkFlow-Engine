@@ -1,21 +1,29 @@
 <template>
     <div class="from-file" style="width: 670px; height: 97.7%; margin: 15px auto">
         <div style="padding-bottom: 15px; vertical-align: middle">
-            <div class="att-files">{{ $t('附件') }}</div>
-            <div v-if="optShow" class="addFile-bnt">
-                <i :title="$t('添加附件')" class="ri-file-add-line" @click="addFiles"></i>
-            </div>
-            <div v-if="downloadZipShow" class="downloaFiles-bnt">
-                <a
-                    :href="downloadZipUrl + '&processSerialNumber=' + basicData.processSerialNumber"
-                    style="text-decoration: none"
-                >
-                    <i :title="$t('下载附件zip')" class="ri-folder-download-line" @click="downloaFiles"></i>
-                </a>
-            </div>
+            <div class="att-files">{{ $t('附件：') }}</div>
+            <el-button-group class="ml-4" style="margin-left: 10px" text>
+                <el-button v-if="optShow" :title="$t('添加附件')" @click="addFiles" size="mini" text
+                    ><i class="ri-file-add-line"></i
+                ></el-button>
+                <el-button v-if="downloadZipShow" :title="$t('下载附件zip')" size="mini" text>
+                    <a
+                        :href="downloadZipUrl + '&processSerialNumber=' + basicData.processSerialNumber"
+                        style="text-decoration: none; color: inherit"
+                    >
+                        <i class="ri-file-download-line" @click="downloaFiles"></i>
+                    </a>
+                </el-button>
+                <el-button v-if="optShow" :title="$t('上移文件')" size="mini" @click="moveUp" text>
+                    <i class="ri-upload-line"></i>
+                </el-button>
+                <el-button v-if="optShow" :title="$t('下移文件')" size="mini" @click="moveDown" text>
+                    <i class="ri-download-line"></i>
+                </el-button>
+            </el-button-group>
         </div>
 
-        <y9Table :config="fileTableConfig">
+        <y9Table :config="fileTableConfig" @on-current-change="handleCurrentChange">
             <template #name="{ row, column, index }">
                 <el-link
                     :href="row.jodconverterURL"
@@ -27,13 +35,13 @@
                 </el-link>
             </template>
             <template #opt="{ row, column, index }">
-                <a :href="downloadUrl + '&id=' + row.id" style="text-decoration: none"
-                    ><i
+                <a :href="downloadUrl + '&id=' + row.id" style="text-decoration: none">
+                    <i
                         :style="{ fontSize: fontSizeObj.mediumFontSize }"
                         :title="$t('点击下载')"
-                        class="ri-download-2-line"
-                    ></i
-                ></a>
+                        class="ri-download-cloud-2-line"
+                    ></i>
+                </a>
                 <i
                     v-if="y9UserInfo.personId == row.personId && optShow"
                     :style="{ fontSize: fontSizeObj.mediumFontSize, marginLeft: '5px', color: '#586cb1' }"
@@ -73,8 +81,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject, onMounted, reactive } from 'vue';
-    import { delAttachment, getAttachmentList } from '@/api/flowableUI/attachment';
+    import { computed, inject, onMounted, reactive, toRefs } from 'vue';
+    import { delAttachment, getAttachmentList, saveOrder } from '@/api/flowableUI/attachment';
     import settings from '@/settings';
     import y9_storage from '@/utils/storage';
     import { useI18n } from 'vue-i18n';
@@ -130,7 +138,8 @@
         },
         downloadUrl: '',
         downloadZipUrl: '',
-        downloadZipShow: false
+        downloadZipShow: false,
+        currentRow: []
     });
 
     let {
@@ -143,7 +152,8 @@
         upload,
         downloadUrl,
         downloadZipUrl,
-        downloadZipShow
+        downloadZipShow,
+        currentRow
     } = toRefs(data);
 
     onMounted(() => {
@@ -151,11 +161,11 @@
         y9UserInfo.value = y9_storage.getObjectItem('ssoUserInfo');
         downloadUrl.value =
             import.meta.env.VUE_APP_CONTEXT +
-            '/vue/attachment/attachmentDownload?access_token=' +
+            'vue/attachment/download?access_token=' +
             y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');
         downloadZipUrl.value =
             import.meta.env.VUE_APP_CONTEXT +
-            '/vue/attachment/packDownload?access_token=' +
+            'vue/attachment/packDownload?access_token=' +
             y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');
     });
 
@@ -190,15 +200,10 @@
         getAttachmentList(basicData.value.processSerialNumber, 1, 50).then((res) => {
             let fileList = res.rows;
             for (let i in fileList) {
+                fileList[i].downloadUrl =
+                    import.meta.env.VUE_APP_CONTEXT + 's/' + fileList[i].fileStoreId + '.' + fileList[i].fileType;
                 fileList[i].jodconverterURL = import.meta.env.VUE_APP_JODCONVERTERURL + fileList[i].downloadUrl;
-                let arr = fileList[i].downloadUrl.split('.');
-                let type = arr[arr.length - 1];
-                if (png.indexOf(type) > -1) {
-                    //图片使用外网地址，使用前端配置
-                    fileList[i].downloadUrl =
-                        import.meta.env.VUE_APP_CONTEXT + 's/' + fileList[i].fileStoreId + '.' + fileList[i].fileType;
-                    fileList[i].jodconverterURL = import.meta.env.VUE_APP_JODCONVERTERURL + fileList[i].downloadUrl;
-                }
+                fileList[i].uploadTime = fileList[i].uploadTime.substring(0, 16);
             }
             fileTableConfig.value.tableData = fileList;
             if (fileList.length > 0) {
@@ -210,7 +215,7 @@
     function download(row) {
         window.open(
             import.meta.env.VUE_APP_CONTEXT +
-                '/vue/attachment/attachmentDownload?id=' +
+                'vue/attachment/download?id=' +
                 row.id +
                 '&access_token=' +
                 y9_storage.getObjectItem(settings.siteTokenKey, 'access_token')
@@ -227,7 +232,7 @@
         };
         upload.value.url =
             import.meta.env.VUE_APP_CONTEXT +
-            '/vue/attachment/upload?access_token=' +
+            'vue/attachment/upload?access_token=' +
             y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');
         Object.assign(dialogConfig.value, {
             show: true,
@@ -263,6 +268,101 @@
             .catch(() => {
                 ElMessage({ type: 'info', message: t('已取消删除'), offset: 65, appendTo: '.from-file' });
             });
+    }
+
+    function handleCurrentChange(val) {
+        currentRow.value = val;
+    }
+
+    const moveUp = () => {
+        //上移
+        if (currentRow.value.length == 0) {
+            ElNotification({
+                title: '操作提示',
+                message: '请点击选中一条数据',
+                type: 'error',
+                duration: 2000,
+                offset: 80
+            });
+            return;
+        }
+
+        let index = 0;
+        for (let i = 0; i < fileTableConfig.value.tableData.length; i++) {
+            if (currentRow.value.id == fileTableConfig.value.tableData[i].id) {
+                index = i;
+                break;
+            }
+        }
+        if (index > 0) {
+            let upRow = fileTableConfig.value.tableData[index - 1];
+            let currRow = fileTableConfig.value.tableData[index];
+            let tabIndex = upRow.tabIndex;
+            upRow.tabIndex = currRow.tabIndex;
+            currRow.tabIndex = tabIndex;
+            fileTableConfig.value.tableData.splice(index - 1, 1);
+            fileTableConfig.value.tableData.splice(index, 0, upRow);
+            saveFileOrder();
+        } else {
+            ElNotification({
+                title: '操作提示',
+                message: '已经是第一条，不可上移',
+                type: 'error',
+                duration: 2000,
+                offset: 80
+            });
+        }
+    };
+
+    const moveDown = () => {
+        //下移
+        if (currentRow.value.length == 0) {
+            ElNotification({ title: '操作提示', message: '请选择数据', type: 'error', duration: 2000, offset: 80 });
+            return;
+        }
+
+        let index = 0;
+        for (let i = 0; i < fileTableConfig.value.tableData.length; i++) {
+            if (currentRow.value.id == fileTableConfig.value.tableData[i].id) {
+                index = i;
+                break;
+            }
+        }
+        if (index + 1 == fileTableConfig.value.tableData.length) {
+            ElNotification({
+                title: '操作提示',
+                message: '已经是最后一条，不可下移',
+                type: 'error',
+                duration: 2000,
+                offset: 80
+            });
+        } else {
+            let downRow = fileTableConfig.value.tableData[index + 1];
+            let currRow = fileTableConfig.value.tableData[index];
+            let tabIndex = downRow.tabIndex;
+            downRow.tabIndex = currRow.tabIndex;
+            currRow.tabIndex = tabIndex;
+            fileTableConfig.value.tableData.splice(index + 1, 1);
+            fileTableConfig.value.tableData.splice(index, 0, downRow);
+            saveFileOrder();
+        }
+    };
+
+    function saveFileOrder() {
+        let ids = [];
+        for (let item of fileTableConfig.value.tableData) {
+            ids.push(item.id + ':' + item.tabIndex);
+        }
+        //const loading = ElLoading.service({ lock: true, text: '正在处理中', background: 'rgba(0, 0, 0, 0.3)' });
+        saveOrder(ids.toString()).then((res) => {
+            //loading.close();
+            if (res.success) {
+                //ElNotification({ title: '操作提示', message: res.msg, type: 'success', duration: 2000, offset: 80 });
+                //getViewConfigList();
+            } else {
+                ElNotification({ title: '操作提示', message: '移动失败', type: 'error', duration: 2000, offset: 80 });
+            }
+        });
     }
 </script>
 <style lang="scss">
@@ -449,6 +549,17 @@
         /*message */
         :global(.el-message .el-message__content) {
             font-size: v-bind('fontSizeObj.baseFontSize');
+        }
+
+        .el-button {
+            padding: 8px 8px !important;
+            box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.06);
+            i {
+                margin-right: 0px;
+                font-size: v-bind('fontSizeObj.extraLargeFont');
+                color: rgb(88, 108, 177);
+                vertical-align: middle;
+            }
         }
     }
 </style>
