@@ -123,11 +123,7 @@
         };
         uploadLoading.value = true;
         axios
-            .post(
-                import.meta.env.VUE_APP_CONTEXT + '/vue/attachment/upload',
-                formData,
-                config
-            )
+            .post(import.meta.env.VUE_APP_CONTEXT + 'vue/attachment/upload', formData, config)
             .then((res) => {
                 uploadLoading.value = false;
                 if (res.data.success) {

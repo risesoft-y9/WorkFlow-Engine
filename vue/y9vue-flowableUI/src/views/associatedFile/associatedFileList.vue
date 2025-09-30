@@ -210,11 +210,17 @@
         // let pathName = window.document.location.pathname;
         // let pos = curPageUrl.indexOf(pathName);
         // let localhostPath = curPageUrl.substring(0, pos);
+        let taskId = row.taskId != null ? row.taskId : '';
         window.open(
             import.meta.env.VUE_APP_HOST_INDEX +
                 'index?processInstanceId=' +
                 row.processInstanceId +
-                '&type=fromHistory'
+                '&type=fromHistory&itembox=' +
+                row.itembox +
+                '&taskId=' +
+                taskId +
+                '&itemId=' +
+                row.itemId
         );
     }
 </script>
