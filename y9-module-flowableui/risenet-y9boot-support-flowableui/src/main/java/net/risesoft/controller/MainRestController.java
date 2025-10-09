@@ -465,12 +465,11 @@ public class MainRestController {
                         officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     if (officeDoneInfoModel == null) {
                         processInstanceId = "";
-                    } else {
-                        processSerialNumber = officeDoneInfoModel.getProcessSerialNumber();
                     }
                 }
                 ProcessParamModel processParamModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                processSerialNumber = processParamModel.getProcessSerialNumber();
                 ItemModel itemModel = itemApi.getByItemId(tenantId, processParamModel.getItemId()).getData();
                 map.put("itemModel", itemModel);
             }
