@@ -3,6 +3,8 @@ package net.risesoft.service.impl;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
 import java.util.zip.ZipInputStream;
 
 import org.apache.commons.io.FilenameUtils;
@@ -21,8 +23,10 @@ import org.springframework.web.multipart.MultipartFile;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.enums.ItemProcessStateTypeEnum;
+import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomRepositoryService;
@@ -45,6 +49,8 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
     private final RuntimeService runtimeService;
 
     private final ProcessEngineConfiguration processEngineConfiguration;
+
+    private final ItemApi itemApi;
 
     @Override
     public Y9Result<Object> delete(String deploymentId) {
@@ -73,8 +79,10 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
 
     @Override
     public ProcessDefinition getLatestProcessDefinitionByKey(String processDefinitionKey) {
-        return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey)
-            .latestVersion().singleResult();
+        return repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey(processDefinitionKey)
+            .latestVersion()
+            .singleResult();
     }
 
     @Override
@@ -84,8 +92,10 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
         int version = pd.getVersion();
         String processDefinitionKey = pd.getKey();
         if (version > 1) {
-            pd = repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey)
-                .processDefinitionVersion(--version).singleResult();
+            pd = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionKey(processDefinitionKey)
+                .processDefinitionVersion(--version)
+                .singleResult();
         }
         return pd;
     }
@@ -104,10 +114,12 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                 ProcessInstance processInstance =
                     runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
                 processDefinition = repositoryService.createProcessDefinitionQuery()
-                    .processDefinitionId(processInstance.getProcessDefinitionId()).singleResult();
+                    .processDefinitionId(processInstance.getProcessDefinitionId())
+                    .singleResult();
             } else if (StringUtils.isNotBlank(processDefinitionId)) {
                 processDefinition = repositoryService.createProcessDefinitionQuery()
-                    .processDefinitionId(processDefinitionId).singleResult();
+                    .processDefinitionId(processDefinitionId)
+                    .singleResult();
             }
         }
 
@@ -155,6 +167,15 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                 processDefinitionModel
                     .setDeploymentTime(DateFormatUtils.format(deployment.getDeploymentTime(), "yyyy-MM-dd HH:mm:ss"));
                 processDefinitionModel.setSortTime(deployment.getDeploymentTime().getTime());
+                List<ItemModel> itemModelList =
+                    itemApi.findByProcessDefinitionKeyList(Y9LoginUserHolder.getTenantId(), processDefinition.getKey())
+                        .getData();
+                List<String> itemNames = itemModelList.stream()
+                    .map(ItemModel::getName)
+                    .filter(Objects::nonNull)
+                    .collect(Collectors.toList());
+                String itemNameStr = String.join(",", itemNames);
+                processDefinitionModel.setItemName(itemNameStr);
                 items.add(processDefinitionModel);
             }
             items.sort((o1, o2) -> {
@@ -171,14 +192,20 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
 
     @Override
     public List<ProcessDefinition> listLatestProcessDefinition() {
-        return repositoryService.createProcessDefinitionQuery().latestVersion().orderByProcessDefinitionKey().asc()
+        return repositoryService.createProcessDefinitionQuery()
+            .latestVersion()
+            .orderByProcessDefinitionKey()
+            .asc()
             .list();
     }
 
     @Override
     public List<ProcessDefinition> listProcessDefinitionByKey(String processDefinitionKey) {
-        return repositoryService.createProcessDefinitionQuery().processDefinitionKey(processDefinitionKey)
-            .orderByProcessDefinitionVersion().desc().list();
+        return repositoryService.createProcessDefinitionQuery()
+            .processDefinitionKey(processDefinitionKey)
+            .orderByProcessDefinitionVersion()
+            .desc()
+            .list();
     }
 
     @Override

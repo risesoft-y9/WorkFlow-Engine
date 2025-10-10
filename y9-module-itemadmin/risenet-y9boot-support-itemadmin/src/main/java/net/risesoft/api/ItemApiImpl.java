@@ -86,6 +86,28 @@ public class ItemApiImpl implements ItemApi {
     }
 
     /**
+     * 根据流程的定义Key查找所有绑定的事项信息
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionKey 流程定义Key
+     * @return {@code Y9Result<ItemModel>} 通用请求返回对象 - data 是事项信息
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<ItemModel>> findByProcessDefinitionKeyList(@RequestParam String tenantId,
+        @RequestParam String processDefinitionKey) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        List<Item> list = itemService.findByProcessDefinitionKeyList(processDefinitionKey);
+        List<ItemModel> itemModelList = new ArrayList<>();
+        for (Item item : list) {
+            ItemModel itemModel = new ItemModel();
+            Y9BeanUtil.copyProperties(item, itemModel);
+            itemModelList.add(itemModel);
+        }
+        return Y9Result.success(itemModelList);
+    }
+
+    /**
      * 获取当前租户所有事项列表
      *
      * @param tenantId 租户id

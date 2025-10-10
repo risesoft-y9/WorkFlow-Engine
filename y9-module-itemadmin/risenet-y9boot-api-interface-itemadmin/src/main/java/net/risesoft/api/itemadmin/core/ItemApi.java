@@ -45,6 +45,18 @@ public interface ItemApi {
         @RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
+     * 根据流程的定义Key查找所有绑定的事项
+     *
+     * @param tenantId 租户Id
+     * @param processDefinitionKey 流程定义Key
+     * @return {@code Y9Result<ItemModel>} 通用请求返回对象 - data 是事项信息
+     * @since 9.6.6
+     */
+    @GetMapping("/findByProcessDefinitionKeyList")
+    Y9Result<List<ItemModel>> findByProcessDefinitionKeyList(@RequestParam("tenantId") String tenantId,
+        @RequestParam("processDefinitionKey") String processDefinitionKey);
+
+    /**
      * 获取所有事项列表
      *
      * @param tenantId 租户id

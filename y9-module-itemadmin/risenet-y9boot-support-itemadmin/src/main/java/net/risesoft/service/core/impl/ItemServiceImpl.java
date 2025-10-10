@@ -249,6 +249,11 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
+    public List<Item> findByProcessDefinitionKeyList(String processDefinitionKey) {
+        return itemRepository.findItemByKeyList(processDefinitionKey);
+    }
+
+    @Override
     public Boolean hasProcessDefinitionByKey(String processDefinitionKey) {
         boolean hasKey = false;
         try {
