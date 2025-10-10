@@ -59,6 +59,14 @@ public interface ItemService {
     ItemModel findByProcessDefinitionKey(String tenantId, String processDefinitionKey);
 
     /**
+     * 根据流程定义Key查找绑定的事项
+     *
+     * @param processDefinitionKey
+     * @return
+     */
+    List<Item> findByProcessDefinitionKeyList(String processDefinitionKey);
+
+    /**
      * 根据流程定义key和租户Id判断当前租户是否存在事项
      *
      * @param processDefinitionKey

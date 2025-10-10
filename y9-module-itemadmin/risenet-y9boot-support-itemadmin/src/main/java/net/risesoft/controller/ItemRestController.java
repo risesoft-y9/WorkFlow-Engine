@@ -226,9 +226,12 @@ public class ItemRestController {
         List<ProcessDefinitionModel> pdModelList = repositoryApi.getLatestProcessDefinitionList(tenantId).getData();
         for (ProcessDefinitionModel pdModel : pdModelList) {
             Map<String, Object> row = new HashMap<>(16);
-            row.put("id", pdModel.getKey());
-            row.put("name", pdModel.getName());
-            workflowList.add(row);
+            Boolean hasProcessDefinitionByKey = itemService.hasProcessDefinitionByKey(pdModel.getKey());
+            if (!hasProcessDefinitionByKey) {
+                row.put("id", pdModel.getKey());
+                row.put("name", pdModel.getName());
+                workflowList.add(row);
+            }
         }
         map.put("workflowList", workflowList);
         return Y9Result.success(map, "获取成功");

@@ -69,4 +69,9 @@ public class ProcessDefinitionModel implements Serializable {
      * 部署时间（毫秒）用于排序
      */
     private long sortTime;
+
+    /**
+     * 事项名称
+     */
+    private String itemName;
 }

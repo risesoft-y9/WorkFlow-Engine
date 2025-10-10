@@ -24,6 +24,9 @@ public interface ItemRepository
     @Query("from Item s where s.workflowGuid=?1")
     Item findItemByKey(String processDefinitionKey);
 
+    @Query("from Item s where s.workflowGuid=?1")
+    List<Item> findItemByKeyList(String processDefinitionKey);
+
     @Query("select distinct t.systemName as systemName, t.sysLevel as sysLevel from Item t ")
     List<Map<String, Object>> getItemSystem();
 
