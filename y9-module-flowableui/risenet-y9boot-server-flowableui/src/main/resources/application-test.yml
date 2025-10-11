@@ -4,7 +4,7 @@ spring:
             config:
                 enabled: true
                 group: DEFAULT_GROUP
-                namespace: test
+                namespace: test2
                 server-addr: nacos:8848
                 username: nacos
                 password: ${NACOS_PASSWORD:111111}
