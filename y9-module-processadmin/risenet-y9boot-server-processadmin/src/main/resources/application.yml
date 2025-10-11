@@ -170,6 +170,15 @@ y9:
         logBaseUrl: http://localhost:7056/server-log
         userOnlineBaseUrl: http://localhost:7056/server-useronline
     feature:
+        file:
+            base64FileName: false
+            encryptionFileContent: false
+            #privateKey:
+            #publicKey:
+            local:
+                enabled: true
+                # 本地文件存储的根路径，按需设置为自己的
+                basePath: "d:/y9FileStore"
         jpa:
             packagesToScanEntityPublic: net.risesoft.y9public.entity
             packagesToScanEntityTenant: net.risesoft.entity

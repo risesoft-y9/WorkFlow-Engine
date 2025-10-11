@@ -171,6 +171,7 @@ y9:
             rest:
                 fileManagerUrl: http://localhost:8080/filemanager
             ftp:
+                enabled: true
                 host: nexus-internal.youshengyun.com
                 port: 21
                 username: y9admin
@@ -191,6 +192,10 @@ y9:
                 testWhileIdle: true
                 useEPSVwithIPv4: false
                 passiveMode: true
+            local:
+                enabled: false
+                # 本地文件存储的根路径，按需设置为自己的
+                basePath: "d:/y9FileStore"
         elasticsearch:
             packagesToScanEntityPublic: net.risesoft.nosql.elastic.entity
             packagesToScanRepositoryPublic: net.risesoft.nosql.elastic.repository
