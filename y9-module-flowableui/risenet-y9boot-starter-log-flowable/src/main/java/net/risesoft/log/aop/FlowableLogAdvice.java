@@ -139,7 +139,8 @@ public class FlowableLogAdvice implements MethodInterceptor {
                     // 设置标题
                     if (StringUtils.hasText(processSerialNumber)) {
                         ProcessParamModel processParam = processParamApi
-                            .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+                            .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber)
+                            .getData();
                         if (null != processParam) {
                             flowableAccessLog.setSystemName(processParam.getSystemCnName());
                             flowableAccessLog.setModularName(processParam.getItemName());
@@ -190,7 +191,7 @@ public class FlowableLogAdvice implements MethodInterceptor {
             }
             if (response != null) {
                 // LogFilter 见到这个标志后，就不再记录日志了，因为这里已经写了日志，不需要重复写。
-                response.addHeader("y9aoplog", "true");
+                response.setHeader("y9aoplog", "true");
             }
         }
         return ret;
