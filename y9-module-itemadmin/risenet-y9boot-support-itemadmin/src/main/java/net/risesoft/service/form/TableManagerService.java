@@ -83,7 +83,7 @@ public class TableManagerService {
                     // 修改老表值
                     td.setOldTableName(td.getTableName());
                     this.saveOrUpdate(td);
-                    LOGGER.info("修改表正常");
+                    LOGGER.info("修改表正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
                 }
                 ddLmysql.addTableColumn(dataSource, tableName, dbcs);
             } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
@@ -93,7 +93,7 @@ public class TableManagerService {
                     // 修改老表值
                     td.setOldTableName(td.getTableName());
                     this.saveOrUpdate(td);
-                    LOGGER.info("修改表正常");
+                    LOGGER.info("修改表正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
                 }
                 ddLoracle.addTableColumn(dataSource, tableName, dbcs);
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
@@ -103,7 +103,7 @@ public class TableManagerService {
                     // 修改老表值
                     td.setOldTableName(td.getTableName());
                     this.saveOrUpdate(td);
-                    LOGGER.info("修改表正常");
+                    LOGGER.info("修改表正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
                 }
                 ddLoracle.addTableColumn(dataSource, tableName, dbcs);
             } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
@@ -257,77 +257,51 @@ public class TableManagerService {
      * @return
      */
     public Map<String, Object> getExistTableFields(String tableId) {
-        Map<String, Object> al = new HashMap<>(16);
-        String tableName = null;
-        Connection conn = null;
-        Statement stmt = null;
-        ResultSet rs = null;
+        Map<String, Object> map = new HashMap<>(16);
+        String tableName;
         try {
-            Y9Table y9Table = y9TableRepository.findById(tableId).orElse(null);
-            if (y9Table != null) {
-                tableName = y9Table.getTableName();
-            } else {
-                return al;
+            assert jdbcTemplate4Tenant.getDataSource() != null;
+            try (Connection conn = jdbcTemplate4Tenant.getDataSource().getConnection();
+                Statement stmt = conn.createStatement()) {
+                Y9Table y9Table = y9TableRepository.findById(tableId).orElse(null);
+                if (y9Table != null) {
+                    tableName = y9Table.getTableName();
+                } else {
+                    return map;
+                }
+                String sql = "show tables like '" + tableName + "'";
+                String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectNameByConnection(conn);
+                if (DialectEnum.ORACLE.getValue().equals(dialect)) {
+                    sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
+                } else if (DialectEnum.DM.getValue().equals(dialect)) {
+                    sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
+                } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
+                    sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
+                }
+                List<Map<String, Object>> list = jdbcTemplate4Tenant.queryForList(sql);
+                if (list.isEmpty()) {
+                    return map;
+                }
+                sql = "Select * from " + tableName + " limit 0,0";
+                if (DialectEnum.ORACLE.getValue().equals(dialect)) {
+                    sql = "Select * from \"" + tableName + "\"  where rownum = 0";
+                } else if (DialectEnum.DM.getValue().equals(dialect)) {
+                    sql = "Select * from \"" + tableName + "\"  where rownum = 0";
+                } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
+                    sql = "Select * from \"" + tableName + "\"  where rownum = 0";
+                }
+                try (ResultSet rs = stmt.executeQuery(sql)) {
+                    ResultSetMetaData dt = rs.getMetaData();
+                    for (int i = 0; i < dt.getColumnCount(); i++) {
+                        String fieldName = dt.getColumnName(i + 1).toLowerCase();
+                        map.put(fieldName, fieldName);
+                    }
+                }
             }
-            conn = jdbcTemplate4Tenant.getDataSource().getConnection();
-
-            String sql = "show tables like '" + tableName + "'";
-
-            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectNameByConnection(conn);
-            if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
-            } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
-            } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
-            }
-
-            List<Map<String, Object>> list = jdbcTemplate4Tenant.queryForList(sql);
-            if (list == null || list.size() == 0) {
-                return al;
-            }
-            sql = "Select * from " + tableName + " limit 0,0";
-
-            if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                sql = "Select * from \"" + tableName + "\"  where rownum = 0";
-            } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                sql = "Select * from \"" + tableName + "\"  where rownum = 0";
-            } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                sql = "Select * from \"" + tableName + "\"  where rownum = 0";
-            }
-
-            stmt = conn.createStatement();
-            rs = stmt.executeQuery(sql);
-            ResultSetMetaData dt = rs.getMetaData();
-            for (int i = 0; i < dt.getColumnCount(); i++) {
-                String fieldName = dt.getColumnName(i + 1).toLowerCase();
-                al.put(fieldName, fieldName);
-            }
-
-            /*
-             * List<DbColumn> listMapTemp =
-             * Y9FormDbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName,
-             * null); for (DbColumn column : listMapTemp) { String fieldName =
-             * column.getColumn_name().toLowerCase(); al.put(fieldName, fieldName); }
-             */
         } catch (Exception ex) {
             ex.printStackTrace();
-        } finally {
-            try {
-                if (conn != null) {
-                    conn.close();
-                }
-                if (stmt != null) {
-                    stmt.close();
-                }
-                if (rs != null) {
-                    rs.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
-        return al;
+        return map;
     }
 
     /**

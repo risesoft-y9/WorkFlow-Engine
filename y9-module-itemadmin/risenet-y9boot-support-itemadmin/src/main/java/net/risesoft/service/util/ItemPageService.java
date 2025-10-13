@@ -23,7 +23,8 @@ public class ItemPageService {
 
     public int count(String countSql, Map<String, Object> map) {
         NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
-        return jdbc.queryForObject(countSql, map, Integer.class);
+        Integer result = jdbc.queryForObject(countSql, map, Integer.class);
+        return result != null ? result : 0;
     }
 
     @SuppressWarnings("deprecation")
@@ -50,7 +51,8 @@ public class ItemPageService {
             size = 15;
         }
         NamedParameterJdbcTemplate jdbc = new NamedParameterJdbcTemplate(jdbcTemplate);
-        int totalSize = jdbc.queryForObject(countSql, countSqlMap, Integer.class);
+        Integer result = jdbc.queryForObject(countSql, countSqlMap, Integer.class);
+        int totalSize = null == result ? 0 : result;
         if (totalSize == 0) {
             return ItemPage.<T>builder().rows(new ArrayList<>()).currpage(0).size(0).totalpages(0).total(0).build();
         }
@@ -59,7 +61,12 @@ public class ItemPageService {
         int limit = size;
         sql = sql + " limit " + limit + " offset " + offset;
         List<T> content = jdbc.query(sql, sqlMap, rowMapper);
-        return ItemPage.<T>builder().rows(content).total(totalSize).totalpages(totalPage).currpage(currPage).size(size)
+        return ItemPage.<T>builder()
+            .rows(content)
+            .total(totalSize)
+            .totalpages(totalPage)
+            .currpage(currPage)
+            .size(size)
             .build();
     }
 
@@ -94,7 +101,12 @@ public class ItemPageService {
         int limit = size;
         sql = sql + " limit " + limit + " offset " + offset;
         List<T> content = jdbcTemplate.query(sql, queryArgs, rowMapper);
-        return ItemPage.<T>builder().rows(content).total(totalSize).totalpages(totalPage).currpage(currPage).size(size)
+        return ItemPage.<T>builder()
+            .rows(content)
+            .total(totalSize)
+            .totalpages(totalPage)
+            .currpage(currPage)
+            .size(size)
             .build();
     }
 }

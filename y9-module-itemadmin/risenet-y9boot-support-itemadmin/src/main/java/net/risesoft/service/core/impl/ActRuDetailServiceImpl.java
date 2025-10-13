@@ -168,7 +168,9 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
         list = list.stream()
             .filter(actRuDetail -> historictaskApi.getById(Y9LoginUserHolder.getTenantId(), actRuDetail.getTaskId())
-                .getData().getExecutionId().equals(executionId))
+                .getData()
+                .getExecutionId()
+                .equals(executionId))
             .collect(Collectors.toList());
         list.forEach(actRuDetail -> actRuDetail.setDeleted(true));
         actRuDetailRepository.saveAll(list);
@@ -179,8 +181,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     /**
      * 放入回收站时，为待办状态的需要调用第三方接口删除待办
      *
-     * @param processSerialNumber
-     * @return
+     * @param processSerialNumber 流程序列号
+     * @return boolean
      */
     @Override
     @Transactional
@@ -203,8 +205,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     /**
      * 正常办结时，会先监听到任务的删除事件，任务的删除事件会调用第三方待办删除接口，所以这里不再需要调用第三方待办接口
      *
-     * @param processInstanceId
-     * @return
+     * @param processInstanceId 流程实例id
+     * @return boolean
      */
     @Override
     @Transactional
@@ -242,7 +244,10 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         if (null == SUB_NODE_MAP.get(processDefinitionId)) {
             List<String> subTaskDefKeys =
                 processDefinitionApi.getSubProcessChildNode(Y9LoginUserHolder.getTenantId(), processDefinitionId)
-                    .getData().stream().map(TargetModel::getTaskDefKey).collect(Collectors.toList());
+                    .getData()
+                    .stream()
+                    .map(TargetModel::getTaskDefKey)
+                    .collect(Collectors.toList());
             SUB_NODE_MAP.put(processDefinitionId, subTaskDefKeys);
         }
     }
@@ -422,11 +427,14 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
         list = list.stream()
             .filter(actRuDetail -> historictaskApi.getById(Y9LoginUserHolder.getTenantId(), actRuDetail.getTaskId())
-                .getData().getExecutionId().equals(executionId))
+                .getData()
+                .getExecutionId()
+                .equals(executionId))
             .collect(Collectors.toList());
         list.forEach(actRuDetail -> actRuDetail.setDeleted(false));
         actRuDetailRepository.saveAll(list);
-        list.stream().filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO))
+        list.stream()
+            .filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO))
             .forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail)));
     }
 
@@ -434,7 +442,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
      * 真办结后恢复待办，会产生新的任务，不需要在这里调用第三方待办接口
      *
      * @param processInstanceId 流程实例id
-     * @return
+     * @return boolean
      */
     @Override
     @Transactional
@@ -452,7 +460,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
      * 删除后恢复待办，之前为待办状态的需要调用第三方待办接口
      *
      * @param processSerialNumber 流程序列号
-     * @return
+     * @return boolean
      */
     @Override
     @Transactional
@@ -463,7 +471,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             listTemp.add(actRuDetail);
         });
         actRuDetailRepository.saveAll(listTemp);
-        listTemp.stream().filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO))
+        listTemp.stream()
+            .filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO))
             .forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail)));
         return true;
     }
@@ -497,15 +506,16 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     /**
      * 彻底删除流程实例时，为待办状态的需要调用第三方接口删除待办
      *
-     * @param processInstanceId
-     * @return
+     * @param processInstanceId 流程实例id
+     * @return boolean
      */
     @Override
     @Transactional
     public boolean removeByProcessInstanceId(String processInstanceId) {
         List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(processInstanceId);
         actRuDetailRepository.deleteAll(list);
-        list.stream().filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO))
+        list.stream()
+            .filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO))
             .forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoDeletedEvent<>(actRuDetail)));
         return true;
     }
@@ -513,8 +523,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     /**
      * 彻底删除流程实例时，为非删除状态且待办状态的需要调用第三方接口删除待办
      *
-     * @param processSerialNumber
-     * @return
+     * @param processSerialNumber 流程序列号
+     * @return boolean
      */
     @Override
     @Transactional
@@ -557,7 +567,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     @Override
     @Transactional
-    public boolean saveOrUpdate(ActRuDetail actRuDetail) {
+    public void saveOrUpdate(ActRuDetail actRuDetail) {
         initSubNodeMap(actRuDetail.getProcessDefinitionId());
         String processSerialNumber = actRuDetail.getProcessSerialNumber();
         String assignee = actRuDetail.getAssignee();
@@ -585,13 +595,14 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             doing.setTaskDefName(actRuDetail.getTaskDefName());
             doing.setSignStatus(
                 null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE : actRuDetail.getSignStatus());
-            doing.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
+            doing.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId())
+                .stream()
                 .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
             actRuDetailRepository.save(doing);
             if (actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO)) {
                 Y9Context.publishEvent(new Y9TodoCreatedEvent<>(doing));
             }
-            return true;
+            return;
         }
         OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
         String deptName = dept.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
@@ -603,7 +614,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         actRuDetail.setSystemName(processParam.getSystemName());
         actRuDetail.setDueDate(processParam.getDueDate());
         actRuDetail.setDeleted(false);
-        actRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId()).stream()
+        actRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId())
+            .stream()
             .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
         OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
         actRuDetail.setBureauId(bureau.getId());
@@ -612,7 +624,6 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             null == actRuDetail.getSignStatus() ? ActRuDetailSignStatusEnum.NONE : actRuDetail.getSignStatus());
         actRuDetailRepository.save(actRuDetail);
         Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail));
-        return true;
     }
 
     @Override
@@ -738,7 +749,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             doing.setTaskDefKey(todo.getTaskDefKey());
             doing.setTaskDefName(todo.getTaskDefName());
             doing.setExecutionId(todo.getExecutionId());
-            doing.setSub(SUB_NODE_MAP.get(todo.getProcessDefinitionId()).stream()
+            doing.setSub(SUB_NODE_MAP.get(todo.getProcessDefinitionId())
+                .stream()
                 .anyMatch(taskDefKey -> taskDefKey.equals(todo.getTaskDefKey())));
             actRuDetailRepository.save(doing);
             actRuDetailRepository.delete(todo);

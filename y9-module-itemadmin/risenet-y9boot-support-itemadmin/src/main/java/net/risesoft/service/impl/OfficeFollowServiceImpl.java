@@ -84,7 +84,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
      *
      * @return
      */
-    private final List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
+    private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
@@ -151,7 +151,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<OfficeFollowModel> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
-        Page<OfficeFollow> followList = null;
+        Page<OfficeFollow> followList;
         if (StringUtils.isBlank(searchName)) {
             followList = officeFollowRepository.findByUserId(userId, pageable);
         } else {
@@ -204,7 +204,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<OfficeFollowModel> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
-        Page<OfficeFollow> followList = null;
+        Page<OfficeFollow> followList;
         if (StringUtils.isBlank(searchName)) {
             followList = officeFollowRepository.findBySystemNameAndUserId(systemName, userId, pageable);
         } else {
@@ -237,6 +237,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                     officeFollow.setTaskAssignee(processParam != null ? processParam.getCompleter() : "");
 
                 }
+                assert processParam != null;
                 officeFollow.setSendDept(processParam.getStartorName());
             } catch (Exception e) {
                 e.printStackTrace();

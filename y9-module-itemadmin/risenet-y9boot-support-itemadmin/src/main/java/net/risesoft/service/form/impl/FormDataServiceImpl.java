@@ -259,7 +259,7 @@ public class FormDataServiceImpl implements FormDataService {
 
     /**
      * 合并具有相同key的Map，对于相同字段，优先保留非null值
-     * 
+     *
      * @param listMap 要合并的Map列表
      * @param key 用于判断相等的键名
      * @return 合并后的Map
@@ -313,7 +313,6 @@ public class FormDataServiceImpl implements FormDataService {
 
     @Override
     public FieldPermModel getFieldPerm(String formId, String fieldName, String taskDefKey, String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         // 写权限
         FieldPermModel model = new FieldPermModel();
         model.setFieldName(fieldName);
@@ -323,8 +322,7 @@ public class FormDataServiceImpl implements FormDataService {
         if (y9FieldPerm != null) {
             model = getFieldPerm(y9FieldPerm);
         } else {
-            model = null;
-            return model;
+            return null;
         }
         return model;
     }
@@ -375,6 +373,7 @@ public class FormDataServiceImpl implements FormDataService {
         String formJson = "";
         try {
             Y9Form y9Form = y9FormRepository.findById(formId).orElse(null);
+            assert y9Form != null;
             formJson = y9Form.getFormJson();
         } catch (Exception e) {
             e.printStackTrace();
@@ -510,9 +509,9 @@ public class FormDataServiceImpl implements FormDataService {
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public String saveAFormData(String itemId, String formdata, String formId) throws Exception {
+    public String saveAFormData(String itemId, String formData, String formId) throws Exception {
         try {
-            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);
+            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formData, Map.class);
             List<Map<String, Object>> listMap = new ArrayList<>();
             Map<String, Object> map = new HashMap<>(16);
             map.put("name", "form_Id");
@@ -526,8 +525,8 @@ public class FormDataServiceImpl implements FormDataService {
                 map.put("value", value);
                 listMap.add(map);
             }
-            formdata = Y9JsonUtil.writeValueAsString(listMap);
-            Y9Result<Object> y9Result = y9FormService.saveFormData(formdata);// 保存前置表单数据
+            formData = Y9JsonUtil.writeValueAsString(listMap);
+            Y9Result<Object> y9Result = y9FormService.saveFormData(formData);// 保存前置表单数据
             if (!y9Result.isSuccess()) {
                 throw new Exception("FormDataService savePreFormData前置表单 error0");
             }
@@ -545,8 +544,8 @@ public class FormDataServiceImpl implements FormDataService {
                 bindFormId = form.getFormId();
             }
             String processSerialNumber = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-            if (!bindFormId.equals("")) {
-                List<Map<String, Object>> list1 = Y9JsonUtil.readValue(formdata, List.class);
+            if (!bindFormId.isEmpty()) {
+                List<Map<String, Object>> list1 = Y9JsonUtil.readValue(formData, List.class);
                 for (Map<String, Object> map1 : list1) {
                     if (map1.get("name").equals("form_Id")) {// 重设表单id
                         map1.put("value", bindFormId);
@@ -556,15 +555,15 @@ public class FormDataServiceImpl implements FormDataService {
                         map1.put("value", processSerialNumber);
                     }
                 }
-                formdata = Y9JsonUtil.writeValueAsString(list1);
-                Y9Result<Object> y9Result2 = y9FormService.saveFormData(formdata);// 保存主表信息
+                formData = Y9JsonUtil.writeValueAsString(list1);
+                Y9Result<Object> y9Result2 = y9FormService.saveFormData(formData);// 保存主表信息
                 if (!y9Result2.isSuccess()) {
                     throw new Exception("FormDataService savePreFormData主表 error0");
                 }
                 return processSerialNumber;// 返回主表主键id
             }
         } catch (Exception e) {
-            LOGGER.error("****************************formdata:" + formdata);
+            LOGGER.error("****************************formData:" + formData);
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
@@ -592,9 +591,9 @@ public class FormDataServiceImpl implements FormDataService {
 
     @Override
     @Transactional
-    public void saveChildTableData(String formId, String formdata) throws Exception {
+    public void saveChildTableData(String formId, String formData) throws Exception {
         try {
-            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);
+            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formData, Map.class);
             List<Map<String, Object>> listMap = new ArrayList<>();
             Map<String, Object> map = new HashMap<>(16);
             map.put("name", "form_Id");
@@ -608,13 +607,13 @@ public class FormDataServiceImpl implements FormDataService {
                 map.put("value", value);
                 listMap.add(map);
             }
-            formdata = Y9JsonUtil.writeValueAsString(listMap);
-            Y9Result<Object> y9Result = y9FormService.saveChildTableData(formId, formdata);
+            formData = Y9JsonUtil.writeValueAsString(listMap);
+            Y9Result<Object> y9Result = y9FormService.saveChildTableData(formId, formData);
             if (!y9Result.isSuccess()) {
                 throw new Exception("FormDataService saveChildTableData error0");
             }
         } catch (Exception e) {
-            LOGGER.error("****************************formdata:" + formdata);
+            LOGGER.error("****************************formData:{}", formData);
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
@@ -627,9 +626,9 @@ public class FormDataServiceImpl implements FormDataService {
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
-    public void saveFormData(String formdata, String formId) throws Exception {
+    public void saveFormData(String formData, String formId) throws Exception {
         try {
-            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formdata, Map.class);
+            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formData, Map.class);
             List<Map<String, Object>> listMap = new ArrayList<>();
             Map<String, Object> map = new HashMap<>(16);
             map.put("name", "form_Id");
@@ -642,13 +641,13 @@ public class FormDataServiceImpl implements FormDataService {
                 map.put("value", mapFormJsonData.get(columnName));
                 listMap.add(map);
             }
-            formdata = Y9JsonUtil.writeValueAsString(listMap);
-            Y9Result<Object> y9Result = y9FormService.saveFormData(formdata);
+            formData = Y9JsonUtil.writeValueAsString(listMap);
+            Y9Result<Object> y9Result = y9FormService.saveFormData(formData);
             if (!y9Result.isSuccess()) {
                 throw new Exception("FormDataService saveFormData error0");
             }
         } catch (Exception e) {
-            LOGGER.error("****************************formdata:" + formdata);
+            LOGGER.error("****************************formData:{}", formData);
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);

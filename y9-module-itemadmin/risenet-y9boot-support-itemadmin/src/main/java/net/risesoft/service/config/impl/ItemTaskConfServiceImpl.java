@@ -64,23 +64,23 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     public void copyTaskConf(String itemId, String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String proDefKey = processDefinitionId.split(":")[0];
-        ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
-        String latestpdId = latestpd.getId();
-        String previouspdId = processDefinitionId;
-        if (processDefinitionId.equals(latestpdId)) {
-            if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd =
-                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
-                previouspdId = previouspd.getId();
+        ProcessDefinitionModel latest = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        String latestId = latest.getId();
+        String previousId = processDefinitionId;
+        if (processDefinitionId.equals(latestId)) {
+            if (latest.getVersion() > 1) {
+                ProcessDefinitionModel previous =
+                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestId).getData();
+                previousId = previous.getId();
             }
         }
-        if (latestpd.getVersion() > 1) {
-            List<ItemTaskConf> confList = taskConfRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
-            List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId).getData();
+        if (latest.getVersion() > 1) {
+            List<ItemTaskConf> confList = taskConfRepository.findByItemIdAndProcessDefinitionId(itemId, previousId);
+            List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestId).getData();
             for (TargetModel targetModel : nodes) {
                 String currentTaskDefKey = targetModel.getTaskDefKey();
                 ItemTaskConf currentConf =
-                    this.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, latestpdId, currentTaskDefKey);
+                    this.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId, latestId, currentTaskDefKey);
                 if (null == currentConf) {
                     for (ItemTaskConf conf : confList) {
                         String previousTaskDefKey = conf.getTaskDefKey();
@@ -88,7 +88,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
                             currentConf = new ItemTaskConf();
                             currentConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                             currentConf.setItemId(itemId);
-                            currentConf.setProcessDefinitionId(latestpdId);
+                            currentConf.setProcessDefinitionId(latestId);
                             currentConf.setSignOpinion(conf.getSignOpinion());
                             currentConf.setSponsor(conf.getSponsor());
                             currentConf.setTaskDefKey(currentTaskDefKey);
@@ -102,7 +102,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
                         String previousTaskDefKey = conf.getTaskDefKey();
                         if (previousTaskDefKey.equals(currentTaskDefKey)) {
                             currentConf.setItemId(itemId);
-                            currentConf.setProcessDefinitionId(latestpdId);
+                            currentConf.setProcessDefinitionId(latestId);
                             currentConf.setSignOpinion(conf.getSignOpinion());
                             currentConf.setSponsor(conf.getSponsor());
                             currentConf.setTaskDefKey(currentTaskDefKey);
@@ -171,7 +171,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
 
     @Override
     public boolean getSponserStatus(String itemId, String processDefinitionId, String taskDefKey) {
-        boolean sponserStatus = false;
+        boolean status = false;
         ItemTaskConf conf;
         if (StringUtils.isEmpty(taskDefKey)) {
             conf =
@@ -181,9 +181,9 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
                 taskDefKey);
         }
         if (null != conf) {
-            sponserStatus = conf.getSponsor();
+            status = conf.getSponsor();
         }
-        return sponserStatus;
+        return status;
     }
 
     @Override
@@ -191,12 +191,12 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     public void save(ItemTaskConf t) {
         String id = t.getId();
         if (StringUtils.isNotBlank(id)) {
-            ItemTaskConf olditc = taskConfRepository.findById(id).orElse(null);
-            assert olditc != null;
-            olditc.setSponsor(t.getSponsor());
-            olditc.setSignOpinion(t.getSignOpinion());
-            olditc.setSignTask(t.getSignTask());
-            taskConfRepository.save(olditc);
+            ItemTaskConf oldItemTaskConf = taskConfRepository.findById(id).orElse(null);
+            assert oldItemTaskConf != null;
+            oldItemTaskConf.setSponsor(t.getSponsor());
+            oldItemTaskConf.setSignOpinion(t.getSignOpinion());
+            oldItemTaskConf.setSignTask(t.getSignTask());
+            taskConfRepository.save(oldItemTaskConf);
             return;
         }
         ItemTaskConf newitc = new ItemTaskConf();
@@ -219,9 +219,8 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
         if (StringUtils.isBlank(id)) {
             entity.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         } else {
-            entity.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            entity.setId(id);
         }
-
         entity.setProcessDefinitionId(processDefinitionId);
         entity.setTaskDefKey(taskDefKey);
         return entity;

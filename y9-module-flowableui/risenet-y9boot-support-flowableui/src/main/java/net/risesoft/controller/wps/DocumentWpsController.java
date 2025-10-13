@@ -444,8 +444,9 @@ public class DocumentWpsController {
             uploadRequest.setFilePath(tempFile.getAbsolutePath());
             UploadTransactionPatchResponse uploadResponse =
                 appFilesApi.appCreateUploadTransaction(volume, root, uploadRequest);
-            tempFile.delete();
-
+            if (!tempFile.delete()) {
+                LOGGER.error("删除临时文件失败");
+            }
             String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();

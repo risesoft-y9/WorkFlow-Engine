@@ -14,9 +14,11 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.entity.entrust.EntrustHistory;
+import net.risesoft.enums.EntrustUseEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.EntrustItemModel;
@@ -117,7 +119,7 @@ public class EntrustServiceImpl implements EntrustService {
             /**
              * 判断是否使用
              */
-            entrust.setUsed(Entrust.NOTUSED);
+            entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
             Date startTime4Date;
@@ -131,9 +133,9 @@ public class EntrustServiceImpl implements EntrustService {
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
-                    entrust.setUsed(Entrust.USING);
+                    entrust.setUsed(EntrustUseEnum.DOING.getValue());
                 } else if (currentDate.after(endTime4Date)) {
-                    entrust.setUsed(Entrust.USED);
+                    entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
             } catch (ParseException e) {
             }
@@ -145,7 +147,7 @@ public class EntrustServiceImpl implements EntrustService {
     public Entrust findOneByOwnerIdAndItemIdAndTime(String ownerId, String itemId, String dateTime) {
         Entrust entrust = entrustRepository.findOneByOwnerIdAndItemIdAndTime(ownerId, itemId, dateTime);
         if (null == entrust || null == entrust.getId()) {
-            entrust = entrustRepository.findOneByOwnerIdAndItemIdAndTime(ownerId, Entrust.ITEMID4ALL, dateTime);
+            entrust = entrustRepository.findOneByOwnerIdAndItemIdAndTime(ownerId, ItemConsts.ITEMID4ALL, dateTime);
         }
         return entrust;
     }
@@ -162,8 +164,8 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setOwnerName(pTemp.getName());
 
             String itemId = entrust.getItemId();
-            if (Entrust.ITEMID4ALL.equals(itemId)) {
-                entrust.setItemName(Entrust.ITEMNAME4ALL);
+            if (ItemConsts.ITEMID4ALL.equals(itemId)) {
+                entrust.setItemName(ItemConsts.ITEMNAME4ALL);
             } else {
                 Item itemTemp = itemService.findById(itemId);
                 if (null == itemTemp || StringUtils.isEmpty(itemTemp.getId())) {
@@ -175,7 +177,7 @@ public class EntrustServiceImpl implements EntrustService {
             /**
              * 判断是否使用
              */
-            entrust.setUsed(Entrust.NOTUSED);
+            entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
             Date startTime4Date;
@@ -189,9 +191,9 @@ public class EntrustServiceImpl implements EntrustService {
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
-                    entrust.setUsed(Entrust.USING);
+                    entrust.setUsed(EntrustUseEnum.DOING.getValue());
                 } else if (currentDate.after(endTime4Date)) {
-                    entrust.setUsed(Entrust.USED);
+                    entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -231,7 +233,7 @@ public class EntrustServiceImpl implements EntrustService {
             /**
              * 判断是否使用
              */
-            entrust.setUsed(Entrust.NOTUSED);
+            entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
             Date startTime4Date;
@@ -245,9 +247,9 @@ public class EntrustServiceImpl implements EntrustService {
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
-                    entrust.setUsed(Entrust.USING);
+                    entrust.setUsed(EntrustUseEnum.DOING.getValue());
                 } else if (currentDate.after(endTime4Date)) {
-                    entrust.setUsed(Entrust.USED);
+                    entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -282,7 +284,7 @@ public class EntrustServiceImpl implements EntrustService {
             /**
              * 判断是否使用
              */
-            entrust.setUsed(Entrust.NOTUSED);
+            entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
             Date startTime4Date = null;
@@ -296,9 +298,9 @@ public class EntrustServiceImpl implements EntrustService {
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
-                    entrust.setUsed(Entrust.USING);
+                    entrust.setUsed(EntrustUseEnum.DOING.getValue());
                 } else if (currentDate.after(endTime4Date)) {
-                    entrust.setUsed(Entrust.USED);
+                    entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -333,7 +335,7 @@ public class EntrustServiceImpl implements EntrustService {
             /**
              * 判断是否使用
              */
-            entrust.setUsed(Entrust.NOTUSED);
+            entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
             Date startTime4Date = null;
@@ -347,9 +349,9 @@ public class EntrustServiceImpl implements EntrustService {
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
-                    entrust.setUsed(Entrust.USING);
+                    entrust.setUsed(EntrustUseEnum.DOING.getValue());
                 } else if (currentDate.after(endTime4Date)) {
-                    entrust.setUsed(Entrust.USED);
+                    entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -370,7 +372,7 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setAssigneeName(pTemp.getName());
             pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
-            entrust.setUsed(Entrust.NOTUSED);// 判断是否使用
+            entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
             Date startTime4Date = null;
@@ -384,9 +386,9 @@ public class EntrustServiceImpl implements EntrustService {
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
-                    entrust.setUsed(Entrust.USING);
+                    entrust.setUsed(EntrustUseEnum.DOING.getValue());
                 } else if (currentDate.after(endTime4Date)) {
-                    entrust.setUsed(Entrust.USED);
+                    entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
             } catch (ParseException e) {
                 e.printStackTrace();
@@ -410,10 +412,10 @@ public class EntrustServiceImpl implements EntrustService {
          * 针对所有事项
          */
         eim = new EntrustItemModel();
-        eim.setItemId(Entrust.ITEMID4ALL);
-        eim.setItemName(Entrust.ITEMNAME4ALL);
+        eim.setItemId(ItemConsts.ITEMID4ALL);
+        eim.setItemName(ItemConsts.ITEMNAME4ALL);
         eim.setOwnerId(userId);
-        count = this.getCountByOwnerIdAndItemId(userId, Entrust.ITEMID4ALL);
+        count = this.getCountByOwnerIdAndItemId(userId, ItemConsts.ITEMID4ALL);
         isEntrust = 0 != count;
         eim.setIsEntrust(isEntrust);
         eimList.add(eim);
@@ -437,7 +439,7 @@ public class EntrustServiceImpl implements EntrustService {
         List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(orgUnitId);
         List<EntrustModel> list = new ArrayList<>();
         for (Entrust entrust : entrustList) {
-            entrust.setUsed(Entrust.NOTUSED);// 判断是否使用
+            entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
             Date startTime4Date = null;
@@ -451,9 +453,9 @@ public class EntrustServiceImpl implements EntrustService {
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
                 if (b) {
-                    entrust.setUsed(Entrust.USING);
+                    entrust.setUsed(EntrustUseEnum.DOING.getValue());
                 } else if (currentDate.after(endTime4Date)) {
-                    entrust.setUsed(Entrust.USED);
+                    entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
             } catch (ParseException e) {
                 e.printStackTrace();

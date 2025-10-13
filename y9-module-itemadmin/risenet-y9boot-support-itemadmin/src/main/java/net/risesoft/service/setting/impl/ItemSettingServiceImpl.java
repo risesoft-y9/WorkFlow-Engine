@@ -78,7 +78,7 @@ public class ItemSettingServiceImpl implements ItemSettingService {
     }
 
     @Transactional
-    private void saveObjectFiledAsSettingItem(AbstractSetting setting) {
+    public void saveObjectFiledAsSettingItem(AbstractSetting setting) {
         Field[] declaredFields = setting.getClass().getDeclaredFields();
         for (Field declaredField : declaredFields) {
             declaredField.setAccessible(true);

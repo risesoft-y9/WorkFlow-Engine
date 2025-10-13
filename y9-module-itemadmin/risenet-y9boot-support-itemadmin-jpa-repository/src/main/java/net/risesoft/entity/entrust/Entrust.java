@@ -27,22 +27,6 @@ import lombok.NoArgsConstructor;
 @org.hibernate.annotations.Table(comment = "出差委托表", appliesTo = "FF_ENTRUST")
 public class Entrust implements Serializable {
 
-    public static final String ITEMID4ALL = "ALL";
-
-    public static final String ITEMNAME4ALL = "所有事项";
-    /**
-     * 未使用
-     */
-    public static final Integer NOTUSED = 0;
-    /**
-     * 使用中
-     */
-    public static final Integer USING = 1;
-    /**
-     * 已使用
-     */
-    public static final Integer USED = 2;
-
     private static final long serialVersionUID = 6623504879552636137L;
     /**
      * 唯一标示

@@ -57,18 +57,15 @@ import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.ProcessTrackService;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.TaskRelatedService;
-import net.risesoft.service.core.ActRuDetailService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.word.Y9WordHistoryService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;
 
-/*
+/**
  * @author qinman
- *
  * @author zhangchongjie
- *
  * @date 2022/12/20
  */
 @Slf4j
@@ -107,8 +104,6 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
-    private final ActRuDetailService actRuDetailService;
-
     private final SignDeptDetailService signDeptDetailService;
 
     private final PositionApi positionApi;
@@ -124,7 +119,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         return this.processTrackRepository.findById(id).orElse(null);
     }
 
-    private HistoryProcessModel getHistoryProcessModel(HistoricTaskInstanceModel hai, int tabIndex, String year) {
+    private HistoryProcessModel getHistoryProcessModel(HistoricTaskInstanceModel hai, int tabIndex) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         HistoryProcessModel model = new HistoryProcessModel();
@@ -194,9 +189,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                             }
                         });
                     } else {
-                        personListTemp.forEach(p -> {
-                            p.setTabIndex(ProcessTrackStatusEnum.UNCLAIMED.getValue());
-                        });
+                        personListTemp.forEach(p -> p.setTabIndex(ProcessTrackStatusEnum.UNCLAIMED.getValue()));
                     }
                     personList.addAll(personListTemp);
                 });
@@ -366,8 +359,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 results = this.historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
             }
         }
-        for (int i = 0; i < results.size(); i++) {
-            HistoricTaskInstanceModel hai = results.get(i);
+        for (HistoricTaskInstanceModel hai : results) {
             if (hai == null) {
                 continue;
             }
@@ -447,10 +439,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                             this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
                                 .getData();
                         if (j < 5) {
-                            assignees =
-                                Y9Util.genCustomStr(assignees, ownerUser == null ? "岗位不存在" : ownerUser.getName(), "、");
+                            Y9Util.genCustomStr(assignees, ownerUser == null ? "岗位不存在" : ownerUser.getName(), "、");
                         } else {
-                            assignees.append("等，共" + iList.size() + "人");
+                            assignees.append("等，共").append(iList.size()).append("人");
                             break;
                         }
                         j++;
@@ -458,7 +449,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     model.setAssignee(assignees.toString());
                 }
             }
-            Integer newToDo = 0;
+            int newToDo = 0;
             if (hai.getEndTime() == null) {
                 TaskModel taskModel = this.taskApi.findById(tenantId, taskId).getData();
                 newToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
@@ -509,7 +500,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
              */
             Date endTime1 = hai.getEndTime();
             List<ProcessTrack> ptList = this.listByTaskId(taskId);
-            if (ptList.size() >= 1) {
+            if (!ptList.isEmpty()) {
                 model.setEndTime(endTime1 == null ? "" : DATE_FORMAT.format(endTime1));
                 try {
                     model.setEndTimes(endTime1 == null ? 0 : DATE_FORMAT.parse(sdf.format(endTime1)).getTime());
@@ -616,8 +607,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 results = this.historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
             }
         }
-        for (int i = 0; i < results.size(); i++) {
-            HistoricTaskInstanceModel hai = results.get(i);
+        for (HistoricTaskInstanceModel hai : results) {
             if (hai == null) {
                 continue;
             }
@@ -667,10 +657,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                             this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
                                 .getData();
                         if (j < 5) {
-                            assignees =
-                                Y9Util.genCustomStr(assignees, ownerUser != null ? ownerUser.getName() : "岗位不存在", "、");
+                            Y9Util.genCustomStr(assignees, ownerUser != null ? ownerUser.getName() : "岗位不存在", "、");
                         } else {
-                            assignees.append("等，共" + iList.size() + "人");
+                            assignees.append("等，共").append(iList.size()).append("人");
                             break;
                         }
                         j++;
@@ -686,13 +675,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
              */
             Date endTime1 = hai.getEndTime();
             List<ProcessTrack> ptList = this.listByTaskId(taskId);
-            if (ptList.size() >= 1) {
-                history.setEndTime(endTime1 == null ? "" : DATE_FORMAT.format(endTime1));
-                history.setTime(this.longTime(hai.getStartTime(), endTime1));
-            } else {
-                history.setEndTime(endTime1 == null ? "" : DATE_FORMAT.format(endTime1));
-                history.setTime(this.longTime(hai.getStartTime(), endTime1));
-            }
+            history.setEndTime(endTime1 == null ? "" : DATE_FORMAT.format(endTime1));
+            history.setTime(this.longTime(hai.getStartTime(), endTime1));
             items.add(history);
             for (ProcessTrack pt : ptList) {
                 HistoryProcessModel process = new HistoryProcessModel();
@@ -791,7 +775,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
          * 主流程历程
          */
         for (HistoricTaskInstanceModel htiMain : mainResults) {
-            HistoryProcessModel historyProcessModel = this.getHistoryProcessModel(htiMain, tabIndex++, year);
+            HistoryProcessModel historyProcessModel = this.getHistoryProcessModel(htiMain, tabIndex++);
             items.add(historyProcessModel);
             items.addAll(this.getHistoryProcessModel(historyProcessModel));
             /*
@@ -809,12 +793,12 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 int subTabIndex = 1;
                 for (HistoricTaskInstanceModel hti : subResults) {
                     if (hti.getExecutionId().equals(signDeptDetail.getExecutionId())) {
-                        twoProcessList.add(this.getHistoryProcessModel(hti, subTabIndex++, year));
+                        twoProcessList.add(this.getHistoryProcessModel(hti, subTabIndex++));
                     }
                 }
                 oneModel.setTabIndex(tabIndex++);
                 oneModel.setChildren(twoProcessList);
-                oneModel.setStartTime(twoProcessList.size() > 0 ? twoProcessList.get(0).getStartTime() : "");
+                oneModel.setStartTime(!twoProcessList.isEmpty() ? twoProcessList.get(0).getStartTime() : "");
                 items.add(oneModel);
             }
         }
@@ -837,13 +821,11 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         return this.processTrackRepository.findByTaskIdAsc(taskId);
     }
 
-    private final String longTime(Date startTime, Date endTime) {
+    private String longTime(Date startTime, Date endTime) {
         if (endTime == null) {
             return "";
         } else {
-            Date d1 = endTime;
-            Date d2 = startTime;
-            long time = d1.getTime() - d2.getTime();
+            long time = endTime.getTime() - startTime.getTime();
             time = time / 1000;
             int s = (int)(time % 60);
             int m = (int)(time / 60 % 60);
@@ -859,26 +841,26 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = pt.getId();
         if (StringUtils.isNotEmpty(id)) {
-            Optional<ProcessTrack> oldptOption = this.processTrackRepository.findById(id);
-            if (oldptOption.isPresent()) {
-                ProcessTrack oldpt = oldptOption.get();
-                oldpt.setEndTime(sdf.format(new Date()));
-                oldpt.setDescribed(pt.getDescribed());
-                return this.processTrackRepository.save(oldpt);
+            Optional<ProcessTrack> option = this.processTrackRepository.findById(id);
+            if (option.isPresent()) {
+                ProcessTrack oldProcessTrack = option.get();
+                oldProcessTrack.setEndTime(sdf.format(new Date()));
+                oldProcessTrack.setDescribed(pt.getDescribed());
+                return this.processTrackRepository.save(oldProcessTrack);
             }
         }
-        ProcessTrack newpt = new ProcessTrack();
-        newpt.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newpt.setProcessInstanceId(pt.getProcessInstanceId());
-        newpt.setTaskId(pt.getTaskId());
-        newpt.setTaskDefName(pt.getTaskDefName());
-        newpt.setSenderName(pt.getSenderName());
-        newpt.setReceiverName(pt.getReceiverName());
-        newpt.setTaskDefName(pt.getTaskDefName());
-        newpt.setStartTime(pt.getStartTime());
-        newpt.setEndTime(pt.getEndTime());
-        newpt.setDescribed(pt.getDescribed());
-        this.processTrackRepository.save(newpt);
-        return newpt;
+        ProcessTrack newProcessTrack = new ProcessTrack();
+        newProcessTrack.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newProcessTrack.setProcessInstanceId(pt.getProcessInstanceId());
+        newProcessTrack.setTaskId(pt.getTaskId());
+        newProcessTrack.setTaskDefName(pt.getTaskDefName());
+        newProcessTrack.setSenderName(pt.getSenderName());
+        newProcessTrack.setReceiverName(pt.getReceiverName());
+        newProcessTrack.setTaskDefName(pt.getTaskDefName());
+        newProcessTrack.setStartTime(pt.getStartTime());
+        newProcessTrack.setEndTime(pt.getEndTime());
+        newProcessTrack.setDescribed(pt.getDescribed());
+        this.processTrackRepository.save(newProcessTrack);
+        return newProcessTrack;
     }
 }

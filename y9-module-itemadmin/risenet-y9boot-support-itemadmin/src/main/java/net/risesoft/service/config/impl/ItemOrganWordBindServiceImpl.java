@@ -64,6 +64,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
+        assert item != null : "不存在itemId=" + itemId + "事项";
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestPd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestPdId = latestPd.getId();

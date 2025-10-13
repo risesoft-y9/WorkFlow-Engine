@@ -101,15 +101,19 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                         TargetModel targetModel = targetModelList.get(0);
                         String routeToTaskId = targetModel.getTaskDefKey();
                         String multiInstance = targetModel.getMultiInstance();
-                        List<String> userChoiceList = documentService.parserUser(itemId, processDefinitionId,
-                            routeToTaskId, targetModel.getTaskDefName(), processInstanceId, multiInstance).getData();
+                        List<String> userChoiceList =
+                            documentService
+                                .parserUser(itemId, processDefinitionId, routeToTaskId, targetModel.getTaskDefName(),
+                                    processInstanceId, multiInstance)
+                                .getData();
                         if (userChoiceList != null && !userChoiceList.isEmpty()) {
                             // String userChoice = "";
                             // for (String userId : userChoiceList) {
                             // userChoice = Y9Util.genCustomStr(userChoice, "6:" + userId, ";");
                             // }
-                            String subProcessStr = variableApi
-                                .getVariableByProcessInstanceId(tenantId, processInstanceId, "subProcessNum").getData();
+                            String subProcessStr =
+                                variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, "subProcessNum")
+                                    .getData();
                             if (subProcessStr != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
                                 if (SysVariables.PARALLEL.equals(multiInstance)) {// 并行节点才执行
                                     String userChoice = userChoiceList.get(0);
@@ -131,6 +135,26 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                     }
                 }
             }
+        } catch (InterruptedException e) {
+            // 重新中断当前线程
+            Thread.currentThread().interrupt();
+            // 记录中断日志
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            LOGGER.info("*****loopSending循环发送被中断*****");
+            String time = sdf.format(new Date());
+            String msg = "Thread was interrupted during execution";
+            // 保存中断日志
+            ErrorLog errorLog = new ErrorLog();
+            errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            errorLog.setCreateTime(time);
+            errorLog.setErrorFlag("loopSending循环发送被中断");
+            errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
+            errorLog.setExtendField("loopSending循环发送被中断:" + taskDefinitionKey);
+            errorLog.setProcessInstanceId(processInstanceId);
+            errorLog.setTaskId(taskId);
+            errorLog.setText(msg);
+            errorLog.setUpdateTime(time);
+            errorLogService.saveErrorLog(errorLog);
         } catch (Exception e) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             LOGGER.info("*****loopSending循环发送发生异常*****");
@@ -153,5 +177,4 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
             errorLogService.saveErrorLog(errorLog);
         }
     }
-
 }

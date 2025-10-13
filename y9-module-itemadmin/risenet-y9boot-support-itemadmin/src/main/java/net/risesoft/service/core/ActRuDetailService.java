@@ -364,7 +364,7 @@ public interface ActRuDetailService {
      * @param actRuDetail
      * @return
      */
-    boolean saveOrUpdate(ActRuDetail actRuDetail);
+    void saveOrUpdate(ActRuDetail actRuDetail);
 
     /**
      * 签收
