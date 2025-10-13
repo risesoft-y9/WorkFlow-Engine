@@ -53,20 +53,15 @@ public class ItemWorkDayServiceImpl implements ItemWorkDayService {
         Date startDateTemp = sdf.parse(sdf.format(startDate));
         Date endDateTemp = sdf.parse(sdf.format(endDate));
         // startDateTemp不大于endDateTemp则进入
-        while (startDateTemp.compareTo(endDateTemp) != 1) {
+        while (startDateTemp.compareTo(endDateTemp) <= 0) {
             cal.setTime(startDateTemp);
             String time1 = sdf.format(startDateTemp);
             // 节假日包含开始时间，则天数减1
-            if (everyYearHoliday.contains(time1)) {
-                // 开始时间加1天继续判断
-                cal.add(Calendar.DAY_OF_MONTH, +1);
-                startDateTemp = sdf.parse(sdf.format(cal.getTime()));
-            } else {
+            if (!everyYearHoliday.contains(time1)) {
                 days += 1;
-                // 开始时间加1天继续判断
-                cal.add(Calendar.DAY_OF_MONTH, +1);
-                startDateTemp = sdf.parse(sdf.format(cal.getTime()));
             }
+            cal.add(Calendar.DAY_OF_MONTH, +1);
+            startDateTemp = sdf.parse(sdf.format(cal.getTime()));
         }
         return days;
     }

@@ -104,7 +104,7 @@ public class FlowableLogConfiguration {
 
         @Primary
         @Bean("y9KafkaTemplate")
-        public KafkaTemplate<?, ?> y9KafkaTemplate(ProducerFactory<Object, Object> kafkaProducerFactory) {
+        public KafkaTemplate<String, Object> y9KafkaTemplate(ProducerFactory<String, Object> kafkaProducerFactory) {
             FlowableLogKafkaConfiguration.LOGGER.error("FlowableLogKafkaConfiguration y9KafkaTemplate init ......");
             return new KafkaTemplate<>(kafkaProducerFactory);
         }

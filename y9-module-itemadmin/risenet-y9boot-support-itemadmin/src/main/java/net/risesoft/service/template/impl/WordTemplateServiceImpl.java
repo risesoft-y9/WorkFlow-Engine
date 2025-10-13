@@ -81,13 +81,11 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             assert wordTemplate != null;
             byte[] b = y9FileStoreService.downloadFileToBytes(wordTemplate.getFilePath());
             int length = b.length;
-            String filename = "", firefox = "firefox", msie = "MSIE";
+            String filename, firefox = "firefox";
             String userAgent = request.getHeader("User-Agent").toLowerCase();
             if (userAgent.contains(firefox)) {
                 filename = new String(wordTemplate.getFileName().getBytes(StandardCharsets.UTF_8),
                     StandardCharsets.ISO_8859_1);
-            } else if (userAgent.contains(msie)) {
-                filename = URLEncoder.encode(wordTemplate.getFileName(), StandardCharsets.UTF_8);
             } else {
                 filename = URLEncoder.encode(wordTemplate.getFileName(), StandardCharsets.UTF_8);
             }
@@ -116,9 +114,10 @@ public class WordTemplateServiceImpl implements WordTemplateService {
         String wordTemplateType) {
         try {
             WordTemplate wordTemplate = wordTemplateRepository.findById(wordTemplateId).orElse(null);
+            assert wordTemplate != null;
             byte[] b = y9FileStoreService.downloadFileToBytes(wordTemplate.getFilePath());
             InputStream is = new ByteArrayInputStream(b);
-            List<String> bookMarkNameList = new ArrayList<>();
+            List<String> bookMarkNameList;
             String doc = "doc";
             if (doc.equals(wordTemplateType)) {
                 bookMarkNameList = Y9WordTool4Doc.getBookmarkNameList(is);
@@ -126,8 +125,8 @@ public class WordTemplateServiceImpl implements WordTemplateService {
                 bookMarkNameList = Y9WordTool4Docx.getBookMarkNameList(is);
             }
             List<Map<String, Object>> items = new ArrayList<>();
-            Map<String, Object> mapTemp = null;
-            BookMarkBind bookMarkBind = null;
+            Map<String, Object> mapTemp;
+            BookMarkBind bookMarkBind;
             for (String bookMarkName : bookMarkNameList) {
                 mapTemp = new HashMap<>(16);
                 mapTemp.put("bookMarkName", bookMarkName);
@@ -177,11 +176,10 @@ public class WordTemplateServiceImpl implements WordTemplateService {
                 oldWord.setUploadTime(new Date());
 
                 wordTemplateRepository.save(oldWord);
-                return;
             } else {
                 wordTemplateRepository.save(wordTemplate);
-                return;
             }
+            return;
         }
 
         WordTemplate newWord = new WordTemplate();
@@ -199,10 +197,10 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> upload(MultipartFile file) {
         String[] fileNames = Objects.requireNonNull(file.getOriginalFilename()).split("\\\\");
-        String fileName = "";
+        String fileName;
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
         try {

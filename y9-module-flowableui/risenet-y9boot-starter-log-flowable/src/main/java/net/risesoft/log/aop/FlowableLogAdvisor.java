@@ -3,7 +3,6 @@ package net.risesoft.log.aop;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Method;
 
-import org.aopalliance.aop.Advice;
 import org.springframework.aop.support.StaticMethodMatcherPointcutAdvisor;
 import org.springframework.core.annotation.AnnotationUtils;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -63,10 +62,5 @@ public class FlowableLogAdvisor extends StaticMethodMatcherPointcutAdvisor {
         }
 
         return false;
-    }
-
-    @Override
-    public void setAdvice(Advice advice) {
-        super.setAdvice(advice);
     }
 }

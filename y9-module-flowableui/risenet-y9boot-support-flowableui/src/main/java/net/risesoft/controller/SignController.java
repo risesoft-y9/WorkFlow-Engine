@@ -59,7 +59,7 @@ public class SignController {
         Calendar cal = Calendar.getInstance();
         Date startTime1 = sdf.parse(startTime);// 转成yyyy-MM-dd格式
         Date endTime1 = sdf.parse(endTime);// 转成yyyy-MM-dd格式
-        while (startTime1.compareTo(endTime1) != 1) {// startTime1不大于endTime1则进入
+        while (startTime1.compareTo(endTime1) <= 0) {// startTime1不大于endTime1则进入
             cal.setTime(startTime1);
             String time1 = sdf.format(startTime1);
             if (everyYearHoliday.contains(time1)) {// 节假日包含开始时间，则天数减1
@@ -128,11 +128,11 @@ public class SignController {
             dayStr = calendarConfig.getEveryYearHoliday();
             switch (type) {
                 case "天": {
-                    boolean isdel = !StringUtils.isNotBlank(leaveType) || (!leaveType.equals("离京报备")
+                    boolean isDel = !StringUtils.isNotBlank(leaveType) || (!leaveType.equals("离京报备")
                         && !leaveType.equals("产假") && !leaveType.equals("婚假") && !leaveType.equals("陪产假"));
                     // 产假不排除节假日，直接算天数
                     if (leaveStartTime.equals(leaveEndTime)) {
-                        if (isdel && dayStr.contains(leaveStartTime)) {
+                        if (isDel && dayStr.contains(leaveStartTime)) {
                             return Y9Result.success("0", "获取成功");
                         }
                     }
@@ -140,7 +140,7 @@ public class SignController {
                     int num = 0;
                     while (tmp.compareTo(leaveEndTime) <= 0) {
                         LOGGER.debug("tmp={}", tmp);
-                        if (isdel) {
+                        if (isDel) {
                             if (!dayStr.contains(tmp)) {
                                 num++;
                             }

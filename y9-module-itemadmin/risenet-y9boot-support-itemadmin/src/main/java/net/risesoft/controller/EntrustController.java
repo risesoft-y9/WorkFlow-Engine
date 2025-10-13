@@ -20,6 +20,7 @@ import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.entrust.Entrust;
@@ -159,8 +160,8 @@ public class EntrustController {
         Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotEmpty(id)) {
             Entrust entrust = entrustService.getById(id);
-            if (entrust.getItemId().equals(Entrust.ITEMID4ALL)) {
-                entrust.setItemName(Entrust.ITEMNAME4ALL);
+            if (entrust.getItemId().equals(ItemConsts.ITEMID4ALL)) {
+                entrust.setItemName(ItemConsts.ITEMNAME4ALL);
             } else {
                 Item item = itemRepository.findById(entrust.getItemId()).orElse(null);
                 entrust.setItemName(item != null ? item.getName() : "事项不存在");
@@ -169,11 +170,12 @@ public class EntrustController {
         }
         List<Item> itemList = itemRepository.findAll();
         List<Item> list = new ArrayList<>();
-        Integer count = entrustService.getCountByOwnerIdAndItemId(Y9LoginUserHolder.getPersonId(), Entrust.ITEMID4ALL);
+        Integer count =
+            entrustService.getCountByOwnerIdAndItemId(Y9LoginUserHolder.getPersonId(), ItemConsts.ITEMID4ALL);
         if (count == 0) {
             Item item = new Item();
-            item.setId(Entrust.ITEMID4ALL);
-            item.setName(Entrust.ITEMNAME4ALL);
+            item.setId(ItemConsts.ITEMID4ALL);
+            item.setName(ItemConsts.ITEMNAME4ALL);
             list.add(item);
         }
         for (Item item : itemList) {

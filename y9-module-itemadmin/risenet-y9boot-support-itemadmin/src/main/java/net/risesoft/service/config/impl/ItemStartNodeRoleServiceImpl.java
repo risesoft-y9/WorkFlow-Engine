@@ -61,48 +61,50 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
+        assert item != null : "不存在itemId=" + itemId + "事项";
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
-        String latestpdId = latestpd.getId();
-        String previouspdId = processDefinitionId;
-        if (processDefinitionId.equals(latestpdId)) {
-            if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd =
-                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
-                previouspdId = previouspd.getId();
+        ProcessDefinitionModel latestPd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        String latestPdId = latestPd.getId();
+        String previousId = processDefinitionId;
+        if (processDefinitionId.equals(latestPdId)) {
+            if (latestPd.getVersion() > 1) {
+                ProcessDefinitionModel previousPd =
+                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestPdId).getData();
+                previousId = previousPd.getId();
             }
         }
         List<ItemStartNodeRole> isnrList =
-            itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
+            itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionId(itemId, previousId);
 
-        String startNodeKey = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, latestpdId).getData();
-        List<TargetModel> nodes = processDefinitionApi.getTargetNodes(tenantId, latestpdId, startNodeKey).getData();
+        String startNodeKey = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, latestPdId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getTargetNodes(tenantId, latestPdId, startNodeKey).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
-            for (ItemStartNodeRole isnr : isnrList) {
-                if (currentTaskDefKey.equals(isnr.getTaskDefKey())) {
-                    ItemStartNodeRole oldisnr = itemStartNodeRoleRepository
-                        .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, latestpdId, currentTaskDefKey);
-                    if (null == oldisnr) {
+            for (ItemStartNodeRole ItemStartNodeRole : isnrList) {
+                if (currentTaskDefKey.equals(ItemStartNodeRole.getTaskDefKey())) {
+                    ItemStartNodeRole oldItemStartNodeRole = itemStartNodeRoleRepository
+                        .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, latestPdId, currentTaskDefKey);
+                    if (null == oldItemStartNodeRole) {
                         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        oldisnr = new ItemStartNodeRole();
-                        oldisnr.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                        oldisnr.setItemId(itemId);
-                        oldisnr.setProcessDefinitionId(latestpdId);
-                        oldisnr.setTaskDefKey(currentTaskDefKey);
-                        oldisnr.setRoleIds(isnr.getRoleIds());
-                        oldisnr.setUserName(userName);
-                        oldisnr.setCreateTime(sdf.format(new Date()));
-                        Integer index = itemStartNodeRoleRepository.getMaxTabIndex(itemId, latestpdId);
+                        oldItemStartNodeRole = new ItemStartNodeRole();
+                        oldItemStartNodeRole.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                        oldItemStartNodeRole.setItemId(itemId);
+                        oldItemStartNodeRole.setProcessDefinitionId(latestPdId);
+                        oldItemStartNodeRole.setTaskDefKey(currentTaskDefKey);
+                        oldItemStartNodeRole.setRoleIds(ItemStartNodeRole.getRoleIds());
+                        oldItemStartNodeRole.setUserName(userName);
+                        oldItemStartNodeRole.setCreateTime(sdf.format(new Date()));
+                        Integer index = itemStartNodeRoleRepository.getMaxTabIndex(itemId, latestPdId);
                         if (index == null) {
-                            oldisnr.setTabIndex(1);
+                            oldItemStartNodeRole.setTabIndex(1);
                         } else {
-                            oldisnr.setTabIndex(index + 1);
+                            oldItemStartNodeRole.setTabIndex(index + 1);
                         }
-                        itemStartNodeRoleRepository.save(oldisnr);
+                        itemStartNodeRoleRepository.save(oldItemStartNodeRole);
                     } else {
-                        String oldRoleIds = oldisnr.getRoleIds();
-                        String newRoleIds = StringUtils.isNotBlank(isnr.getRoleIds()) ? isnr.getRoleIds() : "";
+                        String oldRoleIds = oldItemStartNodeRole.getRoleIds();
+                        String newRoleIds = StringUtils.isNotBlank(ItemStartNodeRole.getRoleIds())
+                            ? ItemStartNodeRole.getRoleIds() : "";
                         String[] newRoleIdArr = newRoleIds.split(";");
                         Role role;
                         for (String newRoleId : newRoleIdArr) {
@@ -117,8 +119,8 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                                 }
                             }
                         }
-                        oldisnr.setRoleIds(oldRoleIds);
-                        itemStartNodeRoleRepository.save(oldisnr);
+                        oldItemStartNodeRole.setRoleIds(oldRoleIds);
+                        itemStartNodeRoleRepository.save(oldItemStartNodeRole);
                     }
                 }
             }
@@ -152,29 +154,30 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         String startTaskDefKey = "", tenantId = Y9LoginUserHolder.getTenantId(),
             userId = Y9LoginUserHolder.getOrgUnitId();
         Item item = itemRepository.findById(itemId).orElse(null);
+        assert item != null : "不存在itemId=" + itemId + "事项";
         String processDefinitionKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd =
+        ProcessDefinitionModel latestPd =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-        String processDefinitionId = latestpd.getId();
+        String processDefinitionId = latestPd.getId();
         List<ItemStartNodeRole> list = itemStartNodeRoleRepository
             .findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId, processDefinitionId);
         if (list.size() > 1) {
             list:
-            for (ItemStartNodeRole isnr : list) {
-                if (1 != isnr.getTabIndex()) {
-                    String roleIds = isnr.getRoleIds();
+            for (ItemStartNodeRole itemStartNodeRole : list) {
+                if (1 != itemStartNodeRole.getTabIndex()) {
+                    String roleIds = itemStartNodeRole.getRoleIds();
                     if (StringUtils.isNotEmpty(roleIds)) {
                         String[] roleIdArr = roleIds.split(";");
                         for (String roleId : roleIdArr) {
                             boolean has = positionRoleApi.hasRole(tenantId, roleId, userId).getData();
                             if (has) {
-                                startTaskDefKey = isnr.getTaskDefKey();
+                                startTaskDefKey = itemStartNodeRole.getTaskDefKey();
                                 break list;
                             }
                         }
                     }
                 } else {
-                    startTaskDefKey = isnr.getTaskDefKey();
+                    startTaskDefKey = itemStartNodeRole.getTaskDefKey();
                     break;
                 }
             }
@@ -194,19 +197,20 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     public List<ItemStartNodeRoleModel> getAllStartTaskDefKey(String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
         Item item = itemRepository.findById(itemId).orElse(null);
+        assert item != null : "不存在itemId=" + itemId + "事项";
         String processDefinitionKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd =
+        ProcessDefinitionModel latestPd =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-        String processDefinitionId = latestpd.getId();
+        String processDefinitionId = latestPd.getId();
         List<ItemStartNodeRole> list = itemStartNodeRoleRepository
             .findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId, processDefinitionId);
         List<ItemStartNodeRoleModel> itemStartNodeRoleModelList = new ArrayList<>();
         ItemStartNodeRoleModel itemStartNodeRoleModel;
-        for (ItemStartNodeRole isnr : list) {
-            String roleIds = isnr.getRoleIds();
+        for (ItemStartNodeRole itemStartNodeRole : list) {
+            String roleIds = itemStartNodeRole.getRoleIds();
             if (StringUtils.isEmpty(roleIds)) {
                 itemStartNodeRoleModel = new ItemStartNodeRoleModel();
-                Y9BeanUtil.copyProperties(isnr, itemStartNodeRoleModel);
+                Y9BeanUtil.copyProperties(itemStartNodeRole, itemStartNodeRoleModel);
                 itemStartNodeRoleModelList.add(itemStartNodeRoleModel);
             } else {
                 String[] roleIdArr = roleIds.split(";");
@@ -214,7 +218,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                     boolean has = positionRoleApi.hasRole(tenantId, roleId, userId).getData();
                     if (has) {
                         itemStartNodeRoleModel = new ItemStartNodeRoleModel();
-                        Y9BeanUtil.copyProperties(isnr, itemStartNodeRoleModel);
+                        Y9BeanUtil.copyProperties(itemStartNodeRole, itemStartNodeRoleModel);
                         itemStartNodeRoleModelList.add(itemStartNodeRoleModel);
                     }
                 }
@@ -229,26 +233,26 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     public void initRole(String itemId, String processDefinitionId, String taskDefKey, String taskDefName) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();
-        ItemStartNodeRole isnr =
+        ItemStartNodeRole itemStartNodeRole =
             this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-        if (null == isnr) {
+        if (null == itemStartNodeRole) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            isnr = new ItemStartNodeRole();
-            isnr.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            isnr.setItemId(itemId);
-            isnr.setProcessDefinitionId(processDefinitionId);
-            isnr.setTaskDefKey(taskDefKey);
-            isnr.setTaskDefName(taskDefName);
-            isnr.setRoleIds("");
-            isnr.setUserName(userName);
-            isnr.setCreateTime(sdf.format(new Date()));
+            itemStartNodeRole = new ItemStartNodeRole();
+            itemStartNodeRole.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            itemStartNodeRole.setItemId(itemId);
+            itemStartNodeRole.setProcessDefinitionId(processDefinitionId);
+            itemStartNodeRole.setTaskDefKey(taskDefKey);
+            itemStartNodeRole.setTaskDefName(taskDefName);
+            itemStartNodeRole.setRoleIds("");
+            itemStartNodeRole.setUserName(userName);
+            itemStartNodeRole.setCreateTime(sdf.format(new Date()));
             Integer index = itemStartNodeRoleRepository.getMaxTabIndex(itemId, processDefinitionId);
             if (index == null) {
-                isnr.setTabIndex(1);
+                itemStartNodeRole.setTabIndex(1);
             } else {
-                isnr.setTabIndex(index + 1);
+                itemStartNodeRole.setTabIndex(index + 1);
             }
-            itemStartNodeRoleRepository.save(isnr);
+            itemStartNodeRoleRepository.save(itemStartNodeRole);
         }
     }
 
@@ -262,10 +266,10 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     public List<Role> listRoleByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
         String taskDefKey) {
         List<Role> list = new ArrayList<>();
-        ItemStartNodeRole isnr =
+        ItemStartNodeRole itemStartNodeRole =
             this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-        if (null != isnr && StringUtils.isNotEmpty(isnr.getRoleIds())) {
-            String roleIds = isnr.getRoleIds();
+        if (null != itemStartNodeRole && StringUtils.isNotEmpty(itemStartNodeRole.getRoleIds())) {
+            String roleIds = itemStartNodeRole.getRoleIds();
             String[] roleIdArr = roleIds.split(";");
             Role role;
             for (String roleId : roleIdArr) {
@@ -285,10 +289,10 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     public void removeRole(String itemId, String processDefinitionId, String taskDefKey, String roleIds) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();
-        ItemStartNodeRole isnr =
+        ItemStartNodeRole itemStartNodeRole =
             this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-        if (null != isnr) {
-            String oldRoleIds = isnr.getRoleIds();
+        if (null != itemStartNodeRole) {
+            String oldRoleIds = itemStartNodeRole.getRoleIds();
             String[] oldRoleIdArr = oldRoleIds.split(";");
             String[] roleIdArr = roleIds.split(",");
             String newRoleIds = "";
@@ -308,9 +312,9 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                     }
                 }
             }
-            isnr.setRoleIds(newRoleIds);
-            isnr.setUserName(userName);
-            itemStartNodeRoleRepository.save(isnr);
+            itemStartNodeRole.setRoleIds(newRoleIds);
+            itemStartNodeRole.setUserName(userName);
+            itemStartNodeRoleRepository.save(itemStartNodeRole);
         }
     }
 
@@ -322,10 +326,10 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         List<ItemStartNodeRole> oldtibList = new ArrayList<>();
         for (String idAndTabIndex : idAndTabIndexs) {
             String[] arr = idAndTabIndex.split(SysVariables.COLON);
-            ItemStartNodeRole oldisnr = this.findById(arr[0]);
-            oldisnr.setTabIndex(Integer.valueOf(arr[1]));
-            oldisnr.setUserName(userName);
-            oldtibList.add(oldisnr);
+            ItemStartNodeRole oldItemStartNodeRole = this.findById(arr[0]);
+            oldItemStartNodeRole.setTabIndex(Integer.valueOf(arr[1]));
+            oldItemStartNodeRole.setUserName(userName);
+            oldtibList.add(oldItemStartNodeRole);
         }
         itemStartNodeRoleRepository.saveAll(oldtibList);
     }
@@ -335,10 +339,10 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     public void saveRole(String itemId, String processDefinitionId, String taskDefKey, String roleIds) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userName = person.getName();
-        ItemStartNodeRole isnr =
+        ItemStartNodeRole itemStartNodeRole =
             this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-        if (null != isnr) {
-            String oldRoleIds = isnr.getRoleIds();
+        if (null != itemStartNodeRole) {
+            String oldRoleIds = itemStartNodeRole.getRoleIds();
             String[] roleIdArr = roleIds.split(";");
             for (String roleId : roleIdArr) {
                 if (StringUtils.isEmpty(oldRoleIds)) {
@@ -349,28 +353,28 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                     }
                 }
             }
-            isnr.setRoleIds(oldRoleIds);
-            isnr.setUserName(userName);
+            itemStartNodeRole.setRoleIds(oldRoleIds);
+            itemStartNodeRole.setUserName(userName);
 
-            itemStartNodeRoleRepository.save(isnr);
+            itemStartNodeRoleRepository.save(itemStartNodeRole);
             return;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
-        isnr = new ItemStartNodeRole();
-        isnr.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        isnr.setItemId(itemId);
-        isnr.setProcessDefinitionId(processDefinitionId);
-        isnr.setTaskDefKey(taskDefKey);
-        isnr.setRoleIds(roleIds);
-        isnr.setUserName(userName);
-        isnr.setCreateTime(sdf.format(new Date()));
+        itemStartNodeRole = new ItemStartNodeRole();
+        itemStartNodeRole.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        itemStartNodeRole.setItemId(itemId);
+        itemStartNodeRole.setProcessDefinitionId(processDefinitionId);
+        itemStartNodeRole.setTaskDefKey(taskDefKey);
+        itemStartNodeRole.setRoleIds(roleIds);
+        itemStartNodeRole.setUserName(userName);
+        itemStartNodeRole.setCreateTime(sdf.format(new Date()));
         Integer index = itemStartNodeRoleRepository.getMaxTabIndex(itemId, processDefinitionId);
         if (index == null) {
-            isnr.setTabIndex(1);
+            itemStartNodeRole.setTabIndex(1);
         } else {
-            isnr.setTabIndex(index + 1);
+            itemStartNodeRole.setTabIndex(index + 1);
         }
-        itemStartNodeRoleRepository.save(isnr);
+        itemStartNodeRoleRepository.save(itemStartNodeRole);
     }
 }

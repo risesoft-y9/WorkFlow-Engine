@@ -43,31 +43,20 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequiredArgsConstructor
 @Service
 public class ButtonOperationServiceImpl implements ButtonOperationService {
-    private final static SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final DocumentApi documentApi;
-
     private final TaskApi taskApi;
-
     private final VariableApi variableApi;
-
     private final ProcessTrackApi processTrackApi;
-
     private final RuntimeApi runtimeApi;
-
     private final HistoricTaskApi historictaskApi;
-
     private final OfficeDoneInfoApi officeDoneInfoApi;
-
     private final ProcessParamApi processParamApi;
-
     private final ProcessDefinitionApi processDefinitionApi;
-
     private final ActRuDetailApi actRuDetailApi;
-
     private final HistoricProcessApi historicProcessApi;
-
     private final ButtonOperationApi buttonOperationApi;
+    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
@@ -152,7 +141,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     }
 
     @Override
-    public Y9Result<String> multipleResumeTodo(String[] processInstanceIds, String desc) {
+    public Y9Result<String> multipleResumeToDo(String[] processInstanceIds, String desc) {
         boolean haveDoing =
             Arrays.stream(processInstanceIds)
                 .anyMatch(processInstanceId -> runtimeApi
@@ -164,7 +153,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         AtomicInteger successCount = new AtomicInteger();
         AtomicInteger failCount = new AtomicInteger();
         Arrays.stream(processInstanceIds).forEach(processInstanceId -> {
-            if (resumeTodo(processInstanceId, desc).isSuccess()) {
+            if (resumeToDoAndReposition(processInstanceId, desc).isSuccess()) {
                 successCount.getAndIncrement();
             } else {
                 failCount.getAndIncrement();
@@ -183,7 +172,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             /*
               1、恢复待办
              */
-
             String year;
             OfficeDoneInfoModel officeDoneInfoModel =
                 officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -194,13 +182,11 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
             }
-
             HistoricTaskInstanceModel hisTaskModelTemp =
                 historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
                     .getData()
                     .get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
-
             /*
               2、添加流程的历程
              */
@@ -215,7 +201,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setTaskId(hisTaskModelTemp.getId());
 
             processTrackApi.saveOrUpdate(tenantId, ptm);
-
             /*
               2、添加流程的历程
              */
@@ -236,7 +221,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     }
 
     @Override
-    public Y9Result<String> resumeTodo(String processInstanceId, String desc) {
+    public Y9Result<String> resumeToDoAndReposition(String processInstanceId, String desc) {
         String positionId = Y9LoginUserHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {

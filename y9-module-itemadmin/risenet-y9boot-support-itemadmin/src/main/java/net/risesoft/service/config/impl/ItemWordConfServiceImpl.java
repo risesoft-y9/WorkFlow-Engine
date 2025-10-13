@@ -22,7 +22,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.documentword.ItemWordConfRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.config.ItemWordConfService;
@@ -53,13 +52,13 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
         ItemWordConf itemWordConf = itemWordConfRepository.findById(id).orElse(null);
         if (itemWordConf != null) {
             if (StringUtils.isNotBlank(itemWordConf.getRoleIds())) {
-                String newroleIds = itemWordConf.getRoleIds();
+                String newRoleIds = itemWordConf.getRoleIds();
                 for (String rid : roleIds.split(",")) {
-                    if (!newroleIds.contains(rid)) {
-                        newroleIds = Y9Util.genCustomStr(newroleIds, rid);
+                    if (!newRoleIds.contains(rid)) {
+                        newRoleIds = Y9Util.genCustomStr(newRoleIds, rid);
                     }
                 }
-                itemWordConf.setRoleIds(newroleIds);
+                itemWordConf.setRoleIds(newRoleIds);
             } else {
                 itemWordConf.setRoleIds(roleIds);
             }
@@ -71,40 +70,40 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
     @Transactional
     public void copyWordConf(String itemId, String processDefinitionId) {
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         Item item = itemRepository.findById(itemId).orElse(null);
+        assert item != null : "不存在itemId=" + itemId + "事项";
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
-        String latestpdId = latestpd.getId();
-        String previouspdId = processDefinitionId;
-        if (processDefinitionId.equals(latestpdId)) {
-            if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd =
-                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
-                previouspdId = previouspd.getId();
+        ProcessDefinitionModel latest = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        String latestId = latest.getId();
+        String previousId = processDefinitionId;
+        if (processDefinitionId.equals(latestId)) {
+            if (latest.getVersion() > 1) {
+                ProcessDefinitionModel previous =
+                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestId).getData();
+                previousId = previous.getId();
             }
         }
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             List<ItemWordConf> bindList = itemWordConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
-                previouspdId, currentTaskDefKey);
+                previousId, currentTaskDefKey);
             for (ItemWordConf bind : bindList) {
                 ItemWordConf oldBind =
-                    itemWordConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndWordType(itemId,
-                        latestpdId, currentTaskDefKey, bind.getWordType());
+                    itemWordConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndWordType(itemId, latestId,
+                        currentTaskDefKey, bind.getWordType());
                 if (null == oldBind) {
-                    String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                    ItemWordConf newbind = new ItemWordConf();
-                    newbind.setId(newbindId);
-                    newbind.setItemId(itemId);
-                    newbind.setCreateTime(sdf.format(new Date()));
-                    newbind.setWordType(bind.getWordType());
-                    newbind.setProcessDefinitionId(latestpdId);
-                    newbind.setTaskDefKey(currentTaskDefKey);
-                    newbind.setRoleIds(bind.getRoleIds());
-                    itemWordConfRepository.save(newbind);
+                    String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+                    ItemWordConf newBind = new ItemWordConf();
+                    newBind.setId(newBindId);
+                    newBind.setItemId(itemId);
+                    newBind.setCreateTime(sdf.format(new Date()));
+                    newBind.setWordType(bind.getWordType());
+                    newBind.setProcessDefinitionId(latestId);
+                    newBind.setTaskDefKey(currentTaskDefKey);
+                    newBind.setRoleIds(bind.getRoleIds());
+                    itemWordConfRepository.save(newBind);
                 }
             }
         }

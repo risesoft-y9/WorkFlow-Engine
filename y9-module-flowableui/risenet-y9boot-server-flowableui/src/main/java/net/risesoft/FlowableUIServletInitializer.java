@@ -26,10 +26,12 @@ public class FlowableUIServletInitializer extends SpringBootServletInitializer {
         String cookieSecure = env.getProperty("server.servlet.session.cookie.secure", "false");
 
         ServletContext servletContext = ctx.getServletContext();
-        servletContext.setSessionTrackingModes(Collections.singleton(SessionTrackingMode.COOKIE));
-        SessionCookieConfig sessionCookieConfig = servletContext.getSessionCookieConfig();
-        sessionCookieConfig.setHttpOnly(true);
-        sessionCookieConfig.setSecure(Boolean.parseBoolean(cookieSecure));
+        if (null != servletContext) {
+            servletContext.setSessionTrackingModes(Collections.singleton(SessionTrackingMode.COOKIE));
+            SessionCookieConfig sessionCookieConfig = servletContext.getSessionCookieConfig();
+            sessionCookieConfig.setHttpOnly(true);
+            sessionCookieConfig.setSecure(Boolean.parseBoolean(cookieSecure));
+        }
         return ctx;
     }
 }

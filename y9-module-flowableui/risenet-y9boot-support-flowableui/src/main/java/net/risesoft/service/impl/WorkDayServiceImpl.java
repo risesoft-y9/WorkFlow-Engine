@@ -54,7 +54,7 @@ public class WorkDayServiceImpl implements WorkDayService {
         Date startDateTemp = sdf.parse(sdf.format(startDate));
         Date endDateTemp = sdf.parse(sdf.format(endDate));
         // startDateTemp不大于endDateTemp则进入
-        while (startDateTemp.compareTo(endDateTemp) != 1) {
+        while (startDateTemp.compareTo(endDateTemp) <= 0) {
             cal.setTime(startDateTemp);
             String time1 = sdf.format(startDateTemp);
             // 节假日包含开始时间，则天数减1

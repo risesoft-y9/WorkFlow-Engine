@@ -670,7 +670,7 @@ public class ButtonServiceImpl implements ButtonService {
                         Boolean isSubProcess4Send =
                             processDefinitionApi
                                 .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(),
-                                    hisTaskList.stream().findFirst().get().getTaskDefinitionKey())
+                                    hisTaskList.get(0).getTaskDefinitionKey())
                                 .getData();
                         if (!isSubProcess4Send) {
                             buttonModelList.add(ItemButton.shouHui);
@@ -1015,11 +1015,9 @@ public class ButtonServiceImpl implements ButtonService {
                 List<HistoricTaskInstanceModel> hisTaskList =
                     historictaskApi.getThePreviousTasks(tenantId, taskId).getData();
                 if (!hisTaskList.isEmpty()) {
-                    Boolean isSubProcess4Send =
-                        processDefinitionApi
-                            .isSubProcessChildNode(tenantId, processDefinitionId,
-                                hisTaskList.stream().findFirst().get().getTaskDefinitionKey())
-                            .getData();
+                    Boolean isSubProcess4Send = processDefinitionApi
+                        .isSubProcessChildNode(tenantId, processDefinitionId, hisTaskList.get(0).getTaskDefinitionKey())
+                        .getData();
                     if (!isSubProcess4Send) {
                         buttonList.add(ItemButton.tuiHui);
                     }
