@@ -6,10 +6,8 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Base64;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -52,6 +50,7 @@ import net.risesoft.model.itemadmin.InterfaceParamsModel;
 import net.risesoft.model.itemadmin.TaskTimeConfModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.InterfaceMethodService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -77,8 +76,11 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
-    public InterfaceMethodServiceImpl(ItemInterfaceApi itemInterfaceApi, Y9FileStoreService y9FileStoreService,
-        Y9Properties y9Config, ErrorLogApi errorLogApi) {
+    public InterfaceMethodServiceImpl(
+        ItemInterfaceApi itemInterfaceApi,
+        Y9FileStoreService y9FileStoreService,
+        Y9Properties y9Config,
+        ErrorLogApi errorLogApi) {
         this.itemInterfaceApi = itemInterfaceApi;
         this.y9FileStoreService = y9FileStoreService;
         this.y9Config = y9Config;
@@ -263,8 +265,9 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                 method.setQueryString(nameValuePairs.toArray(new NameValuePair[nameValuePairs.size()]));
             }
             int time = 10000;
-            TaskTimeConfModel taskTimeConf = itemInterfaceApi
-                .getTaskTimeConf(Y9LoginUserHolder.getTenantId(), processDefinitionId, itemId, taskKey).getData();
+            TaskTimeConfModel taskTimeConf =
+                itemInterfaceApi.getTaskTimeConf(Y9LoginUserHolder.getTenantId(), processDefinitionId, itemId, taskKey)
+                    .getData();
             if (taskTimeConf != null && taskTimeConf.getTimeoutInterrupt() != null
                 && taskTimeConf.getTimeoutInterrupt() > 0) {
                 time = taskTimeConf.getTimeoutInterrupt();
@@ -525,8 +528,9 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                 httpPost.setEntity(entity);
             }
             int time = 10000;
-            TaskTimeConfModel taskTimeConf = itemInterfaceApi
-                .getTaskTimeConf(Y9LoginUserHolder.getTenantId(), processDefinitionId, itemId, taskKey).getData();
+            TaskTimeConfModel taskTimeConf =
+                itemInterfaceApi.getTaskTimeConf(Y9LoginUserHolder.getTenantId(), processDefinitionId, itemId, taskKey)
+                    .getData();
             if (taskTimeConf != null && taskTimeConf.getTimeoutInterrupt() != null
                 && taskTimeConf.getTimeoutInterrupt() > 0) {
                 time = taskTimeConf.getTimeoutInterrupt();
@@ -534,8 +538,11 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
             String urlStr = httpPost.getURI().toString();
             httpPost.setURI(new URI(urlStr));
             LOGGER.info("*********************设置请求超时参数:" + time);
-            RequestConfig requestConfig = RequestConfig.custom().setConnectTimeout(time)
-                .setConnectionRequestTimeout(time).setSocketTimeout(time).build();
+            RequestConfig requestConfig = RequestConfig.custom()
+                .setConnectTimeout(time)
+                .setConnectionRequestTimeout(time)
+                .setSocketTimeout(time)
+                .build();
             httpPost.setConfig(requestConfig);
             CloseableHttpResponse response = httpclient.execute(httpPost);
             int httpCode = response.getStatusLine().getStatusCode();
@@ -587,8 +594,7 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     public Future<Boolean> saveErrorLog(final String tenantId, final String processInstanceId, final String taskId,
         final String taskKey, final String interfaceAddress, final String msg) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);
@@ -608,11 +614,10 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     }
 
     private String saveFile(String processSerialNumber, String fileStr, String fileType) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHHmmss");
         String fullPath = "/" + Y9Context.getSystemName() + "/" + processSerialNumber;
         byte[] file = Base64.getDecoder().decode(fileStr);
         Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath,
-            processSerialNumber + sdf.format(new Date()) + "." + fileType);
+            processSerialNumber + Y9DateTimeUtils.formatCurrentDateTimeCompact() + "." + fileType);
         String downloadUrl = "";
         if (y9FileStore != null) {
             downloadUrl = y9Config.getCommon().getProcessAdminBaseUrl() + "/s/" + y9FileStore.getId() + "." + fileType;

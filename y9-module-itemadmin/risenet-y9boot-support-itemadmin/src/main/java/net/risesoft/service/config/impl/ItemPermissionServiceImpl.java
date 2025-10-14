@@ -1,7 +1,5 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -35,6 +33,7 @@ import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.config.ItemPermissionService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -241,7 +240,6 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     @Transactional
     public ItemPermission save(String itemId, String processDefinitionId, String taskDefKey, String roleId,
         ItemPermissionEnum roleType) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ItemPermission oldip = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
             processDefinitionId, taskDefKey, roleId);
         if (null == oldip) {
@@ -253,7 +251,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             newip.setRoleId(roleId);
             newip.setRoleType(roleType);
             newip.setTenantId(tenantId);
-            newip.setCreatDate(sdf.format(new Date()));
+            newip.setCreatDate(Y9DateTimeUtils.formatCurrentDateTime());
             newip.setTaskDefKey(taskDefKey);
             Integer tabIndex = itemPermissionRepository.getMaxTabIndex(itemId, processDefinitionId, taskDefKey);
             if (null != tabIndex) {

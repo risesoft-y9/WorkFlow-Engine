@@ -845,7 +845,6 @@ public class WorkListServiceImpl implements WorkListService {
             // 督办时限：红绿灯,这里根据表单中的字段督办时限来判断
             // Object dbsx = formData.get(TableColumnEnum.DBSX.getValue());
             // if (ToolUtil.isObjectNotNullAndStringNotEmpty(dbsx)) {
-            // SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             // TaskRelatedModel taskRelatedModel =
             // workDayService.getLightColor(new Date(), sdf.parse(String.valueOf(dbsx)));
             // if (null != taskRelatedModel) {

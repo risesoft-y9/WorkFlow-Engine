@@ -1,8 +1,6 @@
 package net.risesoft.api;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -28,6 +26,7 @@ import net.risesoft.model.platform.org.Person;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.opinion.OpinionCopyService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -62,8 +61,10 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
             if (opinionCopy.isSend()) {
                 List<DocumentCopy> dcList = documentCopyService.findByOpinionCopyId(opinionCopy.getId());
                 StringBuffer userNames = new StringBuffer();
-                dcList.stream().filter(dc -> dc.getStatus().getValue() < DocumentCopyStatusEnum.CANCEL.getValue())
-                    .collect(Collectors.toList()).forEach(dc -> {
+                dcList.stream()
+                    .filter(dc -> dc.getStatus().getValue() < DocumentCopyStatusEnum.CANCEL.getValue())
+                    .collect(Collectors.toList())
+                    .forEach(dc -> {
                         if (userNames.toString().isEmpty()) {
                             userNames.append(dc.getUserName());
                         } else {
@@ -91,10 +92,9 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
         if (optional.isPresent()) {
             List<DocumentCopy> dcList = documentCopyService.findByProcessSerialNumberAndUserIdAndStatus(
                 opinionCopy.getProcessSerialNumber(), orgUnitId, DocumentCopyStatusEnum.TODO_SIGN);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             dcList.forEach(dc -> {
                 dc.setStatus(DocumentCopyStatusEnum.SIGN);
-                dc.setUpdateTime(sdf.format(new Date()));
+                dc.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 documentCopyService.save(dc);
             });
             Y9BeanUtil.copyProperties(optional.get(), opinionCopyModel);

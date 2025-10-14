@@ -1,7 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +14,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.template.BookMarkBindRepository;
 import net.risesoft.service.BookMarkBindService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -55,13 +54,12 @@ public class BookMarkBindServiceImpl implements BookMarkBindService {
     @Transactional
     public void saveOrUpdate(BookMarkBind bookMarkBind) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = bookMarkBind.getId();
         if (StringUtils.isNotBlank(id)) {
             BookMarkBind oldbmb = this.findById(id);
             oldbmb.setTableName(bookMarkBind.getTableName());
             oldbmb.setColumnName(bookMarkBind.getColumnName());
-            oldbmb.setUpdateTime(sdf.format(new Date()));
+            oldbmb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             oldbmb.setUserId(person.getPersonId());
             oldbmb.setUserName(person.getName());
             oldbmb.setBookMarkType(1);
@@ -76,8 +74,8 @@ public class BookMarkBindServiceImpl implements BookMarkBindService {
         newbmb.setBookMarkType(1);
         newbmb.setTableName(bookMarkBind.getTableName());
         newbmb.setColumnName(bookMarkBind.getColumnName());
-        newbmb.setCreateTime(sdf.format(new Date()));
-        newbmb.setUpdateTime(sdf.format(new Date()));
+        newbmb.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        newbmb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newbmb.setUserId(person.getPersonId());
         newbmb.setUserName(person.getName());
         bookMarkBindRepository.save(newbmb);

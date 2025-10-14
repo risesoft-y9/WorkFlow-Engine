@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -37,6 +36,7 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -147,11 +147,10 @@ public class RemindInstanceRestController {
             taskPage = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, 1, 500);
             List<TaskModel> list = taskPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
-            List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<List<TaskModel>>() {});
-            List<Map<String, Object>> items = new ArrayList<Map<String, Object>>();
+            List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<>() {});
+            List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = 0;
-            Map<String, Object> mapTemp = null;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            Map<String, Object> mapTemp;
             Date currentTime = new Date();
             RemindInstanceModel remindInstance =
                 remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId)
@@ -170,7 +169,7 @@ public class RemindInstanceRestController {
                 mapTemp.put("userName", StringUtils.isBlank(task.getAssignee()) ? ""
                     : orgUnitApi.getOrgUnit(tenantId, task.getAssignee()).getData().getName());
                 mapTemp.put("taskName", taskName);
-                mapTemp.put("createTime", sdf.format(task.getCreateTime()));
+                mapTemp.put("createTime", Y9DateTimeUtils.formatDateTime(task.getCreateTime()));
                 mapTemp.put("duration", longTime(task.getCreateTime(), currentTime));
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;

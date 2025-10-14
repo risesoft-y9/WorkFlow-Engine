@@ -3,7 +3,6 @@ package net.risesoft.controller;
 import java.io.ByteArrayInputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
@@ -52,6 +51,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.controller.vo.ModelVO;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 
@@ -178,7 +178,6 @@ public class ProcessModelVueController {
         List<ModelVO> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         // if (tenantManager || ManagerLevelEnum.SYSTEM_MANAGER.equals(userInfo.getManagerLevel())) {
         for (AbstractModel model : list) {
             ModelVO mapTemp = new ModelVO();
@@ -193,9 +192,9 @@ public class ProcessModelVueController {
             if (null != processDefinition) {
                 mapTemp.setVersion(processDefinition.getVersion());
             }
-            mapTemp.setCreateTime(sdf.format(model.getCreated()));
+            mapTemp.setCreateTime(Y9DateTimeUtils.formatDateTime(model.getCreated()));
             mapTemp.setSortTime(model.getCreated().getTime());
-            mapTemp.setLastUpdateTime(sdf.format(model.getLastUpdated()));
+            mapTemp.setLastUpdateTime(Y9DateTimeUtils.formatDateTime(model.getLastUpdated()));
             items.add(mapTemp);
         }
         Collections.sort(items);

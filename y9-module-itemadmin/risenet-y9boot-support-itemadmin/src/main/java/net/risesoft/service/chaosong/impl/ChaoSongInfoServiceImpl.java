@@ -3,10 +3,8 @@ package net.risesoft.service.chaosong.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -66,6 +64,7 @@ import net.risesoft.service.OfficeFollowService;
 import net.risesoft.service.chaosong.ChaoSongInfoService;
 import net.risesoft.service.core.DocumentService;
 import net.risesoft.service.core.ProcessParamService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -124,13 +123,12 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Override
     public void setRead(String id) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ChaoSongInfo chaoSong = chaoSongInfoRepository.findById(id).orElse(null);
         if (chaoSong != null && !ChaoSongStatusEnum.READ.getValue().equals(chaoSong.getStatus())) {
             ChaoSongInfo origin = new ChaoSongInfo();
             Y9BeanUtil.copyProperties(chaoSong, origin);
             chaoSong.setStatus(ChaoSongStatusEnum.READ.getValue());
-            chaoSong.setReadTime(sdf.format(new Date()));
+            chaoSong.setReadTime(Y9DateTimeUtils.formatCurrentDateTime());
             chaoSongInfoRepository.save(chaoSong);
             Y9Context.publishEvent(new Y9EntityUpdatedEvent<>(origin, chaoSong));
         }
@@ -288,7 +286,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int startRow = (page - 1) * rows;
         for (ChaoSongInfo info : csList) {
             ChaoSongModel model = new ChaoSongModel();
@@ -302,12 +299,10 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setTitle(info.getTitle());
             model.setSerialNumber(startRow + 1);
             try {
-                if (StringUtils.isBlank(info.getReadTime())) {
-                    model.setReadTime("");
-                } else {
-                    model.setReadTime(sdf.format(sdf.parse(info.getReadTime())));
-                }
-                model.setCreateTime(sdf.format(sdf.parse(info.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(info.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(info.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(info.getReadTime())) : "--");
             } catch (Exception e) {
                 LOGGER.error("获取数据失败", e);
             }
@@ -341,7 +336,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int startRow = (page - 1) * rows;
         for (ChaoSongInfo cs : csList) {
             ChaoSongModel model = new ChaoSongModel();
@@ -355,12 +349,10 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setTitle(cs.getTitle());
             model.setSerialNumber(startRow + 1);
             try {
-                if (StringUtils.isBlank(cs.getReadTime())) {
-                    model.setReadTime("");
-                } else {
-                    model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
-                }
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
             } catch (Exception e) {
                 LOGGER.error("获取数据失败", e);
             }
@@ -390,7 +382,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongInfo> list = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(list, pageable, searchHits.getTotalHits());
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
@@ -400,13 +391,15 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             map.put("id", cs.getId());
             try {
                 String processInstanceId = cs.getProcessInstanceId();
-                map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
+                map.put("createTime",
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                map.put("readTime", StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 map.put("processInstanceId", processInstanceId);
                 map.put("senderName", cs.getSenderName());
                 map.put("sendDeptId", cs.getSendDeptId());
                 map.put("sendDeptName", cs.getSendDeptName());
-                map.put("readTime", sdf.format(sdf.parse(cs.getReadTime())));
                 map.put("title", processParam.getTitle());
                 map.put("status", cs.getStatus());
                 map.put("banjie", false);
@@ -455,7 +448,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
@@ -475,8 +467,10 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
             try {
-                model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
@@ -532,7 +526,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         OfficeDoneInfo hpi;
         for (ChaoSongInfo cs : csList) {
@@ -552,15 +545,16 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 hpi = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                 model.setProcessSerialNumber(hpi.getProcessSerialNumber());
                 model.setTitle(hpi.getTitle());
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
                 model.setUserId(cs.getUserId());
                 model.setUserName(cs.getUserName());
                 model.setUserDeptName(cs.getUserDeptName());
-                model.setReadTime(
-                    StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
                 model.setSystemName(hpi.getSystemName());
-                model.setProcessDefinitionId(hpi != null ? hpi.getProcessDefinitionId() : "");
-                boolean banjie = hpi == null || hpi.getEndTime() != null;
+                model.setProcessDefinitionId(hpi.getProcessDefinitionId());
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
+                boolean banjie = hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);
                 }
@@ -599,7 +593,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
         int num = (page - 1) * rows;
@@ -618,8 +611,10 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
             try {
-                model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
@@ -666,7 +661,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
@@ -685,7 +679,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
             try {
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
                 hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
@@ -725,7 +720,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     public Y9Result<Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
         String smsContent, String smsPersonId) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String tenantId = Y9LoginUserHolder.getTenantId(), curruserId = Y9LoginUserHolder.getOrgUnitId();
             OrgUnit currOrgUnit = Y9LoginUserHolder.getOrgUnit();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
@@ -768,7 +762,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                 ChaoSongInfo cs = new ChaoSongInfo();
                 cs.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                cs.setCreateTime(sdf.format(new Date()));
+                cs.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 cs.setProcessInstanceId(processInstanceId);
                 cs.setSenderId(curruserId);
                 cs.setSenderName(currOrgUnit.getName());
@@ -794,8 +788,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             e.printStackTrace(print);
             try {
                 String msg = result.toString();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String time = sdf.format(new Date());
+                String time = Y9DateTimeUtils.formatCurrentDateTime();
                 ErrorLog errorLog = new ErrorLog();
                 errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 errorLog.setCreateTime(time);
@@ -848,7 +841,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
@@ -867,9 +859,10 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
             try {
-                model.setReadTime(
-                    StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
@@ -928,7 +921,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
@@ -949,9 +941,10 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             model.setUserName(cs.getUserName());
             model.setUserDeptName(cs.getUserDeptName());
             try {
-                model.setReadTime(
-                    StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());

@@ -3,8 +3,6 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 
 import javax.annotation.Resource;
 
@@ -24,6 +22,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.service.DeleteProcessService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -117,8 +116,7 @@ public class DeleteProcessServiceImpl implements DeleteProcessService {
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);

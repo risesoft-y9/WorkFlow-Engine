@@ -3,9 +3,7 @@ package net.risesoft.controller;
 import java.io.IOException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -49,6 +47,7 @@ import net.risesoft.service.config.ItemInterfaceParamsBindService;
 import net.risesoft.service.config.ItemViewConfService;
 import net.risesoft.service.form.Y9FormOptionClassService;
 import net.risesoft.service.opinion.OpinionFrameService;
+import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  * 接口信息
@@ -70,7 +69,6 @@ public class JsonImAndExportRestController {
     private final CommonButtonService commonButtonService;
     private final SendButtonService sendButtonService;
     private final Y9FormOptionClassService y9FormOptionClassService;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH-mm-ss");
 
     /**
      * 导出 JSON 数据
@@ -82,7 +80,7 @@ public class JsonImAndExportRestController {
     public ResponseEntity<byte[]> exportJson(@RequestParam(required = false) String id, @RequestParam String type) {
 
         Object dataToExport;
-        String filename = "export";
+        String filename;
         switch (type) {
             case "interface": // 接口信息
                 dataToExport = buildInterfaceExportData(id);
@@ -90,39 +88,39 @@ public class JsonImAndExportRestController {
                 break;
             case "interfaceAll": // 全部接口信息
                 dataToExport = buildInterfaceExportData("");
-                filename = "所有接口数据" + sdf.format(new Date());
+                filename = "所有接口数据" + Y9DateTimeUtils.formatCurrentDateTime();
                 break;
             case "interfaceParam": // 接口信息
                 dataToExport = buildInterfaceParamBindExportData(id);
-                filename = "接口参数" + sdf.format(new Date());
+                filename = "接口参数" + Y9DateTimeUtils.formatCurrentDateTime();
                 break;
             case "itemViewConfig": // 事项视图配置
                 dataToExport = buildItemViewConfigExportData(id);
-                filename = "视图配置" + sdf.format(new Date());
+                filename = "视图配置" + Y9DateTimeUtils.formatCurrentDateTime();
                 break;
             case "dynamicRoleConfig": // 动态角色配置
                 dataToExport = buildDynamicRoleConfigExportData();
-                filename = "动态角色配置" + sdf.format(new Date());
+                filename = "动态角色配置" + Y9DateTimeUtils.formatCurrentDateTime();
                 break;
             case "opinionFrame":
                 dataToExport = buildOpinionFrameExportData();
-                filename = "意见框配置" + sdf.format(new Date());
+                filename = "意见框配置" + Y9DateTimeUtils.formatCurrentDateTime();
                 break;
             case "commonButton":
                 dataToExport = buildCommonButtonExportData();
-                filename = "普通按钮配置" + sdf.format(new Date());
+                filename = "普通按钮配置" + Y9DateTimeUtils.formatCurrentDateTime();
                 break;
             case "sendButton":
                 dataToExport = buildSendButtonExportData();
-                filename = "发送按钮配置" + sdf.format(new Date());
+                filename = "发送按钮配置" + Y9DateTimeUtils.formatCurrentDateTime();
                 break;
             case "optionClassAll":
                 dataToExport = buildOptionClassExportData("");
-                filename = "数字字典所有配置" + sdf.format(new Date());
+                filename = "数字字典所有配置" + Y9DateTimeUtils.formatCurrentDateTime();
                 break;
             case "optionClass":
                 dataToExport = buildOptionClassExportData(id);
-                filename = "数字字典【" + id + "】配置" + sdf.format(new Date());
+                filename = "数字字典【" + id + "】配置" + Y9DateTimeUtils.formatCurrentDateTime();
                 break;
             // 可扩展其他类型
             default:
@@ -255,7 +253,8 @@ public class JsonImAndExportRestController {
 
             String filename = URLEncoder.encode(baseFilename, StandardCharsets.UTF_8).replace("+", "%20");
 
-            return ResponseEntity.ok().contentType(MediaType.APPLICATION_OCTET_STREAM)
+            return ResponseEntity.ok()
+                .contentType(MediaType.APPLICATION_OCTET_STREAM)
                 .header(HttpHeaders.CONTENT_DISPOSITION,
                     "attachment; filename=" + filename + ".json; filename*=UTF-8''" + filename + ".json")
                 .body(jsonData);

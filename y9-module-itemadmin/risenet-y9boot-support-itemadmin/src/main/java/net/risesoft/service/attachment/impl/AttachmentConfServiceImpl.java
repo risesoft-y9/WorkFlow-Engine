@@ -1,7 +1,5 @@
 package net.risesoft.service.attachment.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +17,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.attachment.AttachmentConfRepository;
 import net.risesoft.service.attachment.AttachmentConfService;
+import net.risesoft.util.Y9DateTimeUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -56,7 +55,6 @@ public class AttachmentConfServiceImpl implements AttachmentConfService {
     @Override
     @Transactional
     public void saveOrUpdate(AttachmentConf attachmentConf) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = attachmentConf.getId();
         if (StringUtils.isNotBlank(id)) {
             AttachmentConf oldConf = this.findById(id);
@@ -65,7 +63,7 @@ public class AttachmentConfServiceImpl implements AttachmentConfService {
                 oldConf.setDisPlayWidth(attachmentConf.getDisPlayWidth());
                 oldConf.setDisPlayName(attachmentConf.getDisPlayName());
                 oldConf.setDisPlayAlign(attachmentConf.getDisPlayAlign());
-                oldConf.setUpdateTime(sdf.format(new Date()));
+                oldConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 oldConf.setInputBoxType(attachmentConf.getInputBoxType());
                 oldConf.setLabelName(attachmentConf.getLabelName());
                 oldConf.setConfigType(attachmentConf.getConfigType());
@@ -86,8 +84,8 @@ public class AttachmentConfServiceImpl implements AttachmentConfService {
         newConf.setDisPlayName(attachmentConf.getDisPlayName());
         newConf.setDisPlayAlign(attachmentConf.getDisPlayAlign());
         newConf.setAttachmentType(attachmentConf.getAttachmentType());
-        newConf.setUpdateTime(sdf.format(new Date()));
-        newConf.setUpdateTime(sdf.format(new Date()));
+        newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newConf.setInputBoxType(attachmentConf.getInputBoxType());
         newConf.setLabelName(attachmentConf.getLabelName());
         newConf.setConfigType(attachmentConf.getConfigType());

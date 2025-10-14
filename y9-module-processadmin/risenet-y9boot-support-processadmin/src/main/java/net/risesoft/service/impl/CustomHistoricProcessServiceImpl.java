@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -110,11 +109,8 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             String tenantId = Y9LoginUserHolder.getTenantId();
             HistoricProcessInstance his =
                 historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
-            String year = "";
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             // 未办结件删除
             if (his != null && his.getEndTime() == null) {
-                year = sdf.format(his.getStartTime());
                 runtimeService.deleteProcessInstance(processInstanceId, "已删除");
                 historyService.deleteHistoricProcessInstance(his.getId());
             } else {
@@ -123,12 +119,11 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
                     OfficeDoneInfoModel officeDoneInfoModel =
                         officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     if (officeDoneInfoModel != null) {
-                        year = officeDoneInfoModel.getStartTime().substring(0, 4);
+                        String year = officeDoneInfoModel.getStartTime().substring(0, 4);
                         // 删除年度数据
                         deleteProcessService.deleteYearData(tenantId, year, processInstanceId);
                     }
                 } else {// 办结件
-                    year = sdf.format(his.getStartTime());
                     historyService.deleteHistoricProcessInstance(his.getId());
                 }
             }

@@ -1,7 +1,6 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -10,6 +9,7 @@ import org.springframework.util.StringUtils;
 import lombok.Data;
 
 import net.risesoft.model.platform.org.Person;
+import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  * 历程信息
@@ -87,15 +87,17 @@ public class HistoryProcessModel implements Serializable, Comparable<HistoryProc
     @Override
     public int compareTo(HistoryProcessModel o) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date now = new Date();
-            Date startTime1 = StringUtils.hasText(this.getStartTime()) ? sdf.parse(this.getStartTime()) : now;
-            Date startTime2 = StringUtils.hasText(o.getStartTime()) ? sdf.parse(o.getStartTime()) : now;
+            Date startTime1 =
+                StringUtils.hasText(this.getStartTime()) ? Y9DateTimeUtils.parseDateTime(this.getStartTime()) : now;
+            Date startTime2 =
+                StringUtils.hasText(o.getStartTime()) ? Y9DateTimeUtils.parseDateTime(o.getStartTime()) : now;
             if (startTime1.getTime() > startTime2.getTime()) {
                 return 1;
             } else if (startTime1.getTime() == startTime2.getTime()) {
-                Date date1 = !StringUtils.hasText(this.getEndTime()) ? now : sdf.parse(this.getEndTime());
-                Date date2 = !StringUtils.hasText(o.getEndTime()) ? now : sdf.parse(o.getEndTime());
+                Date date1 =
+                    !StringUtils.hasText(this.getEndTime()) ? now : Y9DateTimeUtils.parseDateTime(this.getEndTime());
+                Date date2 = !StringUtils.hasText(o.getEndTime()) ? now : Y9DateTimeUtils.parseDateTime(o.getEndTime());
                 // 开始时间相等的才排序
                 return Long.compare(date1.getTime(), date2.getTime());
             } else {

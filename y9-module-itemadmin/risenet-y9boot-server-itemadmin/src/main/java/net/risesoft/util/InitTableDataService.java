@@ -1,6 +1,5 @@
 package net.risesoft.util;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -228,13 +227,12 @@ public class InitTableDataService {
     }
 
     private void createItemOpinionFrame(String processDefinitionId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindRepository
             .findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(ITEM_ID, processDefinitionId);
         if (list.isEmpty()) {
             ItemOpinionFrameBind newoftrb = new ItemOpinionFrameBind();
             newoftrb.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newoftrb.setCreateDate(sdf.format(new Date()));
+            newoftrb.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
             newoftrb.setOpinionFrameMark(OPINION_FRAME_MARK);
             newoftrb.setOpinionFrameName(OPINION_FRAME_NAME);
             newoftrb.setItemId(ITEM_ID);
@@ -247,7 +245,6 @@ public class InitTableDataService {
     }
 
     private void createItemPermission(String processDefinitionId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<ItemPermission> list =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(ITEM_ID, processDefinitionId);
         if (list.isEmpty()) {
@@ -259,7 +256,7 @@ public class InitTableDataService {
             newIp.setRoleType(ItemPermissionEnum.ROLE_DYNAMIC);
             newIp.setTaskDefKey("");
             newIp.setTenantId(Y9LoginUserHolder.getTenantId());
-            newIp.setCreatDate(sdf.format(new Date()));
+            newIp.setCreatDate(Y9DateTimeUtils.formatCurrentDateTime());
             itemPermissionRepository.save(newIp);
         }
     }
@@ -279,10 +276,9 @@ public class InitTableDataService {
     }
 
     private void createItemViewConf() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(ITEM_ID);
         if (list.isEmpty()) {
-            String date = sdf.format(new Date());
+            String date = Y9DateTimeUtils.formatCurrentDateTime();
             List<ItemViewConf> list0 = new ArrayList<>();
             ItemViewConf newConf = new ItemViewConf();
             int i = 0;
@@ -648,13 +644,12 @@ public class InitTableDataService {
     }
 
     private void createOpinionFrame() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         OpinionFrame opinionFrame = opinionFrameRepository.findById(OPINION_FRAME_ID).orElse(null);
         if (null == opinionFrame) {
             opinionFrame = new OpinionFrame();
             opinionFrame.setId(OPINION_FRAME_ID);
             opinionFrame.setMark(OPINION_FRAME_MARK);
-            opinionFrame.setCreateDate(sdf.format(new Date()));
+            opinionFrame.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
             opinionFrame.setName(OPINION_FRAME_NAME);
             opinionFrame.setTenantId(Y9LoginUserHolder.getTenantId());
             opinionFrame.setDeleted(0);
@@ -988,12 +983,11 @@ public class InitTableDataService {
     }
 
     private void createY9Table() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Y9Table y9Table = y9TableRepository.findById(Y9_TABLE_ID).orElse(null);
         if (null == y9Table) {
             y9Table = new Y9Table();
             y9Table.setId(Y9_TABLE_ID);
-            y9Table.setCreateTime(sdf.format(new Date()));
+            y9Table.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             y9Table.setSystemCnName(SYSTEMCNNAME);
             y9Table.setSystemName(SYSTEMNAME);
             y9Table.setTableName(Y9_TABLE_NAME);
@@ -1203,9 +1197,7 @@ public class InitTableDataService {
     }
 
     private void createYearTable() {
-        Date date = new Date();
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy");
-        String year = sdf1.format(date);
+        String year = Y9DateTimeUtils.getYear(new Date());
         String year0 = String.valueOf((Integer.parseInt(year) + 1));
         syncYearTableService.syncYearTable(year);
         syncYearTableService.syncYearTable(year0);

@@ -29,12 +29,10 @@ public class MediaFilePreviewImpl implements FilePreview {
         this.otherFilePreview = otherFilePreview;
     }
 
-    private static String convertToMp4(String filePath, String outFilePath, FileAttribute fileAttribute)
-        throws Exception {
-        FFmpegFrameGrabber frameGrabber = FFmpegFrameGrabber.createDefault(filePath);
+    private static String convertToMp4(String filePath, String outFilePath, FileAttribute fileAttribute) {
         Frame captured_frame;
-        FFmpegFrameRecorder recorder = null;
-        try {
+        try (FFmpegFrameGrabber frameGrabber = FFmpegFrameGrabber.createDefault(filePath);
+            FFmpegFrameRecorder recorder = new FFmpegFrameRecorder(outFilePath, 0, 0, 0)) {
             File desFile = new File(outFilePath);
             // 判断一下防止重复转换
             if (desFile.exists()) {
@@ -50,8 +48,9 @@ public class MediaFilePreviewImpl implements FilePreview {
                 }
             }
             frameGrabber.start();
-            recorder = new FFmpegFrameRecorder(outFilePath, frameGrabber.getImageWidth(), frameGrabber.getImageHeight(),
-                frameGrabber.getAudioChannels());
+            recorder.setImageWidth(frameGrabber.getImageWidth());
+            recorder.setImageHeight(frameGrabber.getImageHeight());
+            recorder.setAudioChannels(frameGrabber.getAudioChannels());
             // recorder.setImageHeight(640);
             // recorder.setImageWidth(480);
             recorder.setFormat(mp4);
@@ -80,13 +79,6 @@ public class MediaFilePreviewImpl implements FilePreview {
         } catch (Exception e) {
             e.printStackTrace();
             return null;
-        } finally {
-            if (recorder != null) { // 关闭
-                recorder.stop();
-                recorder.close();
-            }
-            frameGrabber.stop();
-            frameGrabber.close();
         }
         return outFilePath;
     }

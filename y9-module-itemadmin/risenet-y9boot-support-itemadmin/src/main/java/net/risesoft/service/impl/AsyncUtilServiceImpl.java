@@ -3,8 +3,6 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.scheduling.annotation.Async;
@@ -32,6 +30,7 @@ import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.config.TaskTimeConfService;
 import net.risesoft.service.core.DocumentService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -139,9 +138,8 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
             // 重新中断当前线程
             Thread.currentThread().interrupt();
             // 记录中断日志
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             LOGGER.info("*****loopSending循环发送被中断*****");
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             String msg = "Thread was interrupted during execution";
             // 保存中断日志
             ErrorLog errorLog = new ErrorLog();
@@ -156,9 +154,8 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
             errorLog.setUpdateTime(time);
             errorLogService.saveErrorLog(errorLog);
         } catch (Exception e) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             LOGGER.info("*****loopSending循环发送发生异常*****");
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);

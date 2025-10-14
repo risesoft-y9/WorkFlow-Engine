@@ -3,8 +3,6 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -31,6 +29,7 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.Process4SearchService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
@@ -58,7 +57,6 @@ public class Process4SearchServiceImpl implements Process4SearchService {
     public void saveToDataCenter(final String tenantId, final ProcessParam processParam, final OrgUnit orgUnit) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String processInstanceId = processParam.getProcessInstanceId();
         try {
             String sql0 =
@@ -81,7 +79,7 @@ public class Process4SearchServiceImpl implements Process4SearchService {
              *********************************************/
             OfficeDoneInfo officeDoneInfo = new OfficeDoneInfo();
             officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            if (processParam != null && StringUtils.isNotBlank(processParam.getId())) {
+            if (StringUtils.isNotBlank(processParam.getId())) {
                 officeDoneInfo.setDocNumber(
                     StringUtils.isNotBlank(processParam.getCustomNumber()) ? processParam.getCustomNumber() : "");
                 officeDoneInfo
@@ -123,7 +121,7 @@ public class Process4SearchServiceImpl implements Process4SearchService {
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLog errorLogModel = new ErrorLog();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);
@@ -146,7 +144,6 @@ public class Process4SearchServiceImpl implements Process4SearchService {
     @Override
     public void saveToDataCenter1(final String tenantId, final String taskId, final ProcessParam processParam) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String processInstanceId = processParam.getProcessInstanceId();
         try {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
@@ -227,7 +224,7 @@ public class Process4SearchServiceImpl implements Process4SearchService {
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLog errorLogModel = new ErrorLog();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);

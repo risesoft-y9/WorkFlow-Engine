@@ -1,8 +1,6 @@
 package net.risesoft.service.word.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -18,8 +16,8 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.documentword.DocumentHistoryWordRepository;
 import net.risesoft.repository.documentword.DocumentWordRepository;
 import net.risesoft.service.word.DocumentWordService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.util.Y9BeanUtil;
-import net.risesoft.y9public.service.Y9FileStoreService;
 
 /**
  * @author qinman
@@ -34,8 +32,6 @@ public class DocumentWordServiceImpl implements DocumentWordService {
     private final DocumentWordRepository documentWordRepository;
 
     private final DocumentHistoryWordRepository documentHistoryWordRepository;
-
-    private final Y9FileStoreService y9FileStoreService;
 
     @Override
     @Transactional
@@ -79,13 +75,12 @@ public class DocumentWordServiceImpl implements DocumentWordService {
     @Override
     @Transactional
     public void replaceWord(DocumentWord documentWord, String oldId, String taskId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         documentWordRepository.save(documentWord);
         DocumentWord oldDocumentWord = documentWordRepository.findById(oldId).orElse(null);
         DocumentHistoryWord documentHistoryWord = new DocumentHistoryWord();
         Y9BeanUtil.copyProperties(oldDocumentWord, documentHistoryWord);
         documentHistoryWord.setTaskId(taskId);
-        documentHistoryWord.setUpdateDate(sdf.format(new Date()));
+        documentHistoryWord.setUpdateDate(Y9DateTimeUtils.formatCurrentDateTime());
         documentHistoryWordRepository.save(documentHistoryWord);
         documentWordRepository.deleteById(oldId);
     }

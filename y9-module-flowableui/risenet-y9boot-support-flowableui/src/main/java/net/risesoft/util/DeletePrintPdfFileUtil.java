@@ -1,7 +1,6 @@
 package net.risesoft.util;
 
 import java.io.File;
-import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
@@ -38,10 +37,10 @@ public class DeletePrintPdfFileUtil {
      */
     @Scheduled(cron = "0 0 */5 * * ?") // 每5个小时执行一次
     public void deletePdf() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Date date = new Date();
         try {
-            LOGGER.info("******************定时任务删除pdf文件开始：{}******************", sdf.format(date));
+            LOGGER.info("******************定时任务删除pdf文件开始：{}******************",
+                Y9DateTimeUtils.formatCurrentDateTime());
             calendar.clear();
             calendar.setTime(date);
             calendar.add(Calendar.HOUR, -5);// 当前时间减去5个小时，当前时间的前五个小时
@@ -74,8 +73,7 @@ public class DeletePrintPdfFileUtil {
         Date date = new Date();
         Y9LoginUserHolder.setTenantId("11111111-1111-1111-1111-111111111113");
         LOGGER.info("***************定时任务updateTaskEndTime:{}", date);
-        SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy");
-        String year = sdf1.format(date);
+        String year = String.valueOf(Calendar.getInstance().get(Calendar.YEAR));
         String year0 = String.valueOf((Integer.parseInt(year) - 1));// 同步去年，避免跨年办理问题
         this.updateTaskEndTime(year);
         this.updateTaskEndTime(year0);

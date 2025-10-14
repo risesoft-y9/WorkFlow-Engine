@@ -1,7 +1,5 @@
 package net.risesoft;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
@@ -22,6 +20,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.tenant.Tenant;
 import net.risesoft.util.InitTableDataService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -62,7 +61,6 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
     }
 
     private void creatApp() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             String sql = "select * from y9_common_system where NAME = 'itemAdmin'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
@@ -71,12 +69,13 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                 sql = "select * from Y9_COMMON_APP_STORE where CUSTOM_ID = 'banjian' and SYSTEM_ID = '"
                     + smap.get("ID").toString() + "'";
                 List<Map<String, Object>> alist = jdbcTemplate.queryForList(sql);
-                if (alist.size() == 0) {
+                if (alist.isEmpty()) {
                     sql =
                         "INSERT INTO y9_common_app_store (ID,NAME, TAB_INDEX, URL, CHECKED, OPEN_TYPE,SYSTEM_ID,CREATE_TIME,CUSTOM_ID,TYPE,INHERIT,RESOURCE_TYPE,SHOW_NUMBER,ENABLED,HIDDEN) VALUES ('"
                             + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "','办件', 0, '"
                             + y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ITEM_ID + "', 1, 1,'"
-                            + smap.get("ID").toString() + "','" + sdf.format(new Date()) + "','banjian',2,0,0,0,1,0)";
+                            + smap.get("ID").toString() + "','" + Y9DateTimeUtils.formatCurrentDateTime()
+                            + "','banjian',2,0,0,0,1,0)";
                     jdbcTemplate.execute(sql);
                 }
             }
@@ -86,7 +85,6 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
     }
 
     private void createSystem() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             String sql = "select * from y9_common_system where NAME = 'itemAdmin'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
@@ -94,7 +92,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                 sql =
                     "INSERT INTO y9_common_system (ID, CONTEXT_PATH, NAME, CN_NAME, TAB_INDEX,ENABLED,AUTO_INIT,CREATE_TIME) VALUES ('"
                         + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', 'itemAdmin', '" + "itemAdmin"
-                        + "', '事项管理', 100,1,1,'" + sdf.format(new Date()) + "')";
+                        + "', '事项管理', 100,1,1,'" + Y9DateTimeUtils.formatCurrentDateTime() + "')";
                 jdbcTemplate.execute(sql);
             }
         } catch (Exception e) {
@@ -103,7 +101,6 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
     }
 
     private void createTenantApp(Tenant tenant) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String sql = "select * from y9_common_system where NAME = '" + "itemAdmin" + "'";
         List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
         if (list.size() == 1) {
@@ -121,8 +118,8 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                         "INSERT INTO y9_common_tenant_app (ID, TENANT_ID, TENANT_NAME, SYSTEM_ID, APP_ID,APP_NAME,CREATE_TIME,APPLY_NAME,APPLY_ID,APPLY_REASON,VERIFY_STATUS,TENANCY) VALUES ('"
                             + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + tenant.getId() + "', '"
                             + tenant.getName() + "', '" + smap.get("ID").toString() + "', '" + amap.get("ID").toString()
-                            + "','" + amap.get("NAME").toString() + "','" + sdf.format(new Date()) + "','"
-                            + ManagerLevelEnum.SYSTEM_MANAGER.getName() + "','','系统默认租用',1,1)";
+                            + "','" + amap.get("NAME").toString() + "','" + Y9DateTimeUtils.formatCurrentDateTime()
+                            + "','" + ManagerLevelEnum.SYSTEM_MANAGER.getName() + "','','系统默认租用',1,1)";
                     jdbcTemplate.execute(sql1);
                 }
             }
@@ -131,7 +128,6 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
     }
 
     private void createTenantSystem(Tenant tenant) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             String sql = "select * from y9_common_system where NAME = 'itemAdmin'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
@@ -144,8 +140,8 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                     String sql1 =
                         "INSERT INTO y9_common_tenant_system (ID, SYSTEM_ID, TENANT_ID, TENANT_DATA_SOURCE, CREATE_TIME) VALUES ('"
                             + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + smap.get("ID").toString() + "', '"
-                            + tenant.getId() + "', '" + tenant.getDefaultDataSourceId() + "','" + sdf.format(new Date())
-                            + "')";
+                            + tenant.getId() + "', '" + tenant.getDefaultDataSourceId() + "','"
+                            + Y9DateTimeUtils.formatCurrentDateTime() + "')";
                     jdbcTemplate.execute(sql1);
                 }
             }

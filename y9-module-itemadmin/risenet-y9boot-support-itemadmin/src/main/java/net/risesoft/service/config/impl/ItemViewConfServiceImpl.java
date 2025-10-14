@@ -1,7 +1,5 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +18,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.view.ItemViewConfRepository;
 import net.risesoft.service.config.ItemViewConfService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -40,7 +39,6 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     @Transactional
     public void copyBindInfo(String itemId, String newItemId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(itemId);
             if (null != list && !list.isEmpty()) {
@@ -49,8 +47,8 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
                     Y9BeanUtil.copyProperties(itemViewConf, newConf);
                     newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     newConf.setItemId(newItemId);
-                    newConf.setCreateTime(sdf.format(new Date()));
-                    newConf.setUpdateTime(sdf.format(new Date()));
+                    newConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+                    newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     newConf.setUserId(person.getPersonId());
                     newConf.setUserName(person.getName());
                     newConf.setTabIndex(itemViewConf.getTabIndex());
@@ -65,14 +63,13 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     @Override
     @Transactional
     public void copyView(String[] ids, String viewType) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String id : ids) {
             ItemViewConf oldView = this.findById(id);
             ItemViewConf newView = new ItemViewConf();
             Y9BeanUtil.copyProperties(oldView, newView);
             newView.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newView.setCreateTime(sdf.format(new Date()));
-            newView.setUpdateTime(sdf.format(new Date()));
+            newView.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+            newView.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             newView.setViewType(viewType);
             itemViewConfRepository.save(newView);
         }
@@ -137,7 +134,6 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     @Transactional
     public void saveOrUpdate(ItemViewConf itemViewConf) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = itemViewConf.getId();
         if (StringUtils.isNotBlank(id)) {
             ItemViewConf oldConf = this.findById(id);
@@ -147,7 +143,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
                 oldConf.setDisPlayName(itemViewConf.getDisPlayName());
                 oldConf.setDisPlayAlign(itemViewConf.getDisPlayAlign());
                 oldConf.setTableName(itemViewConf.getTableName());
-                oldConf.setUpdateTime(sdf.format(new Date()));
+                oldConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 oldConf.setUserId(person.getPersonId());
                 oldConf.setUserName(person.getName());
                 oldConf.setInputBoxType(itemViewConf.getInputBoxType());
@@ -156,11 +152,10 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
                 oldConf.setOptionClass(itemViewConf.getOptionClass());
                 oldConf.setSpanWidth(itemViewConf.getSpanWidth());
                 itemViewConfRepository.save(oldConf);
-                return;
             } else {
                 itemViewConfRepository.save(itemViewConf);
-                return;
             }
+            return;
         }
 
         ItemViewConf newConf = new ItemViewConf();
@@ -174,8 +169,8 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
         newConf.setViewType(itemViewConf.getViewType());
         newConf.setUserId(person.getPersonId());
         newConf.setUserName(person.getName());
-        newConf.setCreateTime(sdf.format(new Date()));
-        newConf.setUpdateTime(sdf.format(new Date()));
+        newConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newConf.setInputBoxType(itemViewConf.getInputBoxType());
         newConf.setLabelName(itemViewConf.getLabelName());
         newConf.setOpenSearch(itemViewConf.getOpenSearch());

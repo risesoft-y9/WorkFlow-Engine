@@ -64,6 +64,7 @@ public class SimTextFilePreviewImpl implements FilePreview {
         } catch (IOException e) {
             e.printStackTrace();
         }
+        assert fileData != null;
         model.addAttribute("textData", Base64.encodeBase64String(fileData.getBytes()));
         return TXT_FILE_PREVIEW_PAGE;
     }
@@ -80,14 +81,18 @@ public class SimTextFilePreviewImpl implements FilePreview {
             if ("ASCII".equals(charset)) {
                 charset = StandardCharsets.US_ASCII.name();
             }
-            BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), charset));
-            StringBuilder result = new StringBuilder();
-            String line;
-            while ((line = br.readLine()) != null) {
-                result.append(line).append("\r\n");
+            StringBuilder result;
+            try (
+                BufferedReader br = new BufferedReader(new InputStreamReader(new FileInputStream(filePath), charset))) {
+                result = new StringBuilder();
+                String line;
+                while ((line = br.readLine()) != null) {
+                    result.append(line).append("\r\n");
+                }
+                return result.toString();
+            } catch (IOException e) {
+                throw e;
             }
-            br.close();
-            return result.toString();
         }
     }
 }

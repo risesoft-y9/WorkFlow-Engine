@@ -29,7 +29,8 @@ public class ItemPageService {
 
     @SuppressWarnings("deprecation")
     public int count(String countSql, Object[] countArgs) {
-        return jdbcTemplate.queryForObject(countSql, countArgs, Integer.class);
+        Integer result = jdbcTemplate.queryForObject(countSql, countArgs, Integer.class);
+        return result == null ? 0 : result;
     }
 
     public <T> List<T> list(String sql, Map<String, Object> sqlMap, RowMapper<T> rowMapper) {
@@ -92,7 +93,8 @@ public class ItemPageService {
         if (size <= 0) {
             size = 15;
         }
-        int totalSize = jdbcTemplate.queryForObject(countSql, countArgs, Integer.class);
+        Integer result = jdbcTemplate.queryForObject(countSql, countArgs, Integer.class);
+        int totalSize = result != null ? result : 0;
         if (totalSize == 0) {
             return ItemPage.<T>builder().rows(new ArrayList<>()).currpage(0).size(0).totalpages(0).total(0).build();
         }

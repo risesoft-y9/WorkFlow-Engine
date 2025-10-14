@@ -3,9 +3,7 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -58,8 +56,8 @@ import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.event.Y9TodoUpdateEvent;
-import net.risesoft.service.setting.ItemSettingService;
 import net.risesoft.service.word.Y9WordHistoryService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -110,8 +108,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
-    private final ItemSettingService itemSettingService;
-
     /**
      * 异步发送
      *
@@ -144,8 +140,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 e.printStackTrace(print);
                 String msg = result.toString();
                 int num = userAndDeptIdList.size();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String time = sdf.format(new Date());
+                String time = Y9DateTimeUtils.formatCurrentDateTime();
 
                 // 发送失败,可能会出现统一待办已经保存成功,但任务没有在数据库产生,需要删除统一待办数据,只保存当前发送人的待办任务。
                 Y9Context.publishEvent(new Y9TodoUpdateEvent<>(new TodoTaskEventModel(
@@ -304,7 +299,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         final String executionId, final String processInstanceId, final FlowElementModel flowElementModel,
         final String sponsorGuid, final ProcessParam processParam, List<String> userList) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Y9LoginUserHolder.setTenantId(tenantId);
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
             Y9LoginUserHolder.setOrgUnit(orgUnit);
@@ -312,7 +306,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
             List<ProcessTrack> ptModelList = processTrackRepository.findByTaskId(task.getId());
             for (ProcessTrack ptModel : ptModelList) {
                 if (StringUtils.isBlank(ptModel.getEndTime())) {
-                    ptModel.setEndTime(sdf.format(new Date()));
+                    ptModel.setEndTime(Y9DateTimeUtils.formatCurrentDateTime());
                     processTrackRepository.save(ptModel);
                 }
             }
@@ -396,14 +390,13 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
     @Async
     @Override
     public void saveOpinionHistory(final String tenantId, final Opinion oldOpinion, final String opinionType) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             OpinionHistory history = new OpinionHistory();
             history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             history.setContent(oldOpinion.getContent());
             history.setCreateDate(oldOpinion.getCreateDate());
-            history.setSaveDate(sdf.format(new Date()));
+            history.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
             history.setDeptId(oldOpinion.getDeptId());
             history.setDeptName(oldOpinion.getDeptName());
             history.setModifyDate(oldOpinion.getModifyDate());
@@ -446,7 +439,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 String url = todoTaskUrlPrefix + "?itemId=" + itemId + "&processInstanceId="
                     + processParam.getProcessInstanceId() + "&type=fromCplane";
                 Date date = new Date();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                 String newPersonIds = "";
                 String[] ids = personIds.split(",");
                 OfficeDoneInfo officeDoneInfo =

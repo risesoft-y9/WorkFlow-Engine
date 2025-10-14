@@ -2,6 +2,8 @@ package net.risesoft.utils;
 
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 import javax.net.ssl.HostnameVerifier;
 import javax.net.ssl.HttpsURLConnection;
@@ -10,13 +12,20 @@ import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
 
 public class SslUtils {
+    public static DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+
     private static void trustAllHttpsCertificates() throws Exception {
         TrustManager[] trustAllCerts = new TrustManager[1];
         TrustManager tm = new miTM();
         trustAllCerts[0] = tm;
-        SSLContext sc = SSLContext.getInstance("SSL");
+        SSLContext sc = SSLContext.getInstance("TLSv1.2");
         sc.init(null, trustAllCerts, null);
         HttpsURLConnection.setDefaultSSLSocketFactory(sc.getSocketFactory());
+    }
+
+    public static void main(String[] args) {
+        String dateStr = LocalDateTime.now().format(DATE_FORMATTER);
+        System.out.println(dateStr);
     }
 
     /**

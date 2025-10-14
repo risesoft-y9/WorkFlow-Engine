@@ -1,6 +1,5 @@
 package net.risesoft.service.form.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.service.form.Y9TableService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -63,9 +63,13 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     private final ItemRepository itemRepository;
 
-    public Y9FormServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
-        Y9FormRepository y9FormRepository, Y9TableService y9TableService, Y9FormFieldRepository y9FormFieldRepository,
-        Y9TableFieldRepository y9TableFieldRepository, ItemRepository itemRepository) {
+    public Y9FormServiceImpl(
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
+        Y9FormRepository y9FormRepository,
+        Y9TableService y9TableService,
+        Y9FormFieldRepository y9FormFieldRepository,
+        Y9TableFieldRepository y9TableFieldRepository,
+        ItemRepository itemRepository) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9FormRepository = y9FormRepository;
         this.y9TableService = y9TableService;
@@ -368,7 +372,7 @@ public class Y9FormServiceImpl implements Y9FormService {
      * @param listMap
      * @return
      */
-    private final Map<String, Object> listMapToKeyValue(List<Map<String, Object>> listMap) {
+    private Map<String, Object> listMapToKeyValue(List<Map<String, Object>> listMap) {
         Map<String, Object> map = new CaseInsensitiveMap<>(16);
         for (Map<String, Object> m : listMap) {
             map.put((String)m.get("name"), m.get("value"));
@@ -383,7 +387,7 @@ public class Y9FormServiceImpl implements Y9FormService {
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "updateTime");
         Pageable pageable = PageRequest.of(page - 1, rows, sort);
-        Page<Y9Form> pageList = null;
+        Page<Y9Form> pageList;
         if (StringUtils.isBlank(systemName)) {
             pageList = y9FormRepository.findAll(pageable);
         } else {
@@ -391,7 +395,6 @@ public class Y9FormServiceImpl implements Y9FormService {
         }
         List<Y9Form> list = pageList.getContent();
         List<Map<String, Object>> listMap = new ArrayList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<Map<String, Object>> slist = itemRepository.getItemSystem();
         String systemCnName = "";
         for (Map<String, Object> m : slist) {
@@ -406,9 +409,9 @@ public class Y9FormServiceImpl implements Y9FormService {
             map.put("formType", y9Form.getFormType());
             map.put("templateType", y9Form.getTemplateType());
             map.put("fileName", y9Form.getFileName() == null ? "" : y9Form.getFileName());
-            map.put("systemCnName", systemCnName.equals("") ? y9Form.getSystemCnName() : systemCnName);
+            map.put("systemCnName", systemCnName.isEmpty() ? y9Form.getSystemCnName() : systemCnName);
             map.put("systemName", y9Form.getSystemName());
-            map.put("updateTime", sdf.format(y9Form.getUpdateTime()));
+            map.put("updateTime", Y9DateTimeUtils.formatDateTime(y9Form.getUpdateTime()));
             listMap.add(map);
         }
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
@@ -431,7 +434,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                 if (StringUtils.isBlank(guid)) {
                     guid = keyValue.get("GUID") != null ? (String)keyValue.get("GUID") : "";
                 }
-                String actionType = "0";
+                String actionType;
                 Map<String, Object> m = this.getData(guid, tableName);
                 if (m.get("edittype").equals("0")) {
                     actionType = "0";
@@ -622,6 +625,7 @@ public class Y9FormServiceImpl implements Y9FormService {
         try {
             String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<Map<String, Object>> listMap = Y9JsonUtil.readValue(jsonData, List.class);
+            assert listMap != null;
             Map<String, Object> keyValue = this.listMapToKeyValue(listMap);
             String guid = keyValue.get("guid") != null ? (String)keyValue.get("guid") : "";
             if (StringUtils.isBlank(guid)) {
@@ -633,7 +637,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                 if (y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
                     continue;
                 }
-                String actionType = "0";
+                String actionType;
                 Map<String, Object> m = this.getData(guid, tableName);
                 if (m.get("edittype").equals("0")) {
                     actionType = "0";
@@ -913,7 +917,8 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (DialectEnum.ORACLE.getValue().equals(dialect)
                                     || DialectEnum.DM.getValue().equals(dialect)
                                     || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append("TO_DATE('").append(keyValue.get(fieldName))
+                                    sqlStr1.append("TO_DATE('")
+                                        .append(keyValue.get(fieldName))
                                         .append("','yyyy-MM-dd')");
                                 } else {
                                     sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
@@ -923,7 +928,8 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (DialectEnum.ORACLE.getValue().equals(dialect)
                                     || DialectEnum.DM.getValue().equals(dialect)
                                     || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append("TO_DATE('").append(keyValue.get(fieldName))
+                                    sqlStr1.append("TO_DATE('")
+                                        .append(keyValue.get(fieldName))
                                         .append("','yyyy-MM-dd HH24:mi:ss')");
                                 } else {
                                     sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))

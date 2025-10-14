@@ -1,15 +1,10 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Sort;
@@ -32,6 +27,7 @@ import net.risesoft.repository.interfaceinfo.InterfaceResponseParamsRepository;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceBindRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.InterfaceService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
@@ -68,21 +64,17 @@ public class InterfaceServiceImpl implements InterfaceService {
         return interfaceInfoRepository.findAll(sort);
     }
 
-    @SuppressWarnings("serial")
     @Override
     public List<ItemInterfaceBind> listInterfaceById(String id) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        List<ItemInterfaceBind> list = itemInterfaceBindRepository.findAll(new Specification<ItemInterfaceBind>() {
-            @Override
-            public Predicate toPredicate(Root<ItemInterfaceBind> root, CriteriaQuery<?> query,
-                CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<>();
-                list.add(builder.equal(root.get("interfaceId"), id));
-                Predicate[] predicates = new Predicate[list.size()];
-                list.toArray(predicates);
+        List<ItemInterfaceBind> list =
+            itemInterfaceBindRepository.findAll((Specification<ItemInterfaceBind>)(root, query, builder) -> {
+                List<Predicate> list1 = new ArrayList<>();
+                list1.add(builder.equal(root.get("interfaceId"), id));
+                Predicate[] predicates = new Predicate[list1.size()];
+                list1.toArray(predicates);
                 return builder.and(predicates);
-            }
-        }, sort);
+            }, sort);
         for (ItemInterfaceBind bind : list) {
             Item item = itemRepository.findById(bind.getItemId()).orElse(null);
             bind.setItemName(item != null ? item.getName() : "事项不存在");
@@ -90,38 +82,31 @@ public class InterfaceServiceImpl implements InterfaceService {
         return list;
     }
 
-    @SuppressWarnings("serial")
     @Override
     public List<InterfaceInfo> listInterfaces(String name, String type, String address) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        return interfaceInfoRepository.findAll(new Specification<InterfaceInfo>() {
-            @Override
-            public Predicate toPredicate(Root<InterfaceInfo> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<>();
-                if (StringUtils.isNotBlank(name)) {
-                    list.add(builder.like(root.get("interfaceName"), "%" + name + "%"));
-                }
-                if (StringUtils.isNotBlank(address)) {
-                    list.add(builder.like(root.get("interfaceAddress"), "%" + address + "%"));
-                }
-                if (StringUtils.isNotBlank(type)) {
-                    list.add(builder.equal(root.get("requestType"), type));
-                }
-                Predicate[] predicates = new Predicate[list.size()];
-                list.toArray(predicates);
-                return builder.and(predicates);
+        return interfaceInfoRepository.findAll((Specification<InterfaceInfo>)(root, query, builder) -> {
+            List<Predicate> list = new ArrayList<>();
+            if (StringUtils.isNotBlank(name)) {
+                list.add(builder.like(root.get("interfaceName"), "%" + name + "%"));
             }
+            if (StringUtils.isNotBlank(address)) {
+                list.add(builder.like(root.get("interfaceAddress"), "%" + address + "%"));
+            }
+            if (StringUtils.isNotBlank(type)) {
+                list.add(builder.equal(root.get("requestType"), type));
+            }
+            Predicate[] predicates = new Predicate[list.size()];
+            list.toArray(predicates);
+            return builder.and(predicates);
         }, sort);
     }
 
-    @SuppressWarnings("serial")
     @Override
     public List<InterfaceRequestParams> listRequestParams(String name, String type, String id) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        return interfaceRequestParamsRepository.findAll(new Specification<InterfaceRequestParams>() {
-            @Override
-            public Predicate toPredicate(Root<InterfaceRequestParams> root, CriteriaQuery<?> query,
-                CriteriaBuilder builder) {
+        return interfaceRequestParamsRepository
+            .findAll((Specification<InterfaceRequestParams>)(root, query, builder) -> {
                 List<Predicate> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(name)) {
                     list.add(builder.like(root.get("parameterName"), "%" + name + "%"));
@@ -135,18 +120,14 @@ public class InterfaceServiceImpl implements InterfaceService {
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
                 return builder.and(predicates);
-            }
-        }, sort);
+            }, sort);
     }
 
-    @SuppressWarnings("serial")
     @Override
     public List<InterfaceResponseParams> listResponseParamsByNameAndId(String name, String id) {
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        return interfaceResponseParamsRepository.findAll(new Specification<InterfaceResponseParams>() {
-            @Override
-            public Predicate toPredicate(Root<InterfaceResponseParams> root, CriteriaQuery<?> query,
-                CriteriaBuilder builder) {
+        return interfaceResponseParamsRepository
+            .findAll((Specification<InterfaceResponseParams>)(root, query, builder) -> {
                 List<Predicate> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(name)) {
                     list.add(builder.like(root.get("parameterName"), "%" + name + "%"));
@@ -157,8 +138,7 @@ public class InterfaceServiceImpl implements InterfaceService {
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
                 return builder.and(predicates);
-            }
-        }, sort);
+            }, sort);
     }
 
     @Override
@@ -190,7 +170,7 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Transactional
     public void saveAllResponseParams(String interfaceId, String jsonData) {
         Map<String, Object> map = Y9JsonUtil.readValue(jsonData, Map.class);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        assert map != null;
         for (String columnName : map.keySet()) {
             List<InterfaceResponseParams> list = interfaceResponseParamsRepository.findByParameterName(columnName);
             if (list.isEmpty()) {
@@ -198,7 +178,7 @@ public class InterfaceServiceImpl implements InterfaceService {
                 item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 item.setInterfaceId(interfaceId);
                 item.setParameterName(columnName);
-                item.setCreateTime(sdf.format(new Date()));
+                item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 item.setRemark("");
                 interfaceResponseParamsRepository.saveAndFlush(item);
             }
@@ -209,7 +189,6 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Transactional
     public InterfaceInfo saveInterfaceInfo(InterfaceInfo info) {
         String id = info.getId();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
             InterfaceInfo item = interfaceInfoRepository.findById(id).orElse(null);
             if (null != item) {
@@ -228,7 +207,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         item.setInterfaceAddress(info.getInterfaceAddress());
         item.setAbnormalStop(info.getAbnormalStop());
         item.setAsyn(info.getAsyn());
-        item.setCreateTime(sdf.format(new Date()));
+        item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         return interfaceInfoRepository.saveAndFlush(item);
     }
 
@@ -236,7 +215,6 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Transactional
     public void saveRequestParams(InterfaceRequestParams info) {
         String id = info.getId();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
             InterfaceRequestParams item = interfaceRequestParamsRepository.findById(id).orElse(null);
             if (null != item) {
@@ -252,7 +230,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         item.setInterfaceId(info.getInterfaceId());
         item.setParameterName(info.getParameterName());
         item.setParameterType(info.getParameterType());
-        item.setCreateTime(sdf.format(new Date()));
+        item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         item.setRemark(info.getRemark());
         interfaceRequestParamsRepository.saveAndFlush(item);
     }
@@ -260,7 +238,6 @@ public class InterfaceServiceImpl implements InterfaceService {
     @Override
     @Transactional
     public void saveResponseParams(InterfaceResponseParams info) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = info.getId();
         if (StringUtils.isNotBlank(id)) {
             InterfaceResponseParams item = interfaceResponseParamsRepository.findById(id).orElse(null);
@@ -276,7 +253,7 @@ public class InterfaceServiceImpl implements InterfaceService {
         item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         item.setInterfaceId(info.getInterfaceId());
         item.setParameterName(info.getParameterName());
-        item.setCreateTime(sdf.format(new Date()));
+        item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         item.setRemark(info.getRemark());
         item.setFileType(info.getFileType());
         interfaceResponseParamsRepository.saveAndFlush(item);

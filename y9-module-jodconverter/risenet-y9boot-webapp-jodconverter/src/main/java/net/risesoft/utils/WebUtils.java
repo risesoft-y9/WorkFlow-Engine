@@ -1,6 +1,5 @@
 package net.risesoft.utils;
 
-import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.net.URLEncoder;
@@ -44,11 +43,7 @@ public class WebUtils {
      *
      */
     public static String encodeFileName(String name) {
-        try {
-            name = URLEncoder.encode(name, "UTF-8").replaceAll("\\+", "%20");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+        name = URLEncoder.encode(name, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
         return name;
     }
 
@@ -81,12 +76,13 @@ public class WebUtils {
             return null;
         }
         if (!UrlEncoderUtils.hasUrlEncoded(fullFileName)) { // 判断文件名是否转义
-            try {
-                urlStr = URLEncoder.encode(urlStr, "UTF-8").replaceAll("\\+", "%20").replaceAll("%3A", ":")
-                    .replaceAll("%2F", "/").replaceAll("%3F", "?").replaceAll("%26", "&").replaceAll("%3D", "=");
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
+            urlStr = URLEncoder.encode(urlStr, StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20")
+                .replaceAll("%3A", ":")
+                .replaceAll("%2F", "/")
+                .replaceAll("%3F", "?")
+                .replaceAll("%26", "&")
+                .replaceAll("%3D", "=");
         }
         return urlStr;
     }
@@ -213,11 +209,8 @@ public class WebUtils {
         if (fileNameEndIndex < fileNameStartIndex) {
             return url;
         }
-        try {
-            encodedFileName = URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), "UTF-8");
-        } catch (UnsupportedEncodingException e) {
-            return null;
-        }
+        encodedFileName =
+            URLEncoder.encode(noQueryUrl.substring(fileNameStartIndex, fileNameEndIndex), StandardCharsets.UTF_8);
         return url.substring(0, fileNameStartIndex) + encodedFileName + url.substring(fileNameEndIndex);
     }
 
@@ -259,6 +252,7 @@ public class WebUtils {
             if (UrlEncoderUtils.isBase64EncodedUrl(urls)) {
                 urls = decodeUrl(urls);
             }
+            assert urls != null;
             String[] images = urls.split("\\|");
             return images[0];
         }

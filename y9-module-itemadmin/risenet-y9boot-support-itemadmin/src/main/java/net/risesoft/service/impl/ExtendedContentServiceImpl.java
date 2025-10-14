@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -26,6 +25,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ExtendedContentRepository;
 import net.risesoft.service.ExtendedContentService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -118,7 +118,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
                     for (ExtendedContent content : list) {
                         Map<String, Object> map = new HashMap<>(16);
                         map.put("content", content);
-                        map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(content.getModifyDate()));
+                        map.put("date", Y9DateTimeUtils.formatDate(content.getModifyDate()));
                         map.put("editable", false);
                         if (person.getPersonId().equals(content.getUserId())) {
                             map.put("editable", true);
@@ -134,7 +134,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
                     for (ExtendedContent content : list) {
                         Map<String, Object> map = new HashMap<>(16);
                         map.put("content", content);
-                        map.put("date", new SimpleDateFormat("yyyy-MM-dd").format(content.getModifyDate()));
+                        map.put("date", Y9DateTimeUtils.formatDate(content.getModifyDate()));
                         map.put("editable", false);
                         resList.add(map);
                     }
@@ -157,7 +157,7 @@ public class ExtendedContentServiceImpl implements ExtendedContentService {
             if (StringUtils.isNotBlank(id)) {
                 extendedContent = this.findById(id);
             } else {
-                Integer count = 0;
+                Integer count;
                 if (StringUtils.isNotBlank(taskId)) {
                     count = this.getCountPersonal(processSerialNumber, taskId, category, person.getPersonId());
                 } else {

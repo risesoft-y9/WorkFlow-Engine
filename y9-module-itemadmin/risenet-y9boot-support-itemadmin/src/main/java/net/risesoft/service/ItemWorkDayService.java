@@ -1,6 +1,5 @@
 package net.risesoft.service;
 
-import java.text.ParseException;
 import java.util.Date;
 import java.util.List;
 
@@ -19,9 +18,9 @@ public interface ItemWorkDayService {
      * @param date 起始日期
      * @param days 几个工作日
      * @return 计算后的日期字符串 YYYY-MM-DD
-     * @throws ParseException
+     * @throws Exception
      */
-    String getDate(Date date, int days) throws ParseException;
+    String getDate(Date date, int days) throws Exception;
 
     List<String> getDb(int days);
 }

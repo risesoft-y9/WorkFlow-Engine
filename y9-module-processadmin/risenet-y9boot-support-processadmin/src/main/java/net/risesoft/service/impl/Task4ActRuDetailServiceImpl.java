@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -24,6 +23,7 @@ import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.service.Task4ActRuDetailService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -112,12 +112,11 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
     }
 
     private String getStartTime(String processInstanceId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String sql0 =
             "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '"
                 + processInstanceId + "'";
         List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
-        return list.isEmpty() ? sdf.format(new Date()) : list.get(0).get("START_TIME_").toString();
+        return list.isEmpty() ? Y9DateTimeUtils.formatCurrentDateTime() : list.get(0).get("START_TIME_").toString();
     }
 
     @Override

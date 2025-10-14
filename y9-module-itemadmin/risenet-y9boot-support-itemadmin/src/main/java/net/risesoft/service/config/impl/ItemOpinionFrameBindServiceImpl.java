@@ -1,8 +1,6 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +32,7 @@ import net.risesoft.repository.opinion.ItemOpinionFrameBindRepository;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.config.ItemOpinionFrameRoleService;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -74,7 +73,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     @Override
     @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
@@ -109,8 +107,8 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     ItemOpinionFrameBind newbind = new ItemOpinionFrameBind();
                     newbind.setId(newbindId);
                     newbind.setItemId(itemId);
-                    newbind.setCreateDate(sdf.format(new Date()));
-                    newbind.setModifyDate(sdf.format(new Date()));
+                    newbind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+                    newbind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                     newbind.setOpinionFrameMark(bind.getOpinionFrameMark());
                     newbind.setOpinionFrameName(bind.getOpinionFrameName());
                     newbind.setProcessDefinitionId(latestpdId);
@@ -135,7 +133,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     for (OpinionFrameOneClickSet set : setList) {
                         OpinionFrameOneClickSet newSet = new OpinionFrameOneClickSet();
                         newSet.setBindId(newbindId);
-                        newSet.setCreateDate(sdf.format(new Date()));
+                        newSet.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
                         newSet.setOneSetType(set.getOneSetType());
                         newSet.setOneSetTypeName(set.getOneSetTypeName());
                         newSet.setExecuteAction(set.getExecuteAction());
@@ -151,7 +149,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         try {
@@ -163,8 +160,8 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     String newbindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                     newbind.setId(newbindId);
                     newbind.setItemId(newItemId);
-                    newbind.setCreateDate(sdf.format(new Date()));
-                    newbind.setModifyDate(sdf.format(new Date()));
+                    newbind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+                    newbind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                     newbind.setOpinionFrameMark(bind.getOpinionFrameMark());
                     newbind.setOpinionFrameName(bind.getOpinionFrameName());
                     newbind.setProcessDefinitionId(lastVersionPid);
@@ -180,7 +177,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                         OpinionFrameOneClickSet newset = new OpinionFrameOneClickSet();
                         newset.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                         newset.setBindId(newbindId);
-                        newset.setCreateDate(sdf.format(new Date()));
+                        newset.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
                         newset.setOneSetType(set.getOneSetType());
                         newset.setOneSetTypeName(set.getOneSetTypeName());
                         newset.setExecuteAction(set.getExecuteAction());
@@ -334,8 +331,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     @Override
     @Transactional
     public void save(String opinionFrameNameAndMarks, String itemId, String processDefinitionId, String taskDefKey) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        List<ItemOpinionFrameBind> resList = new ArrayList<>();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotEmpty(opinionFrameNameAndMarks)) {
@@ -346,8 +341,8 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
 
                 ItemOpinionFrameBind newBind = new ItemOpinionFrameBind();
                 newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                newBind.setCreateDate(sdf.format(new Date()));
-                newBind.setModifyDate(sdf.format(new Date()));
+                newBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+                newBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                 newBind.setOpinionFrameMark(mark);
                 newBind.setOpinionFrameName(name);
                 newBind.setItemId(itemId);
@@ -359,7 +354,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                 newBind.setSignOpinion(true);
 
                 this.save(newBind);
-                resList.add(newBind);
             } else {
                 String[] strings = opinionFrameNameAndMarks.split(";");
                 for (String string : strings) {
@@ -369,8 +363,8 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
 
                     ItemOpinionFrameBind newoftrb = new ItemOpinionFrameBind();
                     newoftrb.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    newoftrb.setCreateDate(sdf.format(new Date()));
-                    newoftrb.setModifyDate(sdf.format(new Date()));
+                    newoftrb.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+                    newoftrb.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                     newoftrb.setOpinionFrameMark(mark);
                     newoftrb.setOpinionFrameName(name);
                     newoftrb.setItemId(itemId);
@@ -382,7 +376,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     newoftrb.setSignOpinion(true);
 
                     this.save(newoftrb);
-                    resList.add(newoftrb);
                 }
             }
         }

@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -22,6 +21,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.FlowableReminderService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -59,7 +59,6 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Date currentTime = new Date();
             for (TaskModel task : taskList) {
                 mapTemp = new HashMap<>(16);
@@ -69,7 +68,7 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, task.getAssignee()).getData();
                 mapTemp.put("userName", StringUtils.isBlank(task.getAssignee()) ? "" : orgUnit.getName());
                 mapTemp.put("taskName", taskName);
-                mapTemp.put("createTime", sdf.format(task.getCreateTime()));
+                mapTemp.put("createTime", Y9DateTimeUtils.formatDateTime(task.getCreateTime()));
                 mapTemp.put("duration", longTime(task.getCreateTime(), currentTime));
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;

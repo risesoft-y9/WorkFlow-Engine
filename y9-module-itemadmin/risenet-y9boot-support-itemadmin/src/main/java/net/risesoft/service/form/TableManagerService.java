@@ -4,9 +4,7 @@ import java.sql.Connection;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
 import java.sql.Statement;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -28,6 +26,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.util.form.DdlKingbase;
 import net.risesoft.util.form.DdlMysql;
 import net.risesoft.util.form.DdlOracle;
@@ -65,11 +64,11 @@ public class TableManagerService {
      * 修改表结构
      *
      * @param td
-     * @param dbcs
+     * @param dbColumnList
      * @return
      * @throws Exception
      */
-    public Y9Result<Object> addFieldToTable(Y9Table td, List<DbColumn> dbcs) {
+    public Y9Result<Object> addFieldToTable(Y9Table td, List<DbColumn> dbColumnList) {
         try {
             String tableName = td.getTableName();
             String tableId = td.getId();
@@ -85,7 +84,7 @@ public class TableManagerService {
                     this.saveOrUpdate(td);
                     LOGGER.info("修改表正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
                 }
-                ddLmysql.addTableColumn(dataSource, tableName, dbcs);
+                ddLmysql.addTableColumn(dataSource, tableName, dbColumnList);
             } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                 DdlOracle ddLoracle = new DdlOracle();
                 if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
@@ -95,7 +94,7 @@ public class TableManagerService {
                     this.saveOrUpdate(td);
                     LOGGER.info("修改表正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
                 }
-                ddLoracle.addTableColumn(dataSource, tableName, dbcs);
+                ddLoracle.addTableColumn(dataSource, tableName, dbColumnList);
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
                 DdlOracle ddLoracle = new DdlOracle();
                 if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
@@ -105,7 +104,7 @@ public class TableManagerService {
                     this.saveOrUpdate(td);
                     LOGGER.info("修改表正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
                 }
-                ddLoracle.addTableColumn(dataSource, tableName, dbcs);
+                ddLoracle.addTableColumn(dataSource, tableName, dbColumnList);
             } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
                 DdlKingbase ddLkingbase = new DdlKingbase();
                 if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
@@ -115,7 +114,7 @@ public class TableManagerService {
                     this.saveOrUpdate(td);
                     LOGGER.info("修改表正常");
                 }
-                ddLkingbase.addTableColumn(dataSource, tableName, dbcs);
+                ddLkingbase.addTableColumn(dataSource, tableName, dbColumnList);
             }
             // 修改状态
             y9TableFieldRepository.updateState(tableId);
@@ -131,16 +130,16 @@ public class TableManagerService {
      * 创建表结构
      *
      * @param td
-     * @param dbcs
+     * @param dbColumnList
      * @return
      */
-    public Y9Result<Object> buildTable(Y9Table td, List<DbColumn> dbcs) {
+    public Y9Result<Object> buildTable(Y9Table td, List<DbColumn> dbColumnList) {
         StringBuilder createSql = new StringBuilder();
         try {
             // 创建表
             DataSource dataSource = jdbcTemplate4Tenant.getDataSource();
             String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
-            String jsonDbColumns = Y9JsonUtil.writeValueAsString(dbcs);
+            String jsonDbColumns = Y9JsonUtil.writeValueAsString(dbColumnList);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 DdlMysql ddLmysql = new DdlMysql();
                 if (StringUtils.isNotBlank(td.getOldTableName())) {
@@ -260,9 +259,11 @@ public class TableManagerService {
         Map<String, Object> map = new HashMap<>(16);
         String tableName;
         try {
-            assert jdbcTemplate4Tenant.getDataSource() != null;
-            try (Connection conn = jdbcTemplate4Tenant.getDataSource().getConnection();
-                Statement stmt = conn.createStatement()) {
+            DataSource dataSource = jdbcTemplate4Tenant.getDataSource();
+            if (dataSource == null) {
+                throw new IllegalStateException("Tenant DataSource is not available");
+            }
+            try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
                 Y9Table y9Table = y9TableRepository.findById(tableId).orElse(null);
                 if (y9Table != null) {
                     tableName = y9Table.getTableName();
@@ -336,7 +337,7 @@ public class TableManagerService {
             }
             sqlStr1.append(")");
             sqlStr.append(sqlStr1);
-            LOGGER.info("表" + tableName + "的insert语句：" + sqlStr);
+            LOGGER.info("表{}的insert语句：{}", tableName, sqlStr);
         } catch (Exception e) {
             e.printStackTrace();
         }
@@ -380,7 +381,7 @@ public class TableManagerService {
         try {
             List<DbColumn> list =
                 Y9FormDbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
-            sqlStr.append("update " + tableName + " set ");
+            sqlStr.append("update ").append(tableName).append(" set ");
             StringBuilder sqlStr1 = new StringBuilder();
             for (DbColumn column : list) {
                 if (column.getPrimaryKey()) {
@@ -402,7 +403,6 @@ public class TableManagerService {
     }
 
     public void saveOrUpdate(Y9Table table) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             if (StringUtils.isBlank(table.getId())) {
                 table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -411,7 +411,7 @@ public class TableManagerService {
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }
-            table.setCreateTime(sdf.format(new Date()));
+            table.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             y9TableRepository.save(table);
         } catch (Exception e) {
             e.printStackTrace();

@@ -4,7 +4,6 @@ import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -34,6 +33,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.template.WordTemplateRepository;
 import net.risesoft.service.BookMarkBindService;
 import net.risesoft.service.template.WordTemplateService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.word.Y9WordTool4Doc;
@@ -212,8 +212,8 @@ public class WordTemplateServiceImpl implements WordTemplateService {
                 fileName = file.getOriginalFilename();
             }
             wordTemplate.setFileName(fileName);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), "wordTemplate", sdf.format(new Date()));
+            String fullPath =
+                Y9FileStore.buildPath(Y9Context.getSystemName(), "wordTemplate", Y9DateTimeUtils.formatCurrentDate());
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             wordTemplate.setPersonId(person.getPersonId());
             wordTemplate.setPersonName(person.getName());

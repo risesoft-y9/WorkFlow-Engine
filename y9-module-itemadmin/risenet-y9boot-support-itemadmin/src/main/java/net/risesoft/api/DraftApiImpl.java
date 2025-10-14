@@ -1,6 +1,5 @@
 package net.risesoft.api;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +18,6 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.Item;
-import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.pojo.Y9Page;
@@ -27,7 +25,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.DraftEntityRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.DraftEntityService;
-import net.risesoft.service.form.FormDataService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -48,8 +46,6 @@ public class DraftApiImpl implements DraftApi {
     private final DraftEntityRepository draftEntityRepository;
 
     private final ItemRepository itemRepository;
-
-    private final FormDataService formDataService;
 
     /**
      * 根据系统名称和组织id获取草稿数量
@@ -173,9 +169,7 @@ public class DraftApiImpl implements DraftApi {
         }
         Page<DraftEntity> pageList = draftEntityService.pageDraftList(itemId, orgUnitId, page, rows, title, delFlag);
         List<Map<String, Object>> draftList = new ArrayList<>();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         int number = (page - 1) * rows;
-        ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
         List<String> processSerialNumbers = new ArrayList<>();
         for (DraftEntity draftEntity : pageList) {
             processSerialNumbers.add(draftEntity.getProcessSerialNumber());
@@ -198,7 +192,7 @@ public class DraftApiImpl implements DraftApi {
             retMap.put("processSerialNumber", draftEntity.getProcessSerialNumber());
             retMap.put("title", StringUtils.isEmpty(draftEntity.getTitle()) ? "无标题" : draftEntity.getTitle());
             retMap.put("urgency", draftEntity.getUrgency());
-            retMap.put("draftTime", sdf.format(draftEntity.getDraftTime()));
+            retMap.put("draftTime", Y9DateTimeUtils.formatDateTime(draftEntity.getDraftTime()));
             draftList.add(retMap);
             number += 1;
         }

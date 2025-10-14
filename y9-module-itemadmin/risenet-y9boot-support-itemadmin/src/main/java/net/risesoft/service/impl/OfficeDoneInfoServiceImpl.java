@@ -3,9 +3,7 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -41,6 +39,7 @@ import net.risesoft.nosql.elastic.repository.OfficeDoneInfoRepository;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -96,8 +95,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public int countByUserId(String userId, String itemId) {
         try {
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists()
-                .and("allUserId").contains(userId);
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+                .and("endTime")
+                .exists()
+                .and("allUserId")
+                .contains(userId);
             if (StringUtils.isNotBlank(itemId)) {
                 criteria.subCriteria(new Criteria("itemId").is(itemId));
             }
@@ -113,8 +115,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public int countByUserIdAndSystemName(String orgUnitId, String systemName) {
         try {
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists()
-                .and("allUserId").contains(orgUnitId);
+            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+                .and("endTime")
+                .exists()
+                .and("allUserId")
+                .contains(orgUnitId);
             if (StringUtils.isNotBlank(systemName)) {
                 criteria.subCriteria(new Criteria("systemName").is(systemName));
             }
@@ -176,8 +181,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     public Y9Page<OfficeDoneInfoModel> pageMeetingList(String userName, String deptName, String title,
         String meetingType, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
-        int totalPages = 1;
-        long total = 0;
+        int totalPages;
+        long total;
         if (page < 1) {
             page = 1;
         }
@@ -216,7 +221,6 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
     @Override
     public void saveOfficeDone(OfficeDoneInfo info) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String processInstanceId = "";
         try {
             processInstanceId = info.getProcessInstanceId();
@@ -240,7 +244,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             e.printStackTrace(print);
             String msg = result.toString();
             LOGGER.warn("异常", e);
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLog errorLogModel = new ErrorLog();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);
@@ -264,8 +268,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     public Y9Page<OfficeDoneInfoModel> searchAllByDeptId(String deptId, String title, String itemId, String userName,
         String state, String year, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
-        int totalPages = 1;
-        long total = 0;
+        int totalPages;
+        long total;
         if (page < 1) {
             page = 1;
         }
@@ -318,8 +322,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     public Y9Page<OfficeDoneInfoModel> searchAllByUserId(String userId, String title, String itemId, String userName,
         String state, String year, String startDate, String endDate, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
-        int totalPages = 1;
-        long total = 0;
+        int totalPages;
+        long total;
         if (page < 1) {
             page = 1;
         }
@@ -378,8 +382,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     public Y9Page<OfficeDoneInfoModel> searchAllByUserIdAndSystemName(String orgUnitId, String title, String systemName,
         String itemId, String state, String year, String startDate, String endDate, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
-        int totalPages = 1;
-        long total = 0;
+        int totalPages;
+        long total;
         if (page < 1) {
             page = 1;
         }
@@ -439,8 +443,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         String systemName, String itemId, String target, String state, String year, String startDate, String endDate,
         Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
-        int totalPages = 1;
-        long total = 0;
+        int totalPages;
+        long total;
         if (page < 1) {
             page = 1;
         }
@@ -504,8 +508,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     public Y9Page<OfficeDoneInfoModel> searchAllList(String searchName, String itemId, String userName, String state,
         String year, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
-        int totalPages = 1;
-        long total = 0;
+        int totalPages;
+        long total;
         if (page < 1) {
             page = 1;
         }
@@ -557,8 +561,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     public Y9Page<OfficeDoneInfoModel> searchByItemId(String title, String itemId, String state, String startdate,
         String enddate, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
-        int totalPages = 1;
-        long total = 0;
+        int totalPages;
+        long total;
         if (page < 1) {
             page = 1;
         }
@@ -570,8 +574,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         }
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
         if (StringUtils.isNotBlank(title)) {
-            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title)
-                .or("creatUserName").contains(title));
+            criteria.subCriteria(new Criteria("title").contains(title)
+                .or("docNumber")
+                .contains(title)
+                .or("creatUserName")
+                .contains(title));
         }
         if (StringUtils.isNotBlank(itemId)) {
             criteria.subCriteria(new Criteria("itemId").is(itemId));
@@ -612,15 +619,18 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     public Y9Page<OfficeDoneInfoModel> searchByUserId(String userId, String title, String itemId, String startdate,
         String enddate, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
-        int totalPages = 1;
-        long total = 0;
+        int totalPages;
+        long total;
         if (page < 1) {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
 
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
-            .contains(userId).and("endTime").exists();
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+            .and("allUserId")
+            .contains(userId)
+            .and("endTime")
+            .exists();
         if (StringUtils.isNotBlank(title)) {
             criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
         }
@@ -656,15 +666,18 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     public Y9Page<OfficeDoneInfoModel> searchByUserIdAndSystemName(String orgUnitId, String title, String systemName,
         String startdate, String enddate, Integer page, Integer rows) {
         List<OfficeDoneInfoModel> list1 = new ArrayList<>();
-        int totalPages = 1;
-        long total = 0;
+        int totalPages;
+        long total;
         if (page < 1) {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
 
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId")
-            .contains(orgUnitId).and("endTime").exists();
+        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+            .and("allUserId")
+            .contains(orgUnitId)
+            .and("endTime")
+            .exists();
         if (StringUtils.isNotBlank(title)) {
             criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
         }

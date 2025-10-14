@@ -1,7 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +15,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.RemindInstanceRepository;
 import net.risesoft.service.RemindInstanceService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -72,7 +71,6 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
         String arriveTaskKey, String completeTaskKey) {
         try {
             String userId = Y9LoginUserHolder.getOrgUnitId();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             RemindInstance remindInstance =
                 remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId, userId);
             // 删除
@@ -101,7 +99,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
                 remindInstance.setRemindType(remindType);
                 remindInstance.setArriveTaskKey(arriveTaskKey);
                 remindInstance.setCompleteTaskKey(completeTaskKey);
-                remindInstance.setCreateTime(sdf.format(new Date()));
+                remindInstance.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 remindInstanceRepository.save(remindInstance);
                 return Y9Result.successMsg("保存成功");
             }
@@ -114,7 +112,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
             remindInstance.setRemindType(remindType);
             remindInstance.setArriveTaskKey(arriveTaskKey);
             remindInstance.setCompleteTaskKey(completeTaskKey);
-            remindInstance.setCreateTime(sdf.format(new Date()));
+            remindInstance.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             remindInstanceRepository.save(remindInstance);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {

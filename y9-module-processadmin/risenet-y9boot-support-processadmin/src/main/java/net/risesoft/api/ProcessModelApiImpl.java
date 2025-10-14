@@ -2,7 +2,6 @@ package net.risesoft.api;
 
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
@@ -42,6 +41,7 @@ import net.risesoft.api.processadmin.ProcessModelApi;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
@@ -111,7 +111,6 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      */
     @Override
     public Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         FlowableTenantInfoHolder.setTenantId(tenantId);
         List<FlowableBpmnModel> items = new ArrayList<>();
         List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
@@ -123,13 +122,15 @@ public class ProcessModelApiImpl implements ProcessModelApi {
             flowableBpmnModel.setKey(model.getKey());
             flowableBpmnModel.setName(model.getName());
             flowableBpmnModel.setVersion(0);
-            processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey())
-                .latestVersion().singleResult();
+            processDefinition = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionKey(model.getKey())
+                .latestVersion()
+                .singleResult();
             if (null != processDefinition) {
                 flowableBpmnModel.setVersion(processDefinition.getVersion());
             }
-            flowableBpmnModel.setCreateTime(sdf.format(model.getCreated()));
-            flowableBpmnModel.setLastUpdateTime(sdf.format(model.getLastUpdated()));
+            flowableBpmnModel.setCreateTime(Y9DateTimeUtils.formatDateTime(model.getCreated()));
+            flowableBpmnModel.setLastUpdateTime(Y9DateTimeUtils.formatDateTime(model.getLastUpdated()));
             items.add(flowableBpmnModel);
         }
         return Y9Result.success(items, "获取成功");

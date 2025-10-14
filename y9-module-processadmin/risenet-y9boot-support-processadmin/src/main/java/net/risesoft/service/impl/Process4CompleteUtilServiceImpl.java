@@ -3,8 +3,6 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -28,6 +26,7 @@ import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.service.Process4CompleteUtilService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.sqlddl.DbMetaDataUtil;
@@ -50,8 +49,11 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
 
     private final ErrorLogApi errorLogApi;
 
-    public Process4CompleteUtilServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        OfficeDoneInfoApi officeDoneInfoApi, ProcessParamApi processParamApi, ErrorLogApi errorLogApi) {
+    public Process4CompleteUtilServiceImpl(
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+        OfficeDoneInfoApi officeDoneInfoApi,
+        ProcessParamApi processParamApi,
+        ErrorLogApi errorLogApi) {
         this.officeDoneInfoApi = officeDoneInfoApi;
         this.jdbcTemplate = jdbcTemplate;
         this.processParamApi = processParamApi;
@@ -143,7 +145,6 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
         final String personName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -168,7 +169,8 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
             Map<String, Object> map = list.get(0);
             String processDefinitionId = (String)map.get("PROC_DEF_ID_");
             String startTime = (String)map.get("START_TIME_");
-            String endTime = map.get("END_TIME_") != null ? (String)map.get("END_TIME_") : sdf.format(new Date());
+            String endTime =
+                map.get("END_TIME_") != null ? (String)map.get("END_TIME_") : Y9DateTimeUtils.formatCurrentDateTime();
             /**********************************
              * 保存办结数据到数据中心，用于办结件列表查询
              *********************************************/
@@ -235,11 +237,14 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
             this.deleteDoneData(processInstanceId);
             LOGGER.info("#################保存办结件数据到数据中心成功#################");
         } catch (Exception e) {
+            if (e instanceof InterruptedException) {
+                Thread.currentThread().interrupt();
+            }
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);

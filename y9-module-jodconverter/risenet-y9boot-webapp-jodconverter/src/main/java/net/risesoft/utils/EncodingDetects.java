@@ -38,6 +38,7 @@ public class EncodingDetects {
             return SimpleEncodingDetects.getJavaEncode(content);
         }
         UniversalDetector detector = new UniversalDetector(null);
+        assert content != null;
         detector.handleData(content, 0, content.length);
         detector.dataEnd();
         String charsetName = detector.getDetectedCharset();

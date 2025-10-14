@@ -1,8 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -13,6 +10,7 @@ import net.risesoft.entity.SmsDetail;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.SmsDetailRepository;
 import net.risesoft.service.SmsDetailService;
+import net.risesoft.util.Y9DateTimeUtils;
 
 @Slf4j
 @Service
@@ -30,7 +28,6 @@ public class SmsDetailServiceImpl implements SmsDetailService {
     @Override
     @Transactional
     public void saveOrUpdate(SmsDetail smsDetail) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         SmsDetail oldSmsDetail =
             this.findByProcessSerialNumberAndPositionId(smsDetail.getProcessSerialNumber(), smsDetail.getPositionId());
         if (null != oldSmsDetail) {
@@ -38,12 +35,12 @@ public class SmsDetailServiceImpl implements SmsDetailService {
             oldSmsDetail.setSign(smsDetail.isSign());
             oldSmsDetail.setSend(smsDetail.isSend());
             oldSmsDetail.setPositionIds(smsDetail.getPositionIds());
-            oldSmsDetail.setModifyDate(sdf.format(new Date()));
+            oldSmsDetail.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             smsDetailRepository.save(oldSmsDetail);
         } else {
             smsDetail.setId(Y9IdGenerator.genId());
-            smsDetail.setCreateDate(sdf.format(new Date()));
-            smsDetail.setModifyDate(sdf.format(new Date()));
+            smsDetail.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+            smsDetail.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             smsDetailRepository.save(smsDetail);
         }
     }

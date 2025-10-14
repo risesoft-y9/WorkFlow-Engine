@@ -1,8 +1,6 @@
 package net.risesoft.service.view.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import javax.persistence.criteria.CriteriaBuilder;
@@ -28,6 +26,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.view.ViewTypeRepository;
 import net.risesoft.service.config.ItemViewConfService;
 import net.risesoft.service.view.ViewTypeService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -104,13 +103,12 @@ public class ViewTypeServiceImpl implements ViewTypeService {
     @Transactional
     public ViewType saveOrUpdate(ViewType viewType) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String id = viewType.getId();
             if (StringUtils.isNotEmpty(id)) {
                 ViewType oldof = this.findById(id);
                 if (null != oldof) {
-                    oldof.setModifyDate(sdf.format(new Date()));
+                    oldof.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                     oldof.setName(viewType.getName());
                     oldof.setUserName(null == person ? "" : person.getName());
                     this.save(oldof);
@@ -123,8 +121,8 @@ public class ViewTypeServiceImpl implements ViewTypeService {
             ViewType newof = new ViewType();
             newof.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             newof.setMark(viewType.getMark());
-            newof.setCreateDate(sdf.format(new Date()));
-            newof.setModifyDate(sdf.format(new Date()));
+            newof.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+            newof.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             newof.setName(viewType.getName());
             newof.setUserName(person.getName());
             this.save(newof);

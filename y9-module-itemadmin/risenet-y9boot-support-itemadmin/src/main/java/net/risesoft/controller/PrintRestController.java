@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +25,7 @@ import net.risesoft.entity.template.PrintTemplate;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.service.template.PrintTemplateService;
+import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  * @author qinman
@@ -83,7 +83,6 @@ public class PrintRestController {
      */
     @GetMapping(value = "/getPrintTemplateList")
     public Y9Result<List<Map<String, Object>>> getPrintTemplateList(@RequestParam(required = false) String fileName) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<PrintTemplate> list;
         if (StringUtils.isNotBlank(fileName)) {
             list = printTemplateService.listByFileNameLike(fileName);
@@ -98,7 +97,7 @@ public class PrintRestController {
             map.put("fileSize", printTemplate.getFileSize());
             map.put("fileUrl", printTemplate.getFilePath());
             map.put("personName", printTemplate.getPersonName());
-            map.put("uploadTime", sdf.format(printTemplate.getUploadTime()));
+            map.put("uploadTime", Y9DateTimeUtils.formatDateTime(printTemplate.getUploadTime()));
             items.add(map);
         }
         return Y9Result.success(items, "获取成功");

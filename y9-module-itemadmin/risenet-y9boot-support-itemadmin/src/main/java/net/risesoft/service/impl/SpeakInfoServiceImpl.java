@@ -1,7 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -18,6 +16,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.SpeakInfoRepository;
 import net.risesoft.service.SpeakInfoService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -40,18 +39,17 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
         Date createDate;
         Date dateAfterCreateDate5Minute;
         Date currentDate;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
-            createDate = sdf.parse(speakInfo.getCreateTime());
+            createDate = Y9DateTimeUtils.parseDateTime(speakInfo.getCreateTime());
             dateAfterCreateDate5Minute = new Date(createDate.getTime() + 300000);
-            currentDate = sdf.parse(sdf.format(new Date()));
+            currentDate = Y9DateTimeUtils.parseDateTime(Y9DateTimeUtils.formatCurrentDateTime());
             if (currentDate.after(dateAfterCreateDate5Minute)) {
                 return Y9Result.failure("该信息已提交超过5分钟,不可删除!");
             } else {
                 speakInfoRepository.deleteById(id);
                 return Y9Result.successMsg("删除成功");
             }
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return Y9Result.failure("删除失败!");
@@ -65,7 +63,6 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
     @Override
     @Transactional
     public List<SpeakInfo> findByProcessInstanceId(String processInstanceId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String currentUserId = person.getPersonId();
         List<SpeakInfo> siList =
@@ -86,13 +83,13 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
                 continue;
             }
             try {
-                createDate = sdf.parse(speakInfo.getCreateTime());
+                createDate = Y9DateTimeUtils.parseDateTime(speakInfo.getCreateTime());
                 dateAfterCreateDate5Minute = new Date(createDate.getTime() + 300000);
-                currentDate = sdf.parse(sdf.format(new Date()));
+                currentDate = Y9DateTimeUtils.parseDateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 if (currentDate.after(dateAfterCreateDate5Minute)) {
                     speakInfo.setEdited(false);
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -108,29 +105,28 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
     @Override
     @Transactional
     public String saveOrUpdate(SpeakInfo speakInfo) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = speakInfo.getId();
         if (StringUtils.isNotEmpty(id)) {
-            SpeakInfo oldsi = this.findById(id);
-            oldsi.setContent(speakInfo.getContent());
-            oldsi.setUpdateTime(sdf.format(new Date()));
-            speakInfoRepository.save(oldsi);
+            SpeakInfo oldSpeakInfo = this.findById(id);
+            oldSpeakInfo.setContent(speakInfo.getContent());
+            oldSpeakInfo.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
+            speakInfoRepository.save(oldSpeakInfo);
             return id;
         }
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName();
-        SpeakInfo newsi = new SpeakInfo();
+        SpeakInfo newSpeakInfo = new SpeakInfo();
         String newId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-        newsi.setId(newId);
-        newsi.setProcessInstanceId(speakInfo.getProcessInstanceId());
-        newsi.setContent(speakInfo.getContent());
-        newsi.setDeleted(false);
-        newsi.setCreateTime(sdf.format(new Date()));
-        newsi.setUpdateTime(sdf.format(new Date()));
-        newsi.setUserId(userId);
-        newsi.setUserName(userName);
-        newsi.setReadUserId(userId);
-        speakInfoRepository.save(newsi);
+        newSpeakInfo.setId(newId);
+        newSpeakInfo.setProcessInstanceId(speakInfo.getProcessInstanceId());
+        newSpeakInfo.setContent(speakInfo.getContent());
+        newSpeakInfo.setDeleted(false);
+        newSpeakInfo.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        newSpeakInfo.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        newSpeakInfo.setUserId(userId);
+        newSpeakInfo.setUserName(userName);
+        newSpeakInfo.setReadUserId(userId);
+        speakInfoRepository.save(newSpeakInfo);
         return newId;
     }
 }

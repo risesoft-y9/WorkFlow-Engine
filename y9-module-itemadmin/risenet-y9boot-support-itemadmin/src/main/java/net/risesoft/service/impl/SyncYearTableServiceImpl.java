@@ -9,7 +9,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
 import java.sql.Connection;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,6 +28,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.service.SyncYearTableService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -48,7 +48,8 @@ public class SyncYearTableServiceImpl implements SyncYearTableService {
 
     private final JdbcTemplate jdbcTemplate4Public;
 
-    public SyncYearTableServiceImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+    public SyncYearTableServiceImpl(
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
         @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcTemplate4Public = jdbcTemplate4Public;
@@ -73,16 +74,14 @@ public class SyncYearTableServiceImpl implements SyncYearTableService {
      */
     @Scheduled(cron = "0 0 2 * * ?")
     public void syncYearTable() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         Date date = new Date();
         /**
          * 每年的10月10号开始生成年度表结构
          */
-        boolean is1010 = sdf.format(date).contains("10-10");
+        boolean is1010 = Y9DateTimeUtils.formatCurrentDate().contains("10-10");
         if (is1010) {
             LOGGER.info("********************定时生成年度表结构开始**********************");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy");
-            String year = sdf1.format(date);
+            String year = Y9DateTimeUtils.getYear(date);
             String year0 = String.valueOf((Integer.parseInt(year) + 1));
             List<String> list = jdbcTemplate4Public.queryForList("select id from y9_common_tenant", String.class);
             for (String tenantId : list) {
@@ -117,8 +116,7 @@ public class SyncYearTableServiceImpl implements SyncYearTableService {
         Connection connection = null;
         try {
             if (StringUtils.isBlank(year)) {
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
-                year = sdf.format(new Date());
+                year = Y9DateTimeUtils.getYear(new Date());
             }
             Integer count = -1;
             try {

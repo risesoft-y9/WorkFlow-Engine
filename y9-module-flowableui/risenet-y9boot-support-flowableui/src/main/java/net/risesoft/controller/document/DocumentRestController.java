@@ -1,7 +1,5 @@
 package net.risesoft.controller.document;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -65,6 +63,7 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.service.ProcessParamService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
@@ -446,8 +445,7 @@ public class DocumentRestController {
                     processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), tpArr[1]).getData();
                 processParamModel.setDueDate(null);
                 if (StringUtils.isNotBlank(dueDate)) {
-                    SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-                    processParamModel.setDueDate(sdf.parse(dueDate));
+                    processParamModel.setDueDate(Y9DateTimeUtils.parseDate(dueDate));
                 }
                 processParamModel.setDescription(description);
                 processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
@@ -459,7 +457,7 @@ public class DocumentRestController {
                 } else {
                     fail.getAndIncrement();
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 fail.getAndIncrement();
             }
         });

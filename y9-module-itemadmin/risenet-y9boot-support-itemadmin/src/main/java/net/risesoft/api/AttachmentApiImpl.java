@@ -1,8 +1,6 @@
 package net.risesoft.api;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -32,6 +30,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.attachment.AttachmentConfRepository;
 import net.risesoft.repository.attachment.AttachmentRepository;
 import net.risesoft.service.attachment.AttachmentService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -199,7 +198,6 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Map<String, Object> attachmentJson = Y9JsonUtil.readValue(attachjson, Map.class);
         assert attachmentJson != null;
         List<Map<String, Object>> attachmentList = (List<Map<String, Object>>)attachmentJson.get("attachment");
@@ -215,7 +213,7 @@ public class AttachmentApiImpl implements AttachmentApi {
             file.setPersonId(map.get("personId") == null ? "" : map.get("personId").toString());
             file.setPersonName(map.get("personName") == null ? "" : map.get("personName").toString());
             file.setProcessSerialNumber(processSerialNumber);
-            file.setUploadTime(sdf.format(new Date()));
+            file.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
             attachmentRepository.save(file);
         }
         return Y9Result.success();
@@ -245,7 +243,6 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Attachment attachment = attachmentService.getFileInfoByFileName(fileName, processSerialNumber);
             if (null != attachment) {
@@ -255,7 +252,7 @@ public class AttachmentApiImpl implements AttachmentApi {
                 attachment.setTaskId(taskId);
                 attachment.setPersonId(orgUnitId);
                 attachment.setPersonName(orgUnit.getName());
-                attachment.setUploadTime(sdf.format(new Date()));
+                attachment.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
                 attachmentRepository.save(attachment);
             } else {
                 Attachment fileAttachment = new Attachment();
@@ -264,7 +261,7 @@ public class AttachmentApiImpl implements AttachmentApi {
                 fileAttachment.setName(fileName);
                 fileAttachment.setFileSize(fileSizeString);
                 fileAttachment.setFileType(fileType);
-                fileAttachment.setUploadTime(sdf.format(new Date()));
+                fileAttachment.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
                 fileAttachment.setPersonId(orgUnitId);
                 fileAttachment.setPersonName(orgUnit.getName());
                 fileAttachment.setProcessInstanceId(processInstanceId);
@@ -301,13 +298,12 @@ public class AttachmentApiImpl implements AttachmentApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         Y9LoginUserHolder.setOrgUnit(orgUnit);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Attachment attachment = attachmentRepository.findById(fileId).orElse(null);
             if (null != attachment) {
                 attachment.setFileStoreId(y9FileStoreId);
                 attachment.setFileSize(fileSize);
-                attachment.setUploadTime(sdf.format(new Date()));
+                attachment.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
                 attachmentRepository.save(attachment);
             }
             msg = "success:true";

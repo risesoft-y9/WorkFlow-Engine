@@ -5,8 +5,6 @@ import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -42,6 +40,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.service.impl.TaoHongServiceImpl;
 import net.risesoft.util.ToolUtil;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -259,7 +258,6 @@ public class DocumentWpsController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         String documentTitle;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             // String destDocx = "C:\\Users\\10858\\Desktop\\套红.docx";
             // String content = "C:\\Users\\10858\\Desktop\\工作流相关文档.docx";
@@ -396,7 +394,7 @@ public class DocumentWpsController {
                 documentWps.setIstaohong("0");
                 documentWps.setProcessInstanceId(processInstanceId);
                 documentWps.setProcessSerialNumber(processSerialNumber);
-                documentWps.setSaveDate(sdf.format(new Date()));
+                documentWps.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
                 documentWps.setTenantId(tenantId);
                 documentWps.setUserId(userId);
                 documentWps.setVolumeId(result.getVolumeId());
@@ -426,7 +424,6 @@ public class DocumentWpsController {
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
             String tmpdir = System.getProperty("java.io.tmpdir");
@@ -469,7 +466,7 @@ public class DocumentWpsController {
             documentWps.setIstaohong("0");
             documentWps.setProcessInstanceId(processInstanceId);
             documentWps.setProcessSerialNumber(processSerialNumber);
-            documentWps.setSaveDate(sdf.format(new Date()));
+            documentWps.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
             documentWps.setTenantId(tenantId);
             documentWps.setUserId(userId);
             documentWps.setVolumeId(File.getVolumeId());

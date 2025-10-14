@@ -1,9 +1,7 @@
 package net.risesoft.service.form.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -41,6 +39,7 @@ import net.risesoft.service.ItemWorkDayService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
@@ -88,11 +87,10 @@ public class Y9TableServiceImpl implements Y9TableService {
     @Override
     @Transactional(readOnly = false)
     public Y9Result<Object> addDataBaseTable(String tableName, String systemName, String systemCnName) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             Y9Table y9Table = new Y9Table();
             y9Table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            y9Table.setCreateTime(sdf.format(new Date()));
+            y9Table.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             y9Table.setOldTableName("");
             y9Table.setTableCnName(tableName);
             y9Table.setSystemName(systemName);
@@ -486,7 +484,6 @@ public class Y9TableServiceImpl implements Y9TableService {
     @Override
     @Transactional
     public Y9Table saveOrUpdate(Y9Table table) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             if (StringUtils.isBlank(table.getId())) {
                 table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -496,7 +493,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }
-            table.setCreateTime(sdf.format(new Date()));
+            table.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             return y9TableRepository.save(table);
         } catch (Exception e) {
             LOGGER.error("保存失败", e);
@@ -508,10 +505,10 @@ public class Y9TableServiceImpl implements Y9TableService {
     @Transactional(readOnly = false)
     public Y9Result<Object> updateTable(Y9Table table, List<Map<String, Object>> listMap, String type) {
         try {
-            Y9Table savetable = this.saveOrUpdate(table);
-            if (savetable != null && savetable.getId() != null) {
-                String tableId = savetable.getId();
-                String tableName = savetable.getTableName();
+            Y9Table saveTable = this.saveOrUpdate(table);
+            if (saveTable != null && saveTable.getId() != null) {
+                String tableId = saveTable.getId();
+                String tableName = saveTable.getTableName();
                 if (!listMap.isEmpty()) {
                     List<String> ids = new ArrayList<>();
                     List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
@@ -530,7 +527,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                      */
                     boolean isSave = "save".equals(type);
                     if (!isSave) {
-                        return tableManagerService.addFieldToTable(savetable, dbcs);
+                        return tableManagerService.addFieldToTable(saveTable, dbcs);
                     }
                 }
             }

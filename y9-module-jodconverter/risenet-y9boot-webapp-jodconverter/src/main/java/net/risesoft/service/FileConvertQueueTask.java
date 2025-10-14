@@ -26,7 +26,9 @@ public class FileConvertQueueTask {
     private final CacheService cacheService;
     private final FileHandlerService fileHandlerService;
 
-    public FileConvertQueueTask(FilePreviewFactory previewFactory, CacheService cacheService,
+    public FileConvertQueueTask(
+        FilePreviewFactory previewFactory,
+        CacheService cacheService,
         FileHandlerService fileHandlerService) {
         this.previewFactory = previewFactory;
         this.cacheService = cacheService;
@@ -46,7 +48,9 @@ public class FileConvertQueueTask {
         private final CacheService cacheService;
         private final FileHandlerService fileHandlerService;
 
-        public ConvertTask(FilePreviewFactory previewFactory, CacheService cacheService,
+        public ConvertTask(
+            FilePreviewFactory previewFactory,
+            CacheService cacheService,
             FileHandlerService fileHandlerService) {
             this.previewFactory = previewFactory;
             this.cacheService = cacheService;
@@ -55,7 +59,7 @@ public class FileConvertQueueTask {
 
         @Override
         public void run() {
-            while (true) {
+            while (!Thread.currentThread().isInterrupted()) {
                 String url = null;
                 try {
                     url = cacheService.takeQueueTask();

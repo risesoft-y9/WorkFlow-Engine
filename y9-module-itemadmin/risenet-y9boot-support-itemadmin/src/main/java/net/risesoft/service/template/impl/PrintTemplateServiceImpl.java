@@ -2,7 +2,6 @@ package net.risesoft.service.template.impl;
 
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +27,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
 import net.risesoft.repository.template.PrintTemplateRepository;
 import net.risesoft.service.template.PrintTemplateService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -51,7 +51,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     private final ItemPrintTemplateBindRepository itemPrintTemplateBindRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void copyBindInfo(String itemId, String newItemId) {
         try {
             ItemPrintTemplateBind printTemplateItemBind = itemPrintTemplateBindRepository.findByItemId(itemId);
@@ -82,7 +82,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> deleteBindPrintTemplate(String id) {
         try {
             ItemPrintTemplateBind bindTemplate = itemPrintTemplateBindRepository.findById(id).orElse(null);
@@ -97,7 +97,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> deletePrintTemplate(String id) {
         try {
             PrintTemplate printTemplate = printTemplateRepository.findById(id).orElse(null);
@@ -165,7 +165,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
         return list;
     }
 
-    @Transactional(readOnly = false)
+    @Transactional
     @Override
     public Y9Result<String> saveBindTemplate(String itemId, String templateId, String templateName, String templateUrl,
         String templateType) {
@@ -197,7 +197,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void saveOrUpdate(PrintTemplate printTemplate) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String personId = person.getPersonId(), personName = person.getName(),
@@ -235,7 +235,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> uploadTemplate(MultipartFile file) {
         String[] fileNames = file.getOriginalFilename().split("\\\\");
         String fileName = "";
@@ -249,8 +249,8 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
                 fileName = file.getOriginalFilename();
             }
             printTemplate.setFileName(fileName);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), "printTemplate", sdf.format(new Date()));
+            String fullPath =
+                Y9FileStore.buildPath(Y9Context.getSystemName(), "printTemplate", Y9DateTimeUtils.formatCurrentDate());
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             printTemplate.setPersonId(person.getPersonId());
             printTemplate.setPersonName(person.getName());

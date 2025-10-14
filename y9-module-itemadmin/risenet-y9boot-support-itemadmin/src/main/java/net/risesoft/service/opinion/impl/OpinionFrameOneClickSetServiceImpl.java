@@ -1,9 +1,7 @@
 package net.risesoft.service.opinion.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -21,6 +19,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OpinionFrameOneClickSetModel;
 import net.risesoft.repository.opinion.OpinionFrameOneClickSetRepository;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -31,7 +30,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class OpinionFrameOneClickSetServiceImpl implements OpinionFrameOneClickSetService {
 
     private final OpinionFrameOneClickSetRepository opinionFrameOneClickSetRepository;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     @Transactional(readOnly = false)
@@ -66,13 +64,14 @@ public class OpinionFrameOneClickSetServiceImpl implements OpinionFrameOneClickS
         try {
             if (StringUtils.isBlank(opinionFrameOneClickSet.getId())) {
                 opinionFrameOneClickSet.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                opinionFrameOneClickSet.setCreateDate(sdf.format(new Date()));
+                opinionFrameOneClickSet.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
                 opinionFrameOneClickSet.setUserId(Y9LoginUserHolder.getPersonId());
                 opinionFrameOneClickSetRepository.save(opinionFrameOneClickSet);
             } else {
                 OpinionFrameOneClickSet oneClick =
                     opinionFrameOneClickSetRepository.findById(opinionFrameOneClickSet.getId()).orElse(null);
                 Y9BeanUtil.copyProperties(opinionFrameOneClickSet, oneClick);
+                assert oneClick != null;
                 opinionFrameOneClickSetRepository.save(oneClick);
             }
             retMap.put("success", true);

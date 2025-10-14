@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,6 +31,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoingService;
 import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.UtilService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -62,7 +62,6 @@ public class DoingServiceImpl implements DoingService {
         Y9Page<ProcessInstanceModel> piPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
@@ -82,7 +81,8 @@ public class DoingServiceImpl implements DoingService {
                         processInstanceId = piModel.getId();
                         processDefinitionId = piModel.getProcessDefinitionId();
                         Date endTime = piModel.getEndTime();
-                        String taskCreateTime = piModel.getEndTime() != null ? sdf.format(endTime) : "";
+                        String taskCreateTime =
+                            piModel.getEndTime() != null ? Y9DateTimeUtils.formatDateTimeMinute(endTime) : "";
                         List<TaskModel> taskList =
                             this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         processParam =
@@ -149,7 +149,8 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("processDefinitionId", processDefinitionId);
                         mapTemp.put("itemName", itemName);
                         mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskCreateTime", sdf.format(taskList.get(0).getCreateTime()));
+                        mapTemp.put("taskCreateTime",
+                            Y9DateTimeUtils.formatDateTimeMinute(taskList.get(0).getCreateTime()));
                         mapTemp.put("taskAssignee", this.getAssigneeNames(taskList));
                         mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                         mapTemp.put(SysVariables.LEVEL, level);
@@ -246,7 +247,6 @@ public class DoingServiceImpl implements DoingService {
         Y9Page<ProcessInstanceModel> piPage;
         try {
             List<Map<String, Object>> items = new ArrayList<>();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
@@ -263,7 +263,8 @@ public class DoingServiceImpl implements DoingService {
                         String processInstanceId = piModel.getId();
                         String processDefinitionId = piModel.getProcessDefinitionId();
                         Date endTime = piModel.getEndTime();
-                        String taskCreateTime = piModel.getEndTime() != null ? sdf.format(endTime) : "";
+                        String taskCreateTime =
+                            piModel.getEndTime() != null ? Y9DateTimeUtils.formatDateTimeMinute(endTime) : "";
                         List<TaskModel> taskList =
                             this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         processParam =
@@ -317,7 +318,8 @@ public class DoingServiceImpl implements DoingService {
                         mapTemp.put("processDefinitionId", processDefinitionId);
                         mapTemp.put("itemName", itemName);
                         mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskCreateTime", sdf.format(taskList.get(0).getCreateTime()));
+                        mapTemp.put("taskCreateTime",
+                            Y9DateTimeUtils.formatDateTimeMinute(taskList.get(0).getCreateTime()));
                         mapTemp.put("taskAssignee", this.getAssigneeNames(taskList));
                         mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                         mapTemp.put(SysVariables.LEVEL, level);

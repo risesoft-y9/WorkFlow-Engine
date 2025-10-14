@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.sql.Connection;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -46,6 +45,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.CustomRuntimeService;
 import net.risesoft.service.DeleteProcessService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 
@@ -82,10 +82,16 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
-    public CustomRuntimeServiceImpl(RuntimeService runtimeService, HistoryService historyService,
-        IdentityService identityService, ManagementService managementService,
-        CustomProcessDefinitionService customProcessDefinitionService, OfficeDoneInfoApi officeDoneInfoApi,
-        ErrorLogApi errorLogApi, DeleteProcessService deleteProcessService, ActRuDetailApi actRuDetailApi,
+    public CustomRuntimeServiceImpl(
+        RuntimeService runtimeService,
+        HistoryService historyService,
+        IdentityService identityService,
+        ManagementService managementService,
+        CustomProcessDefinitionService customProcessDefinitionService,
+        OfficeDoneInfoApi officeDoneInfoApi,
+        ErrorLogApi errorLogApi,
+        DeleteProcessService deleteProcessService,
+        ActRuDetailApi actRuDetailApi,
         ProcessParamApi processParamApi) {
         this.runtimeService = runtimeService;
         this.historyService = historyService;
@@ -209,8 +215,11 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
         String updateSql =
             "UPDATE ACT_HI_PROCINST T SET T.END_TIME_ = #{END_TIME_,jdbcType=DATE} WHERE T.PROC_INST_ID_=#{processInstanceId}";
-        historyService.createNativeHistoricProcessInstanceQuery().sql(updateSql).parameter("END_TIME_", null)
-            .parameter("processInstanceId", processInstanceId).singleResult();
+        historyService.createNativeHistoricProcessInstanceQuery()
+            .sql(updateSql)
+            .parameter("END_TIME_", null)
+            .parameter("processInstanceId", processInstanceId)
+            .singleResult();
     }
 
     @Override
@@ -260,8 +269,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             for (Execution execution : executionList) {
                 executionSet.add(execution.getId());
             }
-            String nodeType = customProcessDefinitionService
-                .getNode(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey()).getMultiInstance();
+            String nodeType =
+                customProcessDefinitionService.getNode(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())
+                    .getMultiInstance();
 
             /*
              * 复制年度历史数据到正在运行历史表
@@ -269,7 +279,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             saveYearData(year, processInstanceId);
 
             List<HistoricVariableInstance> pVarList = historyService.createHistoricVariableInstanceQuery()
-                .executionIds(executionSet).excludeTaskVariables().list();
+                .executionIds(executionSet)
+                .excludeTaskVariables()
+                .list();
             List<HistoricVariableInstance> tVarList =
                 historyService.createHistoricVariableInstanceQuery().taskId(hti.getId()).list();
             Map<String, Object> pVarMap = new HashMap<>(16);
@@ -340,20 +352,27 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             if (nodeType.equals(SysVariables.PARALLEL) || nodeType.equals(SysVariables.SEQUENTIAL)) {
                 String sql00 =
                     "SELECT * FROM ACT_RU_EXECUTION WHERE PROC_INST_ID_ = #{PROC_INST_ID_} AND IS_MI_ROOT_=1";
-                Execution miRootExecution = runtimeService.createNativeExecutionQuery().sql(sql00)
-                    .parameter("PROC_INST_ID_", processInstanceId).singleResult();
+                Execution miRootExecution = runtimeService.createNativeExecutionQuery()
+                    .sql(sql00)
+                    .parameter("PROC_INST_ID_", processInstanceId)
+                    .singleResult();
                 String sql01 =
                     "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_=#{PROC_INST_ID_} OR EXECUTION_ID_=#{MIROOTEXECUTION_ID_} OR TASK_ID_=#{TASK_ID_}";
-                historyService.createNativeHistoricVariableInstanceQuery().sql(sql01)
+                historyService.createNativeHistoricVariableInstanceQuery()
+                    .sql(sql01)
                     .parameter("PROC_INST_ID_", processInstanceId)
-                    .parameter("MIROOTEXECUTION_ID_", miRootExecution.getId()).parameter("TASK_ID_", hti.getId())
+                    .parameter("MIROOTEXECUTION_ID_", miRootExecution.getId())
+                    .parameter("TASK_ID_", hti.getId())
                     .list();
                 runtimeService.setVariablesLocal(miRootExecution.getId(), eVarMap);
             } else {
                 String sql01 =
                     "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_=#{PROC_INST_ID_} OR TASK_ID_=#{TASK_ID_}";
-                historyService.createNativeHistoricVariableInstanceQuery().sql(sql01)
-                    .parameter("PROC_INST_ID_", processInstanceId).parameter("TASK_ID_", hti.getId()).list();
+                historyService.createNativeHistoricVariableInstanceQuery()
+                    .sql(sql01)
+                    .parameter("PROC_INST_ID_", processInstanceId)
+                    .parameter("TASK_ID_", hti.getId())
+                    .list();
             }
 
             /*
@@ -365,7 +384,10 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
              * 4-删除历史节点中办结任务到结束节点的数据
              */
             List<HistoricActivityInstance> hisActivityList = historyService.createHistoricActivityInstanceQuery()
-                .processInstanceId(processInstanceId).orderByHistoricActivityInstanceEndTime().desc().list();
+                .processInstanceId(processInstanceId)
+                .orderByHistoricActivityInstanceEndTime()
+                .desc()
+                .list();
             for (HistoricActivityInstance hisActivity : hisActivityList) {
                 if (hisActivity.getActivityType().equals(SysVariables.USER_TASK)) {
                     String sql2 =
@@ -382,14 +404,16 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
              */
             try {
                 // 修改ES办件信息数据
-                OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi
-                    .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+                OfficeDoneInfoModel officeDoneInfo =
+                    officeDoneInfoApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId)
+                        .getData();
                 officeDoneInfo.setUserComplete("");
                 officeDoneInfo.setEndTime(null);
                 officeDoneInfoApi.saveOfficeDone(Y9LoginUserHolder.getTenantId(), officeDoneInfo);
 
-                ProcessParamModel processParamModel = processParamApi
-                    .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+                ProcessParamModel processParamModel =
+                    processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId)
+                        .getData();
                 processParamModel.setCompleter("");
                 processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
             } catch (Exception e) {
@@ -397,8 +421,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 final PrintWriter print = new PrintWriter(result);
                 e.printStackTrace(print);
                 String msg = result.toString();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String time = sdf.format(new Date());
+                String time = Y9DateTimeUtils.formatCurrentDateTime();
                 ErrorLogModel errorLogModel = new ErrorLogModel();
                 errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 errorLogModel.setCreateTime(time);
@@ -426,8 +449,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                 final PrintWriter print = new PrintWriter(result);
                 e.printStackTrace(print);
                 String msg = result.toString();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String time = sdf.format(new Date());
+                String time = Y9DateTimeUtils.formatCurrentDateTime();
                 ErrorLogModel errorLogModel = new ErrorLogModel();
                 errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 errorLogModel.setCreateTime(time);
@@ -451,8 +473,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);
@@ -512,8 +533,11 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
         String updateSql =
             "UPDATE ACT_HI_PROCINST T SET T.END_TIME_ = #{END_TIME_} WHERE T.PROC_INST_ID_=#{processInstanceId}";
-        historyService.createNativeHistoricProcessInstanceQuery().sql(updateSql).parameter("END_TIME_", new Date())
-            .parameter("processInstanceId", processInstanceId).singleResult();
+        historyService.createNativeHistoricProcessInstanceQuery()
+            .sql(updateSql)
+            .parameter("END_TIME_", new Date())
+            .parameter("processInstanceId", processInstanceId)
+            .singleResult();
     }
 
     @Override

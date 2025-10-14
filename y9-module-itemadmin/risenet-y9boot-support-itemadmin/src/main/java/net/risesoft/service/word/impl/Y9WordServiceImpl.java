@@ -1,7 +1,5 @@
 package net.risesoft.service.word.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +15,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.documentword.Y9WordRepository;
 import net.risesoft.service.word.Y9WordService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -86,7 +85,6 @@ public class Y9WordServiceImpl implements Y9WordService {
     @Override
     public void saveWord(String fileStoreId, String fileSize, String documenttitle, String fileType,
         String processSerialNumber, String istaohong, String docCategory) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -95,7 +93,7 @@ public class Y9WordServiceImpl implements Y9WordService {
         y9Word.setFileType(fileType);
         y9Word.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         y9Word.setIstaohong(istaohong);
-        y9Word.setSaveDate(sdf.format(new Date()));
+        y9Word.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
         y9Word.setTenantId(tenantId);
         y9Word.setTitle(documenttitle);
         y9Word.setFileName(StringUtils.isNotBlank(documenttitle) ? documenttitle + fileType : "正文" + fileType);
@@ -115,7 +113,6 @@ public class Y9WordServiceImpl implements Y9WordService {
     public Boolean saveWord(String docjson, String processSerialNumber) {
         boolean checkSave = false;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Map<String, Object> documentMap = Y9JsonUtil.readValue(docjson, Map.class);
             List<Map<String, Object>> documentList = (List<Map<String, Object>>)documentMap.get("document");
             for (Map<String, Object> dMap : documentList) {
@@ -125,7 +122,7 @@ public class Y9WordServiceImpl implements Y9WordService {
                 tw.setFileStoreId(dMap.get("filePath").toString());
                 tw.setFileType(dMap.get("fileType").toString());
                 tw.setProcessSerialNumber(processSerialNumber);
-                tw.setSaveDate(sdf.format(new Date()));
+                tw.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
                 tw.setTenantId(dMap.get("tenantId").toString());
                 tw.setUserId(dMap.get("userId").toString());
                 tw.setTitle(dMap.get("title") == null ? "" : dMap.get("title").toString());
@@ -143,10 +140,9 @@ public class Y9WordServiceImpl implements Y9WordService {
     @Override
     public void updateById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong,
         String userId, String id) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
-            y9WordRepository.updateById(fileStoreId, fileType, fileName, fileSize, sdf.format(new Date()), isTaoHong,
-                userId, id);
+            y9WordRepository.updateById(fileStoreId, fileType, fileName, fileSize,
+                Y9DateTimeUtils.formatCurrentDateTime(), isTaoHong, userId, id);
         }
     }
 

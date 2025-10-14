@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -37,6 +36,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.TodoService;
 import net.risesoft.service.UtilService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -58,7 +58,6 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
@@ -107,7 +106,7 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("description", description);
                     mapTemp.put("taskName", taskName);
-                    mapTemp.put("taskCreateTime", sdf.format(taskCreateTime));
+                    mapTemp.put("taskCreateTime", Y9DateTimeUtils.formatDateTimeMinute(taskCreateTime));
                     mapTemp.put("taskAssignee", taskAssignee);
                     mapTemp.put(SysVariables.TASK_SENDER, taskSender);
                     mapTemp.put(SysVariables.IS_NEW_TODO, isNewTodo);
@@ -179,7 +178,6 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public Y9Page<Map<String, Object>> list4Mobile(String itemId, String searchTerm, Integer page, Integer rows) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
@@ -230,7 +228,7 @@ public class TodoServiceImpl implements TodoService {
                     mapTemp.put("taskId", taskId);
                     mapTemp.put("description", description);
                     mapTemp.put("taskName", taskName);
-                    mapTemp.put("taskCreateTime", sdf.format(taskCreateTime));
+                    mapTemp.put("taskCreateTime", Y9DateTimeUtils.formatDateTimeMinute(taskCreateTime));
                     mapTemp.put("taskAssignee", taskAssignee);
                     mapTemp.put(SysVariables.TASK_SENDER, taskSender);
                     mapTemp.put(SysVariables.IS_NEW_TODO, isNewTodo);

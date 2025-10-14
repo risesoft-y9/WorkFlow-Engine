@@ -1,8 +1,6 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -29,6 +27,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.repository.jpa.ItemStartNodeRoleRepository;
 import net.risesoft.service.config.ItemStartNodeRoleService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -85,7 +84,6 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                     ItemStartNodeRole oldItemStartNodeRole = itemStartNodeRoleRepository
                         .findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, latestPdId, currentTaskDefKey);
                     if (null == oldItemStartNodeRole) {
-                        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                         oldItemStartNodeRole = new ItemStartNodeRole();
                         oldItemStartNodeRole.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                         oldItemStartNodeRole.setItemId(itemId);
@@ -93,7 +91,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                         oldItemStartNodeRole.setTaskDefKey(currentTaskDefKey);
                         oldItemStartNodeRole.setRoleIds(ItemStartNodeRole.getRoleIds());
                         oldItemStartNodeRole.setUserName(userName);
-                        oldItemStartNodeRole.setCreateTime(sdf.format(new Date()));
+                        oldItemStartNodeRole.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                         Integer index = itemStartNodeRoleRepository.getMaxTabIndex(itemId, latestPdId);
                         if (index == null) {
                             oldItemStartNodeRole.setTabIndex(1);
@@ -236,7 +234,6 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         ItemStartNodeRole itemStartNodeRole =
             this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         if (null == itemStartNodeRole) {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             itemStartNodeRole = new ItemStartNodeRole();
             itemStartNodeRole.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             itemStartNodeRole.setItemId(itemId);
@@ -245,7 +242,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             itemStartNodeRole.setTaskDefName(taskDefName);
             itemStartNodeRole.setRoleIds("");
             itemStartNodeRole.setUserName(userName);
-            itemStartNodeRole.setCreateTime(sdf.format(new Date()));
+            itemStartNodeRole.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             Integer index = itemStartNodeRoleRepository.getMaxTabIndex(itemId, processDefinitionId);
             if (index == null) {
                 itemStartNodeRole.setTabIndex(1);
@@ -359,8 +356,6 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             itemStartNodeRoleRepository.save(itemStartNodeRole);
             return;
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
         itemStartNodeRole = new ItemStartNodeRole();
         itemStartNodeRole.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         itemStartNodeRole.setItemId(itemId);
@@ -368,7 +363,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         itemStartNodeRole.setTaskDefKey(taskDefKey);
         itemStartNodeRole.setRoleIds(roleIds);
         itemStartNodeRole.setUserName(userName);
-        itemStartNodeRole.setCreateTime(sdf.format(new Date()));
+        itemStartNodeRole.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         Integer index = itemStartNodeRoleRepository.getMaxTabIndex(itemId, processDefinitionId);
         if (index == null) {
             itemStartNodeRole.setTabIndex(1);

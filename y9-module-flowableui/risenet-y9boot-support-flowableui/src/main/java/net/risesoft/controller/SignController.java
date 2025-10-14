@@ -2,10 +2,10 @@ package net.risesoft.controller;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
+import java.util.Objects;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.CalendarConfigApi;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -38,38 +39,41 @@ public class SignController {
     private final CalendarConfigApi calendarConfigApi;
 
     // 获取两个日期时间的相隔天数
-    public String daysBetween(String startTime, String endTime) {
+    public String daysBetween(String startDate, String endDate) {
         String day = "0";
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-            Date startTime1 = sdf.parse(startTime);// 转成yyyy-MM-dd格式
-            Date endTime1 = sdf.parse(endTime);// 转成yyyy-MM-dd格式
+            Date startTime1 = Y9DateTimeUtils.parseDate(startDate);
+            Date endTime1 = Y9DateTimeUtils.parseDate(endDate);
+            assert endTime1 != null;
+            assert startTime1 != null;
             long difference = (endTime1.getTime() - startTime1.getTime()) / 86400000;
             day = String.valueOf(Math.abs(difference) + 1);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             LOGGER.error("日期格式错误", e);
         }
         return day;
     }
 
     // 获取两个日期之间相隔天数，去除节假日
-    public String daysBetween(String startTime, String endTime, String everyYearHoliday) throws Exception {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+    public String daysBetween(String startDate, String endDate, String everyYearHoliday) {
         int days = 0;
-        Calendar cal = Calendar.getInstance();
-        Date startTime1 = sdf.parse(startTime);// 转成yyyy-MM-dd格式
-        Date endTime1 = sdf.parse(endTime);// 转成yyyy-MM-dd格式
-        while (startTime1.compareTo(endTime1) <= 0) {// startTime1不大于endTime1则进入
-            cal.setTime(startTime1);
-            String time1 = sdf.format(startTime1);
-            if (everyYearHoliday.contains(time1)) {// 节假日包含开始时间，则天数减1
+        try {
+            Calendar cal = Calendar.getInstance();
+            Date startDate1 = Y9DateTimeUtils.parseDate(startDate);
+            Date endDate1 = Y9DateTimeUtils.parseDate(endDate);
+            // startTime1不大于endTime1则进入
+            while (startDate1.compareTo(endDate1) <= 0) {
+                cal.setTime(startDate1);
+                String time1 = Y9DateTimeUtils.formatDate(startDate1);
+                // 开始时间加1天继续判断
+                if (!everyYearHoliday.contains(time1)) {
+                    days += 1;
+                }
                 cal.add(Calendar.DAY_OF_MONTH, +1);// 开始时间加1天继续判断
-                startTime1 = sdf.parse(sdf.format(cal.getTime()));
-            } else {
-                days += 1;
-                cal.add(Calendar.DAY_OF_MONTH, +1);// 开始时间加1天继续判断
-                startTime1 = sdf.parse(sdf.format(cal.getTime()));
+                startDate1 = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatDate(cal.getTime()));
             }
+        } catch (Exception e) {
+            e.printStackTrace();
         }
         return String.valueOf(days);
     }
@@ -121,7 +125,6 @@ public class SignController {
         @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime,
         @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType) {
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             String dayStr;
             CalendarConfigModel calendarConfig =
                 calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]).getData();
@@ -147,7 +150,8 @@ public class SignController {
                         } else {
                             num++;
                         }
-                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
                     }
                     return Y9Result.success(String.valueOf(num), "获取成功");
                 }
@@ -166,17 +170,22 @@ public class SignController {
                             if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel)
                                 && startSel.equals("下午")) {// 开始日期选择下午，算半天
                                 start += 0.5;
-                                tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                                long time =
+                                    Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                                tmp = Y9DateTimeUtils.formatDate(new Date(time));
                                 continue;
                             }
                             if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(endSel) && endSel.equals("上午")) {// 结束日期选择上午，算半天
                                 start += 0.5;
-                                tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                                long time =
+                                    Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                                tmp = Y9DateTimeUtils.formatDate(new Date(time));
                                 continue;
                             }
                             num++;
                         }
-                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
                     }
                     if (start > 0) {
                         return Y9Result.success(String.valueOf(num + start), "获取成功");
@@ -217,7 +226,9 @@ public class SignController {
                             if (!dayStr.contains(tmp)) {
                                 num++;
                             }
-                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            long time =
+                                Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                            tmp = Y9DateTimeUtils.formatDate(new Date(time));
                         }
                         // 计算小时
                         if (StringUtils.isBlank(selStartTime)) {
@@ -252,7 +263,9 @@ public class SignController {
                                     waitTime = waitTime - 1.5;
                                 }
                                 timeCount = timeCount + waitTime;
-                                tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                                long timeTemp =
+                                    Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                                tmp = Y9DateTimeUtils.formatDate(new Date(timeTemp));
                                 continue;
                             }
                             if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
@@ -264,12 +277,15 @@ public class SignController {
                                     waitTime = waitTime - 1.5;
                                 }
                                 timeCount = timeCount + waitTime;
-                                tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                                long timeTemp =
+                                    Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                                tmp = Y9DateTimeUtils.formatDate(new Date(timeTemp));
                                 continue;
                             }
                             timeCount = timeCount + 7;// 其余时间每天加7小时
                         }
-                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
                     }
                     return Y9Result.success(String.valueOf(timeCount), "获取成功");
                 }
@@ -299,7 +315,6 @@ public class SignController {
         @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime,
         @RequestParam(required = false) String selEndTime) {
         try {
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd");
             switch (type) {
                 case "天": {
                     if (leaveStartTime.equals(leaveEndTime)) {
@@ -310,7 +325,8 @@ public class SignController {
                     while (tmp.compareTo(leaveEndTime) <= 0) {
                         LOGGER.debug("tmp={}", tmp);
                         num++;
-                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
                     }
                     return Y9Result.success(String.valueOf(num), "获取成功");
                 }
@@ -325,16 +341,21 @@ public class SignController {
                         LOGGER.debug("tmp={}", tmp);
                         if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel) && startSel.equals("下午")) {// 开始日期选择下午，算半天
                             start += 0.5;
-                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            long time =
+                                Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                            tmp = Y9DateTimeUtils.formatDate(new Date(time));
                             continue;
                         }
                         if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(endSel) && endSel.equals("上午")) {// 结束日期选择上午，算半天
                             start += 0.5;
-                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            long time =
+                                Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                            tmp = Y9DateTimeUtils.formatDate(new Date(time));
                             continue;
                         }
                         num++;
-                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
                     }
                     if (start > 0) {
                         return Y9Result.success(String.valueOf(num + start), "获取成功");
@@ -375,7 +396,9 @@ public class SignController {
                                 waitTime = waitTime - 1.5;
                             }
                             timeCount = timeCount + waitTime;
-                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            long timeTemp =
+                                Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                            tmp = Y9DateTimeUtils.formatDate(new Date(timeTemp));
                             continue;
                         }
                         if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
@@ -387,11 +410,14 @@ public class SignController {
                                 waitTime = waitTime - 1.5;
                             }
                             timeCount = timeCount + waitTime;
-                            tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                            long timeTemp =
+                                Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                            tmp = Y9DateTimeUtils.formatDate(new Date(timeTemp));
                             continue;
                         }
                         timeCount = timeCount + 7;// 其余时间每天加7小时
-                        tmp = format.format(format.parse(tmp).getTime() + 3600 * 24 * 1000);
+                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
+                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
                     }
                     return Y9Result.success(String.valueOf(timeCount), "获取成功");
                 }

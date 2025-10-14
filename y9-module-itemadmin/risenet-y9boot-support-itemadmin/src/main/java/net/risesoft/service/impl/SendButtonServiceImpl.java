@@ -1,7 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +14,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.button.SendButtonRepository;
 import net.risesoft.service.SendButtonService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -63,13 +62,12 @@ public class SendButtonServiceImpl implements SendButtonService {
     public SendButton saveOrUpdate(SendButton sendButton) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getParentId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = sendButton.getId();
         if (StringUtils.isNotEmpty(id)) {
             SendButton oldsb = this.getById(id);
             if (null != oldsb) {
                 oldsb.setName(sendButton.getName());
-                oldsb.setUpdateTime(sdf.format(new Date()));
+                oldsb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 oldsb.setUserId(userId);
                 oldsb.setUserName(userName);
 
@@ -86,8 +84,8 @@ public class SendButtonServiceImpl implements SendButtonService {
         newsb.setUserId(userId);
         newsb.setUserName(userName);
         newsb.setTenantId(tenantId);
-        newsb.setCreateTime(sdf.format(new Date()));
-        newsb.setUpdateTime(sdf.format(new Date()));
+        newsb.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        newsb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         return sendButtonRepository.save(newsb);
     }
 }

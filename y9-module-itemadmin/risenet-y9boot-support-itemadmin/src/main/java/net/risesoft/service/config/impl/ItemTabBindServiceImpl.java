@@ -1,8 +1,6 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -21,6 +19,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.tab.ItemTabBindRepository;
 import net.risesoft.service.TabEntityService;
 import net.risesoft.service.config.ItemTabBindService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -42,7 +41,6 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     @Override
     @Transactional
     public void copyTabItemBind(String itemId, String processDefinitionId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
             personName = person.getName();
@@ -66,8 +64,8 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
                     bindTemp.setTenantId(tenantId);
                     bindTemp.setUserId(personId);
                     bindTemp.setUserName(personName);
-                    bindTemp.setCreateTime(sdf.format(new Date()));
-                    bindTemp.setUpdateTime(sdf.format(new Date()));
+                    bindTemp.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+                    bindTemp.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     Integer index = tabItemBindRepository.getMaxTabIndex(itemId, processDefinitionId);
                     if (index == null) {
                         bindTemp.setTabIndex(1);
@@ -127,7 +125,6 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     @Override
     @Transactional
     public void saveOrder(String[] idAndTabIndexs) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName();
         List<ItemTabBind> oldtibList = new ArrayList<>();
@@ -135,7 +132,7 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
             String[] arr = idAndTabIndex.split(SysVariables.COLON);
             ItemTabBind oldtib = this.getById(arr[0]);
             oldtib.setTabIndex(Integer.valueOf(arr[1]));
-            oldtib.setUpdateTime(sdf.format(new Date()));
+            oldtib.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             oldtib.setUserId(userId);
             oldtib.setUserName(userName);
 
@@ -147,7 +144,6 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
     @Override
     @Transactional
     public ItemTabBind saveTabBind(String tabId, String itemId, String processDefinitionId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
 
@@ -155,11 +151,11 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
         ItemTabBind tabItemBind = new ItemTabBind();
         tabItemBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         tabItemBind.setTenantId(tenantId);
-        tabItemBind.setCreateTime(sdf.format(new Date()));
+        tabItemBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         tabItemBind.setItemId(itemId);
         tabItemBind.setProcessDefinitionId(processDefinitionId);
         tabItemBind.setTabId(tabEntity.getId());
-        tabItemBind.setUpdateTime(sdf.format(new Date()));
+        tabItemBind.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         tabItemBind.setUserId(userId);
         tabItemBind.setUserName(userName);
         tabItemBind.setTabName(tabEntity.getName());

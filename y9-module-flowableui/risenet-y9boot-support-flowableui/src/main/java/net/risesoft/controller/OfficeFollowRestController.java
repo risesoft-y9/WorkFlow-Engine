@@ -1,8 +1,5 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
@@ -34,6 +31,7 @@ import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -118,7 +116,6 @@ public class OfficeFollowRestController {
     @PostMapping(value = "/saveOfficeFollow")
     public Y9Result<String> saveOfficeFollow(@RequestParam @NotBlank String processInstanceId) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Position position = Y9LoginUserHolder.getPosition();
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
             OfficeFollowModel officeFollow = new OfficeFollowModel();
@@ -129,7 +126,7 @@ public class OfficeFollowRestController {
                 OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
                 officeFollow.setBureauId(orgUnit != null ? orgUnit.getId() : "");
                 officeFollow.setBureauName(orgUnit != null ? orgUnit.getName() : "");
-                officeFollow.setCreateTime(sdf.format(new Date()));
+                officeFollow.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 officeFollow.setDocumentTitle(processParamModel.getTitle());
                 officeFollow.setFileType(processParamModel.getItemName());
                 officeFollow.setHandleTerm("");
@@ -147,7 +144,8 @@ public class OfficeFollowRestController {
                         officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     officeFollow.setStartTime(officeDoneInfoModel != null ? officeDoneInfoModel.getStartTime() : "");
                 } else {
-                    officeFollow.setStartTime(sdf.format(historicProcessInstanceModel.getStartTime()));
+                    officeFollow
+                        .setStartTime(Y9DateTimeUtils.formatDateTime(historicProcessInstanceModel.getStartTime()));
                 }
                 officeFollow.setUserId(positionId);
                 officeFollow.setUserName(position.getName());

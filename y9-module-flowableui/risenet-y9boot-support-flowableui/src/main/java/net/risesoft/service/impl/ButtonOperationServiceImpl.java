@@ -1,9 +1,7 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +34,7 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -56,7 +55,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     private final ActRuDetailApi actRuDetailApi;
     private final HistoricProcessApi historicProcessApi;
     private final ButtonOperationApi buttonOperationApi;
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     @Override
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
@@ -88,7 +86,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         List<ProcessTrackModel> ptModelList = processTrackApi.findByTaskId(tenantId, taskId).getData();
         for (ProcessTrackModel ptModel : ptModelList) {
             if (StringUtils.isBlank(ptModel.getEndTime())) {
-                ptModel.setEndTime(sdf.format(new Date()));
+                ptModel.setEndTime(Y9DateTimeUtils.formatCurrentDateTime());
                 processTrackApi.saveOrUpdate(tenantId, ptModel);
             }
         }
@@ -100,8 +98,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         ptModel.setProcessInstanceId(processInstanceId);
         ptModel.setReceiverName(userName);
         ptModel.setSenderName(userName);
-        ptModel.setStartTime(sdf.format(new Date()));
-        ptModel.setEndTime(sdf.format(new Date()));
+        ptModel.setStartTime(Y9DateTimeUtils.formatCurrentDateTime());
+        ptModel.setEndTime(Y9DateTimeUtils.formatCurrentDateTime());
         ptModel.setTaskDefName(taskDefName);
         ptModel.setTaskId(taskId);
         ptModel.setId("");
@@ -195,8 +193,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setProcessInstanceId(hisTaskModelTemp.getProcessInstanceId());
             ptm.setReceiverName(userName);
             ptm.setSenderName(userName);
-            ptm.setStartTime(sdf.format(new Date()));
-            ptm.setEndTime(sdf.format(new Date()));
+            ptm.setStartTime(Y9DateTimeUtils.formatCurrentDateTime());
+            ptm.setEndTime(Y9DateTimeUtils.formatCurrentDateTime());
             ptm.setTaskDefName("恢复待办");
             ptm.setTaskId(hisTaskModelTemp.getId());
 
@@ -209,7 +207,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setProcessInstanceId(hisTaskModelTemp.getProcessInstanceId());
             ptm.setReceiverName(userName);
             ptm.setSenderName(userName);
-            ptm.setStartTime(sdf.format(new Date()));
+            ptm.setStartTime(Y9DateTimeUtils.formatCurrentDateTime());
             ptm.setEndTime("");
             ptm.setTaskDefName(hisTaskModelTemp.getName());
             ptm.setTaskId(hisTaskModelTemp.getId());

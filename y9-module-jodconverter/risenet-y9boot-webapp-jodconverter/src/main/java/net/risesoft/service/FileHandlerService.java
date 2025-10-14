@@ -225,6 +225,7 @@ public class FileHandlerService implements InitializingBean {
                     result.get(Long.parseLong(ConfigConstants.getCadTimeout()), TimeUnit.SECONDS);
                     // 如果在超时时间内，没有数据返回：则抛出TimeoutException异常
                 } catch (InterruptedException e) {
+                    Thread.currentThread().interrupt();
                     LOGGER.error("CAD转换文件异常：", e);
                     return null;
                 } catch (ExecutionException e) {
@@ -610,7 +611,10 @@ public class FileHandlerService implements InitializingBean {
             try {
                 result.get(pdftimeout, TimeUnit.SECONDS);
                 // 如果在超时时间内，没有数据返回：则抛出TimeoutException异常
-            } catch (InterruptedException | ExecutionException e) {
+            } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
+                throw new Exception(e);
+            } catch (ExecutionException e) {
                 throw new Exception(e);
             } catch (TimeoutException e) {
                 throw new Exception("overtime");

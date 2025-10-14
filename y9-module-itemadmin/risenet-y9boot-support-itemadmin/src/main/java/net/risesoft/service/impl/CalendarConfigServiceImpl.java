@@ -1,7 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -24,6 +22,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.CalendarConfigRepository;
 import net.risesoft.service.CalendarConfigService;
+import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  * @author qinman
@@ -132,7 +131,6 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
      */
     public List<String> getYearHoliday(String years) {
         // 返回的日期集合
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
         List<String> days = new ArrayList<>();
         try {
             int year = Integer.parseInt(years);
@@ -142,13 +140,13 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
                 calendar.set(Calendar.WEEK_OF_YEAR, i++);
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SUNDAY);
                 if (calendar.get(Calendar.YEAR) == year) {
-                    LOGGER.info("星期天:{}", sdf.format(calendar.getTime()));
-                    days.add(sdf.format(calendar.getTime()));
+                    LOGGER.info("星期天:{}", Y9DateTimeUtils.formatDate(calendar.getTime()));
+                    days.add(Y9DateTimeUtils.formatDate(calendar.getTime()));
                 }
                 calendar.set(Calendar.DAY_OF_WEEK, Calendar.SATURDAY);
                 if (calendar.get(Calendar.YEAR) == year) {
-                    LOGGER.info("星期六:{}", sdf.format(calendar.getTime()));
-                    days.add(sdf.format(calendar.getTime()));
+                    LOGGER.info("星期六:{}", Y9DateTimeUtils.formatDate(calendar.getTime()));
+                    days.add(Y9DateTimeUtils.formatDate(calendar.getTime()));
                 }
             }
         } catch (Exception e) {
@@ -157,9 +155,8 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
         return days;
     }
 
-    public boolean isWeekend(String date) throws ParseException {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        Date bdate = sdf.parse(date);
+    public boolean isWeekend(String date) throws Exception {
+        Date bdate = Y9DateTimeUtils.parseDate(date);
         Calendar cal = Calendar.getInstance();
         cal.setTime(bdate);
         return cal.get(Calendar.DAY_OF_WEEK) == Calendar.SATURDAY || cal.get(Calendar.DAY_OF_WEEK) == Calendar.SUNDAY;
