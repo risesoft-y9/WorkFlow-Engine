@@ -1,8 +1,6 @@
 package net.risesoft.service.attachment.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +23,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.attachment.AttachmentRepository;
 import net.risesoft.service.attachment.AttachmentService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -134,7 +133,6 @@ public class AttachmentServiceImpl implements AttachmentService {
         String processSerialNumber, String describes, String fileSource, String y9FileStoreId) {
         String[] types = fileName.split("\\.");
         String type = types[types.length - 1].toLowerCase();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Attachment attachment = new Attachment();
         attachment.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         attachment.setName(fileName);
@@ -143,7 +141,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         attachment.setProcessInstanceId(processInstanceId);
         attachment.setProcessSerialNumber(processSerialNumber);
         attachment.setTaskId(taskId);
-        attachment.setUploadTime(sdf.format(new Date()));
+        attachment.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
         attachment.setDescribes(describes);
         attachment.setPersonName(Y9LoginUserHolder.getUserInfo().getName());
         attachment.setPersonId(Y9LoginUserHolder.getPersonId());
@@ -162,8 +160,7 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Transactional
     @Override
     public void uploadRestModel(Attachment attachment) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        attachment.setUploadTime(sdf.format(new Date()));
+        attachment.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
         Integer index = attachmentRepository.getMaxTabIndex(attachment.getProcessSerialNumber());
         attachment.setTabIndex(index == null ? 1 : index + 1);
         attachmentRepository.save(attachment);

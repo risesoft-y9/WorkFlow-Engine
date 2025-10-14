@@ -3,7 +3,6 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -38,6 +37,7 @@ import net.risesoft.service.CustomHistoricTaskService;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.util.FlowableModelConvertUtil;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -81,10 +81,10 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     @Transactional
     public void complete(String processInstanceId, String taskId) throws Exception {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
-            String nodeType = customProcessDefinitionService
-                .getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getMultiInstance();
+            String nodeType =
+                customProcessDefinitionService.getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getMultiInstance();
             HistoricProcessInstance historicProcessInstance =
                 historyService.createHistoricProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
             if (nodeType.equals(SysVariables.PARALLEL)) {
@@ -97,17 +97,21 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                     }
                 }
             }
-            String year = sdf.format(historicProcessInstance.getStartTime());
+            String year = Y9DateTimeUtils.getYear(historicProcessInstance.getStartTime());
             /*
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据
              */
             String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
-            List<Execution> list0 = runtimeService.createNativeExecutionQuery().sql(sql0)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
+            List<Execution> list0 = runtimeService.createNativeExecutionQuery()
+                .sql(sql0)
+                .parameter("PROC_INST_ID_", processInstanceId)
+                .list();
             if (!list0.isEmpty()) {
                 // 备份数据已有，则先删除再重新插入备份
                 String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
-                runtimeService.createNativeExecutionQuery().sql(sql2).parameter("PROC_INST_ID_", processInstanceId)
+                runtimeService.createNativeExecutionQuery()
+                    .sql(sql2)
+                    .parameter("PROC_INST_ID_", processInstanceId)
                     .list();
             }
             String sql = "INSERT INTO FF_ACT_RU_EXECUTION_" + year
@@ -117,8 +121,10 @@ public class CustomTaskServiceImpl implements CustomTaskService {
              * 2-办结流程
              */
             String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
-            List<Execution> list1 = runtimeService.createNativeExecutionQuery().sql(sql3)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
+            List<Execution> list1 = runtimeService.createNativeExecutionQuery()
+                .sql(sql3)
+                .parameter("PROC_INST_ID_", processInstanceId)
+                .list();
             if (!list1.isEmpty()) {
                 // 成功备份数据才办结
                 String endNodeKey = customProcessDefinitionService.getEndNode(taskId).getData().getTaskDefKey();
@@ -134,8 +140,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);
@@ -163,8 +168,9 @@ public class CustomTaskServiceImpl implements CustomTaskService {
         try {
             Task task = taskService.createTaskQuery().taskId(taskId).singleResult();
             processInstanceId = task.getProcessInstanceId();
-            String nodeType = customProcessDefinitionService
-                .getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getMultiInstance();
+            String nodeType =
+                customProcessDefinitionService.getNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getMultiInstance();
             if (nodeType.equals(SysVariables.PARALLEL)) {
                 List<Task> taskList = this.listByProcessInstanceId(task.getProcessInstanceId());
                 for (Task tTemp : taskList) {
@@ -189,8 +195,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);
@@ -217,7 +222,8 @@ public class CustomTaskServiceImpl implements CustomTaskService {
         List<Task> taskList = this.listByProcessInstanceId(processInstanceId);
         Task task = taskList.get(0);
         List<GatewayModel> parallelGatewayList = customProcessDefinitionService
-            .listParallelGateway(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
+            .listParallelGateway(task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+            .getData();
         String routeToTaskId = parallelGatewayList.get(0).getTaskDefKey();
         Map<String, Object> vars = new HashMap<>(16);
         vars.put(SysVariables.ROUTE_TO_TASK_ID, routeToTaskId);
@@ -273,10 +279,12 @@ public class CustomTaskServiceImpl implements CustomTaskService {
         try {
             Task currentTask = taskService.createTaskQuery().taskId(taskId).singleResult();
             String multinstance = customProcessDefinitionService
-                .getNode(currentTask.getProcessDefinitionId(), currentTask.getTaskDefinitionKey()).getMultiInstance();
+                .getNode(currentTask.getProcessDefinitionId(), currentTask.getTaskDefinitionKey())
+                .getMultiInstance();
             if (multinstance.equals(SysVariables.PARALLEL)) {
                 List<HistoricTaskInstance> hisTaskList = historyService.createHistoricTaskInstanceQuery()
-                    .processInstanceId(currentTask.getProcessInstanceId()).taskCreatedOn(currentTask.getCreateTime())
+                    .processInstanceId(currentTask.getProcessInstanceId())
+                    .taskCreatedOn(currentTask.getCreateTime())
                     .list();
                 for (HistoricTaskInstance entity : hisTaskList) {
                     // 由于并行任务的创建时间可能会有延迟，所以这里创建时间相差不超过2秒的，即为当前任务的所有并行任务
@@ -313,19 +321,31 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     @Override
     public List<Task> listByProcessInstanceIdAndActive(String processInstanceId, boolean active) {
         if (active) {
-            return taskService.createTaskQuery().processInstanceId(processInstanceId).active().orderByTaskCreateTime()
-                .asc().list();
+            return taskService.createTaskQuery()
+                .processInstanceId(processInstanceId)
+                .active()
+                .orderByTaskCreateTime()
+                .asc()
+                .list();
         } else {
-            return taskService.createTaskQuery().processInstanceId(processInstanceId).suspended()
-                .orderByTaskCreateTime().asc().list();
+            return taskService.createTaskQuery()
+                .processInstanceId(processInstanceId)
+                .suspended()
+                .orderByTaskCreateTime()
+                .asc()
+                .list();
         }
     }
 
     @Override
     public Y9Page<TaskModel> pageByProcessInstanceId(String processInstanceId, Integer page, Integer rows) {
         long totalCount = taskService.createTaskQuery().processInstanceId(processInstanceId).active().count();
-        List<Task> taskList = taskService.createTaskQuery().processInstanceId(processInstanceId).active()
-            .orderByTaskCreateTime().asc().listPage((page - 1) * rows, rows);
+        List<Task> taskList = taskService.createTaskQuery()
+            .processInstanceId(processInstanceId)
+            .active()
+            .orderByTaskCreateTime()
+            .asc()
+            .listPage((page - 1) * rows, rows);
         List<TaskModel> taskModelList = FlowableModelConvertUtil.taskList2TaskModelList(taskList);
         int totalPages = (int)(totalCount + rows - 1) / rows;
         return Y9Page.success(page, totalPages, totalCount, taskModelList);

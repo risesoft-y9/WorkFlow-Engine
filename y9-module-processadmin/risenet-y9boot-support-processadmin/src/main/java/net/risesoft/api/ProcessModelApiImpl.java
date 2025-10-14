@@ -1,11 +1,9 @@
 package net.risesoft.api;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.flowable.engine.RepositoryService;
-import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -20,6 +18,7 @@ import net.risesoft.api.processadmin.ProcessModelApi;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 
 /**
@@ -65,14 +64,15 @@ public class ProcessModelApiImpl implements ProcessModelApi {
     @Override
     public Y9Result<Object> deployModel(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        // Model modelData = modelService.getModel(modelId);
-        // BpmnModel model = modelService.getBpmnModel(modelData);
-        // if (model.getProcesses().isEmpty()) {
-        // return Y9Result.failure("数据模型不符要求，请至少设计一条主线流程。");
-        // }
-        // byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
-        // String processName = modelData.getName() + ".bpmn20.xml";
-        // repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
+        /*Model modelData = modelService.getModel(modelId);
+        BpmnModel model = modelService.getBpmnModel(modelData);
+        if (model.getProcesses().isEmpty()) {
+            return Y9Result.failure("数据模型不符要求，请至少设计一条主线流程。");
+        }
+        byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
+        String processName = modelData.getName() + ".bpmn20.xml";
+        repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
+        */
         return Y9Result.success();
     }
 
@@ -85,27 +85,28 @@ public class ProcessModelApiImpl implements ProcessModelApi {
      */
     @Override
     public Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        FlowableTenantInfoHolder.setTenantId(tenantId);
+      FlowableTenantInfoHolder.setTenantId(tenantId);
         List<FlowableBpmnModel> items = new ArrayList<>();
-        // List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
+        /* List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition;
         FlowableBpmnModel flowableBpmnModel;
-        // for (AbstractModel model : list) {
-        // flowableBpmnModel = new FlowableBpmnModel();
-        // flowableBpmnModel.setId(model.getId());
-        // flowableBpmnModel.setKey(model.getKey());
-        // flowableBpmnModel.setName(model.getName());
-        // flowableBpmnModel.setVersion(0);
-        // processDefinition = repositoryService.createProcessDefinitionQuery().processDefinitionKey(model.getKey())
-        // .latestVersion().singleResult();
-        // if (null != processDefinition) {
-        // flowableBpmnModel.setVersion(processDefinition.getVersion());
-        // }
-        // flowableBpmnModel.setCreateTime(sdf.format(model.getCreated()));
-        // flowableBpmnModel.setLastUpdateTime(sdf.format(model.getLastUpdated()));
-        // items.add(flowableBpmnModel);
-        // }
+        for (AbstractModel model : list) {
+            flowableBpmnModel = new FlowableBpmnModel();
+            flowableBpmnModel.setId(model.getId());
+            flowableBpmnModel.setKey(model.getKey());
+            flowableBpmnModel.setName(model.getName());
+            flowableBpmnModel.setVersion(0);
+            processDefinition = repositoryService.createProcessDefinitionQuery()
+                .processDefinitionKey(model.getKey())
+                .latestVersion()
+                .singleResult();
+            if (null != processDefinition) {
+                flowableBpmnModel.setVersion(processDefinition.getVersion());
+            }
+            flowableBpmnModel.setCreateTime(Y9DateTimeUtils.formatDateTime(model.getCreated()));
+            flowableBpmnModel.setLastUpdateTime(Y9DateTimeUtils.formatDateTime(model.getLastUpdated()));
+            items.add(flowableBpmnModel);
+        }*/
         return Y9Result.success(items, "获取成功");
     }
 
@@ -120,8 +121,8 @@ public class ProcessModelApiImpl implements ProcessModelApi {
     @Override
     public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        // byte[] bpmnBytes;
-        // Model model = modelService.getModel(modelId);
+        //  byte[] bpmnBytes;
+        //  Model model = modelService.getModel(modelId);
         // bpmnBytes = modelService.getBpmnXML(model);
         // return Y9Result.success(bpmnBytes == null ? "" : new String(bpmnBytes, StandardCharsets.UTF_8), "获取成功");
         return Y9Result.success("", "获取成功");

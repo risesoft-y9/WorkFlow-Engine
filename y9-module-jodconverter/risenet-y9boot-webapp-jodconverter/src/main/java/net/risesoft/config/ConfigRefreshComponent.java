@@ -211,6 +211,7 @@ public class ConfigRefreshComponent {
                     TimeUnit.SECONDS.sleep(1000);
                 }
             } catch (InterruptedException e) {
+                Thread.currentThread().interrupt();
                 LOGGER.error("读取配置文件异常", e);
             }
         }

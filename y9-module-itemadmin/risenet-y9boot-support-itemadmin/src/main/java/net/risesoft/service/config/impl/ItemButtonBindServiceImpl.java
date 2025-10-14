@@ -1,8 +1,6 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Objects;
 
@@ -33,6 +31,7 @@ import net.risesoft.service.CommonButtonService;
 import net.risesoft.service.SendButtonService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemButtonRoleService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -64,7 +63,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Transactional
     public void bindButton(String itemId, String buttonId, String processDefinitionId, String taskDefKey,
         ItemButtonTypeEnum buttonType) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemButtonBind bib = new ItemButtonBind();
@@ -75,8 +73,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         bib.setProcessDefinitionId(processDefinitionId);
         bib.setTaskDefKey(taskDefKey);
         bib.setTenantId(tenantId);
-        bib.setCreateTime(sdf.format(new Date()));
-        bib.setUpdateTime(sdf.format(new Date()));
+        bib.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        bib.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         bib.setUserId(userId);
         bib.setUserName(userName);
 
@@ -92,10 +90,10 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Override
     @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
+        assert item != null;
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestpdId = latestpd.getId();
@@ -143,8 +141,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                     newBind.setTaskDefKey(currentTaskDefKey);
                     newBind.setTenantId(tenantId);
                     newBind.setTenantId(tenantId);
-                    newBind.setCreateTime(sdf.format(new Date()));
-                    newBind.setUpdateTime(sdf.format(new Date()));
+                    newBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+                    newBind.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     newBind.setUserId(userId);
                     newBind.setUserName(userName);
 
@@ -172,7 +170,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         try {
@@ -188,8 +185,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                     newBind.setProcessDefinitionId(lastVersionPid);
                     newBind.setTaskDefKey(bind.getTaskDefKey());
                     newBind.setTenantId(tenantId);
-                    newBind.setCreateTime(sdf.format(new Date()));
-                    newBind.setUpdateTime(sdf.format(new Date()));
+                    newBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+                    newBind.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     newBind.setUserId(userId);
                     newBind.setUserName(userName);
                     newBind.setTabIndex(bind.getTabIndex());
@@ -426,12 +423,11 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     public ItemButtonBind save(ItemButtonBind buttonItemBind) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = buttonItemBind.getId();
         ItemButtonBind oldbib = this.getById(id);
         if (null != oldbib) {
             oldbib.setTenantId(tenantId);
-            oldbib.setUpdateTime(sdf.format(new Date()));
+            oldbib.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             oldbib.setUserId(userId);
             oldbib.setUserName(userName);
 
@@ -463,7 +459,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Override
     @Transactional
     public void saveOrder(String[] idAndTabIndexs) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName();
         List<ItemButtonBind> oldtibList = new ArrayList<>();
@@ -471,7 +466,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
             String[] arr = idAndTabIndex.split(SysVariables.COLON);
             ItemButtonBind oldBib = this.getById(arr[0]);
             oldBib.setTabIndex(Integer.valueOf(arr[1]));
-            oldBib.setUpdateTime(sdf.format(new Date()));
+            oldBib.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             oldBib.setUserId(userId);
             oldBib.setUserName(userName);
 

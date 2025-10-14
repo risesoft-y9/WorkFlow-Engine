@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -57,6 +56,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -386,7 +386,6 @@ public class ButtonOperationRestController {
     public Y9Result<Map<String, Object>> getTaskList(@RequestParam @NotBlank String taskId) {
         Map<String, Object> retMap;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Position position = Y9LoginUserHolder.getPosition();
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -438,7 +437,7 @@ public class ButtonOperationRestController {
                                 .getData();
                         for (HistoricTaskInstanceModel hai : htims) {
                             if (hai.getAssignee().equals(users.get(i))) {// 获取串行多人处理的完成时间
-                                map.put("endTime", sdf.format(hai.getEndTime()));
+                                map.put("endTime", Y9DateTimeUtils.formatDateTime(hai.getEndTime()));
                                 if (StringUtils.isNotBlank(hai.getScopeType())) {// ScopeType存的是岗位/人员名称，优先显示这个名称
                                     map.put("user", hai.getScopeType());
                                 }
@@ -481,7 +480,7 @@ public class ButtonOperationRestController {
                             parallelSponsorObj =
                                 parallelSponsorObj1 != null ? parallelSponsorObj1.getValue().toString() : "";
                         }
-                        map.put("endTime", endTime == null ? "" : sdf.format(endTime));
+                        map.put("endTime", endTime == null ? "" : Y9DateTimeUtils.formatDateTime(endTime));
                         if (parallelSponsorObj != null) {
                             if (parallelSponsorObj.equals(employee.getId())) {
                                 map.put("parallelSponsor", "主办");
@@ -1021,7 +1020,6 @@ public class ButtonOperationRestController {
         Position position = Y9LoginUserHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             buttonOperationApi.specialComplete(tenantId, positionId, taskId, reason);
             // 更新自定义历程结束时间
@@ -1043,8 +1041,8 @@ public class ButtonOperationRestController {
             ptModel.setProcessInstanceId(taskModel.getProcessInstanceId());
             ptModel.setReceiverName(position.getName());
             ptModel.setSenderName(position.getName());
-            ptModel.setStartTime(sdf.format(new Date()));
-            ptModel.setEndTime(sdf.format(new Date()));
+            ptModel.setStartTime(Y9DateTimeUtils.formatCurrentDateTime());
+            ptModel.setEndTime(Y9DateTimeUtils.formatCurrentDateTime());
             ptModel.setTaskDefName("特殊办结");
             ptModel.setTaskId(taskId);
             ptModel.setId("");

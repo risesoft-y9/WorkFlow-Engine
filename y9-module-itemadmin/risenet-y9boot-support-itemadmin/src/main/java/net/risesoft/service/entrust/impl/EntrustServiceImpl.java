@@ -1,7 +1,5 @@
 package net.risesoft.service.entrust.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +26,7 @@ import net.risesoft.repository.entrust.EntrustHistoryRepository;
 import net.risesoft.repository.entrust.EntrustRepository;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.entrust.EntrustService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -52,7 +51,6 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     @Transactional
     public void destroyEntrust(String id) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Entrust entrust = this.getById(id);
         if (0 != entrust.getUsed()) {
             EntrustHistory eh = new EntrustHistory();
@@ -63,7 +61,7 @@ public class EntrustServiceImpl implements EntrustService {
             eh.setStartTime(entrust.getStartTime());
             eh.setEndTime(entrust.getEndTime());
             eh.setCreatTime(entrust.getCreatTime());
-            eh.setUpdateTime(sdf.format(new Date()));
+            eh.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             entrustHistoryRepository.save(eh);
             entrustRepository.delete(entrust);
         } else {
@@ -74,7 +72,6 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     @Transactional
     public void destroyEntrust(String ownerId, String itemId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Entrust entrust = this.findOneByOwnerIdAndItemId(ownerId, itemId);
         if (0 != entrust.getUsed()) {
             EntrustHistory eh = new EntrustHistory();
@@ -85,7 +82,7 @@ public class EntrustServiceImpl implements EntrustService {
             eh.setStartTime(entrust.getStartTime());
             eh.setEndTime(entrust.getEndTime());
             eh.setCreatTime(entrust.getCreatTime());
-            eh.setUpdateTime(sdf.format(new Date()));
+            eh.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             entrustHistoryRepository.save(eh);
             entrustRepository.delete(entrust);
         }
@@ -94,7 +91,6 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     @Transactional
     public void destroyEntrustById(String id) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Entrust entrust = this.getById(id);
         if (0 != entrust.getUsed()) {
             EntrustHistory eh = new EntrustHistory();
@@ -105,7 +101,7 @@ public class EntrustServiceImpl implements EntrustService {
             eh.setStartTime(entrust.getStartTime());
             eh.setEndTime(entrust.getEndTime());
             eh.setCreatTime(entrust.getCreatTime());
-            eh.setUpdateTime(sdf.format(new Date()));
+            eh.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             entrustHistoryRepository.save(eh);
             entrustRepository.delete(entrust);
         }
@@ -114,7 +110,6 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     public Entrust findOneByOwnerIdAndItemId(String ownerId, String itemId) {
         Entrust entrust = entrustRepository.findOneByOwnerIdAndItemId(ownerId, itemId);
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         if (entrust != null) {
             /**
              * 判断是否使用
@@ -126,9 +121,9 @@ public class EntrustServiceImpl implements EntrustService {
             Date endTime4Date;
             Date currentDate;
             try {
-                startTime4Date = sdf2.parse(startTime);
-                endTime4Date = sdf2.parse(endTime);
-                currentDate = sdf2.parse(sdf2.format(new Date()));
+                startTime4Date = Y9DateTimeUtils.parseDate(startTime);
+                endTime4Date = Y9DateTimeUtils.parseDate(endTime);
+                currentDate = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatCurrentDate());
                 boolean b =
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
@@ -137,7 +132,7 @@ public class EntrustServiceImpl implements EntrustService {
                 } else if (currentDate.after(endTime4Date)) {
                     entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
             }
         }
         return entrust;
@@ -155,7 +150,6 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     public Entrust getById(String id) {
         Entrust entrust = entrustRepository.findById(id).orElse(null);
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         if (null != entrust) {
             String tenantId = Y9LoginUserHolder.getTenantId();
             OrgUnit pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
@@ -184,9 +178,9 @@ public class EntrustServiceImpl implements EntrustService {
             Date endTime4Date;
             Date currentDate;
             try {
-                startTime4Date = sdf2.parse(startTime);
-                endTime4Date = sdf2.parse(endTime);
-                currentDate = sdf2.parse(sdf2.format(new Date()));
+                startTime4Date = Y9DateTimeUtils.parseDate(startTime);
+                endTime4Date = Y9DateTimeUtils.parseDate(endTime);
+                currentDate = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatCurrentDate());
                 boolean b =
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
@@ -195,7 +189,7 @@ public class EntrustServiceImpl implements EntrustService {
                 } else if (currentDate.after(endTime4Date)) {
                     entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -209,7 +203,6 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     public List<Entrust> list(String ownerId) {
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll(ownerId);
         OrgUnit pTemp;
@@ -240,9 +233,9 @@ public class EntrustServiceImpl implements EntrustService {
             Date endTime4Date;
             Date currentDate;
             try {
-                startTime4Date = sdf2.parse(startTime);
-                endTime4Date = sdf2.parse(endTime);
-                currentDate = sdf2.parse(sdf2.format(new Date()));
+                startTime4Date = Y9DateTimeUtils.parseDate(startTime);
+                endTime4Date = Y9DateTimeUtils.parseDate(endTime);
+                currentDate = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatCurrentDate());
                 boolean b =
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
@@ -251,7 +244,7 @@ public class EntrustServiceImpl implements EntrustService {
                 } else if (currentDate.after(endTime4Date)) {
                     entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -260,11 +253,10 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     public List<Entrust> listAll() {
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll();
         OrgUnit pTemp;
-        Item itemTemp = null;
+        Item itemTemp;
         for (Entrust entrust : entrustList) {
             pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
@@ -287,13 +279,13 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
-            Date startTime4Date = null;
-            Date endTime4Date = null;
-            Date currentDate = null;
+            Date startTime4Date;
+            Date endTime4Date;
+            Date currentDate;
             try {
-                startTime4Date = sdf2.parse(startTime);
-                endTime4Date = sdf2.parse(endTime);
-                currentDate = sdf2.parse(sdf2.format(new Date()));
+                startTime4Date = Y9DateTimeUtils.parseDate(startTime);
+                endTime4Date = Y9DateTimeUtils.parseDate(endTime);
+                currentDate = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatCurrentDate());
                 boolean b =
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
@@ -302,7 +294,7 @@ public class EntrustServiceImpl implements EntrustService {
                 } else if (currentDate.after(endTime4Date)) {
                     entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -311,11 +303,10 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     public List<Entrust> listByAssigneeId(String assigneeId) {
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(assigneeId);
-        OrgUnit pTemp = null;
-        Item itemTemp = null;
+        OrgUnit pTemp;
+        Item itemTemp;
         for (Entrust entrust : entrustList) {
             pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
@@ -338,13 +329,13 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
-            Date startTime4Date = null;
-            Date endTime4Date = null;
-            Date currentDate = null;
+            Date startTime4Date;
+            Date endTime4Date;
+            Date currentDate;
             try {
-                startTime4Date = sdf2.parse(startTime);
-                endTime4Date = sdf2.parse(endTime);
-                currentDate = sdf2.parse(sdf2.format(new Date()));
+                startTime4Date = Y9DateTimeUtils.parseDate(startTime);
+                endTime4Date = Y9DateTimeUtils.parseDate(endTime);
+                currentDate = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatCurrentDate());
                 boolean b =
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
@@ -353,7 +344,7 @@ public class EntrustServiceImpl implements EntrustService {
                 } else if (currentDate.after(endTime4Date)) {
                     entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
         }
@@ -362,11 +353,10 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     public List<EntrustModel> listEntrustByUserId(String orgUnitId) {
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll(orgUnitId);
         List<EntrustModel> list = new ArrayList<>();
-        OrgUnit pTemp = null;
+        OrgUnit pTemp;
         for (Entrust entrust : entrustList) {
             pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
@@ -375,13 +365,13 @@ public class EntrustServiceImpl implements EntrustService {
             entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
-            Date startTime4Date = null;
-            Date endTime4Date = null;
-            Date currentDate = null;
+            Date startTime4Date;
+            Date endTime4Date;
+            Date currentDate;
             try {
-                startTime4Date = sdf2.parse(startTime);
-                endTime4Date = sdf2.parse(endTime);
-                currentDate = sdf2.parse(sdf2.format(new Date()));
+                startTime4Date = Y9DateTimeUtils.parseDate(startTime);
+                endTime4Date = Y9DateTimeUtils.parseDate(endTime);
+                currentDate = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatCurrentDate());
                 boolean b =
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
@@ -390,7 +380,7 @@ public class EntrustServiceImpl implements EntrustService {
                 } else if (currentDate.after(endTime4Date)) {
                     entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             EntrustModel model = new EntrustModel();
@@ -405,9 +395,9 @@ public class EntrustServiceImpl implements EntrustService {
         Page<Item> pageList = itemService.page(page, rows);
         List<Item> itemList = pageList.getContent();
         List<EntrustItemModel> eimList = new ArrayList<>();
-        EntrustItemModel eim = null;
-        Boolean isEntrust = false;
-        Integer count = 0;
+        EntrustItemModel eim;
+        boolean isEntrust;
+        Integer count;
         /**
          * 针对所有事项
          */
@@ -435,20 +425,19 @@ public class EntrustServiceImpl implements EntrustService {
 
     @Override
     public List<EntrustModel> listMyEntrust(String orgUnitId) {
-        SimpleDateFormat sdf2 = new SimpleDateFormat("yyyy-MM-dd");
         List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(orgUnitId);
         List<EntrustModel> list = new ArrayList<>();
         for (Entrust entrust : entrustList) {
             entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();
             String endTime = entrust.getEndTime();
-            Date startTime4Date = null;
-            Date endTime4Date = null;
-            Date currentDate = null;
+            Date startTime4Date;
+            Date endTime4Date;
+            Date currentDate;
             try {
-                startTime4Date = sdf2.parse(startTime);
-                endTime4Date = sdf2.parse(endTime);
-                currentDate = sdf2.parse(sdf2.format(new Date()));
+                startTime4Date = Y9DateTimeUtils.parseDate(startTime);
+                endTime4Date = Y9DateTimeUtils.parseDate(endTime);
+                currentDate = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatCurrentDate());
                 boolean b =
                     startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
                         || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
@@ -457,7 +446,7 @@ public class EntrustServiceImpl implements EntrustService {
                 } else if (currentDate.after(endTime4Date)) {
                     entrust.setUsed(EntrustUseEnum.DONE.getValue());
                 }
-            } catch (ParseException e) {
+            } catch (Exception e) {
                 e.printStackTrace();
             }
             EntrustModel model = new EntrustModel();
@@ -476,7 +465,6 @@ public class EntrustServiceImpl implements EntrustService {
     @Override
     @Transactional
     public Entrust saveOrUpdate(Entrust entrust) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = entrust.getId();
         if (StringUtils.isNotEmpty(id)) {
             Entrust old = this.getById(id);
@@ -484,7 +472,7 @@ public class EntrustServiceImpl implements EntrustService {
             old.setAssigneeId(entrust.getAssigneeId());
             old.setStartTime(entrust.getStartTime());
             old.setEndTime(entrust.getEndTime());
-            old.setUpdateTime(sdf.format(new Date()));
+            old.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             entrustRepository.save(old);
             return old;
         }
@@ -495,8 +483,8 @@ public class EntrustServiceImpl implements EntrustService {
         newEntrust.setAssigneeId(entrust.getAssigneeId());
         newEntrust.setStartTime(entrust.getStartTime());
         newEntrust.setEndTime(entrust.getEndTime());
-        newEntrust.setCreatTime(sdf.format(new Date()));
-        newEntrust.setUpdateTime(sdf.format(new Date()));
+        newEntrust.setCreatTime(Y9DateTimeUtils.formatCurrentDateTime());
+        newEntrust.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         entrustRepository.save(newEntrust);
         return newEntrust;
     }

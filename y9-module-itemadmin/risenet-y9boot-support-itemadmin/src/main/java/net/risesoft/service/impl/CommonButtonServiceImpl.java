@@ -1,7 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -16,6 +14,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.button.CommonButtonRepository;
 import net.risesoft.service.CommonButtonService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -63,13 +62,12 @@ public class CommonButtonServiceImpl implements CommonButtonService {
     public CommonButton saveOrUpdate(CommonButton commonButton) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = commonButton.getId();
         if (StringUtils.isNotEmpty(id)) {
             CommonButton oldcb = this.getById(id);
             if (null != oldcb) {
                 oldcb.setName(commonButton.getName());
-                oldcb.setUpdateTime(sdf.format(new Date()));
+                oldcb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 oldcb.setUserId(userId);
                 oldcb.setUserName(userName);
 
@@ -86,8 +84,8 @@ public class CommonButtonServiceImpl implements CommonButtonService {
         newcb.setUserId(userId);
         newcb.setUserName(userName);
         newcb.setTenantId(tenantId);
-        newcb.setCreateTime(sdf.format(new Date()));
-        newcb.setUpdateTime(sdf.format(new Date()));
+        newcb.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        newcb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         return commonButtonRepository.save(newcb);
     }
 }

@@ -1,4 +1,4 @@
-package y9.autoconfiguration.log;
+package autoconfiguration.log;
 
 import java.util.concurrent.Executor;
 

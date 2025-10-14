@@ -38,12 +38,9 @@ public class SimpleEncodingDetects {
     }
 
     public static void readFile(String file, String code) {
-        BufferedReader fr;
-        try {
-            String myCode = code != null && !"".equals(code) ? code : "UTF8";
-            InputStreamReader read = new InputStreamReader(new FileInputStream(file), myCode);
-
-            fr = new BufferedReader(read);
+        String myCode = code != null && !code.isEmpty() ? code : "UTF8";
+        try (InputStreamReader read = new InputStreamReader(new FileInputStream(file), myCode);
+            BufferedReader fr = new BufferedReader(read)) {
             String line = null;
             int flag = 1;
             // 读取每一行，如果结束了，line会为空
@@ -55,8 +52,6 @@ public class SimpleEncodingDetects {
                 // 每一行创建一个Student对象，并存入数组中
                 System.out.println(line);
             }
-            fr.close();
-
         } catch (FileNotFoundException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
@@ -106,13 +101,10 @@ class BytesEncodingDetect extends Encoding {
         byte[] rawtext = new byte[10000];
         int bytesread = 0, byteoffset = 0;
         int guess = OTHER;
-        InputStream chinesestream;
-        try {
-            chinesestream = testurl.openStream();
+        try (InputStream chinesestream = testurl.openStream()) {
             while ((bytesread = chinesestream.read(rawtext, byteoffset, rawtext.length - byteoffset)) > 0) {
                 byteoffset += bytesread;
             }
-            chinesestream.close();
             guess = detectEncoding(rawtext);
         } catch (Exception e) {
             System.err.println("Error loading or using URL " + e);
@@ -456,45 +448,8 @@ class BytesEncodingDetect extends Encoding {
         rawtextlen = rawtext.length;
         for (i = 0; i < rawtextlen - 1; i++) {
             // System.err.println(rawtext[i]);
-            if (rawtext[i] >= 128) {
-                // asciichars++;
-            } else {
-                dbchars++;
-                if (0xA1 <= rawtext[i] && rawtext[i] <= 0xF9 && // Original Big5 range
-                    ((0x40 <= rawtext[i + 1] && rawtext[i + 1] <= 0x7E)
-                        || (0xA1 <= rawtext[i + 1] && rawtext[i + 1] <= 0xFE))) {
-                    bfchars++;
-                    totalfreq += 500;
-                    row = rawtext[i] - 0xA1;
-                    if (0x40 <= rawtext[i + 1] && rawtext[i + 1] <= 0x7E) {
-                        column = rawtext[i + 1] - 0x40;
-                    } else {
-                        column = rawtext[i + 1] - 0x61;
-                    }
-                    // System.out.println("original row " + row + " column " + column);
-                    if (Big5Freq[row][column] != 0) {
-                        bffreq += Big5Freq[row][column];
-                    } else if (3 <= row && row < 37) {
-                        bffreq += 200;
-                    }
-                } else if (0x81 <= rawtext[i] && rawtext[i] <= 0xFE && // Extended Big5 range
-                    ((0x40 <= rawtext[i + 1] && rawtext[i + 1] <= 0x7E)
-                        || (0x80 <= rawtext[i + 1] && rawtext[i + 1] <= 0xFE))) {
-                    bfchars++;
-                    totalfreq += 500;
-                    row = rawtext[i] - 0x81;
-                    if (0x40 <= rawtext[i + 1] && rawtext[i + 1] <= 0x7E) {
-                        column = rawtext[i + 1] - 0x40;
-                    } else {
-                        column = rawtext[i + 1] - 0x40;
-                    }
-                    // System.out.println("extended row " + row + " column " + column + " rawtext[i] " + rawtext[i]);
-                    if (Big5PFreq[row][column] != 0) {
-                        bffreq += Big5PFreq[row][column];
-                    }
-                }
-                i++;
-            }
+            dbchars++;
+            i++;
         }
         rangeval = 50 * ((float)bfchars / (float)dbchars);
         freqval = 50 * ((float)bffreq / (float)totalfreq);

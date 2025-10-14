@@ -1,7 +1,5 @@
 package net.risesoft.service.core.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -18,6 +16,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ProcessParamRepository;
 import net.risesoft.service.core.ProcessParamService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -129,7 +128,6 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             }
             return oldProcessParam;
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ProcessParam newProcessParam = new ProcessParam();
         newProcessParam.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         newProcessParam.setBureauIds(processParam.getBureauIds());
@@ -149,7 +147,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         newProcessParam.setStartorName(processParam.getStartorName());
         newProcessParam.setSponsorGuid(processParam.getSponsorGuid());
         newProcessParam.setSended(processParam.getSended());
-        newProcessParam.setCreateTime(sdf.format(new Date()));
+        newProcessParam.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newProcessParam.setCustomItem(processParam.getCustomItem());
         newProcessParam.setTarget(processParam.getTarget());
         newProcessParam.setDueDate(processParam.getDueDate());

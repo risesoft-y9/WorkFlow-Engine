@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -358,7 +357,6 @@ public class MonitorServiceImpl implements MonitorService {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             // if (StringUtils.isBlank(searchTerm)) {

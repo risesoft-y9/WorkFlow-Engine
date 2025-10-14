@@ -1,7 +1,5 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -19,6 +17,7 @@ import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.config.ItemInterfaceTaskBindService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -40,7 +39,6 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
     @Override
     @Transactional
     public void copyBind(String itemId, String interfaceId, String processDefinitionId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String tenantId = Y9LoginUserHolder.getTenantId();
         String proDefKey = processDefinitionId.split(":")[0];
         ProcessDefinitionModel latestPd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
@@ -70,7 +68,7 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
                     newBind.setItemId(itemId);
                     newBind.setInterfaceId(interfaceId);
                     newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    newBind.setCreateTime(sdf.format(new Date()));
+                    newBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     newBind.setExecuteCondition(bind.getExecuteCondition());
                     newBind.setProcessDefinitionId(latestPdId);
                     newBind.setTaskDefKey(currentTaskDefKey);
@@ -97,12 +95,11 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
                 itemInterfaceTaskBindRepository.save(bind);
             }
         } else {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             bind = new ItemInterfaceTaskBind();
             bind.setItemId(itemId);
             bind.setInterfaceId(interfaceId);
             bind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            bind.setCreateTime(sdf.format(new Date()));
+            bind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             bind.setExecuteCondition(condition);
             bind.setProcessDefinitionId(processDefinitionId);
             bind.setTaskDefKey(elementKey);

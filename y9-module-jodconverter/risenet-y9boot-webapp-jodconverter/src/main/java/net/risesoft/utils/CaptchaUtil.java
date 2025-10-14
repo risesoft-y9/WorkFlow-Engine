@@ -19,6 +19,8 @@ public class CaptchaUtil {
         'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q',
         'r', 's', 't', 'u', 'v', 'w', 'x', 'y', '2', '3', '4', '5', '6', '7', '8', '9'};
 
+    private static final Random random = new Random();
+
     /**
      * 指定验证码、生成验证码图片。
      * 
@@ -30,7 +32,6 @@ public class CaptchaUtil {
         // 定义图像buffer
         BufferedImage buffImg = new BufferedImage(WIDTH, HEIGHT, BufferedImage.TYPE_INT_RGB);
         Graphics gd = buffImg.getGraphics();
-        Random random = new Random();
         // 将图像填充为白色
         gd.setColor(Color.WHITE);
         gd.fillRect(0, 0, WIDTH, HEIGHT);
@@ -67,7 +68,6 @@ public class CaptchaUtil {
      * @return 字符串
      */
     public static String generateCaptchaCode() {
-        Random random = new Random();
         StringBuilder randomCode = new StringBuilder();
         for (int i = 0; i < CODE_LENGTH; i++) {
             randomCode.append(CODE_SEQUENCE[random.nextInt(52)]);

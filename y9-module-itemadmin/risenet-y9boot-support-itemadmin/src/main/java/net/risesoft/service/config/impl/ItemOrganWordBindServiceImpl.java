@@ -1,8 +1,6 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,6 +28,7 @@ import net.risesoft.repository.organword.ItemOrganWordBindRepository;
 import net.risesoft.repository.organword.OrganWordRepository;
 import net.risesoft.service.config.ItemOrganWordBindService;
 import net.risesoft.service.config.ItemOrganWordRoleService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -60,7 +59,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     @Override
     @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
@@ -93,8 +91,8 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
                     ItemOrganWordBind newBind = new ItemOrganWordBind();
                     newBind.setId(newBindId);
                     newBind.setItemId(itemId);
-                    newBind.setCreateDate(sdf.format(new Date()));
-                    newBind.setModifyDate(sdf.format(new Date()));
+                    newBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+                    newBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                     newBind.setOrganWordCustom(bind.getOrganWordCustom());
                     newBind.setProcessDefinitionId(latestPdId);
                     newBind.setTaskDefKey(currentTaskDefKey);
@@ -117,7 +115,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName();
         try {
@@ -128,8 +125,8 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
                     ItemOrganWordBind newbind = new ItemOrganWordBind();
                     newbind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     newbind.setItemId(newItemId);
-                    newbind.setCreateDate(sdf.format(new Date()));
-                    newbind.setModifyDate(sdf.format(new Date()));
+                    newbind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+                    newbind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                     newbind.setOrganWordCustom(bind.getOrganWordCustom());
                     newbind.setProcessDefinitionId(lastVersionPid);
                     newbind.setTaskDefKey(bind.getTaskDefKey());
@@ -269,9 +266,8 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     @Override
     @Transactional
     public void save(String id, String name, String custom) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ItemOrganWordBind taskRoleBind = this.findById(id);
-        taskRoleBind.setModifyDate(sdf.format(new Date()));
+        taskRoleBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         taskRoleBind.setOrganWordCustom(custom);
         itemOrganWordBindRepository.save(taskRoleBind);
     }
@@ -279,7 +275,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     @Override
     @Transactional
     public void save(String custom, String itemId, String processDefinitionId, String taskDefKey) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ItemOrganWordBind bind = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
             processDefinitionId, taskDefKey, custom);
         if (null == bind) {
@@ -291,8 +286,8 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             taskRoleBind.setTaskDefKey(taskDefKey);
             taskRoleBind.setUserId(Y9LoginUserHolder.getPersonId());
             taskRoleBind.setUserName(Y9LoginUserHolder.getUserInfo().getName());
-            taskRoleBind.setCreateDate(sdf.format(new Date()));
-            taskRoleBind.setModifyDate(sdf.format(new Date()));
+            taskRoleBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+            taskRoleBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             itemOrganWordBindRepository.save(taskRoleBind);
         } else {
             bind.setOrganWordCustom(custom);
@@ -300,7 +295,7 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             bind.setTaskDefKey(taskDefKey);
             bind.setUserId(Y9LoginUserHolder.getPersonId());
             bind.setUserName(Y9LoginUserHolder.getUserInfo().getName());
-            bind.setModifyDate(sdf.format(new Date()));
+            bind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             itemOrganWordBindRepository.save(bind);
         }
     }

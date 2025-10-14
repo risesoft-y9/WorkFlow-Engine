@@ -1,7 +1,5 @@
 package net.risesoft.service.opinion.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -16,6 +14,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.opinion.OpinionCopyRepository;
 import net.risesoft.service.opinion.OpinionCopyService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -43,14 +42,13 @@ public class OpinionCopyServiceImpl implements OpinionCopyService {
     @Override
     @Transactional
     public Optional<OpinionCopy> saveOrUpdate(OpinionCopy opinionCopy) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = opinionCopy.getId();
         if (StringUtils.isNotBlank(id)) {
             Optional<OpinionCopy> optional = opinionCopyRepository.findById(id);
             if (optional.isPresent()) {
                 OpinionCopy oldOc = optional.get();
                 oldOc.setContent(opinionCopy.getContent());
-                oldOc.setUpdateTime(sdf.format(new Date()));
+                oldOc.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 return Optional.of(opinionCopyRepository.save(oldOc));
             }
         }
@@ -61,8 +59,8 @@ public class OpinionCopyServiceImpl implements OpinionCopyService {
         newOc.setContent(opinionCopy.getContent());
         newOc.setUserId(userInfo.getPersonId());
         newOc.setUserName(userInfo.getName());
-        newOc.setCreateTime(sdf.format(new Date()));
-        newOc.setUpdateTime(sdf.format(new Date()));
+        newOc.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        newOc.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newOc.setSend(opinionCopy.isSend());
         return Optional.of(opinionCopyRepository.save(newOc));
     }

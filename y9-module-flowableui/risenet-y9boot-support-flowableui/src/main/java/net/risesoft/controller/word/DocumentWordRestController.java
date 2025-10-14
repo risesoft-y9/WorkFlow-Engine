@@ -2,8 +2,6 @@ package net.risesoft.controller.word;
 
 import java.io.OutputStream;
 import java.nio.charset.StandardCharsets;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -31,6 +29,7 @@ import net.risesoft.model.itemadmin.DocumentWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.ToolUtil;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -209,7 +208,6 @@ public class DocumentWordRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             DocumentWordModel oldModel = documentWordApi.findWordById(tenantId, oldId).getData();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
             String fullPath =
@@ -223,12 +221,12 @@ public class DocumentWordRestController {
             model.setUserId(userId);
             model.setUserName(person.getName());
             model.setType(oldModel.getType());
-            model.setSaveDate(sdf.format(new Date()));
+            model.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
             model.setProcessSerialNumber(oldModel.getProcessSerialNumber());
             model.setProcessInstanceId(oldModel.getProcessInstanceId());
             model.setWordType(oldModel.getWordType());
             model.setTaskId(taskId);
-            model.setUpdateDate(sdf.format(new Date()));
+            model.setUpdateDate(Y9DateTimeUtils.formatCurrentDateTime());
             model.setFileStoreId(y9FileStore.getId());
             documentWordApi.replaceWord(tenantId, model, oldId, taskId);
             return Y9Result.success(model);

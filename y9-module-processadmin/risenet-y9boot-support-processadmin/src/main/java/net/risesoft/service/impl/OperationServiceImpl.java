@@ -3,9 +3,7 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -48,6 +46,7 @@ import net.risesoft.service.CustomRuntimeService;
 import net.risesoft.service.CustomTaskService;
 import net.risesoft.service.CustomVariableService;
 import net.risesoft.service.OperationService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -98,8 +97,9 @@ public class OperationServiceImpl implements OperationService {
         this.managementService.executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, reason0));
 
         List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
-        String multiInstance = this.customProcessDefinitionService
-            .getNode(currentTask.getProcessDefinitionId(), targetTaskDefineKey).getMultiInstance();
+        String multiInstance =
+            this.customProcessDefinitionService.getNode(currentTask.getProcessDefinitionId(), targetTaskDefineKey)
+                .getMultiInstance();
         // 更新自定义历程结束时间
         List<ProcessTrackModel> ptModelList =
             this.processTrackApi.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId).getData();
@@ -122,8 +122,9 @@ public class OperationServiceImpl implements OperationService {
                 // if (StringUtils.isBlank(ownerId)) {
                 if (task.getAssignee().equals(sponsorGuid)) {
                     vars.put(SysVariables.PARALLEL_SPONSOR, sponsorGuid);
-                    ProcessParamModel processParam = this.processParamApi
-                        .findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+                    ProcessParamModel processParam =
+                        this.processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId)
+                            .getData();
                     processParam.setSponsorGuid(sponsorGuid);
                     this.processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
                 }
@@ -159,7 +160,8 @@ public class OperationServiceImpl implements OperationService {
         boolean isSub = customProcessDefinitionService.isSubProcessChildNode(currentTask.getProcessDefinitionId(),
             currentTask.getTaskDefinitionKey());
         if (isSub) {
-            taskList = taskList.stream().filter(task -> task.getExecutionId().equals(currentTask.getExecutionId()))
+            taskList = taskList.stream()
+                .filter(task -> task.getExecutionId().equals(currentTask.getExecutionId()))
                 .collect(Collectors.toList());
         }
         taskList.forEach(task -> {
@@ -246,33 +248,41 @@ public class OperationServiceImpl implements OperationService {
             String userName = Y9LoginUserHolder.getOrgUnit().getName();
             Task task = this.customTaskService.findById(taskId);
             String endKey = this.customProcessDefinitionService.getTaskDefKey4EndEvent(task.getProcessDefinitionId());
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy");
             processInstanceId = task.getProcessInstanceId();
             HistoricProcessInstance historicProcessInstance = this.historyService.createHistoricProcessInstanceQuery()
-                .processInstanceId(processInstanceId).singleResult();
-            String year = sdf.format(historicProcessInstance.getStartTime());
+                .processInstanceId(processInstanceId)
+                .singleResult();
+            String year = Y9DateTimeUtils.getYear(historicProcessInstance.getStartTime());
             /*
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据
              */
             String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
-            List<Execution> list0 = this.runtimeService.createNativeExecutionQuery().sql(sql0)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
+            List<Execution> list0 = this.runtimeService.createNativeExecutionQuery()
+                .sql(sql0)
+                .parameter("PROC_INST_ID_", processInstanceId)
+                .list();
             // 备份数据已有，则先删除再重新插入备份
             if (!list0.isEmpty()) {
                 String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
-                this.runtimeService.createNativeExecutionQuery().sql(sql2).parameter("PROC_INST_ID_", processInstanceId)
+                this.runtimeService.createNativeExecutionQuery()
+                    .sql(sql2)
+                    .parameter("PROC_INST_ID_", processInstanceId)
                     .list();
             }
             String sql = "INSERT INTO FF_ACT_RU_EXECUTION_" + year
                 + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
-            this.runtimeService.createNativeExecutionQuery().sql(sql).parameter("PROC_INST_ID_", processInstanceId)
+            this.runtimeService.createNativeExecutionQuery()
+                .sql(sql)
+                .parameter("PROC_INST_ID_", processInstanceId)
                 .list();
             /*
              * 2-办结流程
              */
             String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
-            List<Execution> list1 = this.runtimeService.createNativeExecutionQuery().sql(sql3)
-                .parameter("PROC_INST_ID_", processInstanceId).list();
+            List<Execution> list1 = this.runtimeService.createNativeExecutionQuery()
+                .sql(sql3)
+                .parameter("PROC_INST_ID_", processInstanceId)
+                .list();
             // 成功备份数据才特殊办结
             if (!list1.isEmpty()) {
                 this.managementService.executeCommand(
@@ -286,8 +296,7 @@ public class OperationServiceImpl implements OperationService {
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);
@@ -347,7 +356,8 @@ public class OperationServiceImpl implements OperationService {
         List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
         if (customProcessDefinitionService.isSubProcessChildNode(currentTask.getProcessDefinitionId(),
             currentTask.getTaskDefinitionKey())) {
-            taskList = taskList.stream().filter(task -> task.getExecutionId().equals(currentTask.getExecutionId()))
+            taskList = taskList.stream()
+                .filter(task -> task.getExecutionId().equals(currentTask.getExecutionId()))
                 .collect(Collectors.toList());
         }
         for (Task task : taskList) {

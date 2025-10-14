@@ -20,7 +20,7 @@ public interface WorkDayService {
      * @return 计算后的日期字符串 YYYY-MM-DD
      * @throws ParseException
      */
-    String getDate(Date date, int days) throws ParseException;
+    String getDate(Date date, int days) throws Exception;
 
     /**
      *

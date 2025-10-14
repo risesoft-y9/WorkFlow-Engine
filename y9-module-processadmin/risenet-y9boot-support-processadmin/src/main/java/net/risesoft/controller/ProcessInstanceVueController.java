@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -41,6 +40,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomIdentityService;
 import net.risesoft.service.CustomTaskService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -294,15 +294,14 @@ public class ProcessInstanceVueController {
         OrgUnit orgUnit;
         OrgUnit parent;
         Map<String, Object> map;
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (ProcessInstance processInstance : processInstanceList) {
             processInstanceId = processInstance.getId();
             map = new HashMap<>(16);
             map.put("processInstanceId", processInstanceId);
             map.put("processDefinitionId", processInstance.getProcessDefinitionId());
             map.put("processDefinitionName", processInstance.getProcessDefinitionName());
-            map.put("startTime",
-                processInstance.getStartTime() == null ? "" : sdf.format(processInstance.getStartTime()));
+            map.put("startTime", processInstance.getStartTime() == null ? ""
+                : Y9DateTimeUtils.formatDateTime(processInstance.getStartTime()));
             try {
                 map.put("activityName",
                     runtimeService.createActivityInstanceQuery()

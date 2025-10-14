@@ -1,8 +1,6 @@
 package net.risesoft.service.word.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +15,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.documentword.Y9WordHistoryRepository;
 import net.risesoft.service.word.Y9WordHistoryService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
@@ -101,7 +100,6 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
     @Override
     public void save(String fileStoreId, String fileSize, String documentTitle, String fileType,
         String processSerialNumber, String isTaoHong, String taskId, String docCategory) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -113,7 +111,7 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
         y9WordHistory.setTaskId(taskId);
         Integer version = y9WordHistoryRepository.getMaxHistoryVersion(processSerialNumber);
         y9WordHistory.setVersion(version != null ? version + 1 : 1);
-        y9WordHistory.setSaveDate(sdf.format(new Date()));
+        y9WordHistory.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
         y9WordHistory.setTenantId(tenantId);
         y9WordHistory.setTitle(documentTitle);
         y9WordHistory.setFileName(StringUtils.isNotBlank(documentTitle) ? documentTitle + fileType : "正文" + fileType);
@@ -149,10 +147,9 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
     @Override
     public void updateById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong,
         String docCategory, String userId, String id) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (StringUtils.isNotBlank(id)) {
-            y9WordHistoryRepository.updateById(fileStoreId, fileSize, isTaoHong, docCategory, sdf.format(new Date()),
-                userId, id);
+            y9WordHistoryRepository.updateById(fileStoreId, fileSize, isTaoHong, docCategory,
+                Y9DateTimeUtils.formatCurrentDateTime(), userId, id);
         }
     }
 

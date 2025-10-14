@@ -4,10 +4,8 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.text.MessageFormat;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,6 +131,7 @@ import net.risesoft.service.word.Y9WordService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.util.ItemButton;
 import net.risesoft.util.ListUtil;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -827,23 +826,21 @@ public class DocumentServiceImpl implements DocumentService {
                 processDefinitionApi.getNode(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
             Map<String, Object> variables =
                 CommonOpt.setVariables(orgUnitId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             /*
              * 并行发送超过20人时，启用异步后台处理。
              */
             tooMuch = num > 20;
             if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance()) && tooMuch) {
                 TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
-                Date date = new Date();
                 if (taskVariable == null) {
                     taskVariable = new TaskVariable();
                     taskVariable.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     taskVariable.setProcessInstanceId(processInstanceId);
                     taskVariable.setTaskId(taskId);
                     taskVariable.setKeyName("isForwarding");
-                    taskVariable.setCreateTime(sdf.format(date));
+                    taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 }
-                taskVariable.setUpdateTime(sdf.format(date));
+                taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 taskVariable.setText("true:" + num);
                 taskVariableRepository.save(taskVariable);
                 asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
@@ -860,16 +857,15 @@ public class DocumentServiceImpl implements DocumentService {
                     if (tooMuch) {
                         TaskVariable taskVariable =
                             taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
-                        Date date = new Date();
                         if (taskVariable == null) {
                             taskVariable = new TaskVariable();
                             taskVariable.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                             taskVariable.setProcessInstanceId(processInstanceId);
                             taskVariable.setTaskId(taskId);
                             taskVariable.setKeyName("isForwarding");
-                            taskVariable.setCreateTime(sdf.format(date));
+                            taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                         }
-                        taskVariable.setUpdateTime(sdf.format(date));
+                        taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                         taskVariable.setText("true:" + num);
                         taskVariableRepository.save(taskVariable);
                         asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
@@ -892,8 +888,7 @@ public class DocumentServiceImpl implements DocumentService {
                 final PrintWriter print = new PrintWriter(result);
                 e.printStackTrace(print);
                 String msg = result.toString();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String time = sdf.format(new Date());
+                String time = Y9DateTimeUtils.formatCurrentDateTime();
                 // 保存任务发送错误日志
                 ErrorLog errorLog = new ErrorLog();
                 errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -2150,21 +2145,19 @@ public class DocumentServiceImpl implements DocumentService {
             Map<String, Object> variables =
                 CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
             int num = userList.size();
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             // 并行发送超过20人时，启用异步后台处理。
             boolean tooMuch = num > 20;
             if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance()) && tooMuch) {
                 TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
-                Date date = new Date();
                 if (taskVariable == null) {
                     taskVariable = new TaskVariable();
                     taskVariable.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     taskVariable.setProcessInstanceId(processInstanceId);
                     taskVariable.setTaskId(taskId);
                     taskVariable.setKeyName("isForwarding");
-                    taskVariable.setCreateTime(sdf.format(date));
+                    taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 }
-                taskVariable.setUpdateTime(sdf.format(date));
+                taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 taskVariable.setText("true:" + num);
                 taskVariableRepository.save(taskVariable);
                 asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, "", sponsorGuid,
@@ -2183,8 +2176,7 @@ public class DocumentServiceImpl implements DocumentService {
                 final PrintWriter print = new PrintWriter(result);
                 e.printStackTrace(print);
                 String msg = result.toString();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String time = sdf.format(new Date());
+                String time = Y9DateTimeUtils.formatCurrentDateTime();
                 // 保存任务发送错误日志
                 ErrorLog errorLog = new ErrorLog();
                 errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));

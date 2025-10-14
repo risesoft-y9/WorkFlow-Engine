@@ -1,7 +1,5 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -21,6 +19,7 @@ import net.risesoft.repository.interfaceinfo.ItemInterfaceParamsBindRepository;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceTaskBindRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.config.ItemInterfaceBindService;
+import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  *
@@ -108,7 +107,6 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
     @Override
     @Transactional
     public void saveBind(String itemId, String[] interfaceIds) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String interfaceId : interfaceIds) {
             ItemInterfaceBind item = itemInterfaceBindRepository.findByInterfaceIdAndItemId(interfaceId, itemId);
             if (item == null) {
@@ -116,7 +114,7 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
                 item.setItemId(itemId);
                 item.setInterfaceId(interfaceId);
                 item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                item.setCreateTime(sdf.format(new Date()));
+                item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 itemInterfaceBindRepository.save(item);
             }
         }

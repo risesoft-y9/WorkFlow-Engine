@@ -36,6 +36,7 @@ public class CommonOpt {
             }
         }
         String user = null;
+        assert users != null;
         if (users.size() == 1) {
             user = users.get(0);
         }

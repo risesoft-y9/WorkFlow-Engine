@@ -1,7 +1,5 @@
 package net.risesoft.listener;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +20,7 @@ import net.risesoft.model.platform.resource.App;
 import net.risesoft.model.platform.resource.System;
 import net.risesoft.model.platform.tenant.Tenant;
 import net.risesoft.util.InitTableDataService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
 
@@ -67,7 +66,6 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
     }
 
     private void creatApp() {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             System y9System = systemApi.getByName("itemAdmin").getData();
             if (null != y9System) {
@@ -77,7 +75,8 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
                         "INSERT INTO y9_common_app_store (ID,NAME, TAB_INDEX, URL, CHECKED, OPEN_TYPE,SYSTEM_ID,CREATE_TIME,CUSTOM_ID,TYPE,INHERIT,RESOURCE_TYPE,SHOW_NUMBER,ENABLED,HIDDEN) VALUES ('"
                             + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "','办件', 0, '"
                             + y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ITEM_ID + "', 1, 1,'"
-                            + y9System.getId() + "','" + sdf.format(new Date()) + "','banjian',2,0,0,0,1,0)";
+                            + y9System.getId() + "','" + Y9DateTimeUtils.formatCurrentDateTime()
+                            + "','banjian',2,0,0,0,1,0)";
                     jdbcTemplate.execute(sql);
                 }
             }
@@ -86,9 +85,8 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
         }
     }
 
-    private void createTenantApp(String systemName, Tenant tenant) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        System y9System = systemApi.getByName(systemName).getData();
+    private void createTenantApp(Tenant tenant) {
+        System y9System = systemApi.getByName("itemAdmin").getData();
         if (null != y9System) {
             App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian").getData();
             if (null != app) {
@@ -100,7 +98,7 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
                         "INSERT INTO y9_common_tenant_app (ID, TENANT_ID, TENANT_NAME, SYSTEM_ID, APP_ID,APP_NAME,CREATE_TIME,APPLY_NAME,APPLY_ID,APPLY_REASON,VERIFY_STATUS,TENANCY) VALUES ('"
                             + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + tenant.getId() + "', '"
                             + tenant.getName() + "', '" + y9System.getId() + "', '" + app.getId() + "','"
-                            + app.getName() + "','" + sdf.format(new Date()) + "','"
+                            + app.getName() + "','" + Y9DateTimeUtils.formatCurrentDateTime() + "','"
                             + ManagerLevelEnum.SYSTEM_MANAGER.getName() + "','','数字底座生成的默认租户自动租用',1,1)";
                     jdbcTemplate.execute(sql1);
                 }
@@ -114,7 +112,7 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
         LOGGER.info("租户:{}租用itemAdmin 初始化数据.........", tenantId);
         Tenant tenant = tenantApi.getById(tenantId).getData();
         creatApp();
-        createTenantApp("itemAdmin", tenant);
+        createTenantApp(tenant);
         initTableDataService.init(tenantId);
         LOGGER.info("{}, 同步租户数据源信息, 成功！", Y9Context.getSystemName());
     }

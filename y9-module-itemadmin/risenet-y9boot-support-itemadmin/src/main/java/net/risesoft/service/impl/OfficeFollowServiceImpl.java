@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -32,6 +31,7 @@ import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.OfficeFollowService;
 import net.risesoft.service.RemindInstanceService;
 import net.risesoft.service.core.ProcessParamService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -147,8 +147,6 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     @Override
     public Y9Page<OfficeFollowModel> pageBySearchName(String searchName, int page, int rows) {
         String userId = Y9LoginUserHolder.getOrgUnitId(), tenantId = Y9LoginUserHolder.getTenantId();
-        SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<OfficeFollowModel> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
         Page<OfficeFollow> followList;
@@ -161,7 +159,8 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
         for (OfficeFollow officeFollow : followList.getContent()) {
             try {
                 String processInstanceId = officeFollow.getProcessInstanceId();
-                officeFollow.setStartTime(sdf5.format(sdf.parse(officeFollow.getStartTime())));
+                officeFollow.setStartTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(officeFollow.getStartTime())));
                 List<TaskModel> taskList =
                     taskApi.findByProcessInstanceId(tenantId, officeFollow.getProcessInstanceId()).getData();
                 if (CollectionUtils.isNotEmpty(taskList)) {
@@ -200,8 +199,6 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     public Y9Page<OfficeFollowModel> pageBySystemNameAndSearchName(String systemName, String searchName, int page,
         int rows) {
         String userId = Y9LoginUserHolder.getOrgUnitId(), tenantId = Y9LoginUserHolder.getTenantId();
-        SimpleDateFormat sdf5 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<OfficeFollowModel> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.DESC, "startTime"));
         Page<OfficeFollow> followList;
@@ -215,7 +212,9 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
             try {
                 String processInstanceId = officeFollow.getProcessInstanceId();
                 OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-                officeFollow.setStartTime(sdf5.format(sdf.parse(officeDoneInfo.getStartTime())));
+                officeFollow.setStartTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(officeFollow.getStartTime())));
+
                 officeFollow
                     .setMsgremind(officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
                 ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);

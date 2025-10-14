@@ -178,7 +178,7 @@ public class AttachmentRestController {
             }
             zos.flush();
             zos.close();
-            boolean b = request.getHeader("User-Agent").toLowerCase().indexOf(BrowserTypeEnum.FIREFOX.getValue()) > 0;
+            boolean b = request.getHeader("User-Agent").toLowerCase().contains(BrowserTypeEnum.FIREFOX.getValue());
             if (b) {
                 fileZip = new String(fileZip.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
             } else {

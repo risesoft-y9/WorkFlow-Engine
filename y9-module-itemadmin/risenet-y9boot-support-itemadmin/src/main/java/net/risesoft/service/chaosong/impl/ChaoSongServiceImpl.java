@@ -3,9 +3,7 @@ package net.risesoft.service.chaosong.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -54,15 +52,14 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ChaoSongRepository;
-import net.risesoft.service.AsyncHandleService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.OfficeFollowService;
 import net.risesoft.service.chaosong.ChaoSongService;
 import net.risesoft.service.core.DocumentService;
 import net.risesoft.service.core.ProcessParamService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -94,11 +91,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
 
     private final OfficeDoneInfoService officeDoneInfoService;
 
-    private final Y9ItemAdminProperties y9ItemAdminProperties;
-
     private final OfficeFollowService officeFollowService;
-
-    private final AsyncHandleService asyncHandleService;
 
     private final ErrorLogService errorLogService;
 
@@ -120,11 +113,10 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     @Transactional
     public void changeStatus(String id) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         ChaoSong chaoSong = chaoSongRepository.findById(id).orElse(null);
         if (chaoSong != null) {
             chaoSong.setStatus(ChaoSongStatusEnum.READ);
-            chaoSong.setReadTime(sdf.format(new Date()));
+            chaoSong.setReadTime(Y9DateTimeUtils.formatCurrentDateTime());
             chaoSongRepository.save(chaoSong);
         }
     }
@@ -132,12 +124,11 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     @Transactional
     public void changeStatus(String[] ids) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         for (String id : ids) {
             ChaoSong chaoSong = chaoSongRepository.findById(id).orElse(null);
             if (chaoSong != null) {
                 chaoSong.setStatus(ChaoSongStatusEnum.READ);
-                chaoSong.setReadTime(sdf.format(new Date()));
+                chaoSong.setReadTime(Y9DateTimeUtils.formatCurrentDateTime());
                 chaoSongRepository.save(chaoSong);
             }
         }
@@ -277,7 +268,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             page = 1;
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
@@ -294,7 +285,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             }
         }, pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int startRow = (page - 1) * rows;
         for (ChaoSong info : csList) {
             ChaoSong4DataBaseModel model = new ChaoSong4DataBaseModel();
@@ -311,9 +301,11 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 if (StringUtils.isBlank(info.getReadTime())) {
                     model.setReadTime("");
                 } else {
-                    model.setReadTime(sdf.format(sdf.parse(info.getReadTime())));
+                    model.setReadTime(
+                        Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(info.getReadTime())));
                 }
-                model.setCreateTime(sdf.format(sdf.parse(info.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(info.getCreateTime())));
             } catch (Exception e) {
                 LOGGER.error("获取数据失败", e);
             }
@@ -332,7 +324,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             page = 1;
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
@@ -349,7 +341,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             }
         }, pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int startRow = (page - 1) * rows;
         for (ChaoSong cs : csList) {
             ChaoSong4DataBaseModel model = new ChaoSong4DataBaseModel();
@@ -366,9 +357,11 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 if (StringUtils.isBlank(cs.getReadTime())) {
                     model.setReadTime("");
                 } else {
-                    model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
+                    model.setReadTime(
+                        Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())));
                 }
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
             } catch (Exception e) {
                 LOGGER.error("获取数据失败", e);
             }
@@ -387,7 +380,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             page = 1;
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
@@ -403,7 +396,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             }
         }, pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
@@ -413,13 +405,15 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             map.put("id", cs.getId());
             try {
                 String processInstanceId = cs.getProcessInstanceId();
-                map.put("createTime", sdf.format(sdf.parse(cs.getCreateTime())));
+                map.put("createTime",
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 map.put("processInstanceId", processInstanceId);
                 map.put("senderName", cs.getSenderName());
                 map.put("sendDeptId", cs.getSendDeptId());
                 map.put("sendDeptName", cs.getSendDeptName());
-                map.put("readTime", sdf.format(sdf.parse(cs.getReadTime())));
+                map.put("readTime",
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())));
                 map.put("title", processParam.getTitle());
                 map.put("status", cs.getStatus());
                 map.put("banjie", false);
@@ -470,7 +464,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             }
         }, pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
@@ -490,8 +483,9 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
             try {
-                model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model
+                    .setReadTime(Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())));
+                model.setCreateTime(Y9DateTimeUtils.formatDateTime(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
                 hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
@@ -524,7 +518,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             page = 1;
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
@@ -552,7 +546,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             }
         }, pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         OfficeDoneInfo hpi;
         for (ChaoSong cs : csList) {
@@ -572,15 +565,16 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 hpi = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                 model.setProcessSerialNumber(hpi.getProcessSerialNumber());
                 model.setTitle(hpi.getTitle());
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 model.setUserId(cs.getUserId());
                 model.setUserName(cs.getUserName());
                 model.setUserDeptName(cs.getUserDeptName());
-                model.setReadTime(
-                    StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
                 model.setSystemName(hpi.getSystemName());
-                model.setProcessDefinitionId(hpi != null ? hpi.getProcessDefinitionId() : "");
-                boolean banjie = hpi == null || hpi.getEndTime() != null;
+                model.setProcessDefinitionId(hpi.getProcessDefinitionId());
+                boolean banjie = hpi.getEndTime() != null;
                 if (banjie) {
                     model.setBanjie(true);
                 }
@@ -605,7 +599,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         }
         List<ChaoSong4DataBaseModel> list = new ArrayList<>();
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
@@ -622,7 +616,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             }
         }, pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
         int num = (page - 1) * rows;
@@ -641,8 +634,10 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
             try {
-                model.setReadTime(sdf.format(sdf.parse(cs.getReadTime())));
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
@@ -675,7 +670,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             page = 1;
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
@@ -692,7 +687,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             }
         }, pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
@@ -711,7 +705,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
             try {
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
                 hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
                 boolean banjie = hpi == null || hpi.getEndTime() != null;
                 if (banjie) {
@@ -725,6 +718,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
             } catch (Exception e) {
                 LOGGER.error("获取数据失败", e);
             }
@@ -751,12 +746,11 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     public Y9Result<Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
         String smsContent, String smsPersonId) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             String tenantId = Y9LoginUserHolder.getTenantId(), curruserId = Y9LoginUserHolder.getOrgUnitId();
             OrgUnit currOrgUnit = Y9LoginUserHolder.getOrgUnit();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             String title = processParam.getTitle(), itemId = processParam.getItemId(),
-                itemName = processParam.getItemName(), systemName = processParam.getSystemName();
+                itemName = processParam.getItemName();
             String[] orgUnitList = users.split(";");
             List<ChaoSong> csList = new ArrayList<>();
             List<String> userIdListAdd = new ArrayList<>();
@@ -790,12 +784,11 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             if (null == dept || null == dept.getId()) {
                 dept = organizationApi.get(tenantId, currOrgUnit.getParentId()).getData();
             }
-            List<String> mobile = new ArrayList<>();
             for (String userId : userIdListAdd) {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
                 ChaoSong cs = new ChaoSong();
                 cs.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                cs.setCreateTime(sdf.format(new Date()));
+                cs.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 cs.setProcessInstanceId(processInstanceId);
                 cs.setSenderId(curruserId);
                 cs.setSenderName(currOrgUnit.getName());
@@ -821,8 +814,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             e.printStackTrace(print);
             try {
                 String msg = result.toString();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                String time = sdf.format(new Date());
+                String time = Y9DateTimeUtils.formatCurrentDateTime();
                 ErrorLog errorLog = new ErrorLog();
                 errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 errorLog.setCreateTime(time);
@@ -852,7 +844,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             page = 1;
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+        PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
@@ -880,7 +872,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             }
         }, pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
@@ -899,9 +890,10 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             model.setItemName(cs.getItemName());
             model.setBanjie(false);
             try {
-                model.setReadTime(
-                    StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
@@ -964,7 +956,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             }
         }, pageable);
         csList = pageList.getContent();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         int num = (page - 1) * rows;
         HistoricProcessInstanceModel hpi;
         ProcessParam processParam;
@@ -985,9 +976,10 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             model.setUserName(cs.getUserName());
             model.setUserDeptName(cs.getUserDeptName());
             try {
-                model.setReadTime(
-                    StringUtils.isNotBlank(cs.getReadTime()) ? sdf.format(sdf.parse(cs.getReadTime())) : "--");
-                model.setCreateTime(sdf.format(sdf.parse(cs.getCreateTime())));
+                model.setCreateTime(
+                    Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
+                model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
+                    ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());

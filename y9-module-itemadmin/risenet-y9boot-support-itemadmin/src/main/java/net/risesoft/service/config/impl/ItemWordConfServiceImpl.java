@@ -1,7 +1,5 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -25,6 +23,7 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.repository.documentword.ItemWordConfRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.config.ItemWordConfService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -69,7 +68,6 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
     @Override
     @Transactional
     public void copyWordConf(String itemId, String processDefinitionId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String tenantId = Y9LoginUserHolder.getTenantId();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId=" + itemId + "事项";
@@ -98,7 +96,7 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
                     ItemWordConf newBind = new ItemWordConf();
                     newBind.setId(newBindId);
                     newBind.setItemId(itemId);
-                    newBind.setCreateTime(sdf.format(new Date()));
+                    newBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     newBind.setWordType(bind.getWordType());
                     newBind.setProcessDefinitionId(latestId);
                     newBind.setTaskDefKey(currentTaskDefKey);
@@ -185,7 +183,6 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
     public void save(String wordType, String itemId, String processDefinitionId, String taskDefKey) {
         ItemWordConf itemWordConf = itemWordConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndWordType(
             itemId, processDefinitionId, taskDefKey, wordType);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         if (itemWordConf == null) {
             itemWordConf = new ItemWordConf();
             itemWordConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -194,7 +191,7 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
             itemWordConf.setTaskDefKey(StringUtils.isBlank(taskDefKey) ? "" : taskDefKey);
         }
         itemWordConf.setWordType(wordType);
-        itemWordConf.setCreateTime(sdf.format(new Date()));
+        itemWordConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         itemWordConfRepository.save(itemWordConf);
     }
 }

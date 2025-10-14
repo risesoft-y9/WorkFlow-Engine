@@ -1,8 +1,6 @@
 package net.risesoft.controller.opinion;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -36,6 +34,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -258,9 +257,8 @@ public class OpinionRestController {
     @GetMapping(value = "/newOrModify/personalComment")
     public Y9Result<Map<String, Object>> personalComment(@RequestParam(required = false) String id) {
         Map<String, Object> map = new HashMap<>(16);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String tenantId = Y9LoginUserHolder.getTenantId();
-        map.put("date", sdf.format(new Date()));
+        map.put("date", Y9DateTimeUtils.formatCurrentDateTime());
         if (StringUtils.isNotBlank(id)) {
             OpinionModel opinion = opinionApi.getById(tenantId, id).getData();
             map.put("opinion", opinion);

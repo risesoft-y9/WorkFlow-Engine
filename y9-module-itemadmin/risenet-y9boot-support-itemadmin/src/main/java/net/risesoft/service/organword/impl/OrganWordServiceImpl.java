@@ -1,10 +1,8 @@
 package net.risesoft.service.organword.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +47,7 @@ import net.risesoft.service.organword.OrganWordDetailService;
 import net.risesoft.service.organword.OrganWordPropertyService;
 import net.risesoft.service.organword.OrganWordService;
 import net.risesoft.service.organword.OrganWordUseHistoryService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -101,7 +100,6 @@ public class OrganWordServiceImpl implements OrganWordService {
         Integer common, String processSerialNumber) {
         int status = 3;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             OrganWord organWord = this.findByCustom(custom);
             if (null != organWord) {
@@ -110,19 +108,19 @@ public class OrganWordServiceImpl implements OrganWordService {
                 }
                 OrganWordDetail owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom,
                     characterValue, year, itemId);
-                /**
+                /*
                  * 1.使用详情存在
                  */
                 if (null != owd) {
                     status =
                         checkOrganWordUseHistory(characterValue, custom, year, numberTemp, itemId, processSerialNumber);
-                    /**
+                    /*
                      * 传入的数值等于使用详情的当前值+1时，保存使用详情，为的是下次正常编号的时候，会从编号的当前值+1开始
                      */
                     Integer number = owd.getNumber() + 1;
                     if (numberTemp.equals(number) && status == 1) {
                         owd.setNumber(numberTemp);
-                        owd.setCreateTime(sdf.format(new Date()));
+                        owd.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                         organWordDetailService.save(owd);
                     }
                 } else {
@@ -132,7 +130,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                     OrganWordUseHistory organWordUseHistory = new OrganWordUseHistory();
                     organWordUseHistory.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     organWordUseHistory.setItemId(itemId);
-                    organWordUseHistory.setCreateTime(sdf.format(new Date()));
+                    organWordUseHistory.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     organWordUseHistory.setCustom(custom);
                     organWordUseHistory.setProcessSerialNumber(processSerialNumber);
                     organWordUseHistory.setTenantId(Y9LoginUserHolder.getTenantId());
@@ -146,7 +144,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                     newOrganWordDetail.setItemId(itemId);
                     newOrganWordDetail.setTenantId(Y9LoginUserHolder.getTenantId());
                     newOrganWordDetail.setNumber(num);
-                    newOrganWordDetail.setCreateTime(sdf.format(new Date()));
+                    newOrganWordDetail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     newOrganWordDetail.setItemId(itemId);
                     newOrganWordDetail.setYear(year);
                     newOrganWordDetail.setCharacterValue(characterValue);
@@ -168,7 +166,6 @@ public class OrganWordServiceImpl implements OrganWordService {
     public Integer checkNumberStr4DeptName(String custom, Integer year, Integer numberTemp, String itemId,
         Integer common, String processSerialNumber) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
             String deptName = bureau.getName();
@@ -185,7 +182,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                     OrganWordUseHistory organWordUseHistory = new OrganWordUseHistory();
                     organWordUseHistory.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     organWordUseHistory.setItemId(itemId);
-                    organWordUseHistory.setCreateTime(sdf.format(new Date()));
+                    organWordUseHistory.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     organWordUseHistory.setCustom(custom);
                     organWordUseHistory.setProcessSerialNumber(processSerialNumber);
                     organWordUseHistory.setTenantId(Y9LoginUserHolder.getTenantId());
@@ -195,7 +192,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                     organWordUseHistoryService.save(organWordUseHistory);
 
                     owd.setNumber(numberTemp);
-                    owd.setCreateTime(sdf.format(new Date()));
+                    owd.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     organWordDetailService.save(owd);
                     return 1;
                 }
@@ -203,7 +200,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 OrganWordUseHistory organWordUseHistory = new OrganWordUseHistory();
                 organWordUseHistory.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 organWordUseHistory.setItemId(itemId);
-                organWordUseHistory.setCreateTime(sdf.format(new Date()));
+                organWordUseHistory.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 organWordUseHistory.setCustom(custom);
                 organWordUseHistory.setProcessSerialNumber(processSerialNumber);
                 organWordUseHistory.setTenantId(Y9LoginUserHolder.getTenantId());
@@ -217,7 +214,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 newOrganWordDetail.setItemId(itemId);
                 newOrganWordDetail.setTenantId(Y9LoginUserHolder.getTenantId());
                 newOrganWordDetail.setNumber(numberTemp);
-                newOrganWordDetail.setCreateTime(sdf.format(new Date()));
+                newOrganWordDetail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 newOrganWordDetail.setItemId(itemId);
                 newOrganWordDetail.setYear(year);
                 newOrganWordDetail.setCharacterValue(deptName);
@@ -234,7 +231,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     @Transactional
     public Integer checkOrganWordUseHistory(String characterValue, String custom, Integer year, Integer numberTemp,
         String itemId, String processSerialNumber) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         /*
          * 1、检查当前的编号有没有被使用
@@ -273,7 +270,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 organWordUseHistory = new OrganWordUseHistory();
                 organWordUseHistory.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 organWordUseHistory.setItemId(itemId);
-                organWordUseHistory.setCreateTime(sdf.format(new Date()));
+                organWordUseHistory.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 organWordUseHistory.setCustom(custom);
                 organWordUseHistory.setProcessSerialNumber(processSerialNumber);
                 organWordUseHistory.setTenantId(Y9LoginUserHolder.getTenantId());
@@ -402,13 +399,13 @@ public class OrganWordServiceImpl implements OrganWordService {
                  * 标示不存在，说明是第一次编号，保存当前的编号
                  */
                 UserInfo person = Y9LoginUserHolder.getUserInfo();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
                 String organWordId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                 organWord = new OrganWord();
                 organWord.setId(organWordId);
                 organWord.setCustom(custom);
                 organWord.setName(characterValue);
-                organWord.setCreateTime(sdf.format(new Date()));
+                organWord.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 organWord.setUserName(person.getName());
                 this.save(organWord);
                 /**
@@ -518,13 +515,13 @@ public class OrganWordServiceImpl implements OrganWordService {
                  * 标示不存在，说明是第一次编号，保存当前的编号
                  */
                 UserInfo person = Y9LoginUserHolder.getUserInfo();
-                SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
                 String organWordId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                 organWord = new OrganWord();
                 organWord.setId(organWordId);
                 organWord.setCustom(custom);
                 organWord.setName(characterValue);
-                organWord.setCreateTime(sdf.format(new Date()));
+                organWord.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 organWord.setUserName(person.getName());
                 this.save(organWord);
                 /**
@@ -710,10 +707,10 @@ public class OrganWordServiceImpl implements OrganWordService {
                 return organWordRepository.save(organWord);
             }
         }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         OrganWord newOw = new OrganWord();
         newOw.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newOw.setCreateTime(sdf.format(new Date()));
+        newOw.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newOw.setUserName(person.getName());
         newOw.setCustom(organWord.getCustom());
         newOw.setName(organWord.getName());
@@ -727,7 +724,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     @Transactional
     public Map<String, Object> saveNumberString(String custom, String numberString, String itemId,
         String processSerialNumber) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
         Map<String, Object> retMap = new HashMap<>();
         Calendar calendar = Calendar.getInstance();
         int year = calendar.get(Calendar.YEAR);
@@ -750,7 +747,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                         detail.setItemId(itemId);
                         detail.setCharacterValue(numberString);
                         detail.setYear(year);
-                        detail.setCreateTime(sdf.format(new Date()));
+                        detail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                         organWordDetailService.save(detail);
                     } else {
                         oldDetail.setNumber(oldDetail.getNumber() + 1);
@@ -779,7 +776,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                         detail.setCharacterValue(characterValue);
                         detail.setItemId(itemId);
                         detail.setYear(year);
-                        detail.setCreateTime(sdf.format(new Date()));
+                        detail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                         organWordDetailService.save(detail);
                     } else {
                         oldDetail.setNumber(oldDetail.getNumber() + 1);
@@ -796,7 +793,7 @@ public class OrganWordServiceImpl implements OrganWordService {
                 history.setUserId(person.getPersonId());
                 history.setUserName(person.getName());
                 history.setTenantId(tenantId);
-                history.setCreateTime(sdf.format(new Date()));
+                history.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 organWordUseHistoryService.save(history);
                 retMap.put("success", true);
                 retMap.put("msg", "保存编号成功");

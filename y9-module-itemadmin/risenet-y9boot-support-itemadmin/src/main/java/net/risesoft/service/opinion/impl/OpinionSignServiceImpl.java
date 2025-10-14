@@ -1,9 +1,6 @@
 package net.risesoft.service.opinion.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -13,7 +10,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.DepartmentApi;
-import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
@@ -39,6 +35,7 @@ import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
 import net.risesoft.service.opinion.OpinionSignService;
 import net.risesoft.util.CommentUtil;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -69,17 +66,14 @@ public class OpinionSignServiceImpl implements OpinionSignService {
 
     private final DepartmentApi departmentApi;
 
-    private final HistoricProcessApi historicProcessApi;
-
     @Override
     @Transactional
     public OpinionSign saveOrUpdate(OpinionSign opinionSign) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = opinionSign.getId();
         if (StringUtils.isNotBlank(id)) {
             OpinionSign old = this.findById(id);
             old.setContent(opinionSign.getContent());
-            old.setModifyDate(sdf.format(new Date()));
+            old.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             return opinionSignRepository.save(old);
         }
         OpinionSign newOs = new OpinionSign();
@@ -93,8 +87,8 @@ public class OpinionSignServiceImpl implements OpinionSignService {
         SignDeptDetail signDeptDetail = signDeptDetailService.findById(opinionSign.getSignDeptDetailId());
         newOs.setDeptId(signDeptDetail.getDeptId());
         newOs.setDeptName(signDeptDetail.getDeptName());
-        newOs.setCreateDate(sdf.format(new Date()));
-        newOs.setModifyDate(sdf.format(new Date()));
+        newOs.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+        newOs.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         return opinionSignRepository.save(newOs);
     }
 
@@ -110,8 +104,6 @@ public class OpinionSignServiceImpl implements OpinionSignService {
             model.setAddable(true);
             model.setOpinionFrameMark(opinionFrameMark);
             model.setOneClickSetList(oneClickSetList);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            SimpleDateFormat sdf1 = new SimpleDateFormat("yyyy-MM-dd HH:mm");
             List<OpinionSign> list = opinionSignRepository
                 .findBySignDeptDetailIdAndOpinionFrameMarkOrderByCreateDateAsc(signDeptDetailId, opinionFrameMark);
             if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
@@ -121,8 +113,10 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                     for (OpinionSign opinionSign : list) {
                         OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
                         opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
-                        opinionSign.setModifyDate(sdf1.format(sdf.parse(opinionSign.getModifyDate())));
-                        opinionSign.setCreateDate(sdf1.format(sdf.parse(opinionSign.getCreateDate())));
+                        opinionSign.setModifyDate(Y9DateTimeUtils
+                            .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getModifyDate())));
+                        opinionSign.setCreateDate(Y9DateTimeUtils
+                            .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getCreateDate())));
                         opinionSignListModel.setEditable(false);
                         OpinionSignModel opinionSignModel = new OpinionSignModel();
                         Y9BeanUtil.copyProperties(opinionSign, opinionSignModel);
@@ -136,8 +130,10 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                 for (OpinionSign opinionSign : list) {
                     OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
                     opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
-                    opinionSign.setModifyDate(sdf1.format(sdf.parse(opinionSign.getModifyDate())));
-                    opinionSign.setCreateDate(sdf1.format(sdf.parse(opinionSign.getCreateDate())));
+                    opinionSign.setModifyDate(Y9DateTimeUtils
+                        .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getModifyDate())));
+                    opinionSign.setCreateDate(Y9DateTimeUtils
+                        .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getCreateDate())));
                     OpinionSignModel opinionModel = new OpinionSignModel();
                     Y9BeanUtil.copyProperties(opinionSign, opinionModel);
                     opinionSignListModel.setOpinionSignModel(opinionModel);
@@ -149,7 +145,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                             model.setAddable(false);
                         }
                     } else {// 收回件可编辑意见
-                        if (takeBack != null && Boolean.valueOf(takeBack)
+                        if (Boolean.parseBoolean(takeBack)
                             && Y9LoginUserHolder.getPersonId().equals(opinionSign.getUserId())) {
                             List<HistoricTaskInstanceModel> tlist = historicTaskApi
                                 .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
@@ -225,8 +221,10 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                 for (OpinionSign opinionSign : list) {
                     OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
                     opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
-                    opinionSign.setModifyDate(sdf1.format(sdf.parse(opinionSign.getModifyDate())));
-                    opinionSign.setCreateDate(sdf1.format(sdf.parse(opinionSign.getCreateDate())));
+                    opinionSign.setModifyDate(Y9DateTimeUtils
+                        .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getModifyDate())));
+                    opinionSign.setCreateDate(Y9DateTimeUtils
+                        .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getCreateDate())));
                     OpinionSignModel opinionSignModel = new OpinionSignModel();
                     Y9BeanUtil.copyProperties(opinionSign, opinionSignModel);
                     opinionSignListModel.setOpinionSignModel(opinionSignModel);
@@ -239,7 +237,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                 }
             }
             resList.add(model);
-        } catch (ParseException e) {
+        } catch (Exception e) {
             e.printStackTrace();
         }
         return resList;

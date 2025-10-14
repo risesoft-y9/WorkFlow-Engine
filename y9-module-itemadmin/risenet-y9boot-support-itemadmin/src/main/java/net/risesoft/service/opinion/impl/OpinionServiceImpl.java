@@ -1,9 +1,6 @@
 package net.risesoft.service.opinion.impl;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -59,6 +56,7 @@ import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
 import net.risesoft.service.opinion.OpinionService;
 import net.risesoft.service.setting.ItemSettingService;
 import net.risesoft.util.CommentUtil;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -211,13 +209,12 @@ public class OpinionServiceImpl implements OpinionService {
                 history.setUserName(opinion.getUserName());
                 resList.add(history);
             }
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             resList.sort((o1, o2) -> {
                 try {
                     String startTime1 = o1.getCreateDate();
                     String startTime2 = o2.getCreateDate();
-                    long time1 = sdf.parse(startTime1).getTime();
-                    long time2 = sdf.parse(startTime2).getTime();
+                    long time1 = Y9DateTimeUtils.parseDateTime(startTime1).getTime();
+                    long time2 = Y9DateTimeUtils.parseDateTime(startTime2).getTime();
                     if (time1 > time2) {
                         return 1;
                     } else if (time1 == time2) {
@@ -230,8 +227,8 @@ public class OpinionServiceImpl implements OpinionService {
                         } else if (modifyDate1.equals(modifyDate2)) {
                             return 0;
                         } else {
-                            long time11 = sdf.parse(modifyDate1).getTime();
-                            long time22 = sdf.parse(modifyDate2).getTime();
+                            long time11 = Y9DateTimeUtils.parseDateTime(modifyDate1).getTime();
+                            long time22 = Y9DateTimeUtils.parseDateTime(modifyDate2).getTime();
                             if (time11 > time22) {
                                 return 1;
                             } else {
@@ -399,13 +396,13 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     private void format(Opinion opinion) {
-        SimpleDateFormat sdfSource = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-        SimpleDateFormat sdfTarget = new SimpleDateFormat("yyyy-MM-dd HH:mm");
         opinion.setContent(CommentUtil.replaceEnter2Br(opinion.getContent()));
         try {
-            opinion.setModifyDate(sdfTarget.format(sdfSource.parse(opinion.getModifyDate())));
-            opinion.setCreateDate(sdfTarget.format(sdfSource.parse(opinion.getCreateDate())));
-        } catch (ParseException e) {
+            opinion.setModifyDate(
+                Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinion.getModifyDate())));
+            opinion.setCreateDate(
+                Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinion.getCreateDate())));
+        } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);
         }
     }
@@ -496,8 +493,6 @@ public class OpinionServiceImpl implements OpinionService {
                 model.setEditable(false);
                 modelList.add(this.getOpinionModelNew(opinion, model));
             }
-            modelList = this.order(modelList, opinionOrderBy);
-            opinionFrameModel.setOpinionList(modelList);
         } else {
             opinionFrameModel.setAddable(true);
             String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
@@ -541,9 +536,9 @@ public class OpinionServiceImpl implements OpinionService {
                 }
             }
             this.setAddableNew(opinionFrameModel, itemOpinionFrameBind);
-            modelList = this.order(modelList, opinionOrderBy);
-            opinionFrameModel.setOpinionList(modelList);
         }
+        modelList = this.order(modelList, opinionOrderBy);
+        opinionFrameModel.setOpinionList(modelList);
     }
 
     private void setAddable(OpinionListModel opinionListModel, ItemOpinionFrameBind itemOpinionFrameBind) {
@@ -614,8 +609,7 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     private OpinionModel getOpinionModelNew(Opinion opinion, OpinionModel opinionModel) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         Y9BeanUtil.copyProperties(opinion, opinionModel);
         if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
             OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, opinion.getPositionId()).getData();
@@ -796,7 +790,6 @@ public class OpinionServiceImpl implements OpinionService {
     @Override
     @Transactional
     public Opinion saveOrUpdate(Opinion entity) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         OrgUnit user = Y9LoginUserHolder.getOrgUnit();
@@ -818,8 +811,8 @@ public class OpinionServiceImpl implements OpinionService {
             o.setOpinionFrameMark(entity.getOpinionFrameMark());
             o.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
             o.setContent(entity.getContent());
-            o.setCreateDate(sdf.format(new Date()));
-            o.setModifyDate(sdf.format(new Date()));
+            o.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+            o.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             o.setPositionId(orgUnitId);
             o.setPositionName(user.getName());
             if (StringUtils.isNotBlank(entity.getTaskId())) {
@@ -832,23 +825,6 @@ public class OpinionServiceImpl implements OpinionService {
                 } catch (Exception e1) {
                     e1.printStackTrace();
                 }
-                /*try {
-                    HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, entity.getTaskId());
-                    EntrustDetail entrustDetail = entrustDetailService.findByTaskId(historicTaskInstanceModel.getId());
-                    if (entrustDetail != null) {
-                        if (historicTaskInstanceModel.getAssignee().contains(positionId)) {
-                            String idTemp = entrustDetail.getOwnerId();
-                            Person p = personApi.getPerson(tenantId, idTemp);
-                            if (isAgent != 1) {
-                                o.setUserName(userName + "(" + p.getName() + "委托)");
-                            } else {
-                                o.setAgentUserName(userName + "(" + p.getName() + "委托)");
-                            }
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }*/
             }
             opinionRepository.save(o);
             asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
@@ -861,7 +837,7 @@ public class OpinionServiceImpl implements OpinionService {
         opinion.setUserId(person.getPersonId());
         opinion.setUserName(userName);
         opinion.setTaskId(entity.getTaskId());
-        opinion.setModifyDate(sdf.format(new Date()));
+        opinion.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         opinion.setContent(entity.getContent());
         opinion.setProcessInstanceId(entity.getProcessInstanceId());
         opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);

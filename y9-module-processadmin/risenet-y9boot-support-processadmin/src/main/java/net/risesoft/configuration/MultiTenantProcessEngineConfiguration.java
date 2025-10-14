@@ -1,7 +1,5 @@
 package net.risesoft.configuration;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -20,6 +18,7 @@ import com.zaxxer.hikari.HikariDataSource;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.consts.InitDataConsts;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.base64.Y9Base64Util;
@@ -41,8 +40,10 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
 
     private final JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
 
-    public MultiTenantProcessEngineConfiguration(@Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public,
-        @Qualifier("y9FlowableDS") HikariDataSource defaultDataSource, Y9Properties y9Properties) {
+    public MultiTenantProcessEngineConfiguration(
+        @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public,
+        @Qualifier("y9FlowableDS") HikariDataSource defaultDataSource,
+        Y9Properties y9Properties) {
         super(getFlowableTenantInfoHolder());
         this.jdbcTemplate4Public = jdbcTemplate4Public;
         this.defaultDataSource = defaultDataSource;
@@ -117,7 +118,6 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
     }
 
     private void createSystem(String systemName) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             String sql = "select * from y9_common_system where NAME = '" + systemName + "'";
             List<Map<String, Object>> list = jdbcTemplate4Public.queryForList(sql);
@@ -125,7 +125,7 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
                 sql =
                     "INSERT INTO y9_common_system (ID, CONTEXT_PATH, NAME, CN_NAME, TAB_INDEX,ENABLED,AUTO_INIT,CREATE_TIME) VALUES ('"
                         + SYSTEM_ID + "', 'processAdmin', '" + systemName + "', '流程管理', 100,1,1,'"
-                        + sdf.format(new Date()) + "')";
+                        + Y9DateTimeUtils.formatCurrentDateTime() + "')";
                 jdbcTemplate4Public.execute(sql);
             }
         } catch (Exception e) {
@@ -134,7 +134,6 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
     }
 
     private void createTenantSystem(String systemName) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             String sql = "select * from y9_common_system where NAME = '" + systemName + "'";
             List<Map<String, Object>> list = jdbcTemplate4Public.queryForList(sql);
@@ -151,7 +150,8 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
                         String sql1 =
                             "INSERT INTO y9_common_tenant_system (ID, SYSTEM_ID, TENANT_ID, TENANT_DATA_SOURCE, CREATE_TIME) VALUES ('"
                                 + id + "', '" + smap.get("ID").toString() + "', '" + map.get("ID").toString() + "', '"
-                                + map.get("DEFAULT_DATA_SOURCE_ID").toString() + "','" + sdf.format(new Date()) + "')";
+                                + map.get("DEFAULT_DATA_SOURCE_ID").toString() + "','"
+                                + Y9DateTimeUtils.formatCurrentDateTime() + "')";
                         jdbcTemplate4Public.execute(sql1);
                     }
                 }

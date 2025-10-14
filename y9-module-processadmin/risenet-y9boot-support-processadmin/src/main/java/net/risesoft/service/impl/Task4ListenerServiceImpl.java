@@ -3,8 +3,6 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
@@ -23,6 +21,7 @@ import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.service.SetDeptIdUtilService;
 import net.risesoft.service.Task4ListenerService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -101,8 +100,7 @@ public class Task4ListenerServiceImpl implements Task4ListenerService {
             final PrintWriter print = getPrintWriter(msgResult);
             extracted(e, print);
             String msg = getMsg(msgResult);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            String time = sdf.format(new Date());
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLogModel.setCreateTime(time);

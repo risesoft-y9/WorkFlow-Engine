@@ -1,7 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -17,6 +15,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.tab.TabEntityRepository;
 import net.risesoft.service.TabEntityService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -54,14 +53,13 @@ public class TabEntityServiceImpl implements TabEntityService {
     public TabEntity saveOrUpdate(TabEntity tabEntity) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = tabEntity.getId();
         if (StringUtils.isNotEmpty(id)) {
             TabEntity oldTabEntity = this.getById(id);
             if (null != oldTabEntity) {
                 oldTabEntity.setName(tabEntity.getName());
                 oldTabEntity.setUrl(tabEntity.getUrl());
-                oldTabEntity.setUpdateTime(sdf.format(new Date()));
+                oldTabEntity.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 oldTabEntity.setUserId(userId);
                 oldTabEntity.setUserName(userName);
                 return tabEntityRepository.save(oldTabEntity);
@@ -77,8 +75,8 @@ public class TabEntityServiceImpl implements TabEntityService {
         newTabEntity.setUserId(userId);
         newTabEntity.setUserName(userName);
         newTabEntity.setTenantId(tenantId);
-        newTabEntity.setCreateTime(sdf.format(new Date()));
-        newTabEntity.setUpdateTime(sdf.format(new Date()));
+        newTabEntity.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        newTabEntity.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         return tabEntityRepository.save(newTabEntity);
     }
 }

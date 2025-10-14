@@ -1,8 +1,6 @@
 package net.risesoft.api;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -47,6 +45,7 @@ import net.risesoft.service.core.ItemService;
 import net.risesoft.service.template.TaoHongTemplateService;
 import net.risesoft.service.word.Y9WordHistoryService;
 import net.risesoft.service.word.Y9WordService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -532,7 +531,6 @@ public class Y9WordApiImpl implements Y9WordApi {
         Y9LoginUserHolder.setPerson(person);
         boolean checkSave = false;
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             Map<String, Object> documentMap = Y9JsonUtil.readValue(docJson, Map.class);
             assert documentMap != null;
             List<Map<String, Object>> documentList = (List<Map<String, Object>>)documentMap.get("document");
@@ -543,7 +541,7 @@ public class Y9WordApiImpl implements Y9WordApi {
                 tw.setFileStoreId(dMap.get("filePath").toString());
                 tw.setFileType(dMap.get("fileType").toString());
                 tw.setProcessSerialNumber(processSerialNumber);
-                tw.setSaveDate(sdf.format(new Date()));
+                tw.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
                 tw.setTenantId(dMap.get("tenantId").toString());
                 tw.setUserId(dMap.get("userId").toString());
                 tw.setTitle(dMap.get("title") == null ? "" : dMap.get("title").toString());

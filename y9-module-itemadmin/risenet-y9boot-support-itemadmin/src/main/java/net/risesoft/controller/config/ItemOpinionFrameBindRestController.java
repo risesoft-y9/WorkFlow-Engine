@@ -1,8 +1,6 @@
 package net.risesoft.controller.config;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,6 +28,7 @@ import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.config.ItemOpinionFrameRoleService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -43,8 +42,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Slf4j
 @RequestMapping(value = "/vue/itemOpinionFrameBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemOpinionFrameBindRestController {
-
-    private final SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 
     private final ItemOpinionFrameBindService itemOpinionFrameBindService;
 
@@ -248,7 +245,7 @@ public class ItemOpinionFrameBindRestController {
         String mark = opinionFrameNameAndMark[1];
         opinionBind.setOpinionFrameMark(mark);
         opinionBind.setOpinionFrameName(name);
-        opinionBind.setModifyDate(sdf.format(new Date()));
+        opinionBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         itemOpinionFrameBindService.save(opinionBind);
         return Y9Result.successMsg("修改成功");
     }

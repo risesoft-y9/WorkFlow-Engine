@@ -1,10 +1,8 @@
 package net.risesoft.api;
 
 import java.lang.reflect.Field;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -37,6 +35,7 @@ import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.opinion.OpinionCopyService;
 import net.risesoft.service.util.ItemPageService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -64,9 +63,14 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public DocumentCopyApiImpl(DocumentCopyService documentCopyService, ProcessParamService processParamService,
-        OpinionCopyService opinionCopyService, ItemPageService itemPageService, PersonApi personApi,
-        OrgUnitApi orgUnitApi, @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
+    public DocumentCopyApiImpl(
+        DocumentCopyService documentCopyService,
+        ProcessParamService processParamService,
+        OpinionCopyService opinionCopyService,
+        ItemPageService itemPageService,
+        PersonApi personApi,
+        OrgUnitApi orgUnitApi,
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
         this.documentCopyService = documentCopyService;
         this.processParamService = processParamService;
         this.opinionCopyService = opinionCopyService;
@@ -101,8 +105,11 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                     } else if ("bureauIds".equals(f.getName())) {
                         paramSql.append(" AND P.HOSTDEPTID = '").append(fieldValue).append("' ");
                     } else {
-                        paramSql.append(" AND INSTR(P.").append(f.getName().toUpperCase()).append(",'")
-                            .append(fieldValue).append("') > 0 ");
+                        paramSql.append(" AND INSTR(P.")
+                            .append(f.getName().toUpperCase())
+                            .append(",'")
+                            .append(fieldValue)
+                            .append("') > 0 ");
                     }
                 }
             } catch (Exception e) {
@@ -169,8 +176,11 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                             systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
                                 : " AND P.SYSTEMNAME = '" + fieldValue + "' ";
                         } else {
-                            paramSql.append(" AND INSTR(P.").append(f.getName().toUpperCase()).append(",'")
-                                .append(fieldValue).append("') > 0 ");
+                            paramSql.append(" AND INSTR(P.")
+                                .append(f.getName().toUpperCase())
+                                .append(",'")
+                                .append(fieldValue)
+                                .append("') > 0 ");
                         }
                     }
                 } catch (Exception e) {
@@ -221,7 +231,6 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         if (optional.isPresent()) {
             String opinionCopyId = optional.get().getId();
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             List<DocumentCopy> list = new ArrayList<>();
             Arrays.stream(users.split(";")).forEach(user -> {
                 String[] nameAndId = user.split(":");
@@ -236,8 +245,8 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                 documentCopy.setSenderName(orgUnit.getName());
                 documentCopy.setStatus(DocumentCopyStatusEnum.TODO_SIGN);
                 documentCopy.setSystemName(processParam.getSystemName());
-                documentCopy.setCreateTime(sdf.format(new Date()));
-                documentCopy.setUpdateTime(sdf.format(new Date()));
+                documentCopy.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+                documentCopy.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 list.add(documentCopy);
             });
             documentCopyService.save(list);
@@ -251,12 +260,11 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
     public Y9Result<Object> setStatus(String tenantId, String userId, String orgUnitId, String id,
         DocumentCopyStatusEnum status) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         Optional<DocumentCopy> optional = documentCopyService.findById(id);
         if (optional.isPresent()) {
             DocumentCopy documentCopy = optional.get();
             documentCopy.setStatus(status);
-            documentCopy.setUpdateTime(sdf.format(new Date()));
+            documentCopy.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             documentCopyService.save(documentCopy);
             return Y9Result.success();
         }
@@ -267,14 +275,13 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
     public Y9Result<Object> deleteByProcessSerialNumber(String tenantId, String userId, String orgUnitId,
         String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         List<DocumentCopy> dcList =
             documentCopyService.findByProcessSerialNumberAndUserId(processSerialNumber, orgUnitId);
         dcList.stream()
             .filter(documentCopy -> documentCopy.getStatus().getValue() < DocumentCopyStatusEnum.CANCEL.getValue())
             .forEach(documentCopy -> {
                 documentCopy.setStatus(DocumentCopyStatusEnum.DELETE);
-                documentCopy.setUpdateTime(sdf.format(new Date()));
+                documentCopy.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 documentCopyService.save(documentCopy);
             });
         return Y9Result.success();

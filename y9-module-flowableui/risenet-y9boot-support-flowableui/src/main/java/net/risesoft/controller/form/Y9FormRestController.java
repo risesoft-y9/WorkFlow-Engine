@@ -1,8 +1,6 @@
 package net.risesoft.controller.form;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,6 +49,7 @@ import net.risesoft.model.platform.tenant.Tenant;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -312,13 +311,9 @@ public class Y9FormRestController {
         Map<String, Object> map = new HashMap<>(16);
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         Position position = Y9LoginUserHolder.getPosition();
-        Date date = new Date();
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
-        String nowDate = sdf.format(date);
-        SimpleDateFormat yearsdf = new SimpleDateFormat("yyyyMMdd");
-        SimpleDateFormat sesdf = new SimpleDateFormat("HHmmss");
-        String year = yearsdf.format(date);
-        String second = sesdf.format(date);
+        String nowDate = Y9DateTimeUtils.formatCurrentDate();
+        String year = Y9DateTimeUtils.formatCurrentDateCompact();
+        String second = Y9DateTimeUtils.formatCurrentTimeCompact();
         String itemNumber = "〔" + year + "〕" + second + "号";
         OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), position.getParentId()).getData();
         OrgUnit bureau =

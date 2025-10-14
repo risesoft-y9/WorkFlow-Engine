@@ -1,7 +1,5 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +13,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceParamsBindRepository;
 import net.risesoft.service.config.ItemInterfaceParamsBindService;
+import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  * @author zhangchongjie
@@ -48,7 +47,6 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
     @Override
     @Transactional
     public void saveBind(ItemInterfaceParamsBind info) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = info.getId();
         if (StringUtils.isNotBlank(id)) {
             ItemInterfaceParamsBind item = itemInterfaceParamsBindRepository.findById(id).orElse(null);
@@ -70,7 +68,7 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
                 item.setTableType(info.getTableType());
                 item.setItemId(info.getItemId());
                 item.setId(info.getId());
-                item.setCreateTime(sdf.format(new Date()));
+                item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 itemInterfaceParamsBindRepository.save(item);
             }
         } else {
@@ -84,7 +82,7 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
             item.setItemId(info.getItemId());
             item.setTableType(info.getTableType());
             item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            item.setCreateTime(sdf.format(new Date()));
+            item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             itemInterfaceParamsBindRepository.save(item);
         }
     }

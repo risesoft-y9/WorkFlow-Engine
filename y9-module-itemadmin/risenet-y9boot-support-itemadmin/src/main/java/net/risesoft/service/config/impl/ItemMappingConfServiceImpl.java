@@ -1,7 +1,5 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -15,6 +13,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.service.config.ItemMappingConfService;
+import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  * @author qinman
@@ -43,7 +42,6 @@ public class ItemMappingConfServiceImpl implements ItemMappingConfService {
     @Override
     @Transactional
     public void saveItemMappingConf(ItemMappingConf itemMappingConf) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String id = itemMappingConf.getId();
         if (StringUtils.isNotBlank(id)) {
             ItemMappingConf oldConf = itemMappingConfRepository.findById(id).orElse(null);
@@ -52,12 +50,12 @@ public class ItemMappingConfServiceImpl implements ItemMappingConfService {
                 oldConf.setMappingName(itemMappingConf.getMappingName());
                 oldConf.setMappingTableName(itemMappingConf.getMappingTableName());
                 oldConf.setTableName(itemMappingConf.getTableName());
-                oldConf.setCreateTime(sdf.format(new Date()));
+                oldConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 itemMappingConfRepository.save(oldConf);
             }
         } else {
             itemMappingConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            itemMappingConf.setCreateTime(sdf.format(new Date()));
+            itemMappingConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             itemMappingConfRepository.save(itemMappingConf);
         }
     }

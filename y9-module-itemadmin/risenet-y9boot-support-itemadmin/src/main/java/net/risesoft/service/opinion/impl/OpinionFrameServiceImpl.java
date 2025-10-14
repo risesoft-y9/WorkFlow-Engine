@@ -1,8 +1,6 @@
 package net.risesoft.service.opinion.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import jakarta.persistence.criteria.CriteriaBuilder;
@@ -29,6 +27,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.opinion.OpinionFrameRepository;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.opinion.OpinionFrameService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -70,7 +69,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
 
             @Override
             public Predicate toPredicate(Root<OpinionFrame> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<Predicate>();
+                List<Predicate> list = new ArrayList<>();
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
                 return builder.and(predicates);
@@ -127,13 +126,12 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
     @Transactional(readOnly = false)
     public OpinionFrame saveOrUpdate(OpinionFrame opinionFrame) {
         try {
-            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String id = opinionFrame.getId();
             if (StringUtils.isNotEmpty(id)) {
                 OpinionFrame oldof = this.getById(id);
                 if (null != oldof) {
-                    oldof.setModifyDate(sdf.format(new Date()));
+                    oldof.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                     oldof.setName(opinionFrame.getName());
                     oldof.setUserId(null == person ? "" : person.getPersonId());
                     oldof.setUserName(null == person ? "" : person.getName());
@@ -147,8 +145,8 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
             OpinionFrame newof = new OpinionFrame();
             newof.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             newof.setMark(opinionFrame.getMark());
-            newof.setCreateDate(sdf.format(new Date()));
-            newof.setModifyDate(sdf.format(new Date()));
+            newof.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+            newof.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             newof.setName(opinionFrame.getName());
             newof.setTenantId(person.getTenantId());
             newof.setUserId(person.getPersonId());

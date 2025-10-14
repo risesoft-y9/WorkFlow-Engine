@@ -5,7 +5,6 @@ import java.net.URL;
 import java.net.URLEncoder;
 import java.nio.charset.Charset;
 import java.nio.charset.StandardCharsets;
-import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.regex.Matcher;
@@ -76,8 +75,13 @@ public class WebUtils {
             return null;
         }
         if (!UrlEncoderUtils.hasUrlEncoded(fullFileName)) { // 判断文件名是否转义
-            urlStr = URLEncoder.encode(urlStr, StandardCharsets.UTF_8).replaceAll("\\+", "%20").replaceAll("%3A", ":")
-                .replaceAll("%2F", "/").replaceAll("%3F", "?").replaceAll("%26", "&").replaceAll("%3D", "=");
+            urlStr = URLEncoder.encode(urlStr, StandardCharsets.UTF_8)
+                .replaceAll("\\+", "%20")
+                .replaceAll("%3A", ":")
+                .replaceAll("%2F", "/")
+                .replaceAll("%3F", "?")
+                .replaceAll("%26", "&")
+                .replaceAll("%3D", "=");
         }
         return urlStr;
     }
@@ -247,6 +251,7 @@ public class WebUtils {
             if (UrlEncoderUtils.isBase64EncodedUrl(urls)) {
                 urls = decodeUrl(urls);
             }
+            assert urls != null;
             String[] images = urls.split("\\|");
             return images[0];
         }

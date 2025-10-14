@@ -1,7 +1,5 @@
 package net.risesoft.service.config.impl;
 
-import java.text.SimpleDateFormat;
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.data.domain.Page;
@@ -17,6 +15,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.RelatedProcessRepository;
 import net.risesoft.service.config.RelatedProcessService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -30,7 +29,6 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         try {
             List<RelatedProcess> list = relatedProcessRepository.findByParentItemId(itemId);
             if (null != list && !list.isEmpty()) {
@@ -38,7 +36,7 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
                     RelatedProcess item = new RelatedProcess();
                     item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     item.setParentItemId(newItemId);
-                    item.setCreateDate(sdf.format(new Date()));
+                    item.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
                     item.setItemId(associated.getItemId());
                     item.setItemName(associated.getItemName());
                     item.setTenantId(associated.getTenantId());
@@ -75,7 +73,6 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
     @Override
     @Transactional
     public void save(String parentItemId, String[] itemIdList) {
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
         String tenantId = Y9LoginUserHolder.getTenantId();
         for (String itemId : itemIdList) {
             String[] array = itemId.split(":");
@@ -87,7 +84,7 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
                 item.setItemName(array[1]);
                 item.setParentItemId(parentItemId);
                 item.setTenantId(tenantId);
-                item.setCreateDate(sdf.format(new Date()));
+                item.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
                 relatedProcessRepository.save(item);
             }
         }

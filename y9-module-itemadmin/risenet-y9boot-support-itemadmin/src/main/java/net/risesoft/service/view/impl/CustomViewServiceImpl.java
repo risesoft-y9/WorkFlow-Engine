@@ -1,8 +1,6 @@
 package net.risesoft.service.view.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -21,6 +19,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.view.CustomViewRepository;
 import net.risesoft.service.view.CustomViewService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -73,12 +72,12 @@ public class CustomViewServiceImpl implements CustomViewService {
         int maxTabIndex = 1;
         List<String> ids = new ArrayList<>();
         String viewType = "";
-        SimpleDateFormat dateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        assert list != null;
         for (CustomView info : list) {
             viewType = info.getViewType();
             if (StringUtils.isBlank(info.getId())) {
                 info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                info.setCreateTime(dateFormat.format(new Date()));
+                info.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             }
             info.setTabIndex(maxTabIndex);
             info.setUserId(Y9LoginUserHolder.getOrgUnitId());

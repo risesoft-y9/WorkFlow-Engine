@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
@@ -31,6 +30,7 @@ import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.SignDeptInfoService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.form.FormDataService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -168,7 +168,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                     if (StringUtils.isNotBlank(tzsDeptId) && dept.getId().equals(tzsDeptId)) {
                         // 需要将显示名称改为原司局单位名称
                         Department bureau = (Department)orgUnitApi
-                            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnitId()).getData();
+                            .getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnitId())
+                            .getData();
                         signDeptInfo.setDisplayDeptId(bureau.getId());
                         signDeptInfo.setDisplayDeptName(
                             StringUtils.isBlank(bureau.getAliasName()) ? bureau.getName() : bureau.getAliasName());
@@ -208,9 +209,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
     public void saveSignDeptInfo(String id, String userName) {
         SignDeptInfo signDeptInfo = signDeptInfoRepository.findById(id).orElse(null);
         if (signDeptInfo != null) {
-            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
             signDeptInfo.setUserName(userName);
-            signDeptInfo.setSignDate(simpleDateFormat.format(new Date()));
+            signDeptInfo.setSignDate(Y9DateTimeUtils.formatCurrentDate());
             signDeptInfoRepository.save(signDeptInfo);
         }
     }
