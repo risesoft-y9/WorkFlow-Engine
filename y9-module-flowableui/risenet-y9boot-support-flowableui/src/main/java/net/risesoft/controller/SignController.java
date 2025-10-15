@@ -44,8 +44,6 @@ public class SignController {
         try {
             Date startTime1 = Y9DateTimeUtils.parseDate(startDate);
             Date endTime1 = Y9DateTimeUtils.parseDate(endDate);
-            assert endTime1 != null;
-            assert startTime1 != null;
             long difference = (endTime1.getTime() - startTime1.getTime()) / 86400000;
             day = String.valueOf(Math.abs(difference) + 1);
         } catch (Exception e) {
@@ -289,6 +287,9 @@ public class SignController {
                     }
                     return Y9Result.success(String.valueOf(timeCount), "获取成功");
                 }
+                default: {
+                    LOGGER.error("无效:{}", type);
+                }
             }
         } catch (Exception e) {
             LOGGER.error("获取请假时长失败", e);
@@ -420,6 +421,9 @@ public class SignController {
                         tmp = Y9DateTimeUtils.formatDate(new Date(time));
                     }
                     return Y9Result.success(String.valueOf(timeCount), "获取成功");
+                }
+                default: {
+                    LOGGER.error("无效:{}", type);
                 }
             }
         } catch (Exception e) {

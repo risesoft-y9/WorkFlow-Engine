@@ -86,7 +86,7 @@ public class AttachmentRestController {
             AttachmentModel model = attachmentApi.findById(tenantId, id).getData();
             String filename = model.getName();
             String filePath = model.getFileStoreId();
-            if (request.getHeader("User-Agent").toLowerCase().indexOf("firefox") > 0) {
+            if (request.getHeader("User-Agent").toLowerCase().contains("firefox")) {
                 filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
             } else {
                 filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
@@ -233,16 +233,16 @@ public class AttachmentRestController {
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = person.getPersonId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             if (StringUtils.isNotBlank(describes)) {
                 describes = URLDecoder.decode(describes, StandardCharsets.UTF_8);
             }
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
-            System.out.println("fileName:" + fileName);
             String fullPath =
-                "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
+                String.format("/%s/%s/attachmentFile/%s", Y9Context.getSystemName(), tenantId, processSerialNumber);
             Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
             String storeId = y9FileStore.getId();
             String fileSize =
@@ -323,8 +323,8 @@ public class AttachmentRestController {
     /**
      * 保存附件排序
      * 
-     * @param idAndTabIndexs
-     * @return
+     * @param idAndTabIndexs idAndTabIndexs
+     * @return Y9Result<Object>
      */
     @FlowableLog(operationName = "保存附件排序", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrder")

@@ -57,7 +57,7 @@ public abstract class AbstractDynamicRoleMember {
     }
 
     public List<Person> getPersonList() {
-        return null;
+        return List.of();
     }
 
     public Position getPosition() {
@@ -69,7 +69,7 @@ public abstract class AbstractDynamicRoleMember {
     }
 
     public List<Position> getPositionList(String param, DynamicRole dynamicRole) {
-        return null;
+        return List.of();
     }
 
     public List<Position> getPositionList() {

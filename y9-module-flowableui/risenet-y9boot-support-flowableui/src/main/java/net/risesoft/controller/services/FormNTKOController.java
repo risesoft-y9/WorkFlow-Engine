@@ -6,6 +6,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -19,7 +20,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -42,7 +42,6 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.itemadmin.Y9WordHistoryModel;
-import net.risesoft.model.itemadmin.Y9WordInfo;
 import net.risesoft.model.itemadmin.Y9WordModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
@@ -100,7 +99,6 @@ public class FormNTKOController {
      *
      * @param taskId 任务id
      * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id
      * @param fileType 文件类型
      * @param tenantId 租户id
      * @param userId 人员id
@@ -108,8 +106,7 @@ public class FormNTKOController {
     @FlowableLog(operationName = "下载历史正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downLoadHistoryDoc")
     public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType,
+        @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String fileType,
         @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -119,43 +116,8 @@ public class FormNTKOController {
         String fileStoreId = map.getFileStoreId();
         ServletOutputStream out;
         try {
+            setResponse(response, request, processSerialNumber, fileType);
             out = response.getOutputStream();
-            // Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
-            // String fileName = y9FileStore.getFileName();
-            String userAgent = request.getHeader("User-Agent");
-            String title;
-            String documentTitle = null;
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                if (draftModel != null) {
-                    documentTitle = draftModel.getTitle();
-                }
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
-            }
-            title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
-            title = ToolUtil.replaceSpecialStr(title);
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title =
-                        "=?UTF-8?B?" + (new String(Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
-                } else {
-                    title = URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-            }
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
             out.flush();
             out.close();
@@ -170,55 +132,19 @@ public class FormNTKOController {
      * @param id 文件id
      * @param fileType 文件类型
      * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id
      * @param tenantId 租户id
      * @param userId 人员id
      */
     @FlowableLog(operationName = "下载正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/download")
     public void download(@RequestParam String id, @RequestParam(required = false) String fileType,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam String tenantId,
+        @RequestParam(required = false) String processSerialNumber, @RequestParam String tenantId,
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            String documentTitle = "";
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                if (draftModel != null) {
-                    documentTitle = draftModel.getTitle();
-                }
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
-            }
-            String title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
-            // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
-            // String fileName = y9FileStore.getFileName();
-            title = ToolUtil.replaceSpecialStr(title);
-            String userAgent = request.getHeader("User-Agent");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title =
-                        "=?UTF-8?B?" + (new String(Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
-                } else {
-                    title = URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-            }
+            setResponse(response, request, processSerialNumber, fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(id, out);
             out.flush();
@@ -228,61 +154,53 @@ public class FormNTKOController {
         }
     }
 
+    private void setResponse(HttpServletResponse response, HttpServletRequest request, String processSerialNumber,
+        String fileType) throws UnsupportedEncodingException {
+        ProcessParamModel processModel =
+            processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        String title = StringUtils.isNotBlank(processModel.getTitle()) ? processModel.getTitle() : "正文";
+        title = ToolUtil.replaceSpecialStr(title);
+        String userAgent = request.getHeader("User-Agent");
+        if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
+            title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
+            response.setHeader("Content-type", "text/html;charset=GBK");
+            response.setContentType("application/octet-stream");
+        } else {
+            if (userAgent.contains("Firefox")) {
+                title = "=?UTF-8?B?" + (new String(Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
+            } else {
+                title = URLEncoder.encode(title, StandardCharsets.UTF_8);
+                title = StringUtils.replace(title, "+", "%20");// 替换空格
+            }
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
+            response.setHeader("Content-type", "text/html;charset=UTF-8");
+            response.setContentType("application/octet-stream");
+        }
+    }
+
     /**
      * 下载正文（抄送）
      *
      * @param fileType 文件类型
      * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id
      * @param tenantId 租户id
      * @param userId 人员id
      */
     @FlowableLog(operationName = "下载正文（抄送）", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downloadCS")
     public void downloadCS(@RequestParam(required = false) String fileType, @RequestParam String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam String tenantId,
-        @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
+        @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response,
+        HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
             Y9WordModel word = y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String fileStoreId = word.getFileStoreId();
-            String documentTitle = null;
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                if (draftModel != null) {
-                    documentTitle = draftModel.getTitle();
-                }
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
-            }
-            String title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
-            // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
-            // String fileName = y9FileStore.getFileName();
-            title = ToolUtil.replaceSpecialStr(title);
-            String userAgent = request.getHeader("User-Agent");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title =
-                        "=?UTF-8?B?" + (new String(Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
-                } else {
-                    title = URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-            }
+            setResponse(response, request, processSerialNumber, fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
             out.flush();
@@ -298,57 +216,19 @@ public class FormNTKOController {
      * @param id 正文id
      * @param fileType 文件类型
      * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id
      * @param tenantId 租户id
      * @param userId 人员id
      */
     @FlowableLog(operationName = "下载正文文件", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam(required = false) String fileType,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam String tenantId,
+        @RequestParam(required = false) String processSerialNumber, @RequestParam String tenantId,
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            String documentTitle = "";
-            String[] pId = processInstanceId.split(",");
-            processInstanceId = pId[0];
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                if (draftModel != null) {
-                    documentTitle = draftModel.getTitle();
-                }
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
-            }
-            String title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
-            // Y9FileStore y9FileStore = y9FileStoreService.getById(id);
-            // String fileName = y9FileStore.getFileName();
-            title = ToolUtil.replaceSpecialStr(title);
-            String userAgent = request.getHeader("User-Agent");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title =
-                        "=?UTF-8?B?" + (new String(Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
-                } else {
-                    title = URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-            }
+            setResponse(response, request, processSerialNumber, fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(id, out);
             out.flush();
@@ -383,10 +263,9 @@ public class FormNTKOController {
     public void openBlankWordTemplate(HttpServletRequest request, HttpServletResponse response) {
         String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "tags"
             + File.separator + "template" + File.separator + "blankTemplate.doc";
-        ServletOutputStream out = null;
-        BufferedInputStream bi = null;
-        try {
-            File file = new File(filePath);
+        File file = new File(filePath);
+        try (ServletOutputStream out = response.getOutputStream(); FileInputStream fs = new FileInputStream(file);
+            BufferedInputStream bi = IOUtils.buffer(fs)) {
             String fileName = file.getName();
             String agent = request.getHeader("USER-AGENT");
             if (agent.contains("Firefox")) {
@@ -398,10 +277,6 @@ public class FormNTKOController {
             }
             response.reset();
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-            FileInputStream fs = new FileInputStream(file);
-            bi = IOUtils.buffer(fs);
-            out = response.getOutputStream();
             int b;
             byte[] by = new byte[1024];
             while ((b = bi.read(by)) != -1) {
@@ -409,17 +284,6 @@ public class FormNTKOController {
             }
         } catch (Exception e) {
             LOGGER.error("新建正文空白模板失败", e);
-        } finally {
-            try {
-                if (bi != null) {
-                    bi.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流失败", e);
-            }
         }
     }
 
@@ -440,9 +304,7 @@ public class FormNTKOController {
         Y9LoginUserHolder.setPerson(person);
         String y9FileStoreId =
             y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
-
-        ServletOutputStream out = null;
-        try {
+        try (ServletOutputStream out = response.getOutputStream()) {
             String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
@@ -453,16 +315,8 @@ public class FormNTKOController {
                 StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
-            // response.setHeader("Content-Type", "application/msword");
-            // response.setHeader("Content-Length", String.valueOf(buf.length));
             response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
-            out = response.getOutputStream();
-            byte[] buf = null;
-            try {
-                buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
-            } catch (Exception e) {
-                LOGGER.error("下载正文失败", e);
-            }
+            byte[] buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             ByteArrayInputStream bin = null;
             if (buf != null) {
                 bin = new ByteArrayInputStream(buf);
@@ -474,16 +328,8 @@ public class FormNTKOController {
                     out.write(by, 0, b);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("打开正文失败", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流失败", e);
-            }
         }
     }
 
@@ -503,11 +349,8 @@ public class FormNTKOController {
         Y9LoginUserHolder.setPerson(person);
         y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");// 删除未套红的正文
         String content = y9WordApi.openDocumentTemplate(tenantId, userId, templateGUID).getData();
-        ServletOutputStream out = null;
-        try {
-            byte[] result;
-            out = response.getOutputStream();
-            result = java.util.Base64.getDecoder().decode(content);
+        try (ServletOutputStream out = response.getOutputStream()) {
+            byte[] result = java.util.Base64.getDecoder().decode(content);
             ByteArrayInputStream bin = new ByteArrayInputStream(result);
             int b;
             byte[] by = new byte[1024];
@@ -519,14 +362,6 @@ public class FormNTKOController {
             }
         } catch (IOException e) {
             LOGGER.error("套红正文失败", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流失败", e);
-            }
         }
     }
 
@@ -545,8 +380,7 @@ public class FormNTKOController {
         Y9LoginUserHolder.setPerson(person);
         Y9WordHistoryModel map = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
         String fileStoreId = map.getFileStoreId();
-        ServletOutputStream out = null;
-        try {
+        try (ServletOutputStream out = response.getOutputStream()) {
             String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
             String fileName = y9FileStore.getFileName();
@@ -557,17 +391,8 @@ public class FormNTKOController {
                 StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
-            // response.setHeader("Content-Type", "application/msword");
-            // response.setHeader("Content-Length", String.valueOf(buf.length));
             response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
-
-            out = response.getOutputStream();
-            byte[] buf = null;
-            try {
-                buf = y9FileStoreService.downloadFileToBytes(fileStoreId);
-            } catch (Exception e) {
-                LOGGER.error("下载正文失败", e);
-            }
+            byte[] buf = y9FileStoreService.downloadFileToBytes(fileStoreId);
             ByteArrayInputStream bin = null;
             if (buf != null) {
                 bin = new ByteArrayInputStream(buf);
@@ -579,16 +404,8 @@ public class FormNTKOController {
                     out.write(by, 0, b);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("打开正文失败", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流失败", e);
-            }
         }
     }
 
@@ -608,12 +425,7 @@ public class FormNTKOController {
         String y9FileStoreId = y9WordApi.openPdf(tenantId, userId, processSerialNumber).getData();
 
         try (ServletOutputStream out = response.getOutputStream()) {
-            byte[] buf = null;
-            try {
-                buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
-            } catch (Exception e) {
-                LOGGER.error("下载正文失败", e);
-            }
+            byte[] buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             ByteArrayInputStream bin = null;
             if (buf != null) {
                 bin = new ByteArrayInputStream(buf);
@@ -621,7 +433,6 @@ public class FormNTKOController {
             int b;
             byte[] by = new byte[1024];
             response.reset();
-            // response.setHeader("Content-Type", "application/msword");
             if (buf != null) {
                 response.setHeader("Content-Length", String.valueOf(buf.length));
             }
@@ -631,7 +442,7 @@ public class FormNTKOController {
                     out.flush();
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("打开正文失败", e);
         }
     }
@@ -655,9 +466,7 @@ public class FormNTKOController {
         y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "3");
         String y9FileStoreId =
             y9WordApi.openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong).getData();
-
-        ServletOutputStream out = null;
-        try {
+        try (ServletOutputStream out = response.getOutputStream()) {
             String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
@@ -669,16 +478,9 @@ public class FormNTKOController {
                 fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
             }
             response.reset();
-            // response.setHeader("Content-Type", "application/msword");
-            // response.setHeader("Content-Length", String.valueOf(buf.length));
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-            out = response.getOutputStream();
-            byte[] buf = null;
-            try {
-                buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
-            } catch (Exception e) {
-                LOGGER.error("下载正文失败", e);
-            }
+
+            byte[] buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             ByteArrayInputStream bin = null;
             if (buf != null) {
                 bin = new ByteArrayInputStream(buf);
@@ -690,38 +492,9 @@ public class FormNTKOController {
                     out.write(by, 0, b);
                 }
             }
-        } catch (IOException e) {
+        } catch (Exception e) {
             LOGGER.error("打开正文失败", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流失败", e);
-            }
         }
-    }
-
-    /**
-     * 选择套红模板（后端页面调用）
-     *
-     * @param activitiUser 人员id
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @return String
-     */
-    @RequestMapping(value = "/openTaoHong")
-    public String openTaoHong(@RequestParam(required = false) String activitiUser, @RequestParam String tenantId,
-        @RequestParam String userId, Model model) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, activitiUser).getData();
-        model.addAttribute("currentBureauGuid", currentBureau.getId());
-        model.addAttribute("tenantId", tenantId);
-        model.addAttribute("userId", userId);
-        return "intranet/taohongNTKO";
     }
 
     /**
@@ -780,67 +553,6 @@ public class FormNTKOController {
             LOGGER.error("保存正文失败", e);
         }
         return result;
-    }
-
-    /**
-     * 打开下载PDF转换工具页面（后端页面调用）
-     *
-     * @return
-     */
-    @RequestMapping("/showDownPdfTool")
-    public String showDownPdfTool() {
-        return "intranet/downPdfTool";
-    }
-
-    /**
-     * 获取正文文件信息（用于后端页面调用）
-     *
-     * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id
-     * @param itemId 事项id
-     * @param itembox 状态
-     * @param taskId 任务id
-     * @param browser 浏览器
-     * @param positionId 岗位id
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @return String
-     */
-    @RequestMapping("/showWord")
-    public String showWord(@RequestParam String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam String itemId,
-        @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String browser, @RequestParam(required = false) String positionId,
-        @RequestParam String tenantId, @RequestParam(required = false) String userId, Model model) {
-        Y9WordInfo wordInfo =
-            y9WordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, "").getData();
-        String documentTitle = "";
-        if (StringUtils.isBlank(processInstanceId)) {
-            DraftModel model1 = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            if (model1 != null) {
-                documentTitle = model1.getTitle();
-            }
-        } else {
-            String[] pInstanceId = processInstanceId.split(",");
-            ProcessParamModel processModel =
-                processParamApi.findByProcessInstanceId(tenantId, pInstanceId[0]).getData();
-            documentTitle = processModel.getTitle();
-            processInstanceId = pInstanceId[0];
-        }
-        wordInfo.setDocumentTitle(StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文");
-        wordInfo.setBrowser(browser);
-        wordInfo.setProcessInstanceId(processInstanceId);
-        wordInfo.setTenantId(tenantId);
-        wordInfo.setUserId(userId);
-        wordInfo.setPositionId(positionId);
-        model.addAttribute("wordInfo", wordInfo);
-        model.addAttribute("documentTitle", documentTitle != null ? documentTitle : "正文");
-        model.addAttribute("browser", browser);
-        model.addAttribute("processInstanceId", processInstanceId);
-        model.addAttribute("tenantId", tenantId);
-        model.addAttribute("positionId", positionId);
-        model.addAttribute("userId", userId);
-        return "intranet/webOfficeNTKO";
     }
 
     /**
@@ -1000,5 +712,4 @@ public class FormNTKOController {
         }
         return result;
     }
-
 }

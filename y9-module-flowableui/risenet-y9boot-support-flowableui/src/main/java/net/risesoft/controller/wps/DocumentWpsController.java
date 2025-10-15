@@ -77,51 +77,51 @@ public class DocumentWpsController {
     /**
      * 云文档路径
      */
-    private static final String yunWpsBasePath = "http://yun.test.cn";
+    private static final String YUN_WPS_BASE_PATH = "http://yun.test.cn";
     /**
      * 应用id
      */
-    private static final String yunWpsAppId = "4a1291d0-b753-4c2b-0000-000000000005";
+    private static final String YUN_WPS_APP_ID = "4a1291d0-b753-4c2b-0000-000000000005";
     /**
      * 应用密码
      */
-    private static final String yunWpsAppSecret = "u5x7yWKFjsSB";
+    private static final String YUN_WPS_APP_SECRET = "u5x7yWKFjsSB";
     /**
      * 回调地址
      */
-    private static final String yunWpsRedirectUri = "https://www.risesoft.net/";
+    private static final String YUN_WPS_REDIRECT_URI = "https://www.risesoft.net/";
     /**
      * APP权限
      */
-    private static final String yunWpsAppScope = "App.Files.Read App.Files.ReadWrite";
+    private static final String YUN_WPS_APP_SCOPE = "App.Files.Read App.Files.ReadWrite";
     /**
      * 人员权限
      */
-    private static final String yunWpsUserScope = "User.Profile.Read";
+    private static final String YUN_WPS_USER_SCOPE = "User.Profile.Read";
     /**
      * 人员账号
      */
-    private static final String yunWpsUserName = "test1";
+    private static final String YUN_WPS_USER_NAME = "test1";
     /**
      * 密码
      */
-    private static final String yunWpsUserPassword = "Aa123456";
+    private static final String yun_Wps_User_Password = "Aa123456";
     /**
      * 云文档下载路径
      */
-    private static final String yunWpsDownloadPath = "http://yun.test.cn/minio";
+    private static final String YUN_WPS_DOWNLOAD_PATH = "http://yun.test.cn/minio";
     /**
      * 卷标识
      */
-    private static final String volume = "workspace";
+    private static final String VOLUME = "workspace";
     /**
      * 文件标识，当值为\"root\"时表示根文件夹。
      */
-    private static final String root = "root";
+    private static final String ROOT = "root";
     /**
      * 云文档路径
      */
-    private static final String yunWpsBasePath4Graph = "http://yun.test.cn/graph";
+    private static final String yun_Wps_Base_Path_Graph = "http://yun.test.cn/graph";
     private final DraftApi draftApi;
     private final OrgUnitApi orgUnitApi;
     private final ProcessParamApi processParamApi;
@@ -173,11 +173,11 @@ public class DocumentWpsController {
             HttpURLConnection conn;
             try {
                 AppFilesApi apiInstance =
-                    new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
+                    new AppFilesApi(yun_Wps_Base_Path_Graph, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
                 FileContent result =
                     apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
                 LOGGER.debug("result:{}", result);
-                URL url = new URL(yunWpsDownloadPath + result.getUrl());
+                URL url = new URL(YUN_WPS_DOWNLOAD_PATH + result.getUrl());
                 conn = (HttpURLConnection)url.openConnection();
                 conn.setConnectTimeout(3 * 1000);
                 IOUtils.copy(conn.getInputStream(), out);
@@ -264,16 +264,16 @@ public class DocumentWpsController {
             // TaoHongService taoHongService = new TaoHongService();
             // TaoHongService.word2RedDocument(content, destDocx);
 
-            String wpsSid = new YunApi(yunWpsBasePath).yunLogin(yunWpsUserName, yunWpsUserPassword);
+            String wpsSid = new YunApi(YUN_WPS_BASE_PATH).yunLogin(YUN_WPS_USER_NAME, yun_Wps_User_Password);
             LOGGER.debug("wpsSid:{}", wpsSid);
 
-            UserOrgApi apiInstance0 = new UserOrgApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret,
-                yunWpsRedirectUri, yunWpsUserScope, wpsSid);
+            UserOrgApi apiInstance0 = new UserOrgApi(yun_Wps_Base_Path_Graph, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET,
+                YUN_WPS_REDIRECT_URI, YUN_WPS_USER_SCOPE, wpsSid);
             User result0 = apiInstance0.userGetProfile();
             LOGGER.debug("User:{}", result0);
 
             AppFilesApi apiInstance =
-                new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
+                new AppFilesApi(yun_Wps_Base_Path_Graph, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
 
             DocumentWpsModel documentWps =
                 documentWpsApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
@@ -328,7 +328,7 @@ public class DocumentWpsController {
                     FileContent result =
                         apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
                     LOGGER.debug("result:{}", result);
-                    model.addAttribute("downloadUrl", yunWpsDownloadPath + result.getUrl());
+                    model.addAttribute("downloadUrl", YUN_WPS_DOWNLOAD_PATH + result.getUrl());
                 } catch (Exception e) {
                     LOGGER.warn("Exception when calling AppFilesApi#appGetFileContent", e);
                 }
@@ -347,7 +347,7 @@ public class DocumentWpsController {
 
                 CreateEmptyRequest body = new CreateEmptyRequest(); // CreateEmptyRequest |
                 body.setFileName(documentTitle + ".docx");
-                EmptyFile result = apiInstance.appCreateEmpty(volume, root, body);
+                EmptyFile result = apiInstance.appCreateEmpty(VOLUME, ROOT, body);
                 LOGGER.debug("result:{}", result);
 
                 FilePermissionCreateRequest body0 = new FilePermissionCreateRequest(); // FilePermissionCreateRequest |
@@ -431,7 +431,7 @@ public class DocumentWpsController {
             file.transferTo(tempFile);
 
             AppFilesApi appFilesApi =
-                new AppFilesApi(yunWpsBasePath4Graph, yunWpsAppId, yunWpsAppSecret, yunWpsAppScope);
+                new AppFilesApi(yun_Wps_Base_Path_Graph, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
 
             UploadTransactionCreateRequest uploadRequest = new UploadTransactionCreateRequest();
             uploadRequest.setFileName(this.genRealFileName(file.getOriginalFilename()));
@@ -440,7 +440,7 @@ public class DocumentWpsController {
             uploadRequest.setFileNameConflictBehavior(UploadConflictBehavior.RENAME);
             uploadRequest.setFilePath(tempFile.getAbsolutePath());
             UploadTransactionPatchResponse uploadResponse =
-                appFilesApi.appCreateUploadTransaction(volume, root, uploadRequest);
+                appFilesApi.appCreateUploadTransaction(VOLUME, ROOT, uploadRequest);
             if (!tempFile.delete()) {
                 LOGGER.error("删除临时文件失败");
             }

@@ -106,7 +106,8 @@ public class AssociatedFileRestController {
     @PostMapping(value = "/saveAssociatedFile")
     public Y9Result<String> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String processInstanceIds) {
-        String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Y9Result<Object> y9Result =
                 associatedFileApi.saveAssociatedFile(tenantId, positionId, processSerialNumber, processInstanceIds);
