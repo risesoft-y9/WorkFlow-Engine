@@ -8,6 +8,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.net.ftp.FTP;
 import org.apache.commons.net.ftp.FTPClient;
 import org.apache.commons.net.ftp.FTPReply;
 
@@ -30,7 +31,7 @@ public class FtpUtils {
             ftpClient.disconnect();
         }
         ftpClient.setControlEncoding(controlEncoding);
-        ftpClient.setFileType(FTPClient.BINARY_FILE_TYPE);
+        ftpClient.setFileType(FTP.BINARY_FILE_TYPE);
         return ftpClient;
     }
 

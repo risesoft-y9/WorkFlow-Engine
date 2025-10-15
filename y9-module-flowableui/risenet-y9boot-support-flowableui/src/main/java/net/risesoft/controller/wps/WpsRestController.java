@@ -4,6 +4,7 @@ import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
@@ -65,41 +66,42 @@ public class WpsRestController {
     @RequestMapping(value = "/download")
     public void download(@RequestParam String tenantId, @RequestParam String processSerialNumber,
         HttpServletResponse response, HttpServletRequest request) {
-        try {
-            String documentTitle;
-            ProcessParamModel processModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            documentTitle = processModel.getTitle();
-            String title = documentTitle != null ? documentTitle : "正文";
+        try (OutputStream out = response.getOutputStream()) {
+            setResponse(response, request, processSerialNumber);
             String y9FileStoreId = y9WordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            title = ToolUtil.replaceSpecialStr(title);
-            String userAgent = request.getHeader("User-Agent");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=" + title + ".docx");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
-                        + "?=";
-                } else {
-                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=" + title + ".docx");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-            }
-            OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(y9FileStoreId, out);
-            out.flush();
-            out.close();
         } catch (Exception e) {
             LOGGER.error("下载正文异常", e);
+        }
+    }
+
+    private void setResponse(HttpServletResponse response, HttpServletRequest request, String processSerialNumber)
+        throws UnsupportedEncodingException {
+        ProcessParamModel processModel =
+            processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        String title = processModel.getTitle() != null ? processModel.getTitle() : "正文";
+        title = ToolUtil.replaceSpecialStr(title);
+        String userAgent = request.getHeader("User-Agent");
+        if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
+            title = new String(title.getBytes("gb2312"), "ISO8859-1");
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + title + ".docx");
+            response.setHeader("Content-type", "text/html;charset=GBK");
+            response.setContentType("application/octet-stream");
+        } else {
+            if (userAgent.contains("Firefox")) {
+                title = "=?UTF-8?B?"
+                    + (new String(
+                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
+                    + "?=";
+            } else {
+                title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
+                title = StringUtils.replace(title, "+", "%20");// 替换空格
+            }
+            response.reset();
+            response.setHeader("Content-disposition", "attachment; filename=" + title + ".docx");
+            response.setHeader("Content-type", "text/html;charset=UTF-8");
+            response.setContentType("application/octet-stream");
         }
     }
 
@@ -114,10 +116,8 @@ public class WpsRestController {
     public void getTaoHongTemplate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String templateGuid, HttpServletResponse response) {
         String content = y9WordApi.openDocumentTemplate(tenantId, userId, templateGuid).getData();
-        ServletOutputStream out = null;
-        try {
+        try (ServletOutputStream out = response.getOutputStream()) {
             byte[] result;
-            out = response.getOutputStream();
             result = java.util.Base64.getDecoder().decode(content);
             ByteArrayInputStream bin = new ByteArrayInputStream(result);
             int b;
@@ -130,14 +130,6 @@ public class WpsRestController {
             }
         } catch (IOException e) {
             LOGGER.error("打开套红模板异常", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭套红模板异常", e);
-            }
         }
     }
 
@@ -151,40 +143,11 @@ public class WpsRestController {
     @RequestMapping(value = "/revokeRedHeader")
     public void revokeRedHeader(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, HttpServletResponse response, HttpServletRequest request) {
-        try {
-            String documentTitle;
-            ProcessParamModel processModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            documentTitle = processModel.getTitle();
-            String title = documentTitle != null ? documentTitle : "正文";
+        try (OutputStream out = response.getOutputStream()) {
+            setResponse(response, request, processSerialNumber);
             y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "1");
             String y9FileStoreId = y9WordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            title = ToolUtil.replaceSpecialStr(title);
-            String userAgent = request.getHeader("User-Agent");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=" + title + ".docx");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
-                        + "?=";
-                } else {
-                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=" + title + ".docx");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-            }
-            OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(y9FileStoreId, out);
-            out.flush();
-            out.close();
         } catch (Exception e) {
             LOGGER.error("撤销红头异常", e);
         }

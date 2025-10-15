@@ -75,7 +75,7 @@ public class MultiInstanceRestController {
     public Y9Result<String> addExecutionId(@RequestParam @NotBlank String processInstanceId,
         @RequestParam(required = false) String executionId, @RequestParam @NotBlank String taskId,
         @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String selectUserId,
-        @RequestParam(required = false) int num, @RequestParam(required = false) String isSendSms,
+        @RequestParam(required = false) Integer num, @RequestParam(required = false) String isSendSms,
         @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
         try {
             /*
@@ -164,7 +164,7 @@ public class MultiInstanceRestController {
     @PostMapping(value = "/removeExecution4Sequential")
     public Y9Result<String> removeExecution4Sequential(@RequestParam @NotBlank String executionId,
         @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String elementUser,
-        @RequestParam(required = false) int num) {
+        @RequestParam(required = false) Integer num) {
         try {
             multiInstanceService.removeExecution4Sequential(executionId, taskId, elementUser, num);
             return Y9Result.successMsg("减签成功");

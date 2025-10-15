@@ -241,15 +241,16 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     }
 
     private void initSubNodeMap(String processDefinitionId) {
-        if (null == SUB_NODE_MAP.get(processDefinitionId)) {
-            List<String> subTaskDefKeys =
-                processDefinitionApi.getSubProcessChildNode(Y9LoginUserHolder.getTenantId(), processDefinitionId)
-                    .getData()
-                    .stream()
-                    .map(TargetModel::getTaskDefKey)
-                    .collect(Collectors.toList());
-            SUB_NODE_MAP.put(processDefinitionId, subTaskDefKeys);
+        if (null != SUB_NODE_MAP.get(processDefinitionId)) {
+            return;
         }
+        List<String> subTaskDefKeys =
+            processDefinitionApi.getSubProcessChildNode(Y9LoginUserHolder.getTenantId(), processDefinitionId)
+                .getData()
+                .stream()
+                .map(TargetModel::getTaskDefKey)
+                .collect(Collectors.toList());
+        SUB_NODE_MAP.put(processDefinitionId, subTaskDefKeys);
     }
 
     @Override
@@ -481,7 +482,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Transactional
     public Y9Result<Object> refuseClaim(String taskId, String assignee) {
         List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
-        StringBuffer names = new StringBuffer();
+        StringBuilder names = new StringBuilder();
         ardList.forEach(ard -> {
             if (!ard.getAssignee().equals(assignee)) {
                 if (StringUtils.isBlank(names)) {
@@ -639,11 +640,13 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Transactional
     public boolean syncByProcessInstanceId(String processInstanceId) {
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-        String systemName = processParam.getSystemName(), tenantId = Y9LoginUserHolder.getTenantId();
+        String systemName = processParam.getSystemName();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricTaskInstanceModel> htiList =
             historictaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "").getData();
         ActRuDetail actRuDetail;
-        String assignee, owner;
+        String assignee;
+        String owner;
         TaskModel taskTemp;
         for (HistoricTaskInstanceModel hti : htiList) {
             actRuDetail = new ActRuDetail();
@@ -764,7 +767,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     public Y9Result<Object> unClaim(String taskId) {
         List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
         TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
-        StringBuffer names = new StringBuffer();
+        StringBuilder names = new StringBuilder();
         ardList.forEach(ard -> {
             if (StringUtils.isBlank(names)) {
                 names.append(ard.getAssigneeName());

@@ -53,14 +53,10 @@ public class MobileSyncController {
     public void deleteDoneData(String processInstanceId) {
         String sql3 = "DELETE from ACT_HI_TASKINST where PROC_INST_ID_ = '" + processInstanceId + "'";
         jdbcTemplate.execute(sql3);
-
-        sql3 = "DELETE" + " FROM" + "   ACT_GE_BYTEARRAY" + " WHERE" + "    ID_ IN (" + "       SELECT" + "         *"
-            + "      FROM ( " + "         SELECT" + "            b.ID_" + "        FROM"
-            + "          ACT_GE_BYTEARRAY b" + "          LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_"
-            + "       WHERE" + "             v.PROC_INST_ID_ = '" + processInstanceId + "'"
-            + "       AND v.NAME_ = 'users'" + "       ) TT" + "    )";
+        sql3 = "DELETE FROM ACT_GE_BYTEARRAY WHERE ID_ IN (SELECT * FROM ( SELECT b.ID_ FROM"
+            + " ACT_GE_BYTEARRAY b LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_ WHERE v.PROC_INST_ID_ = '"
+            + processInstanceId + "' AND v.NAME_ = 'users' ) TT )";
         jdbcTemplate.execute(sql3);
-
         sql3 = "DELETE from ACT_HI_VARINST where PROC_INST_ID_ = '" + processInstanceId + "'";
         jdbcTemplate.execute(sql3);
 
@@ -85,8 +81,8 @@ public class MobileSyncController {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "SELECT" + "	P .PROC_INST_ID_" + " FROM" + "	ACT_HI_PROCINST P" + " WHERE"
-                + "	(P.END_TIME_ is not null or P.DELETE_REASON_ = '已删除')" + " ORDER BY" + "	P .START_TIME_ DESC";
+            String sql = "SELECT P.PROC_INST_ID_ FROM ACT_HI_PROCINST P WHERE"
+                + "	(P.END_TIME_ is not null or P.DELETE_REASON_ = '已删除') ORDER BY P.START_TIME_ DESC";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
             int i = 0;
@@ -96,7 +92,6 @@ public class MobileSyncController {
                     PROC_INST_ID_ = (String)map.get("PROC_INST_ID_");
                     String sql3 = "DELETE from ACT_HI_TASKINST where PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";
                     jdbcTemplate.execute(sql3);// 删除历史任务
-
                     // 删除二进制数据表
                     sql3 = "DELETE FROM ACT_GE_BYTEARRAY WHERE ID_ IN ( SELECT * FROM ( SELECT b.ID_ FROM"
                         + "	ACT_GE_BYTEARRAY b LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_ WHERE"
@@ -129,69 +124,63 @@ public class MobileSyncController {
     }
 
     private String getActGeBytearraySql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_GE_BYTEARRAY_" + year + " (" + "  ID_," + "   REV_," + "  NAME_," + " DEPLOYMENT_ID_,"
-            + "    BYTES_," + "    GENERATED_" + " ) SELECT " + "  b.ID_," + " b.REV_," + "    b.NAME_,"
-            + "   b.DEPLOYMENT_ID_," + "  b.BYTES_," + "  b.GENERATED_" + " FROM" + " ACT_GE_BYTEARRAY b"
-            + " LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_" + " WHERE" + "   v.PROC_INST_ID_ = '"
-            + processInstanceId + "'" + " AND v.NAME_ = 'users'";
+        return "INSERT INTO ACT_GE_BYTEARRAY_" + year + " ( ID_, REV_, NAME_, DEPLOYMENT_ID_, BYTES_,GENERATED_"
+            + " ) SELECT b.ID_,b.REV_,b.NAME_,b.DEPLOYMENT_ID_,b.BYTES_,b.GENERATED_ FROM ACT_GE_BYTEARRAY b"
+            + " LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_ WHERE v.PROC_INST_ID_ = '" + processInstanceId
+            + "'  AND v.NAME_ = 'users'";
     }
 
     private String getActHiActinstSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_ACTINST_" + year + " (" + "   ID_," + "   REV_," + "  PROC_DEF_ID_,"
-            + "  PROC_INST_ID_," + " EXECUTION_ID_," + " ACT_ID_," + "   TASK_ID_," + "  CALL_PROC_INST_ID_,"
-            + "    ACT_NAME_," + " ACT_TYPE_," + " ASSIGNEE_," + " START_TIME_," + "   END_TIME_," + " DURATION_,"
-            + " DELETE_REASON_," + "    TENANT_ID_" + " ) SELECT" + "   ID_," + "   REV_," + "  PROC_DEF_ID_,"
-            + "  PROC_INST_ID_," + " EXECUTION_ID_," + " ACT_ID_," + "   TASK_ID_," + "  CALL_PROC_INST_ID_,"
-            + "    ACT_NAME_," + " ACT_TYPE_," + " ASSIGNEE_," + " START_TIME_," + " END_TIME_," + " DURATION_,"
-            + " DELETE_REASON_," + "    TENANT_ID_" + " FROM" + "   ACT_HI_ACTINST A" + " WHERE"
-            + "    A.PROC_INST_ID_ = '" + processInstanceId + "'";
+        return "INSERT INTO ACT_HI_ACTINST_" + year + " ( ID_, REV_,   PROC_DEF_ID_,   PROC_INST_ID_,"
+            + " EXECUTION_ID_,  ACT_ID_, TASK_ID_,   CALL_PROC_INST_ID_,  ACT_NAME_,  ACT_TYPE_,"
+            + " ASSIGNEE_,  START_TIME_, END_TIME_,  DURATION_,  DELETE_REASON_,   TENANT_ID_"
+            + " ) SELECT ID_, REV_,   PROC_DEF_ID_,   PROC_INST_ID_,  EXECUTION_ID_,"
+            + " ACT_ID_, TASK_ID_,   CALL_PROC_INST_ID_,  ACT_NAME_,  ACT_TYPE_,  ASSIGNEE_,"
+            + " START_TIME_,  END_TIME_,  DURATION_,  DELETE_REASON_,   TENANT_ID_"
+            + " FROM ACT_HI_ACTINST A  WHERE  A.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
     private String getActHiIdentiyLinkSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_IDENTITYLINK_" + year + " (" + "  ID_," + "   GROUP_ID_," + " TYPE_," + " USER_ID_,"
-            + "  TASK_ID_," + "  CREATE_TIME_," + "  PROC_INST_ID_," + " SCOPE_ID_," + " SCOPE_TYPE_,"
-            + "   SCOPE_DEFINITION_ID_" + " ) SELECT" + " ID_," + "   GROUP_ID_," + " TYPE_," + " USER_ID_,"
-            + "  TASK_ID_," + "  CREATE_TIME_," + "  PROC_INST_ID_," + " SCOPE_ID_," + " SCOPE_TYPE_,"
-            + "   SCOPE_DEFINITION_ID_" + " FROM" + " ACT_HI_IDENTITYLINK i" + " WHERE" + "   i.PROC_INST_ID_ = '"
-            + processInstanceId + "'";
+        return "INSERT INTO ACT_HI_IDENTITYLINK_" + year + " (   ID_, GROUP_ID_,  TYPE_,  USER_ID_,"
+            + "  TASK_ID_,   CREATE_TIME_,   PROC_INST_ID_,  SCOPE_ID_,  SCOPE_TYPE_,"
+            + "   SCOPE_DEFINITION_ID_  ) SELECT  ID_, GROUP_ID_,  TYPE_,  USER_ID_,   TASK_ID_,"
+            + "  CREATE_TIME_,   PROC_INST_ID_,  SCOPE_ID_,  SCOPE_TYPE_,    SCOPE_DEFINITION_ID_"
+            + " FROM  ACT_HI_IDENTITYLINK i  WHERE i.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
     private String getActHiProcinstSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_PROCINST_" + year + " (" + "   ID_," + "   REV_," + "  PROC_INST_ID_,"
-            + " BUSINESS_KEY_," + " PROC_DEF_ID_," + "  START_TIME_," + "   END_TIME_," + " DURATION_,"
-            + " START_USER_ID_," + "    START_ACT_ID_," + " END_ACT_ID_," + "   SUPER_PROCESS_INSTANCE_ID_,"
-            + " DELETE_REASON_," + "    TENANT_ID_," + "    NAME_," + " CALLBACK_ID_," + "  CALLBACK_TYPE_" + ") SELECT"
-            + "    ID_," + "   REV_," + "  PROC_INST_ID_," + " BUSINESS_KEY_," + " PROC_DEF_ID_," + "  START_TIME_,"
-            + "   END_TIME_," + " DURATION_," + " START_USER_ID_," + " START_ACT_ID_," + " END_ACT_ID_,"
-            + "   SUPER_PROCESS_INSTANCE_ID_," + "    DELETE_REASON_," + "    TENANT_ID_," + "    NAME_,"
-            + " CALLBACK_ID_," + "  CALLBACK_TYPE_" + " FROM" + "   ACT_HI_PROCINST RES" + " WHERE"
-            + " RES.PROC_INST_ID_ = '" + processInstanceId + "'";
+        return "INSERT INTO ACT_HI_PROCINST_" + year + " ( ID_, REV_,   PROC_INST_ID_,  BUSINESS_KEY_,"
+            + " PROC_DEF_ID_,   START_TIME_, END_TIME_,  DURATION_,  START_USER_ID_,  START_ACT_ID_,"
+            + " END_ACT_ID_, SUPER_PROCESS_INSTANCE_ID_,  DELETE_REASON_,  TENANT_ID_,  NAME_,  CALLBACK_ID_,"
+            + "  CALLBACK_TYPE_ ) SELECT   ID_, REV_,   PROC_INST_ID_,  BUSINESS_KEY_,"
+            + " PROC_DEF_ID_,   START_TIME_,    END_TIME_,  DURATION_,  START_USER_ID_,"
+            + " START_ACT_ID_,  END_ACT_ID_,"
+            + "   SUPER_PROCESS_INSTANCE_ID_,  DELETE_REASON_,  TENANT_ID_,  NAME_,  CALLBACK_ID_,"
+            + "  CALLBACK_TYPE_  FROM ACT_HI_PROCINST RES  WHERE  RES.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
     private String getActHiTaskinstSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_TASKINST_" + year + " (" + "   ID_," + "   REV_," + "  PROC_DEF_ID_,"
-            + "  TASK_DEF_ID_," + "  TASK_DEF_KEY_," + " PROC_INST_ID_," + " EXECUTION_ID_," + " SCOPE_ID_,"
-            + " SUB_SCOPE_ID_," + " SCOPE_TYPE_," + "   SCOPE_DEFINITION_ID_," + "  PARENT_TASK_ID_," + " NAME_,"
-            + " DESCRIPTION_," + "  OWNER_," + "    ASSIGNEE_," + " START_TIME_," + "   CLAIM_TIME_," + "   END_TIME_,"
-            + " DURATION_," + " DELETE_REASON_," + "    PRIORITY_," + " DUE_DATE_," + " FORM_KEY_," + " CATEGORY_,"
-            + " TENANT_ID_," + "    LAST_UPDATED_TIME_" + " ) SELECT" + " ID_," + "   REV_," + "  PROC_DEF_ID_,"
-            + "  TASK_DEF_ID_," + "  TASK_DEF_KEY_," + " PROC_INST_ID_," + " EXECUTION_ID_," + " SCOPE_ID_,"
-            + " SUB_SCOPE_ID_," + " SCOPE_TYPE_," + "   SCOPE_DEFINITION_ID_," + "  PARENT_TASK_ID_," + "   NAME_,"
-            + " DESCRIPTION_," + "  OWNER_," + " ASSIGNEE_," + " START_TIME_," + "   CLAIM_TIME_," + "   END_TIME_,"
-            + " DURATION_," + " DELETE_REASON_," + "    PRIORITY_," + " DUE_DATE_," + " FORM_KEY_," + " CATEGORY_,"
-            + " TENANT_ID_," + "    LAST_UPDATED_TIME_" + " FROM" + "   ACT_HI_TASKINST T" + " WHERE"
-            + " T .PROC_INST_ID_ = '" + processInstanceId + "'";
+        return "INSERT INTO ACT_HI_TASKINST_" + year + " ( ID_, REV_,   PROC_DEF_ID_,   TASK_DEF_ID_,"
+            + " TASK_DEF_KEY_,  PROC_INST_ID_,  EXECUTION_ID_,  SCOPE_ID_,  SUB_SCOPE_ID_,"
+            + " SCOPE_TYPE_, SCOPE_DEFINITION_ID_,   PARENT_TASK_ID_,  NAME_,  DESCRIPTION_,"
+            + " OWNER_,  ASSIGNEE_,  START_TIME_, CLAIM_TIME_, END_TIME_,  DURATION_,"
+            + " DELETE_REASON_,  PRIORITY_,  DUE_DATE_,  FORM_KEY_,  CATEGORY_,"
+            + " TENANT_ID_,  LAST_UPDATED_TIME_  ) SELECT  ID_, REV_,   PROC_DEF_ID_,   TASK_DEF_ID_,"
+            + " TASK_DEF_KEY_,  PROC_INST_ID_,  EXECUTION_ID_,  SCOPE_ID_,  SUB_SCOPE_ID_,"
+            + " SCOPE_TYPE_, SCOPE_DEFINITION_ID_,   PARENT_TASK_ID_, NAME_,  DESCRIPTION_,   OWNER_,"
+            + " ASSIGNEE_,  START_TIME_, CLAIM_TIME_, END_TIME_,  DURATION_,  DELETE_REASON_,  PRIORITY_,"
+            + " DUE_DATE_,  FORM_KEY_,  CATEGORY_,  TENANT_ID_,  LAST_UPDATED_TIME_"
+            + " FROM ACT_HI_TASKINST T  WHERE  T .PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
     private String getActHiVarinstSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_VARINST_" + year + " (" + "   ID_," + "   REV_," + "  PROC_INST_ID_,"
-            + " EXECUTION_ID_," + " TASK_ID_," + "  NAME_," + " VAR_TYPE_," + " SCOPE_ID_," + " SUB_SCOPE_ID_,"
-            + " SCOPE_TYPE_," + "   BYTEARRAY_ID_," + " DOUBLE_," + "   LONG_," + " TEXT_," + " TEXT2_,"
-            + "    CREATE_TIME_," + "  LAST_UPDATED_TIME_" + " ) SELECT" + "   ID_," + "   REV_," + "  PROC_INST_ID_,"
-            + " EXECUTION_ID_," + " TASK_ID_," + "  NAME_," + " VAR_TYPE_," + " SCOPE_ID_," + " SUB_SCOPE_ID_,"
-            + " SCOPE_TYPE_," + "   BYTEARRAY_ID_," + " DOUBLE_," + "   LONG_," + " TEXT_," + " TEXT2_,"
-            + "    CREATE_TIME_," + "  LAST_UPDATED_TIME_" + " FROM" + "   ACT_HI_VARINST v" + " WHERE"
-            + "    v.PROC_INST_ID_ = '" + processInstanceId
+        return "INSERT INTO ACT_HI_VARINST_" + year + " ( ID_, REV_,   PROC_INST_ID_,  EXECUTION_ID_,"
+            + " TASK_ID_,   NAME_,  VAR_TYPE_,  SCOPE_ID_,  SUB_SCOPE_ID_,"
+            + " SCOPE_TYPE_, BYTEARRAY_ID_,  DOUBLE_, LONG_,  TEXT_,  TEXT2_,   CREATE_TIME_,"
+            + " LAST_UPDATED_TIME_  ) SELECT ID_, REV_,   PROC_INST_ID_,  EXECUTION_ID_,  TASK_ID_,"
+            + " NAME_,  VAR_TYPE_,  SCOPE_ID_,  SUB_SCOPE_ID_,  SCOPE_TYPE_, BYTEARRAY_ID_,"
+            + " DOUBLE_, LONG_,  TEXT_,  TEXT2_,   CREATE_TIME_,   LAST_UPDATED_TIME_"
+            + " FROM ACT_HI_VARINST v  WHERE   v.PROC_INST_ID_ = '" + processInstanceId
             + "' and v.NAME_ not in ('nrOfActiveInstances','nrOfCompletedInstances','nrOfInstances','loopCounter','elementUser')";
     }
 
@@ -255,17 +244,16 @@ public class MobileSyncController {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "SELECT" + "	P .PROC_INST_ID_,TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                + " TO_CHAR(P .END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_" + " FROM"
-                + "	ACT_HI_PROCINST_2020 P" + " WHERE" + "	P .END_TIME_ IS NOT NULL" + " and P.DELETE_REASON_ is null"
-                + " ORDER BY" + "	P .END_TIME_ DESC";
+            String sql = "SELECT P.PROC_INST_ID_,TO_CHAR(P.START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+                + " TO_CHAR(P.END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_  FROM"
+                + "	ACT_HI_PROCINST_2020 P  WHERE 	P.END_TIME_ IS NOT NULL  and P.DELETE_REASON_ is null"
+                + " ORDER BY P.END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals("mysql")) {
-                sql = "SELECT"
-                    + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P .END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
-                    + " FROM" + "	ACT_HI_PROCINST_2020 P" + " WHERE" + "	P .END_TIME_ IS NOT NULL"
-                    + " and P.DELETE_REASON_ is null" + " ORDER BY" + "	P .END_TIME_ DESC";
+                sql =
+                    "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P.END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
+                        + " FROM ACT_HI_PROCINST_2020 P  WHERE 	P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null  ORDER BY 	P.END_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -316,20 +304,6 @@ public class MobileSyncController {
                         officeDoneInfo.setTarget(
                             StringUtils.isBlank(processParamModel.getTarget()) ? "" : processParamModel.getTarget());
                     }
-
-                    // 处理委托人
-                    /*sql =
-                        "SELECT e.OWNERID from FF_ENTRUSTDETAIL e where e.PROCESSINSTANCEID = '" + PROC_INST_ID_ + "'";
-                    List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql);
-                    String entrustUserId = "";
-                    for (Map<String, Object> m : list2) {
-                        String USER_ID_ = (String)m.get("OWNERID");
-                        if (!entrustUserId.contains(USER_ID_)) {
-                            entrustUserId = Y9Util.genCustomStr(entrustUserId, USER_ID_);
-                        }
-                    }
-                    officeDoneInfo.setEntrustUserId(entrustUserId);*/
-
                     // 处理参与人
                     sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK_2020 i where i.PROC_INST_ID_ = '" + PROC_INST_ID_
                         + "'";
@@ -374,17 +348,17 @@ public class MobileSyncController {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "SELECT" + "	P .PROC_INST_ID_,TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                + " TO_CHAR(P .END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_" + " FROM"
-                + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NOT NULL" + " and P.DELETE_REASON_ is null"
-                + " ORDER BY" + "	P .END_TIME_ DESC";
+            String sql = "SELECT P.PROC_INST_ID_,TO_CHAR(P.START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+                + " TO_CHAR(P.END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_ FROM"
+                + "	ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL  and P.DELETE_REASON_ is null"
+                + " ORDER BY P.END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals("mysql") || dialectName.equals("kingbase")) {
-                sql = "SELECT"
-                    + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P .END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
-                    + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NOT NULL"
-                    + " and P.DELETE_REASON_ is null" + " ORDER BY" + "	P .END_TIME_ DESC";
+                sql =
+                    "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P.END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
+                        + " FROM ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL"
+                        + " and P.DELETE_REASON_ is null  ORDER BY 	P.END_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -436,15 +410,15 @@ public class MobileSyncController {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "SELECT" + "	P .PROC_INST_ID_,TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_"
-                + " FROM" + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NOT NULL"
-                + " and P.DELETE_REASON_ is null" + " ORDER BY" + "	P .END_TIME_ DESC";
+            String sql = "SELECT P.PROC_INST_ID_,TO_CHAR(P.START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_"
+                + " FROM ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL"
+                + " and P.DELETE_REASON_ is null ORDER BY P.END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals("mysql") || dialectName.equals("kingbase")) {
-                sql = "SELECT" + "	P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_" + " FROM"
-                    + "	ACT_HI_PROCINST P" + " WHERE" + "	P .END_TIME_ IS NOT NULL" + " and P.DELETE_REASON_ is null"
-                    + " ORDER BY" + "	P .END_TIME_ DESC";
+                sql = "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_  FROM"
+                    + "	ACT_HI_PROCINST P  WHERE 	P.END_TIME_ IS NOT NULL  and P.DELETE_REASON_ is null"
+                    + " ORDER BY 	P.END_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -452,12 +426,10 @@ public class MobileSyncController {
             for (Map<String, Object> map : list) {
                 String PROC_INST_ID_;
                 try {
-
                     PROC_INST_ID_ = (String)map.get("PROC_INST_ID_");
                     String START_TIME_ = (String)map.get("START_TIME_");
                     String year = START_TIME_.substring(0, 4);
                     officeDoneInfoApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
-
                     String sql3 =
                         "SELECT * FROM ACT_HI_TASKINST_" + year + " where PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";
                     List<Map<String, Object>> list0 = jdbcTemplate.queryForList(sql3);
@@ -465,21 +437,18 @@ public class MobileSyncController {
                         sql3 = getActHiTaskinstSql(year, PROC_INST_ID_);
                         jdbcTemplate.execute(sql3);// 同步历史任务
                     }
-
                     sql3 = "SELECT * FROM ACT_HI_VARINST_" + year + " where PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";
                     List<Map<String, Object>> list1 = jdbcTemplate.queryForList(sql3);
                     if (list1.isEmpty()) {
                         sql3 = getActHiVarinstSql(year, PROC_INST_ID_);
                         jdbcTemplate.execute(sql3);// 同步历史变量
                     }
-
                     try {
                         sql3 = getActGeBytearraySql(year, PROC_INST_ID_);
                         jdbcTemplate.execute(sql3);// 同步二进制数据表
                     } catch (Exception e) {
                         LOGGER.error("同步二进制数据表失败", e);
                     }
-
                     sql3 =
                         "SELECT * FROM ACT_HI_IDENTITYLINK_" + year + " where PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";
                     List<Map<String, Object>> list2 = jdbcTemplate.queryForList(sql3);
@@ -487,17 +456,12 @@ public class MobileSyncController {
                         sql3 = getActHiIdentiyLinkSql(year, PROC_INST_ID_);
                         jdbcTemplate.execute(sql3);// 同步历史参与人
                     }
-
                     sql3 = "SELECT * FROM ACT_HI_ACTINST_" + year + " where PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";
                     List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql3);
                     if (list3.isEmpty()) {
                         sql3 = getActHiActinstSql(year, PROC_INST_ID_);
                         jdbcTemplate.execute(sql3);// 同步历史节点
                     }
-
-                    // sql3 = get_FF_ACT_RU_EXECUTION_Sql(year,PROC_INST_ID_);
-                    // jdbcTemplate.execute(sql3);//同步备份执行实例
-
                     sql3 = "SELECT * FROM ACT_HI_PROCINST_" + year + " where PROC_INST_ID_ = '" + PROC_INST_ID_ + "'";
                     List<Map<String, Object>> list4 = jdbcTemplate.queryForList(sql3);
                     if (list4.isEmpty()) {

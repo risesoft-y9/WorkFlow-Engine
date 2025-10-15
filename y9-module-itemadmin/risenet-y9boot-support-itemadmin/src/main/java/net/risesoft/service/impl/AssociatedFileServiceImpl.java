@@ -101,8 +101,11 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getOrgUnitId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
-            taskId = "";
+        String taskIds = "";
+        String assigneeIds = "";
+        String assigneeNames = "";
+        String itembox = ItemBoxTypeEnum.DOING.getValue();
+        String taskId = "";
         List<String> list = new ArrayList<>();
         int i = 0;
         if (!taskList.isEmpty()) {

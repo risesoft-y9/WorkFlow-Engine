@@ -37,6 +37,7 @@ import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
@@ -103,7 +104,8 @@ public class ButtonOperationRestController {
     public Y9Result<String> claim(@RequestParam @NotBlank String taskId) {
         try {
             Position position = Y9LoginUserHolder.getPosition();
-            String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = position.getId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
             List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
             for (IdentityLinkModel il : list) {
                 // 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
@@ -270,7 +272,8 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/directSend")
     public Y9Result<String> directSend(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTask) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
         try {
             Y9Result<Object> y9Result =
                 buttonOperationApi.directSend(tenantId, positionId, taskId, routeToTask, processInstanceId);
@@ -408,9 +411,9 @@ public class ButtonOperationRestController {
                     map.put("user", employee.getName());
                     map.put("order", "");
                     if (StringUtils.isBlank(taskModel.getAssignee())) {// 办理人为空，改件未被签收
-                        map.put("status", "等待签收");
+                        map.put(FlowableUiConsts.STATUS, "等待签收");
                     } else if (StringUtils.isNoneBlank(taskModel.getAssignee())) {
-                        map.put("status", "正在处理");
+                        map.put(FlowableUiConsts.STATUS, "正在处理");
                     }
                     map.put("endTime", "");
                     map.put("multiInstance", "普通单实例");
@@ -427,15 +430,15 @@ public class ButtonOperationRestController {
                     map.put("user", employee.getName());
                     map.put("order", i + 1);
                     if (users.get(i).equals(taskModel.getAssignee())) {
-                        map.put("status", "正在处理");
+                        map.put(FlowableUiConsts.STATUS, "正在处理");
                         map.put("endTime", "");
                         isEnd = false;
                     } else if (isEnd) {
-                        map.put("status", "完成");
-                        List<HistoricTaskInstanceModel> htims =
+                        map.put(FlowableUiConsts.STATUS, "完成");
+                        List<HistoricTaskInstanceModel> modelList =
                             historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "")
                                 .getData();
-                        for (HistoricTaskInstanceModel hai : htims) {
+                        for (HistoricTaskInstanceModel hai : modelList) {
                             if (hai.getAssignee().equals(users.get(i))) {// 获取串行多人处理的完成时间
                                 map.put("endTime", Y9DateTimeUtils.formatDateTime(hai.getEndTime()));
                                 if (StringUtils.isNotBlank(hai.getScopeType())) {// ScopeType存的是岗位/人员名称，优先显示这个名称
@@ -444,7 +447,7 @@ public class ButtonOperationRestController {
                             }
                         }
                     } else {
-                        map.put("status", "等待");
+                        map.put(FlowableUiConsts.STATUS, "等待");
                         map.put("endTime", "");
                     }
                     map.put("multiInstance", "串行");
@@ -453,14 +456,14 @@ public class ButtonOperationRestController {
                 retMap.put("multiInstance", "串行");
             }
             if (multiInstance.equals(SysVariables.PARALLEL)) {
-                List<HistoricTaskInstanceModel> htims =
+                List<HistoricTaskInstanceModel> modelList =
                     historictaskApi.getByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), "").getData();
-                for (HistoricTaskInstanceModel hai : htims) {
+                for (HistoricTaskInstanceModel hai : modelList) {
                     if (hai == null) {
                         continue;
                     }
-                    long timediff = taskModel.getCreateTime().getTime() - hai.getStartTime().getTime();
-                    if (((timediff >= -3000 && timediff <= 3000) && taskModel.getName().equals(hai.getName()))
+                    long timeDiff = taskModel.getCreateTime().getTime() - hai.getStartTime().getTime();
+                    if (((timeDiff >= -3000 && timeDiff <= 3000) && taskModel.getName().equals(hai.getName()))
                         || hai.getEndTime() == null) {
                         Map<String, Object> map = new HashMap<>(16);
                         OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, hai.getAssignee()).getData();
@@ -472,10 +475,11 @@ public class ButtonOperationRestController {
                         String parallelSponsorObj;
                         if (null == endTime) {
                             parallelSponsorObj =
-                                variableApi.getVariableLocal(tenantId, hai.getId(), "parallelSponsor").getData();
+                                variableApi.getVariableLocal(tenantId, hai.getId(), FlowableUiConsts.PARALLELSPONSOR)
+                                    .getData();
                         } else {
                             HistoricVariableInstanceModel parallelSponsorObj1 = historicvariableApi
-                                .getByTaskIdAndVariableName(tenantId, hai.getId(), "parallelSponsor", "")
+                                .getByTaskIdAndVariableName(tenantId, hai.getId(), FlowableUiConsts.PARALLELSPONSOR, "")
                                 .getData();
                             parallelSponsorObj =
                                 parallelSponsorObj1 != null ? parallelSponsorObj1.getValue().toString() : "";
@@ -483,14 +487,14 @@ public class ButtonOperationRestController {
                         map.put("endTime", endTime == null ? "" : Y9DateTimeUtils.formatDateTime(endTime));
                         if (parallelSponsorObj != null) {
                             if (parallelSponsorObj.equals(employee.getId())) {
-                                map.put("parallelSponsor", "主办");
+                                map.put(FlowableUiConsts.PARALLELSPONSOR, "主办");
                             } else {
-                                map.put("parallelSponsor", "协办");
+                                map.put(FlowableUiConsts.PARALLELSPONSOR, "协办");
                             }
                         } else {
-                            map.put("parallelSponsor", "协办");
+                            map.put(FlowableUiConsts.PARALLELSPONSOR, "协办");
                         }
-                        map.put("status", endTime == null ? "正在处理" : "完成");
+                        map.put(FlowableUiConsts.STATUS, endTime == null ? "正在处理" : "完成");
                         map.put("multiInstance", "并行");
                         listMap.add(map);
                     }
@@ -831,8 +835,7 @@ public class ButtonOperationRestController {
      * 批量退回拟稿人
      *
      * @param actionName 操作名称
-     * @param taskIdAndProcessSerialNumbers
-     *
+     * @param taskIdAndProcessSerialNumbers 批量退回参数
      * @return Y9Result<String>
      */
     @FlowableLog(operationName = "批量退回拟稿人", operationType = FlowableOperationTypeEnum.ROLLBACK)

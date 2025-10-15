@@ -219,7 +219,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
         String executionId = task.getExecutionId();
-        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel, sponsorGuid,
+        forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel, sponsorGuid,
             processParam, userList);
     }
 

@@ -434,7 +434,7 @@ public class ButtonServiceImpl implements ButtonService {
                 /*----- 下面是办结按钮的设置 -----*/
                 // 办结
                 // 当前节点的目标节点存在ENDEVENT类型节点时，显示办结按钮
-                if (isAssignee && isContainEndEvent) {
+                if (isAssignee && Boolean.TRUE.equals(isContainEndEvent)) {
                     // 如果是在并行状态下，那么就要看是不是并行状态主办人，如果是则显示办结按钮，否则不显示
                     if (isParallel) {
                         ItemTaskConf itemTaskConf =
@@ -615,8 +615,9 @@ public class ButtonServiceImpl implements ButtonService {
 
     @Override
     public List<ItemButtonModel> showButton4Doing(DocumentDetailModel model) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        String itemId = model.getItemId(), taskId = model.getTaskId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String taskId = model.getTaskId();
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.chaoSong);
         buttonModelList.add(ItemButton.daYin);
@@ -657,7 +658,7 @@ public class ButtonServiceImpl implements ButtonService {
                 Boolean isSub4Current = processDefinitionApi
                     .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
                     .getData();
-                if (isSub4Current) {
+                if (Boolean.TRUE.equals(isSub4Current)) {
                     OrgUnit sendBureau = orgUnitApi.getBureau(tenantId, orgUnitId).getData();
                     OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
                     if (currentBureau.getId().equals(sendBureau.getId())) {
@@ -672,7 +673,7 @@ public class ButtonServiceImpl implements ButtonService {
                                 .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(),
                                     hisTaskList.get(0).getTaskDefinitionKey())
                                 .getData();
-                        if (!isSubProcess4Send) {
+                        if (Boolean.FALSE.equals(isSubProcess4Send)) {
                             buttonModelList.add(ItemButton.shouHui);
                         }
                     }
