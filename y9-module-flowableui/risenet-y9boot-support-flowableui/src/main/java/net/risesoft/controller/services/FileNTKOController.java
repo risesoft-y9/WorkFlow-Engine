@@ -64,8 +64,8 @@ public class FileNTKOController {
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
-        ServletOutputStream out = null;
-        try {
+
+        try (ServletOutputStream out = response.getOutputStream()) {
             String agent = request.getHeader("USER-AGENT");
             String fileName = file.getName();
             if (agent.contains("Firefox")) {
@@ -76,34 +76,23 @@ public class FileNTKOController {
             }
             response.reset();
             response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
-            out = response.getOutputStream();
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(file.getFileStoreId());
             } catch (Exception e) {
                 LOGGER.error("下载文件失败", e);
             }
-            ByteArrayInputStream bin = null;
             if (buf != null) {
-                bin = new ByteArrayInputStream(buf);
-            }
-            int b;
-            byte[] by = new byte[1024];
-            if (bin != null) {
-                while ((b = bin.read(by)) != -1) {
-                    out.write(by, 0, b);
+                try (ByteArrayInputStream bin = new ByteArrayInputStream(buf)) {
+                    int b;
+                    byte[] by = new byte[1024];
+                    while ((b = bin.read(by)) != -1) {
+                        out.write(by, 0, b);
+                    }
                 }
             }
         } catch (IOException e) {
             LOGGER.error("下载文件失败", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流失败", e);
-            }
         }
     }
 

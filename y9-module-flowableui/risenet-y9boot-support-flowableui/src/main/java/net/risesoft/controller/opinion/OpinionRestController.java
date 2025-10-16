@@ -51,10 +51,11 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequestMapping(value = "/vue/opinion", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OpinionRestController {
 
+    private static final String ORGTYPE_KEY = "orgType";
+    private static final String PARENTID_KEY = "parentId";
+    private static final String ISPARENT_KEY = "isParent";
     private final OpinionApi opinionApi;
-
     private final OrgUnitApi orgUnitApi;
-
     private final PersonApi personApi;
 
     /**
@@ -132,9 +133,9 @@ public class OpinionRestController {
                 Map<String, Object> map = new HashMap<>(16);
                 map.put("id", orgUnit.getId());
                 map.put("name", orgUnit.getName());
-                map.put("orgType", orgUnit.getOrgType());
-                map.put("parentId", orgUnit.getParentId());
-                map.put("isParent", true);
+                map.put(ORGTYPE_KEY, orgUnit.getOrgType());
+                map.put(PARENTID_KEY, orgUnit.getParentId());
+                map.put(ISPARENT_KEY, true);
                 if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
                     Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                     if (per.getDisabled()) {// 除去禁用的人员
@@ -142,8 +143,8 @@ public class OpinionRestController {
                     }
                     map.put("sex", per.getSex());
                     map.put("duty", per.getDuty());
-                    map.put("isParent", false);
-                    map.put("parentId", orgUnit.getParentId());
+                    map.put(ISPARENT_KEY, false);
+                    map.put(PARENTID_KEY, orgUnit.getParentId());
                 }
                 item.add(map);
             }
@@ -181,9 +182,9 @@ public class OpinionRestController {
                 Map<String, Object> m = new HashMap<>(16);
                 m.put("id", orgUnit.getId());
                 m.put("name", orgUnit.getName());
-                m.put("parentId", orgUnit.getParentId());
-                m.put("orgType", orgUnit.getOrgType());
-                m.put("isParent", true);
+                m.put(PARENTID_KEY, orgUnit.getParentId());
+                m.put(ORGTYPE_KEY, orgUnit.getOrgType());
+                m.put(ISPARENT_KEY, true);
                 item.add(m);
             }
         } else {
@@ -192,11 +193,11 @@ public class OpinionRestController {
                 Map<String, Object> m = new HashMap<>(16);
                 m.put("id", orgUnit.getId());
                 m.put("name", orgUnit.getName());
-                m.put("parentId", orgUnit.getParentId());
-                m.put("orgType", orgUnit.getOrgType());
-                m.put("isParent", true);
+                m.put(PARENTID_KEY, orgUnit.getParentId());
+                m.put(ORGTYPE_KEY, orgUnit.getOrgType());
+                m.put(ISPARENT_KEY, true);
                 if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)) {
-                    m.put("isParent", false);
+                    m.put(ISPARENT_KEY, false);
                     Person person = personApi.get(tenantId, orgUnit.getId()).getData();
                     if (person.getDisabled()) {
                         continue;
