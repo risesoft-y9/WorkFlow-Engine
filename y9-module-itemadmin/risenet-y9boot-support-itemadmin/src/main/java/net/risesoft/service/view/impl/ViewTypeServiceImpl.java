@@ -1,19 +1,12 @@
 package net.risesoft.service.view.impl;
 
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
-
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Path;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,38 +52,23 @@ public class ViewTypeServiceImpl implements ViewTypeService {
         return viewTypeRepository.findAll(sort);
     }
 
-    @SuppressWarnings("serial")
     @Override
     public Page<ViewType> pageAll(int page, int rows) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return viewTypeRepository.findAll(new Specification<ViewType>() {
-            @Override
-            public Predicate toPredicate(Root<ViewType> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<>();
-                Predicate[] predicates = new Predicate[list.size()];
-                list.toArray(predicates);
-                return builder.and(predicates);
-            }
-        }, pageable);
-    }
-
-    @Override
-    @Transactional
-    public void remove(String id) {
-        ViewType viewType = this.findById(id);
-        if (viewType != null) {
-            itemViewConfService.removeByViewType(viewType.getMark());
-        }
+        return viewTypeRepository.findAll(pageable);
     }
 
     @Override
     @Transactional
     public void remove(String[] ids) {
-        for (String id : ids) {
-            this.remove(id);
-            viewTypeRepository.deleteById(id);
-        }
+        Arrays.stream(ids).forEach(id -> {
+            ViewType viewType = viewTypeRepository.findById(id).orElse(null);
+            if (viewType != null) {
+                viewTypeRepository.delete(viewType);
+                itemViewConfService.removeByViewType(viewType.getMark());
+            }
+        });
     }
 
     @Override
@@ -106,51 +84,37 @@ public class ViewTypeServiceImpl implements ViewTypeService {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String id = viewType.getId();
             if (StringUtils.isNotEmpty(id)) {
-                ViewType oldof = this.findById(id);
-                if (null != oldof) {
-                    oldof.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
-                    oldof.setName(viewType.getName());
-                    oldof.setUserName(null == person ? "" : person.getName());
-                    this.save(oldof);
-                    return oldof;
+                ViewType oldViewType = this.findById(id);
+                if (null != oldViewType) {
+                    oldViewType.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
+                    oldViewType.setName(viewType.getName());
+                    oldViewType.setUserName(null == person ? "" : person.getName());
+                    viewTypeRepository.save(oldViewType);
+                    return oldViewType;
                 } else {
-                    return this.save(viewType);
+                    return viewTypeRepository.save(viewType);
                 }
             }
 
-            ViewType newof = new ViewType();
-            newof.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newof.setMark(viewType.getMark());
-            newof.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-            newof.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
-            newof.setName(viewType.getName());
-            newof.setUserName(person.getName());
-            this.save(newof);
-
-            return newof;
+            ViewType newViewType = new ViewType();
+            newViewType.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newViewType.setMark(viewType.getMark());
+            newViewType.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+            newViewType.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
+            newViewType.setName(viewType.getName());
+            newViewType.setUserName(person.getName());
+            viewTypeRepository.save(newViewType);
+            return newViewType;
         } catch (Exception e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    @SuppressWarnings("serial")
     @Override
-    public Page<ViewType> search(int page, int rows, final String keyword) {
+    public Page<ViewType> search(int page, int rows, final String name) {
         Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        return viewTypeRepository.findAll(new Specification<ViewType>() {
-            @Override
-            public Predicate toPredicate(Root<ViewType> root, CriteriaQuery<?> query, CriteriaBuilder builder) {
-                List<Predicate> list = new ArrayList<>();
-                Path<String> nameExp = root.get("name");
-                if (StringUtils.isNotEmpty(keyword)) {
-                    list.add(builder.like(nameExp, "%" + keyword + "%"));
-                }
-                Predicate[] predicates = new Predicate[list.size()];
-                list.toArray(predicates);
-                return builder.and(predicates);
-            }
-        }, pageable);
+        return viewTypeRepository.findByNameContaining(name, pageable);
     }
 }

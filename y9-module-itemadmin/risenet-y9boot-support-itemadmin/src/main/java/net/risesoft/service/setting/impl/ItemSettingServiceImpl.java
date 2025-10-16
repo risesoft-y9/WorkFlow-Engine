@@ -77,25 +77,6 @@ public class ItemSettingServiceImpl implements ItemSettingService {
         return setting;
     }
 
-    @Transactional
-    public void saveObjectFiledAsSettingItem(AbstractSetting setting) {
-        Field[] declaredFields = setting.getClass().getDeclaredFields();
-        for (Field declaredField : declaredFields) {
-            declaredField.setAccessible(true);
-
-            if (!Modifier.isStatic(declaredField.getModifiers())) {
-                ItemSetting itemSetting = new ItemSetting();
-                itemSetting.setKey(setting.getPrefix() + declaredField.getName());
-                try {
-                    itemSetting.setValue(String.valueOf(declaredField.get(setting)));
-                } catch (IllegalAccessException e) {
-                    throw new RuntimeException(e);
-                }
-                this.saveOrUpdate(itemSetting);
-            }
-        }
-    }
-
     @Override
     @Transactional
     public ItemSetting saveOrUpdate(ItemSetting itemSetting) {
@@ -110,6 +91,19 @@ public class ItemSettingServiceImpl implements ItemSettingService {
     @Override
     @Transactional
     public void saveConfSetting(ConfSetting tenantSetting) {
-        this.saveObjectFiledAsSettingItem(tenantSetting);
+        Field[] declaredFields = tenantSetting.getClass().getDeclaredFields();
+        for (Field declaredField : declaredFields) {
+            declaredField.setAccessible(true);
+            if (!Modifier.isStatic(declaredField.getModifiers())) {
+                ItemSetting itemSetting = new ItemSetting();
+                itemSetting.setKey(tenantSetting.getPrefix() + declaredField.getName());
+                try {
+                    itemSetting.setValue(String.valueOf(declaredField.get(tenantSetting)));
+                } catch (IllegalAccessException e) {
+                    throw new RuntimeException(e);
+                }
+                this.saveOrUpdate(itemSetting);
+            }
+        }
     }
 }

@@ -126,13 +126,13 @@ public class ViewTypeRestController {
      *
      * @param page 页码
      * @param rows 条数
-     * @param keyword 视图类型名称
+     * @param name 视图类型名称
      * @return
      */
     @GetMapping(value = "/search")
     public Y9Page<ViewType> search(@RequestParam Integer page, @RequestParam Integer rows,
-        @RequestParam(required = false) String keyword) {
-        Page<ViewType> pageList = viewTypeService.search(page, rows, keyword);
+        @RequestParam(required = false) String name) {
+        Page<ViewType> pageList = viewTypeService.search(page, rows, name);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
             "获取列表成功");
     }
