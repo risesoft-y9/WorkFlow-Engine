@@ -64,6 +64,9 @@ public class UtilServiceImpl implements UtilService {
                 countFollow =
                     officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                 break;
+            default:
+                LOGGER.warn("未定义的itemBoxTypeEnum:{}", itemBoxTypeEnum);
+                break;
         }
         mapTemp.put("chaosongNum", chaosongNum);
         mapTemp.put("speakInfoNum", speakInfoNum);

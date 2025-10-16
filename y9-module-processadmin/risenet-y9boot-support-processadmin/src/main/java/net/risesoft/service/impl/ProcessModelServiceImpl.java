@@ -26,43 +26,45 @@ public class ProcessModelServiceImpl implements ProcessModelService {
          */
         FlowableTenantInfoHolder.setTenantId(sourceTenantId);
         String modelId = null;
-        // List<AbstractModel> sourceModelList = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
-        // for (AbstractModel aModel : sourceModelList) {
-        // if (modelKey.equals(aModel.getKey())) {
-        // modelId = aModel.getId();
-        // break;
-        // }
-        // }
-        // Model sourceModel = modelService.getModel(modelId);
-        // /*
-        // * 切换租户
-        // */
-        // FlowableTenantInfoHolder.setTenantId(targetTenantId);
-        // /*
-        // * 判断目标租户是否存在该流程，不存在才新增
-        // */
-        // boolean has = false;
-        // List<AbstractModel> targetModelList = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
-        // for (AbstractModel aModel : targetModelList) {
-        // if (modelKey.equals(aModel.getKey())) {
-        // has = true;
-        // break;
-        // }
-        // }
-        // if (!has) {
-        // /*
-        // * 复制流程
-        // */
-        // sourceModel.setId(null);
-        // sourceModel.setTenantId(targetTenantId);
-        // Model modelData = modelService.createModel(sourceModel, "管理员");
-        // /*
-        // * 部署流程
-        // */
-        // BpmnModel bpmnModel = modelService.getBpmnModel(modelData);
-        // byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(bpmnModel);
-        // String processName = modelData.getName() + ".bpmn20.xml";
-        // repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
-        // }
+        /*List<AbstractModel> sourceModelList =
+            modelService.getModelsByModelType(org.flowable.ui.modeler.domain.AbstractModel.MODEL_TYPE_BPMN);
+        for (AbstractModel aModel : sourceModelList) {
+            if (modelKey.equals(aModel.getKey())) {
+                modelId = aModel.getId();
+                break;
+            }
+        }
+        Model sourceModel = modelService.getModel(modelId);
+        *//*
+         * 切换租户
+         *//*
+        FlowableTenantInfoHolder.setTenantId(targetTenantId);
+        *//*
+         * 判断目标租户是否存在该流程，不存在才新增
+         *//*
+        boolean has = false;
+        List<AbstractModel> targetModelList =
+            modelService.getModelsByModelType(org.flowable.ui.modeler.domain.AbstractModel.MODEL_TYPE_BPMN);
+        for (AbstractModel aModel : targetModelList) {
+            if (modelKey.equals(aModel.getKey())) {
+                has = true;
+                break;
+            }
+        }
+        if (!has) {
+            *//*
+             * 复制流程
+             *//*
+            sourceModel.setId(null);
+            sourceModel.setTenantId(targetTenantId);
+            Model modelData = modelService.createModel(sourceModel, "管理员");
+            *//*
+             * 部署流程
+             *//*
+            BpmnModel bpmnModel = modelService.getBpmnModel(modelData);
+            byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(bpmnModel);
+            String processName = modelData.getName() + ".bpmn20.xml";
+            repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
+        }*/
     }
 }

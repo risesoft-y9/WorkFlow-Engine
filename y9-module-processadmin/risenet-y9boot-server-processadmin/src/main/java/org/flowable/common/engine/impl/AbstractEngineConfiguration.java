@@ -117,7 +117,6 @@ import org.flowable.common.engine.impl.persistence.entity.data.impl.MybatisPrope
 import org.flowable.common.engine.impl.runtime.Clock;
 import org.flowable.common.engine.impl.service.CommonEngineServiceImpl;
 import org.flowable.common.engine.impl.util.DefaultClockImpl;
-import org.flowable.common.engine.impl.util.IoUtil;
 import org.flowable.common.engine.impl.util.ReflectUtil;
 import org.flowable.common.engine.impl.variable.NoopVariableLengthVerifier;
 import org.flowable.common.engine.impl.variable.VariableLengthVerifier;
@@ -817,7 +816,7 @@ public abstract class AbstractEngineConfiguration {
             if (transactionsExternallyManaged) {
                 transactionFactory = new ManagedTransactionFactory();
                 Properties properties = new Properties();
-                properties.put("closeConnection", "false");
+                properties.put("closeConnection", DB_SCHEMA_UPDATE_FALSE);
                 this.transactionFactory.setProperties(properties);
             } else {
                 transactionFactory = new JdbcTransactionFactory();
@@ -827,10 +826,7 @@ public abstract class AbstractEngineConfiguration {
 
     public void initSqlSessionFactory() {
         if (sqlSessionFactory == null) {
-            InputStream inputStream = null;
-            try {
-                inputStream = getMyBatisXmlConfigurationStream();
-
+            try (InputStream inputStream = getMyBatisXmlConfigurationStream()) {
                 Environment environment = new Environment("default", transactionFactory, dataSource);
                 Reader reader = new InputStreamReader(inputStream);
                 Properties properties = new Properties();
@@ -860,8 +856,6 @@ public abstract class AbstractEngineConfiguration {
 
             } catch (Exception e) {
                 throw new FlowableException("Error while building ibatis SqlSessionFactory: " + e.getMessage(), e);
-            } finally {
-                IoUtil.closeSilently(inputStream);
             }
         } else {
             // This is needed when the SQL Session Factory is created by another engine.

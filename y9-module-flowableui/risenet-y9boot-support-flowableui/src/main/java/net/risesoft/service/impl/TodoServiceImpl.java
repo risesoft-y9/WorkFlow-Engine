@@ -25,6 +25,7 @@ import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.TaskVariableModel;
@@ -113,13 +114,13 @@ public class TodoServiceImpl implements TodoService {
                     String multiInstance = processDefinitionApi
                         .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
                         .getData();
-                    mapTemp.put("isZhuBan", "");
+                    mapTemp.put(FlowableUiConsts.ISZHUBAN, "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
-                        mapTemp.put("isZhuBan", "false");
+                        mapTemp.put(FlowableUiConsts.ISZHUBAN, "false");
                         String sponsorGuid = processParam.getSponsorGuid();
                         if (StringUtils.isNotBlank(sponsorGuid)) {
                             if (task.getAssignee().equals(sponsorGuid)) {
-                                mapTemp.put("isZhuBan", "true");
+                                mapTemp.put(FlowableUiConsts.ISZHUBAN, "true");
                             }
                         }
                         String obj =
@@ -129,10 +130,10 @@ public class TodoServiceImpl implements TodoService {
                                 .getData();
                         int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
-                            mapTemp.put("isZhuBan", "true");
+                            mapTemp.put(FlowableUiConsts.ISZHUBAN, "true");
                         }
                         if (StringUtils.isNotBlank(task.getOwner()) && !task.getOwner().equals(task.getAssignee())) {
-                            mapTemp.put("isZhuBan", "");
+                            mapTemp.put(FlowableUiConsts.ISZHUBAN, "");
                         }
                     }
                     mapTemp.put("isForwarding", false);
@@ -210,14 +211,12 @@ public class TodoServiceImpl implements TodoService {
                     String taskAssignee = task.getAssignee();
                     String description = task.getDescription();
                     String taskName = task.getName();
-                    int priority = task.getPriority();
                     keys = new ArrayList<>();
                     keys.add(SysVariables.TASK_SENDER);
                     vars = variableApi.getVariablesByProcessInstanceId(tenantId, processInstanceId, keys).getData();
                     String taskSender = Strings.nullToEmpty((String)vars.get(SysVariables.TASK_SENDER));
                     int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
                     // 催办的时候任务的优先级+5
-                    Boolean isReminder = String.valueOf(priority).contains("8");
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     String processSerialNumber = processParam.getProcessSerialNumber();
                     processSerialNumbers.add(processSerialNumber);
@@ -235,13 +234,13 @@ public class TodoServiceImpl implements TodoService {
                     String multiInstance = processDefinitionApi
                         .getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
                         .getData();
-                    mapTemp.put("isZhuBan", "");
+                    mapTemp.put(FlowableUiConsts.ISZHUBAN, "");
                     if (multiInstance.equals(SysVariables.PARALLEL)) {
-                        mapTemp.put("isZhuBan", "false");
+                        mapTemp.put(FlowableUiConsts.ISZHUBAN, "false");
                         String sponsorGuid = processParam.getSponsorGuid();
                         if (StringUtils.isNotBlank(sponsorGuid)) {
                             if (task.getAssignee().equals(sponsorGuid)) {
-                                mapTemp.put("isZhuBan", "true");
+                                mapTemp.put(FlowableUiConsts.ISZHUBAN, "true");
                             }
                         }
                         String obj =
@@ -251,10 +250,10 @@ public class TodoServiceImpl implements TodoService {
                                 .getData();
                         int nrOfActiveInstances = obj != null ? Integer.parseInt(obj) : 0;
                         if (nrOfActiveInstances == 1) {
-                            mapTemp.put("isZhuBan", "true");
+                            mapTemp.put(FlowableUiConsts.ISZHUBAN, "true");
                         }
                         if (StringUtils.isNotBlank(task.getOwner()) && !task.getOwner().equals(task.getAssignee())) {
-                            mapTemp.put("isZhuBan", "");
+                            mapTemp.put(FlowableUiConsts.ISZHUBAN, "");
                         }
                     }
                     utilService.setPublicData(mapTemp, processInstanceId, List.of(task), ItemBoxTypeEnum.TODO);

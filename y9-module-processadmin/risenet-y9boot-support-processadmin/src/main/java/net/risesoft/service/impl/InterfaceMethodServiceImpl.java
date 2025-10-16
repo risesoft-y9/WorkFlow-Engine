@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.io.IOException;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
@@ -343,7 +342,7 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                 List<Map<String, Object>> res_list = jdbcTemplate.queryForList(sqlStr.toString(), guid);
                 table.put("paramsList", res_list);
             }
-            LOGGER.info("*********************请求参数返回结果:listmap={}", Y9JsonUtil.writeValueAsString(tableList));
+            LOGGER.info("*********************请求参数返回结果:listMap={}", Y9JsonUtil.writeValueAsString(tableList));
             return tableList;
         } catch (Exception e) {
             final Writer msgResult = new StringWriter();
@@ -360,15 +359,17 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     }
 
     private StringBuilder getSqlStr(String dialect, String tableName) {
-        StringBuilder sqlStr = new StringBuilder();
-        if ("oracle".equals(dialect)) {
-            sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
-        } else if ("dm".equals(dialect)) {
-            sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
-        } else if ("kingbase".equals(dialect)) {
-            sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
-        } else if ("mysql".equals(dialect)) {
-            sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where guid =?");
+        StringBuilder sqlStr;
+        switch (dialect) {
+            case "oracle":
+            case "dm":
+            case "kingbase":
+                sqlStr = new StringBuilder(String.format("SELECT * FROM \"%s\" where guid =?", tableName));
+                break;
+            case "mysql":
+            default:
+                sqlStr = new StringBuilder(String.format("SELECT * FROM %s where guid =?", tableName));
+                break;
         }
         return sqlStr;
     }
@@ -446,9 +447,7 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     public void postMethod(final String processSerialNumber, final String itemId, final InterfaceModel info,
         final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey,
         final Integer loopCounter) throws Exception {
-        CloseableHttpClient httpclient = null;
-        try {
-            httpclient = HttpClients.createDefault();
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
             HttpPost httpPost = new HttpPost(info.getInterfaceAddress());
             httpPost.addHeader("Content-Type", "application/json;charset=utf-8");
             // 默认添加请求头
@@ -578,14 +577,6 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                 info.getInterfaceAddress(), msg);
             if (info.getAbnormalStop().equals("1")) {
                 throw new Exception("调用接口失败_postMethod：" + info.getInterfaceAddress());
-            }
-        } finally {
-            if (httpclient != null) {
-                try {
-                    httpclient.close();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
             }
         }
     }

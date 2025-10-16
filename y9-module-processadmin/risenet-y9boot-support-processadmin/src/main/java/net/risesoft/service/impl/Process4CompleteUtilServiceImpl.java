@@ -66,7 +66,7 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
         jdbcTemplate.update(deleteSql, processInstanceId);
         deleteSql = "DELETE FROM ACT_GE_BYTEARRAY WHERE ID_ IN (SELECT * FROM ( SELECT b.ID_ FROM"
             + " ACT_GE_BYTEARRAY b LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_"
-            + "	WHERE v.PROC_INST_ID_ = ? AND v.NAME_ = 'users' ) TT )";
+            + " WHERE v.PROC_INST_ID_ = ? AND v.NAME_ = 'users') TT )";
         jdbcTemplate.update(deleteSql, processInstanceId);
 
         deleteSql = "DELETE from ACT_HI_VARINST where PROC_INST_ID_ = ?";
@@ -91,51 +91,51 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
 
     private String getActHiActinstSql(String year, String processInstanceId) {
         return "INSERT INTO ACT_HI_ACTINST_" + year + " ( ID_,REV_,PROC_DEF_ID_,PROC_INST_ID_,"
-            + "	EXECUTION_ID_,ACT_ID_,TASK_ID_,CALL_PROC_INST_ID_,ACT_NAME_,ACT_TYPE_,ASSIGNEE_,START_TIME_,"
-            + "	END_TIME_,DURATION_,DELETE_REASON_,ENANT_ID_ SELECT ID_,REV_,PROC_DEF_ID_,PROC_INST_ID_,"
-            + "	EXECUTION_ID_,ACT_ID_,TASK_ID_,CALL_PROC_INST_ID_,ACT_NAME_,ACT_TYPE_,ASSIGNEE_,START_TIME_,"
-            + "	END_TIME_,DURATION_,DELETE_REASON_,TENANT_ID_ FROM ACT_HI_ACTINST A WHERE A.PROC_INST_ID_ = '"
+            + " EXECUTION_ID_,ACT_ID_,TASK_ID_,CALL_PROC_INST_ID_,ACT_NAME_,ACT_TYPE_,ASSIGNEE_,START_TIME_,"
+            + " END_TIME_,DURATION_,DELETE_REASON_,ENANT_ID_ SELECT ID_,REV_,PROC_DEF_ID_,PROC_INST_ID_,"
+            + " EXECUTION_ID_,ACT_ID_,TASK_ID_,CALL_PROC_INST_ID_,ACT_NAME_,ACT_TYPE_,ASSIGNEE_,START_TIME_,"
+            + " END_TIME_,DURATION_,DELETE_REASON_,TENANT_ID_ FROM ACT_HI_ACTINST A WHERE A.PROC_INST_ID_ = '"
             + processInstanceId + "'";
     }
 
     private String getActHiIdentiyLinkSql(String year, String processInstanceId) {
         return "INSERT INTO ACT_HI_IDENTITYLINK_" + year + " ( ID_,GROUP_ID_,TYPE_,USER_ID_,TASK_ID_,"
-            + "	CREATE_TIME_,PROC_INST_ID_,SCOPE_ID_,SCOPE_TYPE_,SCOPE_DEFINITION_ID_) SELECT ID_,GROUP_ID_,"
-            + "	TYPE_,USER_ID_,TASK_ID_,CREATE_TIME_,PROC_INST_ID_,SCOPE_ID_,SCOPE_TYPE_,SCOPE_DEFINITION_ID_ FROM"
-            + "	ACT_HI_IDENTITYLINK i WHERE i.PROC_INST_ID_ = '" + processInstanceId + "'";
+            + " CREATE_TIME_,PROC_INST_ID_,SCOPE_ID_,SCOPE_TYPE_,SCOPE_DEFINITION_ID_) SELECT ID_,GROUP_ID_,"
+            + " TYPE_,USER_ID_,TASK_ID_,CREATE_TIME_,PROC_INST_ID_,SCOPE_ID_,SCOPE_TYPE_,SCOPE_DEFINITION_ID_ FROM"
+            + " ACT_HI_IDENTITYLINK i WHERE i.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
     private String getActHiProcinstSql(String year, String processInstanceId) {
         return "INSERT INTO ACT_HI_PROCINST_" + year + " (ID_,REV_,PROC_INST_ID_,"
-            + "	BUSINESS_KEY_,PROC_DEF_ID_,START_TIME_,END_TIME_,DURATION_,"
-            + "	START_USER_ID_,START_ACT_ID_,END_ACT_ID_,SUPER_PROCESS_INSTANCE_ID_,"
-            + "	DELETE_REASON_,TENANT_ID_,NAME_,CALLBACK_ID_,CALLBACK_TYPE_" + ") SELECT"
-            + "	ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PROC_DEF_ID_,START_TIME_,"
-            + "	END_TIME_,DURATION_,START_USER_ID_,START_ACT_ID_,END_ACT_ID_,"
-            + "	SUPER_PROCESS_INSTANCE_ID_,DELETE_REASON_,TENANT_ID_,NAME_,"
-            + "	CALLBACK_ID_,CALLBACK_TYPE_ FROM ACT_HI_PROCINST RES WHERE RES.PROC_INST_ID_ = '" + processInstanceId
+            + " BUSINESS_KEY_,PROC_DEF_ID_,START_TIME_,END_TIME_,DURATION_,"
+            + " START_USER_ID_,START_ACT_ID_,END_ACT_ID_,SUPER_PROCESS_INSTANCE_ID_,"
+            + " DELETE_REASON_,TENANT_ID_,NAME_,CALLBACK_ID_,CALLBACK_TYPE_" + ") SELECT"
+            + " ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PROC_DEF_ID_,START_TIME_,"
+            + " END_TIME_,DURATION_,START_USER_ID_,START_ACT_ID_,END_ACT_ID_,"
+            + " SUPER_PROCESS_INSTANCE_ID_,DELETE_REASON_,TENANT_ID_,NAME_,"
+            + " CALLBACK_ID_,CALLBACK_TYPE_ FROM ACT_HI_PROCINST RES WHERE RES.PROC_INST_ID_ = '" + processInstanceId
             + "'";
     }
 
     private String getActHiTaskinstSql(String year, String processInstanceId) {
         return "INSERT INTO ACT_HI_TASKINST_" + year + " ( ID_,REV_,PROC_DEF_ID_,TASK_DEF_ID_,"
-            + "	TASK_DEF_KEY_,PROC_INST_ID_,EXECUTION_ID_,SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,"
-            + "	SCOPE_DEFINITION_ID_,PARENT_TASK_ID_,NAME_,DESCRIPTION_,OWNER_,ASSIGNEE_,START_TIME_,"
-            + "	CLAIM_TIME_,END_TIME_,DURATION_,DELETE_REASON_,PRIORITY_,DUE_DATE_,FORM_KEY_,CATEGORY_,"
-            + "	TENANT_ID_,LAST_UPDATED_TIME_) SELECT ID_,REV_,PROC_DEF_ID_,TASK_DEF_ID_,TASK_DEF_KEY_,"
-            + "	PROC_INST_ID_,EXECUTION_ID_,SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,SCOPE_DEFINITION_ID_,"
-            + "	PARENT_TASK_ID_,NAME_,DESCRIPTION_,OWNER_,ASSIGNEE_,START_TIME_,CLAIM_TIME_,END_TIME_,DURATION_,"
-            + "	DELETE_REASON_,PRIORITY_,DUE_DATE_,FORM_KEY_,CATEGORY_,TENANT_ID_,LAST_UPDATED_TIME_ FROM"
-            + "	ACT_HI_TASKINST T WHERE T.PROC_INST_ID_ = '" + processInstanceId + "'";
+            + " TASK_DEF_KEY_,PROC_INST_ID_,EXECUTION_ID_,SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,"
+            + " SCOPE_DEFINITION_ID_,PARENT_TASK_ID_,NAME_,DESCRIPTION_,OWNER_,ASSIGNEE_,START_TIME_,"
+            + " CLAIM_TIME_,END_TIME_,DURATION_,DELETE_REASON_,PRIORITY_,DUE_DATE_,FORM_KEY_,CATEGORY_,"
+            + " TENANT_ID_,LAST_UPDATED_TIME_) SELECT ID_,REV_,PROC_DEF_ID_,TASK_DEF_ID_,TASK_DEF_KEY_,"
+            + " PROC_INST_ID_,EXECUTION_ID_,SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,SCOPE_DEFINITION_ID_,"
+            + " PARENT_TASK_ID_,NAME_,DESCRIPTION_,OWNER_,ASSIGNEE_,START_TIME_,CLAIM_TIME_,END_TIME_,DURATION_,"
+            + " DELETE_REASON_,PRIORITY_,DUE_DATE_,FORM_KEY_,CATEGORY_,TENANT_ID_,LAST_UPDATED_TIME_ FROM"
+            + " ACT_HI_TASKINST T WHERE T.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
     private String getActHiVarinstSql(String year, String processInstanceId) {
         return "INSERT INTO ACT_HI_VARINST_" + year + " (ID_,REV_,PROC_INST_ID_,EXECUTION_ID_,TASK_ID_,"
-            + "	NAME_,VAR_TYPE_,SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,BYTEARRAY_ID_,DOUBLE_,LONG_,TEXT_,TEXT2_,"
-            + "	CREATE_TIME_,LAST_UPDATED_TIME_ ) SELECT ID_, REV_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_,"
-            + "	NAME_, VAR_TYPE_, SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,BYTEARRAY_ID_,"
-            + "	DOUBLE_,LONG_,TEXT_,TEXT2_,CREATE_TIME_,LAST_UPDATED_TIME_" + " FROM ACT_HI_VARINST v" + " WHERE"
-            + "	v.PROC_INST_ID_ = '" + processInstanceId
+            + " NAME_,VAR_TYPE_,SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,BYTEARRAY_ID_,DOUBLE_,LONG_,TEXT_,TEXT2_,"
+            + " CREATE_TIME_,LAST_UPDATED_TIME_ ) SELECT ID_, REV_, PROC_INST_ID_, EXECUTION_ID_, TASK_ID_,"
+            + " NAME_, VAR_TYPE_, SCOPE_ID_,SUB_SCOPE_ID_,SCOPE_TYPE_,BYTEARRAY_ID_,"
+            + " DOUBLE_,LONG_,TEXT_,TEXT2_,CREATE_TIME_,LAST_UPDATED_TIME_" + " FROM ACT_HI_VARINST v" + " WHERE"
+            + " v.PROC_INST_ID_ = '" + processInstanceId
             + "' and v.NAME_ not in ('nrOfActiveInstances','nrOfCompletedInstances','nrOfInstances','loopCounter','elementUser')";
     }
 
@@ -156,7 +156,7 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
             }
             String sql = "SELECT P .PROC_INST_ID_,TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
                 + " TO_CHAR(P .END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_" + " FROM"
-                + "	ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = ?";
+                + " ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = ?";
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)

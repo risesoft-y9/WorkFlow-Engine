@@ -117,8 +117,8 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
                 .asc()
                 .list();
         } else {
-            String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE"
-                + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.START_TIME_ ASC";
+            String sql = "SELECT DISTINCT" + " RES.*" + " FROM" + " ACT_HI_TASKINST_" + year + " RES" + " WHERE"
+                + " RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + " RES.START_TIME_ ASC";
             return historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list();
         }
     }
@@ -126,8 +126,8 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
     @Override
     public List<HistoricTaskInstance> listByProcessInstanceIdOrderByEndTimeAsc(String processInstanceId, String year) {
         if (StringUtils.isNotEmpty(year)) {
-            String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE"
-                + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.END_TIME_ ASC";
+            String sql = "SELECT DISTINCT" + " RES.*" + " FROM" + " ACT_HI_TASKINST_" + year + " RES" + " WHERE"
+                + " RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + " RES.END_TIME_ ASC";
             return historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list();
         } else {
             return historyService.createHistoricTaskInstanceQuery()
@@ -141,8 +141,8 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
     @Override
     public List<HistoricTaskInstance> listByProcessInstanceIdOrderByEndTimeDesc(String processInstanceId, String year) {
         if (StringUtils.isNotEmpty(year)) {
-            String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE"
-                + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.END_TIME_ DESC";
+            String sql = "SELECT DISTINCT" + " RES.*" + " FROM" + " ACT_HI_TASKINST_" + year + " RES" + " WHERE"
+                + " RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + " RES.END_TIME_ DESC";
             return historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list();
         } else {
             return historyService.createHistoricTaskInstanceQuery()

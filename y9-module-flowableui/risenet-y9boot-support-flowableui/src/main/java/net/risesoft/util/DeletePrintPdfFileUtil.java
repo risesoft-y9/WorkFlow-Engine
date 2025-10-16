@@ -28,10 +28,6 @@ public class DeletePrintPdfFileUtil {
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
-    public DeletePrintPdfFileUtil() {
-
-    }
-
     /**
      * 定时任务，定时删除打印转换生成的pdf文件
      */
