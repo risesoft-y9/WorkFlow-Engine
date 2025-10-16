@@ -105,7 +105,7 @@ public class DocumentWpsController {
     /**
      * 密码
      */
-    private static final String yun_Wps_User_Password = "Aa123456";
+    private static final String YUN_WPS_USER_PASSWORD = "Aa123456";
     /**
      * 云文档下载路径
      */
@@ -121,7 +121,7 @@ public class DocumentWpsController {
     /**
      * 云文档路径
      */
-    private static final String yun_Wps_Base_Path_Graph = "http://yun.test.cn/graph";
+    private static final String YUN_WPS_BASE_PATH_GRAPH = "http://yun.test.cn/graph";
     private final DraftApi draftApi;
     private final OrgUnitApi orgUnitApi;
     private final ProcessParamApi processParamApi;
@@ -173,7 +173,7 @@ public class DocumentWpsController {
             HttpURLConnection conn;
             try {
                 AppFilesApi apiInstance =
-                    new AppFilesApi(yun_Wps_Base_Path_Graph, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
+                    new AppFilesApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
                 FileContent result =
                     apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
                 LOGGER.debug("result:{}", result);
@@ -264,16 +264,16 @@ public class DocumentWpsController {
             // TaoHongService taoHongService = new TaoHongService();
             // TaoHongService.word2RedDocument(content, destDocx);
 
-            String wpsSid = new YunApi(YUN_WPS_BASE_PATH).yunLogin(YUN_WPS_USER_NAME, yun_Wps_User_Password);
+            String wpsSid = new YunApi(YUN_WPS_BASE_PATH).yunLogin(YUN_WPS_USER_NAME, YUN_WPS_USER_PASSWORD);
             LOGGER.debug("wpsSid:{}", wpsSid);
 
-            UserOrgApi apiInstance0 = new UserOrgApi(yun_Wps_Base_Path_Graph, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET,
+            UserOrgApi apiInstance0 = new UserOrgApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET,
                 YUN_WPS_REDIRECT_URI, YUN_WPS_USER_SCOPE, wpsSid);
             User result0 = apiInstance0.userGetProfile();
             LOGGER.debug("User:{}", result0);
 
             AppFilesApi apiInstance =
-                new AppFilesApi(yun_Wps_Base_Path_Graph, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
+                new AppFilesApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
 
             DocumentWpsModel documentWps =
                 documentWpsApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
@@ -431,7 +431,7 @@ public class DocumentWpsController {
             file.transferTo(tempFile);
 
             AppFilesApi appFilesApi =
-                new AppFilesApi(yun_Wps_Base_Path_Graph, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
+                new AppFilesApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
 
             UploadTransactionCreateRequest uploadRequest = new UploadTransactionCreateRequest();
             uploadRequest.setFileName(this.genRealFileName(file.getOriginalFilename()));
