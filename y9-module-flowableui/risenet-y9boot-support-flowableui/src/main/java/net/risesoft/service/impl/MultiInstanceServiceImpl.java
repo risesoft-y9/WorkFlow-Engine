@@ -20,6 +20,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.SmsDetailModel;
@@ -215,16 +216,16 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
                 mapTemp.put("assigneeId", user);
                 mapTemp.put("assigneeName", personTemp == null ? "" : personTemp.getName());
                 if (user.equals(currentAssignee)) {
-                    mapTemp.put("status", "正在办理");
+                    mapTemp.put(FlowableUiConsts.STATUS, "正在办理");
                     listMap.add(mapTemp);
                     notStart = true;
                     num += 1;
                     continue;
                 }
                 if (notStart) {
-                    mapTemp.put("status", "未开始");
+                    mapTemp.put(FlowableUiConsts.STATUS, "未开始");
                 } else {
-                    mapTemp.put("status", "已办理");
+                    mapTemp.put(FlowableUiConsts.STATUS, "已办理");
                 }
                 listMap.add(mapTemp);
                 num += 1;

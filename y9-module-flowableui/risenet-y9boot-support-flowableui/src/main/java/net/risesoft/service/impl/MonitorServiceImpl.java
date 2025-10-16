@@ -329,11 +329,11 @@ public class MonitorServiceImpl implements MonitorService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取监控办件列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取列表失败", e);
+            LOGGER.error("获取监控办件列表失败！出现异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取监控办件列表失败！！！");
     }
 
     @Override
@@ -344,9 +344,9 @@ public class MonitorServiceImpl implements MonitorService {
             return chaoSongApi.searchAllList(tenantId, searchName, itemId, senderName, userName, state, year, page,
                 rows);
         } catch (Exception e) {
-            LOGGER.error("获取列表失败", e);
+            LOGGER.error("获取监控抄送列表失败", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取监控抄送列表失败");
     }
 
     @Override
@@ -417,11 +417,11 @@ public class MonitorServiceImpl implements MonitorService {
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取监控在办列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取列表失败", e);
+            LOGGER.error("获取监控在办列表失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取监控在办列表失败");
     }
 
     @Override
@@ -468,16 +468,16 @@ public class MonitorServiceImpl implements MonitorService {
                     mapTemp.put(FlowableUiConsts.LEVEL_KEY, level);
                     mapTemp.put(FlowableUiConsts.NUMBER_KEY, number);
                 } catch (Exception e) {
-                    LOGGER.error("获取列表失败" + processInstanceId, e);
+                    LOGGER.error("获取监控办结列表失败，processInstanceId：" + processInstanceId, e);
                 }
                 mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, serialNumber + 1);
                 serialNumber += 1;
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取监控办结列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取列表失败", e);
+            LOGGER.error("获取监控办结列表失败，出现异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取监控办结列表失败！");
     }
 }

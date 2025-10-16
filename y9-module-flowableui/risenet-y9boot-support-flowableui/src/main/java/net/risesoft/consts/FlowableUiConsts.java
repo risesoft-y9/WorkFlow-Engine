@@ -23,6 +23,7 @@ public class FlowableUiConsts {
     public static final String NUMBER_KEY = "number";
     public static final String ITEMBOX_KEY = "itembox";
     public static final String TASKID_KEY = "taskId";
+    public static final String USER_ID_KEY = "USER_ID_";
 
     /**
      * 私有构造函数，防止实例化
