@@ -101,7 +101,7 @@ public class ProcessModelVueController {
         newModel.setName(name);
         newModel.setKey(key);
         newModel.setDescription(description);
-        newModel.setModelType(Model.MODEL_TYPE_BPMN);
+        newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
         newModel.setModelEditorJson(editorNode.toString());
         newModel.setLastUpdatedBy(personName);
         newModel.setCreatedBy(personName);
@@ -176,7 +176,7 @@ public class ProcessModelVueController {
     @GetMapping(value = "/getModelList")
     public Y9Result<List<ModelVO>> getModelList() {
         List<ModelVO> items = new ArrayList<>();
-        List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
+        List<AbstractModel> list = modelService.getModelsByModelType(AbstractModel.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition;
         // if (tenantManager || ManagerLevelEnum.SYSTEM_MANAGER.equals(userInfo.getManagerLevel())) {
         for (AbstractModel model : list) {

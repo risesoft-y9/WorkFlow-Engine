@@ -7,7 +7,6 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.impl.interceptor.Command;
 import org.flowable.common.engine.impl.interceptor.CommandContext;
-import org.flowable.engine.delegate.TaskListener;
 import org.flowable.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.flowable.engine.impl.persistence.entity.HistoricProcessInstanceEntity;
 import org.flowable.engine.impl.persistence.entity.HistoricProcessInstanceEntityManager;
@@ -17,6 +16,7 @@ import org.flowable.identitylink.service.IdentityLinkService;
 import org.flowable.identitylink.service.impl.persistence.entity.HistoricIdentityLinkEntity;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.task.service.TaskService;
+import org.flowable.task.service.delegate.BaseTaskListener;
 import org.flowable.task.service.impl.persistence.entity.TaskEntityImpl;
 
 /**
@@ -88,14 +88,13 @@ public class RecoveryTodoCommand implements Command<Void> {
         taskEntity.setVariables(pVarMap);
         taskEntity.setVariablesLocal(tVarMap);
         taskService.updateTask(taskEntity, false);
-
         /*
          * 触发任务产生事件
          */
         ProcessEngineConfigurationImpl processEngineConfiguration =
             org.flowable.engine.impl.util.CommandContextUtil.getProcessEngineConfiguration(commandContext);
         processEngineConfiguration.getListenerNotificationHelper()
-            .executeTaskListeners(taskEntity, TaskListener.EVENTNAME_CREATE);
+            .executeTaskListeners(taskEntity, BaseTaskListener.EVENTNAME_CREATE);
         /*
          * 2-设置历史任务办结时间为null
          */

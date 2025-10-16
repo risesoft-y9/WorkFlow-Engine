@@ -55,7 +55,7 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
             FlowableTenantInfoHolder.setTenantId(sourceTenantId);
 
             String modelId = null;
-            List<AbstractModel> sourceModelList = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
+            List<AbstractModel> sourceModelList = modelService.getModelsByModelType(AbstractModel.MODEL_TYPE_BPMN);
             for (AbstractModel aModel : sourceModelList) {
                 if (modelKey.equals(aModel.getKey())) {
                     modelId = aModel.getId();
@@ -71,7 +71,7 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
              * 判断目标租户是否存在该流程，不存在才新增
              */
             boolean has = false;
-            List<AbstractModel> targetModelList = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
+            List<AbstractModel> targetModelList = modelService.getModelsByModelType(AbstractModel.MODEL_TYPE_BPMN);
             for (AbstractModel aModel : targetModelList) {
                 if (modelKey.equals(aModel.getKey())) {
                     has = true;
@@ -91,7 +91,9 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
                 BpmnModel bpmnModel = modelService.getBpmnModel(modelData);
                 byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(bpmnModel);
                 String processName = modelData.getName() + ".bpmn20.xml";
-                repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes)
+                repositoryService.createDeployment()
+                    .name(modelData.getName())
+                    .addBytes(processName, bpmnBytes)
                     .deploy();
             }
         } catch (Exception e) {

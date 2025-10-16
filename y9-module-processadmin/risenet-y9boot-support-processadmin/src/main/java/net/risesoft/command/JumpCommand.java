@@ -18,7 +18,6 @@ import org.flowable.bpmn.model.UserTask;
 import org.flowable.common.engine.impl.interceptor.Command;
 import org.flowable.common.engine.impl.interceptor.CommandContext;
 import org.flowable.engine.FlowableEngineAgenda;
-import org.flowable.engine.delegate.TaskListener;
 import org.flowable.engine.impl.bpmn.behavior.MultiInstanceActivityBehavior;
 import org.flowable.engine.impl.cfg.ProcessEngineConfigurationImpl;
 import org.flowable.engine.impl.persistence.entity.ExecutionEntity;
@@ -27,6 +26,7 @@ import org.flowable.engine.impl.util.CommandContextUtil;
 import org.flowable.engine.impl.util.ProcessDefinitionUtil;
 import org.flowable.identitylink.service.IdentityLinkService;
 import org.flowable.task.service.TaskService;
+import org.flowable.task.service.delegate.BaseTaskListener;
 import org.flowable.task.service.impl.persistence.entity.TaskEntity;
 import org.flowable.variable.service.VariableService;
 
@@ -91,8 +91,10 @@ public class JumpCommand implements Command<Void> {
         List<FlowElement> subList = new ArrayList<>();
         list.stream().filter(flowElement -> flowElement instanceof SubProcess).forEach(flowElement -> {
             SubProcess subProcess = (SubProcess)flowElement;
-            subList.addAll(subProcess.getFlowElements().stream()
-                .filter(subFlowElement -> subFlowElement instanceof UserTask).collect(Collectors.toList()));
+            subList.addAll(subProcess.getFlowElements()
+                .stream()
+                .filter(subFlowElement -> subFlowElement instanceof UserTask)
+                .collect(Collectors.toList()));
         });
         /*
          * 子流程内部节点处理
@@ -102,7 +104,8 @@ public class JumpCommand implements Command<Void> {
         // 子流程内部节点
         if (currentActivity == null) {
             Optional<FlowElement> feOptional = subList.stream()
-                .filter(flowElement -> taskEntity.getTaskDefinitionKey().equals(flowElement.getId())).findFirst();
+                .filter(flowElement -> taskEntity.getTaskDefinitionKey().equals(flowElement.getId()))
+                .findFirst();
             if (feOptional.isPresent()) {
                 currentActivity = (Activity)feOptional.get();
                 isSubProcessNode = true;
@@ -123,8 +126,8 @@ public class JumpCommand implements Command<Void> {
             identityLinkService.deleteIdentityLinksByTaskId(taskId);
             variableService.deleteVariablesByExecutionId(executionId);
             taskService.deleteTask(taskEntity, true);
-            org.flowable.engine.impl.util.CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity,
-                executionEntity, reason, new Date());
+            org.flowable.engine.impl.util.CommandContextUtil.getHistoryManager()
+                .recordTaskEnd(taskEntity, executionEntity, reason, new Date());
             org.flowable.engine.impl.util.CommandContextUtil.getActivityInstanceEntityManager()
                 .recordActivityEnd(executionEntity, reason);
         }
@@ -133,8 +136,8 @@ public class JumpCommand implements Command<Void> {
          */
         ProcessEngineConfigurationImpl processEngineConfiguration =
             org.flowable.engine.impl.util.CommandContextUtil.getProcessEngineConfiguration(commandContext);
-        processEngineConfiguration.getListenerNotificationHelper().executeTaskListeners(taskEntity,
-            TaskListener.EVENTNAME_DELETE);
+        processEngineConfiguration.getListenerNotificationHelper()
+            .executeTaskListeners(taskEntity, BaseTaskListener.EVENTNAME_DELETE);
 
         /*
          * 获取目标节点的信息，并设置目标节点为当前执行实体的当前节点

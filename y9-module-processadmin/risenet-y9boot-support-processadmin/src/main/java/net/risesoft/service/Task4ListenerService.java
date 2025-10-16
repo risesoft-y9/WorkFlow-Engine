@@ -20,16 +20,6 @@ public interface Task4ListenerService {
     void task4AssignmentListener(final DelegateTask task, final Map<String, Object> variables);
 
     /**
-     * 异步处理
-     *
-     * @param task 任务
-     * @param variables 流程变量
-     * @param localVariables 任务变量
-     */
-    void task4CreateListener(final DelegateTask task, final Map<String, Object> variables,
-                             final Map<String, Object> localVariables);
-
-    /**
      * 异步处理，记录岗位/人员名称
      *
      * @param task 任务

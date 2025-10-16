@@ -67,13 +67,6 @@ public class Task4ListenerServiceImpl implements Task4ListenerService {
 
     @Override
     @Async
-    public void task4CreateListener(final DelegateTask task, final Map<String, Object> variables,
-        final Map<String, Object> localVariables) {
-
-    }
-
-    @Override
-    @Async
     public void task4DeleteListener(final DelegateTask task, final Map<String, Object> variables) {
         String tenantId = (String)variables.get("tenantId");
         Y9LoginUserHolder.setTenantId(tenantId);
