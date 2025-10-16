@@ -1,5 +1,7 @@
 package net.risesoft.service.impl;
 
+import static net.risesoft.consts.FlowableUiConsts.ITEMID_KEY;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -21,6 +23,7 @@ import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.ChaoSongModel;
@@ -42,15 +45,10 @@ import net.risesoft.y9.util.Y9Util;
 public class MonitorServiceImpl implements MonitorService {
 
     private final TaskApi taskApi;
-
     private final ItemApi itemApi;
-
     private final OrgUnitApi orgUnitApi;
-
     private final OfficeDoneInfoApi officeDoneInfoApi;
-
     private final ChaoSongApi chaoSongApi;
-
     private final IdentityApi identityApi;
 
     /**
@@ -233,43 +231,43 @@ public class MonitorServiceImpl implements MonitorService {
                     level = model.getUrgency();
                     number = model.getDocNumber();
                     String completer = model.getUserComplete();
-                    mapTemp.put("itemName", model.getItemName());
+                    mapTemp.put(FlowableUiConsts.ITEMNAME_KEY, model.getItemName());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("processDefinitionKey", model.getProcessDefinitionKey());
-                    mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime",
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, processDefinitionId);
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, model.getProcessDefinitionKey());
+                    mapTemp.put(FlowableUiConsts.STARTTIME_KEY, startTime);
+                    mapTemp.put(FlowableUiConsts.ENDTIME_KEY,
                         StringUtils.isBlank(model.getEndTime()) ? "--" : model.getEndTime().substring(0, 16));
-                    mapTemp.put("taskDefinitionKey", "");
-                    mapTemp.put("taskAssignee", completer);
-                    mapTemp.put("creatUserName", model.getCreatUserName());
-                    mapTemp.put("itemId", model.getItemId());
-                    mapTemp.put("level", StringUtils.defaultString(level));
-                    mapTemp.put("number", StringUtils.defaultString(number));
-                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
+                    mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, "");
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, completer);
+                    mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, model.getCreatUserName());
+                    mapTemp.put(ITEMID_KEY, model.getItemId());
+                    mapTemp.put(FlowableUiConsts.LEVEL_KEY, StringUtils.defaultString(level));
+                    mapTemp.put(FlowableUiConsts.NUMBER_KEY, StringUtils.defaultString(number));
+                    mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(model.getEndTime())) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
                         String taskIds = listTemp.get(0), assigneeNames = listTemp.get(2);
-                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskId",
+                        mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
+                        mapTemp.put(FlowableUiConsts.TASKID_KEY,
                             listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                        mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put("itembox", new HashMap<String, String>(16));
+                        mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
+                        mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, new HashMap<String, String>(16));
                     }
                 } catch (Exception e) {
-                    LOGGER.error("获取列表失败{}", processInstanceId, e);
+                    LOGGER.error("获取单位所有件列表失败，异常：{}", processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取单位所有件列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取列表失败", e);
+            LOGGER.error("获取单位所有件列表失败，异常如下：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取单位所有件列表失败!");
     }
 
     @Override
@@ -297,37 +295,37 @@ public class MonitorServiceImpl implements MonitorService {
                     String level = hpim.getUrgency();
                     String number = hpim.getDocNumber();
                     String completer = hpim.getUserComplete();
-                    mapTemp.put("itemName", hpim.getItemName());
+                    mapTemp.put(FlowableUiConsts.ITEMNAME_KEY, hpim.getItemName());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("processDefinitionKey", hpim.getProcessDefinitionKey());
-                    mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime",
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, processDefinitionId);
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, hpim.getProcessDefinitionKey());
+                    mapTemp.put(FlowableUiConsts.STARTTIME_KEY, startTime);
+                    mapTemp.put(FlowableUiConsts.ENDTIME_KEY,
                         StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
-                    mapTemp.put("taskDefinitionKey", "");
-                    mapTemp.put("taskAssignee", completer);
-                    mapTemp.put("creatUserName", hpim.getCreatUserName());
-                    mapTemp.put("itemId", hpim.getItemId());
-                    mapTemp.put("level", level == null ? "" : level);
-                    mapTemp.put("number", number == null ? "" : number);
-                    mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
+                    mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, "");
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, completer);
+                    mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, hpim.getCreatUserName());
+                    mapTemp.put(ITEMID_KEY, hpim.getItemId());
+                    mapTemp.put(FlowableUiConsts.LEVEL_KEY, level == null ? "" : level);
+                    mapTemp.put(FlowableUiConsts.NUMBER_KEY, number == null ? "" : number);
+                    mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(hpim.getEndTime())) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
                         String taskIds = listTemp.get(0), assigneeNames = listTemp.get(2);
-                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskId",
+                        mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
+                        mapTemp.put(FlowableUiConsts.TASKID_KEY,
                             listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                        mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put("itembox", listTemp.get(3));
+                        mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
+                        mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, listTemp.get(3));
                     }
                 } catch (Exception e) {
                     LOGGER.error("获取任务信息失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
+                mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, serialNumber + 1);
                 serialNumber += 1;
                 items.add(mapTemp);
             }
@@ -384,21 +382,21 @@ public class MonitorServiceImpl implements MonitorService {
                 processInstanceId = model.getProcessInstanceId();
                 try {
                     String processDefinitionId = model.getProcessDefinitionId();
-                    mapTemp.put("itemName", itemName);
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("processDefinitionKey", processDefinitionKey);
+                    mapTemp.put(FlowableUiConsts.ITEMNAME_KEY, itemName);
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, processDefinitionKey);
                     // processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId);
                     String processSerialNumber = model.getProcessSerialNumber();
                     String documentTitle = StringUtils.isBlank(model.getTitle()) ? "无标题" : model.getTitle();
                     String level = model.getUrgency();
                     String number = model.getDocNumber();
-                    mapTemp.put("creatUserName", model.getCreatUserName());
+                    mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, model.getCreatUserName());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-                    mapTemp.put("processDefinitionId", processDefinitionId);
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, processDefinitionId);
                     mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
-                    mapTemp.put("itemId", itemId);
-                    mapTemp.put("level", level == null ? "" : level);
-                    mapTemp.put("number", number == null ? "" : number);
+                    mapTemp.put(ITEMID_KEY, itemId);
+                    mapTemp.put(FlowableUiConsts.LEVEL_KEY, level == null ? "" : level);
+                    mapTemp.put(FlowableUiConsts.NUMBER_KEY, number == null ? "" : number);
                     mapTemp.put("status", 1);
                     mapTemp.put("taskDueDate", "");
 
@@ -406,16 +404,16 @@ public class MonitorServiceImpl implements MonitorService {
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
                     String taskIds = listTemp.get(0), assigneeNames = listTemp.get(1);
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                    mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
+                    mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
                     mapTemp.put("taskName", taskList.get(0).getName());
                     mapTemp.put("taskCreateTime", model.getStartTime().substring(0, 16));
-                    mapTemp.put("taskId", taskIds);
-                    mapTemp.put("taskAssignee", assigneeNames);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskIds);
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
                     mapTemp.put("isReminder", isReminder);
                 } catch (Exception e) {
                     LOGGER.error("获取列表失败{}", processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
+                mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, serialNumber + 1);
                 serialNumber += 1;
                 items.add(mapTemp);
             }
@@ -455,24 +453,24 @@ public class MonitorServiceImpl implements MonitorService {
                     String level = hpim.getUrgency();
                     String number = hpim.getDocNumber();
                     String completer = hpim.getUserComplete();
-                    mapTemp.put("itemName", itemName);
+                    mapTemp.put(FlowableUiConsts.ITEMNAME_KEY, itemName);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("processDefinitionId", processDefinitionId);
-                    mapTemp.put("processDefinitionKey", processDefinitionKey);
-                    mapTemp.put("creatUserName", hpim.getCreatUserName());
-                    mapTemp.put("startTime", startTime);
-                    mapTemp.put("endTime", endTime);
-                    mapTemp.put("taskDefinitionKey", "");
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, processDefinitionId);
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, processDefinitionKey);
+                    mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, hpim.getCreatUserName());
+                    mapTemp.put(FlowableUiConsts.STARTTIME_KEY, startTime);
+                    mapTemp.put(FlowableUiConsts.ENDTIME_KEY, endTime);
+                    mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, "");
                     mapTemp.put("user4Complete", completer);
-                    mapTemp.put("itemId", itemId);
-                    mapTemp.put("level", level);
-                    mapTemp.put("number", number);
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, itemId);
+                    mapTemp.put(FlowableUiConsts.LEVEL_KEY, level);
+                    mapTemp.put(FlowableUiConsts.NUMBER_KEY, number);
                 } catch (Exception e) {
                     LOGGER.error("获取列表失败" + processInstanceId, e);
                 }
-                mapTemp.put("serialNumber", serialNumber + 1);
+                mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, serialNumber + 1);
                 serialNumber += 1;
                 items.add(mapTemp);
             }
