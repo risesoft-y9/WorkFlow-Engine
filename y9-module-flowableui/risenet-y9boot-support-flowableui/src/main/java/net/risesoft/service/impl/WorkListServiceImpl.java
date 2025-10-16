@@ -171,15 +171,15 @@ public class WorkListServiceImpl implements WorkListService {
                     }
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, taskRelatedList);
                 } catch (Exception e) {
-                    LOGGER.error("获取已办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取所有与当前人相关的办件列表失败，processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取所有与当前人相关的办件列表成功！");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取所有与当前人相关的办件列表失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取所有与当前人相关的办件列表失败！");
     }
 
     @Override
@@ -212,11 +212,11 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put("number", processParam.getCustomNumber());
                     mapTemp.put("title", processParam.getTitle());
                     mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
-                    mapTemp.put("taskName", ardModel.getTaskDefName());
+                    mapTemp.put(FlowableUiConsts.TASKNAME_KEY, ardModel.getTaskDefName());
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
-                    mapTemp.put("taskAssignee", ardModel.getAssigneeName());
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, ardModel.getAssigneeName());
                     formData = formDataApi.getData(tenantId, ardModel.getItemId(), processSerialNumber).getData();
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Todo(ardModel, formData));
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
@@ -226,11 +226,11 @@ public class WorkListServiceImpl implements WorkListService {
                 items.add(mapTemp);
             }
             return Y9Page.success(queryParamModel.getPage(), itemPage.getTotalPages(), itemPage.getTotal(), items,
-                "获取列表成功");
+                "获取所有待办件列表成功！");
         } catch (Exception e) {
-            LOGGER.error("获取待办列表失败", e);
+            LOGGER.error("获取所有待办列表失败，异常：", e);
         }
-        return Y9Page.success(queryParamModel.getPage(), 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(queryParamModel.getPage(), 0, 0, new ArrayList<>(), "获取所有待办列表失败！");
     }
 
     @Override
@@ -272,7 +272,7 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
-                    mapTemp.put("processDefinitionId", ardModel.getProcessDefinitionId());
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, ardModel.getProcessDefinitionId());
                     mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
@@ -284,15 +284,15 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, formData, taskList, urgeInfoList, signDeptDetailList, true));
                 } catch (Exception e) {
-                    LOGGER.error("获取在办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取所有在办件列表失败，processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取所有在办件列表成功！");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取所有在办件列表失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取所有在办件列表失败！");
     }
 
     @Override
@@ -342,7 +342,7 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
-                    mapTemp.put("processDefinitionId", ardModel.getProcessDefinitionId());
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, ardModel.getProcessDefinitionId());
                     mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     /*
                      * 暂时取表单所有字段数据
@@ -357,15 +357,15 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, formData, taskList, urgeInfoList, signDeptDetailList, true));
                 } catch (Exception e) {
-                    LOGGER.error("获取在办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取部门在办件列表失败，processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取部门在办件列表成功!");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取部门在办件失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取部门在办件列表失败!!");
     }
 
     @Override
@@ -417,15 +417,15 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, formData, taskList, urgeInfoList, signDeptDetailList, true));
                 } catch (Exception e) {
-                    LOGGER.error("获取在办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取督办列表失败,processInstanceId:" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取督办列表成功!");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取督办列表失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取督办列表失败！");
     }
 
     @Override
@@ -457,10 +457,10 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put("id", processSerialNumber);
                     mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
                     mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
-                    mapTemp.put("taskName", "已办结");
+                    mapTemp.put(FlowableUiConsts.TASKNAME_KEY, "已办结");
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
-                    mapTemp.put("completer",
+                    mapTemp.put(FlowableUiConsts.COMPLETER_KEY,
                         StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     /*
                      * 暂时取表单所有字段数据
@@ -469,15 +469,15 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.putAll(handleFormData(formData));
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.DONE.getValue());
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取办结列表失败,processInstanceId:" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取办结列表成功");
         } catch (Exception e) {
             LOGGER.error("获取待办异常", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取办结列表失败");
     }
 
     @Override
@@ -514,10 +514,10 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
                     mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
-                    mapTemp.put("taskName", "已办结");
+                    mapTemp.put(FlowableUiConsts.TASKNAME_KEY, "已办结");
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
-                    mapTemp.put("completer",
+                    mapTemp.put(FlowableUiConsts.COMPLETER_KEY,
                         StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
@@ -532,15 +532,15 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, formData, List.of(), urgeInfoList, signDeptDetailList, true));
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取所有办结件列表失败" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取所有办结件列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取所有办结件失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取所有办结件列表失败");
     }
 
     @Override
@@ -583,10 +583,10 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
                     mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
-                    mapTemp.put("taskName", "已办结");
+                    mapTemp.put(FlowableUiConsts.TASKNAME_KEY, "已办结");
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
-                    mapTemp.put("completer",
+                    mapTemp.put(FlowableUiConsts.COMPLETER_KEY,
                         StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     /*
                      * 暂时取表单所有字段数据
@@ -606,15 +606,15 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, formData, List.of(), urgeInfoList, signDeptDetailList, true));
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取委办局或部门待办列表失败，processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取委办局或部门待办列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取委办局或部门待办列表失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取委办局或部门待办列表失败");
     }
 
     /**
@@ -698,8 +698,8 @@ public class WorkListServiceImpl implements WorkListService {
             childrenMap.put("isSub", true);
             childrenMap.put(FlowableUiConsts.CANOPEN_KEY, false);
             childrenMap.put(FlowableUiConsts.SERIALNUMBER_KEY, count.incrementAndGet());
-            childrenMap.put("taskName", taskNameAndAssigneeNames.get(0));
-            childrenMap.put("taskAssignee", taskNameAndAssigneeNames.get(1));
+            childrenMap.put(FlowableUiConsts.TASKNAME_KEY, taskNameAndAssigneeNames.get(0));
+            childrenMap.put(FlowableUiConsts.TASKASSIGNEE_KEY, taskNameAndAssigneeNames.get(1));
             childrenMap.put(FlowableUiConsts.CHILDREN_KEY, List.of());
             childrenMap.put("status", sdd.getStatus());
             childrenMap.put(FlowableUiConsts.BUREAUNAME_KEY, sdd.getDeptName());
@@ -747,15 +747,15 @@ public class WorkListServiceImpl implements WorkListService {
             taskName = taskList.get(0).getName();
             userName = listTemp.get(0);
         }
-        map.put("taskName", taskName);
-        map.put("taskAssignee", userName);
+        map.put(FlowableUiConsts.TASKNAME_KEY, taskName);
+        map.put(FlowableUiConsts.TASKASSIGNEE_KEY, userName);
         return map;
     }
 
     private Map<String, Object> getTaskNameAndUserName4Done(ProcessParamModel processParam) {
         Map<String, Object> map = new HashMap<>();
-        map.put("taskName", "已办结");
-        map.put("taskAssignee", processParam.getCompleter());
+        map.put(FlowableUiConsts.TASKNAME_KEY, "已办结");
+        map.put(FlowableUiConsts.TASKASSIGNEE_KEY, processParam.getCompleter());
         return map;
     }
 
@@ -828,8 +828,8 @@ public class WorkListServiceImpl implements WorkListService {
 
     private Map<String, Object> getTaskNameAndUserName4Todo(ActRuDetailModel ardModel) {
         Map<String, Object> map = new HashMap<>();
-        map.put("taskName", ardModel.getTaskDefName());
-        map.put("taskAssignee", ardModel.getAssigneeName());
+        map.put(FlowableUiConsts.TASKNAME_KEY, ardModel.getTaskDefName());
+        map.put(FlowableUiConsts.TASKASSIGNEE_KEY, ardModel.getAssigneeName());
         return map;
     }
 
@@ -1191,7 +1191,7 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.putAll(handleFormData(formData));
                     mapTemp.put(SysVariables.ITEM_BOX, StringUtils.isBlank(processParam.getCompleter())
                         ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
-                    mapTemp.put("processDefinitionId", ardModel.getProcessDefinitionId());
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, ardModel.getProcessDefinitionId());
                     List<SignDeptDetailModel> signDeptDetailList =
                         signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     List<UrgeInfoModel> urgeInfoList =
@@ -1213,15 +1213,15 @@ public class WorkListServiceImpl implements WorkListService {
                     }
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, taskRelatedList);
                 } catch (Exception e) {
-                    LOGGER.error("获取已办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取已办列表失败，processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取已办列表成功!");
         } catch (Exception e) {
-            LOGGER.error("获取已办异常", e);
+            LOGGER.error("获取已办列表失败，出现异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取已办列表失败");
     }
 
     @Override
@@ -1262,9 +1262,9 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    mapTemp.put("taskName", taskList.get(0).getName());
+                    mapTemp.put(FlowableUiConsts.TASKNAME_KEY, taskList.get(0).getName());
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                    mapTemp.put("taskAssignee", listTemp.get(0));
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, listTemp.get(0));
                     /*
                      * 暂时取表单所有字段数据
                      */
@@ -1273,15 +1273,15 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.DONE.getValue());
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Recycle(ardModel, formData, false));
                 } catch (Exception e) {
-                    LOGGER.error("获取回收站列表失败" + processInstanceId, e);
+                    LOGGER.error("获取回收站列表失败，processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取回收站列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取回收站列表失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取回收站列表失败");
     }
 
     @Override
@@ -1318,29 +1318,29 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put(FlowableUiConsts.TASKID_KEY, "");
-                    mapTemp.put("taskAssignee", "无");
-                    mapTemp.put("taskName", "已办结");
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, "无");
+                    mapTemp.put(FlowableUiConsts.TASKNAME_KEY, "已办结");
                     if (!ardModel.isEnded()) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        mapTemp.put("taskName", taskList.get(0).getName());
+                        mapTemp.put(FlowableUiConsts.TASKNAME_KEY, taskList.get(0).getName());
                         List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        mapTemp.put("taskAssignee", listTemp.get(0));
+                        mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, listTemp.get(0));
                     }
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.MONITOR_RECYCLE.getValue());
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Recycle(ardModel, formData, true));
                 } catch (Exception e) {
-                    LOGGER.error("获取回收站列表失败" + processInstanceId, e);
+                    LOGGER.error("获取所有回收站列表失败，processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取所有回收站列表成功！");
         } catch (Exception e) {
-            LOGGER.error("获取异常", e);
+            LOGGER.error("获取所有回收站列表失败，出现异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取所有回收站列表失败!!");
     }
 
     @Override
@@ -1385,9 +1385,9 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    mapTemp.put("taskName", taskList.get(0).getName());
+                    mapTemp.put(FlowableUiConsts.TASKNAME_KEY, taskList.get(0).getName());
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                    mapTemp.put("taskAssignee", listTemp.get(0));
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, listTemp.get(0));
                     /*
                      * 暂时取表单所有字段数据
                      */
@@ -1396,15 +1396,15 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.DONE.getValue());
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Recycle(ardModel, formData, false));
                 } catch (Exception e) {
-                    LOGGER.error("获取部门回收站列表失败" + processInstanceId, e);
+                    LOGGER.error("获取部门回收站列表失败，processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取部门回收站列表成功！");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取部门回收站失败，出现异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取部门回收站列表失败");
     }
 
     /**
@@ -1453,26 +1453,26 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
                     mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
                     mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
-                    mapTemp.put("taskName", ardModel.getTaskDefName());
+                    mapTemp.put(FlowableUiConsts.TASKNAME_KEY, ardModel.getTaskDefName());
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
-                    mapTemp.put("taskAssignee", ardModel.getAssigneeName());
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, ardModel.getAssigneeName());
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Todo(ardModel, formData));
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取待办列表失败，processInstanceId = " + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取待办件列表成功！！！");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取待办列表失败，出现异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取待办件列表失败！");
     }
 
     @Override
@@ -1503,11 +1503,11 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
                     mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
                     mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
-                    mapTemp.put("taskName", ardModel.getTaskDefName());
+                    mapTemp.put(FlowableUiConsts.TASKNAME_KEY, ardModel.getTaskDefName());
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
-                    mapTemp.put("taskAssignee", ardModel.getAssigneeName());
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, ardModel.getAssigneeName());
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Todo(ardModel, formData));
@@ -1518,11 +1518,11 @@ public class WorkListServiceImpl implements WorkListService {
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取待办列表成功!!");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取待办列表失败，出现异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取待办件列表失败！！！");
     }
 
     @Override
@@ -1560,11 +1560,11 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
                     mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
                     mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
-                    mapTemp.put("taskName", ardModel.getTaskDefName());
+                    mapTemp.put(FlowableUiConsts.TASKNAME_KEY, ardModel.getTaskDefName());
                     mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
-                    mapTemp.put("taskAssignee", ardModel.getAssigneeName());
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, ardModel.getAssigneeName());
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Todo(ardModel, formData));
@@ -1575,10 +1575,10 @@ public class WorkListServiceImpl implements WorkListService {
                 }
                 items.add(mapTemp);
             }
-            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
+            return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取待办列表成功!");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取待办列表失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取待办列表失败！");
     }
 }
