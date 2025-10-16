@@ -470,7 +470,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                             .getByTaskIdAndVariableName(tenantId, hai.getId(), "rollBackReason", year)
                             .getData();
                         if (rollBackReason != null) {
-                            model.setDescription(rollBackReason.getValue());
+                            model.setDescription(String.valueOf(rollBackReason.getValue()));
                         }
                         // 发送办结协办任务使用减签方式办结，需要设置description为空
                         if (StringUtils.isNotBlank(hai.getTenantId())) {

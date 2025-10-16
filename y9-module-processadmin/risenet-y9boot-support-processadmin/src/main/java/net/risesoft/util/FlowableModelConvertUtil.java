@@ -45,8 +45,6 @@ public class FlowableModelConvertUtil {
         tm.setTaskDefinitionKey(task.getTaskDefinitionKey());
         tm.setDueDate(task.getDueDate());
         tm.setDelegationState(task.getDelegationState());
-        tm.setVariables(task.getVariables());
-        tm.setLocalVariables(task.getVariablesLocal());
         return tm;
     }
 
@@ -115,7 +113,6 @@ public class FlowableModelConvertUtil {
             hpiModel.setStartTime(hpi.getStartTime());
             hpiModel.setStartUserId(hpi.getStartUserId());
             hpiModel.setSuperProcessInstanceId(hpi.getSuperProcessInstanceId());
-            hpiModel.setVariables(hpi.getProcessVariables());
         }
         return hpiModel;
     }
@@ -275,8 +272,6 @@ public class FlowableModelConvertUtil {
             tm.setDueDate(task.getDueDate());
             tm.setClaimTime(task.getClaimTime());
             tm.setDelegationState(task.getDelegationState());
-            tm.setVariables(task.getProcessVariables());
-            tm.setLocalVariables(task.getTaskLocalVariables());
             tm.setFormKey(task.getFormKey());
         }
         return tm;
