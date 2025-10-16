@@ -171,7 +171,7 @@ public class DocumentRestController {
         } catch (Exception e) {
             LOGGER.error("校验失败", e);
         }
-        return Y9Result.failure("校验失败，发生异常");
+        return Y9Result.failure("校验是否可以批量发送失败，发生异常");
     }
 
     /**
@@ -215,7 +215,7 @@ public class DocumentRestController {
         } catch (Exception e) {
             LOGGER.error("校验失败", e);
         }
-        return Y9Result.failure("校验失败，发生异常");
+        return Y9Result.failure("校验是否可以批量重定向失败，发生异常");
     }
 
     /**
@@ -708,7 +708,7 @@ public class DocumentRestController {
         } catch (Exception e) {
             LOGGER.error("校验失败", e);
         }
-        return Y9Result.failure("校验失败，发生异常");
+        return Y9Result.failure("校验是否批量签收失败，发生异常");
     }
 
     /**

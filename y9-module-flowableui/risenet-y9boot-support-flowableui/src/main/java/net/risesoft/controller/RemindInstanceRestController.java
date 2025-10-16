@@ -52,14 +52,11 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/vue/remindInstance", produces = MediaType.APPLICATION_JSON_VALUE)
 public class RemindInstanceRestController {
 
+    private static final String REMINDTYPE_KEY = "remindType";
     private final RemindInstanceApi remindInstanceApi;
-
     private final TaskApi taskApi;
-
     private final HistoricProcessApi historicProcessApi;
-
     private final OrgUnitApi orgUnitApi;
-
     private final ProcessDefinitionApi processDefinitionApi;
 
     /**
@@ -78,11 +75,11 @@ public class RemindInstanceRestController {
         RemindInstanceModel remindInstance =
             remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId)
                 .getData();
-        retMap.put("remindType", "");
+        retMap.put(REMINDTYPE_KEY, "");
         retMap.put("completeTaskKey", "");
         retMap.put("arriveTaskKey", "");
         if (remindInstance != null) {
-            retMap.put("remindType", remindInstance.getRemindType());
+            retMap.put(REMINDTYPE_KEY, remindInstance.getRemindType());
             retMap.put("completeTaskKey", remindInstance.getCompleteTaskKey());
             retMap.put("arriveTaskKey", remindInstance.getArriveTaskKey());
         }
@@ -155,10 +152,10 @@ public class RemindInstanceRestController {
             RemindInstanceModel remindInstance =
                 remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId)
                     .getData();
-            retMap.put("remindType", "");
+            retMap.put(REMINDTYPE_KEY, "");
             retMap.put("taskIds", "");
             if (remindInstance != null) {
-                retMap.put("remindType", remindInstance.getRemindType());
+                retMap.put(REMINDTYPE_KEY, remindInstance.getRemindType());
                 retMap.put("taskIds", remindInstance.getTaskId());
             }
             for (TaskModel task : taskList) {

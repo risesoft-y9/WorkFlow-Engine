@@ -155,22 +155,35 @@ public class FlowableLogAdvice implements MethodInterceptor {
         String[] paramNames = parameterNameDiscoverer.getParameterNames(method);
         if (null != paramNames) {
             Object[] args = invocation.getArguments();
-            Map<String, Object> paramMap = new HashMap<>();
-            for (int i = 0; i < args.length; i++) {
-                String paramName = paramNames.length > i ? paramNames[i] : "arg" + i;
-                Object paramValue = args[i];
-                if (paramValue instanceof MultipartFile file) {
-                    paramValue = file.getOriginalFilename();
-                } else {
-                    if ("processSerialNumber".equalsIgnoreCase(paramName)) {
-                        requestInfo.setProcessSerialNumber((String)paramValue);
-                    }
-                }
-                paramMap.put(paramName, paramValue);
-            }
-            if (args.length > 0) {
+            Map<String, Object> paramMap = buildParameterMap(paramNames, args, requestInfo);
+            if (!paramMap.isEmpty()) {
                 flowableAccessLog.setArguments(Y9JsonUtil.writeValueAsString(paramMap));
             }
+        }
+    }
+
+    private Map<String, Object> buildParameterMap(String[] paramNames, Object[] args, RequestInfo requestInfo) {
+        Map<String, Object> paramMap = new HashMap<>();
+        for (int i = 0; i < args.length; i++) {
+            String paramName = getParameterName(paramNames, i);
+            Object paramValue = processParameterValue(args[i], paramName, requestInfo);
+            paramMap.put(paramName, paramValue);
+        }
+        return paramMap;
+    }
+
+    private String getParameterName(String[] paramNames, int index) {
+        return paramNames.length > index ? paramNames[index] : "arg" + index;
+    }
+
+    private Object processParameterValue(Object value, String paramName, RequestInfo requestInfo) {
+        if (value instanceof MultipartFile) {
+            return ((MultipartFile)value).getOriginalFilename();
+        } else {
+            if ("processSerialNumber".equalsIgnoreCase(paramName)) {
+                requestInfo.setProcessSerialNumber((String)value);
+            }
+            return value;
         }
     }
 
@@ -185,9 +198,9 @@ public class FlowableLogAdvice implements MethodInterceptor {
         log.setServerIp(Y9Context.getHostIp());
 
         if (exceptionInfo != null) {
-            log.setSuccess(exceptionInfo.success());
-            log.setErrorMessage(exceptionInfo.errorMessage());
-            log.setThrowable(exceptionInfo.throwableStr());
+            log.setSuccess(exceptionInfo.getSuccess());
+            log.setErrorMessage(exceptionInfo.getErrorMessage());
+            log.setThrowable(exceptionInfo.getThrowableStr());
         } else {
             log.setSuccess("成功");
             log.setErrorMessage("");
@@ -249,7 +262,17 @@ public class FlowableLogAdvice implements MethodInterceptor {
         }
     }
 
-    private record ExceptionInfo(String success, String errorMessage, String throwableStr) {
+    @Getter
+    private static class ExceptionInfo {
+        private final String success;
+        private final String errorMessage;
+        private final String throwableStr;
+
+        public ExceptionInfo(String success, String errorMessage, String throwableStr) {
+            this.success = success;
+            this.errorMessage = errorMessage;
+            this.throwableStr = throwableStr;
+        }
     }
 
     @Setter

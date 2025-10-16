@@ -42,12 +42,10 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequestMapping(value = "/vue/quickSend", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QuickSendRestController {
 
+    private static final String ORGTYPE_KEY = "orgType";
     private final QuickSendApi quickSendApi;
-
     private final OrgUnitApi orgUnitApi;
-
     private final DepartmentApi departmentApi;
-
     private final CustomGroupApi customGroupApi;
 
     /**
@@ -75,20 +73,20 @@ public class QuickSendRestController {
                     OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgId).getData();
                     map.put("id", orgUnit.getId());
                     map.put("name", orgUnit.getName());
-                    map.put("orgType", OrgTypeEnum.POSITION.getEnName());
+                    map.put(ORGTYPE_KEY, OrgTypeEnum.POSITION.getEnName());
                     list.add(map);
                 } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
                     Department dept = departmentApi.get(tenantId, orgId).getData();
                     map.put("id", dept.getId());
                     map.put("name", dept.getName());
-                    map.put("orgType", OrgTypeEnum.DEPARTMENT.getEnName());
+                    map.put(ORGTYPE_KEY, OrgTypeEnum.DEPARTMENT.getEnName());
                     list.add(map);
                 } else if (principalType == ItemPermissionEnum.GROUP_CUSTOM.getValue()) {
                     CustomGroup customGroup =
                         customGroupApi.findCustomGroupById(tenantId, Y9LoginUserHolder.getPersonId(), orgId).getData();
                     map.put("id", customGroup.getId());
                     map.put("name", customGroup.getGroupName());
-                    map.put("orgType", "customGroup");
+                    map.put(ORGTYPE_KEY, "customGroup");
                     list.add(map);
                 }
             }
