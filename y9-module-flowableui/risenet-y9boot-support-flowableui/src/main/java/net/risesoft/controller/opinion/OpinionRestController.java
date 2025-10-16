@@ -75,7 +75,7 @@ public class OpinionRestController {
                 opinionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
             map.put("checkSignOpinion", checkSignOpinion);
         } catch (Exception e) {
-            LOGGER.error("查询" + taskId + "是否签写意见失败！", e);
+            LOGGER.error("查询{}是否签写意见失败！", taskId, e);
         }
         return Y9Result.success(map, "查询成功");
     }
@@ -137,7 +137,7 @@ public class OpinionRestController {
                 map.put("isParent", true);
                 if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
                     Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
-                    if (per.getDisabled()) {// 除去禁用的人员
+                    if (per.getDisabled()) {
                         continue;
                     }
                     map.put("sex", per.getSex());

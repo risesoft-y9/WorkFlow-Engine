@@ -89,14 +89,12 @@ public class Y9WordController {
      *
      * @param taskId 任务id
      * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id
      * @param fileType 文件类型
      */
     @FlowableLog(operationName = "下载历史版本正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downLoadHistoryDoc")
     public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String fileType,
+        @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String fileType,
         HttpServletResponse response, HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
@@ -105,33 +103,30 @@ public class Y9WordController {
         String fileStoreId = map.getFileStoreId();
 
         try (ServletOutputStream out = response.getOutputStream()) {
-            String userAgent = request.getHeader("User-Agent");
-            String title;
-            String documentTitle;
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
-            }
-            title = documentTitle != null ? documentTitle : "正文";
-            title = ToolUtil.replaceSpecialStr(title);
-            title = encodeFileName(title, userAgent);
-
-            response.reset();
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                response.setHeader("Content-type", "text/html;charset=GBK");
-            } else {
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-            }
+            setResponse(response, request, processSerialNumber, fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
-            out.flush();
         } catch (Exception e) {
             LOGGER.error("下载正文异常", e);
+        }
+    }
+
+    private void setResponse(HttpServletResponse response, HttpServletRequest request, String processSerialNumber,
+        String fileType) {
+        String userAgent = request.getHeader("User-Agent");
+        String title;
+        ProcessParamModel processModel =
+            processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        title = processModel.getTitle() != null ? processModel.getTitle() : "正文";
+        title = ToolUtil.replaceSpecialStr(title);
+        title = encodeFileName(title, userAgent);
+
+        response.reset();
+        response.setContentType("application/octet-stream");
+        response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
+        if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
+            response.setHeader("Content-type", "text/html;charset=GBK");
+        } else {
+            response.setHeader("Content-type", "text/html;charset=UTF-8");
         }
     }
 
@@ -170,36 +165,11 @@ public class Y9WordController {
     @FlowableLog(operationName = "下载正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, @RequestParam(required = false) String fileType,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, HttpServletResponse response,
+        @RequestParam(required = false) String processSerialNumber, HttpServletResponse response,
         HttpServletRequest request) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            String documentTitle;
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
-            }
-            String userAgent = request.getHeader("User-Agent");
-            String title = documentTitle != null ? documentTitle : "正文";
-            title = ToolUtil.replaceSpecialStr(title);
-            title = encodeFileName(title, userAgent);
-            response.reset();
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                response.setHeader("Content-type", "text/html;charset=GBK");
-            } else {
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-            }
-            OutputStream out = response.getOutputStream();
+        try (OutputStream out = response.getOutputStream()) {
+            setResponse(response, request, processSerialNumber, fileType);
             y9FileStoreService.downloadFileToOutputStream(id, out);
-            out.flush();
-            out.close();
         } catch (Exception e) {
             LOGGER.error("下载正文异常", e);
         }
@@ -210,43 +180,18 @@ public class Y9WordController {
      *
      * @param fileType 文件类型
      * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例id
      */
     @FlowableLog(operationName = "下载正文（抄送件）", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @RequestMapping(value = "/downloadCS")
     public void downloadCS(@RequestParam(required = false) String fileType,
-        @RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String processInstanceId, HttpServletResponse response,
+        @RequestParam(required = false) String processSerialNumber, HttpServletResponse response,
         HttpServletRequest request) {
-        try {
+        try (OutputStream out = response.getOutputStream()) {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Y9WordModel map = y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String fileStoreId = map.getFileStoreId();
-            String documentTitle;
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                documentTitle = model.getTitle();
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
-            }
-            String userAgent = request.getHeader("User-Agent");
-            String title = documentTitle != null ? documentTitle : "正文";
-            title = ToolUtil.replaceSpecialStr(title);
-            title = encodeFileName(title, userAgent);
-            response.reset();
-            response.setContentType("application/octet-stream");
-            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                response.setHeader("Content-type", "text/html;charset=GBK");
-            } else {
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-            }
-            OutputStream out = response.getOutputStream();
+            setResponse(response, request, processSerialNumber, fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
-            out.flush();
-            out.close();
         } catch (Exception e) {
             LOGGER.error("下载正文异常", e);
         }
@@ -272,19 +217,14 @@ public class Y9WordController {
     public void openBlankWordTemplate(HttpServletRequest request, HttpServletResponse response) {
         String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "tags"
             + File.separator + "template" + File.separator + "blankTemplate.doc";
-        ServletOutputStream out = null;
-        BufferedInputStream bi = null;
-        try {
-            File file = new File(filePath);
+        File file = new File(filePath);
+        try (ServletOutputStream out = response.getOutputStream(); FileInputStream fs = new FileInputStream(file);
+            BufferedInputStream bi = IOUtils.buffer(fs)) {
             String fileName = file.getName();
             String agent = request.getHeader("USER-AGENT");
             fileName = encodeFileName(fileName, agent);
             response.reset();
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
-
-            FileInputStream fs = new FileInputStream(file);
-            bi = IOUtils.buffer(fs);
-            out = response.getOutputStream();
             int b;
             byte[] by = new byte[1024];
             while ((b = bi.read(by)) != -1) {
@@ -292,17 +232,6 @@ public class Y9WordController {
             }
         } catch (Exception e) {
             LOGGER.error("下载正文异常", e);
-        } finally {
-            try {
-                if (bi != null) {
-                    bi.close();
-                }
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流异常", e);
-            }
         }
     }
 
@@ -322,12 +251,10 @@ public class Y9WordController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String y9FileStoreId =
             y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
-        ServletOutputStream out = null;
-        try {
+        try (ServletOutputStream out = response.getOutputStream()) {
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             response.reset();
             response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
-            out = response.getOutputStream();
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
@@ -347,14 +274,6 @@ public class Y9WordController {
             }
         } catch (IOException e) {
             LOGGER.error("下载正文异常", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流异常", e);
-            }
         }
     }
 
@@ -371,10 +290,8 @@ public class Y9WordController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");// 删除未套红的正文
         String content = y9WordApi.openDocumentTemplate(tenantId, userId, templateGUID).getData();
-        ServletOutputStream out = null;
-        try {
+        try (ServletOutputStream out = response.getOutputStream()) {
             byte[] result;
-            out = response.getOutputStream();
             result = java.util.Base64.getDecoder().decode(content);
             ByteArrayInputStream bin = new ByteArrayInputStream(result);
             int b;
@@ -387,14 +304,6 @@ public class Y9WordController {
             }
         } catch (IOException e) {
             LOGGER.error("下载正文异常", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流异常", e);
-            }
         }
     }
 
@@ -410,13 +319,10 @@ public class Y9WordController {
         Y9WordHistoryModel history =
             y9WordApi.findHistoryVersionDoc(Y9LoginUserHolder.getTenantId(), userId, taskId).getData();
         String fileStoreId = history.getFileStoreId();
-        ServletOutputStream out = null;
-        try {
+        try (ServletOutputStream out = response.getOutputStream()) {
             Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
             response.reset();
             response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
-
-            out = response.getOutputStream();
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(fileStoreId);
@@ -436,14 +342,6 @@ public class Y9WordController {
             }
         } catch (IOException e) {
             LOGGER.error("下载正文异常", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流异常", e);
-            }
         }
     }
 
@@ -473,7 +371,6 @@ public class Y9WordController {
             int b;
             byte[] by = new byte[1024];
             response.reset();
-            // response.setHeader("Content-Type", "application/msword");
             if (buf != null) {
                 response.setHeader("Content-Length", String.valueOf(buf.length));
             }
@@ -511,8 +408,6 @@ public class Y9WordController {
             String fileName = y9FileStore.getFileName();
             fileName = encodeFileName(fileName, agent);
             response.reset();
-            // response.setHeader("Content-Type", "application/msword");
-            // response.setHeader("Content-Length", String.valueOf(buf.length));
             response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
             byte[] buf = null;
             try {

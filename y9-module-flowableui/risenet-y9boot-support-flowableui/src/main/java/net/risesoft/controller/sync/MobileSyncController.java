@@ -95,7 +95,7 @@ public class MobileSyncController {
                     jdbcTemplate.execute(sql3);// 删除历史任务
                     // 删除二进制数据表
                     sql3 = "DELETE FROM ACT_GE_BYTEARRAY WHERE ID_ IN ( SELECT * FROM ( SELECT b.ID_ FROM"
-                        + "	ACT_GE_BYTEARRAY b LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_ WHERE"
+                        + " ACT_GE_BYTEARRAY b LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_ WHERE"
                         + " v.PROC_INST_ID_ = '" + PROC_INST_ID_ + "' AND v.NAME_ = 'users' ) TT )";
                     jdbcTemplate.execute(sql3);
 
@@ -246,15 +246,15 @@ public class MobileSyncController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql = "SELECT P.PROC_INST_ID_,TO_CHAR(P.START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                + " TO_CHAR(P.END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_  FROM"
-                + "	ACT_HI_PROCINST_2020 P  WHERE 	P.END_TIME_ IS NOT NULL  and P.DELETE_REASON_ is null"
+                + " TO_CHAR(P.END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_ FROM"
+                + " ACT_HI_PROCINST_2020 P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
                 + " ORDER BY P.END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals("mysql")) {
                 sql =
                     "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P.END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
-                        + " FROM ACT_HI_PROCINST_2020 P  WHERE 	P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null  ORDER BY 	P.END_TIME_ DESC";
+                        + " FROM ACT_HI_PROCINST_2020 P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null ORDER BY P.END_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -351,7 +351,7 @@ public class MobileSyncController {
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql = "SELECT P.PROC_INST_ID_,TO_CHAR(P.START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
                 + " TO_CHAR(P.END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_ FROM"
-                + "	ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL  and P.DELETE_REASON_ is null"
+                + "	ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
                 + " ORDER BY P.END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
@@ -417,9 +417,9 @@ public class MobileSyncController {
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals("mysql") || dialectName.equals("kingbase")) {
-                sql = "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_  FROM"
-                    + "	ACT_HI_PROCINST P  WHERE 	P.END_TIME_ IS NOT NULL  and P.DELETE_REASON_ is null"
-                    + " ORDER BY 	P.END_TIME_ DESC";
+                sql = "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM"
+                    + "	ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
+                    + " ORDER BY P.END_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
