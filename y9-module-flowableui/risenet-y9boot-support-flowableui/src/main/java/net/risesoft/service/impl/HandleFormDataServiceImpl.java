@@ -19,6 +19,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Service
 public class HandleFormDataServiceImpl implements HandleFormDataService {
 
+    private static final String LEARVETYPE_KEY = "leaveType";
     private final FormDataApi formDataApi;
 
     @Override
@@ -42,12 +43,12 @@ public class HandleFormDataServiceImpl implements HandleFormDataService {
     }
 
     void formatFormData(Map<String, Object> map) {
-        if (map.get("leaveType") != null) {
-            String leaveType = (String)map.get("leaveType");
+        if (map.get(LEARVETYPE_KEY) != null) {
+            String leaveType = (String)map.get(LEARVETYPE_KEY);
             ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
             for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
                 if (leaveType.equals(leaveTypeEnum.getValue())) {
-                    map.put("leaveType", leaveTypeEnum.getName());
+                    map.put(LEARVETYPE_KEY, leaveTypeEnum.getName());
                     break;
                 }
             }

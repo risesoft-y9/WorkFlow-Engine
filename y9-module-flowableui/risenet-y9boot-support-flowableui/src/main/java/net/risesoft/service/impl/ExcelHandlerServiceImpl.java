@@ -14,7 +14,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.service.ExcelHandlerService;
 
-import cn.idev.excel.EasyExcel;
+import cn.idev.excel.FastExcelFactory;
 
 /**
  * @author : qinman
@@ -31,7 +31,7 @@ public class ExcelHandlerServiceImpl implements ExcelHandlerService {
         List<List<String>> headName = new ArrayList<>();
         if (mapList.isEmpty()) {
             headName.add(Collections.singletonList("无查询"));
-            EasyExcel.write(outStream).head(headName).sheet("Sheet1").doWrite(headName);
+            FastExcelFactory.write(outStream).head(headName).sheet("Sheet1").doWrite(headName);
             return;
         }
         List<List<String>> headKey = new ArrayList<>();
@@ -49,6 +49,6 @@ public class ExcelHandlerServiceImpl implements ExcelHandlerService {
             data.add(list);
         });
         // 写入数据到 Excel 文件
-        EasyExcel.write(outStream).head(headName).sheet("Sheet1").doWrite(data);
+        FastExcelFactory.write(outStream).head(headName).sheet("Sheet1").doWrite(data);
     }
 }

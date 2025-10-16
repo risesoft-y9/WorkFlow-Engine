@@ -41,20 +41,20 @@ import net.risesoft.y9.util.Y9Util;
 @Transactional(readOnly = true)
 public class DoingServiceImpl implements DoingService {
 
+    private static final String PROCESSDEFINITIONID_KEY = "processDefinitionId";
+    private static final String PROCESSINSTANCEID_KEY = "processInstanceId";
+    private static final String ITEMNAME_KEY = "itemName";
+    private static final String TASKNAME_KEY = "taskName";
+    private static final String TASKCREATETIME_KEY = "taskCreateTime";
+    private static final String TASKASSIGNEE_KEY = "taskAssignee";
+    private static final String SERIALNUMBER_KEY = "serialNumber";
     private final ProcessDoingApi processDoingApi;
-
     private final TaskApi taskApi;
-
     private final ItemApi itemApi;
-
     private final OrgUnitApi orgUnitApi;
-
     private final ProcessParamApi processParamApi;
-
     private final HandleFormDataService handleFormDataService;
-
     private final IdentityApi identityApi;
-
     private final UtilService utilService;
 
     @Override
@@ -98,12 +98,12 @@ public class DoingServiceImpl implements DoingService {
                             processSerialNumbers.add(processSerialNumber);
                         }
                         mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-                        mapTemp.put("processDefinitionId", processDefinitionId);
-                        mapTemp.put("processInstanceId", processInstanceId);
-                        mapTemp.put("itemName", itemName);
-                        mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskCreateTime", taskCreateTime);
-                        mapTemp.put("taskAssignee", this.getAssigneeNames(taskList));
+                        mapTemp.put(PROCESSDEFINITIONID_KEY, processDefinitionId);
+                        mapTemp.put(PROCESSINSTANCEID_KEY, processInstanceId);
+                        mapTemp.put(ITEMNAME_KEY, itemName);
+                        mapTemp.put(TASKNAME_KEY, taskList.get(0).getName());
+                        mapTemp.put(TASKCREATETIME_KEY, taskCreateTime);
+                        mapTemp.put(TASKASSIGNEE_KEY, this.getAssigneeNames(taskList));
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
@@ -111,7 +111,7 @@ public class DoingServiceImpl implements DoingService {
                     } catch (Exception e) {
                         LOGGER.error("获取在办列表失败{}", processInstanceId, e);
                     }
-                    mapTemp.put("serialNumber", serialNumber + 1);
+                    mapTemp.put(SERIALNUMBER_KEY, serialNumber + 1);
                     serialNumber += 1;
                     items.add(mapTemp);
                 }
@@ -145,13 +145,13 @@ public class DoingServiceImpl implements DoingService {
                             processSerialNumbers.add(processSerialNumber);
                         }
                         mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-                        mapTemp.put("processInstanceId", processInstanceId);
-                        mapTemp.put("processDefinitionId", processDefinitionId);
-                        mapTemp.put("itemName", itemName);
-                        mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskCreateTime",
+                        mapTemp.put(PROCESSINSTANCEID_KEY, processInstanceId);
+                        mapTemp.put(PROCESSDEFINITIONID_KEY, processDefinitionId);
+                        mapTemp.put(ITEMNAME_KEY, itemName);
+                        mapTemp.put(TASKNAME_KEY, taskList.get(0).getName());
+                        mapTemp.put(TASKCREATETIME_KEY,
                             Y9DateTimeUtils.formatDateTimeMinute(taskList.get(0).getCreateTime()));
-                        mapTemp.put("taskAssignee", this.getAssigneeNames(taskList));
+                        mapTemp.put(TASKASSIGNEE_KEY, this.getAssigneeNames(taskList));
                         mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
@@ -159,7 +159,7 @@ public class DoingServiceImpl implements DoingService {
                     } catch (Exception e) {
                         LOGGER.error("获取在办列表失败{}", processInstanceId, e);
                     }
-                    mapTemp.put("serialNumber", serialNumber + 1);
+                    mapTemp.put(SERIALNUMBER_KEY, serialNumber + 1);
                     serialNumber += 1;
                     items.add(mapTemp);
                 }
@@ -167,7 +167,7 @@ public class DoingServiceImpl implements DoingService {
             }
             return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取在办列表失败", e);
+            LOGGER.error("获取在办件列表失败", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
@@ -275,20 +275,20 @@ public class DoingServiceImpl implements DoingService {
                         String level = processParam.getCustomLevel();
                         String number = processParam.getCustomNumber();
                         mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-                        mapTemp.put("processInstanceId", processInstanceId);
-                        mapTemp.put("processDefinitionId", processDefinitionId);
-                        mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskCreateTime", taskCreateTime);
-                        mapTemp.put("taskAssignee", this.getAssigneeNames(taskList));
-                        mapTemp.put("itemName", itemName);
+                        mapTemp.put(PROCESSINSTANCEID_KEY, processInstanceId);
+                        mapTemp.put(PROCESSDEFINITIONID_KEY, processDefinitionId);
+                        mapTemp.put(TASKNAME_KEY, taskList.get(0).getName());
+                        mapTemp.put(TASKCREATETIME_KEY, taskCreateTime);
+                        mapTemp.put(TASKASSIGNEE_KEY, this.getAssigneeNames(taskList));
+                        mapTemp.put(ITEMNAME_KEY, itemName);
                         mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         utilService.setPublicData(mapTemp, processInstanceId, taskList, ItemBoxTypeEnum.DOING);
                     } catch (Exception e) {
-                        LOGGER.error("获取在办列表失败", e);
+                        LOGGER.error("手机端获取在办列表失败（无条件查询）,异常：", e);
                     }
-                    mapTemp.put("serialNumber", serialNumber + 1);
+                    mapTemp.put(SERIALNUMBER_KEY, serialNumber + 1);
                     serialNumber += 1;
                     items.add(mapTemp);
                 }
@@ -314,28 +314,28 @@ public class DoingServiceImpl implements DoingService {
                         String level = processParam.getCustomLevel();
                         String number = processParam.getCustomNumber();
                         mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-                        mapTemp.put("processInstanceId", processInstanceId);
-                        mapTemp.put("processDefinitionId", processDefinitionId);
-                        mapTemp.put("itemName", itemName);
-                        mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskCreateTime",
+                        mapTemp.put(PROCESSINSTANCEID_KEY, processInstanceId);
+                        mapTemp.put(PROCESSDEFINITIONID_KEY, processDefinitionId);
+                        mapTemp.put(ITEMNAME_KEY, itemName);
+                        mapTemp.put(TASKNAME_KEY, taskList.get(0).getName());
+                        mapTemp.put(TASKCREATETIME_KEY,
                             Y9DateTimeUtils.formatDateTimeMinute(taskList.get(0).getCreateTime()));
-                        mapTemp.put("taskAssignee", this.getAssigneeNames(taskList));
+                        mapTemp.put(TASKASSIGNEE_KEY, this.getAssigneeNames(taskList));
                         mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                         mapTemp.put(SysVariables.LEVEL, level);
                         mapTemp.put(SysVariables.NUMBER, number);
                         utilService.setPublicData(mapTemp, processInstanceId, taskList, ItemBoxTypeEnum.DOING);
                     } catch (Exception e) {
-                        LOGGER.error("获取在办列表失败", e);
+                        LOGGER.error("手机端获取在办列表（条件查询）失败，异常：", e);
                     }
-                    mapTemp.put("serialNumber", serialNumber + 1);
+                    mapTemp.put(SERIALNUMBER_KEY, serialNumber + 1);
                     serialNumber += 1;
                     items.add(mapTemp);
                 }
             }
             return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取在办列表失败", e);
+            LOGGER.error("手机端获取在办列表失败，异常：", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
