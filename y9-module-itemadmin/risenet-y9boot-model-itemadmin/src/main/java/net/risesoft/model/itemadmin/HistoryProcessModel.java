@@ -52,36 +52,25 @@ public class HistoryProcessModel implements Serializable, Comparable<HistoryProc
     private String time;
 
     /** 描述 */
-    private Object description;
-
+    private String description;
     /** 意见 */
     private String opinion;
-
     /** 历史正文版本 */
     private Integer historyVersion;
-
     /** 是否被强制办结任务标识 */
     private String endFlag;
-
     /** 承办人id,用于数据中心保存 */
     private String undertakerId;
-
     /** 是否新建待办 */
     private Integer newToDo;
-
     /** 是否有抄送 */
     private Boolean isChaoSong;
-
     /** 上一步操作 */
     private String actionName;
-
     /** 序号 */
     private int tabIndex;
-
     private List<HistoryProcessModel> children;
-
     private List<Person> personList;
-
     private List<TaskRelatedModel> taskRelatedList;
 
     @Override

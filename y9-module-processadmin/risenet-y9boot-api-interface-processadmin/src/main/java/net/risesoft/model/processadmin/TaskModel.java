@@ -2,7 +2,6 @@ package net.risesoft.model.processadmin;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
 
 import org.flowable.task.api.DelegationState;
 
@@ -79,13 +78,4 @@ public class TaskModel implements Serializable {
      * 委派状态
      */
     private DelegationState delegationState;
-    /**
-     * 任务变量
-     */
-    private Map<String, Object> localVariables;
-    /**
-     * 流程变量
-     */
-    private Map<String, Object> variables;
-
 }

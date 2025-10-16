@@ -2,7 +2,6 @@ package net.risesoft.model.processadmin;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
 
 import lombok.Data;
 
@@ -81,8 +80,4 @@ public class HistoricProcessInstanceModel implements Serializable {
      * 描述
      */
     private String description;
-    /**
-     * 变量
-     */
-    private Map<String, Object> variables;
 }
