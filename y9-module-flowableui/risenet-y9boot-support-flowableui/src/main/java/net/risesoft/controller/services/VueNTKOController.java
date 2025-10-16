@@ -94,9 +94,9 @@ public class VueNTKOController {
             map.put("processSerialNumber", processSerialNumber);
             return Y9Result.success(map, "获取信息成功");
         } catch (Exception e) {
-            LOGGER.error("获取信息失败", e);
+            LOGGER.error("获取附件信息失败,异常：", e);
         }
-        return Y9Result.failure("获取信息失败");
+        return Y9Result.failure("获取附件信息失败");
     }
 
     /**
@@ -147,9 +147,9 @@ public class VueNTKOController {
             wordInfo.setCurrentBureauGuid(currentBureau != null ? currentBureau.getId() : "");
             return Y9Result.success(wordInfo, "获取信息成功");
         } catch (Exception e) {
-            LOGGER.error("获取信息失败", e);
+            LOGGER.error("获取办件正文信息失败，异常：", e);
         }
-        return Y9Result.failure("获取信息失败");
+        return Y9Result.failure("获取办件正文信息失败");
     }
 
 }

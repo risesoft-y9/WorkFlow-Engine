@@ -43,16 +43,12 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @Slf4j
 public class FormNTKOPrintController {
 
+    private static final String FIREFOX_KEY = "Firefox";
     private final Y9FileStoreService y9FileStoreService;
-
     private final PrintApi printApi;
-
     private final PersonApi personApi;
-
     private final ProcessParamApi processParamApi;
-
     private final DraftApi draftApi;
-
     private final Y9WordApi y9WordApi;
 
     /**
@@ -75,7 +71,7 @@ public class FormNTKOPrintController {
             setResponse(response, request, processSerialNumber, fileType);
             y9FileStoreService.downloadFileToOutputStream(id, out);
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("下载正文文件异常", e);
         }
     }
 
@@ -93,7 +89,7 @@ public class FormNTKOPrintController {
             response.setHeader("Content-type", "text/html;charset=GBK");
             response.setContentType("application/octet-stream");
         } else {
-            if (userAgent.contains("Firefox")) {
+            if (userAgent.contains(FIREFOX_KEY)) {
                 title = "=?UTF-8?B?"
                     + (new String(
                         org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
@@ -131,7 +127,7 @@ public class FormNTKOPrintController {
             String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
-            if (agent.contains("Firefox")) {
+            if (agent.contains(FIREFOX_KEY)) {
                 org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
             } else {
                 fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
@@ -152,7 +148,7 @@ public class FormNTKOPrintController {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开正文文件异常", e);
         }
     }
 
@@ -174,7 +170,7 @@ public class FormNTKOPrintController {
             String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
-            if (agent.contains("Firefox")) {
+            if (agent.contains(FIREFOX_KEY)) {
                 org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
             } else {
                 fileName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
@@ -195,7 +191,7 @@ public class FormNTKOPrintController {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开打印模板文件异常", e);
         }
     }
 }

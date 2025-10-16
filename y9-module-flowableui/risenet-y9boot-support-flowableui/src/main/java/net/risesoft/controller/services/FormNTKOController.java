@@ -65,16 +65,15 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @Slf4j
 public class FormNTKOController {
 
+    private static final String FIREFOX_KEY = "Firefox";
+    private static final String UTF8LINK_KEY = "=?UTF-8?B?";
+    private static final String CONTENT_DIS_KEY = "Content-Disposition";
+    private static final String USER_AGENT_KEY = "USER-AGENT";
     private final Y9FileStoreService y9FileStoreService;
-
     private final PersonApi personApi;
-
     private final OrgUnitApi orgUnitApi;
-
     private final ProcessParamApi processParamApi;
-
     private final DraftApi draftApi;
-
     private final Y9WordApi y9WordApi;
 
     /**
@@ -168,8 +167,8 @@ public class FormNTKOController {
             response.setHeader("Content-type", "text/html;charset=GBK");
             response.setContentType("application/octet-stream");
         } else {
-            if (userAgent.contains("Firefox")) {
-                title = "=?UTF-8?B?" + (new String(Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
+            if (userAgent.contains(FIREFOX_KEY)) {
+                title = UTF8LINK_KEY + (new String(Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
             } else {
                 title = URLEncoder.encode(title, StandardCharsets.UTF_8);
                 title = StringUtils.replace(title, "+", "%20");// 替换空格
@@ -267,16 +266,16 @@ public class FormNTKOController {
         try (ServletOutputStream out = response.getOutputStream(); FileInputStream fs = new FileInputStream(file);
             BufferedInputStream bi = IOUtils.buffer(fs)) {
             String fileName = file.getName();
-            String agent = request.getHeader("USER-AGENT");
-            if (agent.contains("Firefox")) {
+            String agent = request.getHeader(USER_AGENT_KEY);
+            if (agent.contains(FIREFOX_KEY)) {
                 fileName =
-                    "=?UTF-8?B?" + (new String(Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8)))) + "?=";
+                    UTF8LINK_KEY + (new String(Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8)))) + "?=";
             } else {
                 fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
             }
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + fileName);
             int b;
             byte[] by = new byte[1024];
             while ((b = bi.read(by)) != -1) {
@@ -305,17 +304,17 @@ public class FormNTKOController {
         String y9FileStoreId =
             y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
         try (ServletOutputStream out = response.getOutputStream()) {
-            String agent = request.getHeader("USER-AGENT");
+            String agent = request.getHeader(USER_AGENT_KEY);
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
-            if (agent.contains("Firefox")) {
+            if (agent.contains(FIREFOX_KEY)) {
                 Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
             } else {
                 fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=zhengwen." + y9FileStore.getFileExt());
             byte[] buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             ByteArrayInputStream bin = null;
             if (buf != null) {
@@ -329,7 +328,7 @@ public class FormNTKOController {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("打开正文失败", e);
+            LOGGER.error("打开正文文件失败", e);
         }
     }
 
@@ -381,17 +380,17 @@ public class FormNTKOController {
         Y9WordHistoryModel map = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
         String fileStoreId = map.getFileStoreId();
         try (ServletOutputStream out = response.getOutputStream()) {
-            String agent = request.getHeader("USER-AGENT");
+            String agent = request.getHeader(USER_AGENT_KEY);
             Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
             String fileName = y9FileStore.getFileName();
-            if (agent.contains("Firefox")) {
+            if (agent.contains(FIREFOX_KEY)) {
                 Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
             } else {
                 fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 StringUtils.replace(fileName, "+", "%20");
             }
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=zhengwen." + y9FileStore.getFileExt());
             byte[] buf = y9FileStoreService.downloadFileToBytes(fileStoreId);
             ByteArrayInputStream bin = null;
             if (buf != null) {
@@ -405,7 +404,7 @@ public class FormNTKOController {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("打开正文失败", e);
+            LOGGER.error("打开历史版本正文文件失败", e);
         }
     }
 
@@ -443,7 +442,7 @@ public class FormNTKOController {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("打开正文失败", e);
+            LOGGER.error("打开PDF或者TIF文件失败", e);
         }
     }
 
@@ -467,18 +466,18 @@ public class FormNTKOController {
         String y9FileStoreId =
             y9WordApi.openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong).getData();
         try (ServletOutputStream out = response.getOutputStream()) {
-            String agent = request.getHeader("USER-AGENT");
+            String agent = request.getHeader(USER_AGENT_KEY);
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileName = y9FileStore.getFileName();
-            if (agent.contains("Firefox")) {
+            if (agent.contains(FIREFOX_KEY)) {
                 fileName =
-                    "=?UTF-8?B?" + (new String(Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8)))) + "?=";
+                    UTF8LINK_KEY + (new String(Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8)))) + "?=";
             } else {
                 fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
                 fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
             }
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + fileName);
 
             byte[] buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             ByteArrayInputStream bin = null;
@@ -493,7 +492,7 @@ public class FormNTKOController {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("打开正文失败", e);
+            LOGGER.error("打开撤销PDF后的正文失败", e);
         }
     }
 
