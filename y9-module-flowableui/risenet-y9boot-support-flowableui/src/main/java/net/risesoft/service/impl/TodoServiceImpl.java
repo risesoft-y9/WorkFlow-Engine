@@ -136,11 +136,12 @@ public class TodoServiceImpl implements TodoService {
                             mapTemp.put(FlowableUiConsts.ISZHUBAN, "");
                         }
                     }
-                    mapTemp.put("isForwarding", false);
+                    mapTemp.put(FlowableUiConsts.ISFORWARDING_KEY, false);
                     TaskVariableModel taskVariableModel =
-                        taskvariableApi.findByTaskIdAndKeyName(tenantId, taskId, "isForwarding").getData();
+                        taskvariableApi.findByTaskIdAndKeyName(tenantId, taskId, FlowableUiConsts.ISFORWARDING_KEY)
+                            .getData();
                     if (taskVariableModel != null) {// 是否正在发送标识
-                        mapTemp.put("isForwarding", taskVariableModel.getText().contains("true"));
+                        mapTemp.put(FlowableUiConsts.ISFORWARDING_KEY, taskVariableModel.getText().contains("true"));
                     }
                     String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
                     if (Boolean.parseBoolean(rollBack)) {// 退回件

@@ -36,6 +36,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -125,18 +126,18 @@ public class WorkListServiceImpl implements WorkListService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("canOpen", true);
-                    mapTemp.put("children", List.of());
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.CANOPEN_KEY, true);
+                    mapTemp.put(FlowableUiConsts.CHILDREN_KEY, List.of());
                     mapTemp.put("actRuDetailId", ardModel.getId());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-                    mapTemp.put("executionId", ardModel.getExecutionId());
+                    mapTemp.put(FlowableUiConsts.EXECUTIONID_KEY, ardModel.getExecutionId());
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
                     List<UrgeInfoModel> urgeInfoList =
@@ -157,15 +158,15 @@ public class WorkListServiceImpl implements WorkListService {
                             List<TaskModel> taskList =
                                 taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                             mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
-                            mapTemp.put("children", getChildren(ardModel, mapTemp, formData, taskList, urgeInfoList,
-                                signDeptDetailList, false));
+                            mapTemp.put(FlowableUiConsts.CHILDREN_KEY, getChildren(ardModel, mapTemp, formData,
+                                taskList, urgeInfoList, signDeptDetailList, false));
                         } else {
                             mapTemp.put(SysVariables.ITEM_BOX,
                                 isOrg ? ItemBoxTypeEnum.MONITOR_DONE.getValue() : ItemBoxTypeEnum.DONE.getValue());
                             taskRelatedList = getTaskRelated4Done(ardModel, formData, ardModel.isSub(), urgeInfoList);
                             mapTemp.putAll(getTaskNameAndUserName4Done(processParam));
-                            mapTemp.put("children", getChildren(ardModel, mapTemp, formData, List.of(), urgeInfoList,
-                                signDeptDetailList, false));
+                            mapTemp.put(FlowableUiConsts.CHILDREN_KEY, getChildren(ardModel, mapTemp, formData,
+                                List.of(), urgeInfoList, signDeptDetailList, false));
                         }
                     }
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, taskRelatedList);
@@ -204,17 +205,17 @@ public class WorkListServiceImpl implements WorkListService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    mapTemp.put("serialNumber", ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
                     mapTemp.put("id", processSerialNumber);
                     mapTemp.put("actRuDetailId", ardModel.getId());
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
                     mapTemp.put("number", processParam.getCustomNumber());
                     mapTemp.put("title", processParam.getTitle());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
                     mapTemp.put("taskName", ardModel.getTaskDefName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     mapTemp.put("taskAssignee", ardModel.getAssigneeName());
                     formData = formDataApi.getData(tenantId, ardModel.getItemId(), processSerialNumber).getData();
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Todo(ardModel, formData));
@@ -259,20 +260,20 @@ public class WorkListServiceImpl implements WorkListService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("canOpen", true);
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.CANOPEN_KEY, true);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<SignDeptDetailModel> signDeptDetailList =
                         signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put("processDefinitionId", ardModel.getProcessDefinitionId());
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
                     List<UrgeInfoModel> urgeInfoList =
@@ -280,7 +281,7 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Doing(processSerialNumber,
                         ardModel.getExecutionId(), formData, false, urgeInfoList));
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.MONITOR_DOING.getValue());
-                    mapTemp.put("children",
+                    mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, formData, taskList, urgeInfoList, signDeptDetailList, true));
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
@@ -327,8 +328,8 @@ public class WorkListServiceImpl implements WorkListService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("canOpen", true);
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.CANOPEN_KEY, true);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<SignDeptDetailModel> signDeptDetailList =
@@ -337,12 +338,12 @@ public class WorkListServiceImpl implements WorkListService {
                     boolean isSignDept = signDeptDetailList.stream()
                         .anyMatch(signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
                     mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put("processDefinitionId", ardModel.getProcessDefinitionId());
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     /*
                      * 暂时取表单所有字段数据
                      */
@@ -353,7 +354,7 @@ public class WorkListServiceImpl implements WorkListService {
                         urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put(SysVariables.TASK_RELATED_LIST,
                         getTaskRelated4Doing(processSerialNumber, "", formData, isSignDept, urgeInfoList));
-                    mapTemp.put("children",
+                    mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, formData, taskList, urgeInfoList, signDeptDetailList, true));
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
@@ -390,19 +391,19 @@ public class WorkListServiceImpl implements WorkListService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("canOpen", true);
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.CANOPEN_KEY, true);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     List<SignDeptDetailModel> signDeptDetailList =
                         signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.MONITOR_DOING.getValue());
@@ -413,7 +414,7 @@ public class WorkListServiceImpl implements WorkListService {
                         urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put(SysVariables.TASK_RELATED_LIST,
                         getTaskRelated4Doing(processSerialNumber, "", formData, false, urgeInfoList));
-                    mapTemp.put("children",
+                    mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, formData, taskList, urgeInfoList, signDeptDetailList, true));
                 } catch (Exception e) {
                     LOGGER.error("获取在办列表失败" + processInstanceId, e);
@@ -451,14 +452,14 @@ public class WorkListServiceImpl implements WorkListService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put("completer",
                         StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     /*
@@ -506,16 +507,16 @@ public class WorkListServiceImpl implements WorkListService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("canOpen", true);
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.CANOPEN_KEY, true);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    mapTemp.put("taskId", taskId);
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put("completer",
                         StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
@@ -528,7 +529,7 @@ public class WorkListServiceImpl implements WorkListService {
                     List<SignDeptDetailModel> signDeptDetailList = signDeptDetailApi
                         .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), ardModel.getProcessSerialNumber())
                         .getData();
-                    mapTemp.put("children",
+                    mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, formData, List.of(), urgeInfoList, signDeptDetailList, true));
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
@@ -575,16 +576,16 @@ public class WorkListServiceImpl implements WorkListService {
                 try {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("canOpen", true);
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.CANOPEN_KEY, true);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    mapTemp.put("taskId", taskId);
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
                     mapTemp.put("taskName", "已办结");
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put("completer",
                         StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
                     /*
@@ -602,7 +603,7 @@ public class WorkListServiceImpl implements WorkListService {
                         urgeInfoApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put(SysVariables.TASK_RELATED_LIST,
                         getTaskRelated4Done(ardModel, formData, isSignDept, urgeInfoList));
-                    mapTemp.put("children",
+                    mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, formData, List.of(), urgeInfoList, signDeptDetailList, true));
                 } catch (Exception e) {
                     LOGGER.error("获取待办列表失败" + processInstanceId, e);
@@ -695,15 +696,15 @@ public class WorkListServiceImpl implements WorkListService {
             Map<String, Object> childrenMap = new HashMap<>(parentMap);
             childrenMap.put("id", sdd.getId());
             childrenMap.put("isSub", true);
-            childrenMap.put("canOpen", false);
-            childrenMap.put("serialNumber", count.incrementAndGet());
+            childrenMap.put(FlowableUiConsts.CANOPEN_KEY, false);
+            childrenMap.put(FlowableUiConsts.SERIALNUMBER_KEY, count.incrementAndGet());
             childrenMap.put("taskName", taskNameAndAssigneeNames.get(0));
             childrenMap.put("taskAssignee", taskNameAndAssigneeNames.get(1));
-            childrenMap.put("children", List.of());
+            childrenMap.put(FlowableUiConsts.CHILDREN_KEY, List.of());
             childrenMap.put("status", sdd.getStatus());
-            childrenMap.put("bureauName", sdd.getDeptName());
+            childrenMap.put(FlowableUiConsts.BUREAUNAME_KEY, sdd.getDeptName());
             childrenMap.put(SysVariables.PROCESS_SERIAL_NUMBER, ardModel.getProcessSerialNumber());
-            childrenMap.put("executionId", sdd.getExecutionId());
+            childrenMap.put(FlowableUiConsts.EXECUTIONID_KEY, sdd.getExecutionId());
             if (ardModel.isEnded()) {
                 childrenMap.put(SysVariables.TASK_RELATED_LIST,
                     getTaskRelated4Done(ardModel, formData, true, urgeInfoList));
@@ -712,13 +713,13 @@ public class WorkListServiceImpl implements WorkListService {
                     sdd.getExecutionId(), formData, true, urgeInfoList));
             }
             if (isAdmin) {
-                childrenMap.put("canOpen", true);
+                childrenMap.put(FlowableUiConsts.CANOPEN_KEY, true);
             } else {
                 if (!ardModel.isSub()) {
-                    childrenMap.put("canOpen", true);
+                    childrenMap.put(FlowableUiConsts.CANOPEN_KEY, true);
                 } else {
                     if (sdd.getExecutionId().equals(ardModel.getExecutionId())) {
-                        childrenMap.put("canOpen", true);
+                        childrenMap.put(FlowableUiConsts.CANOPEN_KEY, true);
                     }
                 }
             }
@@ -1178,14 +1179,14 @@ public class WorkListServiceImpl implements WorkListService {
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("id", processSerialNumber);
                     mapTemp.put("isSub", false);
-                    mapTemp.put("canOpen", true);
-                    mapTemp.put("serialNumber", ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.CANOPEN_KEY, true);
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("executionId", ardModel.getExecutionId());
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.EXECUTIONID_KEY, ardModel.getExecutionId());
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
                     mapTemp.put(SysVariables.ITEM_BOX, StringUtils.isBlank(processParam.getCompleter())
@@ -1199,16 +1200,16 @@ public class WorkListServiceImpl implements WorkListService {
                     if (ardModel.isEnded()) {
                         taskRelatedList = getTaskRelated4Done(ardModel, formData, false, urgeInfoList);
                         mapTemp.putAll(getTaskNameAndUserName4Done(processParam));
-                        mapTemp.put("children", getChildren(ardModel, mapTemp, formData, List.of(), urgeInfoList,
-                            signDeptDetailList, false));
+                        mapTemp.put(FlowableUiConsts.CHILDREN_KEY, getChildren(ardModel, mapTemp, formData, List.of(),
+                            urgeInfoList, signDeptDetailList, false));
                     } else {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                         taskRelatedList = getTaskRelated4Doing(processSerialNumber, ardModel.getExecutionId(), formData,
                             false, urgeInfoList);
                         mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
-                        mapTemp.put("children", getChildren(ardModel, mapTemp, formData, taskList, urgeInfoList,
-                            signDeptDetailList, false));
+                        mapTemp.put(FlowableUiConsts.CHILDREN_KEY, getChildren(ardModel, mapTemp, formData, taskList,
+                            urgeInfoList, signDeptDetailList, false));
                     }
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, taskRelatedList);
                 } catch (Exception e) {
@@ -1254,12 +1255,12 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("taskId", taskId);
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskName", taskList.get(0).getName());
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
@@ -1311,12 +1312,12 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", "");
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, "");
                     mapTemp.put("taskAssignee", "无");
                     mapTemp.put("taskName", "已办结");
                     if (!ardModel.isEnded()) {
@@ -1377,12 +1378,12 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("taskId", taskId);
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     mapTemp.put("taskName", taskList.get(0).getName());
                     List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
@@ -1448,14 +1449,14 @@ public class WorkListServiceImpl implements WorkListService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("actRuDetailId", ardModel.getId());
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ACTRUDETAILID_KEY, ardModel.getId());
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
                     mapTemp.put("taskName", ardModel.getTaskDefName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     mapTemp.put("taskAssignee", ardModel.getAssigneeName());
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
@@ -1498,14 +1499,14 @@ public class WorkListServiceImpl implements WorkListService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("actRuDetailId", ardModel.getId());
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ACTRUDETAILID_KEY, ardModel.getId());
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
                     mapTemp.put("taskName", ardModel.getTaskDefName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     mapTemp.put("taskAssignee", ardModel.getAssigneeName());
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));
@@ -1555,14 +1556,14 @@ public class WorkListServiceImpl implements WorkListService {
                     String processSerialNumber = ardModel.getProcessSerialNumber();
                     processParam = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
                     mapTemp.put("id", processSerialNumber);
-                    mapTemp.put("actRuDetailId", ardModel.getId());
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("serialNumber", ++serialNumber);
-                    mapTemp.put("bureauName", processParam.getHostDeptName());
+                    mapTemp.put(FlowableUiConsts.ACTRUDETAILID_KEY, ardModel.getId());
+                    mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
+                    mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, ++serialNumber);
+                    mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
                     mapTemp.put("taskName", ardModel.getTaskDefName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
+                    mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
+                    mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
                     mapTemp.put("taskAssignee", ardModel.getAssigneeName());
                     formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
                     mapTemp.putAll(handleFormData(formData));

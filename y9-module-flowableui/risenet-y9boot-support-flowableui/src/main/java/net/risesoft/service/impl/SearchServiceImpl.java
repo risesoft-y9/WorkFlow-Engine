@@ -186,9 +186,9 @@ public class SearchServiceImpl implements SearchService {
             }
             return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取列表失败", e);
+            LOGGER.error("获取个人所有件列表失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取个人所有件列表失败！");
     }
 
     @Override
@@ -199,9 +199,9 @@ public class SearchServiceImpl implements SearchService {
             return chaoSongApi.searchAllByUserId(tenantId, positionId, searchName, itemId, userName, state, year, page,
                 rows);
         } catch (Exception e) {
-            LOGGER.error("获取列表失败", e);
+            LOGGER.error("获取阅件列表失败，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取阅件列表失败");
     }
 
 }
