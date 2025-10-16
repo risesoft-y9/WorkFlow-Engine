@@ -31,8 +31,8 @@ import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.Process4SearchService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -64,7 +64,7 @@ public class Process4SearchServiceImpl implements Process4SearchService {
                 "SELECT P .PROC_INST_ID_,TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,P .PROC_DEF_ID_"
                     + " FROM ACT_HI_PROCINST P WHERE P .PROC_INST_ID_ = '" + processInstanceId + "'";
             DataSource dataSource = jdbcTemplate.getDataSource();
-            String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialectName)
                 || DialectEnum.KINGBASE.getValue().equals(dialectName)) {
                 sql0 = "SELECT P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_"
@@ -152,7 +152,7 @@ public class Process4SearchServiceImpl implements Process4SearchService {
                 String sql0 = "SELECT P .PROC_INST_ID_, TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
                     + " P .PROC_DEF_ID_ FROM ACT_HI_PROCINST P WHERE P .PROC_INST_ID_ = '" + processInstanceId + "'";
                 DataSource dataSource = jdbcTemplate.getDataSource();
-                String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
+                String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
                 if (DialectEnum.MYSQL.getValue().equals(dialectName)
                     || DialectEnum.KINGBASE.getValue().equals(dialectName)) {
                     sql0 = "SELECT P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_ FROM"

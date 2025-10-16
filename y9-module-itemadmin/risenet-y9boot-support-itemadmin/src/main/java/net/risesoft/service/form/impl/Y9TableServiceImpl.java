@@ -41,7 +41,7 @@ import net.risesoft.service.core.ItemService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.sqlddl.DbMetaDataUtil;
+import net.risesoft.y9.sqlddl.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
 /**
@@ -68,8 +68,6 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     private final ItemWorkDayService itemWorkDayService;
 
-    private final Y9TableService self;
-
     public Y9TableServiceImpl(
         @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
         Y9TableRepository y9TableRepository,
@@ -77,8 +75,7 @@ public class Y9TableServiceImpl implements Y9TableService {
         Y9FormFieldRepository y9FormFieldRepository,
         TableManagerService tableManagerService,
         ItemService itemService,
-        ItemWorkDayService itemWorkDayService,
-        @Lazy Y9TableService self) {
+        ItemWorkDayService itemWorkDayService) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9TableRepository = y9TableRepository;
         this.y9TableFieldRepository = y9TableFieldRepository;
@@ -90,7 +87,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public Y9Result<Object> addDataBaseTable(String tableName, String systemName, String systemCnName) {
         try {
             Y9Table y9Table = new Y9Table();
@@ -102,7 +99,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             y9Table.setSystemCnName(systemCnName);
             y9Table.setTableName(tableName);
             y9TableRepository.save(y9Table);
-            List<DbColumn> list = DbMetaDataUtil
+            List<DbColumn> list = Y9FormDbMetaDataUtil
                 .listAllColumns(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()), tableName, "%");
             int order = 1;
             for (DbColumn dbColumn : list) {
@@ -130,7 +127,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public Y9Result<Object> buildTable(Y9Table table, List<Map<String, Object>> listMap) {
         try {
             boolean tableExist = true;
@@ -142,7 +139,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                     tableExist = false;
                 }
             }
-            Y9Table tableTemp = self.saveOrUpdate(table);
+            Y9Table tableTemp = this.saveOrUpdate(table);
             if (tableTemp != null && tableTemp.getId() != null) {
                 String tableId = tableTemp.getId();
                 if (!listMap.isEmpty()) {
@@ -150,14 +147,14 @@ public class Y9TableServiceImpl implements Y9TableService {
                     List<DbColumn> dbcs;
                     if (tableExist) {
                         List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
-                        dbcs = self.saveField(tableId, tableTemp.getTableName(), listMap, ids);
+                        dbcs = saveField(tableId, tableTemp.getTableName(), listMap, ids);
                         for (Y9TableField y9TableField : list) {
                             if (!ids.contains(y9TableField.getId())) {
                                 y9TableFieldRepository.delete(y9TableField);
                             }
                         }
                     } else {
-                        dbcs = self.saveField(tableId, tableTemp.getTableName(), listMap, ids);
+                        dbcs = saveField(tableId, tableTemp.getTableName(), listMap, ids);
                     }
                     return tableManagerService.buildTable(tableTemp, dbcs);
                 }
@@ -326,13 +323,13 @@ public class Y9TableServiceImpl implements Y9TableService {
                     }
                 }
             } else {
-                list = DbMetaDataUtil.listAllTables(dataSource, "y9_form_%");
-                String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
+                list = Y9FormDbMetaDataUtil.listAllTables(dataSource, "y9_form_%");
+                String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
                 if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                    List<Map<String, String>> list1 = DbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
+                    List<Map<String, String>> list1 = Y9FormDbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
                     list.addAll(list1);
                 } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                    List<Map<String, String>> list1 = DbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
+                    List<Map<String, String>> list1 = Y9FormDbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
                     list.addAll(list1);
                 }
             }
@@ -431,7 +428,6 @@ public class Y9TableServiceImpl implements Y9TableService {
      * @param ids
      * @return
      */
-    @Override
     @Transactional
     public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap,
         List<String> ids) {
@@ -498,7 +494,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                 table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             }
             DataSource dataSource = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource());
-            String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }
@@ -511,18 +507,19 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional
+    @Transactional(readOnly = false)
     public Y9Result<Object> updateTable(Y9Table table, List<Map<String, Object>> listMap, String type) {
         try {
-            Y9Table saveTable = self.saveOrUpdate(table);
+            Y9Table saveTable = this.saveOrUpdate(table);
             if (saveTable != null && saveTable.getId() != null) {
                 String tableId = saveTable.getId();
                 String tableName = saveTable.getTableName();
                 if (!listMap.isEmpty()) {
                     List<String> ids = new ArrayList<>();
                     List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
-                    List<DbColumn> dbColumnList = self.saveField(tableId, tableName, listMap, ids);
-                    /*
+                    List<DbColumn> dbcs;
+                    dbcs = saveField(tableId, tableName, listMap, ids);
+                    /**
                      * 删除页面上已删除的字段
                      */
                     for (Y9TableField y9TableField : list) {
@@ -530,12 +527,12 @@ public class Y9TableServiceImpl implements Y9TableService {
                             y9TableFieldRepository.delete(y9TableField);
                         }
                     }
-                    /*
+                    /**
                      * 修改表结构
                      */
                     boolean isSave = "save".equals(type);
                     if (!isSave) {
-                        return tableManagerService.addFieldToTable(saveTable, dbColumnList);
+                        return tableManagerService.addFieldToTable(saveTable, dbcs);
                     }
                 }
             }
