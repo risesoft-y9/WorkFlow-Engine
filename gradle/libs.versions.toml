@@ -2,7 +2,7 @@
 y9-plugin = "9.7.0-M4"
 y9-digitalbase = "9.7.0-SNAPSHOT"
 
-flowable-spring-boot = "7.1.0"
+flowable-spring-boot = "7.2.0"
 
 # database
 com-oracle-database-jdbc-ojdbc11 = "21.9.0.0"
