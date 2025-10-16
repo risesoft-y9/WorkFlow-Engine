@@ -46,13 +46,15 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
     private final OrgUnitApi orgUnitApi;
 
+    private final ReceiveDeptAndPersonService self;
+
     @Override
     public Integer countByDeptId(String deptId) {
         return receivePersonRepository.countByDeptId(deptId);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> delDepartment(String id) {
         try {
             ReceiveDepartment receiveDeptAndPerson = receiveDepartmentRepository.findByDeptId(id);
@@ -69,7 +71,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> delPerson(String id) {
         try {
             receivePersonRepository.deleteById(id);
@@ -135,13 +137,13 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public ReceiveDepartment save(ReceiveDepartment receiveDepartment) {
         return receiveDepartmentRepository.save(receiveDepartment);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> saveDepartment(String id) {
         try {
             ReceiveDepartment receiveDeptAndPerson = receiveDepartmentRepository.findByDeptId(id);
@@ -169,18 +171,19 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> saveOrder(String ids) {
         try {
             if (StringUtils.isNotBlank(ids)) {
                 String[] idArr = ids.split(",");
-                Integer tabIndex = 0;
+                int tabIndex = 0;
                 for (String guid : idArr) {
                     Optional<ReceiveDepartment> receiveDeptAndPersonOpt = receiveDepartmentRepository.findById(guid);
                     if (receiveDeptAndPersonOpt.isPresent()) {
                         ReceiveDepartment receiveDeptAndPerson = receiveDeptAndPersonOpt.get();
-                        Department dept = departmentApi
-                            .get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
+                        Department dept =
+                            departmentApi.get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId())
+                                .getData();
                         receiveDeptAndPerson.setDeptName(dept.getName());
                         receiveDeptAndPerson.setTabIndex(tabIndex);
                         tabIndex += 1;
@@ -196,12 +199,11 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> savePosition(String deptId, String ids) {
         try {
             String[] id = ids.split(",");
             StringBuilder msg = new StringBuilder();
-
             String idsTemp = "";
             String tenantId = Y9LoginUserHolder.getTenantId();
             Department dept = departmentApi.get(tenantId, deptId).getData();
@@ -218,9 +220,14 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
                         if (orgUnit.getId().equals(orgUnit1.getId()) && !receivePerson.getDeptId().equals(deptId)) {
                             isAdd = false;
                             // 同一个委办局，不能设置一个人为两个单位的收文员
-                            OrgUnit person = orgUnitApi
-                                .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), userId).getData();
-                            msg.append("[" + person.getName() + "已是" + receivePerson.getDeptName() + "部门的收发员]<br>");
+                            OrgUnit person =
+                                orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), userId)
+                                    .getData();
+                            msg.append("[")
+                                .append(person.getName())
+                                .append("已是")
+                                .append(receivePerson.getDeptName())
+                                .append("部门的收发员]<br>");
                         }
                     }
                     if (isAdd) {
@@ -309,7 +316,6 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
      * @param deptId
      * @param parentId
      */
-    @Transactional(readOnly = false)
     public void setParentId(String deptId, String parentId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Department> list = departmentApi.listByParentId(tenantId, deptId).getData();
@@ -325,7 +331,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> setReceive(boolean receive, String ids) {
         try {
             if (StringUtils.isNotBlank(ids)) {
@@ -346,7 +352,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> setSend(boolean send, String ids) {
         try {
             if (StringUtils.isNotBlank(ids)) {

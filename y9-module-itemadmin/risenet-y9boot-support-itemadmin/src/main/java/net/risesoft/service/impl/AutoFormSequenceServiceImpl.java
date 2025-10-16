@@ -28,6 +28,8 @@ public class AutoFormSequenceServiceImpl implements AutoFormSequenceService {
 
     private final DocumentNumberDetailService documentNumberDetailService;
 
+    private final AutoFormSequenceService self;
+
     @Override
     public String calculateSequence(int patternLength, int sequence) {
         StringBuilder stringBuilder = new StringBuilder();
@@ -46,7 +48,7 @@ public class AutoFormSequenceServiceImpl implements AutoFormSequenceService {
         if (character == null) {
             character = "";
         }
-        Integer sequence = getSequence(tenantId, labelName, character);
+        Integer sequence = self.getSequence(tenantId, labelName, character);
         String result = "";
         if (sequence > 0) {
             DocumentNumberDetail detail = documentNumberDetailService.listAll().get(0);

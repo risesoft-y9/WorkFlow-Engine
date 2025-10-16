@@ -51,6 +51,8 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
 
     private final RepositoryApi repositoryApi;
 
+    private final Y9FormItemBindService self;
+
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
@@ -82,7 +84,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             // 复制手机端表单绑定信息
             List<Y9FormItemMobileBind> mobileBindList =
                 y9FormItemMobileBindRepository.findByItemIdAndProcDefId(itemId, lastVersionPid);
-            /**
+            /*
              * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的表单，没有就保存
              */
             for (Y9FormItemMobileBind eib : mobileBindList) {
@@ -133,7 +135,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                 Y9FormItemBind eibTemp = y9FormItemBindRepository
                     .findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(itemId, latestpdId, formId);
                 if (null == eibTemp) {
-                    save(eib, latestpdId, formId, itemId, taskDefKey, tenantId);
+                    self.save(eib, latestpdId, formId, itemId, taskDefKey, tenantId);
                 }
             } else {
                 for (TargetModel targetModel : nodes) {
@@ -141,7 +143,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                         Y9FormItemBind eibTemp = y9FormItemBindRepository
                             .findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId, latestpdId, taskDefKey, formId);
                         if (null == eibTemp) {
-                            save(eib, latestpdId, formId, itemId, taskDefKey, tenantId);
+                            self.save(eib, latestpdId, formId, itemId, taskDefKey, tenantId);
                             break;
                         }
                     }
@@ -163,7 +165,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                 Y9FormItemMobileBind eibTemp = y9FormItemMobileBindRepository
                     .findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(itemId, latestpdId, formId);
                 if (null == eibTemp) {
-                    save(eibm, latestpdId, formId, itemId, taskDefKey, tenantId);
+                    self.save(eibm, latestpdId, formId, itemId, taskDefKey, tenantId);
                 }
             } else {
                 for (TargetModel targetModel : nodes) {
@@ -171,7 +173,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                         Y9FormItemMobileBind eibTemp = y9FormItemMobileBindRepository
                             .findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId, latestpdId, taskDefKey, formId);
                         if (null == eibTemp) {
-                            save(eibTemp, latestpdId, formId, itemId, taskDefKey, tenantId);
+                            self.save(eibTemp, latestpdId, formId, itemId, taskDefKey, tenantId);
                             break;
                         }
                     }
@@ -369,6 +371,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         return Y9Result.failure("保存失败");
     }
 
+    @Override
     @Transactional
     public void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
         String tenantId) {
@@ -387,6 +390,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         y9FormItemBindRepository.save(eibTemp);
     }
 
+    @Override
     @Transactional
     public void save(Y9FormItemMobileBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
         String tenantId) {

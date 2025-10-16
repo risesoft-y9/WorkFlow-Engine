@@ -129,7 +129,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 String endNodeKey = customProcessDefinitionService.getEndNode(taskId).getData().getTaskDefKey();
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.ROUTE_TO_TASK_ID, endNodeKey);
-                this.completeWithVariables(taskId, vars);
+                taskService.complete(taskId, vars, false);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -184,7 +184,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             }
             variables.put(SysVariables.USERS, userList);
             variables.put(SysVariables.ACTION_NAME + ":" + Y9LoginUserHolder.getOrgUnitId(), "结束会签");
-            this.completeWithVariables(taskId, variables);
+            taskService.complete(taskId, variables, false);
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);

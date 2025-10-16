@@ -81,6 +81,8 @@ public class OrganWordServiceImpl implements OrganWordService {
 
     private final TaskApi taskApi;
 
+    private final OrganWordService self;
+
     @Override
     public boolean checkCustom(String id, String custom) {
         OrganWord organWord = organWordRepository.findByCustom(custom);
@@ -228,7 +230,6 @@ public class OrganWordServiceImpl implements OrganWordService {
         }
     }
 
-    @Transactional
     public Integer checkOrganWordUseHistory(String characterValue, String custom, Integer year, Integer numberTemp,
         String itemId, String processSerialNumber) {
 
@@ -407,8 +408,8 @@ public class OrganWordServiceImpl implements OrganWordService {
                 organWord.setName(characterValue);
                 organWord.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 organWord.setUserName(person.getName());
-                this.save(organWord);
-                /**
+                self.save(organWord);
+                /*
                  * 标示不存在，则编号对应的机关代字也是不存在的，再保存编号对应的机关代字
                  */
                 OrganWordProperty property = new OrganWordProperty();
@@ -523,8 +524,8 @@ public class OrganWordServiceImpl implements OrganWordService {
                 organWord.setName(characterValue);
                 organWord.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 organWord.setUserName(person.getName());
-                this.save(organWord);
-                /**
+                self.save(organWord);
+                /*
                  * 标示不存在，则编号对应的机关代字也是不存在的，再保存编号对应的机关代字
                  */
                 OrganWordProperty property = new OrganWordProperty();
@@ -695,7 +696,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String id = organWord.getId(), personName = person.getName();
         if (StringUtils.isNotEmpty(id)) {
-            OrganWord oldOrganWord = this.findOne(id);
+            OrganWord oldOrganWord = self.findOne(id);
             if (null != oldOrganWord) {
                 oldOrganWord.setCustom(organWord.getCustom());
                 oldOrganWord.setUserName(personName);

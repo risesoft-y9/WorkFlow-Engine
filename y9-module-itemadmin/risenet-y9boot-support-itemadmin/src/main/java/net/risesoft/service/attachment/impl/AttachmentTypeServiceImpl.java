@@ -80,13 +80,12 @@ public class AttachmentTypeServiceImpl implements AttachmentTypeService {
                     oldof.setName(AttachmentType.getName());
                     oldof.setUserId(null == person ? "" : person.getPersonId());
                     oldof.setUserName(null == person ? "" : person.getName());
-                    this.save(oldof);
+                    attachmentTypeRepository.save(oldof);
                     return oldof;
                 } else {
-                    return this.save(AttachmentType);
+                    return attachmentTypeRepository.save(AttachmentType);
                 }
             }
-
             AttachmentType newof = new AttachmentType();
             newof.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             newof.setMark(AttachmentType.getMark());
@@ -97,8 +96,7 @@ public class AttachmentTypeServiceImpl implements AttachmentTypeService {
             newof.setUserId(person.getPersonId());
             newof.setUserName(person.getName());
             newof.setDeleted(0);
-            this.save(newof);
-
+            attachmentTypeRepository.save(newof);
             return newof;
         } catch (Exception e) {
             e.printStackTrace();

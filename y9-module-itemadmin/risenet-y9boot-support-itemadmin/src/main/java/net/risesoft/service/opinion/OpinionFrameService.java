@@ -14,31 +14,27 @@ import net.risesoft.entity.opinion.OpinionFrame;
 public interface OpinionFrameService {
 
     /**
-     * Description:
-     *
+     * 
      * @param id
      * @return
      */
     OpinionFrame getById(String id);
 
     /**
-     * Description:
-     *
+     * 
      * @param mark
      * @return
      */
     OpinionFrame getByMark(String mark);
 
     /**
-     * Description:
-     *
+     * 
      * @return
      */
     List<OpinionFrame> listAll();
 
     /**
-     * Description:
-     *
+     * 
      * @param page
      * @param rows
      * @return
@@ -46,8 +42,7 @@ public interface OpinionFrameService {
     Page<OpinionFrame> pageAll(int page, int rows);
 
     /**
-     * Description:
-     *
+     * 
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey
@@ -58,38 +53,27 @@ public interface OpinionFrameService {
     Page<OpinionFrame> pageAllNotUsed(String itemId, String processDefinitionId, String taskDefKey, int page, int rows);
 
     /**
-     * Description:
-     *
-     * @param id
-     */
-    void remove(String id);
-
-    /**
-     * Description:
-     *
+     * 
      * @param ids
      */
     void remove(String[] ids);
 
     /**
-     * Description:
-     *
+     * 
      * @param opinionFrame
      * @return
      */
     OpinionFrame save(OpinionFrame opinionFrame);
 
     /**
-     * Description:
-     *
+     * 
      * @param opinionFrame
      * @return
      */
     OpinionFrame saveOrUpdate(OpinionFrame opinionFrame);
 
     /**
-     * Description:
-     *
+     * 
      * @param page
      * @param rows
      * @param keyword
@@ -98,8 +82,7 @@ public interface OpinionFrameService {
     Page<OpinionFrame> search(int page, int rows, String keyword);
 
     /**
-     * Description:
-     *
+     * 
      * @param itemId
      * @param processDefinitionId
      * @param taskDefKey

@@ -66,7 +66,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         ItemOpinionFrameBind itemOpinionFrameBind = this.getById(id);
         if (null != itemOpinionFrameBind) {
             itemOpinionFrameBind.setSignOpinion(signOpinion);
-            this.save(itemOpinionFrameBind);
+            itemOpinionFrameBindRepository.save(itemOpinionFrameBind);
         }
     }
 
@@ -203,7 +203,8 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     @Transactional
     public void delete(String[] ids) {
         for (String id : ids) {
-            this.delete(id);
+            itemOpinionFrameRoleService.removeByItemOpinionFrameId(id);
+            itemOpinionFrameBindRepository.deleteById(id);
         }
     }
 
@@ -353,7 +354,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                 newBind.setProcessDefinitionId(processDefinitionId);
                 newBind.setSignOpinion(true);
 
-                this.save(newBind);
+                itemOpinionFrameBindRepository.save(newBind);
             } else {
                 String[] strings = opinionFrameNameAndMarks.split(";");
                 for (String string : strings) {
@@ -375,7 +376,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     newoftrb.setProcessDefinitionId(processDefinitionId);
                     newoftrb.setSignOpinion(true);
 
-                    this.save(newoftrb);
+                    itemOpinionFrameBindRepository.save(newoftrb);
                 }
             }
         }

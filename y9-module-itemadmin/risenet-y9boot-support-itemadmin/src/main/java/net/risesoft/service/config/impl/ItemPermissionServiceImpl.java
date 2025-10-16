@@ -63,6 +63,8 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
 
     private final OrgUnitApi orgUnitApi;
 
+    private final ItemPermissionService self;
+
     @Override
     @Transactional
     public void copyPerm(String itemId, String processDefinitionId) {
@@ -97,7 +99,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                         itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
                             latestpdId, currentTaskDefKey, roleId);
                     if (null == ipTemp) {
-                        this.save(itemId, latestpdId, currentTaskDefKey, roleId, roleType);
+                        self.save(itemId, latestpdId, currentTaskDefKey, roleId, roleType);
                     }
                 }
             }

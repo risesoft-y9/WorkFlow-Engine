@@ -806,7 +806,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 cs.setItemName(itemName);
                 csList.add(cs);
             }
-            this.save(csList);
+            chaoSongRepository.saveAll(csList);
             return Y9Result.successMsg("抄送成功");
         } catch (Exception e) {
             final Writer result = new StringWriter();

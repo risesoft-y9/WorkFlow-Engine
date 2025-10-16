@@ -88,7 +88,7 @@ public class ReminderServiceImpl implements ReminderService {
             reminder.setModifyTime(new Date());
             list.add(reminder);
         }
-        saveReminder(list);
+        reminderRepository.saveAll(list);
         return "";
     }
 
