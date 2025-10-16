@@ -22,11 +22,6 @@ import net.risesoft.y9.sqlddl.DbMetaDataUtil;
  * @author zhangchongjie
  * @date 2022/12/21
  */
-/**
- * @author qinman
- * @author zhangchongjie
- * @date 2022/12/21
- */
 @Slf4j
 @NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class Y9FormDbMetaDataUtil extends DbMetaDataUtil {
@@ -75,13 +70,9 @@ public class Y9FormDbMetaDataUtil extends DbMetaDataUtil {
             String dialect = getDatabaseDialectName(dataSource);
             switch (dialect) {
                 case SqlConstants.DBTYPE_ORACLE:
-                    list = listTypes4Oracle();
-                    break;
                 case SqlConstants.DBTYPE_DM:
-                    list = listTypes4Dm();
-                    break;
                 case SqlConstants.DBTYPE_KINGBASE:
-                    list = listTypes4KingBase();
+                    list = listTypes4Common();
                     break;
                 default:
                     list = listTypes4Mysql();
@@ -94,155 +85,27 @@ public class Y9FormDbMetaDataUtil extends DbMetaDataUtil {
         return list;
     }
 
-    private static List<Map<String, Object>> listTypes4Dm() {
-        List<Map<String, Object>> list = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("typeName", "VARCHAR2");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "NUMBER");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "FLOAT");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BINARY_FLOAT");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BINARY_DOUBLE");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "LONG");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "TIMESTAMP");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BLOB");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "DATE");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "INTEGER");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "CLOB");
-        list.add(map);
-        return list;
-    }
-
-    private static List<Map<String, Object>> listTypes4KingBase() {
-        List<Map<String, Object>> list = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("typeName", "VARCHAR2");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "NUMBER");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "FLOAT");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BINARY_FLOAT");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BINARY_DOUBLE");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "LONG");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "TIMESTAMP");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BLOB");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "DATE");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "INTEGER");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "CLOB");
-        list.add(map);
-        return list;
-    }
-
     private static List<Map<String, Object>> listTypes4Mysql() {
         List<Map<String, Object>> list = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("typeName", "varchar");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "int");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "integer");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "double");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "float");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "longblob");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "text");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "longtext");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "datetime");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "date");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "bit");
-        list.add(map);
+        String[] typeNames =
+            {"varchar", "int", "integer", "double", "float", "longblob", "text", "longtext", "datetime", "date", "bit"};
+        for (String typeName : typeNames) {
+            Map<String, Object> map = new HashMap<>(16);
+            map.put("typeName", typeName);
+            list.add(map);
+        }
         return list;
     }
 
-    private static List<Map<String, Object>> listTypes4Oracle() {
+    private static List<Map<String, Object>> listTypes4Common() {
         List<Map<String, Object>> list = new ArrayList<>();
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("typeName", "VARCHAR2");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "NUMBER");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "FLOAT");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BINARY_FLOAT");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BINARY_DOUBLE");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "LONG");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "TIMESTAMP");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "BLOB");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "DATE");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "INTEGER");
-        list.add(map);
-        map = new HashMap<>(16);
-        map.put("typeName", "CLOB");
-        list.add(map);
+        String[] typeNames = {"VARCHAR2", "NUMBER", "FLOAT", "BINARY_FLOAT", "BINARY_DOUBLE", "LONG", "TIMESTAMP",
+            "BLOB", "DATE", "INTEGER", "CLOB"};
+        for (String typeName : typeNames) {
+            Map<String, Object> map = new HashMap<>(16);
+            map.put("typeName", typeName);
+            list.add(map);
+        }
         return list;
     }
 }

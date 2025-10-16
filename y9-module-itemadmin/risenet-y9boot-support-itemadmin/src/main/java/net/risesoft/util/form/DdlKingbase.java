@@ -185,8 +185,7 @@ public class DdlKingbase {
                 } else {
                     sb.append(sType);
                 }
-                List<DbColumn> list =
-                    Y9FormDbMetaDataUtil.listAllColumns(dataSource, tableName, dbc.getColumnNameOld());
+                List<DbColumn> list = DbMetaDataUtil.listAllColumns(dataSource, tableName, dbc.getColumnNameOld());
                 if (dbc.getNullable()) {
                     if (!list.get(0).getNullable()) {
                         sb.append(" NULL");
