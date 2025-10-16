@@ -47,11 +47,15 @@ public class SyncYearTableServiceImpl implements SyncYearTableService {
 
     private final JdbcTemplate jdbcTemplate4Public;
 
+    private final SyncYearTableService self;
+
     public SyncYearTableServiceImpl(
         @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public) {
+        @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public,
+        SyncYearTableService self) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcTemplate4Public = jdbcTemplate4Public;
+        this.self = self;
     }
 
     private String convertStreamToString(InputStream inputStream) {
@@ -90,7 +94,7 @@ public class SyncYearTableServiceImpl implements SyncYearTableService {
                     + "' and s.NAME = 'itemAdmin'";
                 int count = jdbcTemplate4Public.queryForObject(sql, Integer.class);
                 if (count > 0) {
-                    this.syncYearTable(year0);
+                    self.syncYearTable(year0);
                 } else {
                     LOGGER.info("********************该租户未租用事项管理系统:{}**********************", tenantId);
                 }

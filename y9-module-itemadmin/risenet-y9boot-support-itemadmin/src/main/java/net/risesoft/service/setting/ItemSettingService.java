@@ -1,6 +1,5 @@
 package net.risesoft.service.setting;
 
-import net.risesoft.entity.settings.ItemSetting;
 import net.risesoft.service.setting.impl.ConfSetting;
 
 /**
@@ -11,8 +10,6 @@ import net.risesoft.service.setting.impl.ConfSetting;
 public interface ItemSettingService {
 
     String get(String key);
-
-    ItemSetting saveOrUpdate(ItemSetting itemSetting);
 
     ConfSetting getConfSetting();
 

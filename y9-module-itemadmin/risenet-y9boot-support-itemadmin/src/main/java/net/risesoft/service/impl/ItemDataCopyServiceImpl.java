@@ -95,11 +95,9 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
-/*
+/**
  * @author qinman
- *
  * @author zhangchongjie
- *
  * @date 2022/12/20
  */
 @Service
@@ -179,6 +177,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     private final OrgUnitApi orgUnitApi;
 
     private final ProcessDataCopyApi processDataCopyApi;
+
+    private final ItemDataCopyService self;
 
     @Override
     @Transactional
@@ -1086,42 +1086,42 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             return;
         }
         /* 一复制事项 */
-        this.copyItem(sourceTenantId, targetTenantId, itemId);
+        self.copyItem(sourceTenantId, targetTenantId, itemId);
         /* 二复制动态角色 */
-        this.copyDynamicRole(sourceTenantId, targetTenantId);
+        self.copyDynamicRole(sourceTenantId, targetTenantId);
         /* 三复制租户的角色 */
-        Map<String, String> roleIdMap = this.copyTenantRole(sourceTenantId, targetTenantId, itemId);
+        Map<String, String> roleIdMap = self.copyTenantRole(sourceTenantId, targetTenantId, itemId);
         /* 四复制授权 */
-        this.copyPerm(sourceTenantId, targetTenantId, itemId, roleIdMap);
+        self.copyPerm(sourceTenantId, targetTenantId, itemId, roleIdMap);
         /* 五复制表单 */
-        this.copyForm(sourceTenantId, targetTenantId, itemId);
+        self.copyForm(sourceTenantId, targetTenantId, itemId);
         /* 六复制意见框及绑定关系和授权关系 */
-        this.copyOpinionFrame(sourceTenantId, targetTenantId, itemId);
+        self.copyOpinionFrame(sourceTenantId, targetTenantId, itemId);
         /* 七复制事项视图配置 */
-        this.copyItemViewConf(sourceTenantId, targetTenantId, itemId);
+        self.copyItemViewConf(sourceTenantId, targetTenantId, itemId);
         /* 八复制正文模板及和事项的绑定关系以及模板中书签的绑定关系 */
-        // this.copyWordTemplate(sourceTenantId, targetTenantId, itemId);
+        // self.copyWordTemplate(sourceTenantId, targetTenantId, itemId);
         /* 九复制打印模板及和事项的绑定关系 */
-        // this.copyPrintTemplate(sourceTenantId, targetTenantId, itemId);
+        // self.copyPrintTemplate(sourceTenantId, targetTenantId, itemId);
         /* 十复制页签及和事项的绑定关系 */
-        // this.copyTabEntity(sourceTenantId, targetTenantId, itemId);
+        // self.copyTabEntity(sourceTenantId, targetTenantId, itemId);
         /* 十一套红模板 */
-        // this.copyTaoHongTemplate(sourceTenantId, targetTenantId);
+        // self.copyTaoHongTemplate(sourceTenantId, targetTenantId);
         /* 十二日历配置 */
-        this.copyCalendarConfig(sourceTenantId, targetTenantId);
+        self.copyCalendarConfig(sourceTenantId, targetTenantId);
         /* 十三编号配置 */
-        // this.copyOrganWord(sourceTenantId, targetTenantId, itemId);
+        // self.copyOrganWord(sourceTenantId, targetTenantId, itemId);
         /* 十四普通按钮 */
-        this.copyCommonButton(sourceTenantId, targetTenantId, itemId);
+        self.copyCommonButton(sourceTenantId, targetTenantId, itemId);
         /* 十五发送按钮 */
-        this.copySendButton(sourceTenantId, targetTenantId, itemId);
+        self.copySendButton(sourceTenantId, targetTenantId, itemId);
     }
 
     @Override
     public void dataCopy4System(String sourceTenantId, String targetTenantId, String systemName) throws Exception {
         List<Item> itemList = itemService.findBySystemName(systemName);
         for (Item item : itemList) {
-            this.dataCopy(sourceTenantId, targetTenantId, item.getId());
+            self.dataCopy(sourceTenantId, targetTenantId, item.getId());
         }
     }
 }

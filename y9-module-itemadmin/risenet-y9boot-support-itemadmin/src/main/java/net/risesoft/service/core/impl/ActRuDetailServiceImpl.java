@@ -80,6 +80,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
+    private final ActRuDetailService self;
+
     @Override
     @Transactional
     public Y9Result<Object> claim(String taskId, String assignee) {
@@ -668,7 +670,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                     actRuDetail.setTaskId(hti.getId());
                     actRuDetail.setStarted(true);
                     actRuDetail.setEnded(false);
-                    this.saveOrUpdate(actRuDetail);
+                    self.saveOrUpdate(actRuDetail);
 
                     /* 再保存assignee */
                     taskTemp = taskApi.findById(tenantId, hti.getId()).getData();
@@ -683,7 +685,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                     actRuDetail.setProcessDefinitionKey(hti.getProcessDefinitionId().split(":")[0]);
                     actRuDetail.setProcessInstanceId(hti.getProcessInstanceId());
                     actRuDetail.setTaskId(hti.getId());
-                    this.saveOrUpdate(actRuDetail);
+                    self.saveOrUpdate(actRuDetail);
                 } else {
                     /*
                      * 2assignee不为null也有可能是恢复待办的人员是当前任务的办理人，这个时候要查出当前任务是否正在运行，正在运行
@@ -701,7 +703,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                     actRuDetail.setProcessDefinitionKey(hti.getProcessDefinitionId().split(":")[0]);
                     actRuDetail.setProcessInstanceId(hti.getProcessInstanceId());
                     actRuDetail.setTaskId(hti.getId());
-                    this.saveOrUpdate(actRuDetail);
+                    self.saveOrUpdate(actRuDetail);
                 }
             } else {
                 /* 2办理人为空，说明是区长办件，可以从历史的参与人查找对应任务的办理人 */
@@ -729,7 +731,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
                 actRuDetail.setProcessDefinitionKey(hti.getProcessDefinitionId().split(":")[0]);
                 actRuDetail.setProcessInstanceId(hti.getProcessInstanceId());
                 actRuDetail.setTaskId(hti.getId());
-                this.saveOrUpdate(actRuDetail);
+                self.saveOrUpdate(actRuDetail);
             }
         }
         return true;

@@ -6,6 +6,7 @@ import java.util.Map;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
 /**
  * @author qinman
@@ -119,6 +120,8 @@ public interface Y9TableService {
      * @return
      */
     Y9Page<Y9Table> pageTables(String systemName, int page, int rows);
+
+    List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap, List<String> ids);
 
     /**
      * Description:

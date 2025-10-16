@@ -78,12 +78,6 @@ public class ItemSettingServiceImpl implements ItemSettingService {
     }
 
     @Override
-    @Transactional
-    public ItemSetting saveOrUpdate(ItemSetting itemSetting) {
-        return itemSettingRepository.save(itemSetting);
-    }
-
-    @Override
     public ConfSetting getConfSetting() {
         return (ConfSetting)this.fillObjectFiledWithSettingItem(ConfSetting.class);
     }
@@ -102,7 +96,7 @@ public class ItemSettingServiceImpl implements ItemSettingService {
                 } catch (IllegalAccessException e) {
                     throw new RuntimeException(e);
                 }
-                this.saveOrUpdate(itemSetting);
+                itemSettingRepository.save(itemSetting);
             }
         }
     }

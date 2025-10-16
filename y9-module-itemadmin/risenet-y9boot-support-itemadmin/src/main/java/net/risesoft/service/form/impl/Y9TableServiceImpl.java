@@ -67,6 +67,8 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     private final ItemWorkDayService itemWorkDayService;
 
+    private final Y9TableService self;
+
     public Y9TableServiceImpl(
         @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
         Y9TableRepository y9TableRepository,
@@ -74,7 +76,8 @@ public class Y9TableServiceImpl implements Y9TableService {
         Y9FormFieldRepository y9FormFieldRepository,
         TableManagerService tableManagerService,
         ItemService itemService,
-        ItemWorkDayService itemWorkDayService) {
+        ItemWorkDayService itemWorkDayService,
+        Y9TableService self) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9TableRepository = y9TableRepository;
         this.y9TableFieldRepository = y9TableFieldRepository;
@@ -82,6 +85,7 @@ public class Y9TableServiceImpl implements Y9TableService {
         this.tableManagerService = tableManagerService;
         this.itemService = itemService;
         this.itemWorkDayService = itemWorkDayService;
+        this.self = self;
     }
 
     @Override
@@ -137,7 +141,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                     tableExist = false;
                 }
             }
-            Y9Table tableTemp = this.saveOrUpdate(table);
+            Y9Table tableTemp = self.saveOrUpdate(table);
             if (tableTemp != null && tableTemp.getId() != null) {
                 String tableId = tableTemp.getId();
                 if (!listMap.isEmpty()) {
@@ -145,14 +149,14 @@ public class Y9TableServiceImpl implements Y9TableService {
                     List<DbColumn> dbcs;
                     if (tableExist) {
                         List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
-                        dbcs = saveField(tableId, tableTemp.getTableName(), listMap, ids);
+                        dbcs = self.saveField(tableId, tableTemp.getTableName(), listMap, ids);
                         for (Y9TableField y9TableField : list) {
                             if (!ids.contains(y9TableField.getId())) {
                                 y9TableFieldRepository.delete(y9TableField);
                             }
                         }
                     } else {
-                        dbcs = saveField(tableId, tableTemp.getTableName(), listMap, ids);
+                        dbcs = self.saveField(tableId, tableTemp.getTableName(), listMap, ids);
                     }
                     return tableManagerService.buildTable(tableTemp, dbcs);
                 }
@@ -426,6 +430,7 @@ public class Y9TableServiceImpl implements Y9TableService {
      * @param ids
      * @return
      */
+    @Override
     @Transactional
     public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap,
         List<String> ids) {
@@ -508,16 +513,15 @@ public class Y9TableServiceImpl implements Y9TableService {
     @Transactional
     public Y9Result<Object> updateTable(Y9Table table, List<Map<String, Object>> listMap, String type) {
         try {
-            Y9Table saveTable = this.saveOrUpdate(table);
+            Y9Table saveTable = self.saveOrUpdate(table);
             if (saveTable != null && saveTable.getId() != null) {
                 String tableId = saveTable.getId();
                 String tableName = saveTable.getTableName();
                 if (!listMap.isEmpty()) {
                     List<String> ids = new ArrayList<>();
                     List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
-                    List<DbColumn> dbcs;
-                    dbcs = saveField(tableId, tableName, listMap, ids);
-                    /**
+                    List<DbColumn> dbColumnList = self.saveField(tableId, tableName, listMap, ids);
+                    /*
                      * 删除页面上已删除的字段
                      */
                     for (Y9TableField y9TableField : list) {
@@ -525,12 +529,12 @@ public class Y9TableServiceImpl implements Y9TableService {
                             y9TableFieldRepository.delete(y9TableField);
                         }
                     }
-                    /**
+                    /*
                      * 修改表结构
                      */
                     boolean isSave = "save".equals(type);
                     if (!isSave) {
-                        return tableManagerService.addFieldToTable(saveTable, dbcs);
+                        return tableManagerService.addFieldToTable(saveTable, dbColumnList);
                     }
                 }
             }
