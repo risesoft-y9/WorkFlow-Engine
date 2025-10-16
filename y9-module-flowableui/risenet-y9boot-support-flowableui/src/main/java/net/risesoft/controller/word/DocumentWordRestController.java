@@ -48,8 +48,11 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RequestMapping(value = "/vue/docWord", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentWordRestController {
 
+    private static final String ATTACHMENT_KEY = "attachment; filename=\"";
+    private static final String CONTENT_DIS_KEY = "Content-disposition";
+    private static final String CONTENT_TYPE_KEY = "Content-type";
+    private static final String APPLICATION_OCT_KEY = "application/octet-stream";
     private final Y9FileStoreService y9FileStoreService;
-
     private final DocumentWordApi documentWordApi;
 
     /**
@@ -69,9 +72,9 @@ public class DocumentWordRestController {
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
                 response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + "\"");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
+                response.setHeader(CONTENT_DIS_KEY, ATTACHMENT_KEY + title + "\"");
+                response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=GBK");
+                response.setContentType(APPLICATION_OCT_KEY);
             } else {
                 if (userAgent.contains("Firefox")) {
                     title = "=?UTF-8?B?" + (new String(
@@ -82,9 +85,9 @@ public class DocumentWordRestController {
                     title = StringUtils.replace(title, "+", "%20");// 替换空格
                 }
                 response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
+                response.setHeader(CONTENT_DIS_KEY, ATTACHMENT_KEY + title + "\"");
+                response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=UTF-8");
+                response.setContentType(APPLICATION_OCT_KEY);
             }
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(model.getFileStoreId(), out);
@@ -113,9 +116,9 @@ public class DocumentWordRestController {
             if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
                 title = new String(title.getBytes("gb2312"), "ISO8859-1");
                 response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + "\"");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
+                response.setHeader(CONTENT_DIS_KEY, ATTACHMENT_KEY + title + "\"");
+                response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=GBK");
+                response.setContentType(APPLICATION_OCT_KEY);
             } else {
                 if (userAgent.contains("Firefox")) {
                     title = "=?UTF-8?B?" + (new String(
@@ -126,9 +129,9 @@ public class DocumentWordRestController {
                     title = StringUtils.replace(title, "+", "%20");// 替换空格
                 }
                 response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
+                response.setHeader(CONTENT_DIS_KEY, ATTACHMENT_KEY + title + "\"");
+                response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=UTF-8");
+                response.setContentType(APPLICATION_OCT_KEY);
             }
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(model.getFileStoreId(), out);

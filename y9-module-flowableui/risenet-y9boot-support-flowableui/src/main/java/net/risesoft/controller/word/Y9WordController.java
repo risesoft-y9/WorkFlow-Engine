@@ -61,12 +61,10 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RequestMapping(value = "/y9Word", produces = MediaType.APPLICATION_JSON_VALUE)
 public class Y9WordController {
 
+    private static final String CONTENT_DIS_KEY = "Content-Disposition";
     private final Y9FileStoreService y9FileStoreService;
-
     private final Y9WordApi y9WordApi;
-
     private final DraftApi draftApi;
-
     private final ProcessParamApi processParamApi;
 
     /**
@@ -106,7 +104,7 @@ public class Y9WordController {
             setResponse(response, request, processSerialNumber, fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("下载历史版本正文文件异常，异常：", e);
         }
     }
 
@@ -171,7 +169,7 @@ public class Y9WordController {
             setResponse(response, request, processSerialNumber, fileType);
             y9FileStoreService.downloadFileToOutputStream(id, out);
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("下载正文文件异常，异常：", e);
         }
     }
 
@@ -193,7 +191,7 @@ public class Y9WordController {
             setResponse(response, request, processSerialNumber, fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("下载正文（抄送件）异常，异常：", e);
         }
     }
 
@@ -224,14 +222,14 @@ public class Y9WordController {
             String agent = request.getHeader("USER-AGENT");
             fileName = encodeFileName(fileName, agent);
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + fileName);
             int b;
             byte[] by = new byte[1024];
             while ((b = bi.read(by)) != -1) {
                 out.write(by, 0, b);
             }
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开新建正文空白模板异常，异常：", e);
         }
     }
 
@@ -254,12 +252,12 @@ public class Y9WordController {
         try (ServletOutputStream out = response.getOutputStream()) {
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=zhengwen." + y9FileStore.getFileExt());
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             } catch (Exception e) {
-                LOGGER.error("下载正文异常", e);
+                LOGGER.error("下载正文文件byte数据异常，异常：", e);
             }
             ByteArrayInputStream bin = null;
             if (buf != null) {
@@ -273,7 +271,7 @@ public class Y9WordController {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开正文文件异常，异常：", e);
         }
     }
 
@@ -303,7 +301,7 @@ public class Y9WordController {
                 out.write(by, 0, b);
             }
         } catch (IOException e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("获取套红模板文件异常，异常：", e);
         }
     }
 
@@ -322,12 +320,12 @@ public class Y9WordController {
         try (ServletOutputStream out = response.getOutputStream()) {
             Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=zhengwen." + y9FileStore.getFileExt());
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(fileStoreId);
             } catch (Exception e) {
-                LOGGER.error("下载正文异常", e);
+                LOGGER.error("下载历史正文版本byte数据异常，异常：", e);
             }
             ByteArrayInputStream bin = null;
             if (buf != null) {
@@ -341,7 +339,7 @@ public class Y9WordController {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开历史正文异常", e);
         }
     }
 
@@ -362,7 +360,7 @@ public class Y9WordController {
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             } catch (Exception e) {
-                LOGGER.error("下载正文异常", e);
+                LOGGER.error("下载PDF文件byte数据异常，异常：", e);
             }
             ByteArrayInputStream bin = null;
             if (buf != null) {
@@ -381,7 +379,7 @@ public class Y9WordController {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开PDF或TIF文件异常，异常：", e);
         }
     }
 
@@ -408,12 +406,12 @@ public class Y9WordController {
             String fileName = y9FileStore.getFileName();
             fileName = encodeFileName(fileName, agent);
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + fileName);
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             } catch (Exception e) {
-                LOGGER.error("下载正文异常", e);
+                LOGGER.error("下载转PDF之前的正文异常，异常：", e);
             }
             ByteArrayInputStream bin = null;
             if (buf != null) {
@@ -427,7 +425,7 @@ public class Y9WordController {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开撤销PDF后的正文异常，异常：", e);
         }
     }
 
