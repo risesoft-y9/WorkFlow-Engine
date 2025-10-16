@@ -22,8 +22,8 @@ import net.risesoft.entity.form.Y9Table;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.form.Y9TableService;
-import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 
 /**
  * @author qinman
@@ -38,7 +38,8 @@ public class TableRestController {
 
     private final Y9TableService y9TableService;
 
-    public TableRestController(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
+    public TableRestController(
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
         Y9TableService y9TableService) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9TableService = y9TableService;
@@ -81,8 +82,8 @@ public class TableRestController {
     @GetMapping(value = "/checkTableExist")
     public Y9Result<String> checkTableExist(@RequestParam String tableName) {
         try {
-            boolean msg = Y9FormDbMetaDataUtil
-                .checkTableExist(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()), tableName);
+            boolean msg =
+                DbMetaDataUtil.checkTableExist(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()), tableName);
             return Y9Result.success(msg ? "exist" : "isNotExist", "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取数据库表失败", e);
@@ -148,8 +149,8 @@ public class TableRestController {
     public Y9Result<Map<String, Object>> newOrModifyTable(@RequestParam(required = false) String id) {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            String databaseName = Y9FormDbMetaDataUtil
-                .getDatabaseDialectName(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
+            String databaseName =
+                DbMetaDataUtil.getDatabaseDialectName(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()));
             map.put("databaseName", databaseName);
             if (StringUtils.isNotBlank(id) && !UtilConsts.NULL.equals(id)) {
                 Y9Table y9Table = y9TableService.findById(id);
