@@ -9,7 +9,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
@@ -29,7 +28,6 @@ import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.org.Person;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
@@ -52,8 +50,6 @@ public class FileNTKOController {
 
     private final AttachmentApi attachmentApi;
 
-    private final Y9Properties y9Config;
-
     /**
      * 附件中打开正文文件
      *
@@ -64,8 +60,7 @@ public class FileNTKOController {
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
         AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
-        ServletOutputStream out = null;
-        try {
+        try (ServletOutputStream out = response.getOutputStream()) {
             String agent = request.getHeader("USER-AGENT");
             String fileName = file.getName();
             if (agent.contains("Firefox")) {
@@ -76,7 +71,6 @@ public class FileNTKOController {
             }
             response.reset();
             response.setHeader("Content-Disposition", "attachment; filename=" + file.getName());
-            out = response.getOutputStream();
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(file.getFileStoreId());
@@ -96,58 +90,7 @@ public class FileNTKOController {
             }
         } catch (IOException e) {
             LOGGER.error("下载文件失败", e);
-        } finally {
-            try {
-                if (out != null) {
-                    out.close();
-                }
-            } catch (IOException e) {
-                LOGGER.error("关闭流失败", e);
-            }
         }
-    }
-
-    /**
-     * 获取附件列表文件信息
-     *
-     * @param processSerialNumber 流程编号
-     * @param itembox 状态
-     * @param taskId 任务id
-     * @param browser 浏览器类型
-     * @param fileId 文件id
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param positionId 岗位id
-     * @return String
-     */
-    @RequestMapping("/showWord")
-    public String showWord(@RequestParam(required = false) String processSerialNumber,
-        @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String browser, @RequestParam(required = false) String fileId,
-        @RequestParam String tenantId, @RequestParam(required = false) String userId,
-        @RequestParam(required = false) String positionId, Model model) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        try {
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
-            AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
-            String downloadUrl =
-                y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
-            model.addAttribute("fileName", file.getName());
-            model.addAttribute("browser", browser);
-            model.addAttribute("fileUrl", downloadUrl);
-            model.addAttribute("tenantId", tenantId);
-            model.addAttribute("userId", userId);
-            model.addAttribute("taskId", taskId);
-            model.addAttribute("positionId", positionId);
-            model.addAttribute("itembox", itembox);
-            model.addAttribute("fileId", fileId);
-            model.addAttribute("userName", person.getName());
-            model.addAttribute("processSerialNumber", processSerialNumber);
-        } catch (Exception e) {
-            LOGGER.error("获取文件失败", e);
-        }
-        return "file/webOfficeNTKO";
     }
 
     /**
@@ -187,5 +130,4 @@ public class FileNTKOController {
         }
         return result;
     }
-
 }

@@ -149,13 +149,13 @@ public class Process4SearchServiceImpl implements Process4SearchService {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
                 String sql0 = "SELECT P .PROC_INST_ID_, TO_CHAR(P .START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                    + "	P .PROC_DEF_ID_ FROM ACT_HI_PROCINST P WHERE P .PROC_INST_ID_ = '" + processInstanceId + "'";
+                    + " P .PROC_DEF_ID_ FROM ACT_HI_PROCINST P WHERE P .PROC_INST_ID_ = '" + processInstanceId + "'";
                 DataSource dataSource = jdbcTemplate.getDataSource();
                 String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
                 if (DialectEnum.MYSQL.getValue().equals(dialectName)
                     || DialectEnum.KINGBASE.getValue().equals(dialectName)) {
                     sql0 = "SELECT P .PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,P.PROC_DEF_ID_ FROM"
-                        + "	ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '" + processInstanceId + "'";
+                        + " ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '" + processInstanceId + "'";
                 }
                 List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
                 Map<String, Object> map = list.get(0);

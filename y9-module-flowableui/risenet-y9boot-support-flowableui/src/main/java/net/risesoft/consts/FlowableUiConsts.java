@@ -6,6 +6,8 @@ public class FlowableUiConsts {
 
     public static final String PARALLELSPONSOR = "parallelSponsor";
 
+    public static final String ISZHUBAN = "isZhuBan";
+
     /**
      * 私有构造函数，防止实例化
      */

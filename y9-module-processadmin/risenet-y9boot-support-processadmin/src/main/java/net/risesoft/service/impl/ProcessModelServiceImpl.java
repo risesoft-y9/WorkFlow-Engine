@@ -35,7 +35,8 @@ public class ProcessModelServiceImpl implements ProcessModelService {
          */
         FlowableTenantInfoHolder.setTenantId(sourceTenantId);
         String modelId = null;
-        List<AbstractModel> sourceModelList = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
+        List<AbstractModel> sourceModelList =
+            modelService.getModelsByModelType(org.flowable.ui.modeler.domain.AbstractModel.MODEL_TYPE_BPMN);
         for (AbstractModel aModel : sourceModelList) {
             if (modelKey.equals(aModel.getKey())) {
                 modelId = aModel.getId();
@@ -51,7 +52,8 @@ public class ProcessModelServiceImpl implements ProcessModelService {
          * 判断目标租户是否存在该流程，不存在才新增
          */
         boolean has = false;
-        List<AbstractModel> targetModelList = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
+        List<AbstractModel> targetModelList =
+            modelService.getModelsByModelType(org.flowable.ui.modeler.domain.AbstractModel.MODEL_TYPE_BPMN);
         for (AbstractModel aModel : targetModelList) {
             if (modelKey.equals(aModel.getKey())) {
                 has = true;

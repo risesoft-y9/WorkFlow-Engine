@@ -82,7 +82,7 @@ public class MobileSyncController {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql = "SELECT P.PROC_INST_ID_ FROM ACT_HI_PROCINST P WHERE"
-                + "	(P.END_TIME_ is not null or P.DELETE_REASON_ = '已删除') ORDER BY P.START_TIME_ DESC";
+                + " (P.END_TIME_ is not null or P.DELETE_REASON_ = '已删除') ORDER BY P.START_TIME_ DESC";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
             int i = 0;
@@ -350,7 +350,7 @@ public class MobileSyncController {
             Y9LoginUserHolder.setTenantId(tenantId);
             String sql = "SELECT P.PROC_INST_ID_,TO_CHAR(P.START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
                 + " TO_CHAR(P.END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_ FROM"
-                + "	ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
+                + " ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
                 + " ORDER BY P.END_TIME_ DESC";
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
@@ -358,7 +358,7 @@ public class MobileSyncController {
                 sql =
                     "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P.END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
                         + " FROM ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL"
-                        + " and P.DELETE_REASON_ is null  ORDER BY 	P.END_TIME_ DESC";
+                        + " and P.DELETE_REASON_ is null  ORDER BY  P.END_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************共{}条数据***************************", list.size());
@@ -417,7 +417,7 @@ public class MobileSyncController {
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals("mysql") || dialectName.equals("kingbase")) {
                 sql = "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM"
-                    + "	ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
+                    + " ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
                     + " ORDER BY P.END_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);

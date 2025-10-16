@@ -118,68 +118,65 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     }
 
     private String getActGeBytearraySql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_GE_BYTEARRAY (" + "	ID_," + "	REV_," + "	NAME_," + "	DEPLOYMENT_ID_," + "	BYTES_,"
-            + "	GENERATED_" + " ) SELECT " + "	b.ID_," + "	b.REV_," + "	b.NAME_," + "	b.DEPLOYMENT_ID_,"
-            + "	b.BYTES_," + "	b.GENERATED_" + " FROM" + "	ACT_GE_BYTEARRAY_" + year + " b"
-            + " LEFT JOIN ACT_HI_VARINST_" + year + " v ON v.BYTEARRAY_ID_ = b.ID_" + " WHERE" + "	v.PROC_INST_ID_ = '"
-            + processInstanceId + "'" + " AND v.NAME_ = 'users'";
+        return "INSERT INTO ACT_GE_BYTEARRAY (" + " ID_," + " REV_," + " NAME_," + " DEPLOYMENT_ID_," + " BYTES_,"
+            + " GENERATED_" + " ) SELECT " + " b.ID_," + " b.REV_," + " b.NAME_," + " b.DEPLOYMENT_ID_," + " b.BYTES_,"
+            + " b.GENERATED_" + " FROM" + " ACT_GE_BYTEARRAY_" + year + " b" + " LEFT JOIN ACT_HI_VARINST_" + year
+            + " v ON v.BYTEARRAY_ID_ = b.ID_" + " WHERE" + " v.PROC_INST_ID_ = '" + processInstanceId + "'"
+            + " AND v.NAME_ = 'users'";
     }
 
     private String getActHiActinstSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_ACTINST (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	PROC_INST_ID_,"
-            + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_," + "	ACT_NAME_,"
-            + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_,"
-            + "	TENANT_ID_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	PROC_INST_ID_,"
-            + "	EXECUTION_ID_," + "	ACT_ID_," + "	TASK_ID_," + "	CALL_PROC_INST_ID_," + "	ACT_NAME_,"
-            + "	ACT_TYPE_," + "	ASSIGNEE_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	DELETE_REASON_,"
-            + "	TENANT_ID_" + " FROM" + "	ACT_HI_ACTINST_" + year + " A" + " WHERE" + "	A.PROC_INST_ID_ = '"
-            + processInstanceId + "'";
+        return "INSERT INTO ACT_HI_ACTINST (" + " ID_," + " REV_," + " PROC_DEF_ID_," + " PROC_INST_ID_,"
+            + " EXECUTION_ID_," + " ACT_ID_," + " TASK_ID_," + " CALL_PROC_INST_ID_," + " ACT_NAME_," + " ACT_TYPE_,"
+            + " ASSIGNEE_," + " START_TIME_," + " END_TIME_," + " DURATION_," + " DELETE_REASON_," + " TENANT_ID_"
+            + " ) SELECT" + " ID_," + " REV_," + " PROC_DEF_ID_," + " PROC_INST_ID_," + " EXECUTION_ID_," + " ACT_ID_,"
+            + " TASK_ID_," + " CALL_PROC_INST_ID_," + " ACT_NAME_," + " ACT_TYPE_," + " ASSIGNEE_," + " START_TIME_,"
+            + " END_TIME_," + " DURATION_," + " DELETE_REASON_," + " TENANT_ID_" + " FROM" + " ACT_HI_ACTINST_" + year
+            + " A" + " WHERE" + " A.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
     private String getActHiIdentiyLinkSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_IDENTITYLINK (" + "	ID_," + "	GROUP_ID_," + "	TYPE_," + "	USER_ID_,"
-            + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_,"
-            + "	SCOPE_DEFINITION_ID_" + " ) SELECT" + "	ID_," + "	GROUP_ID_," + "	TYPE_," + "	USER_ID_,"
-            + "	TASK_ID_," + "	CREATE_TIME_," + "	PROC_INST_ID_," + "	SCOPE_ID_," + "	SCOPE_TYPE_,"
-            + "	SCOPE_DEFINITION_ID_" + " FROM" + "	ACT_HI_IDENTITYLINK_" + year + " i" + " WHERE"
-            + "	i.PROC_INST_ID_ = '" + processInstanceId + "'";
+        return "INSERT INTO ACT_HI_IDENTITYLINK (" + " ID_," + " GROUP_ID_," + " TYPE_," + " USER_ID_," + " TASK_ID_,"
+            + " CREATE_TIME_," + " PROC_INST_ID_," + " SCOPE_ID_," + " SCOPE_TYPE_," + " SCOPE_DEFINITION_ID_"
+            + " ) SELECT" + " ID_," + " GROUP_ID_," + " TYPE_," + " USER_ID_," + " TASK_ID_," + " CREATE_TIME_,"
+            + " PROC_INST_ID_," + " SCOPE_ID_," + " SCOPE_TYPE_," + " SCOPE_DEFINITION_ID_" + " FROM"
+            + " ACT_HI_IDENTITYLINK_" + year + " i" + " WHERE" + " i.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
     private String getActHiProcinstSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_PROCINST (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	BUSINESS_KEY_,"
-            + "	PROC_DEF_ID_," + "	START_TIME_," + "	END_TIME_," + "	DURATION_," + "	START_USER_ID_,"
-            + "	START_ACT_ID_," + "	END_ACT_ID_," + "	SUPER_PROCESS_INSTANCE_ID_," + "	DELETE_REASON_,"
-            + "	TENANT_ID_," + "	NAME_," + "	CALLBACK_ID_," + "	CALLBACK_TYPE_" + ") SELECT" + "	ID_,"
-            + "	REV_," + "	PROC_INST_ID_," + "	BUSINESS_KEY_," + "	PROC_DEF_ID_," + "	START_TIME_," + "	END_TIME_,"
-            + "	DURATION_," + "	START_USER_ID_," + "	START_ACT_ID_," + "	END_ACT_ID_,"
-            + "	SUPER_PROCESS_INSTANCE_ID_," + "	DELETE_REASON_," + "	TENANT_ID_," + "	NAME_,"
-            + "	CALLBACK_ID_," + "	CALLBACK_TYPE_" + " FROM" + "	ACT_HI_PROCINST_" + year + " RES" + " WHERE"
-            + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'";
+        return "INSERT INTO ACT_HI_PROCINST (" + " ID_," + " REV_," + " PROC_INST_ID_," + " BUSINESS_KEY_,"
+            + " PROC_DEF_ID_," + " START_TIME_," + " END_TIME_," + " DURATION_," + " START_USER_ID_,"
+            + " START_ACT_ID_," + " END_ACT_ID_," + " SUPER_PROCESS_INSTANCE_ID_," + " DELETE_REASON_," + " TENANT_ID_,"
+            + " NAME_," + " CALLBACK_ID_," + " CALLBACK_TYPE_" + ") SELECT" + " ID_," + " REV_," + " PROC_INST_ID_,"
+            + " BUSINESS_KEY_," + " PROC_DEF_ID_," + " START_TIME_," + " END_TIME_," + " DURATION_,"
+            + " START_USER_ID_," + " START_ACT_ID_," + " END_ACT_ID_," + " SUPER_PROCESS_INSTANCE_ID_,"
+            + " DELETE_REASON_," + " TENANT_ID_," + " NAME_," + " CALLBACK_ID_," + " CALLBACK_TYPE_" + " FROM"
+            + " ACT_HI_PROCINST_" + year + " RES" + " WHERE" + " RES.PROC_INST_ID_ = '" + processInstanceId + "'";
     }
 
     private String getActHiTaskinstSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_TASKINST (" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	TASK_DEF_ID_,"
-            + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_,"
-            + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_," + "	DESCRIPTION_,"
-            + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_," + "	DURATION_,"
-            + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_," + "	TENANT_ID_,"
-            + "	LAST_UPDATED_TIME_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_DEF_ID_," + "	TASK_DEF_ID_,"
-            + "	TASK_DEF_KEY_," + "	PROC_INST_ID_," + "	EXECUTION_ID_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_,"
-            + "	SCOPE_TYPE_," + "	SCOPE_DEFINITION_ID_," + "	PARENT_TASK_ID_," + "	NAME_," + "	DESCRIPTION_,"
-            + "	OWNER_," + "	ASSIGNEE_," + "	START_TIME_," + "	CLAIM_TIME_," + "	END_TIME_," + "	DURATION_,"
-            + "	DELETE_REASON_," + "	PRIORITY_," + "	DUE_DATE_," + "	FORM_KEY_," + "	CATEGORY_," + "	TENANT_ID_,"
-            + "	LAST_UPDATED_TIME_" + " FROM" + "	ACT_HI_TASKINST_" + year + " T" + " WHERE"
-            + "	T .PROC_INST_ID_ = '" + processInstanceId + "'";
+        return "INSERT INTO ACT_HI_TASKINST (" + " ID_," + " REV_," + " PROC_DEF_ID_," + " TASK_DEF_ID_,"
+            + " TASK_DEF_KEY_," + " PROC_INST_ID_," + " EXECUTION_ID_," + " SCOPE_ID_," + " SUB_SCOPE_ID_,"
+            + " SCOPE_TYPE_," + " SCOPE_DEFINITION_ID_," + " PARENT_TASK_ID_," + " NAME_," + " DESCRIPTION_,"
+            + " OWNER_," + " ASSIGNEE_," + " START_TIME_," + " CLAIM_TIME_," + " END_TIME_," + " DURATION_,"
+            + " DELETE_REASON_," + " PRIORITY_," + " DUE_DATE_," + " FORM_KEY_," + " CATEGORY_," + " TENANT_ID_,"
+            + " LAST_UPDATED_TIME_" + " ) SELECT" + " ID_," + " REV_," + " PROC_DEF_ID_," + " TASK_DEF_ID_,"
+            + " TASK_DEF_KEY_," + " PROC_INST_ID_," + " EXECUTION_ID_," + " SCOPE_ID_," + " SUB_SCOPE_ID_,"
+            + " SCOPE_TYPE_," + " SCOPE_DEFINITION_ID_," + " PARENT_TASK_ID_," + " NAME_," + " DESCRIPTION_,"
+            + " OWNER_," + " ASSIGNEE_," + " START_TIME_," + " CLAIM_TIME_," + " END_TIME_," + " DURATION_,"
+            + " DELETE_REASON_," + " PRIORITY_," + " DUE_DATE_," + " FORM_KEY_," + " CATEGORY_," + " TENANT_ID_,"
+            + " LAST_UPDATED_TIME_" + " FROM" + " ACT_HI_TASKINST_" + year + " T" + " WHERE" + " T .PROC_INST_ID_ = '"
+            + processInstanceId + "'";
     }
 
     private String getActHiVarinstSql(String year, String processInstanceId) {
-        return "INSERT INTO ACT_HI_VARINST (" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_,"
-            + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_,"
-            + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_," + "	CREATE_TIME_,"
-            + "	LAST_UPDATED_TIME_" + " ) SELECT" + "	ID_," + "	REV_," + "	PROC_INST_ID_," + "	EXECUTION_ID_,"
-            + "	TASK_ID_," + "	NAME_," + "	VAR_TYPE_," + "	SCOPE_ID_," + "	SUB_SCOPE_ID_," + "	SCOPE_TYPE_,"
-            + "	BYTEARRAY_ID_," + "	DOUBLE_," + "	LONG_," + "	TEXT_," + "	TEXT2_," + "	CREATE_TIME_,"
-            + "	LAST_UPDATED_TIME_" + " FROM" + "	ACT_HI_VARINST_" + year + " v" + " WHERE" + "	v.PROC_INST_ID_ = '"
+        return "INSERT INTO ACT_HI_VARINST (" + " ID_," + " REV_," + " PROC_INST_ID_," + " EXECUTION_ID_,"
+            + " TASK_ID_," + " NAME_," + " VAR_TYPE_," + " SCOPE_ID_," + " SUB_SCOPE_ID_," + " SCOPE_TYPE_,"
+            + " BYTEARRAY_ID_," + " DOUBLE_," + " LONG_," + " TEXT_," + " TEXT2_," + " CREATE_TIME_,"
+            + " LAST_UPDATED_TIME_" + " ) SELECT" + " ID_," + " REV_," + " PROC_INST_ID_," + " EXECUTION_ID_,"
+            + " TASK_ID_," + " NAME_," + " VAR_TYPE_," + " SCOPE_ID_," + " SUB_SCOPE_ID_," + " SCOPE_TYPE_,"
+            + " BYTEARRAY_ID_," + " DOUBLE_," + " LONG_," + " TEXT_," + " TEXT2_," + " CREATE_TIME_,"
+            + " LAST_UPDATED_TIME_" + " FROM" + " ACT_HI_VARINST_" + year + " v" + " WHERE" + " v.PROC_INST_ID_ = '"
             + processInstanceId + "'";
     }
 
@@ -260,8 +257,8 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             /*
              * 2-恢复正在运行的变量，先查询出来，再删除。因为调接口保存的时候，会再向历史表里面插入一份
              */
-            String sql = "SELECT DISTINCT" + "	RES.*" + " FROM" + "	ACT_HI_TASKINST_" + year + " RES" + " WHERE"
-                + "	RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + "	RES.END_TIME_ DESC";
+            String sql = "SELECT DISTINCT" + " RES.*" + " FROM" + " ACT_HI_TASKINST_" + year + " RES" + " WHERE"
+                + " RES.PROC_INST_ID_ = '" + processInstanceId + "'" + " ORDER BY" + " RES.END_TIME_ DESC";
             HistoricTaskInstance hti = historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list().get(0);
             List<Execution> executionList =
                 runtimeService.createExecutionQuery().processInstanceId(processInstanceId).list();

@@ -46,7 +46,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/vue/taoHongTemplate", produces = MediaType.APPLICATION_JSON_VALUE)
-public class TaoHongTemplateRestContronller {
+public class TaoHongTemplateRestController {
 
     private final TaoHongTemplateService taoHongTemplateService;
 
@@ -85,9 +85,9 @@ public class TaoHongTemplateRestContronller {
             int length = b.length;
             String filename = taoHongTemplate.getTemplateFileName();
             String userAgent = "User-Agent", firefox = "firefox", msie = "MSIE";
-            if (request.getHeader(userAgent).toLowerCase().indexOf(firefox) > 0) {
+            if (request.getHeader(userAgent).toLowerCase().contains(firefox)) {
                 filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
-            } else if (request.getHeader(userAgent).toUpperCase().indexOf(msie) > 0) {
+            } else if (request.getHeader(userAgent).toUpperCase().contains(msie)) {
                 filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
             } else {
                 filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
