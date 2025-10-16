@@ -47,5 +47,5 @@ public class BaseDataModel implements Serializable {
     /**
      * 表单数据
      */
-    private Map<String, Object> formData;
+    private transient Map<String, Object> formData;
 }
