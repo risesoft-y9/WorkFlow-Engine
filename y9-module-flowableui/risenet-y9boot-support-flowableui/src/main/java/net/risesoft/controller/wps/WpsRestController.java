@@ -47,14 +47,11 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RequiredArgsConstructor
 public class WpsRestController {
 
+    private static final String DOCX_KEY = ".docx";
     private final DraftApi draftApi;
-
     private final OrgUnitApi orgUnitApi;
-
     private final ProcessParamApi processParamApi;
-
     private final Y9FileStoreService y9FileStoreService;
-
     private final Y9WordApi y9WordApi;
 
     /**
@@ -85,7 +82,7 @@ public class WpsRestController {
         if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
             title = new String(title.getBytes("gb2312"), "ISO8859-1");
             response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + title + ".docx");
+            response.setHeader("Content-disposition", "attachment; filename=" + title + DOCX_KEY);
             response.setHeader("Content-type", "text/html;charset=GBK");
             response.setContentType("application/octet-stream");
         } else {
@@ -99,7 +96,7 @@ public class WpsRestController {
                 title = StringUtils.replace(title, "+", "%20");// 替换空格
             }
             response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=" + title + ".docx");
+            response.setHeader("Content-disposition", "attachment; filename=" + title + DOCX_KEY);
             response.setHeader("Content-type", "text/html;charset=UTF-8");
             response.setContentType("application/octet-stream");
         }
@@ -199,10 +196,10 @@ public class WpsRestController {
             String fileType = "";
             if (fileName != null) {
                 fileType =
-                    !fileName.contains(".") ? ".docx" : fileName.substring(fileName.lastIndexOf(".")).toLowerCase();// 文件类型
+                    !fileName.contains(".") ? DOCX_KEY : fileName.substring(fileName.lastIndexOf(".")).toLowerCase();// 文件类型
             }
 
-            if (!(fileType.equals(".doc") || fileType.equals(".docx") || fileType.equals(".pdf")
+            if (!(fileType.equals(".doc") || fileType.equals(DOCX_KEY) || fileType.equals(".pdf")
                 || fileType.equals(".tif") || fileType.equals(".ofd"))) {
                 map.put(UtilConsts.SUCCESS, false);
                 map.put("msg", "请上传后缀名为.doc,.docx,.pdf,.tif文件");

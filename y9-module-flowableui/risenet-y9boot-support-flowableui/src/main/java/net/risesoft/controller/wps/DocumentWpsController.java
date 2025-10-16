@@ -122,6 +122,8 @@ public class DocumentWpsController {
      * 云文档路径
      */
     private static final String YUN_WPS_BASE_PATH_GRAPH = "http://yun.test.cn/graph";
+    private static final String DOCURL_KEY = "docUrl";
+    private static final String DOCX_KEY = ".docx";
     private final DraftApi draftApi;
     private final OrgUnitApi orgUnitApi;
     private final ProcessParamApi processParamApi;
@@ -176,7 +178,7 @@ public class DocumentWpsController {
                     new AppFilesApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
                 FileContent result =
                     apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
-                LOGGER.debug("result:{}", result);
+                LOGGER.debug("下载正文,文件内容获取result:{}", result);
                 URL url = new URL(YUN_WPS_DOWNLOAD_PATH + result.getUrl());
                 conn = (HttpURLConnection)url.openConnection();
                 conn.setConnectTimeout(3 * 1000);
@@ -277,7 +279,7 @@ public class DocumentWpsController {
 
             DocumentWpsModel documentWps =
                 documentWpsApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            model.addAttribute("docUrl", "");
+            model.addAttribute(DOCURL_KEY, "");
             model.addAttribute("itembox", itembox);
             model.addAttribute("hasContent", "0");
             model.addAttribute("processInstanceId", processInstanceId);
@@ -300,8 +302,8 @@ public class DocumentWpsController {
                         FilePreview result = apiInstance.appGetFilePreview(documentWps.getVolumeId(),
                             documentWps.getFileId(), documentChallenge, expiration, printable, copyable, watermarkText,
                             watermarkImageUrl, wpsSid, extCompanyid, extUserid);
-                        LOGGER.debug("result:{}", result);
-                        model.addAttribute("docUrl", result.getUrl());
+                        LOGGER.debug("获取wps文件预览信息result:{}", result);
+                        model.addAttribute(DOCURL_KEY, result.getUrl());
                     } catch (Exception e) {
                         LOGGER.warn("Exception when calling AppFilesApi#appGetFileContent", e);
                     }
@@ -318,7 +320,7 @@ public class DocumentWpsController {
                         FileEditor result1 =
                             apiInstance.appGetFileEditor(documentWps.getVolumeId(), documentWps.getFileId(), body1);
                         String docUrl = result1.getUrl();
-                        model.addAttribute("docUrl", docUrl);
+                        model.addAttribute(DOCURL_KEY, docUrl);
                     } catch (ApiException e) {
                         LOGGER.warn("Exception when calling AppFilesApi#appGetFileEditor", e);
                     }
@@ -327,7 +329,7 @@ public class DocumentWpsController {
                 try {
                     FileContent result =
                         apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
-                    LOGGER.debug("result:{}", result);
+                    LOGGER.debug("获取wps文件内容，结果result:{}", result);
                     model.addAttribute("downloadUrl", YUN_WPS_DOWNLOAD_PATH + result.getUrl());
                 } catch (Exception e) {
                     LOGGER.warn("Exception when calling AppFilesApi#appGetFileContent", e);
@@ -346,9 +348,9 @@ public class DocumentWpsController {
                 documentTitle = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
 
                 CreateEmptyRequest body = new CreateEmptyRequest(); // CreateEmptyRequest |
-                body.setFileName(documentTitle + ".docx");
+                body.setFileName(documentTitle + DOCX_KEY);
                 EmptyFile result = apiInstance.appCreateEmpty(VOLUME, ROOT, body);
-                LOGGER.debug("result:{}", result);
+                LOGGER.debug("获取空文件结果result:{}", result);
 
                 FilePermissionCreateRequest body0 = new FilePermissionCreateRequest(); // FilePermissionCreateRequest |
                 Grantee grantedTo = new Grantee();
@@ -382,13 +384,13 @@ public class DocumentWpsController {
                 body1.setHistory("0");
                 FileEditor result1 = apiInstance.appGetFileEditor(result.getVolumeId(), result.getId(), body1);
                 String docUrl = result1.getUrl();
-                model.addAttribute("docUrl", docUrl);
+                model.addAttribute(DOCURL_KEY, docUrl);
                 LOGGER.debug("result1:{}", result1);
 
                 documentWps = new DocumentWpsModel();
                 documentWps.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 documentWps.setFileId(result.getId());
-                documentWps.setFileName(documentTitle + ".docx");
+                documentWps.setFileName(documentTitle + DOCX_KEY);
                 documentWps.setFileType("docx");
                 documentWps.setHasContent("0");
                 documentWps.setIstaohong("0");
@@ -403,7 +405,7 @@ public class DocumentWpsController {
                 model.addAttribute("id", documentWps.getId());
             }
         } catch (Exception e) {
-            model.addAttribute("docUrl", "发生异常");
+            model.addAttribute(DOCURL_KEY, "发生异常");
             LOGGER.error("发生异常", e);
         }
         return "intranet/webOfficeWps";
@@ -460,7 +462,7 @@ public class DocumentWpsController {
             DocumentWpsModel documentWps = new DocumentWpsModel();
             documentWps.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             documentWps.setFileId(File.getId());
-            documentWps.setFileName(documentTitle + ".docx");
+            documentWps.setFileName(documentTitle + DOCX_KEY);
             documentWps.setFileType("docx");
             documentWps.setHasContent("1");
             documentWps.setIstaohong("0");
