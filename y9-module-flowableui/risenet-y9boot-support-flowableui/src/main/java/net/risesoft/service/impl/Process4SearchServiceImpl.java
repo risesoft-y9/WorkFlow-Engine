@@ -20,6 +20,7 @@ import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
@@ -78,7 +79,8 @@ public class Process4SearchServiceImpl implements Process4SearchService {
                 String allUserId = "";
                 String deptIds = "";
                 for (Map<String, Object> m : list3) {
-                    String USER_ID_ = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
+                    String USER_ID_ =
+                        m.get(FlowableUiConsts.USER_ID_KEY) != null ? (String)m.get(FlowableUiConsts.USER_ID_KEY) : "";
                     if (USER_ID_.contains(":")) {
                         USER_ID_ = USER_ID_.split(":")[0];
                     }
@@ -153,7 +155,8 @@ public class Process4SearchServiceImpl implements Process4SearchService {
                 String allUserId = "";
                 String deptIds = "";
                 for (Map<String, Object> m : list3) {
-                    String USER_ID_ = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
+                    String USER_ID_ =
+                        m.get(FlowableUiConsts.USER_ID_KEY) != null ? (String)m.get(FlowableUiConsts.USER_ID_KEY) : "";
                     if (USER_ID_.contains(":")) {
                         USER_ID_ = USER_ID_.split(":")[0];
                     }
