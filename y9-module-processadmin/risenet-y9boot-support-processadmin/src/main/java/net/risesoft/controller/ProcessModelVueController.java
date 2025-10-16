@@ -71,18 +71,17 @@ public class ProcessModelVueController {
         stencilSetNode.put("namespace", "https://b3mn.org/stencilset/bpmn2.0#");
         editorNode.set("stencilset", stencilSetNode);
 
-        // Model newModel = new Model();
-        // newModel.setName(name);
-        // newModel.setKey(key);
-        // newModel.setDescription(description);
-        // newModel.setModelType(Model.MODEL_TYPE_BPMN);
-        // newModel.setModelEditorJson(editorNode.toString());
-        // newModel.setLastUpdatedBy(personName);
-        // newModel.setCreatedBy(personName);
-        //
-        // Model model = modelService.createModel(newModel, personName);
-        // String modelId = model.getId();
-        String modelId = "";
+        /*Model newModel = new Model();
+        newModel.setName(name);
+        newModel.setKey(key);
+        newModel.setDescription(description);
+        newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+        newModel.setModelEditorJson(editorNode.toString());
+        newModel.setLastUpdatedBy(personName);
+        newModel.setCreatedBy(personName);
+
+        Model model = modelService.createModel(newModel, personName);
+        String modelId = model.getId();*/
         /*
          * 跳转画图页面
          */
@@ -110,14 +109,14 @@ public class ProcessModelVueController {
      */
     @PostMapping(value = "/deployModel")
     public Y9Result<String> deployModel(@RequestParam @NotBlank String modelId) {
-        // Model modelData = modelService.getModel(modelId);
-        // BpmnModel model = modelService.getBpmnModel(modelData);
-        // if (model.getProcesses().isEmpty()) {
-        // return Y9Result.failure("数据模型不符要求，请至少设计一条主线流程。");
-        // }
-        // byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
-        // String processName = modelData.getName() + ".bpmn20.xml";
-        // repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();
+        /*Model modelData = modelService.getModel(modelId);
+        BpmnModel model = modelService.getBpmnModel(modelData);
+        if (model.getProcesses().isEmpty()) {
+            return Y9Result.failure("数据模型不符要求，请至少设计一条主线流程。");
+        }
+        byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(model);
+        String processName = modelData.getName() + ".bpmn20.xml";
+        repositoryService.createDeployment().name(modelData.getName()).addBytes(processName, bpmnBytes).deploy();*/
         return Y9Result.successMsg("部署成功");
     }
 
@@ -130,14 +129,14 @@ public class ProcessModelVueController {
     @RequestMapping(value = "/exportModel")
     public void exportModel(@RequestParam @NotBlank String modelId, HttpServletResponse response) {
         try {
-            // Model model = modelService.getModel(modelId);
-            // byte[] bpmnBytes = modelService.getBpmnXML(model);
-            //
-            // ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes);
-            // String filename = model.getKey() + ".bpmn20.xml";
-            // response.setHeader("Content-Disposition", "attachment; filename=" + filename);
-            // IOUtils.copy(in, response.getOutputStream());
-            // response.flushBuffer();
+           /* Model model = modelService.getModel(modelId);
+            byte[] bpmnBytes = modelService.getBpmnXML(model);
+
+            ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes);
+            String filename = model.getKey() + ".bpmn20.xml";
+            response.setHeader("Content-Disposition", "attachment; filename=" + filename);
+            IOUtils.copy(in, response.getOutputStream());
+            response.flushBuffer();*/
         } catch (Exception e) {
             LOGGER.error("导出模型失败,modelId:{} 异常：{}", modelId, e.getMessage());
         }
@@ -151,10 +150,10 @@ public class ProcessModelVueController {
     @GetMapping(value = "/getModelList")
     public Y9Result<List<ModelVO>> getModelList() {
         List<ModelVO> items = new ArrayList<>();
-        // List<AbstractModel> list = modelService.getModelsByModelType(Model.MODEL_TYPE_BPMN);
+        /*List<AbstractModel> list = modelService.getModelsByModelType(AbstractModel.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition;
         // if (tenantManager || ManagerLevelEnum.SYSTEM_MANAGER.equals(userInfo.getManagerLevel())) {
-        /*for (AbstractModel model : list) {
+        for (AbstractModel model : list) {
             ModelVO mapTemp = new ModelVO();
             mapTemp.setId(model.getId());
             mapTemp.setKey(model.getKey());

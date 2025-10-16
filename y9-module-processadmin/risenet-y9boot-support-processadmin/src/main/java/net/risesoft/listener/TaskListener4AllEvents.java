@@ -5,6 +5,7 @@ import java.util.Map;
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.bpmn.model.FlowableListener;
 import org.flowable.engine.delegate.TaskListener;
+import org.flowable.task.service.delegate.BaseTaskListener;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -26,7 +27,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
     @Transactional
     public void notify(DelegateTask task) {
         String eventName = task.getEventName();
-        if (TaskListener.EVENTNAME_ASSIGNMENT.equals(eventName)) {
+        if (BaseTaskListener.EVENTNAME_ASSIGNMENT.equals(eventName)) {
             Map<String, Object> variables = task.getVariables();
             // 1、自定义变量科室id保存(异步)
             Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
@@ -42,7 +43,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
                     task4ActRuDetailService.unClaim(task);
                 }
             }
-        } else if (TaskListener.EVENTNAME_CREATE.equals(eventName)) {
+        } else if (BaseTaskListener.EVENTNAME_CREATE.equals(eventName)) {
             Map<String, Object> variables = task.getVariables();
             // 1、接口调用
             InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
@@ -58,7 +59,7 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
             } else {
                 task4ActRuDetailService.createTodo4Claim(task);
             }
-        } else if (TaskListener.EVENTNAME_DELETE.equals(eventName)) {
+        } else if (BaseTaskListener.EVENTNAME_DELETE.equals(eventName)) {
             Map<String, Object> variables = task.getVariables();
             // 1、接口调用
             InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
