@@ -420,8 +420,7 @@ public class MobileSyncController {
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals(MYSQL_KEY) || dialectName.equals("kingbase")) {
                 sql = "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM"
-                    + "	ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
-                    + " ORDER BY P.END_TIME_ DESC";
+                    + " ACT_HI_PROCINST P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null ORDER BY P.END_TIME_ DESC";
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************结转数据至年度表,共{}条数据***************************", list.size());
