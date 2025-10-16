@@ -6,9 +6,9 @@ import java.util.List;
 import org.flowable.bpmn.model.FlowableListener;
 import org.flowable.bpmn.model.ImplementationType;
 import org.flowable.bpmn.model.UserTask;
-import org.flowable.engine.delegate.TaskListener;
 import org.flowable.engine.impl.bpmn.parser.BpmnParse;
 import org.flowable.engine.impl.bpmn.parser.handler.UserTaskParseHandler;
+import org.flowable.task.service.delegate.BaseTaskListener;
 
 /**
  * @author qinman
@@ -29,7 +29,7 @@ public class ProcessAdminUserTaskParseHandler extends UserTaskParseHandler {
         TaskListener4AllEvents taskListener4AllEvents = new TaskListener4AllEvents();
         taskListener4AllEvents.setImplementationType(ImplementationType.IMPLEMENTATION_TYPE_CLASS);
         taskListener4AllEvents.setImplementation("net.risesoft.listener.TaskListener4AllEvents");
-        taskListener4AllEvents.setEvent(TaskListener.EVENTNAME_ALL_EVENTS);
+        taskListener4AllEvents.setEvent(BaseTaskListener.EVENTNAME_ALL_EVENTS);
         taskListeners.add(taskListener4AllEvents);
         userTask.setTaskListeners(taskListeners);
     }
