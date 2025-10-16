@@ -24,6 +24,13 @@ public class FlowableUiConsts {
     public static final String ITEMBOX_KEY = "itembox";
     public static final String TASKID_KEY = "taskId";
     public static final String USER_ID_KEY = "USER_ID_";
+    public static final String ISFORWARDING_KEY = "isForwarding";
+    public static final String CANOPEN_KEY = "canOpen";
+    public static final String CHILDREN_KEY = "children";
+    public static final String ACTRUDETAILID_KEY = "actRuDetailId";
+    public static final String EXECUTIONID_KEY = "executionId";
+    public static final String SYSTEMCNNAME_KEY = "systemCNName";
+    public static final String BUREAUNAME_KEY = "bureauName";
 
     /**
      * 私有构造函数，防止实例化
