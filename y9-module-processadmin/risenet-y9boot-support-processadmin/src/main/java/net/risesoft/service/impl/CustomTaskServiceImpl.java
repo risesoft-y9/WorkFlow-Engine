@@ -91,8 +91,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 List<Task> taskList = this.listByProcessInstanceId(processInstanceId);
                 for (Task tTemp : taskList) {
                     if (!taskId.equals(tTemp.getId())) {
-                        this.complete(tTemp.getId());
-                        // 设置强制办理任务标识
+                        taskService.complete(tTemp.getId());
                         customHistoricTaskService.setTenantId(tTemp.getId());
                     }
                 }
@@ -131,9 +130,6 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 Map<String, Object> vars = new HashMap<>(16);
                 vars.put(SysVariables.ROUTE_TO_TASK_ID, endNodeKey);
                 this.completeWithVariables(taskId, vars);
-                // 保存到数据中心，在流程办结监听执行
-                // process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year, position.getId(),
-                // processInstanceId, personName);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -175,8 +171,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 List<Task> taskList = this.listByProcessInstanceId(task.getProcessInstanceId());
                 for (Task tTemp : taskList) {
                     if (!taskId.equals(tTemp.getId())) {
-                        this.complete(tTemp.getId());
-                        // 设置强制办理任务标识
+                        taskService.complete(tTemp.getId());
                         customHistoricTaskService.setTenantId(tTemp.getId());
                     }
                 }

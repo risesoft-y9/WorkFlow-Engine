@@ -40,7 +40,7 @@ import net.risesoft.service.core.ItemService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.util.form.Y9FormDbMetaDataUtil;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
 /**
@@ -85,7 +85,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<Object> addDataBaseTable(String tableName, String systemName, String systemCnName) {
         try {
             Y9Table y9Table = new Y9Table();
@@ -97,7 +97,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             y9Table.setSystemCnName(systemCnName);
             y9Table.setTableName(tableName);
             y9TableRepository.save(y9Table);
-            List<DbColumn> list = Y9FormDbMetaDataUtil
+            List<DbColumn> list = DbMetaDataUtil
                 .listAllColumns(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()), tableName, "%");
             int order = 1;
             for (DbColumn dbColumn : list) {
@@ -125,7 +125,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<Object> buildTable(Y9Table table, List<Map<String, Object>> listMap) {
         try {
             boolean tableExist = true;
@@ -311,20 +311,20 @@ public class Y9TableServiceImpl implements Y9TableService {
             DataSource dataSource = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource());
             List<Map<String, String>> list = new ArrayList<>();
             if (StringUtils.isNotBlank(name)) {
-                List<Map<String, String>> list1 = Y9FormDbMetaDataUtil.listAllTables(dataSource, "%" + name + "%");
+                List<Map<String, String>> list1 = DbMetaDataUtil.listAllTables(dataSource, "%" + name + "%");
                 for (Map<String, String> m : list1) {
                     if (m.get("name").startsWith("y9_form_") || m.get("name").startsWith("Y9_FORM_")) {
                         list.add(m);
                     }
                 }
             } else {
-                list = Y9FormDbMetaDataUtil.listAllTables(dataSource, "y9_form_%");
-                String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
+                list = DbMetaDataUtil.listAllTables(dataSource, "y9_form_%");
+                String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
                 if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                    List<Map<String, String>> list1 = Y9FormDbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
+                    List<Map<String, String>> list1 = DbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
                     list.addAll(list1);
                 } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                    List<Map<String, String>> list1 = Y9FormDbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
+                    List<Map<String, String>> list1 = DbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
                     list.addAll(list1);
                 }
             }
@@ -489,7 +489,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                 table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             }
             DataSource dataSource = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource());
-            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }
@@ -502,7 +502,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<Object> updateTable(Y9Table table, List<Map<String, Object>> listMap, String type) {
         try {
             Y9Table saveTable = this.saveOrUpdate(table);

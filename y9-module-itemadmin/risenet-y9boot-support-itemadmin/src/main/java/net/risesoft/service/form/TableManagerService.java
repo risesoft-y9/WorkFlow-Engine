@@ -32,6 +32,7 @@ import net.risesoft.util.form.DdlMysql;
 import net.risesoft.util.form.DdlOracle;
 import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
 /**
@@ -74,7 +75,7 @@ public class TableManagerService {
             String tableId = td.getId();
             // 修改表
             DataSource dataSource = jdbcTemplate4Tenant.getDataSource();
-            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 DdlMysql ddLmysql = new DdlMysql();
                 if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
@@ -138,7 +139,7 @@ public class TableManagerService {
         try {
             // 创建表
             DataSource dataSource = jdbcTemplate4Tenant.getDataSource();
-            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             String jsonDbColumns = Y9JsonUtil.writeValueAsString(dbColumnList);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 DdlMysql ddLmysql = new DdlMysql();
@@ -271,7 +272,7 @@ public class TableManagerService {
                     return map;
                 }
                 String sql = "show tables like '" + tableName + "'";
-                String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectNameByConnection(conn);
+                String dialect = DbMetaDataUtil.getDatabaseDialectNameByConnection(conn);
                 if (DialectEnum.ORACLE.getValue().equals(dialect)) {
                     sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
                 } else if (DialectEnum.DM.getValue().equals(dialect)) {
@@ -317,10 +318,9 @@ public class TableManagerService {
         boolean isHaveField = false;
         StringBuilder sqlStr = new StringBuilder();
         try {
-            List<DbColumn> list =
-                Y9FormDbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
+            List<DbColumn> list = DbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
             StringBuilder sqlStr1 = new StringBuilder(") values(");
-            sqlStr.append("insert into " + tableName + " (");
+            sqlStr.append("insert into ").append(tableName).append(" (");
             for (DbColumn column : list) {
                 fieldList.add(column.getColumnName());
                 if (isHaveField) {
@@ -379,8 +379,7 @@ public class TableManagerService {
         boolean isHaveField = false;
         StringBuilder sqlStr = new StringBuilder();
         try {
-            List<DbColumn> list =
-                Y9FormDbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
+            List<DbColumn> list = DbMetaDataUtil.listAllColumns(jdbcTemplate4Tenant.getDataSource(), tableName, "");
             sqlStr.append("update ").append(tableName).append(" set ");
             StringBuilder sqlStr1 = new StringBuilder();
             for (DbColumn column : list) {
@@ -407,7 +406,7 @@ public class TableManagerService {
             if (StringUtils.isBlank(table.getId())) {
                 table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             }
-            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
+            String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }
