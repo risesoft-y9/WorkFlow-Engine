@@ -11,7 +11,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 
 import org.flowable.engine.RepositoryService;
-import org.flowable.engine.repository.ProcessDefinition;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.controller.vo.ModelVO;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 
@@ -79,14 +77,14 @@ public class ProcessModelVueController {
         newModel.setModelEditorJson(editorNode.toString());
         newModel.setLastUpdatedBy(personName);
         newModel.setCreatedBy(personName);
-
+        
         Model model = modelService.createModel(newModel, personName);
         String modelId = model.getId();*/
         /*
          * 跳转画图页面
          */
-        String path = y9Config.getCommon().getProcessAdminBaseUrl() + "/modeler.html#/editor/" + modelId;
-        return Y9Result.success(path, "创建成功");
+        // String path = y9Config.getCommon().getProcessAdminBaseUrl() + "/modeler.html#/editor/" + modelId;
+        return Y9Result.success("path", "创建成功");
     }
 
     /**
@@ -129,9 +127,9 @@ public class ProcessModelVueController {
     @RequestMapping(value = "/exportModel")
     public void exportModel(@RequestParam @NotBlank String modelId, HttpServletResponse response) {
         try {
-           /* Model model = modelService.getModel(modelId);
+            /* Model model = modelService.getModel(modelId);
             byte[] bpmnBytes = modelService.getBpmnXML(model);
-
+            
             ByteArrayInputStream in = new ByteArrayInputStream(bpmnBytes);
             String filename = model.getKey() + ".bpmn20.xml";
             response.setHeader("Content-Disposition", "attachment; filename=" + filename);
@@ -204,14 +202,14 @@ public class ProcessModelVueController {
      * @param model 模型信息
      * @return Map<String, Object>
      */
-   /* @RequestMapping(value = "/import")
+    /* @RequestMapping(value = "/import")
     public Y9Result<Object> importProcessModel(MultipartFile file, ModelRepresentation model) {
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
             InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
-
+    
             BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
             BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
             // 模板验证
@@ -263,7 +261,7 @@ public class ProcessModelVueController {
             return Y9Result.successMsg("导入成功");
         } catch (Exception e) {
             LOGGER.error("导入流程模板失败,异常：{}", e.getMessage());
-
+    
         }
         return Y9Result.failure("导入流程模板失败");
     }*/
@@ -283,7 +281,7 @@ public class ProcessModelVueController {
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
             InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
-
+    
             BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
             BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
             // 模板验证
