@@ -159,8 +159,7 @@ public class FlowableLogAdvice implements MethodInterceptor {
             for (int i = 0; i < args.length; i++) {
                 String paramName = paramNames.length > i ? paramNames[i] : "arg" + i;
                 Object paramValue = args[i];
-                if (paramValue instanceof MultipartFile) {
-                    MultipartFile file = (MultipartFile)paramValue;
+                if (paramValue instanceof MultipartFile file) {
                     paramValue = file.getOriginalFilename();
                 } else {
                     if ("processSerialNumber".equalsIgnoreCase(paramName)) {
@@ -186,9 +185,9 @@ public class FlowableLogAdvice implements MethodInterceptor {
         log.setServerIp(Y9Context.getHostIp());
 
         if (exceptionInfo != null) {
-            log.setSuccess(exceptionInfo.getSuccess());
-            log.setErrorMessage(exceptionInfo.getErrorMessage());
-            log.setThrowable(exceptionInfo.getThrowableStr());
+            log.setSuccess(exceptionInfo.success());
+            log.setErrorMessage(exceptionInfo.errorMessage());
+            log.setThrowable(exceptionInfo.throwableStr());
         } else {
             log.setSuccess("成功");
             log.setErrorMessage("");
@@ -250,17 +249,7 @@ public class FlowableLogAdvice implements MethodInterceptor {
         }
     }
 
-    @Getter
-    private static class ExceptionInfo {
-        private final String success;
-        private final String errorMessage;
-        private final String throwableStr;
-
-        public ExceptionInfo(String success, String errorMessage, String throwableStr) {
-            this.success = success;
-            this.errorMessage = errorMessage;
-            this.throwableStr = throwableStr;
-        }
+    private record ExceptionInfo(String success, String errorMessage, String throwableStr) {
     }
 
     @Setter

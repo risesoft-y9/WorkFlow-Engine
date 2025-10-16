@@ -32,6 +32,7 @@ public class Y9DbUtil extends DbUtil {
     public static String determineDatabaseType(DataSource dataSource, Logger logger, Properties databaseTypeMappings) {
         Connection connection = null;
         String databaseType = null;
+
         try {
             connection = dataSource.getConnection();
             DatabaseMetaData databaseMetaData = connection.getMetaData();
@@ -40,18 +41,51 @@ public class Y9DbUtil extends DbUtil {
 
             // CRDB does not expose the version through the jdbc driver, so we need to fetch it through version().
             if (PRODUCT_NAME_POSTGRES.equalsIgnoreCase(databaseProductName)) {
-                try (PreparedStatement preparedStatement = connection.prepareStatement("select version() as version;");
-                    ResultSet resultSet = preparedStatement.executeQuery()) {
-                    String version = null;
-                    if (resultSet.next()) {
-                        version = resultSet.getString("version");
+                PreparedStatement preparedStatement = connection.prepareStatement("select version() as version;");
+
+                try {
+                    ResultSet resultSet = preparedStatement.executeQuery();
+
+                    try {
+                        String version = null;
+                        if (resultSet.next()) {
+                            version = resultSet.getString("version");
+                        }
+
+                        if (StringUtils.isNotEmpty(version)
+                            && version.toLowerCase().startsWith(PRODUCT_NAME_CRDB.toLowerCase())) {
+                            databaseProductName = PRODUCT_NAME_CRDB;
+                            logger.info("CockroachDB version '{}' detected", version);
+                        }
+                    } catch (Throwable var24) {
+                        if (resultSet != null) {
+                            try {
+                                resultSet.close();
+                            } catch (Throwable var23) {
+                                var24.addSuppressed(var23);
+                            }
+                        }
+
+                        throw var24;
                     }
 
-                    if (StringUtils.isNotEmpty(version)
-                        && version.toLowerCase().startsWith(PRODUCT_NAME_CRDB.toLowerCase())) {
-                        databaseProductName = PRODUCT_NAME_CRDB;
-                        logger.info("CockroachDB version '{}' detected", version);
+                    if (resultSet != null) {
+                        resultSet.close();
                     }
+                } catch (Throwable var25) {
+                    if (preparedStatement != null) {
+                        try {
+                            preparedStatement.close();
+                        } catch (Throwable var22) {
+                            var25.addSuppressed(var22);
+                        }
+                    }
+
+                    throw var25;
+                }
+
+                if (preparedStatement != null) {
+                    preparedStatement.close();
                 }
             }
 

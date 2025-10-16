@@ -15,7 +15,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
  * @date 2023/01/03
  */
 @SpringBootApplication(exclude = {SecurityAutoConfiguration.class, IdmEngineServicesAutoConfiguration.class,
-    FlowableSecurityAutoConfiguration.class, EventRegistryServicesAutoConfiguration.class, OAuth2ClientAutoConfiguration.class})
+    FlowableSecurityAutoConfiguration.class, EventRegistryServicesAutoConfiguration.class,
+    OAuth2ClientAutoConfiguration.class})
 @EnableAsync
 public class ProcessAdminApplication {
     public static void main(String[] args) {

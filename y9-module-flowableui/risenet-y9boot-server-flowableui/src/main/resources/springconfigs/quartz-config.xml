@@ -1,63 +1,64 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<beans xmlns:context="http://www.springframework.org/schema/context" xmlns="http://www.springframework.org/schema/beans" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="
-	http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd
-	http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.1.xsd"
-	default-lazy-init="true">
+<beans xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns="http://www.springframework.org/schema/beans"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.1.xsd"
+       default-lazy-init="true">
 
-	<!-- <bean id="reminderQuartz" class="org.springframework.scheduling.quartz.JobDetailBean">
-		<property name="jobClass">
-			<value>net.risesoft.common.quartz.ReminderQuartz</value>
-		</property>		
-	</bean>
-	
-	<bean id="trigger1" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
-		<property name="jobDetail">
-			<ref bean="jobDetail"/>
-		</property>
-		<property name="startDelay" value="2000"></property>
-		<property name="repeatInterval" value="600000"/>
-	</bean> -->
+    <!-- <bean id="reminderQuartz" class="org.springframework.scheduling.quartz.JobDetailBean">
+        <property name="jobClass">
+            <value>net.risesoft.common.quartz.ReminderQuartz</value>
+        </property>
+    </bean>
 
-	<!-- 配置每1分钟开始执行的任务 -->
-	<bean id="trigger1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
-		<property name="jobDetail">
-			<bean class="org.springframework.scheduling.quartz.JobDetailFactoryBean" depends-on="reminderDefineService,employeeRepository">
-				<property name="jobClass" value="net.risesoft.common.quartz.ReminderQuartz" />
-				<property name="durability" value="true" />
-			</bean>
-		</property>
-		<property name="cronExpression" value="0 0/1 * * * ?" />
-	</bean>
-    
-	<bean id="scheduler1" class="org.springframework.scheduling.quartz.SchedulerFactoryBean" depends-on="reminderDefineService,employeeRepository">
-		<property name="schedulerName" value="quartz1"/>
-		<property name="jobFactory">
-			<bean class="org.springframework.scheduling.quartz.SpringBeanJobFactory" />
-		</property>
-		<property name="configLocation" value="/WEB-INF/configs/quartz-ram.properties" />
-		<property name="applicationContextSchedulerContextKey" value="applicationContext" />
-		<property name="startupDelay" value="30" />
-		<property name="overwriteExistingJobs" value="true" />
-		<property name="exposeSchedulerInRepository" value="true" />
-		<property name="waitForJobsToCompleteOnShutdown" value="true" />
-		<property name="schedulerContextAsMap">
-			<map>
-				<entry key="reminderDefineService" value-ref="reminderDefineService" />
-				<entry key="employeeRepository" value-ref="employeeRepository" />
-			</map>
-		</property>
-		<!-- <property name="calendars">
-				<map>
-					<entry key="workTimeAMCalendar" value-ref="workTimeAMCalendar"/>
-					<entry key="workTimePMCalendar" value-ref="workTimePMCalendar"/>
-				</map>
-			</property> -->
-		<property name="triggers">
-			<list>
-				<ref bean="trigger1"/>
-			</list>
-		</property>
-	</bean>
+    <bean id="trigger1" class="org.springframework.scheduling.quartz.SimpleTriggerBean">
+        <property name="jobDetail">
+            <ref bean="jobDetail"/>
+        </property>
+        <property name="startDelay" value="2000"></property>
+        <property name="repeatInterval" value="600000"/>
+    </bean> -->
+
+    <!-- 配置每1分钟开始执行的任务 -->
+    <bean id="trigger1" class="org.springframework.scheduling.quartz.CronTriggerFactoryBean">
+        <property name="jobDetail">
+            <bean class="org.springframework.scheduling.quartz.JobDetailFactoryBean"
+                  depends-on="reminderDefineService,employeeRepository">
+                <property name="jobClass" value="net.risesoft.common.quartz.ReminderQuartz"/>
+                <property name="durability" value="true"/>
+            </bean>
+        </property>
+        <property name="cronExpression" value="0 0/1 * * * ?"/>
+    </bean>
+
+    <bean id="scheduler1" class="org.springframework.scheduling.quartz.SchedulerFactoryBean"
+          depends-on="reminderDefineService,employeeRepository">
+        <property name="schedulerName" value="quartz1"/>
+        <property name="jobFactory">
+            <bean class="org.springframework.scheduling.quartz.SpringBeanJobFactory"/>
+        </property>
+        <property name="configLocation" value="/WEB-INF/configs/quartz-ram.properties"/>
+        <property name="applicationContextSchedulerContextKey" value="applicationContext"/>
+        <property name="startupDelay" value="30"/>
+        <property name="overwriteExistingJobs" value="true"/>
+        <property name="exposeSchedulerInRepository" value="true"/>
+        <property name="waitForJobsToCompleteOnShutdown" value="true"/>
+        <property name="schedulerContextAsMap">
+            <map>
+                <entry key="reminderDefineService" value-ref="reminderDefineService"/>
+                <entry key="employeeRepository" value-ref="employeeRepository"/>
+            </map>
+        </property>
+        <!-- <property name="calendars">
+                <map>
+                    <entry key="workTimeAMCalendar" value-ref="workTimeAMCalendar"/>
+                    <entry key="workTimePMCalendar" value-ref="workTimePMCalendar"/>
+                </map>
+            </property> -->
+        <property name="triggers">
+            <list>
+                <ref bean="trigger1"/>
+            </list>
+        </property>
+    </bean>
 
 </beans>

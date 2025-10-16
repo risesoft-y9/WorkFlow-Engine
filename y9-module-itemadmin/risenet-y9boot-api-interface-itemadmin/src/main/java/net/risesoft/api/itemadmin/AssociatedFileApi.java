@@ -89,4 +89,5 @@ public interface AssociatedFileApi {
         @RequestParam("orgUnitId") @NotBlank String orgUnitId,
         @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("processInstanceIds") String processInstanceIds);
+
 }
