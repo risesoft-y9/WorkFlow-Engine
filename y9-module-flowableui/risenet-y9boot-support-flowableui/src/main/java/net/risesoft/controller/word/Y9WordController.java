@@ -61,12 +61,10 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RequestMapping(value = "/y9Word", produces = MediaType.APPLICATION_JSON_VALUE)
 public class Y9WordController {
 
+    private static final String CONTENT_DIS_KEY = "Content-Disposition";
     private final Y9FileStoreService y9FileStoreService;
-
     private final Y9WordApi y9WordApi;
-
     private final DraftApi draftApi;
-
     private final ProcessParamApi processParamApi;
 
     /**
@@ -224,7 +222,7 @@ public class Y9WordController {
             String agent = request.getHeader("USER-AGENT");
             fileName = encodeFileName(fileName, agent);
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + fileName);
             int b;
             byte[] by = new byte[1024];
             while ((b = bi.read(by)) != -1) {
@@ -254,7 +252,7 @@ public class Y9WordController {
         try (ServletOutputStream out = response.getOutputStream()) {
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=zhengwen." + y9FileStore.getFileExt());
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
@@ -322,7 +320,7 @@ public class Y9WordController {
         try (ServletOutputStream out = response.getOutputStream()) {
             Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=zhengwen." + y9FileStore.getFileExt());
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=zhengwen." + y9FileStore.getFileExt());
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(fileStoreId);
@@ -408,7 +406,7 @@ public class Y9WordController {
             String fileName = y9FileStore.getFileName();
             fileName = encodeFileName(fileName, agent);
             response.reset();
-            response.setHeader("Content-Disposition", "attachment; filename=" + fileName);
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + fileName);
             byte[] buf = null;
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
