@@ -28,7 +28,7 @@ public class CommonOpt {
      */
     public static Map<String, Object> setVariables(String taskSenderId, String taskSender, String routeToTaskId,
         List<String> users, FlowElementModel flowElementModel) {
-        if (users == null || users.size() == 0) {
+        if (users == null || users.isEmpty()) {
             try {
                 throw new Exception("发送人不能为空");
             } catch (Exception e) {
@@ -85,7 +85,7 @@ public class CommonOpt {
      */
     public static Map<String, Object> setVariables4Dept(String taskSenderId, String taskSender, String routeToTaskId,
         List<List<String>> users, String documentTitle, String multiInstance) {
-        if (users == null || users.size() == 0) {
+        if (users == null || users.isEmpty()) {
             try {
                 throw new Exception("发送人不能为空");
             } catch (Exception e) {

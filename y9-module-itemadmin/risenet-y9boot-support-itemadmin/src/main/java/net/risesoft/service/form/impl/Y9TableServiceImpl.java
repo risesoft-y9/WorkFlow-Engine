@@ -274,6 +274,9 @@ public class Y9TableServiceImpl implements Y9TableService {
                                 .append("'");
                         }
                         break;
+                    default:
+                        LOGGER.warn("参数不符合a.b或者a.b.c的格式。");
+                        break;
                 }
             } else {
                 // 已办件查询条件#已办类型
@@ -341,7 +344,7 @@ public class Y9TableServiceImpl implements Y9TableService {
      * @param type
      * @return
      */
-    private final String getFieldType(String type) {
+    private String getFieldType(String type) {
         type = type.substring(0, type.lastIndexOf("("));
         return type;
     }
@@ -388,7 +391,7 @@ public class Y9TableServiceImpl implements Y9TableService {
         }
         Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
         Pageable pageable = PageRequest.of(page - 1, rows, sort);
-        Page<Y9Table> pageList = null;
+        Page<Y9Table> pageList;
         if (StringUtils.isBlank(systemName)) {
             pageList = y9TableRepository.findAll(pageable);
         } else {
@@ -428,7 +431,7 @@ public class Y9TableServiceImpl implements Y9TableService {
         List<String> ids) {
         List<DbColumn> dbcs = new ArrayList<>();
         int order = 1;
-        Y9TableField fieldTemp = null;
+        Y9TableField fieldTemp;
         for (Map<String, Object> m : listMap) {
             String id = (String)m.get("id");
             Integer isSystemField = (Integer)m.get("isSystemField");
@@ -512,7 +515,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                 if (!listMap.isEmpty()) {
                     List<String> ids = new ArrayList<>();
                     List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
-                    List<DbColumn> dbcs = new ArrayList<>();
+                    List<DbColumn> dbcs;
                     dbcs = saveField(tableId, tableName, listMap, ids);
                     /**
                      * 删除页面上已删除的字段

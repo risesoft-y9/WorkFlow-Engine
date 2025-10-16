@@ -13,6 +13,7 @@ import org.flowable.task.api.DelegationState;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -50,6 +51,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2025/08/08
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class ButtonServiceImpl implements ButtonService {
@@ -737,6 +739,9 @@ public class ButtonServiceImpl implements ButtonService {
                 break;
             case MONITOR_DONE:
                 buttonModelList.add(ItemButton.huiFuDaiBan);
+                break;
+            default:
+                LOGGER.warn("未定义的ItemBoxTypeEnum:{}", itemBox);
                 break;
         }
         buttonModelList.add(ItemButton.chaoSong);

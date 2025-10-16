@@ -5,9 +5,7 @@ import java.util.List;
 
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.entity.SpeakInfo;
-import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.entity.entrust.EntrustHistory;
-import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.EntrustHistoryModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
@@ -19,16 +17,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2022/12/20
  */
 public class ItemAdminModelConvertUtil {
-
-    public static List<AttachmentModel> attachmentList2ModelList(List<Attachment> transactionList) {
-        List<AttachmentModel> transactionModelList = new ArrayList<>();
-        for (Attachment attachment : transactionList) {
-            AttachmentModel attachment2Model = new AttachmentModel();
-            Y9BeanUtil.copyProperties(attachment, attachment2Model);
-            transactionModelList.add(attachment2Model);
-        }
-        return transactionModelList;
-    }
 
     public static List<EntrustHistoryModel> entrustHistoryList2ModelList(List<EntrustHistory> ehList) {
         List<EntrustHistoryModel> ehModelList = new ArrayList<>();

@@ -10,9 +10,6 @@ import java.util.regex.Pattern;
 
 import org.hibernate.annotations.Comment;
 
-import net.risesoft.consts.processadmin.SysVariables;
-import net.risesoft.y9.Y9Context;
-
 /**
  * @author qinman
  * @author zhangchongjie
@@ -20,13 +17,6 @@ import net.risesoft.y9.Y9Context;
  */
 public class CommentUtil {
     private static final Pattern pattern = Pattern.compile("\r\n|\r|\n|\n\r");
-    private static String comment;
-
-    public static String[] getComment() {
-        comment = Y9Context.getProperty("y9.app.itemAdmin.comment");
-        comment = unicodeToCn(comment);
-        return comment.split(SysVariables.COMMA);
-    }
 
     public static String replaceEnter2Br(String oldStr) {
         Matcher matcher = pattern.matcher(oldStr);

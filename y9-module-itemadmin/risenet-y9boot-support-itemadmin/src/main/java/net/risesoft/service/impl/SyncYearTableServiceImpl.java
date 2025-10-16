@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.nio.charset.StandardCharsets;
-import java.sql.Connection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -29,9 +28,9 @@ import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.service.SyncYearTableService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.util.form.Y9FormDbMetaDataUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.util.Y9FileUtil;
 
 /**
@@ -111,9 +110,6 @@ public class SyncYearTableServiceImpl implements SyncYearTableService {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "生成年度表结构成功");
-        FileInputStream fis = null;
-        ByteArrayOutputStream bos = null;
-        Connection connection = null;
         try {
             if (StringUtils.isBlank(year)) {
                 year = Y9DateTimeUtils.getYear(new Date());
@@ -126,84 +122,63 @@ public class SyncYearTableServiceImpl implements SyncYearTableService {
             if (null != count && count >= 0) {
                 map.put(UtilConsts.SUCCESS, true);
                 map.put("msg", year + "年度表结构已存在！");
-                LOGGER.info("************************" + year + "年度表结构已存在！****************************");
+                LOGGER.info("************************{}年度表结构已存在！****************************", year);
                 return map;
             }
             DataSource dataSource = jdbcTemplate.getDataSource();
-            String dialectName = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             String filePath = Y9Context.getWebRootRealPath() + "static" + File.separator + "yearTableSql"
                 + File.separator + dialectName + File.separator + "yearTable.sql";
             File file = new File(filePath);
-            byte[] buffer = null;
-            String droptable = "droptable";
-            String truncatetable = "truncatetable";
-            if (file.exists()) {
-                fis = new FileInputStream(file);
+            if (!file.exists()) {
+                map.put(UtilConsts.SUCCESS, false);
+                map.put("msg", "年度表sql文件不存在");
+                LOGGER.info("************************年度表不存在：{}****************************", filePath);
+                return map;
+            }
+            // 检查SQL文件安全性
+            try (FileInputStream fis = new FileInputStream(file)) {
                 String fileString = convertStreamToString(fis);
                 fileString = fileString.toLowerCase().replaceAll("\\s*", "");
-                if (fileString.indexOf(droptable) > 0) {
+                if (fileString.contains("droptable")) {
                     LOGGER.info("********************sql文件中包含删除表的语法(drop table)**********************");
                     map.put(UtilConsts.SUCCESS, false);
                     map.put("msg", "sql文件中包含删除表的语法(drop table)");
-                    if (fis != null) {
-                        fis.close();
-                    }
                     return map;
-                } else if (fileString.indexOf(truncatetable) > 0) {
+                } else if (fileString.contains("truncatetable")) {
                     LOGGER.info("********************sql文件中包含清空表数据的语法(truncate table)**********************");
                     map.put(UtilConsts.SUCCESS, false);
                     map.put("msg", "sql文件中包含清空表数据的语法(truncate table)");
-                    if (fis != null) {
-                        fis.close();
-                    }
                     return map;
                 }
-                fis = new FileInputStream(file);
-                bos = new ByteArrayOutputStream();
+            }
+            // 执行SQL文件
+            try (FileInputStream fis = new FileInputStream(file);
+                ByteArrayOutputStream bos = new ByteArrayOutputStream()) {
                 byte[] b = new byte[1024];
                 int n;
                 while ((n = fis.read(b)) != -1) {
                     bos.write(b, 0, n);
                 }
-                buffer = bos.toByteArray();
-                String s = new String(buffer, StandardCharsets.UTF_8);
+                String s = bos.toString(StandardCharsets.UTF_8);
                 s = s.replace("Year4Table", year);
                 List<String> sqlList = Y9FileUtil.loadSql(s);
-                if (DialectEnum.KINGBASE.getValue().equals(dialectName)) {
-                    Y9FormDbMetaDataUtil.batchExecuteDdl4Kingbase(dataSource, sqlList);
-                } else if (DialectEnum.ORACLE.getValue().equals(dialectName)) {
-                    Y9FormDbMetaDataUtil.batchExecuteDdl4Kingbase(dataSource, sqlList);
-                } else if (DialectEnum.DM.getValue().equals(dialectName)) {
-                    Y9FormDbMetaDataUtil.batchExecuteDdl4Kingbase(dataSource, sqlList);
+                // 执行DDL语句
+                if (DialectEnum.KINGBASE.getValue().equals(dialectName)
+                    || DialectEnum.ORACLE.getValue().equals(dialectName)
+                    || DialectEnum.DM.getValue().equals(dialectName)) {
+                    DbMetaDataUtil.batchExecuteDdl4Kingbase(dataSource, sqlList);
                 } else {
-                    Y9FormDbMetaDataUtil.batchExecuteDdl(dataSource, sqlList);
+                    DbMetaDataUtil.batchExecuteDdl(dataSource, sqlList);
                 }
                 LOGGER.info("************************年度表生成成功****************************");
-            } else {
-                map.put(UtilConsts.SUCCESS, false);
-                map.put("msg", "年度表sql文件不存在");
-                LOGGER.info("************************年度表不存在：{}****************************", filePath);
             }
+
         } catch (Exception e) {
             LOGGER.warn("************************年度表生成异常********************************", e);
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "年度表生成发生异常");
-        } finally {
-            try {
-                if (fis != null) {
-                    fis.close();
-                }
-                if (bos != null) {
-                    bos.close();
-                }
-                if (connection != null) {
-                    connection.close();
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
         }
         return map;
     }
-
 }
