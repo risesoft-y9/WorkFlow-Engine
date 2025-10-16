@@ -81,40 +81,24 @@ import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
 @RequestMapping(value = "/vue/document", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentRestController {
 
+    private static final String SYSTEMNAME_KEY = "systemName";
     private final ItemApi itemApi;
-
     private final DocumentApi documentApi;
-
     private final ButtonOperationService buttonOperationService;
-
     private final ProcessParamApi processParamApi;
-
     private final ChaoSongApi chaoSongApi;
-
     private final TaskApi taskApi;
-
     private final ProcessDefinitionApi processDefinitionApi;
-
     private final OrgUnitApi orgUnitApi;
-
     private final SignDeptDetailApi signDeptDetailApi;
-
     private final PositionRoleApi positionRoleApi;
-
     private final ProcessTodoApi processTodoApi;
-
     private final ProcessParamService processParamService;
-
     private final TaskRelatedApi taskRelatedApi;
-
     private final ActRuDetailApi actRuDetailApi;
-
     private final DocumentWordApi documentWordApi;
-
     private final FormDataApi formDataApi;
-
     private final Y9FlowableProperties y9FlowableProperties;
-
     private final SmsDetailApi smsDetailApi;
 
     /**
@@ -553,7 +537,7 @@ public class DocumentRestController {
             List<ItemModel> listMap = itemApi.getAllItem(Y9LoginUserHolder.getTenantId()).getData();
             for (ItemModel itemModel : listMap) {
                 Map<String, Object> newmap = new HashMap<>(16);
-                newmap.put("systemName", itemModel.getSystemName());
+                newmap.put(SYSTEMNAME_KEY, itemModel.getSystemName());
                 newmap.put("systemCnName", itemModel.getSysLevel());
                 if (!list.contains(newmap)) {
                     list.add(newmap);
@@ -561,12 +545,12 @@ public class DocumentRestController {
             }
             for (Map<String, Object> nmap : list) {
                 long todoCount = processTodoApi
-                    .getTodoCountByUserIdAndSystemName(tenantId, positionId, (String)nmap.get("systemName"))
+                    .getTodoCountByUserIdAndSystemName(tenantId, positionId, (String)nmap.get(SYSTEMNAME_KEY))
                     .getData();
                 nmap.put("todoCount", todoCount);
                 List<ItemModel> itemList = new ArrayList<>();
                 for (ItemModel itemModel : listMap) {
-                    if (nmap.get("systemName").equals(itemModel.getSystemName())) {
+                    if (nmap.get(SYSTEMNAME_KEY).equals(itemModel.getSystemName())) {
                         itemList.add(itemModel);
                     }
                 }

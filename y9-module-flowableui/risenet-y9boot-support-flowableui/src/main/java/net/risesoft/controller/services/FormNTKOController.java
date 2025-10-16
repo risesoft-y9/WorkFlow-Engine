@@ -150,7 +150,7 @@ public class FormNTKOController {
             out.flush();
             out.close();
         } catch (Exception e) {
-            LOGGER.error("下载正文失败", e);
+            LOGGER.error("下载正文失败，异常为：", e);
         }
     }
 
@@ -206,7 +206,7 @@ public class FormNTKOController {
             out.flush();
             out.close();
         } catch (Exception e) {
-            LOGGER.error("下载正文失败", e);
+            LOGGER.error("下载正文失败（抄送），异常为：", e);
         }
     }
 
@@ -234,7 +234,7 @@ public class FormNTKOController {
             out.flush();
             out.close();
         } catch (Exception e) {
-            LOGGER.error("下载正文失败", e);
+            LOGGER.error("下载正文文件失败，异常为：", e);
         }
     }
 
