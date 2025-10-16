@@ -106,7 +106,7 @@ public class Y9WordController {
             setResponse(response, request, processSerialNumber, fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("下载历史版本正文文件异常，异常：", e);
         }
     }
 
@@ -171,7 +171,7 @@ public class Y9WordController {
             setResponse(response, request, processSerialNumber, fileType);
             y9FileStoreService.downloadFileToOutputStream(id, out);
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("下载正文文件异常，异常：", e);
         }
     }
 
@@ -193,7 +193,7 @@ public class Y9WordController {
             setResponse(response, request, processSerialNumber, fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("下载正文（抄送件）异常，异常：", e);
         }
     }
 
@@ -231,7 +231,7 @@ public class Y9WordController {
                 out.write(by, 0, b);
             }
         } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开新建正文空白模板异常，异常：", e);
         }
     }
 
@@ -259,7 +259,7 @@ public class Y9WordController {
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             } catch (Exception e) {
-                LOGGER.error("下载正文异常", e);
+                LOGGER.error("下载正文文件byte数据异常，异常：", e);
             }
             ByteArrayInputStream bin = null;
             if (buf != null) {
@@ -273,7 +273,7 @@ public class Y9WordController {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开正文文件异常，异常：", e);
         }
     }
 
@@ -303,7 +303,7 @@ public class Y9WordController {
                 out.write(by, 0, b);
             }
         } catch (IOException e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("获取套红模板文件异常，异常：", e);
         }
     }
 
@@ -327,7 +327,7 @@ public class Y9WordController {
             try {
                 buf = y9FileStoreService.downloadFileToBytes(fileStoreId);
             } catch (Exception e) {
-                LOGGER.error("下载正文异常", e);
+                LOGGER.error("下载历史正文版本byte数据异常，异常：", e);
             }
             ByteArrayInputStream bin = null;
             if (buf != null) {
@@ -341,7 +341,7 @@ public class Y9WordController {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开历史正文异常", e);
         }
     }
 
@@ -362,7 +362,7 @@ public class Y9WordController {
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             } catch (Exception e) {
-                LOGGER.error("下载正文异常", e);
+                LOGGER.error("下载PDF文件byte数据异常，异常：", e);
             }
             ByteArrayInputStream bin = null;
             if (buf != null) {
@@ -381,7 +381,7 @@ public class Y9WordController {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开PDF或TIF文件异常，异常：", e);
         }
     }
 
@@ -413,7 +413,7 @@ public class Y9WordController {
             try {
                 buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
             } catch (Exception e) {
-                LOGGER.error("下载正文异常", e);
+                LOGGER.error("下载转PDF之前的正文异常，异常：", e);
             }
             ByteArrayInputStream bin = null;
             if (buf != null) {
@@ -427,7 +427,7 @@ public class Y9WordController {
                 }
             }
         } catch (IOException e) {
-            LOGGER.error("下载正文异常", e);
+            LOGGER.error("打开撤销PDF后的正文异常，异常：", e);
         }
     }
 
