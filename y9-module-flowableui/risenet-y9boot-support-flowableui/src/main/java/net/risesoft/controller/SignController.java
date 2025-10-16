@@ -36,6 +36,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Slf4j
 public class SignController {
 
+    private static final String STARTTIME_KEY = "09:00";
+    private static final String ENDTIME_KEY = "17:30";
     private final CalendarConfigApi calendarConfigApi;
 
     // 获取两个日期时间的相隔天数
@@ -140,7 +142,7 @@ public class SignController {
                     String tmp = leaveStartTime;
                     int num = 0;
                     while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp={}", tmp);
+                        LOGGER.debug("tmp1={}", tmp);
                         if (isDel) {
                             if (!dayStr.contains(tmp)) {
                                 num++;
@@ -163,7 +165,7 @@ public class SignController {
                     int num = 0;
                     double start = 0;
                     while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp={}", tmp);
+                        LOGGER.debug("tmp2={}", tmp);
                         if (!dayStr.contains(tmp)) {
                             if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel)
                                 && startSel.equals("下午")) {// 开始日期选择下午，算半天
@@ -197,10 +199,10 @@ public class SignController {
                             return Y9Result.success("0", "获取成功");
                         } else {// 同一天，计算时间
                             if (StringUtils.isBlank(selStartTime)) {
-                                selStartTime = "09:00";
+                                selStartTime = STARTTIME_KEY;
                             }
                             if (StringUtils.isBlank(selEndTime)) {
-                                selEndTime = "17:30";
+                                selEndTime = ENDTIME_KEY;
                             }
                             long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
                             double hours = (double)time / (60 * 60 * 1000);
@@ -220,7 +222,7 @@ public class SignController {
                         String tmp = leaveStartTime;
                         int num = 0;
                         while (tmp.compareTo(leaveEndTime) <= 0) {
-                            LOGGER.debug("tmp={}", tmp);
+                            LOGGER.debug("tmp3={}", tmp);
                             if (!dayStr.contains(tmp)) {
                                 num++;
                             }
@@ -230,10 +232,10 @@ public class SignController {
                         }
                         // 计算小时
                         if (StringUtils.isBlank(selStartTime)) {
-                            selStartTime = "09:00";
+                            selStartTime = STARTTIME_KEY;
                         }
                         if (StringUtils.isBlank(selEndTime)) {
-                            selEndTime = "17:30";
+                            selEndTime = ENDTIME_KEY;
                         }
                         long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
                         double hours = (double)time / (60 * 60 * 1000);
@@ -250,10 +252,10 @@ public class SignController {
                     String tmp = leaveStartTime;
                     double timeCount = 0.0;
                     while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp={}", tmp);
+                        LOGGER.debug("tmp4={}", tmp);
                         if (!dayStr.contains(tmp)) {
                             if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {// 开始日期选择时间
-                                long time = sdf.parse("17:30").getTime() - sdf.parse(selStartTime).getTime();
+                                long time = sdf.parse(ENDTIME_KEY).getTime() - sdf.parse(selStartTime).getTime();
                                 double hours = (double)time / (60 * 60 * 1000);
                                 BigDecimal a = BigDecimal.valueOf(hours);
                                 double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
@@ -267,7 +269,7 @@ public class SignController {
                                 continue;
                             }
                             if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
-                                long time = sdf.parse(selEndTime).getTime() - sdf.parse("09:00").getTime();
+                                long time = sdf.parse(selEndTime).getTime() - sdf.parse(STARTTIME_KEY).getTime();
                                 double hours = (double)time / (60 * 60 * 1000);
                                 BigDecimal a = BigDecimal.valueOf(hours);
                                 double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
@@ -324,7 +326,7 @@ public class SignController {
                     String tmp = leaveStartTime;
                     int num = 0;
                     while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp={}", tmp);
+                        LOGGER.debug("tmp5={}", tmp);
                         num++;
                         long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
                         tmp = Y9DateTimeUtils.formatDate(new Date(time));
@@ -339,7 +341,7 @@ public class SignController {
                     int num = 0;
                     double start = 0;
                     while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp={}", tmp);
+                        LOGGER.debug("tmp6={}", tmp);
                         if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel) && startSel.equals("下午")) {// 开始日期选择下午，算半天
                             start += 0.5;
                             long time =
@@ -368,10 +370,10 @@ public class SignController {
                     if (leaveStartTime.equals(leaveEndTime)) {
                         // 同一天，计算时间
                         if (StringUtils.isBlank(selStartTime)) {
-                            selStartTime = "09:00";
+                            selStartTime = STARTTIME_KEY;
                         }
                         if (StringUtils.isBlank(selEndTime)) {
-                            selEndTime = "17:30";
+                            selEndTime = ENDTIME_KEY;
                         }
                         long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
                         double hours = (double)time / (60 * 60 * 1000);
@@ -387,9 +389,9 @@ public class SignController {
                     String tmp = leaveStartTime;
                     double timeCount = 0.0;
                     while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp={}", tmp);
+                        LOGGER.debug("tmp8={}", tmp);
                         if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {// 开始日期选择时间
-                            long time = sdf.parse("17:30").getTime() - sdf.parse(selStartTime).getTime();
+                            long time = sdf.parse(ENDTIME_KEY).getTime() - sdf.parse(selStartTime).getTime();
                             double hours = (double)time / (60 * 60 * 1000);
                             BigDecimal a = BigDecimal.valueOf(hours);
                             double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
@@ -403,7 +405,7 @@ public class SignController {
                             continue;
                         }
                         if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
-                            long time = sdf.parse(selEndTime).getTime() - sdf.parse("09:00").getTime();
+                            long time = sdf.parse(selEndTime).getTime() - sdf.parse(STARTTIME_KEY).getTime();
                             double hours = (double)time / (60 * 60 * 1000);
                             BigDecimal a = BigDecimal.valueOf(hours);
                             double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
