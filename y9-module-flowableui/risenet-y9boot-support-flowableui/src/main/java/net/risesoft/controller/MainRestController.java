@@ -58,30 +58,27 @@ import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
 @RequestMapping(value = "/vue/main", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MainRestController {
 
+    private static final String DRAFTCOUNT_KEY = "draftCount";
+    private static final String TODOCOUNT_KEY = "todoCount";
+    private static final String DOINGCOUNT_KEY = "doingCount";
+    private static final String DONECOUNT_KEY = "doneCount";
+    private static final String DRAFTRECYCLECOUNT_KEY = "draftRecycleCount";
+    private static final String MONITORDOING_KEY = "monitorDoing";
+    private static final String MONITORDONE_KEY = "monitorDone";
+    private static final String MONITORRECYCLE_KEY = "monitorRecycle";
+    private static final String MONITORMANAGE_KEY = "monitorManage";
     private final ItemApi itemApi;
-
     private final HistoricProcessApi historicProcessApi;
-
     private final PositionRoleApi positionRoleApi;
-
     private final PositionApi positionApi;
-
     private final OrgUnitApi orgUnitApi;
-
     private final ProcessTodoApi processTodoApi;
-
     private final DraftApi draftApi;
-
     private final ChaoSongApi chaoSongApi;
-
     private final OfficeDoneInfoApi officeDoneInfoApi;
-
     private final ProcessParamApi processParamApi;
-
     private final EntrustApi entrustApi;
-
     private final Y9FlowableProperties y9FlowableProperties;
-
     private final ItemTodoApi itemTodoApi;
 
     /**
@@ -116,15 +113,15 @@ public class MainRestController {
         long monitorDone = 0;
         long recycleCount = 0;
 
-        map.put("draftCount", draftCount);
-        map.put("todoCount", todoCount);
-        map.put("doingCount", doingCount);
-        map.put("doneCount", doneCount);
-        map.put("draftRecycleCount", draftRecycleCount);
+        map.put(DRAFTCOUNT_KEY, draftCount);
+        map.put(TODOCOUNT_KEY, todoCount);
+        map.put(DOINGCOUNT_KEY, doingCount);
+        map.put(DONECOUNT_KEY, doneCount);
+        map.put(DRAFTRECYCLECOUNT_KEY, draftRecycleCount);
 
-        map.put("monitorDoing", monitorDoing);
-        map.put("monitorDone", monitorDone);
-        map.put("monitorRecycle", recycleCount);
+        map.put(MONITORDOING_KEY, monitorDoing);
+        map.put(MONITORDONE_KEY, monitorDone);
+        map.put(MONITORRECYCLE_KEY, recycleCount);
         try {
             ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = itemModel.getWorkflowGuid();
@@ -140,31 +137,31 @@ public class MainRestController {
                 try {
                     doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, itemId).getData();
                 } catch (Exception e) {
-                    LOGGER.error("获取事项统计失败", e);
+                    LOGGER.error("获取事项办结件数量统计失败", e);
                 }
             }
-            map.put("draftCount", draftCount);
-            map.put("todoCount", todoCount);
-            map.put("doingCount", doingCount);
-            map.put("doneCount", doneCount);
-            map.put("draftRecycleCount", draftRecycleCount);
+            map.put(DRAFTCOUNT_KEY, draftCount);
+            map.put(TODOCOUNT_KEY, todoCount);
+            map.put(DOINGCOUNT_KEY, doingCount);
+            map.put(DONECOUNT_KEY, doneCount);
+            map.put(DRAFTRECYCLECOUNT_KEY, draftRecycleCount);
 
             if (person.isGlobalManager()) {
                 try {
                     monitorDoing = officeDoneInfoApi.countDoingByItemId(tenantId, itemId).getData();
                     monitorDone = officeDoneInfoApi.countByItemId(tenantId, itemId).getData();
                 } catch (Exception e) {
-                    LOGGER.error("获取事项统计失败", e);
+                    LOGGER.error("获取事项监控在办和办结件数量统计失败", e);
                 }
                 // recycleCount = monitorManager.getRecycleCountByProcessDefinitionKey(tenantId,
                 // processDefinitionKey);
-                map.put("monitorDoing", monitorDoing);
-                map.put("monitorDone", monitorDone);
-                map.put("monitorRecycle", recycleCount);
+                map.put(MONITORDOING_KEY, monitorDoing);
+                map.put(MONITORDONE_KEY, monitorDone);
+                map.put(MONITORRECYCLE_KEY, recycleCount);
             }
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
-            LOGGER.error("获取事项统计失败", e);
+            LOGGER.error("获取事项办件分类数量统计失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -189,14 +186,14 @@ public class MainRestController {
         long monitorDoing = 0;
         long monitorDone = 0;
 
-        map.put("draftCount", draftCount);
-        map.put("todoCount", todoCount);
-        map.put("doingCount", doingCount);
-        map.put("doneCount", doneCount);
-        map.put("draftRecycleCount", draftRecycleCount);
+        map.put(DRAFTCOUNT_KEY, draftCount);
+        map.put(TODOCOUNT_KEY, todoCount);
+        map.put(DOINGCOUNT_KEY, doingCount);
+        map.put(DONECOUNT_KEY, doneCount);
+        map.put(DRAFTRECYCLECOUNT_KEY, draftRecycleCount);
 
-        map.put("monitorDoing", monitorDoing);
-        map.put("monitorDone", monitorDone);
+        map.put(MONITORDOING_KEY, monitorDoing);
+        map.put(MONITORDONE_KEY, monitorDone);
         try {
             draftCount = draftApi.countBySystemName(tenantId, positionId, systemName).getData();
             // draftRecycleCount = draftApi.getDeleteDraftCount(tenantId, positionId, systemName);
@@ -207,16 +204,16 @@ public class MainRestController {
             try {
                 doneCount = officeDoneInfoApi.countByUserIdAndSystemName(tenantId, positionId, systemName).getData();
             } catch (Exception e) {
-                LOGGER.error("获取事项统计失败", e);
+                LOGGER.error("获取事项流程办结件统计失败", e);
             }
-            map.put("draftCount", draftCount);
-            map.put("todoCount", todoCount);
-            map.put("doingCount", doingCount);
-            map.put("doneCount", doneCount);
-            map.put("draftRecycleCount", draftRecycleCount);
+            map.put(DRAFTCOUNT_KEY, draftCount);
+            map.put(TODOCOUNT_KEY, todoCount);
+            map.put(DOINGCOUNT_KEY, doingCount);
+            map.put(DONECOUNT_KEY, doneCount);
+            map.put(DRAFTRECYCLECOUNT_KEY, draftRecycleCount);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
-            LOGGER.error("获取事项统计失败", e);
+            LOGGER.error("根据系统名称获取事项办件分类数量统计失败", e);
         }
         return Y9Result.failure("获取失败");
     }
@@ -241,7 +238,7 @@ public class MainRestController {
             .getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
-        map.put("monitorManage", b);
+        map.put(MONITORMANAGE_KEY, b);
         boolean b1 =
             positionRoleApi
                 .hasPublicRole(tenantId, y9FlowableProperties.getRepositionManagerRoleName(),
@@ -265,7 +262,7 @@ public class MainRestController {
         boolean b = positionRoleApi
             .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
             .getData();
-        map.put("monitorManage", b);
+        map.put(MONITORMANAGE_KEY, b);
         boolean b1 =
             positionRoleApi
                 .hasPublicRole(tenantId, y9FlowableProperties.getRepositionManagerRoleName(),
@@ -305,12 +302,12 @@ public class MainRestController {
             doingCount = y9Page.getTotal();
             // 统计历史办结件
             doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, "").getData();
-            map.put("todoCount", todoCount);
-            map.put("doingCount", doingCount);
-            map.put("doneCount", doneCount);
+            map.put(TODOCOUNT_KEY, todoCount);
+            map.put(DOINGCOUNT_KEY, doingCount);
+            map.put(DONECOUNT_KEY, doneCount);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
-            LOGGER.error("获取事项统计失败", e);
+            LOGGER.error("获取事项流程与当前人相关的办件数量统计失败", e);
         }
         return Y9Result.failure(50000, "获取失败");
     }
@@ -356,7 +353,7 @@ public class MainRestController {
                     }
                 }
             }
-            map.put("todoCount", todoCount);
+            map.put(TODOCOUNT_KEY, todoCount);
             resList.add(map);
 
             // 获取当前岗被委托记录
@@ -396,7 +393,7 @@ public class MainRestController {
                                 }
                             }
                         }
-                        map1.put("todoCount", todoCount1);
+                        map1.put(TODOCOUNT_KEY, todoCount1);
                         resList.add(map1);
                     }
                 }
@@ -438,7 +435,7 @@ public class MainRestController {
             .getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
-        map.put("monitorManage", b);
+        map.put(MONITORMANAGE_KEY, b);
         return Y9Result.success(map, "获取成功");
     }
 
