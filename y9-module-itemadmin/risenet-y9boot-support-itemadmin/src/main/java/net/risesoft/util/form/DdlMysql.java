@@ -34,67 +34,89 @@ public class DdlMysql {
     }
 
     public void addTableColumn(DataSource dataSource, String tableName, List<DbColumn> dbColumnList) throws Exception {
-        if (DbMetaDataUtil.checkTableExist(dataSource, tableName)) {
-            for (DbColumn dbc : dbColumnList) {
-                String columnName = dbc.getColumnName();
-                if ("guid".equalsIgnoreCase(columnName) || "processInstanceId".equalsIgnoreCase(columnName)) {
-                    continue;
-                }
-                String ddl = "ALTER TABLE " + tableName;
-                // String DDL = "ALTER TABLE " + tableName + " ADD COLUMN " + dbc.getColumnName() + " ";
-                String dbColumnName = "";
-                ResultSet rs = null;
-                try (Connection connection = dataSource.getConnection()) {
-                    DatabaseMetaData databaseMetaData = connection.getMetaData();
-                    String tableSchema = databaseMetaData.getUserName().toUpperCase();
-                    rs = databaseMetaData.getColumns(null, tableSchema, tableName, dbc.getColumnName());
-                    while (rs.next()) {
-                        dbColumnName = rs.getString("column_name".toLowerCase());
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                } finally {
-                    if (rs != null) {
-                        rs.close();
-                    }
-                }
-                // 不存在旧字段则新增
-                if (("".equals(dbColumnName) && StringUtils.isBlank(dbc.getColumnNameOld()))) {
-                    ddl += " ADD COLUMN " + dbc.getColumnName() + " ";
-                } else {
-                    // 存在旧字段，字段名称没有改变则修改属性
-                    if (dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())
-                        || StringUtils.isBlank(dbc.getColumnNameOld())) {
-                        ddl += " MODIFY COLUMN " + dbc.getColumnName() + " ";
-                    } else {
-                        // 存在旧字段，字段名称改变则修改字段名称及属性
-                        ddl += " CHANGE COLUMN " + dbc.getColumnNameOld() + " " + dbc.getColumnName() + " ";
-                    }
-                }
-                String sType = dbc.getTypeName().toUpperCase();
-                if ("CHAR".equals(sType) || "VARCHAR".equals(sType)) {
-                    ddl += sType + "(" + dbc.getDataLength() + ")";
-                } else if ("DECIMAL".equals(sType) || "NUMERIC".equals(sType)) {
-                    if (dbc.getDataScale() == null) {
-                        ddl += sType + "(" + dbc.getDataLength() + ")";
-                    } else {
-                        ddl += sType + "(" + dbc.getDataLength() + "," + dbc.getDataScale() + ")";
-                    }
-                } else {
-                    ddl += sType;
-                }
-                // 新增字段
-                if (dbc.getNullable()) {
-                    ddl += " DEFAULT NULL";
-                } else {
-                    ddl += " NOT NULL";
-                }
-                if (!dbc.getComment().isEmpty()) {
-                    ddl += " COMMENT '" + dbc.getComment() + "'";
-                }
-                DbMetaDataUtil.executeDdl(dataSource, ddl);
-                y9TableFieldRepository.updateOldFieldName(dbc.getTableName(), dbc.getColumnName());
+        if (!DbMetaDataUtil.checkTableExist(dataSource, tableName)) {
+            return;
+        }
+        for (DbColumn dbc : dbColumnList) {
+            if (shouldSkipColumn(dbc.getColumnName())) {
+                continue;
             }
+            String ddl = buildAlterTableDdl(dataSource, tableName, dbc);
+            DbMetaDataUtil.executeDdl(dataSource, ddl);
+            y9TableFieldRepository.updateOldFieldName(dbc.getTableName(), dbc.getColumnName());
+        }
+    }
+
+    private boolean shouldSkipColumn(String columnName) {
+        return "guid".equalsIgnoreCase(columnName) || "processInstanceId".equalsIgnoreCase(columnName);
+    }
+
+    private String buildAlterTableDdl(DataSource dataSource, String tableName, DbColumn dbc) throws Exception {
+        String dbColumnName = getExistingColumnName(dataSource, tableName, dbc.getColumnName());
+        StringBuilder ddlBuilder = new StringBuilder("ALTER TABLE ").append(tableName);
+        // 确定操作类型
+        String operation = determineOperation(dbColumnName, dbc);
+        ddlBuilder.append(operation).append(dbc.getColumnName()).append(" ");
+        // 添加字段类型定义
+        appendColumnType(ddlBuilder, dbc);
+        // 添加约束和注释
+        appendColumnConstraints(ddlBuilder, dbc);
+        return ddlBuilder.toString();
+    }
+
+    private String getExistingColumnName(DataSource dataSource, String tableName, String columnName) throws Exception {
+        String dbColumnName = "";
+        try (Connection connection = dataSource.getConnection()) {
+            DatabaseMetaData databaseMetaData = connection.getMetaData();
+            String tableSchema = databaseMetaData.getUserName().toUpperCase();
+            try (ResultSet rs = databaseMetaData.getColumns(null, tableSchema, tableName, columnName)) {
+                while (rs.next()) {
+                    dbColumnName = rs.getString("column_name".toLowerCase());
+                }
+            }
+        }
+        return dbColumnName;
+    }
+
+    private String determineOperation(String dbColumnName, DbColumn dbc) {
+        if ("".equals(dbColumnName) && StringUtils.isBlank(dbc.getColumnNameOld())) {
+            return " ADD COLUMN ";
+        } else if (dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())
+            || StringUtils.isBlank(dbc.getColumnNameOld())) {
+            return " MODIFY COLUMN ";
+        } else {
+            return " CHANGE COLUMN " + dbc.getColumnNameOld() + " ";
+        }
+    }
+
+    private void appendColumnType(StringBuilder ddlBuilder, DbColumn dbc) {
+        String sType = dbc.getTypeName().toUpperCase();
+        if ("CHAR".equals(sType) || "VARCHAR".equals(sType)) {
+            ddlBuilder.append(sType).append("(").append(dbc.getDataLength()).append(")");
+        } else if ("DECIMAL".equals(sType) || "NUMERIC".equals(sType)) {
+            if (dbc.getDataScale() == null) {
+                ddlBuilder.append(sType).append("(").append(dbc.getDataLength()).append(")");
+            } else {
+                ddlBuilder.append(sType)
+                    .append("(")
+                    .append(dbc.getDataLength())
+                    .append(",")
+                    .append(dbc.getDataScale())
+                    .append(")");
+            }
+        } else {
+            ddlBuilder.append(sType);
+        }
+    }
+
+    private void appendColumnConstraints(StringBuilder ddlBuilder, DbColumn dbc) {
+        if (dbc.getNullable()) {
+            ddlBuilder.append(" DEFAULT NULL");
+        } else {
+            ddlBuilder.append(" NOT NULL");
+        }
+        if (!dbc.getComment().isEmpty()) {
+            ddlBuilder.append(" COMMENT '").append(dbc.getComment()).append("'");
         }
     }
 

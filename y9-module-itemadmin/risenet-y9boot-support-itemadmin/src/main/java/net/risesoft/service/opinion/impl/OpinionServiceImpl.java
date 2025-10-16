@@ -118,7 +118,6 @@ public class OpinionServiceImpl implements OpinionService {
             }
             return isSign;
         }
-
         count = this.getCountByTaskId(taskId);
         if (count > 0) {
             isSign = true;
@@ -412,25 +411,45 @@ public class OpinionServiceImpl implements OpinionService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
         List<OpinionListModel> resList = new ArrayList<>();
-        /*
-         * 用户未签收前打开公文时(办理人为空)，只读所有意见
-         */
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        // 用户未签收前打开公文时(办理人为空)，只读所有意见
         if (StringUtils.isBlank(task.getAssignee())) {
-            opinionListModel.setAddable(false);
-            for (Opinion opinion : opinionList) {
-                this.format(opinion);
-                OpinionListModel modelTemp = new OpinionListModel();
-                modelTemp.setEditable(false);
-                modelTemp.setOpinion(this.getOpinionModel(opinion));
-                resList.add(modelTemp);
-            }
-            resList.add(opinionListModel);
-            return resList;
+            return handleUnassignedTask(opinionListModel, opinionList, resList);
         }
+        return handleAssignedTask(itemId, opinionFrameMark, opinionListModel, opinionList, taskId, task, tenantId,
+            personId, resList);
+    }
+
+    private List<OpinionListModel> handleUnassignedTask(OpinionListModel opinionListModel, List<Opinion> opinionList,
+        List<OpinionListModel> resList) {
+        opinionListModel.setAddable(false);
+        for (Opinion opinion : opinionList) {
+            this.format(opinion);
+            OpinionListModel modelTemp = new OpinionListModel();
+            modelTemp.setEditable(false);
+            modelTemp.setOpinion(this.getOpinionModel(opinion));
+            resList.add(modelTemp);
+        }
+        resList.add(opinionListModel);
+        return resList;
+    }
+
+    private List<OpinionListModel> handleAssignedTask(String itemId, String opinionFrameMark,
+        OpinionListModel opinionListModel, List<Opinion> opinionList, String taskId, TaskModel task, String tenantId,
+        String personId, List<OpinionListModel> resList) {
         opinionListModel.setAddable(true);
         String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
         List<HistoricTaskInstanceModel> hisTaskList = new ArrayList<>();
+        processOpinionsForAssignedTask(opinionList, opinionListModel, taskId, personId, takeBack, tenantId, task,
+            hisTaskList, resList);
+        handleOpinionFrameBind(itemId, opinionListModel, task, opinionFrameMark);
+        resList.add(opinionListModel);
+        return resList;
+    }
+
+    private void processOpinionsForAssignedTask(List<Opinion> opinionList, OpinionListModel opinionListModel,
+        String taskId, String personId, String takeBack, String tenantId, TaskModel task,
+        List<HistoricTaskInstanceModel> hisTaskList, List<OpinionListModel> resList) {
         for (Opinion opinion : opinionList) {
             this.format(opinion);
             OpinionListModel modelTemp = new OpinionListModel();
@@ -443,24 +462,34 @@ public class OpinionServiceImpl implements OpinionService {
                 }
             } else {
                 // 收回件可编辑意见
-                if (Boolean.parseBoolean(takeBack) && personId.equals(opinion.getUserId())) {
-                    if (hisTaskList.isEmpty()) {
-                        hisTaskList = historicTaskApi
-                            .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
-                            .getData();
-                    }
-                    for (int i = hisTaskList.size() - 1; i >= 0; i--) {
-                        HistoricTaskInstanceModel htiModel = hisTaskList.get(i);
-                        if (htiModel.getEndTime() != null && htiModel.getId().equals(opinion.getTaskId())) {// 找到收回前的上一个任务
-                            modelTemp.setEditable(true);
-                            opinionListModel.setAddable(false);
-                            break;
-                        }
-                    }
-                }
+                handleTakeBackOpinion(modelTemp, opinionListModel, opinion, takeBack, personId, hisTaskList, tenantId,
+                    task);
             }
             resList.add(modelTemp);
         }
+    }
+
+    private void handleTakeBackOpinion(OpinionListModel modelTemp, OpinionListModel opinionListModel, Opinion opinion,
+        String takeBack, String personId, List<HistoricTaskInstanceModel> hisTaskList, String tenantId,
+        TaskModel task) {
+        if (Boolean.parseBoolean(takeBack) && personId.equals(opinion.getUserId())) {
+            if (hisTaskList.isEmpty()) {
+                hisTaskList =
+                    historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
+                        .getData();
+            }
+            hisTaskList.stream()
+                .filter(htiModel -> htiModel.getEndTime() != null && htiModel.getId().equals(opinion.getTaskId()))
+                .findFirst()
+                .ifPresent(htiModel -> {
+                    modelTemp.setEditable(true);
+                    opinionListModel.setAddable(false);
+                });
+        }
+    }
+
+    private void handleOpinionFrameBind(String itemId, OpinionListModel opinionListModel, TaskModel task,
+        String opinionFrameMark) {
         ItemOpinionFrameBind itemOpinionFrameBind =
             itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
                 task.getProcessDefinitionId(), task.getTaskDefinitionKey(), opinionFrameMark);
@@ -472,8 +501,6 @@ public class OpinionServiceImpl implements OpinionService {
             }
         }
         this.setAddable(opinionListModel, itemOpinionFrameBind);
-        resList.add(opinionListModel);
-        return resList;
     }
 
     private void listPersonComment4TodoNew(String itemId, OpinionFrameModel opinionFrameModel,
@@ -481,64 +508,98 @@ public class OpinionServiceImpl implements OpinionService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
         List<OpinionModel> modelList = new ArrayList<>();
-        /*
-         * 用户未签收前打开公文时(办理人为空)，只读所有意见
-         */
+
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
+
+        // 用户未签收前打开公文时(办理人为空)，只读所有意见
         if (StringUtils.isBlank(task.getAssignee())) {
-            opinionFrameModel.setAddable(false);
-            for (Opinion opinion : opinionList) {
-                this.format(opinion);
-                OpinionModel model = new OpinionModel();
-                model.setEditable(false);
-                modelList.add(this.getOpinionModelNew(opinion, model));
-            }
+            handleUnassignedTaskNew(opinionFrameModel, opinionList, modelList);
         } else {
-            opinionFrameModel.setAddable(true);
-            String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-            List<HistoricTaskInstanceModel> hisTaskList = new ArrayList<>();
-            for (Opinion opinion : opinionList) {
-                this.format(opinion);
-                OpinionModel model = new OpinionModel();
-                if (taskId.equals(opinion.getTaskId())) {
-                    if (personId.equals(opinion.getUserId())) {
-                        model.setEditable(true);
-                        opinionFrameModel.setAddable(false);
-                    }
-                } else {
-                    // 收回件可编辑意见
-                    if (Boolean.parseBoolean(takeBack) && personId.equals(opinion.getUserId())) {
-                        if (hisTaskList.isEmpty()) {
-                            hisTaskList = historicTaskApi
-                                .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
-                                .getData();
-                        }
-                        for (int i = hisTaskList.size() - 1; i >= 0; i--) {
-                            HistoricTaskInstanceModel htiModel = hisTaskList.get(i);
-                            if (htiModel.getEndTime() != null && htiModel.getId().equals(opinion.getTaskId())) {// 找到收回前的上一个任务
-                                model.setEditable(true);
-                                opinionFrameModel.setAddable(false);
-                                break;
-                            }
-                        }
-                    }
-                }
-                modelList.add(this.getOpinionModelNew(opinion, model));
-            }
-            ItemOpinionFrameBind itemOpinionFrameBind =
-                itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
-                    task.getProcessDefinitionId(), task.getTaskDefinitionKey(), opinionFrameMark);
-            if (null != itemOpinionFrameBind) {
-                List<OpinionFrameOneClickSetModel> oneClickSetList =
-                    opinionFrameOneClickSetService.findByBindIdModel(itemOpinionFrameBind.getId());
-                if (null != oneClickSetList && !oneClickSetList.isEmpty()) {
-                    opinionFrameModel.setOneClickSetList(oneClickSetList);
-                }
-            }
-            this.setAddableNew(opinionFrameModel, itemOpinionFrameBind);
+            handleAssignedTaskNew(itemId, opinionFrameMark, opinionFrameModel, opinionList, taskId, task, tenantId,
+                personId, modelList);
         }
+
         modelList = this.order(modelList, opinionOrderBy);
         opinionFrameModel.setOpinionList(modelList);
+    }
+
+    private void handleTakeBackOpinionNew(OpinionModel model, OpinionFrameModel opinionFrameModel, Opinion opinion,
+        String takeBack, String personId, List<HistoricTaskInstanceModel> hisTaskList, String tenantId,
+        TaskModel task) {
+        if (Boolean.parseBoolean(takeBack) && personId.equals(opinion.getUserId())) {
+            if (hisTaskList.isEmpty()) {
+                hisTaskList =
+                    historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
+                        .getData();
+            }
+            // 使用Stream API优化历史任务查找
+            hisTaskList.stream()
+                .filter(htiModel -> htiModel.getEndTime() != null && htiModel.getId().equals(opinion.getTaskId()))
+                .findFirst()
+                .ifPresent(htiModel -> {
+                    model.setEditable(true);
+                    opinionFrameModel.setAddable(false);
+                });
+        }
+    }
+
+    private void handleOpinionFrameBindNew(String itemId, OpinionFrameModel opinionFrameModel, TaskModel task,
+        String opinionFrameMark) {
+        ItemOpinionFrameBind itemOpinionFrameBind =
+            itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
+                task.getProcessDefinitionId(), task.getTaskDefinitionKey(), opinionFrameMark);
+        if (null != itemOpinionFrameBind) {
+            List<OpinionFrameOneClickSetModel> oneClickSetList =
+                opinionFrameOneClickSetService.findByBindIdModel(itemOpinionFrameBind.getId());
+            if (null != oneClickSetList && !oneClickSetList.isEmpty()) {
+                opinionFrameModel.setOneClickSetList(oneClickSetList);
+            }
+        }
+        this.setAddableNew(opinionFrameModel, itemOpinionFrameBind);
+    }
+
+    private void handleUnassignedTaskNew(OpinionFrameModel opinionFrameModel, List<Opinion> opinionList,
+        List<OpinionModel> modelList) {
+        opinionFrameModel.setAddable(false);
+        for (Opinion opinion : opinionList) {
+            this.format(opinion);
+            OpinionModel model = new OpinionModel();
+            model.setEditable(false);
+            modelList.add(this.getOpinionModelNew(opinion, model));
+        }
+    }
+
+    private void handleAssignedTaskNew(String itemId, String opinionFrameMark, OpinionFrameModel opinionFrameModel,
+        List<Opinion> opinionList, String taskId, TaskModel task, String tenantId, String personId,
+        List<OpinionModel> modelList) {
+        opinionFrameModel.setAddable(true);
+        String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+        List<HistoricTaskInstanceModel> hisTaskList = new ArrayList<>();
+
+        processOpinionsForAssignedTaskNew(opinionList, opinionFrameModel, taskId, personId, takeBack, tenantId, task,
+            hisTaskList, modelList);
+
+        handleOpinionFrameBindNew(itemId, opinionFrameModel, task, opinionFrameMark);
+    }
+
+    private void processOpinionsForAssignedTaskNew(List<Opinion> opinionList, OpinionFrameModel opinionFrameModel,
+        String taskId, String personId, String takeBack, String tenantId, TaskModel task,
+        List<HistoricTaskInstanceModel> hisTaskList, List<OpinionModel> modelList) {
+        for (Opinion opinion : opinionList) {
+            this.format(opinion);
+            OpinionModel model = new OpinionModel();
+            if (taskId.equals(opinion.getTaskId())) {
+                if (personId.equals(opinion.getUserId())) {
+                    model.setEditable(true);
+                    opinionFrameModel.setAddable(false);
+                }
+            } else {
+                // 收回件可编辑意见
+                handleTakeBackOpinionNew(model, opinionFrameModel, opinion, takeBack, personId, hisTaskList, tenantId,
+                    task);
+            }
+            modelList.add(this.getOpinionModelNew(opinion, model));
+        }
     }
 
     private void setAddable(OpinionListModel opinionListModel, ItemOpinionFrameBind itemOpinionFrameBind) {
@@ -626,19 +687,36 @@ public class OpinionServiceImpl implements OpinionService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
         List<OpinionModel> modelList = new ArrayList<>();
-        // 是否已办结
+        // 处理办结状态检查
+        boolean isEnd = checkProcessEndStatus(processSerialNumber, opinionFrameModel);
+        // 处理意见列表
+        processChaoSongOpinions(opinionList, modelList, personId, isEnd, opinionFrameModel);
+        modelList = this.order(modelList, opinionOrderBy);
+        opinionFrameModel.setOpinionList(modelList);
+        // 处理新增权限检查
+        handleChaoSongAddablePermission(opinionFrameModel, itemId, taskId, taskDefinitionKey, tenantId,
+            opinionFrameMark);
+    }
+
+    private boolean checkProcessEndStatus(String processSerialNumber, OpinionFrameModel opinionFrameModel) {
         boolean isEnd = false;
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         // 办结件，阅件不可填写意见
         if (processParam != null) {
             HistoricProcessInstanceModel historicProcessInstanceModel =
-                historicProcessApi.getById(tenantId, processParam.getProcessInstanceId()).getData();
+                historicProcessApi.getById(Y9LoginUserHolder.getTenantId(), processParam.getProcessInstanceId())
+                    .getData();
             boolean b = historicProcessInstanceModel == null || historicProcessInstanceModel.getEndTime() != null;
             if (b) {
                 opinionFrameModel.setAddable(false);
                 isEnd = true;
             }
         }
+        return isEnd;
+    }
+
+    private void processChaoSongOpinions(List<Opinion> opinionList, List<OpinionModel> modelList, String personId,
+        boolean isEnd, OpinionFrameModel opinionFrameModel) {
         for (Opinion opinion : opinionList) {
             this.format(opinion);
             OpinionModel model = new OpinionModel();
@@ -648,31 +726,17 @@ public class OpinionServiceImpl implements OpinionService {
             }
             modelList.add(this.getOpinionModelNew(opinion, model));
         }
-        modelList = this.order(modelList, opinionOrderBy);
-        opinionFrameModel.setOpinionList(modelList);
-        /*
-         * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
-         */
+    }
+
+    private void handleChaoSongAddablePermission(OpinionFrameModel opinionFrameModel, String itemId, String taskId,
+        String taskDefinitionKey, String tenantId, String opinionFrameMark) {
         if (Boolean.TRUE.equals(opinionFrameModel.getAddable())) {
             opinionFrameModel.setAddable(false);
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             ItemOpinionFrameBind bind =
                 itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
                     task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
-            if (null != bind) {
-                List<String> roleIds = bind.getRoleIds();
-                if (roleIds.isEmpty()) {
-                    opinionFrameModel.setAddable(true);
-                } else {
-                    for (String roleId : roleIds) {
-                        Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
-                        if (Boolean.TRUE.equals(hasRole)) {
-                            opinionFrameModel.setAddable(true);
-                            break;
-                        }
-                    }
-                }
-            }
+            this.setAddableNew(opinionFrameModel, bind);
         }
     }
 
@@ -682,14 +746,26 @@ public class OpinionServiceImpl implements OpinionService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
         List<OpinionListModel> resList = new ArrayList<>();
-        // 是否已办结
+        // 处理办结状态检查
+        boolean isEnd = checkProcessEndStatusOld(processSerialNumber, opinionListModel);
+        // 处理意见列表
+        processChaoSongOpinionsOld(opinionList, resList, personId, isEnd, opinionListModel);
+        // 处理新增权限检查
+        handleChaoSongAddablePermissionOld(opinionListModel, itemId, taskId, taskDefinitionKey, tenantId,
+            opinionFrameMark);
+        resList.add(opinionListModel);
+        return resList;
+    }
+
+    private boolean checkProcessEndStatusOld(String processSerialNumber, OpinionListModel opinionListModel) {
         boolean isEnd = false;
         try {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             // 办结件，阅件不可填写意见
             if (processParam != null) {
                 HistoricProcessInstanceModel historicProcessInstanceModel =
-                    historicProcessApi.getById(tenantId, processParam.getProcessInstanceId()).getData();
+                    historicProcessApi.getById(Y9LoginUserHolder.getTenantId(), processParam.getProcessInstanceId())
+                        .getData();
                 boolean b = historicProcessInstanceModel == null || historicProcessInstanceModel.getEndTime() != null;
                 if (b) {
                     opinionListModel.setAddable(false);
@@ -697,8 +773,13 @@ public class OpinionServiceImpl implements OpinionService {
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("检查流程结束状态时发生异常", e);
         }
+        return isEnd;
+    }
+
+    private void processChaoSongOpinionsOld(List<Opinion> opinionList, List<OpinionListModel> resList, String personId,
+        boolean isEnd, OpinionListModel opinionListModel) {
         for (Opinion opinion : opinionList) {
             this.format(opinion);
             OpinionListModel modelTemp = new OpinionListModel();
@@ -710,9 +791,10 @@ public class OpinionServiceImpl implements OpinionService {
             }
             resList.add(modelTemp);
         }
-        /*
-         * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
-         */
+    }
+
+    private void handleChaoSongAddablePermissionOld(OpinionListModel opinionListModel, String itemId, String taskId,
+        String taskDefinitionKey, String tenantId, String opinionFrameMark) {
         Boolean addableTemp = opinionListModel.getAddable();
         if (Boolean.TRUE.equals(addableTemp)) {
             opinionListModel.setAddable(false);
@@ -720,23 +802,8 @@ public class OpinionServiceImpl implements OpinionService {
             ItemOpinionFrameBind bind =
                 itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
                     task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
-            if (null != bind) {
-                List<String> roleIds = bind.getRoleIds();
-                if (roleIds.isEmpty()) {
-                    opinionListModel.setAddable(true);
-                } else {
-                    for (String roleId : roleIds) {
-                        Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
-                        if (Boolean.TRUE.equals(hasRole)) {
-                            opinionListModel.setAddable(true);
-                            break;
-                        }
-                    }
-                }
-            }
+            this.setAddable(opinionListModel, bind);
         }
-        resList.add(opinionListModel);
-        return resList;
     }
 
     /**
@@ -790,86 +857,93 @@ public class OpinionServiceImpl implements OpinionService {
     @Override
     @Transactional
     public Opinion saveOrUpdate(Opinion entity) {
+        if (StringUtils.isBlank(entity.getId())) {
+            return createOpinion(entity);
+        } else {
+            return updateOpinion(entity);
+        }
+    }
+
+    private Opinion createOpinion(Opinion entity) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
         OrgUnit user = Y9LoginUserHolder.getOrgUnit();
         String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        String userName = person.getName();
-        String personId = person.getPersonId();
-        String id = entity.getId();
-        if (StringUtils.isBlank(id)) {
-            Opinion o = new Opinion();
-            o.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            o.setUserId(personId);
-            o.setUserName(userName);
-            o.setDeptId(user.getParentId());
-            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, user.getParentId()).getData();
-            o.setDeptName(orgUnit.getName());
-            o.setProcessSerialNumber(entity.getProcessSerialNumber());
-            o.setProcessInstanceId(entity.getProcessInstanceId());
-            o.setTaskId(entity.getTaskId());
-            o.setOpinionFrameMark(entity.getOpinionFrameMark());
-            o.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
-            o.setContent(entity.getContent());
-            o.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-            o.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
-            o.setPositionId(orgUnitId);
-            o.setPositionName(user.getName());
-            if (StringUtils.isNotBlank(entity.getTaskId())) {
-                try {
-                    List<ProcessTrack> list = processTrackService.listByTaskIdAndEndTimeIsNull(entity.getTaskId());
-                    // 处理恢复待办后,填写意见错位问题,意见显示在自定义历程上
-                    if (!list.isEmpty()) {
-                        o.setProcessTrackId(list.get(0).getId());
-                    }
-                } catch (Exception e1) {
-                    e1.printStackTrace();
-                }
-            }
-            opinionRepository.save(o);
-            asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
-            return o;
+
+        Opinion opinion = new Opinion();
+        opinion.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        opinion.setUserId(person.getPersonId());
+        opinion.setUserName(person.getName());
+        opinion.setDeptId(user.getParentId());
+
+        setOrgUnitInfo(opinion, tenantId, user.getParentId());
+
+        opinion.setProcessSerialNumber(entity.getProcessSerialNumber());
+        opinion.setProcessInstanceId(entity.getProcessInstanceId());
+        opinion.setTaskId(entity.getTaskId());
+        opinion.setOpinionFrameMark(entity.getOpinionFrameMark());
+        opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
+        opinion.setContent(entity.getContent());
+        opinion.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+        opinion.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
+        opinion.setPositionId(orgUnitId);
+        opinion.setPositionName(user.getName());
+
+        handleProcessTrack(opinion, entity.getTaskId());
+
+        opinionRepository.save(opinion);
+        asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
+
+        return opinion;
+    }
+
+    private Opinion updateOpinion(Opinion entity) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        OrgUnit user = Y9LoginUserHolder.getOrgUnit();
+        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        Opinion opinion = opinionRepository.findById(entity.getId()).orElse(null);
+        if (opinion == null) {
+            return null;
         }
-        Opinion opinion = opinionRepository.findById(id).orElse(null);
         Opinion oldOpinion = new Opinion();
         Y9BeanUtil.copyProperties(opinion, oldOpinion);
-        assert opinion != null;
         opinion.setUserId(person.getPersonId());
-        opinion.setUserName(userName);
+        opinion.setUserName(person.getName());
         opinion.setTaskId(entity.getTaskId());
         opinion.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         opinion.setContent(entity.getContent());
         opinion.setProcessInstanceId(entity.getProcessInstanceId());
         opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
-        OrgUnit orgUnit0 = orgUnitApi.getOrgUnit(tenantId, user.getParentId()).getData();
-        opinion.setDeptId(user.getParentId());
-        opinion.setDeptName(orgUnit0.getName());
+        setOrgUnitInfo(opinion, tenantId, user.getParentId());
         opinion.setPositionId(orgUnitId);
         opinion.setPositionName(user.getName());
-        /*if (StringUtils.isNotBlank(entity.getTaskId())) {
-            try {
-                HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, entity.getTaskId());
-                EntrustDetail entrustDetail = entrustDetailService.findByTaskId(historicTaskInstanceModel.getId());
-                if (entrustDetail != null) {
-                    if (historicTaskInstanceModel.getAssignee().contains(positionId)) {
-                        String idTemp = entrustDetail.getOwnerId();
-                        Person p = personApi.getPerson(tenantId, idTemp);
-                        if (isAgent != 1) {
-                            opinion.setUserName(userName + "(" + p.getName() + "委托)");
-                        } else {
-                            opinion.setAgentUserName(userName + "(" + p.getName() + "委托)");
-                        }
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-        }*/
         opinionRepository.save(opinion);
         asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
         // 修改意见保存历史记录
         asyncHandleService.saveOpinionHistory(Y9LoginUserHolder.getTenantId(), oldOpinion, "1");
         return opinion;
+    }
+
+    private void setOrgUnitInfo(Opinion opinion, String tenantId, String parentId) {
+        try {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, parentId).getData();
+            if (orgUnit != null) {
+                opinion.setDeptName(orgUnit.getName());
+            }
+        } catch (Exception e) {
+            LOGGER.error("获取组织单位信息失败", e);
+        }
+    }
+
+    private void handleProcessTrack(Opinion opinion, String taskId) {
+        if (StringUtils.isNotBlank(taskId)) {
+            List<ProcessTrack> list = processTrackService.listByTaskIdAndEndTimeIsNull(taskId);
+            // 处理恢复待办后,填写意见错位问题,意见显示在自定义历程上
+            if (!list.isEmpty()) {
+                opinion.setProcessTrackId(list.get(0).getId());
+            }
+        }
     }
 
     @Override

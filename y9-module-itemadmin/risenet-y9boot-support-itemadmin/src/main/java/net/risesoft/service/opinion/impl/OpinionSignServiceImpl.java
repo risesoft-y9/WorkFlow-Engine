@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -43,6 +44,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @author : qinman
  * @date : 2024-12-16
  **/
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -107,140 +109,167 @@ public class OpinionSignServiceImpl implements OpinionSignService {
             List<OpinionSign> list = opinionSignRepository
                 .findBySignDeptDetailIdAndOpinionFrameMarkOrderByCreateDateAsc(signDeptDetailId, opinionFrameMark);
             if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
-                TaskModel task = taskApi.findById(tenantId, taskId).getData();
-                if (StringUtils.isBlank(task.getAssignee())) {
-                    model.setAddable(false);
-                    for (OpinionSign opinionSign : list) {
-                        OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
-                        opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
-                        opinionSign.setModifyDate(Y9DateTimeUtils
-                            .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getModifyDate())));
-                        opinionSign.setCreateDate(Y9DateTimeUtils
-                            .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getCreateDate())));
-                        opinionSignListModel.setEditable(false);
-                        OpinionSignModel opinionSignModel = new OpinionSignModel();
-                        Y9BeanUtil.copyProperties(opinionSign, opinionSignModel);
-                        opinionSignListModel.setOpinionSignModel(opinionSignModel);
-                        resList.add(opinionSignListModel);
-                    }
-                    resList.add(model);
-                    return resList;
-                }
-                String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-                for (OpinionSign opinionSign : list) {
-                    OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
-                    opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
-                    opinionSign.setModifyDate(Y9DateTimeUtils
-                        .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getModifyDate())));
-                    opinionSign.setCreateDate(Y9DateTimeUtils
-                        .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getCreateDate())));
-                    OpinionSignModel opinionModel = new OpinionSignModel();
-                    Y9BeanUtil.copyProperties(opinionSign, opinionModel);
-                    opinionSignListModel.setOpinionSignModel(opinionModel);
-                    opinionSignListModel.setEditable(false);
-
-                    if (taskId.equals(opinionSign.getTaskId())) {
-                        if (personId.equals(opinionSign.getUserId())) {
-                            opinionSignListModel.setEditable(true);
-                            model.setAddable(false);
-                        }
-                    } else {// 收回件可编辑意见
-                        if (Boolean.parseBoolean(takeBack)
-                            && Y9LoginUserHolder.getPersonId().equals(opinionSign.getUserId())) {
-                            List<HistoricTaskInstanceModel> tlist = historicTaskApi
-                                .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
-                                .getData();
-                            for (int i = tlist.size() - 1; i >= 0; i--) {
-                                HistoricTaskInstanceModel htimodel = tlist.get(i);
-                                // 找到收回前的上一个任务
-                                if (htimodel.getEndTime() != null && htimodel.getId().equals(opinionSign.getTaskId())) {
-                                    opinionSignListModel.setEditable(true);
-                                    model.setAddable(false);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                    resList.add(opinionSignListModel);
-                }
-                ProcessParam processParam = processParamService.findByProcessInstanceId(task.getProcessInstanceId());
-                ItemOpinionFrameBind itemOpinionFrameBind = itemOpinionFrameBindService
-                    .findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(processParam.getItemId(),
-                        task.getProcessDefinitionId(), task.getTaskDefinitionKey(), opinionFrameMark);
-                if (null != itemOpinionFrameBind) {
-                    oneClickSetList = opinionFrameOneClickSetService.findByBindIdModel(itemOpinionFrameBind.getId());
-                    if (null != oneClickSetList && !oneClickSetList.isEmpty()) {
-                        model.setOneClickSetList(oneClickSetList);
-                    }
-                }
-                /**
-                 * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
-                 */
-                Boolean addableTemp = model.getAddable();
-                if (addableTemp) {
-                    model.setAddable(false);
-                    if (opinionFrameMark.equals("chuzhang")) {
-                        /*
-                         * 处长
-                         */
-                        List<DepartmentProp> leaders =
-                            departmentApi
-                                .listDepartmentPropByOrgUnitIdAndCategory(tenantId, person.getParentId(),
-                                    DepartmentPropCategoryEnum.LEADER)
-                                .getData();
-                        boolean isLeader =
-                            leaders.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9LoginUserHolder.getOrgUnitId()));
-                        if (isLeader) {
-                            model.setAddable(true);
-                        }
-                        model.setAddable(true);
-                    } else {
-                        /*
-                         * 司长
-                         */
-                        List<DepartmentProp> managers =
-                            departmentApi
-                                .listDepartmentPropByOrgUnitIdAndCategory(tenantId, person.getParentId(),
-                                    DepartmentPropCategoryEnum.MANAGER)
-                                .getData();
-                        boolean isManager = managers.stream()
-                            .anyMatch(dp -> dp.getOrgBaseId().equals(Y9LoginUserHolder.getOrgUnitId()));
-                        if (isManager) {
-                            model.setAddable(true);
-                        }
-                        model.setAddable(true);
-                    }
-                }
-            } else if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
-                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
-                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.RECYCLE.getValue())
-                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DOING.getValue())
-                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DONE.getValue())
-                || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.COPY.getValue())) {
-                model.setAddable(false);
-                for (OpinionSign opinionSign : list) {
-                    OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
-                    opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
-                    opinionSign.setModifyDate(Y9DateTimeUtils
-                        .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getModifyDate())));
-                    opinionSign.setCreateDate(Y9DateTimeUtils
-                        .formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getCreateDate())));
-                    OpinionSignModel opinionSignModel = new OpinionSignModel();
-                    Y9BeanUtil.copyProperties(opinionSign, opinionSignModel);
-                    opinionSignListModel.setOpinionSignModel(opinionSignModel);
-                    opinionSignListModel.setEditable(false);
-                    if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DOING.getValue())
-                        || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DONE.getValue())) {
-                        opinionSignListModel.setEditable(true);
-                    }
-                    resList.add(opinionSignListModel);
-                }
+                handleTodoBox(resList, model, list, tenantId, taskId, personId, person, opinionFrameMark);
+            } else if (isProcessedBox(itemBox)) {
+                handleProcessedBox(resList, model, list, itemBox);
             }
             resList.add(model);
         } catch (Exception e) {
             e.printStackTrace();
         }
         return resList;
+    }
+
+    private void handleTodoBox(List<OpinionSignListModel> resList, OpinionSignListModel model, List<OpinionSign> list,
+        String tenantId, String taskId, String personId, UserInfo person, String opinionFrameMark) {
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        if (StringUtils.isBlank(task.getAssignee())) {
+            model.setAddable(false);
+            processOpinionSigns(list, resList);
+            return;
+        }
+        String takeBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+        processTodoOpinionSigns(resList, model, list, taskId, personId, tenantId, task, takeBack);
+        ProcessParam processParam = processParamService.findByProcessInstanceId(task.getProcessInstanceId());
+        ItemOpinionFrameBind itemOpinionFrameBind =
+            itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(
+                processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey(), opinionFrameMark);
+        if (null != itemOpinionFrameBind) {
+            List<OpinionFrameOneClickSetModel> oneClickSetList =
+                opinionFrameOneClickSetService.findByBindIdModel(itemOpinionFrameBind.getId());
+            if (null != oneClickSetList && !oneClickSetList.isEmpty()) {
+                model.setOneClickSetList(oneClickSetList);
+            }
+        }
+        checkAddPermission(model, person, tenantId, opinionFrameMark);
+    }
+
+    private void processOpinionSigns(List<OpinionSign> list, List<OpinionSignListModel> resList) {
+        for (OpinionSign opinionSign : list) {
+            OpinionSignListModel opinionSignListModel = createOpinionSignListModel(opinionSign);
+            opinionSignListModel.setEditable(false);
+            resList.add(opinionSignListModel);
+        }
+    }
+
+    private OpinionSignListModel createOpinionSignListModel(OpinionSign opinionSign) {
+        OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
+        opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
+        try {
+            opinionSign.setModifyDate(
+                Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getModifyDate())));
+            opinionSign.setCreateDate(
+                Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getCreateDate())));
+        } catch (Exception e) {
+            LOGGER.warn(e.getMessage());
+        }
+        OpinionSignModel opinionSignModel = new OpinionSignModel();
+        Y9BeanUtil.copyProperties(opinionSign, opinionSignModel);
+        opinionSignListModel.setOpinionSignModel(opinionSignModel);
+        return opinionSignListModel;
+    }
+
+    private void processTodoOpinionSigns(List<OpinionSignListModel> resList, OpinionSignListModel model,
+        List<OpinionSign> list, String taskId, String personId, String tenantId, TaskModel task, String takeBack) {
+        for (OpinionSign opinionSign : list) {
+            OpinionSignListModel opinionSignListModel = createOpinionSignListModel(opinionSign);
+            opinionSignListModel.setEditable(false);
+
+            if (taskId.equals(opinionSign.getTaskId())) {
+                if (personId.equals(opinionSign.getUserId())) {
+                    opinionSignListModel.setEditable(true);
+                    model.setAddable(false);
+                }
+            } else {
+                handleTakeBackOpinion(model, opinionSignListModel, opinionSign, takeBack, tenantId, task);
+            }
+            resList.add(opinionSignListModel);
+        }
+    }
+
+    private void handleTakeBackOpinion(OpinionSignListModel model, OpinionSignListModel opinionSignListModel,
+        OpinionSign opinionSign, String takeBack, String tenantId, TaskModel task) {
+        if (Boolean.parseBoolean(takeBack) && Y9LoginUserHolder.getPersonId().equals(opinionSign.getUserId())) {
+            List<HistoricTaskInstanceModel> tlist =
+                historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
+                    .getData();
+            tlist.stream()
+                .filter(hisTask -> hisTask.getEndTime() != null && hisTask.getId().equals(opinionSign.getTaskId()))
+                .findFirst()
+                .ifPresent(hisTask -> {
+                    opinionSignListModel.setEditable(true);
+                    model.setAddable(false);
+                });
+        }
+    }
+
+    private boolean isProcessedBox(String itemBox) {
+        return itemBox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
+            || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
+            || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.RECYCLE.getValue())
+            || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DOING.getValue())
+            || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DONE.getValue())
+            || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.COPY.getValue());
+    }
+
+    private void handleProcessedBox(List<OpinionSignListModel> resList, OpinionSignListModel model,
+        List<OpinionSign> list, String itemBox) {
+        model.setAddable(false);
+        processOpinionSigns(list, resList);
+        if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DOING.getValue())
+            || itemBox.equalsIgnoreCase(ItemBoxTypeEnum.MONITOR_DONE.getValue())) {
+            // 设置监控箱中的意见为可编辑
+            for (OpinionSignListModel opinionSignListModel : resList) {
+                opinionSignListModel.setEditable(true);
+            }
+        }
+    }
+
+    private void checkAddPermission(OpinionSignListModel model, UserInfo person, String tenantId,
+        String opinionFrameMark) {
+        Boolean addableTemp = model.getAddable();
+        if (addableTemp) {
+            model.setAddable(false);
+            if (opinionFrameMark.equals("chuzhang")) {
+                checkLeaderPermission(model, person, tenantId);
+            } else {
+                checkManagerPermission(model, person, tenantId);
+            }
+        }
+    }
+
+    private void checkLeaderPermission(OpinionSignListModel model, UserInfo person, String tenantId) {
+        try {
+            List<DepartmentProp> leaders =
+                departmentApi
+                    .listDepartmentPropByOrgUnitIdAndCategory(tenantId, person.getParentId(),
+                        DepartmentPropCategoryEnum.LEADER)
+                    .getData();
+            boolean isLeader =
+                leaders.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9LoginUserHolder.getOrgUnitId()));
+            if (isLeader) {
+                model.setAddable(true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+    private void checkManagerPermission(OpinionSignListModel model, UserInfo person, String tenantId) {
+        try {
+            List<DepartmentProp> managers =
+                departmentApi
+                    .listDepartmentPropByOrgUnitIdAndCategory(tenantId, person.getParentId(),
+                        DepartmentPropCategoryEnum.MANAGER)
+                    .getData();
+            boolean isManager =
+                managers.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9LoginUserHolder.getOrgUnitId()));
+            if (isManager) {
+                model.setAddable(true);
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
