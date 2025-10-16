@@ -16,6 +16,7 @@ import com.fasterxml.jackson.databind.type.TypeFactory;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
 /**
@@ -33,7 +34,7 @@ public class DdlMysql {
     }
 
     public void addTableColumn(DataSource dataSource, String tableName, List<DbColumn> dbColumnList) throws Exception {
-        if (Y9FormDbMetaDataUtil.checkTableExist(dataSource, tableName)) {
+        if (DbMetaDataUtil.checkTableExist(dataSource, tableName)) {
             for (DbColumn dbc : dbColumnList) {
                 String columnName = dbc.getColumnName();
                 if ("guid".equalsIgnoreCase(columnName) || "processInstanceId".equalsIgnoreCase(columnName)) {
@@ -91,14 +92,14 @@ public class DdlMysql {
                 if (!dbc.getComment().isEmpty()) {
                     ddl += " COMMENT '" + dbc.getComment() + "'";
                 }
-                Y9FormDbMetaDataUtil.executeDdl(dataSource, ddl);
+                DbMetaDataUtil.executeDdl(dataSource, ddl);
                 y9TableFieldRepository.updateOldFieldName(dbc.getTableName(), dbc.getColumnName());
             }
         }
     }
 
     public void alterTableColumn(DataSource dataSource, String tableName, String jsonDbColumns) throws Exception {
-        if (!Y9FormDbMetaDataUtil.checkTableExist(dataSource, tableName)) {
+        if (!DbMetaDataUtil.checkTableExist(dataSource, tableName)) {
             throw new Exception("数据库中不存在这个表：" + tableName);
         }
         DbColumn[] dbColumnArr = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
@@ -132,7 +133,7 @@ public class DdlMysql {
             if (!dbc.getComment().isEmpty()) {
                 ddl += " COMMENT '" + dbc.getComment() + "'";
             }
-            Y9FormDbMetaDataUtil.executeDdl(dataSource, ddl);
+            DbMetaDataUtil.executeDdl(dataSource, ddl);
         }
     }
 
@@ -170,19 +171,18 @@ public class DdlMysql {
             sb.append(",\r\n");
         }
         sb.append("PRIMARY KEY (guid) \r\n").append(")");
-        Y9FormDbMetaDataUtil.executeDdl(dataSource, sb.toString());
+        DbMetaDataUtil.executeDdl(dataSource, sb.toString());
     }
 
     public void dropTable(DataSource dataSource, String tableName) throws Exception {
-        Y9FormDbMetaDataUtil.executeDdl(dataSource, "drop table IF EXISTS " + tableName);
+        DbMetaDataUtil.executeDdl(dataSource, "drop table IF EXISTS " + tableName);
     }
 
     public void dropTableColumn(DataSource dataSource, String tableName, String columnName) throws Exception {
-        Y9FormDbMetaDataUtil.executeDdl(dataSource, "ALTER TABLE " + tableName + " DROP COLUMN " + columnName);
+        DbMetaDataUtil.executeDdl(dataSource, "ALTER TABLE " + tableName + " DROP COLUMN " + columnName);
     }
 
     public void renameTable(DataSource dataSource, String tableNameOld, String tableNameNew) throws Exception {
-        Y9FormDbMetaDataUtil.executeDdl(dataSource, "ALTER TABLE " + tableNameOld + " RENAME " + tableNameNew);
+        DbMetaDataUtil.executeDdl(dataSource, "ALTER TABLE " + tableNameOld + " RENAME " + tableNameNew);
     }
-
 }

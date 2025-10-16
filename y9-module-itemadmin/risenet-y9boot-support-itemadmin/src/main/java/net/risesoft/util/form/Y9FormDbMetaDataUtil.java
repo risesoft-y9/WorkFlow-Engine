@@ -38,17 +38,13 @@ public class Y9FormDbMetaDataUtil extends DbMetaDataUtil {
         Map<String, Object> al = new HashMap<>(16);
 
         ResultSet rs = null;
-        String sql = "show tables";
+        String sql;
         try (Connection connection = dataSource.getConnection(); Statement stmt = connection.createStatement()) {
 
             String dialect = getDatabaseDialectNameByConnection(connection);
             switch (dialect) {
                 case SqlConstants.DBTYPE_ORACLE:
-                    sql = "SELECT table_name FROM all_tables";
-                    break;
                 case SqlConstants.DBTYPE_DM:
-                    sql = "SELECT table_name FROM all_tables";
-                    break;
                 case SqlConstants.DBTYPE_KINGBASE:
                     sql = "SELECT table_name FROM all_tables";
                     break;
@@ -73,14 +69,11 @@ public class Y9FormDbMetaDataUtil extends DbMetaDataUtil {
         return al;
     }
 
-    public static List<Map<String, Object>> listTypes(DataSource dataSource) throws Exception {
-        List<Map<String, Object>> list = new ArrayList<>();
+    public static List<Map<String, Object>> listTypes(DataSource dataSource) {
+        List<Map<String, Object>> list;
         try {
             String dialect = getDatabaseDialectName(dataSource);
             switch (dialect) {
-                case SqlConstants.DBTYPE_MYSQL:
-                    list = listTypes4Mysql();
-                    break;
                 case SqlConstants.DBTYPE_ORACLE:
                     list = listTypes4Oracle();
                     break;
@@ -88,7 +81,7 @@ public class Y9FormDbMetaDataUtil extends DbMetaDataUtil {
                     list = listTypes4Dm();
                     break;
                 case SqlConstants.DBTYPE_KINGBASE:
-                    list = listTypes4Kingbase();
+                    list = listTypes4KingBase();
                     break;
                 default:
                     list = listTypes4Mysql();
@@ -139,7 +132,7 @@ public class Y9FormDbMetaDataUtil extends DbMetaDataUtil {
         return list;
     }
 
-    private static List<Map<String, Object>> listTypes4Kingbase() {
+    private static List<Map<String, Object>> listTypes4KingBase() {
         List<Map<String, Object>> list = new ArrayList<>();
         Map<String, Object> map = new HashMap<>(16);
         map.put("typeName", "VARCHAR2");
