@@ -123,7 +123,7 @@ public class WatermarkConfigConstants {
 
     @Value("${watermark.width:240}")
     public void setWatermarkWidth(String watermarkWidth) {
-        WATERMARK_WIDTH = watermarkWidth;
+        setWatermarkWidthValue(watermarkWidth);
     }
 
     public static void setWatermarkWidthValue(String watermarkWidth) {
@@ -136,7 +136,7 @@ public class WatermarkConfigConstants {
 
     @Value("${watermark.height:80}")
     public void setWatermarkHeight(String watermarkHeight) {
-        WATERMARK_HEIGHT = watermarkHeight;
+        setWatermarkHeightValue(watermarkHeight);
     }
 
     public static void setWatermarkHeightValue(String watermarkHeight) {
@@ -149,7 +149,7 @@ public class WatermarkConfigConstants {
 
     @Value("${watermark.angle:10}")
     public void setWatermarkAngle(String watermarkAngle) {
-        WATERMARK_ANGLE = watermarkAngle;
+        setWatermarkAngleValue(watermarkAngle);
     }
 
     public static void setWatermarkAngleValue(String watermarkAngle) {
