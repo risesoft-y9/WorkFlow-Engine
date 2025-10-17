@@ -123,7 +123,7 @@ public class ConfigRefreshComponent {
                         properties.getProperty("spring.servlet.multipart.max-file-size", ConfigConstants.DEFAULT_SIZE);
                     beian = properties.getProperty("beian", ConfigConstants.DEFAULT_BEIAN);
                     prohibit = properties.getProperty("prohibit", ConfigConstants.DEFAULT_PROHIBIT);
-                    password = properties.getProperty("delete.password", ConfigConstants.DEFAULT_PASSWORD);
+                    password = properties.getProperty("delete.password", ConfigConstants.DEFAULT_PD);
                     pdf2JpgDpi =
                         Integer.parseInt(properties.getProperty("pdf2jpg.dpi", ConfigConstants.DEFAULT_PDF2_JPG_DPI));
                     officeTypeWeb = properties.getProperty("office.type.web", ConfigConstants.DEFAULT_OFFICE_TYPE_WEB);
@@ -142,9 +142,8 @@ public class ConfigRefreshComponent {
                         ConfigConstants.DEFAULT_OFFICE_EXPORTBOOKMARKS));
                     officeExportNotes = Boolean.parseBoolean(
                         properties.getProperty("office.exportnotes", ConfigConstants.DEFAULT_OFFICE_EXPORTNOTES));
-                    officeDocumentOpenPasswords =
-                        Boolean.parseBoolean(properties.getProperty("office.documentopenpasswords",
-                            ConfigConstants.DEFAULT_OFFICE_EOCUMENTOPENPASSWORDS));
+                    officeDocumentOpenPasswords = Boolean.parseBoolean(properties
+                        .getProperty("office.documentopenpasswords", ConfigConstants.DEFAULT_OFFICE_EOCUMENTOPENP));
                     cadTimeout = properties.getProperty("cad.timeout", ConfigConstants.DEFAULT_CAD_TIMEOUT);
                     homePageNumber = properties.getProperty("home.pagenumber", ConfigConstants.DEFAULT_HOME_PAGENUMBER);
                     homePagination = properties.getProperty("home.pagination", ConfigConstants.DEFAULT_HOME_PAGINATION);

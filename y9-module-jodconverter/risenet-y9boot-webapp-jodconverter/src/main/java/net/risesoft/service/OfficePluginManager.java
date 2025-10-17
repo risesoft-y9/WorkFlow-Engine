@@ -67,9 +67,13 @@ public class OfficePluginManager {
             int[] ports = Arrays.stream(portsString).mapToInt(Integer::parseInt).toArray();
             long timeout = DurationStyle.detectAndParse(timeOut).toMillis();
             long taskexecutiontimeout = DurationStyle.detectAndParse(taskExecutionTimeout).toMillis();
-            officeManager =
-                LocalOfficeManager.builder().officeHome(officeHome).portNumbers(ports).processTimeout(timeout)
-                    .maxTasksPerProcess(maxTasksPerProcess).taskExecutionTimeout(taskexecutiontimeout).build();
+            officeManager = LocalOfficeManager.builder()
+                .officeHome(officeHome)
+                .portNumbers(ports)
+                .processTimeout(timeout)
+                .maxTasksPerProcess(maxTasksPerProcess)
+                .taskExecutionTimeout(taskexecutiontimeout)
+                .build();
             officeManager.start();
             InstalledOfficeManagerHolder.setInstance(officeManager);
         } catch (Exception e) {
@@ -78,6 +82,7 @@ public class OfficePluginManager {
         }
     }
 
+    @SuppressWarnings("java:S4036")
     private boolean killProcess() {
         boolean flag = false;
         try {
@@ -90,8 +95,8 @@ public class OfficePluginManager {
                     baos.write(b);
                 }
                 String s = baos.toString();
+                Runtime.getRuntime().exec("taskkill /im " + "soffice.bin" + " /f");
                 if (s.contains("soffice.bin")) {
-                    Runtime.getRuntime().exec("taskkill /im " + "soffice.bin" + " /f");
                     flag = true;
                 }
             } else if (OSUtils.IS_OS_MAC || OSUtils.IS_OS_MAC_OSX) {

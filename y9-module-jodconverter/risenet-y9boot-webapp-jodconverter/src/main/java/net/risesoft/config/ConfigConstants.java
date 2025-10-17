@@ -36,7 +36,7 @@ public class ConfigConstants {
     public static final String DEFAULT_BEIAN = "无";
     public static final String DEFAULT_SIZE = "500MB";
     public static final String DEFAULT_PROHIBIT = "exe,dll";
-    public static final String DEFAULT_PASSWORD = "123456";
+    public static final String DEFAULT_PD = "123456";
     public static final String DEFAULT_PDF2_JPG_DPI = "105";
     public static final String DEFAULT_OFFICE_TYPE_WEB = "web";
     public static final String DEFAULT_DELETE_SOURCE_FILE = "true";
@@ -49,7 +49,7 @@ public class ConfigConstants {
     public static final String DEFAULT_OFFICE_MAXIMAQERESOLUTION = "150";
     public static final String DEFAULT_OFFICE_EXPORTBOOKMARKS = "true";
     public static final String DEFAULT_OFFICE_EXPORTNOTES = "true";
-    public static final String DEFAULT_OFFICE_EOCUMENTOPENPASSWORDS = "true";
+    public static final String DEFAULT_OFFICE_EOCUMENTOPENP = "true";
     public static final String DEFAULT_HOME_PAGENUMBER = "1";
     public static final String DEFAULT_HOME_PAGINATION = "true";
     public static final String DEFAULT_HOME_PAGSIZE = "15";

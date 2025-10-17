@@ -77,7 +77,7 @@ public class TaoHongTemplateRestController {
      * @param request HttpServletRequest
      * @param response HttpServletResponse
      */
-    @RequestMapping(value = "/download")
+    @GetMapping(value = "/download")
     public void download(@RequestParam String templateGuid, HttpServletRequest request, HttpServletResponse response) {
         try {
             TaoHongTemplate taoHongTemplate = taoHongTemplateService.getById(templateGuid);
