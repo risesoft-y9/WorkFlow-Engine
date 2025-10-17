@@ -10,6 +10,7 @@ import java.util.Objects;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -85,7 +86,7 @@ public class SignController {
      * @param endDate 结束时间
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/getDay")
+    @GetMapping(value = "/getDay")
     public Y9Result<String> getDay(@RequestParam String startDate, @RequestParam String endDate) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -119,7 +120,7 @@ public class SignController {
      * @param selEndTime 结束时间节点
      * @return Y9Result<String>
      */
-    @RequestMapping("/getDayOrHour")
+    @GetMapping("/getDayOrHour")
     public Y9Result<String> getDayOrHour(@RequestParam(required = false) String type, String leaveStartTime,
         String leaveEndTime, @RequestParam(required = false) String startSel,
         @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime,
@@ -312,7 +313,7 @@ public class SignController {
      * @param selEndTime 结束时间节点
      * @return Y9Result<String>
      */
-    @RequestMapping("/getCommonDayOrHour")
+    @GetMapping("/getCommonDayOrHour")
     public Y9Result<String> getCommonDayOrHour(@RequestParam(required = false) String type, String leaveStartTime,
         String leaveEndTime, @RequestParam(required = false) String startSel,
         @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime,

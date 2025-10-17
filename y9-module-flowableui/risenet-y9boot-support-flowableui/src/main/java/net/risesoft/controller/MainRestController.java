@@ -97,7 +97,7 @@ public class MainRestController {
      * @param itemId 事项id
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getCount4Item")
+    @GetMapping(value = "/getCount4Item")
     public Y9Result<Map<String, Object>> getCount4Item(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
@@ -172,7 +172,7 @@ public class MainRestController {
      * @param systemName 系统名称
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getCount4SystemName")
+    @GetMapping(value = "/getCount4SystemName")
     public Y9Result<Map<String, Object>> getCount4SystemName(@RequestParam @NotBlank String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();

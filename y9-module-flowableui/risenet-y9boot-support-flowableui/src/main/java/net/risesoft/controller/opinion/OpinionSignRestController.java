@@ -51,7 +51,7 @@ public class OpinionSignRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/checkSignOpinion")
+    @GetMapping(value = "/checkSignOpinion")
     public Y9Result<Map<String, Object>> checkSignOpinion(@RequestParam(required = false) String taskId,
         @RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);

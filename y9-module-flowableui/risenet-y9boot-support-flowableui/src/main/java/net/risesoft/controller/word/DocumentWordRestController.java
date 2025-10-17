@@ -12,6 +12,7 @@ import org.apache.commons.io.FilenameUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -61,7 +62,7 @@ public class DocumentWordRestController {
      * @param id 正文id
      */
     @FlowableLog(operationName = "下载正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
-    @RequestMapping(value = "/download")
+    @GetMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -104,7 +105,7 @@ public class DocumentWordRestController {
      * @param id 正文id
      */
     @FlowableLog(operationName = "下载历史正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
-    @RequestMapping(value = "/downloadHis")
+    @GetMapping(value = "/downloadHis")
     public void downloadHis(@RequestParam @NotBlank String id, HttpServletResponse response,
         HttpServletRequest request) {
         try {
@@ -150,7 +151,7 @@ public class DocumentWordRestController {
      * @return Y9Result<List < DocumentWordModel>>
      */
     @FlowableLog(operationName = "获取历史正文")
-    @RequestMapping(value = "/getHisWord")
+    @GetMapping(value = "/getHisWord")
     public Y9Result<List<DocumentWordModel>> getHisWord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String wordType) {
         List<DocumentWordModel> list = documentWordApi
@@ -169,7 +170,7 @@ public class DocumentWordRestController {
      * @return Y9Result<Boolean>
      */
     @FlowableLog(operationName = "获取正文权限")
-    @RequestMapping(value = "/getPermissionWord")
+    @GetMapping(value = "/getPermissionWord")
     public Y9Result<Boolean> getPermissionWord(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey,
         @RequestParam @NotBlank String wordType) {
@@ -185,7 +186,7 @@ public class DocumentWordRestController {
      * @return Y9Result<DocumentWordModel>
      */
     @FlowableLog(operationName = "获取正文")
-    @RequestMapping(value = "/getWord")
+    @GetMapping(value = "/getWord")
     public Y9Result<DocumentWordModel> getWord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String wordType) {
         List<DocumentWordModel> list = documentWordApi

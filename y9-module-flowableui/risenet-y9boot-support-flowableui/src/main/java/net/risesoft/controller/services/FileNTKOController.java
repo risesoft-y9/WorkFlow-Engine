@@ -10,8 +10,9 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -55,7 +56,7 @@ public class FileNTKOController {
      *
      * @param fileId 正文id
      */
-    @RequestMapping(value = "/openDoc")
+    @GetMapping(value = "/openDoc")
     public void openDoc(@RequestParam String fileId, @RequestParam String tenantId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -105,7 +106,7 @@ public class FileNTKOController {
      * @return String
      */
     @FlowableLog(operationName = "更新附件列表文件内容", operationType = FlowableOperationTypeEnum.SAVE)
-    @RequestMapping(value = "/uploadWord", method = RequestMethod.POST)
+    @PostMapping(value = "/uploadWord")
     public String uploadWord(@RequestParam(required = false) String fileId,
         @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String positionId,
         @RequestParam(required = false) String taskId, @RequestParam String tenantId, @RequestParam String userId,

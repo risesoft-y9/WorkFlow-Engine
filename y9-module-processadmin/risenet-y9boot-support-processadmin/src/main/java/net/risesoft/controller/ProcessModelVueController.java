@@ -152,7 +152,7 @@ public class ProcessModelVueController {
      * @param modelId 模型id
      * @param response response
      */
-    @RequestMapping(value = "/exportModel")
+    @GetMapping(value = "/exportModel")
     public void exportModel(@RequestParam @NotBlank String modelId, HttpServletResponse response) {
         try {
             Model model = modelService.getModel(modelId);
@@ -207,7 +207,7 @@ public class ProcessModelVueController {
      * @param modelId 模型id
      * @return Y9Result<Map<String, Object>>
      */
-    @RequestMapping(value = "/getModelXml")
+    @GetMapping(value = "/getModelXml")
     public Y9Result<Map<String, Object>> getModelXml(@RequestParam @NotBlank String modelId) {
         byte[] bpmnBytes = null;
         Map<String, Object> map = new HashMap<>();
@@ -230,7 +230,7 @@ public class ProcessModelVueController {
      * @param model 模型信息
      * @return Map<String, Object>
      */
-    @RequestMapping(value = "/import")
+    @PostMapping(value = "/import")
     public Y9Result<Object> importProcessModel(MultipartFile file, ModelRepresentation model) {
         try {
             UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
@@ -301,7 +301,7 @@ public class ProcessModelVueController {
      * @param model 模型信息
      * @return Y9Result<String>
      */
-    @RequestMapping(value = "/saveModelXml")
+    @PostMapping(value = "/saveModelXml")
     public Y9Result<String> saveModelXml(MultipartFile file, ModelRepresentation model) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
