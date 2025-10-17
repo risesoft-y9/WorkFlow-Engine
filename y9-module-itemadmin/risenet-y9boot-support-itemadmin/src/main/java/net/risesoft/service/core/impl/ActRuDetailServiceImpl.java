@@ -8,13 +8,13 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -56,7 +56,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
  */
 @Slf4j
 @Service
-@RequiredArgsConstructor
 @Transactional(readOnly = true)
 public class ActRuDetailServiceImpl implements ActRuDetailService {
 
@@ -81,6 +80,29 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     private final ProcessDefinitionApi processDefinitionApi;
 
     private final ActRuDetailService self;
+
+    public ActRuDetailServiceImpl(
+        ActRuDetailRepository actRuDetailRepository,
+        HistoricTaskApi historictaskApi,
+        ProcessParamService processParamService,
+        ItemService itemService,
+        TaskApi taskApi,
+        IdentityApi identityApi,
+        OrgUnitApi orgUnitApi,
+        RuntimeApi runtimeApi,
+        ProcessDefinitionApi processDefinitionApi,
+        @Lazy ActRuDetailService self) {
+        this.actRuDetailRepository = actRuDetailRepository;
+        this.historictaskApi = historictaskApi;
+        this.processParamService = processParamService;
+        this.itemService = itemService;
+        this.taskApi = taskApi;
+        this.identityApi = identityApi;
+        this.orgUnitApi = orgUnitApi;
+        this.runtimeApi = runtimeApi;
+        this.processDefinitionApi = processDefinitionApi;
+        this.self = self;
+    }
 
     @Override
     @Transactional

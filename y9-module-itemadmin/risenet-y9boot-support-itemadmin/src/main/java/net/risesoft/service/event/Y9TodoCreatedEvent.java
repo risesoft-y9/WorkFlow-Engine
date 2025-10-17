@@ -1,5 +1,7 @@
 package net.risesoft.service.event;
 
+import java.io.Serializable;
+
 import org.springframework.context.ApplicationEvent;
 import org.springframework.core.ResolvableType;
 import org.springframework.core.ResolvableTypeProvider;
@@ -13,7 +15,7 @@ import lombok.Getter;
  * @date 2025/04/23
  */
 @Getter
-public class Y9TodoCreatedEvent<T> extends ApplicationEvent implements ResolvableTypeProvider {
+public class Y9TodoCreatedEvent<T extends Serializable> extends ApplicationEvent implements ResolvableTypeProvider {
 
     private static final long serialVersionUID = -178737462829509713L;
 

@@ -2,19 +2,22 @@ package net.risesoft.model;
 
 import java.io.Serializable;
 
+import lombok.Getter;
+import lombok.Setter;
+
 /**
  * 接口返回值结构
  *
  * @date 2023-08-02
  */
+@Setter
+@Getter
 public class ReturnResponse<T> implements Serializable {
-    private static final long serialVersionUID = 313975329998789878L;
-
     public static final int SUCCESS_CODE = 0;
     public static final int FAILURE_CODE = 1;
     public static final String SUCCESS_MSG = "SUCCESS";
     public static final String FAILURE_MSG = "FAILURE";
-
+    private static final long serialVersionUID = 313975329998789878L;
     /**
      * 返回状态 0. 成功 1. 失败
      */
@@ -25,7 +28,7 @@ public class ReturnResponse<T> implements Serializable {
      */
     private String msg;
 
-    private T content;
+    private transient T content;
 
     public ReturnResponse(int code, String msg, T content) {
         this.code = code;
@@ -57,27 +60,4 @@ public class ReturnResponse<T> implements Serializable {
         return !isSuccess();
     }
 
-    public int getCode() {
-        return code;
-    }
-
-    public void setCode(int code) {
-        this.code = code;
-    }
-
-    public String getMsg() {
-        return msg;
-    }
-
-    public void setMsg(String msg) {
-        this.msg = msg;
-    }
-
-    public T getContent() {
-        return content;
-    }
-
-    public void setContent(T content) {
-        this.content = content;
-    }
 }

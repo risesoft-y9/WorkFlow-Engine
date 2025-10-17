@@ -5,10 +5,9 @@ import java.util.List;
 import java.util.Optional;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
 
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.commonsentences.CommonSentences;
@@ -28,7 +27,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @Service
-@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class CommonSentencesServiceImpl implements CommonSentencesService {
 
@@ -39,6 +37,17 @@ public class CommonSentencesServiceImpl implements CommonSentencesService {
     private final ItemSettingService itemSettingService;
 
     private final CommonSentencesService self;
+
+    public CommonSentencesServiceImpl(
+        CommonSentencesRepository commonSentencesRepository,
+        CommonSentencesInitRepository commonSentencesInitRepository,
+        ItemSettingService itemSettingService,
+        @Lazy CommonSentencesService self) {
+        this.commonSentencesRepository = commonSentencesRepository;
+        this.commonSentencesInitRepository = commonSentencesInitRepository;
+        this.itemSettingService = itemSettingService;
+        this.self = self;
+    }
 
     @Transactional
     @Override

@@ -1,10 +1,9 @@
 package net.risesoft.service.impl;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
-
-import lombok.RequiredArgsConstructor;
 
 import net.risesoft.entity.AutoFormSequence;
 import net.risesoft.entity.DocumentNumberDetail;
@@ -20,7 +19,6 @@ import net.risesoft.service.DocumentNumberDetailService;
  * @date 2022/12/20
  */
 @Service
-@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class AutoFormSequenceServiceImpl implements AutoFormSequenceService {
 
@@ -29,6 +27,15 @@ public class AutoFormSequenceServiceImpl implements AutoFormSequenceService {
     private final DocumentNumberDetailService documentNumberDetailService;
 
     private final AutoFormSequenceService self;
+
+    public AutoFormSequenceServiceImpl(
+        AutoFormSequenceRepository autoFormSequenceRepository,
+        DocumentNumberDetailService documentNumberDetailService,
+        @Lazy AutoFormSequenceService self) {
+        this.autoFormSequenceRepository = autoFormSequenceRepository;
+        this.documentNumberDetailService = documentNumberDetailService;
+        this.self = self;
+    }
 
     @Override
     public String calculateSequence(int patternLength, int sequence) {

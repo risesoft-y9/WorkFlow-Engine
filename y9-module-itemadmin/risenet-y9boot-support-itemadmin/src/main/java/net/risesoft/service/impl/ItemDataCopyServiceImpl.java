@@ -6,10 +6,10 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -102,7 +102,6 @@ import net.risesoft.y9.sqlddl.pojo.DbColumn;
  */
 @Service
 @Slf4j
-@RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemDataCopyServiceImpl implements ItemDataCopyService {
 
@@ -179,6 +178,83 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     private final ProcessDataCopyApi processDataCopyApi;
 
     private final ItemDataCopyService self;
+
+    public ItemDataCopyServiceImpl(
+        ItemService itemService,
+        DynamicRoleService dynamicRoleService,
+        ItemPermissionRepository itemPermissionRepository,
+        Y9FormItemBindService y9FormItemBindService,
+        Y9FormService y9FormService,
+        Y9FormFieldService y9FormFieldService,
+        Y9FormOptionClassService y9FormOptionClassService,
+        Y9TableService y9TableService,
+        Y9TableFieldService y9TableFieldService,
+        TableManagerService tableManagerService,
+        OpinionFrameService opinionFrameService,
+        ItemOpinionFrameBindService itemOpinionFrameBindService,
+        ItemOpinionFrameRoleService itemOpinionFrameRoleService,
+        ItemViewConfService itemViewConfService,
+        WordTemplateService wordTemplateService,
+        ItemWordTemplateBindService itemWordTemplateBindService,
+        BookMarkBindService bookMarkBindService,
+        PrintTemplateService printTemplateService,
+        TabEntityService tabEntityService,
+        ItemTabBindService itemTabBindService,
+        CalendarConfigService calendarConfigService,
+        TaoHongTemplateService taoHongTemplateService,
+        TaoHongTemplateTypeService taoHongTemplateTypeService,
+        OrganWordService organWordService,
+        OrganWordPropertyService organWordPropertyService,
+        ItemOrganWordBindService itemOrganWordBindService,
+        ItemOrganWordRoleService itemOrganWordRoleService,
+        CommonButtonService commonButtonService,
+        SendButtonService sendButtonService,
+        ItemButtonBindService itemButtonBindService,
+        ItemButtonRoleService itemButtonRoleService,
+        RepositoryApi repositoryApi,
+        SystemApi systemApi,
+        RoleApi roleApi,
+        OrgUnitApi orgUnitApi,
+        ProcessDataCopyApi processDataCopyApi,
+        @Lazy ItemDataCopyService self) {
+        this.itemService = itemService;
+        this.dynamicRoleService = dynamicRoleService;
+        this.itemPermissionRepository = itemPermissionRepository;
+        this.y9FormItemBindService = y9FormItemBindService;
+        this.y9FormService = y9FormService;
+        this.y9FormFieldService = y9FormFieldService;
+        this.y9FormOptionClassService = y9FormOptionClassService;
+        this.y9TableService = y9TableService;
+        this.y9TableFieldService = y9TableFieldService;
+        this.tableManagerService = tableManagerService;
+        this.opinionFrameService = opinionFrameService;
+        this.itemOpinionFrameBindService = itemOpinionFrameBindService;
+        this.itemOpinionFrameRoleService = itemOpinionFrameRoleService;
+        this.itemViewConfService = itemViewConfService;
+        this.wordTemplateService = wordTemplateService;
+        this.itemWordTemplateBindService = itemWordTemplateBindService;
+        this.bookMarkBindService = bookMarkBindService;
+        this.printTemplateService = printTemplateService;
+        this.tabEntityService = tabEntityService;
+        this.itemTabBindService = itemTabBindService;
+        this.calendarConfigService = calendarConfigService;
+        this.taoHongTemplateService = taoHongTemplateService;
+        this.taoHongTemplateTypeService = taoHongTemplateTypeService;
+        this.organWordService = organWordService;
+        this.organWordPropertyService = organWordPropertyService;
+        this.itemOrganWordBindService = itemOrganWordBindService;
+        this.itemOrganWordRoleService = itemOrganWordRoleService;
+        this.commonButtonService = commonButtonService;
+        this.sendButtonService = sendButtonService;
+        this.itemButtonBindService = itemButtonBindService;
+        this.itemButtonRoleService = itemButtonRoleService;
+        this.repositoryApi = repositoryApi;
+        this.systemApi = systemApi;
+        this.roleApi = roleApi;
+        this.orgUnitApi = orgUnitApi;
+        this.processDataCopyApi = processDataCopyApi;
+        this.self = self;
+    }
 
     @Override
     @Transactional

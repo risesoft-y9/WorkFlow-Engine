@@ -11,13 +11,13 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -56,7 +56,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class OrganWordServiceImpl implements OrganWordService {
@@ -82,6 +81,31 @@ public class OrganWordServiceImpl implements OrganWordService {
     private final TaskApi taskApi;
 
     private final OrganWordService self;
+
+    public OrganWordServiceImpl(
+        OrganWordRepository organWordRepository,
+        ProcessParamService processParamService,
+        OrganWordPropertyService organWordPropertyService,
+        OrganWordDetailService organWordDetailService,
+        ItemOrganWordBindService itemOrganWordBindService,
+        OrganWordUseHistoryService organWordUseHistoryService,
+        OrgUnitApi orgUnitApi,
+        PersonRoleApi personRoleApi,
+        PositionRoleApi positionRoleApi,
+        TaskApi taskApi,
+        @Lazy OrganWordService self) {
+        this.organWordRepository = organWordRepository;
+        this.processParamService = processParamService;
+        this.organWordPropertyService = organWordPropertyService;
+        this.organWordDetailService = organWordDetailService;
+        this.itemOrganWordBindService = itemOrganWordBindService;
+        this.organWordUseHistoryService = organWordUseHistoryService;
+        this.orgUnitApi = orgUnitApi;
+        this.personRoleApi = personRoleApi;
+        this.positionRoleApi = positionRoleApi;
+        this.taskApi = taskApi;
+        this.self = self;
+    }
 
     @Override
     public boolean checkCustom(String id, String custom) {

@@ -31,7 +31,7 @@ public class HistoricVariableInstanceModel implements Serializable {
     /**
      * 变量值
      */
-    private Object value;
+    private transient Object value;
     /**
      * 流程实例id
      */

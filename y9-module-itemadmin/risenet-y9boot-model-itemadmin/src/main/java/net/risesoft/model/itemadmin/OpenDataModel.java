@@ -90,7 +90,7 @@ public class OpenDataModel implements Serializable {
     /**
      * 表单列表
      */
-    private List<Map<String, String>> formList;
+    private transient List<Map<String, String>> formList;
     /**
      * 表单ids
      */
@@ -117,7 +117,7 @@ public class OpenDataModel implements Serializable {
     /**
      * 重定位选项
      */
-    private List<Map<String, Object>> repositionMap;
+    private transient List<Map<String, Object>> repositionMap;
 
     /**
      * 重定位选项json数据
@@ -127,7 +127,7 @@ public class OpenDataModel implements Serializable {
     /**
      * 发送按钮选项
      */
-    private List<Map<String, Object>> sendMap;
+    private transient List<Map<String, Object>> sendMap;
 
     /**
      * 发送按钮选项名称
@@ -142,7 +142,7 @@ public class OpenDataModel implements Serializable {
     /**
      * 菜单按钮选项
      */
-    private List<Map<String, Object>> menuMap;
+    private transient List<Map<String, Object>> menuMap;
 
     /**
      * 菜单按钮选项名称

@@ -26,7 +26,7 @@ public class ItemPage<T> implements Serializable {
     /**
      * 内容列表
      */
-    private List<T> rows;
+    private transient List<T> rows;
 
     /**
      * 每页大小
