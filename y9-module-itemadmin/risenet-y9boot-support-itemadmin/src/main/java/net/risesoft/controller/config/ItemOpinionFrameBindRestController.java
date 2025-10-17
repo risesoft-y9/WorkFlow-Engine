@@ -76,7 +76,7 @@ public class ItemOpinionFrameBindRestController {
      * @param signOpinion 是否必签意见
      * @return
      */
-    @RequestMapping("/changeSignOpinion")
+    @PostMapping("/changeSignOpinion")
     public Y9Result<String> changeSignOpinion(String id, boolean signOpinion) {
         itemOpinionFrameBindService.changeSignOpinion(id, signOpinion);
         return Y9Result.successMsg("操作成功");

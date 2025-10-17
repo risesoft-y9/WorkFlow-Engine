@@ -53,6 +53,7 @@ public class PackageClassFinder {
         return classes;
     }
 
+    @SuppressWarnings("java:S4034")
     private static List<Class<?>> findClassesInJar(JarFile jar, String packageName) throws ClassNotFoundException {
         List<Class<?>> classes = new ArrayList<>();
         Enumeration<JarEntry> entries = jar.entries();

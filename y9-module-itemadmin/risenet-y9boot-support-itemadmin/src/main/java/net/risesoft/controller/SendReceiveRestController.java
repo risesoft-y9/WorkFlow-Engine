@@ -261,7 +261,7 @@ public class SendReceiveRestController {
         return parent.getId() != null ? parent : departmentApi.get(tenantId, parentId).getData();
     }
 
-    @RequestMapping(value = "/orderDeptList")
+    @GetMapping(value = "/orderDeptList")
     public Y9Result<List<ReceiveDepartment>> orderDeptList() {
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAllOrderByTabIndex();
         for (ReceiveDepartment receiveDeptAndPerson : list) {
@@ -269,7 +269,6 @@ public class SendReceiveRestController {
                 departmentApi.get(Y9LoginUserHolder.getTenantId(), receiveDeptAndPerson.getDeptId()).getData();
             receiveDeptAndPerson.setDeptName(department.getName());
         }
-        // map.put("rows", list);
         return Y9Result.success(list);
     }
 
@@ -381,7 +380,7 @@ public class SendReceiveRestController {
      * @param ids 部门id
      * @return
      */
-    @RequestMapping(value = "/saveOrder")
+    @PostMapping(value = "/saveOrder")
     public Y9Result<String> saveOrder(String ids) {
         return receiveDeptAndPersonService.saveOrder(ids);
     }

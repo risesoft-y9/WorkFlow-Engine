@@ -17,8 +17,8 @@ import net.risesoft.config.ConfigConstants;
 @Slf4j
 public class KkFileUtils {
 
-    private static final List<String> illegalFileStrList = new ArrayList<>();
     public static final String DEFAULT_FILE_ENCODING = "UTF-8";
+    private static final List<String> illegalFileStrList = new ArrayList<>();
 
     static {
         illegalFileStrList.add("../");
@@ -53,11 +53,15 @@ public class KkFileUtils {
      * @return 合规结果, true:不合规，false:合规
      */
     public static boolean isInteger(String str) {
-        if (StringUtils.hasText(str)) {
-            boolean strResult = str.matches("-?[0-9]+.?[0-9]*");
-            return strResult;
+        if (!StringUtils.hasText(str)) {
+            return false;
         }
-        return false;
+        try {
+            Double.parseDouble(str);
+            return true;
+        } catch (NumberFormatException e) {
+            return false;
+        }
     }
 
     /**

@@ -19,6 +19,7 @@ public class CaptchaUtil {
         'R', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z', 'a', 'b', 'c', 'd', 'e', 'f', 'g', 'h', 'j', 'k', 'm', 'n', 'p', 'q',
         'r', 's', 't', 'u', 'v', 'w', 'x', 'y', '2', '3', '4', '5', '6', '7', '8', '9'};
 
+    @SuppressWarnings("java:S2245")
     private static final Random random = new Random();
 
     /**

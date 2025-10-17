@@ -70,7 +70,7 @@ public class PrintRestController {
      * @param response 响应
      * @param request 请求
      */
-    @RequestMapping(value = "/download")
+    @GetMapping(value = "/download")
     public void download(@RequestParam String id, HttpServletResponse response, HttpServletRequest request) {
         printTemplateService.download(id, response, request);
     }
