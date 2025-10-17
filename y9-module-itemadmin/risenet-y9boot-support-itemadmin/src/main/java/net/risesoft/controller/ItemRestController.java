@@ -139,7 +139,7 @@ public class ItemRestController {
      * @param id 部门id
      * @return
      */
-    @RequestMapping(value = "/getDept")
+    @GetMapping(value = "/getDept")
     public Y9Result<String> getDept(@RequestParam String id) {
         StringBuilder sb = new StringBuilder();
         getJson(sb, id);

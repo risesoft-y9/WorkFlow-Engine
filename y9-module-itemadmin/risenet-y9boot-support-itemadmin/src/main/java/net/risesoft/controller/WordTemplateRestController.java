@@ -59,7 +59,7 @@ public class WordTemplateRestController {
      * @param wordTemplateType 模板类型
      * @return
      */
-    @RequestMapping(value = "/bookMarKList")
+    @GetMapping(value = "/bookMarKList")
     public Y9Result<List<Map<String, Object>>> bookMarkList(String wordTemplateId,
         @RequestParam String wordTemplateType) {
         List<Map<String, Object>> list =
@@ -85,7 +85,7 @@ public class WordTemplateRestController {
      * @param response 响应
      * @param request 请求
      */
-    @RequestMapping(value = "/download")
+    @GetMapping(value = "/download")
     public void download(@RequestParam String id, HttpServletResponse response, HttpServletRequest request) {
         wordTemplateService.download(id, response, request);
     }

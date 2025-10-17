@@ -5,6 +5,7 @@ import java.util.List;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -34,7 +35,7 @@ public class ItemOrganWordRoleController {
      * @param itemOrganWordBindId 绑定id
      * @return
      */
-    @RequestMapping("/bindRole")
+    @PostMapping("/bindRole")
     public Y9Result<String> bindRole(String roleIds, String itemOrganWordBindId) {
         if (StringUtils.isNotEmpty(roleIds)) {
             String[] roleIdarr = roleIds.split(";");
@@ -58,7 +59,7 @@ public class ItemOrganWordRoleController {
      * @param ids 绑定的id
      * @return
      */
-    @RequestMapping("/remove")
+    @PostMapping("/remove")
     public Y9Result<String> remove(String[] ids) {
         itemOrganWordRoleService.remove(ids);
         return Y9Result.successMsg("删除绑定的角色失败");

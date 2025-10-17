@@ -26,7 +26,6 @@ import org.springframework.util.ObjectUtils;
 import org.springframework.util.StreamUtils;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
@@ -94,7 +93,7 @@ public class FileController {
     /**
      * 验证码方法
      */
-    @RequestMapping("/deleteFile/captcha")
+    @GetMapping("/deleteFile/captcha")
     public void captcha(HttpServletRequest request, HttpServletResponse response) throws Exception {
         if (!ConfigConstants.getDeleteCaptcha()) {
             return;

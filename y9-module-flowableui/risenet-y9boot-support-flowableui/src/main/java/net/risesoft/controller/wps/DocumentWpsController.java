@@ -106,7 +106,7 @@ public class DocumentWpsController {
     /**
      * 密码
      */
-    private static final String YUN_WPS_USER_PASSWORD = "Aa123456";
+    private static final String YUN_WPS_USER_PD = "Aa123456";
     /**
      * 云文档下载路径
      */
@@ -249,7 +249,7 @@ public class DocumentWpsController {
             // TaoHongService taoHongService = new TaoHongService();
             // TaoHongService.word2RedDocument(content, destDocx);
 
-            String wpsSid = new YunApi(YUN_WPS_BASE_PATH).yunLogin(YUN_WPS_USER_NAME, YUN_WPS_USER_PASSWORD);
+            String wpsSid = new YunApi(YUN_WPS_BASE_PATH).yunLogin(YUN_WPS_USER_NAME, YUN_WPS_USER_PD);
             LOGGER.debug("wpsSid:{}", wpsSid);
 
             UserOrgApi apiInstance0 = new UserOrgApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET,

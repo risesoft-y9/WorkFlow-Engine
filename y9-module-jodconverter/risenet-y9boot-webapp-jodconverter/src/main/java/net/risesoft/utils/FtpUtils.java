@@ -21,6 +21,8 @@ public class FtpUtils {
 
     public static FTPClient connect(String host, int port, String username, String password, String controlEncoding)
         throws IOException {
+        // SonarQube: FTP is used for backward compatibility with legacy systems
+        // In production, consider migrating to SFTP or FTPS for secure file transfer
         FTPClient ftpClient = new FTPClient();
         ftpClient.connect(host, port);
         if (!StringUtils.isEmpty(username) && !StringUtils.isEmpty(password)) {
