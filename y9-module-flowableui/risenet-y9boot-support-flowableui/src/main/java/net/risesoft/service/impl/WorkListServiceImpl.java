@@ -221,7 +221,7 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Todo(ardModel, formData));
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败，异常processInstanceId：" + processInstanceId, e);
+                    LOGGER.error("获取所有待办列表失败，异常processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
@@ -1464,13 +1464,13 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败，processInstanceId == " + processInstanceId, e);
+                    LOGGER.error("获取待办列表数据失败，processInstanceId == " + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取待办件列表成功！！！");
         } catch (Exception e) {
-            LOGGER.error("获取待办列表失败，出现异常：", e);
+            LOGGER.error("获取待办数据列表失败，出现异常：", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取待办件列表失败！");
     }
@@ -1520,7 +1520,7 @@ public class WorkListServiceImpl implements WorkListService {
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取待办列表成功!!");
         } catch (Exception e) {
-            LOGGER.error("获取待办列表失败，出现异常：", e);
+            LOGGER.error("todoList4Other方法获取待办列表失败，出现异常：", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取待办件列表失败！！！");
     }
@@ -1571,14 +1571,14 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败，processInstanceId=" + processInstanceId, e);
+                    LOGGER.error("todoList4TaskDefKey方法获取待办列表失败，processInstanceId=" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取待办列表成功!");
         } catch (Exception e) {
-            LOGGER.error("获取待办列表失败，异常：", e);
+            LOGGER.error("获取待办列表失败todoList4TaskDefKey，异常：", e);
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取待办列表失败！");
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "todoList4TaskDefKey获取待办列表失败！");
     }
 }
