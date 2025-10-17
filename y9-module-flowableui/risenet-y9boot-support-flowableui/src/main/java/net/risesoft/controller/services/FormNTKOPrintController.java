@@ -11,6 +11,7 @@ import jakarta.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,7 +61,7 @@ public class FormNTKOPrintController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
-    @RequestMapping(value = "/downloadWord")
+    @GetMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber, @RequestParam String tenantId,
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
@@ -113,7 +114,7 @@ public class FormNTKOPrintController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
-    @RequestMapping(value = "/openDoc")
+    @GetMapping(value = "/openDoc")
     public void openDoc(@RequestParam String processSerialNumber, @RequestParam String itemId,
         @RequestParam(required = false) String bindValue, @RequestParam String tenantId, @RequestParam String userId,
         HttpServletResponse response, HttpServletRequest request) {
@@ -161,7 +162,7 @@ public class FormNTKOPrintController {
      * @param response
      * @param request
      */
-    @RequestMapping(value = "/openDocument")
+    @GetMapping(value = "/openDocument")
     public void openDocument(String itemId, String tenantId, String userId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);

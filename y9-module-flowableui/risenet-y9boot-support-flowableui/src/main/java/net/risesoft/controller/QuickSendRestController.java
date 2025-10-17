@@ -10,6 +10,8 @@ import jakarta.validation.constraints.NotBlank;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -55,7 +57,7 @@ public class QuickSendRestController {
      * @param taskKey 任务key
      * @return Y9Result<List < Map < String, Object>>>
      */
-    @RequestMapping(value = "/getAssignee")
+    @GetMapping(value = "/getAssignee")
     public Y9Result<List<Map<String, Object>>> getAssignee(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String taskKey) {
         List<Map<String, Object>> list = new ArrayList<>();
@@ -103,7 +105,7 @@ public class QuickSendRestController {
      * @return Y9Result<String>
      */
     @FlowableLog(operationName = "保存快捷发送人信息", operationType = FlowableOperationTypeEnum.SAVE)
-    @RequestMapping(value = "/saveOrUpdate")
+    @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey,
         @RequestParam(required = false) String assignee) {
         quickSendApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, taskKey,

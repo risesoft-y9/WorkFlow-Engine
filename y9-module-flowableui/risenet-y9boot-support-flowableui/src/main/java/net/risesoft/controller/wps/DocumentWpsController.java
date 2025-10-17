@@ -16,6 +16,8 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.ui.Model;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -36,7 +38,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentWpsModel;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.service.impl.TaoHongServiceImpl;
 import net.risesoft.util.ToolUtil;
@@ -141,7 +142,7 @@ public class DocumentWpsController {
      *
      * @param id 正文id
      */
-    @RequestMapping(value = "/download")
+    @GetMapping(value = "/download")
     public void download(@RequestParam String id, HttpServletResponse response, HttpServletRequest request) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -196,7 +197,7 @@ public class DocumentWpsController {
         return Y9IdGenerator.genId(IdType.SNOWFLAKE) + "." + extension;
     }
 
-    @RequestMapping(value = "/getDocument")
+    @GetMapping(value = "/getDocument")
     public Map<String, Object> getDocument(@RequestParam String processSerialNumber, @RequestParam String itemId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -217,23 +218,7 @@ public class DocumentWpsController {
         return map;
     }
 
-    /**
-     * 选择套红
-     *
-     * @return String
-     */
-    @RequestMapping(value = "/openTaoHong")
-    public String openTaoHong(Model model) {
-        OrgUnit currentBureau =
-            orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getUserInfo().getPersonId())
-                .getData();
-        model.addAttribute("currentBureauGuid", currentBureau.getId());
-        model.addAttribute("tenantId", Y9LoginUserHolder.getTenantId());
-        model.addAttribute("userId", Y9LoginUserHolder.getUserInfo().getPersonId());
-        return "intranet/taohongWps";
-    }
-
-    @RequestMapping(value = "/saveWps")
+    @PostMapping(value = "/saveWps")
     public Map<String, Object> saveWps(@RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
@@ -252,7 +237,7 @@ public class DocumentWpsController {
      *
      * @return String
      */
-    @RequestMapping("/showWps")
+    @GetMapping("/showWps")
     public String showWord(@RequestParam String processSerialNumber, @RequestParam String processInstanceId,
         @RequestParam String itembox, Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -417,7 +402,7 @@ public class DocumentWpsController {
      * @param file 文件
      * @return Map
      */
-    @RequestMapping(value = "/upload")
+    @PostMapping(value = "/upload")
     public Map<String, Object> upload(@RequestParam String processSerialNumber, @RequestParam String processInstanceId,
         @RequestParam MultipartFile file) {
         Map<String, Object> map = new HashMap<>(16);

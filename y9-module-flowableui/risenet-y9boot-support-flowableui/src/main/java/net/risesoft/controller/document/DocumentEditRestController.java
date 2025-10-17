@@ -53,7 +53,7 @@ public class DocumentEditRestController {
      * @param itemId 事项id
      * @return Y9Result<DocumentDetailModel>
      */
-    @RequestMapping("/draft")
+    @GetMapping("/draft")
     public Y9Result<DocumentDetailModel> draft(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();

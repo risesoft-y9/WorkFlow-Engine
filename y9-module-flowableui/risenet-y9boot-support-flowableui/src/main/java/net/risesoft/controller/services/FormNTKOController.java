@@ -21,6 +21,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -84,7 +85,7 @@ public class FormNTKOController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
-    @RequestMapping(value = "/deleteWordByIsTaoHong")
+    @PostMapping(value = "/deleteWordByIsTaoHong")
     public void deleteWordByIsTaoHong(@RequestParam(required = false) String isTaoHong,
         @RequestParam String processSerialNumber, @RequestParam String tenantId, @RequestParam String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -103,7 +104,7 @@ public class FormNTKOController {
      * @param userId 人员id
      */
     @FlowableLog(operationName = "下载历史正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
-    @RequestMapping(value = "/downLoadHistoryDoc")
+    @GetMapping(value = "/downLoadHistoryDoc")
     public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
         @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String fileType,
         @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response,
@@ -135,7 +136,7 @@ public class FormNTKOController {
      * @param userId 人员id
      */
     @FlowableLog(operationName = "下载正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
-    @RequestMapping(value = "/download")
+    @GetMapping(value = "/download")
     public void download(@RequestParam String id, @RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber, @RequestParam String tenantId,
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
@@ -189,7 +190,7 @@ public class FormNTKOController {
      * @param userId 人员id
      */
     @FlowableLog(operationName = "下载正文（抄送）", operationType = FlowableOperationTypeEnum.DOWNLOAD)
-    @RequestMapping(value = "/downloadCS")
+    @GetMapping(value = "/downloadCS")
     public void downloadCS(@RequestParam(required = false) String fileType, @RequestParam String processSerialNumber,
         @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response,
         HttpServletRequest request) {
@@ -219,7 +220,7 @@ public class FormNTKOController {
      * @param userId 人员id
      */
     @FlowableLog(operationName = "下载正文文件", operationType = FlowableOperationTypeEnum.DOWNLOAD)
-    @RequestMapping(value = "/downloadWord")
+    @GetMapping(value = "/downloadWord")
     public void downloadWord(@RequestParam String id, @RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber, @RequestParam String tenantId,
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
@@ -245,7 +246,7 @@ public class FormNTKOController {
      * @param processSerialNumber 流程编号
      * @return Map
      */
-    @RequestMapping(value = "/getUpdateWord")
+    @GetMapping(value = "/getUpdateWord")
     public Y9WordModel getUpdateWord(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -258,7 +259,7 @@ public class FormNTKOController {
      * 新建正文空白模板
      */
     @FlowableLog(operationName = "新建正文空白模板", operationType = FlowableOperationTypeEnum.ADD)
-    @RequestMapping("/openBlankWordTemplate")
+    @GetMapping("/openBlankWordTemplate")
     public void openBlankWordTemplate(HttpServletRequest request, HttpServletResponse response) {
         String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "tags"
             + File.separator + "template" + File.separator + "blankTemplate.doc";
@@ -294,7 +295,7 @@ public class FormNTKOController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
-    @RequestMapping(value = "/openDoc")
+    @GetMapping(value = "/openDoc")
     public void openDoc(@RequestParam String processSerialNumber, @RequestParam String itemId,
         @RequestParam(required = false) String bindValue, @RequestParam String tenantId, @RequestParam String userId,
         HttpServletResponse response, HttpServletRequest request) {
@@ -340,7 +341,7 @@ public class FormNTKOController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
-    @RequestMapping(value = "/openTaohongTemplate")
+    @GetMapping(value = "/openTaohongTemplate")
     public void openDocumentTemplate(@RequestParam String templateGUID, @RequestParam String processSerialNumber,
         @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -371,7 +372,7 @@ public class FormNTKOController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
-    @RequestMapping(value = "/openHistoryVersionDoc")
+    @GetMapping(value = "/openHistoryVersionDoc")
     public void openHistoryVersionDoc(@RequestParam(required = false) String taskId, @RequestParam String tenantId,
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -415,7 +416,7 @@ public class FormNTKOController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
-    @RequestMapping(value = "/openPdf")
+    @GetMapping(value = "/openPdf")
     public void openPdf(@RequestParam String processSerialNumber, @RequestParam String tenantId,
         @RequestParam String userId, HttpServletResponse response) {
         Y9LoginUserHolder.setTenantId(tenantId);
@@ -454,7 +455,7 @@ public class FormNTKOController {
      * @param tenantId 租户id
      * @param userId 人员id
      */
-    @RequestMapping(value = "/openRevokePDFAfterDocument")
+    @GetMapping(value = "/openRevokePDFAfterDocument")
     public void openRevokePDFAfterDocument(@RequestParam String processSerialNumber,
         @RequestParam(required = false) String istaohong, @RequestParam String tenantId, @RequestParam String userId,
         HttpServletResponse response, HttpServletRequest request) {
@@ -510,7 +511,7 @@ public class FormNTKOController {
      */
     @FlowableLog(operationName = "保存word转PDF的正文", operationType = FlowableOperationTypeEnum.SAVE)
     @SuppressWarnings("unused")
-    @RequestMapping(value = "/saveAsPDFFile")
+    @PostMapping(value = "/saveAsPDFFile")
     public String saveAsPDFFile(@RequestParam(required = false) String fileType,
         @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String taskId,
@@ -563,7 +564,7 @@ public class FormNTKOController {
      * @param positionId 岗位id
      * @return List<Map < String, Object>>
      */
-    @RequestMapping(value = "/list")
+    @GetMapping(value = "/list")
     public List<TaoHongTemplateModel> taoHongTemplateList(@RequestParam(required = false) String currentBureauGuid,
         @RequestParam String tenantId, @RequestParam(required = false) String userId,
         @RequestParam(required = false) String positionId) {

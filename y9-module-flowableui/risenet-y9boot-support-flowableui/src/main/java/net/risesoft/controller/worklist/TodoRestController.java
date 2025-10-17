@@ -75,7 +75,7 @@ public class TodoRestController {
      * @return Y9Page<Map < String, Object>>
      */
     @FlowableLog(operationName = "待办列表-指定节点")
-    @RequestMapping(value = "/todoList4TaskDefKey")
+    @GetMapping(value = "/todoList4TaskDefKey")
     public Y9Page<Map<String, Object>> todoList4TaskDefKey(@RequestParam String itemId,
         @RequestParam(required = false) String taskDefKey, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {

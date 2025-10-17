@@ -68,7 +68,7 @@ public class RepositoryVueController {
      * @param processInstanceId 流程实例id
      * @param processDefinitionId 流程定义id
      */
-    @RequestMapping(value = "/processInstanceXml")
+    @GetMapping(value = "/processInstanceXml")
     public Y9Result<String> getXmlByProcessInstance(@RequestParam String resourceType,
         @RequestParam(required = false) String processInstanceId, @RequestParam String processDefinitionId) {
         InputStream resourceAsStream =
@@ -97,7 +97,7 @@ public class RepositoryVueController {
      * @param processDefinitionId 流程定义id
      * @param response HttpServletResponse
      */
-    @RequestMapping(value = "/process-instance")
+    @PostMapping(value = "/process-instance")
     public void loadByProcessInstance(@RequestParam String resourceType,
         @RequestParam(required = false) String processInstanceId, @RequestParam String processDefinitionId,
         HttpServletResponse response) {

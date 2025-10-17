@@ -13,8 +13,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
@@ -80,8 +80,8 @@ public class MobileSyncController {
      *
      * @param tenantId 租户id
      */
-    @ResponseBody
-    @RequestMapping(value = "/deleteTableData")
+
+    @GetMapping(value = "/deleteTableData")
     public void deleteTableData(String tenantId, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
@@ -243,8 +243,8 @@ public class MobileSyncController {
      *
      * @param tenantId 租户id
      */
-    @ResponseBody
-    @RequestMapping(value = "/tongbu2DataCenter")
+
+    @GetMapping(value = "/tongbu2DataCenter")
     public void tongbu2DataCenter(String tenantId, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
@@ -347,8 +347,8 @@ public class MobileSyncController {
      *
      * @param tenantId 租户ID
      */
-    @ResponseBody
-    @RequestMapping(value = "/tongbu2DataCenter0")
+
+    @GetMapping(value = "/tongbu2DataCenter0")
     public void tongbu2DataCenter0(String tenantId, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
@@ -408,8 +408,8 @@ public class MobileSyncController {
      *
      * @param tenantId 租户id
      */
-    @ResponseBody
-    @RequestMapping(value = "/tongbu2YearTable")
+
+    @GetMapping(value = "/tongbu2YearTable")
     public void tongbu2YearTable(String tenantId, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
