@@ -9,6 +9,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemPermission;
@@ -283,10 +284,10 @@ public class InitTableDataService {
             ItemViewConf newConf = new ItemViewConf();
             int i = 0;
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("serialNumber")
+                .setColumnName(ItemConsts.SERIALNUMBER_KEY)
                 .setDisPlayName("序号")
                 .setDisPlayWidth("60")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -295,10 +296,10 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("level")
+                .setColumnName(ItemConsts.LEVEL_KEY)
                 .setDisPlayName("紧急程度")
                 .setDisPlayWidth("120")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
@@ -307,10 +308,10 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("number")
+                .setColumnName(ItemConsts.NUMBER_KEY)
                 .setDisPlayName("文件编号")
                 .setDisPlayWidth("180")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
@@ -319,7 +320,7 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("title")
+                .setColumnName(ItemConsts.TITLE_KEY)
                 .setDisPlayName("文件标题")
                 .setDisPlayWidth("auto")
                 .setDisPlayAlign("left")
@@ -331,10 +332,10 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("createDate")
+                .setColumnName(ItemConsts.CREATEDATE_KEY)
                 .setDisPlayName("创建时间")
                 .setDisPlayWidth("150")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
@@ -346,7 +347,7 @@ public class InitTableDataService {
                 .setColumnName("opt")
                 .setDisPlayName("操作")
                 .setDisPlayWidth("180")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -358,10 +359,10 @@ public class InitTableDataService {
             list0 = new ArrayList<>();
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("serialNumber")
+                .setColumnName(ItemConsts.SERIALNUMBER_KEY)
                 .setDisPlayName("序号")
                 .setDisPlayWidth("60")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -370,10 +371,10 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("number")
+                .setColumnName(ItemConsts.NUMBER_KEY)
                 .setDisPlayName("文件编号")
                 .setDisPlayWidth("180")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
@@ -382,10 +383,10 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("level")
+                .setColumnName(ItemConsts.LEVEL_KEY)
                 .setDisPlayName("紧急程度")
                 .setDisPlayWidth("90")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
@@ -394,7 +395,7 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("title")
+                .setColumnName(ItemConsts.TITLE_KEY)
                 .setDisPlayName("文件标题")
                 .setDisPlayWidth("auto")
                 .setDisPlayAlign("left")
@@ -409,7 +410,7 @@ public class InitTableDataService {
                 .setColumnName("taskName")
                 .setDisPlayName("办理环节")
                 .setDisPlayWidth("120")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -421,7 +422,7 @@ public class InitTableDataService {
                 .setColumnName("taskCreateTime")
                 .setDisPlayName("发送时间")
                 .setDisPlayWidth("150")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -433,7 +434,7 @@ public class InitTableDataService {
                 .setColumnName("taskSender")
                 .setDisPlayName("发送人")
                 .setDisPlayWidth("120")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -445,7 +446,7 @@ public class InitTableDataService {
                 .setColumnName("opt")
                 .setDisPlayName("操作")
                 .setDisPlayWidth("300")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -457,10 +458,10 @@ public class InitTableDataService {
             list0 = new ArrayList<>();
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("serialNumber")
+                .setColumnName(ItemConsts.SERIALNUMBER_KEY)
                 .setDisPlayName("序号")
                 .setDisPlayWidth("60")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -469,10 +470,10 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("number")
+                .setColumnName(ItemConsts.NUMBER_KEY)
                 .setDisPlayName("文件编号")
                 .setDisPlayWidth("180")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
@@ -481,10 +482,10 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("level")
+                .setColumnName(ItemConsts.LEVEL_KEY)
                 .setDisPlayName("紧急程度")
                 .setDisPlayWidth("90")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
@@ -493,7 +494,7 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("title")
+                .setColumnName(ItemConsts.TITLE_KEY)
                 .setDisPlayName("文件标题")
                 .setDisPlayWidth("auto")
                 .setDisPlayAlign("left")
@@ -508,7 +509,7 @@ public class InitTableDataService {
                 .setColumnName("taskName")
                 .setDisPlayName("办理环节")
                 .setDisPlayWidth("120")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -520,7 +521,7 @@ public class InitTableDataService {
                 .setColumnName("taskCreateTime")
                 .setDisPlayName("发送时间")
                 .setDisPlayWidth("150")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -532,7 +533,7 @@ public class InitTableDataService {
                 .setColumnName("taskAssignee")
                 .setDisPlayName("当前办理人")
                 .setDisPlayWidth("150")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -544,7 +545,7 @@ public class InitTableDataService {
                 .setColumnName("opt")
                 .setDisPlayName("操作")
                 .setDisPlayWidth("300")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -556,10 +557,10 @@ public class InitTableDataService {
             list0 = new ArrayList<>();
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("serialNumber")
+                .setColumnName(ItemConsts.SERIALNUMBER_KEY)
                 .setDisPlayName("序号")
                 .setDisPlayWidth("60")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -568,10 +569,10 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("number")
+                .setColumnName(ItemConsts.NUMBER_KEY)
                 .setDisPlayName("文件编号")
                 .setDisPlayWidth("180")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
@@ -580,10 +581,10 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("level")
+                .setColumnName(ItemConsts.LEVEL_KEY)
                 .setDisPlayName("紧急程度")
                 .setDisPlayWidth("90")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
@@ -592,7 +593,7 @@ public class InitTableDataService {
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setColumnName("title")
+                .setColumnName(ItemConsts.TITLE_KEY)
                 .setDisPlayName("文件标题")
                 .setDisPlayWidth("auto")
                 .setDisPlayAlign("left")
@@ -607,7 +608,7 @@ public class InitTableDataService {
                 .setColumnName("user4Complete")
                 .setDisPlayName("办结人")
                 .setDisPlayWidth("150")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -619,7 +620,7 @@ public class InitTableDataService {
                 .setColumnName("endTime")
                 .setDisPlayName("办结时间")
                 .setDisPlayWidth("150")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -631,7 +632,7 @@ public class InitTableDataService {
                 .setColumnName("opt")
                 .setDisPlayName("操作")
                 .setDisPlayWidth("200")
-                .setDisPlayAlign("center")
+                .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i)
                 .setItemId(ITEM_ID)
                 .setTableName("")
@@ -675,8 +676,8 @@ public class InitTableDataService {
             Y9FormField newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("主键")
-                .setFieldName("guid")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.GUID_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -684,8 +685,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("文件编号")
-                .setFieldName("number")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.NUMBER_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -693,8 +694,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("类型")
-                .setFieldName("type")
-                .setFieldType("varchar(20)")
+                .setFieldName(ItemConsts.TYPE_KEY)
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -702,8 +703,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("字号")
-                .setFieldName("wordSize")
-                .setFieldType("varchar(20)")
+                .setFieldName(ItemConsts.WORDSIZE_KEY)
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -711,8 +712,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("标题")
-                .setFieldName("title")
-                .setFieldType("varchar(500)")
+                .setFieldName(ItemConsts.TITLE_KEY)
+                .setFieldType(ItemConsts.VARCHAR500_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -720,8 +721,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建部门")
-                .setFieldName("department")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.DEPARTMENT_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -729,8 +730,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建人")
-                .setFieldName("creater")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.CREATER_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -738,8 +739,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建时间")
-                .setFieldName("createDate")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.CREATEDATE_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -747,8 +748,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("联系方式")
-                .setFieldName("contact")
-                .setFieldType("varchar(20)")
+                .setFieldName(ItemConsts.CONTACT_KEY)
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -756,8 +757,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("主题词")
-                .setFieldName("motive")
-                .setFieldType("varchar(2000)")
+                .setFieldName(ItemConsts.MOTIVE_KEY)
+                .setFieldType(ItemConsts.VARCHAR2000_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -765,8 +766,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("发送对象")
-                .setFieldName("send")
-                .setFieldType("varchar(500)")
+                .setFieldName(ItemConsts.SEND_KEY)
+                .setFieldType(ItemConsts.VARCHAR500_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -774,8 +775,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("紧急程度")
-                .setFieldName("level")
-                .setFieldType("varchar(20)")
+                .setFieldName(ItemConsts.LEVEL_KEY)
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -783,8 +784,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("签发人")
-                .setFieldName("signAndIssue")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.SIGNANDISSUE_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -792,8 +793,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("签发日期")
-                .setFieldName("dateOfIssue")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.DATEOFISSUE_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -801,8 +802,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("备注")
-                .setFieldName("remarks")
-                .setFieldType("varchar(500)")
+                .setFieldName(ItemConsts.REMARKS_KEY)
+                .setFieldType(ItemConsts.VARCHAR500_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -810,8 +811,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("文件概要")
-                .setFieldName("outline")
-                .setFieldType("varchar(2000)")
+                .setFieldName(ItemConsts.OUTLINE_KEY)
+                .setFieldType(ItemConsts.VARCHAR2000_KEY)
                 .setFormId(PRINT_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -837,8 +838,8 @@ public class InitTableDataService {
             Y9FormField newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("主键")
-                .setFieldName("guid")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.GUID_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -846,8 +847,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("文件编号")
-                .setFieldName("number")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.NUMBER_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -855,8 +856,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("类型")
-                .setFieldName("type")
-                .setFieldType("varchar(20)")
+                .setFieldName(ItemConsts.TYPE_KEY)
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -864,8 +865,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("字号")
-                .setFieldName("wordSize")
-                .setFieldType("varchar(20)")
+                .setFieldName(ItemConsts.WORDSIZE_KEY)
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -873,8 +874,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("标题")
-                .setFieldName("title")
-                .setFieldType("varchar(500)")
+                .setFieldName(ItemConsts.TITLE_KEY)
+                .setFieldType(ItemConsts.VARCHAR500_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -882,8 +883,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建部门")
-                .setFieldName("department")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.DEPARTMENT_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -891,8 +892,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建人")
-                .setFieldName("creater")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.CREATER_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -900,8 +901,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建时间")
-                .setFieldName("createDate")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.CREATEDATE_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -909,8 +910,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("联系方式")
-                .setFieldName("contact")
-                .setFieldType("varchar(20)")
+                .setFieldName(ItemConsts.CONTACT_KEY)
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -918,8 +919,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("主题词")
-                .setFieldName("motive")
-                .setFieldType("varchar(2000)")
+                .setFieldName(ItemConsts.MOTIVE_KEY)
+                .setFieldType(ItemConsts.VARCHAR2000_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -927,8 +928,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("发送对象")
-                .setFieldName("send")
-                .setFieldType("varchar(500)")
+                .setFieldName(ItemConsts.SEND_KEY)
+                .setFieldType(ItemConsts.VARCHAR500_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -936,8 +937,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("紧急程度")
-                .setFieldName("level")
-                .setFieldType("varchar(20)")
+                .setFieldName(ItemConsts.LEVEL_KEY)
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -945,8 +946,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("签发人")
-                .setFieldName("signAndIssue")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.SIGNANDISSUE_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -954,8 +955,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("签发日期")
-                .setFieldName("dateOfIssue")
-                .setFieldType("varchar(50)")
+                .setFieldName(ItemConsts.DATEOFISSUE_KEY)
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -963,8 +964,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("备注")
-                .setFieldName("remarks")
-                .setFieldType("varchar(500)")
+                .setFieldName(ItemConsts.REMARKS_KEY)
+                .setFieldType(ItemConsts.VARCHAR500_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -972,8 +973,8 @@ public class InitTableDataService {
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("文件概要")
-                .setFieldName("outline")
-                .setFieldType("varchar(2000)")
+                .setFieldName(ItemConsts.OUTLINE_KEY)
+                .setFieldType(ItemConsts.VARCHAR2000_KEY)
                 .setFormId(Y9_FORM_ID)
                 .setTableId(Y9_TABLE_ID)
                 .setTableName(Y9_TABLE_NAME);
@@ -999,9 +1000,9 @@ public class InitTableDataService {
             Y9TableField field = new Y9TableField();
             int i = 0;
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("guid")
+                .setFieldName(ItemConsts.GUID_KEY)
                 .setFieldCnName("主键")
-                .setFieldType("varchar(50)")
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFieldLength(50)
                 .setIsMayNull(0)
                 .setIsSystemField(1)
@@ -1013,9 +1014,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("number")
+                .setFieldName(ItemConsts.NUMBER_KEY)
                 .setFieldCnName("文件编号")
-                .setFieldType("varchar(50)")
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1025,9 +1026,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("type")
+                .setFieldName(ItemConsts.TYPE_KEY)
                 .setFieldCnName("类型")
-                .setFieldType("varchar(20)")
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFieldLength(20)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1037,9 +1038,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("wordSize")
+                .setFieldName(ItemConsts.WORDSIZE_KEY)
                 .setFieldCnName("字号")
-                .setFieldType("varchar(20)")
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFieldLength(20)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1049,9 +1050,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("title")
+                .setFieldName(ItemConsts.TITLE_KEY)
                 .setFieldCnName("标题")
-                .setFieldType("varchar(500)")
+                .setFieldType(ItemConsts.VARCHAR500_KEY)
                 .setFieldLength(500)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1061,9 +1062,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("department")
+                .setFieldName(ItemConsts.DEPARTMENT_KEY)
                 .setFieldCnName("创建部门")
-                .setFieldType("varchar(50)")
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1073,9 +1074,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("creater")
+                .setFieldName(ItemConsts.CREATER_KEY)
                 .setFieldCnName("创建人")
-                .setFieldType("varchar(50)")
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1085,9 +1086,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("createDate")
+                .setFieldName(ItemConsts.CREATEDATE_KEY)
                 .setFieldCnName("创建时间")
-                .setFieldType("varchar(50)")
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1097,9 +1098,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("contact")
+                .setFieldName(ItemConsts.CONTACT_KEY)
                 .setFieldCnName("联系方式")
-                .setFieldType("varchar(20)")
+                .setFieldType(ItemConsts.VARCHAR20_KEY)
                 .setFieldLength(20)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1109,9 +1110,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("motive")
+                .setFieldName(ItemConsts.MOTIVE_KEY)
                 .setFieldCnName("主题词")
-                .setFieldType("varchar(2000)")
+                .setFieldType(ItemConsts.VARCHAR2000_KEY)
                 .setFieldLength(2000)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1121,9 +1122,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("send")
+                .setFieldName(ItemConsts.SEND_KEY)
                 .setFieldCnName("发送对象")
-                .setFieldType("varchar(500)")
+                .setFieldType(ItemConsts.VARCHAR500_KEY)
                 .setFieldLength(500)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1133,9 +1134,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("level")
+                .setFieldName(ItemConsts.LEVEL_KEY)
                 .setFieldCnName("紧急程度")
-                .setFieldType("varchar(50)")
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1145,9 +1146,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("signAndIssue")
+                .setFieldName(ItemConsts.SIGNANDISSUE_KEY)
                 .setFieldCnName("签发人")
-                .setFieldType("varchar(50)")
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1157,9 +1158,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("dateOfIssue")
+                .setFieldName(ItemConsts.DATEOFISSUE_KEY)
                 .setFieldCnName("签发日期")
-                .setFieldType("varchar(50)")
+                .setFieldType(ItemConsts.VARCHAR50_KEY)
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1169,9 +1170,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("remarks")
+                .setFieldName(ItemConsts.REMARKS_KEY)
                 .setFieldCnName("备注")
-                .setFieldType("varchar(500)")
+                .setFieldType(ItemConsts.VARCHAR500_KEY)
                 .setFieldLength(500)
                 .setDisplayOrder(i++)
                 .setState(1)
@@ -1181,9 +1182,9 @@ public class InitTableDataService {
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
             field.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
-                .setFieldName("outline")
+                .setFieldName(ItemConsts.OUTLINE_KEY)
                 .setFieldCnName("文件概要")
-                .setFieldType("varchar(2000)")
+                .setFieldType(ItemConsts.VARCHAR2000_KEY)
                 .setFieldLength(2000)
                 .setDisplayOrder(i)
                 .setState(1)

@@ -157,7 +157,7 @@ public class OpenDataModel implements Serializable {
     /**
      * 菜单按钮选项
      */
-    private List<ItemButtonModel> buttonList;
+    private transient List<ItemButtonModel> buttonList;
 
     /**
      * 是否主办办理
