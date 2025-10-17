@@ -20,6 +20,7 @@ import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -73,7 +74,7 @@ public class Y9WordController {
      * @param isTaoHong 是否套红
      * @param processSerialNumber 流程编号
      */
-    @RequestMapping(value = "/deleteWordByIsTaoHong")
+    @GetMapping(value = "/deleteWordByIsTaoHong")
     public void deleteWordByIsTaoHong(@RequestParam(required = false) String isTaoHong,
         @RequestParam @NotBlank String processSerialNumber) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -90,7 +91,7 @@ public class Y9WordController {
      * @param fileType 文件类型
      */
     @FlowableLog(operationName = "下载历史版本正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
-    @RequestMapping(value = "/downLoadHistoryDoc")
+    @GetMapping(value = "/downLoadHistoryDoc")
     public void downLoadHistoryDoc(@RequestParam(required = false) String taskId,
         @RequestParam(required = false) String processSerialNumber, @RequestParam(required = false) String fileType,
         HttpServletResponse response, HttpServletRequest request) {
@@ -161,7 +162,7 @@ public class Y9WordController {
      * @param id 正文id
      */
     @FlowableLog(operationName = "下载正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
-    @RequestMapping(value = "/download")
+    @GetMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, @RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber, HttpServletResponse response,
         HttpServletRequest request) {
@@ -180,7 +181,7 @@ public class Y9WordController {
      * @param processSerialNumber 流程编号
      */
     @FlowableLog(operationName = "下载正文（抄送件）", operationType = FlowableOperationTypeEnum.DOWNLOAD)
-    @RequestMapping(value = "/downloadCS")
+    @GetMapping(value = "/downloadCS")
     public void downloadCS(@RequestParam(required = false) String fileType,
         @RequestParam(required = false) String processSerialNumber, HttpServletResponse response,
         HttpServletRequest request) {
@@ -201,7 +202,7 @@ public class Y9WordController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Map < String, Object>>
      */
-    @RequestMapping(value = "/getUpdateWord")
+    @GetMapping(value = "/getUpdateWord")
     public Y9WordModel getUpdateWord(@RequestParam String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
@@ -211,7 +212,7 @@ public class Y9WordController {
      * 新建正文空白模板
      */
     @FlowableLog(operationName = "新建正文空白模板", operationType = FlowableOperationTypeEnum.ADD)
-    @RequestMapping("/openBlankWordTemplate")
+    @GetMapping("/openBlankWordTemplate")
     public void openBlankWordTemplate(HttpServletRequest request, HttpServletResponse response) {
         String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "tags"
             + File.separator + "template" + File.separator + "blankTemplate.doc";
@@ -241,7 +242,7 @@ public class Y9WordController {
      * @param bindValue 绑定值
      *
      */
-    @RequestMapping(value = "/openDocument")
+    @GetMapping(value = "/openDocument")
     public void openDocument(@RequestParam String processSerialNumber, @RequestParam String itemId,
         @RequestParam(required = false) String bindValue, HttpServletResponse response) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -280,7 +281,7 @@ public class Y9WordController {
      *
      * @param templateGUID 模板GUID
      */
-    @RequestMapping(value = "/openTaohongTemplate")
+    @GetMapping(value = "/openTaohongTemplate")
     public void openDocumentTemplate(@RequestParam String templateGUID, @RequestParam String processSerialNumber,
         HttpServletResponse response) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -310,7 +311,7 @@ public class Y9WordController {
      *
      * @param taskId 任务id
      */
-    @RequestMapping(value = "/openHistoryVersionDoc")
+    @GetMapping(value = "/openHistoryVersionDoc")
     public void openHistoryVersionDoc(@RequestParam String taskId, HttpServletResponse response) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
@@ -348,7 +349,7 @@ public class Y9WordController {
      *
      * @param processSerialNumber 流程实编号
      */
-    @RequestMapping(value = "/openPdf")
+    @GetMapping(value = "/openPdf")
     public void openPdf(@RequestParam String processSerialNumber, HttpServletResponse response) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
@@ -389,7 +390,7 @@ public class Y9WordController {
      * @param processSerialNumber 流程实编号
      * @param istaohong 是否套红
      */
-    @RequestMapping(value = "/openRevokePDFAfterDocument")
+    @GetMapping(value = "/openRevokePDFAfterDocument")
     public void openRevokePDFAfterDocument(@RequestParam String processSerialNumber,
         @RequestParam(required = false) String istaohong, HttpServletResponse response, HttpServletRequest request) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -438,7 +439,7 @@ public class Y9WordController {
      * @return String
      */
     @FlowableLog(operationName = "转PDF", operationType = FlowableOperationTypeEnum.SAVE)
-    @RequestMapping(value = "/saveAsPDFFile")
+    @PostMapping(value = "/saveAsPDFFile")
     public String saveAsPDFFile(@RequestParam(required = false) String fileType,
         @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String taskId,
@@ -485,7 +486,7 @@ public class Y9WordController {
      * @param currentBureauGuid 当前办公局guid
      * @return List<Map < String, Object>>
      */
-    @RequestMapping(value = "/list")
+    @GetMapping(value = "/list")
     public List<TaoHongTemplateModel> taoHongTemplateList(@RequestParam(required = false) String currentBureauGuid) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();

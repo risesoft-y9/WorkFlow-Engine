@@ -16,6 +16,8 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.validation.annotation.Validated;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -60,7 +62,7 @@ public class WpsRestController {
      * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      */
-    @RequestMapping(value = "/download")
+    @GetMapping(value = "/download")
     public void download(@RequestParam String tenantId, @RequestParam String processSerialNumber,
         HttpServletResponse response, HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
@@ -109,7 +111,7 @@ public class WpsRestController {
      * @param userId 用户id
      * @param templateGuid 模板id
      */
-    @RequestMapping(value = "/getTaoHongTemplate")
+    @GetMapping(value = "/getTaoHongTemplate")
     public void getTaoHongTemplate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String templateGuid, HttpServletResponse response) {
         String content = y9WordApi.openDocumentTemplate(tenantId, userId, templateGuid).getData();
@@ -137,7 +139,7 @@ public class WpsRestController {
      * @param userId 用户id
      * @param processSerialNumber 流程编号
      */
-    @RequestMapping(value = "/revokeRedHeader")
+    @GetMapping(value = "/revokeRedHeader")
     public void revokeRedHeader(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, HttpServletResponse response, HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
@@ -157,7 +159,7 @@ public class WpsRestController {
      * @param userId 用户id
      * @return List<Map < String, Object>>
      */
-    @RequestMapping(value = "/taoHongTemplateList")
+    @GetMapping(value = "/taoHongTemplateList")
     public List<TaoHongTemplateModel> taoHongTemplateList(@RequestParam String tenantId, @RequestParam String userId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, userId).getData();
@@ -176,7 +178,7 @@ public class WpsRestController {
      * @param file 文件
      * @return Map<String, Object>
      */
-    @RequestMapping(value = "/upload")
+    @PostMapping(value = "/upload")
     public Map<String, Object> upload(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String istaohong,
