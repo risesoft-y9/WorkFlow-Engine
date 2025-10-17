@@ -4,12 +4,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import com.google.common.collect.Lists;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -36,7 +36,6 @@ import net.risesoft.y9.util.Y9Util;
  * @date 2022/12/20
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
@@ -52,6 +51,21 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     private final RepositoryApi repositoryApi;
 
     private final Y9FormItemBindService self;
+
+    public Y9FormItemBindServiceImpl(
+        Y9FormItemBindRepository y9FormItemBindRepository,
+        Y9FormItemMobileBindRepository y9FormItemMobileBindRepository,
+        ItemRepository itemRepository,
+        ProcessDefinitionApi processDefinitionApi,
+        RepositoryApi repositoryApi,
+        @Lazy Y9FormItemBindService self) {
+        this.y9FormItemBindRepository = y9FormItemBindRepository;
+        this.y9FormItemMobileBindRepository = y9FormItemMobileBindRepository;
+        this.itemRepository = itemRepository;
+        this.processDefinitionApi = processDefinitionApi;
+        this.repositoryApi = repositoryApi;
+        this.self = self;
+    }
 
     @Override
     @Transactional

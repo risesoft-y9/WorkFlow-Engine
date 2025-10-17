@@ -2,7 +2,6 @@ package net.risesoft.model.processadmin;
 
 import java.io.Serializable;
 import java.util.Date;
-import java.util.Map;
 
 import lombok.Data;
 
@@ -70,15 +69,9 @@ public class ProcessInstanceModel implements Serializable {
      */
     private String startUserId;
     /**
-     * 流程变量
-     */
-    private Map<String, Object> variables;
-
-    /**
      * 活动节点
      */
     private String activityName;
-
     /**
      * 启动用户名称
      */

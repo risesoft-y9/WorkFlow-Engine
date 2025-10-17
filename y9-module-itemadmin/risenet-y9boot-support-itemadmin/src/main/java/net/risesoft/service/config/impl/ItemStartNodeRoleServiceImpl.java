@@ -4,10 +4,10 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.permission.RoleApi;
@@ -37,7 +37,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2022/12/20
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
@@ -55,6 +54,23 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     private final ProcessDefinitionApi processDefinitionApi;
 
     private final ItemStartNodeRoleService self;
+
+    public ItemStartNodeRoleServiceImpl(
+        ItemStartNodeRoleRepository itemStartNodeRoleRepository,
+        RoleApi roleApi,
+        PositionRoleApi positionRoleApi,
+        ItemRepository itemRepository,
+        RepositoryApi repositoryApi,
+        ProcessDefinitionApi processDefinitionApi,
+        @Lazy ItemStartNodeRoleService self) {
+        this.itemStartNodeRoleRepository = itemStartNodeRoleRepository;
+        this.roleApi = roleApi;
+        this.positionRoleApi = positionRoleApi;
+        this.itemRepository = itemRepository;
+        this.repositoryApi = repositoryApi;
+        this.processDefinitionApi = processDefinitionApi;
+        this.self = self;
+    }
 
     @Override
     @Transactional
