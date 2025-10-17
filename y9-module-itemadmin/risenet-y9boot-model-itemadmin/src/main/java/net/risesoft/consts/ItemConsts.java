@@ -28,6 +28,8 @@ public class ItemConsts {
     public static final String LASTTIME_KEY = "lastTime";
     public static final String DEPTID_KEY = "DEPTID";
     public static final String BUREAUID_KEY = "BUREAUID";
+    public static final String ASSIGNEENAME_KEY = "assigneeName";
+    public static final String NOSIGN_KEY = "noSign";
     /** 自由流办件processDefineKey */
     public static String freeFlowKey = "ziyouliucheng";
     /** 所有事项ID */
