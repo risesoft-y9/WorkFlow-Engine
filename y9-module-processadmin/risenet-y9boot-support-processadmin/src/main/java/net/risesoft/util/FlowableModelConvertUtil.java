@@ -242,7 +242,6 @@ public class FlowableModelConvertUtil {
         pim.setStartTime(pi.getStartTime());
         pim.setStartUserId(pi.getStartUserId());
         pim.setSuspended(pi.isSuspended());
-        pim.setVariables(pi.getProcessVariables());
         return pim;
     }
 

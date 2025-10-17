@@ -27,7 +27,7 @@ public class HistoricVariableInstanceVO implements Serializable {
     private String name;
 
     /** 变量值 */
-    private Object value;
+    private transient Object value;
 
     /** 变量类型 */
     private String type;

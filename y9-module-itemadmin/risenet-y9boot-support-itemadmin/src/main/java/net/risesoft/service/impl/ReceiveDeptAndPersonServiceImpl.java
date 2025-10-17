@@ -46,8 +46,6 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
     private final OrgUnitApi orgUnitApi;
 
-    private final ReceiveDeptAndPersonService self;
-
     @Override
     public Integer countByDeptId(String deptId) {
         return receivePersonRepository.countByDeptId(deptId);

@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -42,7 +42,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @date 2022/12/20
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemPermissionServiceImpl implements ItemPermissionService {
@@ -64,6 +63,27 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     private final OrgUnitApi orgUnitApi;
 
     private final ItemPermissionService self;
+
+    public ItemPermissionServiceImpl(
+        ItemPermissionRepository itemPermissionRepository,
+        DynamicRoleMemberService dynamicRoleMemberService,
+        RoleApi roleApi,
+        DynamicRoleService dynamicRoleService,
+        RepositoryApi repositoryApi,
+        ProcessDefinitionApi processDefinitionApi,
+        ItemRepository itemRepository,
+        OrgUnitApi orgUnitApi,
+        @Lazy ItemPermissionService self) {
+        this.itemPermissionRepository = itemPermissionRepository;
+        this.dynamicRoleMemberService = dynamicRoleMemberService;
+        this.roleApi = roleApi;
+        this.dynamicRoleService = dynamicRoleService;
+        this.repositoryApi = repositoryApi;
+        this.processDefinitionApi = processDefinitionApi;
+        this.itemRepository = itemRepository;
+        this.orgUnitApi = orgUnitApi;
+        this.self = self;
+    }
 
     @Override
     @Transactional

@@ -17,6 +17,7 @@ import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -52,7 +53,7 @@ public class SyncYearTableServiceImpl implements SyncYearTableService {
     public SyncYearTableServiceImpl(
         @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
         @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public,
-        SyncYearTableService self) {
+        @Lazy SyncYearTableService self) {
         this.jdbcTemplate = jdbcTemplate;
         this.jdbcTemplate4Public = jdbcTemplate4Public;
         this.self = self;
