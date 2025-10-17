@@ -44,7 +44,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/itemAll", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemAllApiImpl implements ItemAllApi {
 
-    private static final String commonSql = "SELECT T.* FROM FF_ACT_RU_DETAIL T ";
+    private static final String COMMON_SQL = "SELECT T.* FROM FF_ACT_RU_DETAIL T ";
     private final ItemPageService itemPageService;
     private final ActRuDetailService actRuDetailService;
     private final Y9TableService y9TableService;
@@ -179,7 +179,7 @@ public class ItemAllApiImpl implements ItemAllApi {
                 }
             }
             String orderBy = "T.CREATETIME DESC";
-            String sql = commonSql + processParamSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1
+            String sql = COMMON_SQL + processParamSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1
                 + systemNameSql + " AND T.ASSIGNEE = ? ORDER BY " + orderBy;
             String countSql = "SELECT COUNT(T.ID) FROM FF_ACT_RU_DETAIL T " + processParamSql
                 + " WHERE T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1 + systemNameSql;
@@ -241,7 +241,7 @@ public class ItemAllApiImpl implements ItemAllApi {
         List<String> sqlList = y9TableService.getSql(searchMap);
         String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
             assigneeNameWhereSql = sqlList.get(3);
-        String sql = commonSql + innerSql + assigneeNameInnerSql
+        String sql = COMMON_SQL + innerSql + assigneeNameInnerSql
             + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql
             + " ORDER BY T.CREATETIME DESC";
         String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
@@ -313,7 +313,7 @@ public class ItemAllApiImpl implements ItemAllApi {
             assigneeNameInnerSql = sqlList.get(2);
             assigneeNameWhereSql = sqlList.get(3);
         }
-        String sql = commonSql + innerSql + assigneeNameInnerSql
+        String sql = COMMON_SQL + innerSql + assigneeNameInnerSql
             + " WHERE T.DELETED = FALSE AND T.ASSIGNEE = ? AND T.SYSTEMNAME = ?  " + whereSql + assigneeNameWhereSql
             + " ORDER BY T.CREATETIME DESC";
         Object[] args = {userId, systemName};
