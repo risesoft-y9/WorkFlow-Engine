@@ -55,23 +55,35 @@ public class MobileSyncController {
      * @param processInstanceId 流程实例id
      */
     public void deleteDoneData(String processInstanceId) {
-        String sql3 = "DELETE from ACT_HI_TASKINST where PROC_INST_ID_ = '" + processInstanceId + "'";
-        jdbcTemplate.execute(sql3);
-        sql3 = "DELETE FROM ACT_GE_BYTEARRAY WHERE ID_ IN (SELECT * FROM ( SELECT b.ID_ FROM"
-            + " ACT_GE_BYTEARRAY b LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_ WHERE v.PROC_INST_ID_ = '"
-            + processInstanceId + "' AND v.NAME_ = 'users' ) TT )";
-        jdbcTemplate.execute(sql3);
-        sql3 = "DELETE from ACT_HI_VARINST where PROC_INST_ID_ = '" + processInstanceId + "'";
-        jdbcTemplate.execute(sql3);
+        executeDelete("ACT_HI_TASKINST", processInstanceId);
+        executeDeleteWithUsers("ACT_GE_BYTEARRAY", processInstanceId);
+        executeDelete("ACT_HI_VARINST", processInstanceId);
+        executeDelete("ACT_HI_IDENTITYLINK", processInstanceId);
+        executeDelete("ACT_HI_ACTINST", processInstanceId);
+        executeDelete("ACT_HI_PROCINST", processInstanceId);
+    }
 
-        sql3 = "DELETE from ACT_HI_IDENTITYLINK where PROC_INST_ID_ = '" + processInstanceId + "'";
-        jdbcTemplate.execute(sql3);
+    /**
+     * 执行删除操作（通用表）
+     *
+     * @param tableName 表名
+     * @param processInstanceId 流程实例ID
+     */
+    private void executeDelete(String tableName, String processInstanceId) {
+        String sql = "DELETE FROM " + tableName + " WHERE PROC_INST_ID_ = ?";
+        jdbcTemplate.update(sql, processInstanceId);
+    }
 
-        sql3 = "DELETE from ACT_HI_ACTINST where PROC_INST_ID_ = '" + processInstanceId + "'";
-        jdbcTemplate.execute(sql3);
-
-        sql3 = "DELETE from ACT_HI_PROCINST where PROC_INST_ID_ = '" + processInstanceId + "'";
-        jdbcTemplate.execute(sql3);
+    /**
+     * 执行删除操作（包含用户关联数据）
+     *
+     * @param tableName 表名
+     * @param processInstanceId 流程实例ID
+     */
+    private void executeDeleteWithUsers(String tableName, String processInstanceId) {
+        String sql = "DELETE FROM " + tableName + " WHERE ID_ IN (SELECT * FROM ( SELECT b.ID_ FROM " + tableName
+            + " b LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_ WHERE v.PROC_INST_ID_ = ? AND v.NAME_ = 'users' ) TT )";
+        jdbcTemplate.update(sql, processInstanceId);
     }
 
     /**
