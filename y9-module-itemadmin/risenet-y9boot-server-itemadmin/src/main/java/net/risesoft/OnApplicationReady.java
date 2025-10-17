@@ -86,7 +86,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
 
     private void createSystem() {
         try {
-            String sql = "select * from y9_common_system where NAME = 'itemAdmin'";
+            String sql = "select * from y9_common_system s where s.NAME = 'itemAdmin'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list.isEmpty()) {
                 sql =
@@ -129,7 +129,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
 
     private void createTenantSystem(Tenant tenant) {
         try {
-            String sql = "select * from y9_common_system where NAME = 'itemAdmin'";
+            String sql = "select * from y9_common_system y where y.NAME = 'itemAdmin'";
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             if (list.size() == 1) {
                 Map<String, Object> smap = list.get(0);
