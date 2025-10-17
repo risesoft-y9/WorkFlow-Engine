@@ -38,6 +38,8 @@ public class CommonSentencesServiceImpl implements CommonSentencesService {
 
     private final ItemSettingService itemSettingService;
 
+    private final CommonSentencesService self;
+
     @Transactional
     @Override
     public void deleteById(String id) {
@@ -71,7 +73,7 @@ public class CommonSentencesServiceImpl implements CommonSentencesService {
             commonSentencesInitRepository.save(commonSentencesInit);
             int i = 0;
             for (String option : opinionArray) {
-                CommonSentences commonSentences = saveCommonSentences(userId, option, i);
+                CommonSentences commonSentences = self.saveCommonSentences(userId, option, i);
                 i = i + 1;
                 resList.add(commonSentences);
             }
@@ -108,7 +110,7 @@ public class CommonSentencesServiceImpl implements CommonSentencesService {
         if (!commonSentencesList.isEmpty()) {
             tabIndex = commonSentencesList.get(commonSentencesList.size() - 1).getTabIndex() + 1;
         }
-        saveCommonSentences(userId, content, tabIndex);
+        self.saveCommonSentences(userId, content, tabIndex);
     }
 
     @Override
@@ -121,7 +123,7 @@ public class CommonSentencesServiceImpl implements CommonSentencesService {
                 commonSentencesRepository.save(commonSentences.get());
             }
         } else {
-            this.save(content);
+            self.save(content);
         }
 
     }

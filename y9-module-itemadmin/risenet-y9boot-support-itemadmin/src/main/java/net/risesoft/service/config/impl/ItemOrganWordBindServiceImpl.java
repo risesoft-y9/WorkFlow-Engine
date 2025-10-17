@@ -253,7 +253,8 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     @Transactional
     public void remove(String[] ids) {
         for (String id : ids) {
-            this.remove(id);
+            itemOrganWordRoleService.removeByItemOrganWordBindId(id);
+            itemOrganWordBindRepository.deleteById(id);
         }
     }
 

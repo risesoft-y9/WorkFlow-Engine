@@ -167,8 +167,7 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
         } else {
             tabItemBind.setTabIndex(index + 1);
         }
-
-        this.save(tabItemBind);
+        tabItemBindRepository.save(tabItemBind);
         return tabItemBind;
     }
 }

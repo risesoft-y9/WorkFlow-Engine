@@ -54,6 +54,8 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
+    private final ItemStartNodeRoleService self;
+
     @Override
     @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
@@ -274,7 +276,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
                 if (null != role) {
                     list.add(role);
                 } else {
-                    this.removeRole(itemId, processDefinitionId, taskDefKey, roleId);
+                    self.removeRole(itemId, processDefinitionId, taskDefKey, roleId);
                 }
             }
         }
