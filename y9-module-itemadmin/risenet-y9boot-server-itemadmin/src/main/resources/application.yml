@@ -12,7 +12,7 @@ server:
             force: true
         session:
             tracking-modes: COOKIE
-        context-path: /server-itemddmin
+        context-path: /server-itemadmin
         register-default-servlet: true
     tomcat:
         uri-encoding: UTF-8
@@ -138,23 +138,23 @@ y9:
             comment: 知悉。,同意。,已阅。,已核。,如拟。,呈XX同志阅示。,呈XX同志审签。,请XX研究办理。,请XX传阅。,请抓紧办理。,请速办。,不同意。,供参考。
     service:
         processAdmin:
-            directUrl: http://localhost:7056
+            directUrl: http://localhost:7059
         msgRemind:
-            directUrl: https://dev.youshengyun.com
+            directUrl: https://test.youshengyun.com
         datacenter:
-            directUrl: https://dev.youshengyun.com
+            directUrl: https://test.youshengyun.com
         sms:
-            directUrl: http://localhost:7056
+            directUrl: https://test.youshengyun.com
         todo:
-            directUrl: https://dev.youshengyun.com
+            directUrl: https://test.youshengyun.com
         org:
-            directUrl: http://localhost:7055
+            directUrl: https://test.youshengyun.com
     common:
         cacheEnabled: true
         kafkaEnabled: true
-        orgBaseUrl: http://localhost:7055/server-platform
-        processAdminBaseUrl: http://localhost:7056/server-processadmin
-        itemAdminBaseUrl: http://localhost:7056/server-itemddmin
+        orgBaseUrl: https://test.youshengyun.com/server-platform
+        processAdminBaseUrl: http://localhost:7059/server-processadmin
+        itemAdminBaseUrl: http://localhost:7059/server-itemadmin
         datacenterBaseUrl: https://dev.youshengyun.com/server-datacenter
         msgRemindBaseUrl: https://dev.youshengyun.com/server-msgremind
         smsBaseUrl: http://localhost:7056/sms
