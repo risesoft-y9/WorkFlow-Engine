@@ -12,7 +12,7 @@ server:
             force: true
         session:
             tracking-modes: COOKIE
-        context-path: /server-itemddmin
+        context-path: /server-itemadmin
         register-default-servlet: true
     tomcat:
         uri-encoding: UTF-8
@@ -89,9 +89,9 @@ spring:
                 #password: 111111
                 
                 driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://localhost:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                url: jdbc:mysql://192.168.3.31:3306/y9_public?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
                 username: root
-                password: 111111
+                password: 'Y9i-83204585'
                 initialSize: 1
                 maxActive: 20
                 maxPoolPreparedStatementPerConnectionSize: 100
@@ -111,9 +111,9 @@ spring:
                 #username: y9_flowable
                 #password: 111111
                 driver-class-name: com.mysql.cj.jdbc.Driver
-                url: jdbc:mysql://localhost:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
+                url: jdbc:mysql://192.168.3.31:3306/y9_flowable?serverTimezone=GMT%2B8&nullCatalogMeansCurrent=true&useUnicode=true&characterEncoding=utf-8&rewriteBatchedStatements=true&useCompression=true&useSSL=false&allowPublicKeyRetrieval=true
                 username: root
-                password: 111111
+                password: 'Y9i-83204585'
                 initialSize: 1
                 maxActive: 20
                 maxPoolPreparedStatementPerConnectionSize: 100
@@ -128,9 +128,9 @@ spring:
                 useGlobalDataSourceStat: true
                 validationQuery: SELECT 1 FROM DUAL
     elasticsearch:
-        uris: localhost:9200
+        uris: 192.168.3.31:9200
         username: elastic
-        password: 'risesoft'
+        password: 'Risesoft@2024'
     jmx:
         default-domain: itemAdmin
     jpa:
@@ -153,7 +153,7 @@ spring:
                     batch_size: 100
                 show_sql: false
     kafka:
-        bootstrap-servers: localhost:9092
+        bootstrap-servers: 192.168.3.32:9094
         consumer:
             auto-commit-interval: 1000
             enable-auto-commit: true
@@ -166,8 +166,8 @@ spring:
             suffix: .jsp
     redis:
         database: 8
-        host: localhost
-        password: 111111
+        host: 192.168.3.37
+        password: Y9i-83204585
         port: 6379
         lettuce:
             pool:
@@ -193,23 +193,23 @@ y9:
             comment: 知悉。,同意。,已阅。,已核。,如拟。,呈XX同志阅示。,呈XX同志审签。,请XX研究办理。,请XX传阅。,请抓紧办理。,请速办。,不同意。,供参考。
     service:
         processAdmin:
-            directUrl: http://localhost:7056
+            directUrl: http://localhost:7059
         msgRemind:
-            directUrl: https://dev.youshengyun.com
+            directUrl: https://test.youshengyun.com
         datacenter:
-            directUrl: https://dev.youshengyun.com
+            directUrl: https://test.youshengyun.com
         sms:
-            directUrl: http://localhost:7056
+            directUrl: https://test.youshengyun.com
         todo:
-            directUrl: https://dev.youshengyun.com
+            directUrl: https://test.youshengyun.com
         org:
-            directUrl: http://localhost:7055
+            directUrl: https://test.youshengyun.com
     common:
         cacheEnabled: true
         kafkaEnabled: true
-        orgBaseUrl: http://localhost:7055/server-platform
-        processAdminBaseUrl: http://localhost:7056/server-processadmin
-        itemAdminBaseUrl: http://localhost:7056/server-itemddmin
+        orgBaseUrl: https://test.youshengyun.com/server-platform
+        processAdminBaseUrl: http://localhost:7059/server-processadmin
+        itemAdminBaseUrl: http://localhost:7059/server-itemadmin
         datacenterBaseUrl: https://dev.youshengyun.com/server-datacenter
         msgRemindBaseUrl: https://dev.youshengyun.com/server-msgremind
         smsBaseUrl: http://localhost:7056/sms
@@ -323,5 +323,5 @@ y9:
                 opaque:
                     client-id: clientid_oidc
                     client-secret: secret_oidc
-                    introspection-uri: http://localhost:7055/sso/oidc/introspect
-                    profile-uri: http://localhost:7055/sso/oidc/profile
+                    introspection-uri: http://test-internal.youshengyun.com/sso/oidc/introspect
+                    profile-uri: http://test-internal.youshengyun.com/sso/oidc/profile
