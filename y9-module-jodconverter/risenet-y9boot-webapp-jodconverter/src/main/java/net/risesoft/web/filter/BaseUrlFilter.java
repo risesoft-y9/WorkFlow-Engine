@@ -59,6 +59,8 @@ public class BaseUrlFilter implements Filter {
             baseUrl = baseUrl.concat("/");
         }
 
+        // SonarQube: This assignment is intentional as BASE_URL is a static field
+        // that needs to be updated globally across all filter instances
         BASE_URL = baseUrl;
         request.setAttribute("baseUrl", baseUrl);
         filterChain.doFilter(request, response);

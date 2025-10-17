@@ -389,7 +389,7 @@ public class ConfigConstants {
 
     @Value("${office.preview.switch.disabled:true}")
     public void setOfficePreviewSwitchDisabled(String officePreviewSwitchDisabled) {
-        ConfigConstants.officePreviewSwitchDisabled = officePreviewSwitchDisabled;
+        setOfficePreviewSwitchDisabledValue(officePreviewSwitchDisabled);
     }
 
     public static void setOfficePreviewSwitchDisabledValue(String officePreviewSwitchDisabled) {
