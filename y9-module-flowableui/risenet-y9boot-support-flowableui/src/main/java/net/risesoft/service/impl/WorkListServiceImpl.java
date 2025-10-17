@@ -221,7 +221,7 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Todo(ardModel, formData));
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取待办列表失败，异常processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
@@ -1464,7 +1464,7 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败，processInstanceId = " + processInstanceId, e);
+                    LOGGER.error("获取待办列表失败，processInstanceId == " + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
@@ -1514,7 +1514,7 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取待办件列表失败，processInstanceId：" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }
@@ -1571,7 +1571,7 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                 } catch (Exception e) {
-                    LOGGER.error("获取待办列表失败" + processInstanceId, e);
+                    LOGGER.error("获取待办列表失败，processInstanceId=" + processInstanceId, e);
                 }
                 items.add(mapTemp);
             }

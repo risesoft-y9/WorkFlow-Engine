@@ -52,7 +52,7 @@ public class HistoryProcessModel implements Serializable, Comparable<HistoryProc
     private String time;
 
     /** 描述 */
-    private Object description;
+    private transient Object description;
 
     /** 意见 */
     private String opinion;
