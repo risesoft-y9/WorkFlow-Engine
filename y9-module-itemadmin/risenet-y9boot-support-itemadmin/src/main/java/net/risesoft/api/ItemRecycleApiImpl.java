@@ -17,9 +17,10 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.worklist.ItemRecycleApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.ActRuDetail;
-import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
+import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.core.ActRuDetailService;
@@ -48,8 +49,11 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
 
     private final JdbcTemplate jdbcTemplate;
 
-    public ItemRecycleApiImpl(ItemPageService itemPageService, ActRuDetailService actRuDetailService,
-        Y9TableService y9TableService, @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
+    public ItemRecycleApiImpl(
+        ItemPageService itemPageService,
+        ActRuDetailService actRuDetailService,
+        Y9TableService y9TableService,
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
         this.itemPageService = itemPageService;
         this.actRuDetailService = actRuDetailService;
         this.y9TableService = y9TableService;
@@ -87,7 +91,7 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
     public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.LASTTIME_KEY);
         Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemNameAndDeletedTrue(systemName, page, rows, sort);
         List<ActRuDetailModel> modelList = new ArrayList<>();
         ardPage.getContent().forEach(ard -> {
@@ -114,7 +118,7 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
         @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.LASTTIME_KEY);
         Page<ActRuDetail> ardPage =
             actRuDetailService.pageBySystemNameAndAssigneeAndDeletedTrue(systemName, userId, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
@@ -125,8 +129,13 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
             Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
             modelList.add(actRuDetailModel);
         }
-        ItemPage<ActRuDetailModel> itemPage = ItemPage.<ActRuDetailModel>builder().rows(modelList).currpage(page)
-            .size(rows).totalpages(ardPage.getTotalPages()).total(ardPage.getTotalElements()).build();
+        ItemPage<ActRuDetailModel> itemPage = ItemPage.<ActRuDetailModel>builder()
+            .rows(modelList)
+            .currpage(page)
+            .size(rows)
+            .totalpages(ardPage.getTotalPages())
+            .total(ardPage.getTotalElements())
+            .build();
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
             itemPage.getRows());
     }
@@ -147,7 +156,7 @@ public class ItemRecycleApiImpl implements ItemRecycleApi {
         @RequestParam String deptId, @RequestParam("isBureau") boolean isBureau, @RequestParam String systemName,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.LASTTIME_KEY);
         Page<ActRuDetail> ardPage =
             actRuDetailService.pageBySystemNameAndDeptIdAndDeletedTrue(systemName, deptId, isBureau, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();

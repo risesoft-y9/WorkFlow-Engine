@@ -54,7 +54,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);
             OpinionFrame opinionFrame = opinionFrameService.getByMark(o.getOpinionFrameMark());
-            model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
+            model.setOpinionFrameName(opinionFrame == null ? "意见框数据不存在" : opinionFrame.getName());
             modelList.add(model);
         }
         return Y9Result.success(modelList);
@@ -80,7 +80,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);
             OpinionFrame opinionFrame = opinionFrameService.getByMark(o.getOpinionFrameMark());
-            model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
+            model.setOpinionFrameName(opinionFrame == null ? "绑定的意见框不存在" : opinionFrame.getName());
             modelList.add(model);
         }
         return Y9Result.success(modelList);
@@ -109,7 +109,7 @@ public class ItemOpinionFrameBindApiImpl implements ItemOpinionFrameBindApi {
             ItemOpinionFrameBindModel model = new ItemOpinionFrameBindModel();
             Y9BeanUtil.copyProperties(o, model);
             OpinionFrame opinionFrame = opinionFrameService.getByMark(o.getOpinionFrameMark());
-            model.setOpinionFrameName(opinionFrame == null ? "意见框不存在" : opinionFrame.getName());
+            model.setOpinionFrameName(opinionFrame == null ? "当前绑定的意见框不存在" : opinionFrame.getName());
             modelList.add(model);
         }
         return Y9Result.success(modelList);

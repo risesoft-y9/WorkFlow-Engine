@@ -120,11 +120,11 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         String bySql = "ORDER BY P.CREATETIME DESC ) A WHERE A.RS_NUM = 1";
         String allSql =
             "SELECT A.* FROM (SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY C "
-                + leftJoinSql + " WHERE C.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + " AND USERID = ? "
+                + leftJoinSql + " WHERE C.STATUS< " + DocumentCopyStatusEnum.CANCEL.getValue() + " AND USERID = ? "
                 + paramSql + systemNameSql + bySql;
         String countSql =
             "SELECT COUNT(*) FROM ( SELECT ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM  FROM FF_DOCUMENT_COPY C "
-                + leftJoinSql + " WHERE C.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + " AND USERID = ? "
+                + leftJoinSql + " WHERE C.STATUS <" + DocumentCopyStatusEnum.CANCEL.getValue() + " AND USERID = ? "
                 + paramSql + systemNameSql + ") ALIAS WHERE RS_NUM =1";
         Object[] args = new Object[1];
         args[0] = orgUnitId;
