@@ -63,10 +63,10 @@ public class ItemWordTemplateBindController {
         try {
             itemWordTemplateBindService.clearBindStatus(itemId, processDefinitionId);
         } catch (Exception e) {
-            LOGGER.error("更新绑定状态失败", e);
-            Y9Result.failure("更新绑定状态失败");
+            LOGGER.error("清除绑定模板状态", e);
+            Y9Result.failure("清除绑定模板状态失败");
         }
-        return Y9Result.successMsg("更新绑定状态成功");
+        return Y9Result.successMsg("清除绑定模板状态成功");
     }
 
     /**
@@ -241,7 +241,7 @@ public class ItemWordTemplateBindController {
         try {
             itemWordTemplateBindService.updateBindStatus(id, itemId, processDefinitionId);
         } catch (Exception e) {
-            LOGGER.error("更新绑定状态失败", e);
+            LOGGER.error("更新绑定状态失败!异常：", e);
             Y9Result.failure("更新绑定状态失败");
         }
         return Y9Result.successMsg("更新绑定状态成功");

@@ -20,6 +20,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.documentword.Y9Word;
 import net.risesoft.entity.documentword.Y9WordHistory;
@@ -163,8 +164,8 @@ public class Y9WordApiImpl implements Y9WordApi {
                 word.setUserName(user.getName());
             }
         } catch (Exception e) {
-            LOGGER.error("获取正文文件信息失败", e);
-            return Y9Result.failure("获取正文文件信息失败");
+            LOGGER.error("获取正文文件信息失败（数据传输）", e);
+            return Y9Result.failure("获取正文文件信息失败!");
         }
         return Y9Result.success(word);
     }
@@ -195,10 +196,10 @@ public class Y9WordApiImpl implements Y9WordApi {
                     history.setOpenWordOrPdf("openPDF");
                 } else if (ItemWordTypeEnum.WORD.getValue().equals(historyWord.getIstaohong())
                     || ItemWordTypeEnum.WORD_RED_HEAD.getValue().equals(historyWord.getIstaohong())) {
-                    history.setOpenWordOrPdf("openWord");
+                    history.setOpenWordOrPdf(ItemConsts.OPENWORD_KEY);
                 }
             } else {
-                history.setOpenWordOrPdf("openWord");
+                history.setOpenWordOrPdf(ItemConsts.OPENWORD_KEY);
             }
 
             history.setTitle(historyWord.getTitle());
@@ -241,7 +242,7 @@ public class Y9WordApiImpl implements Y9WordApi {
                 return Y9Result.success(word);
             }
         } catch (Exception e) {
-            LOGGER.error("获取正文文件信息失败", e);
+            LOGGER.error("根据流程编号获取正文文件信息失败", e);
             return Y9Result.failure("获取正文文件信息失败");
         }
         return Y9Result.success(null);
@@ -323,7 +324,7 @@ public class Y9WordApiImpl implements Y9WordApi {
             if (StringUtils.isNotBlank(y9Word.getFileStoreId())) {
                 return Y9Result.success(y9Word.getFileStoreId());
             } else {
-                return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
+                return Y9Result.failure("fileStoreId为空，保存正文的时候出错!!");
             }
         } else {// 打开事项配置的正文模板
             Item item = itemService.findById(itemId);
@@ -387,10 +388,10 @@ public class Y9WordApiImpl implements Y9WordApi {
             if (StringUtils.isNotBlank(y9Word.getFileStoreId())) {
                 return Y9Result.success(y9Word.getFileStoreId());
             } else {
-                return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
+                return Y9Result.failure("获取fileStoreId为空，保存正文的时候出错！");
             }
         }
-        return Y9Result.failure("未找到文档信息");
+        return Y9Result.failure("未找到文档信息，请检查存储信息");
     }
 
     /**
@@ -425,7 +426,7 @@ public class Y9WordApiImpl implements Y9WordApi {
             LOGGER.error("数据库没有templateGUID={}的模版，请联系管理员", templateGuid);
             return Y9Result.failure("数据库没有templateGUID=" + templateGuid + "的模版，请联系管理员");
         }
-        return Y9Result.failure("未找到文档信息");
+        return Y9Result.failure("未找到套红模板信息");
     }
 
     /**
@@ -452,10 +453,10 @@ public class Y9WordApiImpl implements Y9WordApi {
             if (StringUtils.isNotBlank(y9Word.getFileStoreId())) {
                 return Y9Result.success(y9Word.getFileStoreId());
             } else {
-                return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
+                return Y9Result.failure("未获取到fileStoreId，保存正文的时候出错");
             }
         }
-        return Y9Result.failure("未找到文档信息");
+        return Y9Result.failure("未找到PDF文档信息");
     }
 
     /**
@@ -484,11 +485,11 @@ public class Y9WordApiImpl implements Y9WordApi {
             if (StringUtils.isNotBlank(y9Word.getFileStoreId())) {
                 return Y9Result.success(y9Word.getFileStoreId());
             } else {// 从数据库读取正文
-                LOGGER.error("fileStoreId为空，保存正文的时候出错");
-                return Y9Result.failure("fileStoreId为空，保存正文的时候出错");
+                LOGGER.error("fileStoreId为空，保存正文出错");
+                return Y9Result.failure("获取到fileStoreId为空，保存正文出错");
             }
         }
-        return Y9Result.failure("未找到文档信息");
+        return Y9Result.failure("未找到转换PDF前的正文文档信息");
     }
 
     /**
@@ -616,7 +617,7 @@ public class Y9WordApiImpl implements Y9WordApi {
                 openWordOrPdf = "openTaoHongWord";
                 isTaoHong = "1";
             } else {
-                openWordOrPdf = "openWord";
+                openWordOrPdf = ItemConsts.OPENWORD_KEY;
                 isTaoHong = "0";
             }
             wordInfo.setFileType(d.getFileType());
@@ -646,7 +647,7 @@ public class Y9WordApiImpl implements Y9WordApi {
                     String fileName = wordTemplate.getFileName();
                     fileType = fileName.substring(fileName.lastIndexOf("."));
                 } else {
-                    openWordOrPdf = "openWord";
+                    openWordOrPdf = ItemConsts.OPENWORD_KEY;
                     docCategory = bindValue;
                 }
             } else {

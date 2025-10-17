@@ -331,7 +331,7 @@ public class JsonImAndExportRestController {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("导入数据异常：" + e.getMessage());
+            LOGGER.error("导入字典数据异常：" + e.getMessage());
         }
     }
 
@@ -351,7 +351,7 @@ public class JsonImAndExportRestController {
                 commonButtonService.saveOrUpdate(commonButton);
             }
         } catch (Exception e) {
-            LOGGER.error("导入数据异常：" + e.getMessage());
+            LOGGER.error("导入普通按钮数据异常：" + e.getMessage());
         }
     }
 
@@ -371,7 +371,7 @@ public class JsonImAndExportRestController {
                 sendButtonService.saveOrUpdate(sendButton);
             }
         } catch (Exception e) {
-            LOGGER.error("导入数据异常：" + e.getMessage());
+            LOGGER.error("导入发送按钮数据异常：" + e.getMessage());
         }
     }
 
@@ -393,7 +393,7 @@ public class JsonImAndExportRestController {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("导入数据异常：" + e.getMessage());
+            LOGGER.error("导入意见框数据异常：" + e.getMessage());
         }
     }
 
@@ -417,7 +417,7 @@ public class JsonImAndExportRestController {
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("导入数据异常：" + e.getMessage());
+            LOGGER.error("导入动态角色配置数据异常：" + e.getMessage());
         }
     }
 

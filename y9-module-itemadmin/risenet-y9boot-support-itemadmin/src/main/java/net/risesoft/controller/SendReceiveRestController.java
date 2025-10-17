@@ -18,6 +18,7 @@ import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.entity.receive.ReceiveDepartment;
 import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
@@ -65,7 +66,7 @@ public class SendReceiveRestController {
         if (receiveDept != null) {
             return Y9Result.successMsg("true");
         } else {
-            return Y9Result.failure("false");
+            return Y9Result.failure(ItemConsts.FALSE_STR_KEY);
         }
     }
 
@@ -228,11 +229,11 @@ public class SendReceiveRestController {
         List<OrgUnit> orgUnitList = orgUnitApi.getSubTree(Y9LoginUserHolder.getTenantId(), id, treeType).getData();
         for (OrgUnit orgUnit : orgUnitList) {
             if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                orgUnit.setDn("false");
+                orgUnit.setDn(ItemConsts.FALSE_STR_KEY);
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
                 List<Department> deptList =
                     departmentApi.listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
-                orgUnit.setGuidPath("false");
+                orgUnit.setGuidPath(ItemConsts.FALSE_STR_KEY);
                 for (Department dept : deptList) {
                     orgUnit.setGuidPath("true");
                     ReceiveDepartment receiveDept = receiveDeptAndPersonService.findByDeptId(dept.getId());
@@ -241,8 +242,8 @@ public class SendReceiveRestController {
                         break;
                     }
                 }
-                orgUnit.setCustomId("false");
-                orgUnit.setProperties("false");
+                orgUnit.setCustomId(ItemConsts.FALSE_STR_KEY);
+                orgUnit.setProperties(ItemConsts.FALSE_STR_KEY);
                 if (receiveDepartment != null) {
                     orgUnit.setCustomId("true");
                     Integer count = receiveDeptAndPersonService.countByDeptId(orgUnit.getId());
@@ -285,11 +286,11 @@ public class SendReceiveRestController {
         List<OrgUnit> orgUnitList = orgUnitApi.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
         for (OrgUnit orgUnit : orgUnitList) {
             if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                orgUnit.setDn("false");
+                orgUnit.setDn(ItemConsts.FALSE_STR_KEY);
                 ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
                 List<Department> deptList =
                     departmentApi.listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
-                orgUnit.setGuidPath("false");
+                orgUnit.setGuidPath(ItemConsts.FALSE_STR_KEY);
                 for (Department dept : deptList) {
                     orgUnit.setGuidPath("true");
                     ReceiveDepartment receiveDept = receiveDeptAndPersonService.findByDeptId(dept.getId());
@@ -298,8 +299,8 @@ public class SendReceiveRestController {
                         break;
                     }
                 }
-                orgUnit.setCustomId("false");
-                orgUnit.setProperties("false");
+                orgUnit.setCustomId(ItemConsts.FALSE_STR_KEY);
+                orgUnit.setProperties(ItemConsts.FALSE_STR_KEY);
                 if (receiveDepartment != null) {
                     orgUnit.setCustomId("true");
                     Integer count = receiveDeptAndPersonService.countByDeptId(orgUnit.getId());

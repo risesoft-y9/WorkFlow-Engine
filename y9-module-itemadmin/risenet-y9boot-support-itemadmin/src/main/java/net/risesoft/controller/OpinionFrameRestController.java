@@ -50,7 +50,7 @@ public class OpinionFrameRestController {
     public Y9Page<OpinionFrame> list(@RequestParam Integer page, @RequestParam Integer rows) {
         Page<OpinionFrame> pageList = opinionFrameService.pageAll(page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
-            "获取列表成功");
+            "获取意见框列表成功");
     }
 
     /**
@@ -69,7 +69,7 @@ public class OpinionFrameRestController {
         Page<OpinionFrame> pageList =
             opinionFrameService.pageAllNotUsed(itemId, processDefinitionId, taskDefKey, page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
-            "获取列表成功");
+            "获取绑定的意见框列表成功");
     }
 
     /**
@@ -109,7 +109,7 @@ public class OpinionFrameRestController {
         @RequestParam(required = false) String keyword) {
         Page<OpinionFrame> pageList = opinionFrameService.search(page, rows, keyword);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
-            "获取列表成功");
+            "根据关键字查找意见框列表成功");
     }
 
     /**
@@ -130,6 +130,6 @@ public class OpinionFrameRestController {
         Page<OpinionFrame> pageList =
             opinionFrameService.search4NotUsed(itemId, processDefinitionId, taskDefKey, page, rows, keyword);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), pageList.getContent(),
-            "获取列表成功");
+            "根据条件查询意见框列表成功");
     }
 }

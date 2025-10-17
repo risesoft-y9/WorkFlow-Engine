@@ -10,6 +10,7 @@ public class ItemConsts {
     public static final String CREATEDATE_KEY = "createDate";
     public static final String WORDSIZE_KEY = "wordSize";
     public static final String DEPARTMENT_KEY = "department";
+    public static final String DEPARTMENT_D_KEY = "Department";
     public static final String CREATER_KEY = "creater";
     public static final String CONTACT_KEY = "contact";
     public static final String MOTIVE_KEY = "motive";
@@ -30,6 +31,13 @@ public class ItemConsts {
     public static final String BUREAUID_KEY = "BUREAUID";
     public static final String ASSIGNEENAME_KEY = "assigneeName";
     public static final String NOSIGN_KEY = "noSign";
+    public static final String VALUE_KEY = "value";
+    public static final String OPENWORD_KEY = "openWord";
+    public static final String ICONDATA_KEY = "iconData";
+    public static final String FALSE_STR_KEY = "false";
+    public static final String TABLENAME_KEY = "tableName";
+
+    public static final String FIELDLIST_KEY = "fieldlist";
     /** 自由流办件processDefineKey */
     public static String freeFlowKey = "ziyouliucheng";
     /** 所有事项ID */

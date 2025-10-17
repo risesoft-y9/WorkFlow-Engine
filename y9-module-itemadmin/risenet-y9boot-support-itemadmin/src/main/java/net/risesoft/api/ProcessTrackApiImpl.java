@@ -130,8 +130,8 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
             List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId(processInstanceId);
             return Y9Result.success(items);
         } catch (Exception e) {
-            LOGGER.error("获取历程列表异常", e);
-            return Y9Result.failure("获取历程列表异常 ");
+            LOGGER.error("获取历程列表异常(包含每个任务节点的特殊操作的历程)", e);
+            return Y9Result.failure("获取流程历程列表异常 ");
         }
     }
 
@@ -154,8 +154,8 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
                 processTrackService.listByProcessInstanceIdWithActionName(processInstanceId);
             return Y9Result.success(items);
         } catch (Exception e) {
-            LOGGER.error("获取历程列表异常", e);
-            return Y9Result.failure("获取历程列表异常 ");
+            LOGGER.error("获取流程历程列表异常", e);
+            return Y9Result.failure("获取历程列表异常！！ ");
         }
     }
 
@@ -177,8 +177,8 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
             List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId4Simple(processInstanceId);
             return Y9Result.success(items);
         } catch (Exception e) {
-            LOGGER.error("获取历程列表异常", e);
-            return Y9Result.failure("获取历程列表异常 ");
+            LOGGER.error("获取历程列表异常（简单版）", e);
+            return Y9Result.failure("获取历程列表异常! ");
         }
     }
 
