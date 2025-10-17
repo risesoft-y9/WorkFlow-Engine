@@ -36,6 +36,7 @@ import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
@@ -272,7 +273,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria =
             new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("processInstanceId").is(processInstanceId);
         criteria.subCriteria(new Criteria("senderId").not().is(senderId));
@@ -320,7 +321,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
             .and("senderId")
             .is(senderId)
@@ -370,7 +371,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
         if (StringUtils.isNotBlank(documentTitle)) {
             criteria.subCriteria(new Criteria("title").contains(documentTitle));
@@ -391,7 +392,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             map.put("id", cs.getId());
             try {
                 String processInstanceId = cs.getProcessInstanceId();
-                map.put("createTime",
+                map.put(ItemConsts.CREATETIME_KEY,
                     Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
                 map.put("readTime", StringUtils.isNotBlank(cs.getReadTime())
                     ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
@@ -432,7 +433,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
             .and("userId")
             .is(orgUnitId)
@@ -502,7 +503,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId").is(userId);
         if (StringUtils.isNotBlank(searchName)) {
             criteria.subCriteria(new Criteria("title").contains(searchName));
@@ -517,7 +518,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
         }
         if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("createTime").contains(year));
+            criteria.subCriteria(new Criteria(ItemConsts.CREATETIME_KEY).contains(year));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
@@ -577,7 +578,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         List<ChaoSongModel> list = new ArrayList<>();
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
             .and("userId")
             .is(userId)
@@ -645,7 +646,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
             .and("userId")
             .is(orgUnitId)
@@ -817,7 +818,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
         if (StringUtils.isNotBlank(searchName)) {
             criteria.subCriteria(new Criteria("title").contains(searchName));
@@ -832,7 +833,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
         }
         if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("createTime").contains(year));
+            criteria.subCriteria(new Criteria(ItemConsts.CREATETIME_KEY).contains(year));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
@@ -894,7 +895,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "createTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
         if (StringUtils.isNotBlank(searchName)) {
             criteria.subCriteria(new Criteria("title").contains(searchName));
@@ -912,7 +913,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
         }
         if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("createTime").contains(year));
+            criteria.subCriteria(new Criteria(ItemConsts.CREATETIME_KEY).contains(year));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
