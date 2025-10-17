@@ -19,11 +19,12 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import net.risesoft.api.itemadmin.worklist.ItemAllApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.enums.ActRuDetailStatusEnum;
-import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.QueryParamModel;
+import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.core.ActRuDetailService;
@@ -43,16 +44,17 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/itemAll", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemAllApiImpl implements ItemAllApi {
 
+    private static final String commonSql = "SELECT T.* FROM FF_ACT_RU_DETAIL T ";
     private final ItemPageService itemPageService;
-
     private final ActRuDetailService actRuDetailService;
-
     private final Y9TableService y9TableService;
-
     private final JdbcTemplate jdbcTemplate;
 
-    public ItemAllApiImpl(ItemPageService itemPageService, ActRuDetailService actRuDetailService,
-        Y9TableService y9TableService, @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
+    public ItemAllApiImpl(
+        ItemPageService itemPageService,
+        ActRuDetailService actRuDetailService,
+        Y9TableService y9TableService,
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
         this.itemPageService = itemPageService;
         this.actRuDetailService = actRuDetailService;
         this.y9TableService = y9TableService;
@@ -92,7 +94,7 @@ public class ItemAllApiImpl implements ItemAllApi {
         @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         Page<ActRuDetail> ardPage =
             actRuDetailService.pageBySystemNameAndAssignee(systemName, userId, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
@@ -111,7 +113,7 @@ public class ItemAllApiImpl implements ItemAllApi {
     public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemName(systemName, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
@@ -138,7 +140,7 @@ public class ItemAllApiImpl implements ItemAllApi {
     public Y9Page<ActRuDetailModel> findByUserId(@RequestParam String tenantId, @RequestParam String userId,
         QueryParamModel queryParamModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         int page = queryParamModel.getPage(), rows = queryParamModel.getRows();
         Page<ActRuDetail> ardPage;
         boolean isEmpty = checkObjAllFieldsIsNull(queryParamModel);
@@ -165,8 +167,11 @@ public class ItemAllApiImpl implements ItemAllApi {
                             systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
                                 : "AND T.SYSTEMNAME = '" + fieldValue + "' ";
                         } else {
-                            sql1.append("AND INSTR(F.").append(f.getName().toUpperCase()).append(",'")
-                                .append(fieldValue).append("') > 0 ");
+                            sql1.append("AND INSTR(F.")
+                                .append(f.getName().toUpperCase())
+                                .append(",'")
+                                .append(fieldValue)
+                                .append("') > 0 ");
                         }
                     }
                 } catch (Exception e) {
@@ -174,9 +179,8 @@ public class ItemAllApiImpl implements ItemAllApi {
                 }
             }
             String orderBy = "T.CREATETIME DESC";
-            String sql =
-                "SELECT T.* FROM FF_ACT_RU_DETAIL T " + processParamSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE "
-                    + sql1 + systemNameSql + " AND T.ASSIGNEE = ? ORDER BY " + orderBy;
+            String sql = commonSql + processParamSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1
+                + systemNameSql + " AND T.ASSIGNEE = ? ORDER BY " + orderBy;
             String countSql = "SELECT COUNT(T.ID) FROM FF_ACT_RU_DETAIL T " + processParamSql
                 + " WHERE T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1 + systemNameSql;
             Object[] args = new Object[1];
@@ -237,7 +241,7 @@ public class ItemAllApiImpl implements ItemAllApi {
         List<String> sqlList = y9TableService.getSql(searchMap);
         String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
             assigneeNameWhereSql = sqlList.get(3);
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+        String sql = commonSql + innerSql + assigneeNameInnerSql
             + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql
             + " ORDER BY T.CREATETIME DESC";
         String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
@@ -309,10 +313,10 @@ public class ItemAllApiImpl implements ItemAllApi {
             assigneeNameInnerSql = sqlList.get(2);
             assigneeNameWhereSql = sqlList.get(3);
         }
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql
+        String sql = commonSql + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.ASSIGNEE = ? AND T.SYSTEMNAME = ?  " + whereSql + assigneeNameWhereSql
             + " ORDER BY T.CREATETIME DESC";
-        Object[] args = {systemName, userId};
+        Object[] args = {userId, systemName};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
         return Y9Result.success(content);
