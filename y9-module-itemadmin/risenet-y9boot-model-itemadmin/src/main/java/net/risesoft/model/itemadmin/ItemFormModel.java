@@ -34,5 +34,5 @@ public class ItemFormModel implements Serializable {
     /**
      * 表单业务数据(手机端需要)
      */
-    private Map<String, Object> formData;
+    private transient Map<String, Object> formData;
 }
