@@ -74,7 +74,7 @@ public class Y9FormItemBindRestController {
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4Own(itemId, procDefId, taskDefKey);
         for (Y9FormItemBind bind : eformItemList) {
             Y9Form form = y9FormRepository.findById(bind.getFormId()).orElse(null);
-            bind.setFormName(form != null ? form.getFormName() : "表单不存在");
+            bind.setFormName(form != null ? form.getFormName() : "绑定的表单不存在");
         }
 
         return Y9Result.success(eformItemList, "获取成功");
@@ -164,7 +164,7 @@ public class Y9FormItemBindRestController {
         if (StringUtils.isNotBlank(id)) {
             eformItemBind = y9FormItemBindService.getById(id);
             Y9Form form = y9FormRepository.findById(eformItemBind.getFormId()).orElse(null);
-            eformItemBind.setFormName(form != null ? form.getFormName() : "表单不存在");
+            eformItemBind.setFormName(form != null ? form.getFormName() : "表单数据不存在");
         } else {
             id = Y9IdGenerator.genId(IdType.SNOWFLAKE);
             eformItemBind = new Y9FormItemBind();
@@ -204,14 +204,14 @@ public class Y9FormItemBindRestController {
             for (Y9FormItemBind eib : pcBindList) {
                 String formId = eib.getFormId();
                 Y9Form form = y9FormRepository.findById(formId).orElse(null);
-                String formName = form != null ? form.getFormName() : "表单不存在";
+                String formName = form != null ? form.getFormName() : "绑定的表单信息不存在";
                 eformNames = Y9Util.genCustomStr(eformNames, formName);
             }
             if (!mobileBindList.isEmpty()) {
                 for (Y9FormItemMobileBind mobileBind : mobileBindList) {
                     String formId = mobileBind.getFormId();
                     Y9Form form = y9FormRepository.findById(formId).orElse(null);
-                    String formName = form != null ? form.getFormName() : "表单不存在";
+                    String formName = form != null ? form.getFormName() : "手机端绑定的表单不存在";
                     mobileFormName = Y9Util.genCustomStr(mobileFormName, formName);
                 }
             }
@@ -287,7 +287,7 @@ public class Y9FormItemBindRestController {
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4OwnMobile(itemId, procDefId, taskDefKey);
         for (Y9FormItemMobileBind bind : eformItemList) {
             Y9Form form = y9FormRepository.findById(bind.getFormId()).orElse(null);
-            bind.setFormName(form != null ? form.getFormName() : "表单不存在");
+            bind.setFormName(form != null ? form.getFormName() : "手机端表单不存在");
         }
 
         return Y9Result.success(eformItemList, "获取成功");

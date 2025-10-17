@@ -24,6 +24,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.resource.AppIconApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.Item;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -263,7 +264,7 @@ public class ItemRestController {
                 Map<String, String> filemap = new HashMap<>(16);
                 filemap.put("path", appicon.getPath());
                 filemap.put("name", appicon.getName());
-                filemap.put("iconData", appicon.getIconData());
+                filemap.put(ItemConsts.ICONDATA_KEY, appicon.getIconData());
                 iconList.add(filemap);
             }
         }
@@ -311,7 +312,7 @@ public class ItemRestController {
                 Map<String, String> filemap = new HashMap<>(16);
                 filemap.put("path", appicon.getPath());
                 filemap.put("name", appicon.getName());
-                filemap.put("iconData", appicon.getIconData());
+                filemap.put(ItemConsts.ICONDATA_KEY, appicon.getIconData());
                 iconList.add(filemap);
             }
         }
@@ -329,12 +330,12 @@ public class ItemRestController {
     @PostMapping(value = "/uploadItemIcon")
     public Y9Result<Map<String, Object>> uploadItemIcon(@RequestParam MultipartFile files) {
         Map<String, Object> map = new HashMap<>(16);
-        map.put("iconData", "");
+        map.put(ItemConsts.ICONDATA_KEY, "");
         byte[] iconData = null;
         try {
             if (!files.isEmpty()) {
                 iconData = files.getBytes();
-                map.put("iconData", Base64.encodeToString(iconData));
+                map.put(ItemConsts.ICONDATA_KEY, Base64.encodeToString(iconData));
             }
             return Y9Result.success(map, "上传成功");
         } catch (IOException e1) {

@@ -55,7 +55,7 @@ public class InterfaceRestController {
     public Y9Result<List<InterfaceInfo>> findInterfaceList(@RequestParam(required = false) String name,
         @RequestParam(required = false) String type, @RequestParam(required = false) String address) {
         List<InterfaceInfo> list = interfaceService.listInterfaces(name, type, address);
-        return Y9Result.success(list, "获取列表成功");
+        return Y9Result.success(list, "获取接口列表成功");
     }
 
     /**
@@ -70,7 +70,7 @@ public class InterfaceRestController {
     public Y9Result<List<InterfaceRequestParams>> findRequestParamsList(@RequestParam(required = false) String name,
         @RequestParam(required = false) String type, @RequestParam String id) {
         List<InterfaceRequestParams> list = interfaceService.listRequestParams(name, type, id);
-        return Y9Result.success(list, "获取列表成功");
+        return Y9Result.success(list, "获取接口请求参数列表成功");
     }
 
     /**
@@ -84,7 +84,7 @@ public class InterfaceRestController {
     public Y9Result<List<InterfaceResponseParams>> findResponseParamsList(@RequestParam(required = false) String name,
         @RequestParam String id) {
         List<InterfaceResponseParams> list = interfaceService.listResponseParamsByNameAndId(name, id);
-        return Y9Result.success(list, "获取列表成功");
+        return Y9Result.success(list, "获取接口响应参数列表成功");
     }
 
     /**

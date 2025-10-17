@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9FormItemBind;
@@ -139,18 +140,18 @@ public class ItemViewConfRestController {
                 }
                 List<Y9FormField> fieldlist = new ArrayList<>();
                 Map<String, Object> tableFieldMap = tableField.stream().filter(t -> {
-                    return t.get("tableName").equals(y9Table.getTableName());
+                    return t.get(ItemConsts.TABLENAME_KEY).equals(y9Table.getTableName());
                 }).findFirst().orElse(null);
                 if (tableFieldMap == null) {// 判断是否已经存在
                     tableFieldMap = new HashMap<>();
-                    tableFieldMap.put("tableName", y9Table.getTableName());
+                    tableFieldMap.put(ItemConsts.TABLENAME_KEY, y9Table.getTableName());
                     if (y9Table.getTableName().equals(formField.getTableName())) {// 判断是否是同一张表
                         fieldlist.add(formField);
                     }
-                    tableFieldMap.put("fieldlist", fieldlist);
+                    tableFieldMap.put(ItemConsts.FIELDLIST_KEY, fieldlist);
                     tableField.add(tableFieldMap);
                 } else {
-                    fieldlist = (List<Y9FormField>)tableFieldMap.get("fieldlist");
+                    fieldlist = (List<Y9FormField>)tableFieldMap.get(ItemConsts.FIELDLIST_KEY);
                     if (y9Table.getTableName().equals(formField.getTableName())) {// 判断是否是同一张表
                         Y9FormField oldformField = fieldlist.stream().filter(t -> {
                             return t.getFieldName().equals(formField.getFieldName());
@@ -159,10 +160,10 @@ public class ItemViewConfRestController {
                             fieldlist.add(formField);
                         }
                     }
-                    tableFieldMap.put("fieldlist", fieldlist);
+                    tableFieldMap.put(ItemConsts.FIELDLIST_KEY, fieldlist);
                     for (Map<String, Object> map : tableField) {
-                        if (map.get("tableName").equals(y9Table.getTableName())) {
-                            map.put("fieldlist", fieldlist);
+                        if (map.get(ItemConsts.TABLENAME_KEY).equals(y9Table.getTableName())) {
+                            map.put(ItemConsts.FIELDLIST_KEY, fieldlist);
                         }
                     }
                 }

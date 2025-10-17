@@ -16,6 +16,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.worklist.QueryListApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.pojo.Y9Page;
@@ -69,10 +70,10 @@ public class QueryListApiImpl implements QueryListApi {
                 assert list != null;
                 for (Map<String, Object> map : list) {
                     // value有值
-                    if (map.get("value") != null && !map.get("value").toString().isEmpty()) {
+                    if (map.get(ItemConsts.VALUE_KEY) != null && !map.get(ItemConsts.VALUE_KEY).toString().isEmpty()) {
                         query = true;
                         String queryType = map.get("queryType").toString();
-                        String value = map.get("value").toString();
+                        String value = map.get(ItemConsts.VALUE_KEY).toString();
                         String columnName = map.get("columnName").toString();
                         // select，radio类型搜索用=
                         switch (queryType) {

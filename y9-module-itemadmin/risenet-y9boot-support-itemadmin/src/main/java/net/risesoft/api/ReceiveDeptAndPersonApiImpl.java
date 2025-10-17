@@ -15,6 +15,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ReceiveDeptAndPersonApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.receive.ReceiveDepartment;
 import net.risesoft.entity.receive.ReceivePerson;
 import net.risesoft.model.itemadmin.ReceiveOrgUnit;
@@ -76,7 +77,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
             if (bureau != null && bureau.getId() != null && !bureau.getId().equals(department.getId())) {
                 orgUnit.setNameWithBureau(department.getName() + "(" + bureau.getName() + ")");
             }
-            orgUnit.setOrgType("Department");
+            orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
             listMap.add(orgUnit);
         }
         return Y9Result.success(listMap);
@@ -108,7 +109,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
             if (bureau != null && bureau.getId() != null && !bureau.getId().equals(department.getId())) {
                 orgUnit.setNameWithBureau(department.getName() + "(" + bureau.getName() + ")");
             }
-            orgUnit.setOrgType("Department");
+            orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
             listMap.add(orgUnit);
         }
         return Y9Result.success(listMap);
@@ -147,7 +148,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
                 }
                 Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
                 orgUnit.setIsParent(count > 0);
-                orgUnit.setOrgType("Department");
+                orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
                 if (listMap.contains(orgUnit)) {
                     continue;// 去重
                 }
@@ -168,7 +169,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
                     orgUnit.setName(department.getName());
                     Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
                     orgUnit.setIsParent(count > 0);
-                    orgUnit.setOrgType("Department");
+                    orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
                     if (listMap.contains(orgUnit)) {
                         continue;// 去重
                     }
@@ -188,7 +189,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
                     orgUnit.setParentId(orgUnitId);
                     orgUnit.setName(department.getName());
                     orgUnit.setIsParent(count > 0);
-                    orgUnit.setOrgType("Department");
+                    orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
                     if (listMap.contains(orgUnit)) {
                         continue;// 去重
                     }
