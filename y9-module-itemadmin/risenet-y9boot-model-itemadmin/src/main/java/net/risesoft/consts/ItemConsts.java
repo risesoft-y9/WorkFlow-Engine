@@ -25,6 +25,7 @@ public class ItemConsts {
     public static final String SEND_KEY = "send";
     public static final String TYPE_KEY = "type";
     public static final String GUID_KEY = "guid";
+    public static final String PROCESSINSTANCEID_KEY = "processInstanceId";
     public static final String CREATETIME_KEY = "createTime";
     public static final String LASTTIME_KEY = "lastTime";
     public static final String DEPTID_KEY = "DEPTID";
@@ -36,7 +37,7 @@ public class ItemConsts {
     public static final String ICONDATA_KEY = "iconData";
     public static final String FALSE_STR_KEY = "false";
     public static final String TABLENAME_KEY = "tableName";
-
+    public static final String TENANTID_KEY = "tenantId";
     public static final String FIELDLIST_KEY = "fieldlist";
     /** 自由流办件processDefineKey */
     public static String freeFlowKey = "ziyouliucheng";
