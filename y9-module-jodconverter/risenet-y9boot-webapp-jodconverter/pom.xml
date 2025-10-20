@@ -372,10 +372,14 @@
                         <configuration>
                             <from>
                                 <!--<image>eclipse-temurin:11-jre</image>-->
-                                <image>docker-internal.youshengyun.com/base/libreoffice-tomcat9:v7.5.3.2</image>
+                                <image>docker-internal.youshengyun.com/base/libreoffice:tomcat9-fonts</image>
                                 <platforms>
                                     <platform>
                                         <architecture>amd64</architecture>
+                                        <os>linux</os>
+                                    </platform>
+                                    <platform>
+                                        <architecture>arm64</architecture>
                                         <os>linux</os>
                                     </platform>
                                 </platforms>

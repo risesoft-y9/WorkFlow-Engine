@@ -89,8 +89,8 @@ local:
         #WINDOWS参考 D:\\Fileview\\
         dir: default
 office:
-    # /Libreoffice/Openoffice  驱动的绝对路径
-    home: C:\\Program Files\\LibreOffice
+    # OpenOffice 或者 LibreOffice 的安装目录，程序按照一般安装目录找不到时才需特殊配置 LocalOfficeUtils.getDefaultOfficeHome()
+    # home: C:\\Program Files\\LibreOffice
     # home: /opt/libreoffice7
     plugin:
         server:
@@ -122,7 +122,7 @@ office:
         web: web
     preview:
         #office类型文档(word ppt)样式，默认为图片(image)，可配置为pdf（预览时也有按钮切换）
-        type: pdf
+        type: image
         switch:
             #是否关闭office预览切换开关，默认为false，可配置为true关闭
             disabled: false
