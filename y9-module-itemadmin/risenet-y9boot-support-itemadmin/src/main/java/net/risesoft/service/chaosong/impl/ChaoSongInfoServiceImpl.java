@@ -277,9 +277,9 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
             .and(ItemConsts.PROCESSINSTANCEID_KEY)
             .is(processInstanceId);
-        criteria.subCriteria(new Criteria("senderId").not().is(senderId));
+        criteria.subCriteria(new Criteria(ItemConsts.SENDERID_KEY).not().is(senderId));
         if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("userName").contains(userName));
+            criteria.subCriteria(new Criteria(ItemConsts.USERNAME_KEY).contains(userName));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
@@ -306,7 +306,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setReadTime(StringUtils.isNotBlank(info.getReadTime())
                     ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(info.getReadTime())) : "--");
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("根据流程实例id和办理人获取抄送数据失败", e);
             }
             startRow += 1;
             list.add(model);
@@ -324,12 +324,12 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
-            .and("senderId")
+            .and(ItemConsts.SENDERID_KEY)
             .is(senderId)
             .and(ItemConsts.PROCESSINSTANCEID_KEY)
             .is(processInstanceId);
         if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("userName").contains(userName));
+            criteria.subCriteria(new Criteria(ItemConsts.USERNAME_KEY).contains(userName));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
@@ -356,7 +356,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setReadTime(StringUtils.isNotBlank(cs.getReadTime())
                     ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("根据发送人id和流程实例id获取抄送数据失败", e);
             }
             startRow += 1;
             list.add(model);
@@ -373,10 +373,11 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria =
-            new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+            .and(ItemConsts.USERID_KEY)
+            .is(userId);
         if (StringUtils.isNotBlank(documentTitle)) {
-            criteria.subCriteria(new Criteria("title").contains(documentTitle));
+            criteria.subCriteria(new Criteria(ItemConsts.TITLE_KEY).contains(documentTitle));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
@@ -400,13 +401,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
                 map.put(ItemConsts.PROCESSINSTANCEID_KEY, processInstanceId);
-                map.put("senderName", cs.getSenderName());
+                map.put(ItemConsts.SENDERNAME_KEY, cs.getSenderName());
                 map.put("sendDeptId", cs.getSendDeptId());
                 map.put("sendDeptName", cs.getSendDeptName());
-                map.put("title", processParam.getTitle());
-                map.put("status", cs.getStatus());
+                map.put(ItemConsts.TITLE_KEY, processParam.getTitle());
+                map.put(ItemConsts.STATUS_KEY, cs.getStatus());
                 map.put("banjie", false);
-                map.put("itemId", cs.getItemId());
+                map.put(ItemConsts.ITEMID_KEY, cs.getItemId());
                 map.put("itemName", cs.getItemName());
                 map.put("processSerialNumber", processParam.getProcessSerialNumber());
                 map.put("number", processParam.getCustomNumber());
@@ -419,7 +420,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     map.put("banjie", true);
                 }
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("根据人员id或办件标题获取数据失败", e);
             }
             map.put("serialNumber", num + 1);
             num += 1;
@@ -437,12 +438,12 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
-            .and("userId")
+            .and(ItemConsts.USERID_KEY)
             .is(orgUnitId)
-            .and("status")
+            .and(ItemConsts.STATUS_KEY)
             .is(ChaoSongStatusEnum.READ.getValue());
         if (StringUtils.isNotBlank(documentTitle)) {
-            criteria.subCriteria(new Criteria("title").contains(documentTitle));
+            criteria.subCriteria(new Criteria(ItemConsts.TITLE_KEY).contains(documentTitle));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
@@ -488,7 +489,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("获取办结的抄送数据失败", e);
             }
             num += 1;
             list.add(model);
@@ -506,19 +507,20 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria =
-            new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId()).and("senderId").is(userId);
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+            .and(ItemConsts.SENDERID_KEY)
+            .is(userId);
         if (StringUtils.isNotBlank(searchName)) {
-            criteria.subCriteria(new Criteria("title").contains(searchName));
+            criteria.subCriteria(new Criteria(ItemConsts.TITLE_KEY).contains(searchName));
         }
         if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+            criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
         }
         if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("userName").contains(userName));
+            criteria.subCriteria(new Criteria(ItemConsts.USERNAME_KEY).contains(userName));
         }
         if (StringUtils.isNotBlank(state)) {
-            criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
+            criteria.subCriteria(new Criteria(ItemConsts.STATUS_KEY).is(Integer.parseInt(state)));
         }
         if (StringUtils.isNotBlank(year)) {
             criteria.subCriteria(new Criteria(ItemConsts.CREATETIME_KEY).contains(year));
@@ -583,12 +585,12 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         List<ChaoSongModel> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
-            .and("userId")
+            .and(ItemConsts.USERID_KEY)
             .is(userId)
             .and("opinionState")
             .is("1");
         if (StringUtils.isNotBlank(documentTitle)) {
-            criteria.subCriteria(new Criteria("title").contains(documentTitle));
+            criteria.subCriteria(new Criteria(ItemConsts.TITLE_KEY).contains(documentTitle));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
@@ -633,7 +635,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("获取抄送信息数据失败", e);
             }
             num += 1;
             list.add(model);
@@ -651,12 +653,12 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
-            .and("userId")
+            .and(ItemConsts.USERID_KEY)
             .is(orgUnitId)
-            .and("status")
+            .and(ItemConsts.STATUS_KEY)
             .is(2);
         if (StringUtils.isNotBlank(documentTitle)) {
-            criteria.subCriteria(new Criteria("title").contains(documentTitle));
+            criteria.subCriteria(new Criteria(ItemConsts.TITLE_KEY).contains(documentTitle));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
@@ -700,7 +702,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("获取抄送待办数据失败", e);
             }
             num += 1;
             list.add(model);
@@ -822,19 +824,20 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria =
-            new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+            .and(ItemConsts.USERID_KEY)
+            .is(userId);
         if (StringUtils.isNotBlank(searchName)) {
-            criteria.subCriteria(new Criteria("title").contains(searchName));
+            criteria.subCriteria(new Criteria(ItemConsts.TITLE_KEY).contains(searchName));
         }
         if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+            criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
         }
         if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("senderName").contains(userName));
+            criteria.subCriteria(new Criteria(ItemConsts.SENDERNAME_KEY).contains(userName));
         }
         if (StringUtils.isNotBlank(state)) {
-            criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
+            criteria.subCriteria(new Criteria(ItemConsts.STATUS_KEY).is(Integer.parseInt(state)));
         }
         if (StringUtils.isNotBlank(year)) {
             criteria.subCriteria(new Criteria(ItemConsts.CREATETIME_KEY).contains(year));
@@ -902,19 +905,19 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
         Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId());
         if (StringUtils.isNotBlank(searchName)) {
-            criteria.subCriteria(new Criteria("title").contains(searchName));
+            criteria.subCriteria(new Criteria(ItemConsts.TITLE_KEY).contains(searchName));
         }
         if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+            criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
         }
         if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("userName").contains(userName));
+            criteria.subCriteria(new Criteria(ItemConsts.USERNAME_KEY).contains(userName));
         }
         if (StringUtils.isNotBlank(senderName)) {
-            criteria.subCriteria(new Criteria("senderName").contains(senderName));
+            criteria.subCriteria(new Criteria(ItemConsts.SENDERNAME_KEY).contains(senderName));
         }
         if (StringUtils.isNotBlank(state)) {
-            criteria.subCriteria(new Criteria("status").is(Integer.parseInt(state)));
+            criteria.subCriteria(new Criteria(ItemConsts.STATUS_KEY).is(Integer.parseInt(state)));
         }
         if (StringUtils.isNotBlank(year)) {
             criteria.subCriteria(new Criteria(ItemConsts.CREATETIME_KEY).contains(year));
