@@ -30,6 +30,7 @@ import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ChaoSong;
 import net.risesoft.entity.ErrorLog;
@@ -267,17 +268,17 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (page < 1) {
             page = 1;
         }
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
-                list.add(builder.equal(root.get("processInstanceId"), processInstanceId));
-                list.add(builder.notEqual(root.get("senderId"), senderId));
+                list.add(builder.equal(root.get(ItemConsts.PROCESSINSTANCEID_KEY), processInstanceId));
+                list.add(builder.notEqual(root.get(ItemConsts.SENDERID_KEY), senderId));
                 if (StringUtils.isNotBlank(userName)) {
-                    list.add(builder.like(root.get("userName"), "%" + userName + "%"));
+                    list.add(builder.like(root.get(ItemConsts.USERNAME_KEY), "%" + userName + "%"));
                 }
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
@@ -307,7 +308,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 model.setCreateTime(
                     Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(info.getCreateTime())));
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("根据ProcessInstanceId和UserName获取抄送信息数据失败", e);
             }
             startRow += 1;
             list.add(model);
@@ -323,17 +324,17 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (page < 1) {
             page = 1;
         }
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
-                list.add(builder.equal(root.get("senderId"), senderId));
-                list.add(builder.equal(root.get("processInstanceId"), processInstanceId));
+                list.add(builder.equal(root.get(ItemConsts.SENDERID_KEY), senderId));
+                list.add(builder.equal(root.get(ItemConsts.PROCESSINSTANCEID_KEY), processInstanceId));
                 if (StringUtils.isNotBlank(userName)) {
-                    list.add(builder.like(root.get("userName"), "%" + userName + "%"));
+                    list.add(builder.like(root.get(ItemConsts.USERNAME_KEY), "%" + userName + "%"));
                 }
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
@@ -363,7 +364,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 model.setCreateTime(
                     Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("根据SenderId和ProcessInstanceId获取抄送信息数据失败", e);
             }
             startRow += 1;
             list.add(model);
@@ -379,16 +380,16 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (page < 1) {
             page = 1;
         }
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
-                list.add(builder.equal(root.get("userId"), userId));
+                list.add(builder.equal(root.get(ItemConsts.USERID_KEY), userId));
                 if (StringUtils.isNotBlank(documentTitle)) {
-                    list.add(builder.like(root.get("title"), "%" + documentTitle + "%"));
+                    list.add(builder.like(root.get(ItemConsts.TITLE_KEY), "%" + documentTitle + "%"));
                 }
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
@@ -405,19 +406,19 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             map.put("id", cs.getId());
             try {
                 String processInstanceId = cs.getProcessInstanceId();
-                map.put("createTime",
+                map.put(ItemConsts.CREATETIME_KEY,
                     Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                map.put("processInstanceId", processInstanceId);
+                map.put(ItemConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                 map.put("senderName", cs.getSenderName());
                 map.put("sendDeptId", cs.getSendDeptId());
                 map.put("sendDeptName", cs.getSendDeptName());
                 map.put("readTime",
                     Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())));
-                map.put("title", processParam.getTitle());
-                map.put("status", cs.getStatus());
+                map.put(ItemConsts.TITLE_KEY, processParam.getTitle());
+                map.put(ItemConsts.STATUS_KEY, cs.getStatus());
                 map.put("banjie", false);
-                map.put("itemId", cs.getItemId());
+                map.put(ItemConsts.ITEMID_KEY, cs.getItemId());
                 map.put("itemName", cs.getItemName());
                 map.put("processSerialNumber", processParam.getProcessSerialNumber());
                 map.put("number", processParam.getCustomNumber());
@@ -430,7 +431,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                     map.put("banjie", true);
                 }
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("根据UserId和DocumentTitle获取抄送信息数据失败", e);
             }
             map.put("serialNumber", num + 1);
             num += 1;
@@ -446,17 +447,17 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (page < 1) {
             page = 1;
         }
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
-                list.add(builder.equal(root.get("userId"), orgUnitId));
-                list.add(builder.equal(root.get("status"), 1));
+                list.add(builder.equal(root.get(ItemConsts.USERID_KEY), orgUnitId));
+                list.add(builder.equal(root.get(ItemConsts.STATUS_KEY), 1));
                 if (StringUtils.isNotBlank(documentTitle)) {
-                    list.add(builder.like(root.get("title"), "%" + documentTitle + "%"));
+                    list.add(builder.like(root.get(ItemConsts.TITLE_KEY), "%" + documentTitle + "%"));
                 }
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
@@ -500,7 +501,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("获取办结抄送信息数据失败", e);
             }
             num += 1;
             list.add(model);
@@ -517,28 +518,28 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (page < 1) {
             page = 1;
         }
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
-                list.add(builder.equal(root.get("senderId"), userId));
+                list.add(builder.equal(root.get(ItemConsts.SENDERID_KEY), userId));
                 if (StringUtils.isNotBlank(searchName)) {
-                    list.add(builder.like(root.get("title"), "%" + searchName + "%"));
+                    list.add(builder.like(root.get(ItemConsts.TITLE_KEY), "%" + searchName + "%"));
                 }
                 if (StringUtils.isNotBlank(itemId)) {
-                    list.add(builder.equal(root.get("itemId"), itemId));
+                    list.add(builder.equal(root.get(ItemConsts.ITEMID_KEY), itemId));
                 }
                 if (StringUtils.isNotBlank(userName)) {
-                    list.add(builder.like(root.get("userName"), "%" + userName + "%"));
+                    list.add(builder.like(root.get(ItemConsts.USERNAME_KEY), "%" + userName + "%"));
                 }
                 if (StringUtils.isNotBlank(state)) {
-                    list.add(builder.equal(root.get("status"), state));
+                    list.add(builder.equal(root.get(ItemConsts.STATUS_KEY), state));
                 }
                 if (StringUtils.isNotBlank(year)) {
-                    list.add(builder.like(root.get("createTime"), "%" + year + "%"));
+                    list.add(builder.like(root.get(ItemConsts.CREATETIME_KEY), "%" + year + "%"));
                 }
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
@@ -598,17 +599,17 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             page = 1;
         }
         List<ChaoSong4DataBaseModel> list = new ArrayList<>();
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
-                list.add(builder.equal(root.get("userId"), userId));
+                list.add(builder.equal(root.get(ItemConsts.USERID_KEY), userId));
                 list.add(builder.equal(root.get("opinionState"), "1"));
                 if (StringUtils.isNotBlank(documentTitle)) {
-                    list.add(builder.like(root.get("title"), "%" + documentTitle + "%"));
+                    list.add(builder.like(root.get(ItemConsts.TITLE_KEY), "%" + documentTitle + "%"));
                 }
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
@@ -653,7 +654,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 model.setNumber(processParam.getCustomNumber());
                 model.setLevel(processParam.getCustomLevel());
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("获取当前人抄送信息数据失败", e);
             }
             num += 1;
             list.add(model);
@@ -669,17 +670,17 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (page < 1) {
             page = 1;
         }
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
-                list.add(builder.equal(root.get("userId"), orgUnitId));
-                list.add(builder.equal(root.get("status"), 2));
+                list.add(builder.equal(root.get(ItemConsts.USERID_KEY), orgUnitId));
+                list.add(builder.equal(root.get(ItemConsts.STATUS_KEY), 2));
                 if (StringUtils.isNotBlank(documentTitle)) {
-                    list.add(builder.like(root.get("title"), "%" + documentTitle + "%"));
+                    list.add(builder.like(root.get(ItemConsts.TITLE_KEY), "%" + documentTitle + "%"));
                 }
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
@@ -721,7 +722,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 model.setCreateTime(
                     Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getCreateTime())));
             } catch (Exception e) {
-                LOGGER.error("获取数据失败", e);
+                LOGGER.error("获取待办抄送信息数据失败", e);
             }
             num += 1;
             list.add(model);
@@ -843,28 +844,28 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (page < 1) {
             page = 1;
         }
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page - 1, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
             public Predicate toPredicate(Root<ChaoSong> root, jakarta.persistence.criteria.CriteriaQuery<?> query,
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
-                list.add(builder.equal(root.get("userId"), userId));
+                list.add(builder.equal(root.get(ItemConsts.USERID_KEY), userId));
                 if (StringUtils.isNotBlank(searchName)) {
-                    list.add(builder.like(root.get("title"), "%" + searchName + "%"));
+                    list.add(builder.like(root.get(ItemConsts.TITLE_KEY), "%" + searchName + "%"));
                 }
                 if (StringUtils.isNotBlank(itemId)) {
-                    list.add(builder.equal(root.get("itemId"), itemId));
+                    list.add(builder.equal(root.get(ItemConsts.ITEMID_KEY), itemId));
                 }
                 if (StringUtils.isNotBlank(userName)) {
-                    list.add(builder.like(root.get("userName"), "%" + userName + "%"));
+                    list.add(builder.like(root.get(ItemConsts.USERNAME_KEY), "%" + userName + "%"));
                 }
                 if (StringUtils.isNotBlank(state)) {
-                    list.add(builder.equal(root.get("status"), state));
+                    list.add(builder.equal(root.get(ItemConsts.STATUS_KEY), state));
                 }
                 if (StringUtils.isNotBlank(year)) {
-                    list.add(builder.like(root.get("createTime"), "%" + year + "%"));
+                    list.add(builder.like(root.get(ItemConsts.CREATETIME_KEY), "%" + year + "%"));
                 }
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
@@ -925,7 +926,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (page < 1) {
             page = 1;
         }
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<ChaoSong> pageList = chaoSongRepository.findAll(new Specification<ChaoSong>() {
             @Override
@@ -933,22 +934,22 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 CriteriaBuilder builder) {
                 List<Predicate> list = new ArrayList<>();
                 if (StringUtils.isNotBlank(searchName)) {
-                    list.add(builder.like(root.get("title"), "%" + searchName + "%"));
+                    list.add(builder.like(root.get(ItemConsts.TITLE_KEY), "%" + searchName + "%"));
                 }
                 if (StringUtils.isNotBlank(itemId)) {
-                    list.add(builder.equal(root.get("itemId"), itemId));
+                    list.add(builder.equal(root.get(ItemConsts.ITEMID_KEY), itemId));
                 }
                 if (StringUtils.isNotBlank(userName)) {
-                    list.add(builder.like(root.get("userName"), "%" + userName + "%"));
+                    list.add(builder.like(root.get(ItemConsts.USERNAME_KEY), "%" + userName + "%"));
                 }
                 if (StringUtils.isNotBlank(senderName)) {
                     list.add(builder.like(root.get("senderName"), "%" + senderName + "%"));
                 }
                 if (StringUtils.isNotBlank(state)) {
-                    list.add(builder.equal(root.get("status"), state));
+                    list.add(builder.equal(root.get(ItemConsts.STATUS_KEY), state));
                 }
                 if (StringUtils.isNotBlank(year)) {
-                    list.add(builder.like(root.get("createTime"), "%" + year + "%"));
+                    list.add(builder.like(root.get(ItemConsts.CREATETIME_KEY), "%" + year + "%"));
                 }
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);

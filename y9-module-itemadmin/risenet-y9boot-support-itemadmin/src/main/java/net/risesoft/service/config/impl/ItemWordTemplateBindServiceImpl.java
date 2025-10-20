@@ -164,8 +164,8 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
             }
             return Y9Result.success(bind.getId(), "正文模板绑定成功");
         } catch (Exception e) {
-            LOGGER.error("正文模板绑定失败", e);
-            return Y9Result.failure("正文模板绑定失败");
+            LOGGER.error("正文模板绑定失败，异常：", e);
+            return Y9Result.failure("正文模板绑定失败！");
         }
 
     }
@@ -192,8 +192,8 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
 
             return Y9Result.successMsg("正文模板绑定成功");
         } catch (Exception e) {
-            LOGGER.error("正文模板绑定失败", e);
-            return Y9Result.failure("正文模板绑定失败");
+            LOGGER.error("保存正文模板绑定失败，异常：", e);
+            return Y9Result.failure("保存正文模板绑定失败！");
         }
     }
 

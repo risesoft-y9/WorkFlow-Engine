@@ -78,7 +78,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
-        assert item != null : "不存在itemId=" + itemId + "事项";
+        assert item != null : "不存在数据itemId=" + itemId + "事项";
         String proDefKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestPd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
         String latestPdId = latestPd.getId();
@@ -170,7 +170,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         String startTaskDefKey = "", tenantId = Y9LoginUserHolder.getTenantId(),
             userId = Y9LoginUserHolder.getOrgUnitId();
         Item item = itemRepository.findById(itemId).orElse(null);
-        assert item != null : "不存在itemId=" + itemId + "事项";
+        assert item != null : "不存在itemId：" + itemId + "事项";
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel latestPd =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
