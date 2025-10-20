@@ -38,6 +38,12 @@ public class ItemConsts {
     public static final String FALSE_STR_KEY = "false";
     public static final String TABLENAME_KEY = "tableName";
     public static final String TENANTID_KEY = "tenantId";
+    public static final String SENDERID_KEY = "senderId";
+    public static final String SENDERNAME_KEY = "senderName";
+    public static final String USERID_KEY = "userId";
+    public static final String USERNAME_KEY = "userName";
+    public static final String STATUS_KEY = "status";
+    public static final String ITEMID_KEY = "itemId";
     public static final String FIELDLIST_KEY = "fieldlist";
     /** 自由流办件processDefineKey */
     public static String freeFlowKey = "ziyouliucheng";
