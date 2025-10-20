@@ -45,6 +45,7 @@ public class ItemConsts {
     public static final String STATUS_KEY = "status";
     public static final String ITEMID_KEY = "itemId";
     public static final String FIELDLIST_KEY = "fieldlist";
+    public static final String EXISTPOSITION_KEY = "existPosition";
     /** 自由流办件processDefineKey */
     public static String freeFlowKey = "ziyouliucheng";
     /** 所有事项ID */

@@ -15,6 +15,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemPermission;
@@ -156,7 +157,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         List<ItemPermission> objectPermList =
             listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
         Map<String, Object> map = new HashMap<>(16);
-        map.put("existPosition", false);
+        map.put(ItemConsts.EXISTPOSITION_KEY, false);
         map.put("existDepartment", false);
         for (ItemPermission o : objectPermList) {
             if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT)) {
@@ -169,7 +170,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 if (dynamicRole.getClassPath().contains("4SubProcess")) {// 针对岗位,加入岗位集合
                     List<Position> pList = dynamicRoleMemberService.listByDynamicRoleIdAndTaskId(dynamicRole, taskId);
                     if (!pList.isEmpty()) {
-                        map.put("existPosition", true);
+                        map.put(ItemConsts.EXISTPOSITION_KEY, true);
                     }
                 } else {
                     if (null == dynamicRole.getKinds() || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
@@ -178,7 +179,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                             .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
                         for (OrgUnit orgUnit : orgUnitList1) {
                             if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                                map.put("existPosition", true);
+                                map.put(ItemConsts.EXISTPOSITION_KEY, true);
                                 break;
                             } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
                                 || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
@@ -187,11 +188,11 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                             }
                         }
                     } else {// 动态角色种类为【角色】或【部门配置分类】时，针对岗位
-                        map.put("existPosition", true);
+                        map.put(ItemConsts.EXISTPOSITION_KEY, true);
                     }
                 }
             } else {
-                map.put("existPosition", true);
+                map.put(ItemConsts.EXISTPOSITION_KEY, true);
             }
 
         }

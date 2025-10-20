@@ -45,18 +45,13 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
+    private static final String BUTTONNAME_KEY = "按钮不存在";
     private final ItemButtonBindRepository buttonItemBindRepository;
-
     private final CommonButtonService commonButtonService;
-
     private final SendButtonService sendButtonService;
-
     private final ItemButtonRoleService itemButtonRoleService;
-
     private final ItemRepository itemRepository;
-
     private final RepositoryApi repositoryApi;
-
     private final ProcessDefinitionApi processDefinitionApi;
 
     @Override
@@ -241,7 +236,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Override
     public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionId(String itemId,
         ItemButtonTypeEnum buttonType, String processDefinitionId) {
-        String buttonName = "按钮不存在";
+        String buttonName = BUTTONNAME_KEY;
         String buttonCustomId = "";
         List<ItemButtonBind> bibList = buttonItemBindRepository
             .findByItemIdAndButtonTypeAndProcessDefinitionIdOrderByTabIndexAsc(itemId, buttonType, processDefinitionId);
@@ -268,7 +263,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Override
     public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(String itemId,
         ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefKey) {
-        String buttonName = "按钮不存在";
+        String buttonName = BUTTONNAME_KEY;
         String buttonCustomId = "";
         List<ItemButtonBind> bibList =
             buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
@@ -296,7 +291,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Override
     public List<ItemButtonBind> listContainRole(String itemId, ItemButtonTypeEnum buttonType,
         String processDefinitionId, String taskDefineKey) {
-        String buttonName = "按钮不存在";
+        String buttonName = BUTTONNAME_KEY;
         String buttonCustomId = "";
         List<ItemButtonBind> bindList =
             buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
@@ -339,7 +334,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Override
     public List<ItemButtonBind> listContainRoleId(String itemId, ItemButtonTypeEnum buttonType,
         String processDefinitionId, String taskDefineKey) {
-        String buttonName = "按钮不存在";
+        String buttonName = BUTTONNAME_KEY;
         String buttonCustomId = "";
         List<ItemButtonBind> bindList =
             buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
@@ -379,7 +374,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Override
     public List<ItemButtonBind> listExtra(String itemId, ItemButtonTypeEnum buttonType, String processDefinitionId,
         String taskDefineKey) {
-        String buttonName = "按钮不存在";
+        String buttonName = BUTTONNAME_KEY;
         String buttonCustomId = "";
         List<ItemButtonBind> bibList =
             buttonItemBindRepository.findByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(
@@ -431,7 +426,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
             oldbib.setUserId(userId);
             oldbib.setUserName(userName);
 
-            String buttonName = "按钮不存在";
+            String buttonName = BUTTONNAME_KEY;
             String buttonCustomId = "";
             if (Objects.equals(ItemButtonTypeEnum.COMMON, oldbib.getButtonType())) {
                 CommonButton cb = commonButtonService.getById(oldbib.getButtonId());
