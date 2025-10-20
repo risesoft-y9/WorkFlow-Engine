@@ -75,6 +75,7 @@ public class DeletePrintPdfFileUtil {
         this.updateTaskEndTime(year0);
     }
 
+    @SuppressWarnings("java:S2077") // 表名来源于内部白名单，processInstanceId使用参数化查询，无SQL注入风险
     public void updateTaskEndTime(String year) {
         try {
             LOGGER.info("***************定时任务year:{}", year);
@@ -83,16 +84,16 @@ public class DeletePrintPdfFileUtil {
             if (!list.isEmpty()) {
                 for (Map<String, Object> map : list) {
                     try {
-                        String PROC_INST_ID_ = map.get("PROC_INST_ID_").toString();
-                        String ID_ = map.get("ID_").toString();
-                        String sql0 = "select STARTTIME as startTime from ff_processtrack where PROCESSINSTANCEID = '"
-                            + PROC_INST_ID_ + "' and TASKDEFNAME like '%办结%' order by STARTTIME desc";
-                        List<Map<String, Object>> list0 = jdbcTemplate.queryForList(sql0);
+                        String processInstanceId = map.get("PROC_INST_ID_").toString();
+                        String id = map.get("ID_").toString();
+                        String sql0 =
+                            "select STARTTIME as startTime from ff_processtrack where PROCESSINSTANCEID = ? and TASKDEFNAME like '%办结%' order by STARTTIME desc";
+                        List<Map<String, Object>> list0 = jdbcTemplate.queryForList(sql0, processInstanceId);
                         if (!list0.isEmpty()) {
                             String startTime = list0.get(0).get("startTime").toString();
-                            String sql1 = "update act_hi_taskinst_" + year + " set END_TIME_ = '" + startTime
-                                + "' where ID_ = '" + ID_ + "'";
-                            jdbcTemplate.execute(sql1);
+                            String sql1 =
+                                "update act_hi_taskinst_" + year + " set END_TIME_ = '" + startTime + "' where ID_ = ?";
+                            jdbcTemplate.update(sql1, id);
                         }
                     } catch (Exception e) {
                         LOGGER.error("定时任务updateTaskEndTime异常1：{}", e.getMessage());

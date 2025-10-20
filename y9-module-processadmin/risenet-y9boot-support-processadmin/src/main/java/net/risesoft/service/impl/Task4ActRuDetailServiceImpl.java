@@ -112,10 +112,9 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
     }
 
     private String getStartTime(String processInstanceId) {
-        String sql0 =
-            "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = '"
-                + processInstanceId + "'";
-        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql0);
+        String sql =
+            "SELECT SUBSTRING(P.START_TIME_,1,19) as START_TIME_ FROM  ACT_HI_PROCINST P WHERE P.PROC_INST_ID_ = ?";
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, processInstanceId);
         return list.isEmpty() ? Y9DateTimeUtils.formatCurrentDateTime() : list.get(0).get("START_TIME_").toString();
     }
 

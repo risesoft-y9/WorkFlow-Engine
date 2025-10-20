@@ -81,56 +81,49 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
     }
 
     private void executeSql(String latestProcessDefinitionId, String processInstanceId) {
-        String sql1 = "UPDATE ACT_HI_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
-        jdbcTemplate4Tenant.execute(sql1);
+        updateTableByProcessInstanceId("ACT_HI_ACTINST", latestProcessDefinitionId, processInstanceId);
+        updateTableByProcessInstanceId("ACT_HI_PROCINST", latestProcessDefinitionId, processInstanceId);
+        updateTableByProcessInstanceId("ACT_HI_TASKINST", latestProcessDefinitionId, processInstanceId);
+        updateTableByProcessInstanceId("ACT_RU_ACTINST", latestProcessDefinitionId, processInstanceId);
+        updateTableByProcessInstanceId("ACT_RU_EXECUTION", latestProcessDefinitionId, processInstanceId);
+        updateTableByProcessInstanceId("ACT_RU_TASK", latestProcessDefinitionId, processInstanceId);
+    }
 
-        String sql2 = "UPDATE ACT_HI_PROCINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
-        jdbcTemplate4Tenant.execute(sql2);
-
-        String sql3 = "UPDATE ACT_HI_TASKINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
-        jdbcTemplate4Tenant.execute(sql3);
-
-        String sql4 = "UPDATE ACT_RU_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
-        jdbcTemplate4Tenant.execute(sql4);
-
-        String sql5 = "UPDATE ACT_RU_EXECUTION SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
-        jdbcTemplate4Tenant.execute(sql5);
-
-        String sql6 = "UPDATE ACT_RU_TASK SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_INST_ID_ = '" + processInstanceId + "';";
-        jdbcTemplate4Tenant.execute(sql6);
+    /**
+     * 根据流程实例ID更新表中的流程定义ID
+     *
+     * @param tableName 表名
+     * @param latestProcessDefinitionId 新的流程定义ID
+     * @param processInstanceId 流程实例ID
+     */
+    @SuppressWarnings("java:S2077")
+    private void updateTableByProcessInstanceId(String tableName, String latestProcessDefinitionId,
+        String processInstanceId) {
+        String sql = "UPDATE " + tableName + " SET PROC_DEF_ID_ = ? WHERE PROC_INST_ID_ = ?";
+        jdbcTemplate4Tenant.update(sql, latestProcessDefinitionId, processInstanceId);
     }
 
     private void executeSql0(String latestProcessDefinitionId, String processDefinitionId) {
-        String sql1 = "UPDATE ACT_HI_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
-        jdbcTemplate4Tenant.execute(sql1);
+        updateTableByProcessDefinitionId("ACT_HI_ACTINST", latestProcessDefinitionId, processDefinitionId);
+        updateTableByProcessDefinitionId("ACT_HI_PROCINST", latestProcessDefinitionId, processDefinitionId);
+        updateTableByProcessDefinitionId("ACT_HI_TASKINST", latestProcessDefinitionId, processDefinitionId);
+        updateTableByProcessDefinitionId("ACT_RU_ACTINST", latestProcessDefinitionId, processDefinitionId);
+        updateTableByProcessDefinitionId("ACT_RU_EXECUTION", latestProcessDefinitionId, processDefinitionId);
+        updateTableByProcessDefinitionId("ACT_RU_TASK", latestProcessDefinitionId, processDefinitionId);
+    }
 
-        String sql2 = "UPDATE ACT_HI_PROCINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
-        jdbcTemplate4Tenant.execute(sql2);
-
-        String sql3 = "UPDATE ACT_HI_TASKINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
-        jdbcTemplate4Tenant.execute(sql3);
-
-        String sql4 = "UPDATE ACT_RU_ACTINST SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
-        jdbcTemplate4Tenant.execute(sql4);
-
-        String sql5 = "UPDATE ACT_RU_EXECUTION SET PROC_DEF_ID_ = '" + latestProcessDefinitionId
-            + "' WHERE PROC_DEF_ID_ = '" + processDefinitionId + "';";
-        jdbcTemplate4Tenant.execute(sql5);
-
-        String sql6 = "UPDATE ACT_RU_TASK SET PROC_DEF_ID_ = '" + latestProcessDefinitionId + "' WHERE PROC_DEF_ID_ = '"
-            + processDefinitionId + "';";
-        jdbcTemplate4Tenant.execute(sql6);
-
+    /**
+     * 根据流程定义ID更新表中的流程定义ID
+     *
+     * @param tableName 表名
+     * @param latestProcessDefinitionId 新的流程定义ID
+     * @param processDefinitionId 原始流程定义ID
+     */
+    @SuppressWarnings("java:S2077")
+    private void updateTableByProcessDefinitionId(String tableName, String latestProcessDefinitionId,
+        String processDefinitionId) {
+        String sql = "UPDATE " + tableName + " SET PROC_DEF_ID_ = ? WHERE PROC_DEF_ID_ = ?";
+        jdbcTemplate4Tenant.update(sql, latestProcessDefinitionId, processDefinitionId);
     }
 
     private String getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
