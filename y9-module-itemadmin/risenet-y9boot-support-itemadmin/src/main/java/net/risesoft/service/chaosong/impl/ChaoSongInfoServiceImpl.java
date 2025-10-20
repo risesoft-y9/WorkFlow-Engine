@@ -274,8 +274,9 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria =
-            new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("processInstanceId").is(processInstanceId);
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+            .and(ItemConsts.PROCESSINSTANCEID_KEY)
+            .is(processInstanceId);
         criteria.subCriteria(new Criteria("senderId").not().is(senderId));
         if (StringUtils.isNotBlank(userName)) {
             criteria.subCriteria(new Criteria("userName").contains(userName));
@@ -322,10 +323,10 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
             .and("senderId")
             .is(senderId)
-            .and("processInstanceId")
+            .and(ItemConsts.PROCESSINSTANCEID_KEY)
             .is(processInstanceId);
         if (StringUtils.isNotBlank(userName)) {
             criteria.subCriteria(new Criteria("userName").contains(userName));
@@ -372,7 +373,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
+        Criteria criteria =
+            new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
         if (StringUtils.isNotBlank(documentTitle)) {
             criteria.subCriteria(new Criteria("title").contains(documentTitle));
         }
@@ -397,7 +399,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 map.put("readTime", StringUtils.isNotBlank(cs.getReadTime())
                     ? Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(cs.getReadTime())) : "--");
                 processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                map.put("processInstanceId", processInstanceId);
+                map.put(ItemConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                 map.put("senderName", cs.getSenderName());
                 map.put("sendDeptId", cs.getSendDeptId());
                 map.put("sendDeptName", cs.getSendDeptName());
@@ -434,7 +436,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
             .and("userId")
             .is(orgUnitId)
             .and("status")
@@ -504,7 +506,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("senderId").is(userId);
+        Criteria criteria =
+            new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId()).and("senderId").is(userId);
         if (StringUtils.isNotBlank(searchName)) {
             criteria.subCriteria(new Criteria("title").contains(searchName));
         }
@@ -579,7 +582,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         List<ChaoSongModel> list = new ArrayList<>();
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
             .and("userId")
             .is(userId)
             .and("opinionState")
@@ -647,7 +650,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
             .and("userId")
             .is(orgUnitId)
             .and("status")
@@ -819,7 +822,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
+        Criteria criteria =
+            new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId()).and("userId").is(userId);
         if (StringUtils.isNotBlank(searchName)) {
             criteria.subCriteria(new Criteria("title").contains(searchName));
         }
@@ -896,7 +900,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId());
         if (StringUtils.isNotBlank(searchName)) {
             criteria.subCriteria(new Criteria("title").contains(searchName));
         }
