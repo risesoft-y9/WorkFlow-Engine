@@ -258,52 +258,63 @@ public class TableManagerService {
      */
     public Map<String, Object> getExistTableFields(String tableId) {
         Map<String, Object> map = new HashMap<>(16);
-        String tableName;
         try {
             DataSource dataSource = jdbcTemplate4Tenant.getDataSource();
             if (dataSource == null) {
                 throw new IllegalStateException("Tenant DataSource is not available");
             }
-            try (Connection conn = dataSource.getConnection(); Statement stmt = conn.createStatement()) {
-                Y9Table y9Table = y9TableRepository.findById(tableId).orElse(null);
-                if (y9Table != null) {
-                    tableName = y9Table.getTableName();
-                } else {
-                    return map;
-                }
-                String sql = "show tables like '" + tableName + "'";
+            Y9Table y9Table = y9TableRepository.findById(tableId).orElse(null);
+            if (y9Table == null) {
+                return map;
+            }
+            String tableName = y9Table.getTableName();
+            if (StringUtils.isBlank(tableName)) {
+                return map;
+            }
+            try (Connection conn = dataSource.getConnection()) {
                 String dialect = DbMetaDataUtil.getDatabaseDialectNameByConnection(conn);
-                if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                    sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
-                } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                    sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
-                } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                    sql = "SELECT table_name FROM all_tables where table_name = '" + tableName + "'";
-                }
-                List<Map<String, Object>> list = jdbcTemplate4Tenant.queryForList(sql);
-                if (list.isEmpty()) {
+                String checkTableSql = getCheckTableSql(dialect, tableName);
+                List<Map<String, Object>> tableExists = jdbcTemplate4Tenant.queryForList(checkTableSql, tableName);
+                if (tableExists.isEmpty()) {
                     return map;
                 }
-                sql = "Select * from " + tableName + " limit 0,0";
-                if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                    sql = "Select * from \"" + tableName + "\"  where rownum = 0";
-                } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                    sql = "Select * from \"" + tableName + "\"  where rownum = 0";
-                } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                    sql = "Select * from \"" + tableName + "\"  where rownum = 0";
-                }
-                try (ResultSet rs = stmt.executeQuery(sql)) {
-                    ResultSetMetaData dt = rs.getMetaData();
-                    for (int i = 0; i < dt.getColumnCount(); i++) {
-                        String fieldName = dt.getColumnName(i + 1).toLowerCase();
+                String selectSql = getSelectSqlForMetadata(dialect, tableName);
+                try (Statement stmt = conn.createStatement(); ResultSet rs = stmt.executeQuery(selectSql)) {
+                    ResultSetMetaData metaData = rs.getMetaData();
+                    for (int i = 0; i < metaData.getColumnCount(); i++) {
+                        String fieldName = metaData.getColumnName(i + 1).toLowerCase();
                         map.put(fieldName, fieldName);
                     }
                 }
             }
         } catch (Exception ex) {
-            ex.printStackTrace();
+            LOGGER.error("获取表字段信息失败，tableId: {}", tableId, ex);
         }
         return map;
+    }
+
+    /**
+     * 根据数据库方言获取检查表是否存在的SQL
+     */
+    private String getCheckTableSql(String dialect, String tableName) {
+        if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
+            || DialectEnum.KINGBASE.getValue().equals(dialect)) {
+            return "SELECT table_name FROM all_tables WHERE table_name = UPPER(?)";
+        } else {
+            return "SHOW TABLES LIKE ?";
+        }
+    }
+
+    /**
+     * 根据数据库方言获取用于查询元数据的SQL
+     */
+    private String getSelectSqlForMetadata(String dialect, String tableName) {
+        if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
+            || DialectEnum.KINGBASE.getValue().equals(dialect)) {
+            return "SELECT * FROM \"" + tableName + "\" WHERE rownum = 0";
+        } else {
+            return "SELECT * FROM " + tableName + " LIMIT 0,0";
+        }
     }
 
     /**

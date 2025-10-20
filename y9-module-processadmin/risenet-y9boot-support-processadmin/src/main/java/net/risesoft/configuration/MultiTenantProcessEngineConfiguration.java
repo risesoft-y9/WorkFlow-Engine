@@ -119,14 +119,13 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
 
     private void createSystem(String systemName) {
         try {
-            String sql = "select * from y9_common_system where NAME = '" + systemName + "'";
-            List<Map<String, Object>> list = jdbcTemplate4Public.queryForList(sql);
+            String sql = "select * from y9_common_system where NAME = ?";
+            List<Map<String, Object>> list = jdbcTemplate4Public.queryForList(sql, systemName);
             if (list.isEmpty()) {
                 sql =
-                    "INSERT INTO y9_common_system (ID, CONTEXT_PATH, NAME, CN_NAME, TAB_INDEX,ENABLED,AUTO_INIT,CREATE_TIME) VALUES ('"
-                        + SYSTEM_ID + "', 'processAdmin', '" + systemName + "', '流程管理', 100,1,1,'"
-                        + Y9DateTimeUtils.formatCurrentDateTime() + "')";
-                jdbcTemplate4Public.execute(sql);
+                    "INSERT INTO y9_common_system (ID, CONTEXT_PATH, NAME, CN_NAME, TAB_INDEX, ENABLED, AUTO_INIT, CREATE_TIME) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+                jdbcTemplate4Public.update(sql, SYSTEM_ID, "processAdmin", systemName, "流程管理", 100, 1, 1,
+                    Y9DateTimeUtils.formatCurrentDateTime());
             }
         } catch (Exception e) {
             LOGGER.error("在数字底座创建[流程管理]系统失败", e);
@@ -135,24 +134,22 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
 
     private void createTenantSystem(String systemName) {
         try {
-            String sql = "select * from y9_common_system where NAME = '" + systemName + "'";
-            List<Map<String, Object>> list = jdbcTemplate4Public.queryForList(sql);
+            String sql = "select * from y9_common_system where NAME = ?";
+            List<Map<String, Object>> list = jdbcTemplate4Public.queryForList(sql, systemName);
             if (list.size() == 1) {
                 Map<String, Object> smap = list.get(0);
                 sql = "select * from Y9_COMMON_TENANT";
                 List<Map<String, Object>> tlist = jdbcTemplate4Public.queryForList(sql);
                 for (Map<String, Object> map : tlist) {
-                    sql = "select * from y9_common_tenant_system where TENANT_ID = '" + map.get("ID").toString()
-                        + "' and SYSTEM_ID = '" + smap.get("ID").toString() + "'";
-                    List<Map<String, Object>> qlist = jdbcTemplate4Public.queryForList(sql);
+                    sql = "select * from y9_common_tenant_system where TENANT_ID = ? and SYSTEM_ID = ?";
+                    List<Map<String, Object>> qlist =
+                        jdbcTemplate4Public.queryForList(sql, map.get("ID").toString(), smap.get("ID").toString());
                     if (qlist.isEmpty()) {
                         long id = System.currentTimeMillis();
-                        String sql1 =
-                            "INSERT INTO y9_common_tenant_system (ID, SYSTEM_ID, TENANT_ID, TENANT_DATA_SOURCE, CREATE_TIME) VALUES ('"
-                                + id + "', '" + smap.get("ID").toString() + "', '" + map.get("ID").toString() + "', '"
-                                + map.get("DEFAULT_DATA_SOURCE_ID").toString() + "','"
-                                + Y9DateTimeUtils.formatCurrentDateTime() + "')";
-                        jdbcTemplate4Public.execute(sql1);
+                        sql =
+                            "INSERT INTO y9_common_tenant_system (ID, SYSTEM_ID, TENANT_ID, TENANT_DATA_SOURCE, CREATE_TIME) VALUES (?, ?, ?, ?, ?)";
+                        jdbcTemplate4Public.update(sql, id, smap.get("ID").toString(), map.get("ID").toString(),
+                            map.get("DEFAULT_DATA_SOURCE_ID").toString(), Y9DateTimeUtils.formatCurrentDateTime());
                     }
                 }
             }

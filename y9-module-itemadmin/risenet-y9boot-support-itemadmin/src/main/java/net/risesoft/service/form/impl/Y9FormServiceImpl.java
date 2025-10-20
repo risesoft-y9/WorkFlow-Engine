@@ -141,12 +141,13 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @Override
     @Transactional
+    @SuppressWarnings("java:S2077")
     public boolean deleteByGuid(String y9TableId, String guid) {
         try {
             Y9Table y9Table = y9TableService.findById(y9TableId);
             String tableName = y9Table.getTableName();
-            String sql = "DELETE FROM " + tableName + " WHERE GUID='" + guid + "'";
-            jdbcTemplate4Tenant.execute(sql);
+            String sql = "DELETE FROM " + tableName + " WHERE GUID=?";
+            jdbcTemplate4Tenant.update(sql, guid);
             return true;
         } catch (Exception e) {
             e.printStackTrace();

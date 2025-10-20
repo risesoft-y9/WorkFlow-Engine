@@ -79,25 +79,26 @@ public class SyncYearTableServiceImpl implements SyncYearTableService {
     @Scheduled(cron = "0 0 2 * * ?")
     public void syncYearTable() {
         Date date = new Date();
-        /**
-         * 每年的10月10号开始生成年度表结构
-         */
-        boolean is1010 = Y9DateTimeUtils.formatCurrentDate().contains("10-10");
-        if (is1010) {
+        // 每年的10月10号开始生成年度表结构
+        String currentDate = Y9DateTimeUtils.formatCurrentDate();
+        if (currentDate.endsWith("10-10")) {
             LOGGER.info("********************定时生成年度表结构开始**********************");
             String year = Y9DateTimeUtils.getYear(date);
             String year0 = String.valueOf((Integer.parseInt(year) + 1));
             List<String> list = jdbcTemplate4Public.queryForList("select id from y9_common_tenant", String.class);
             for (String tenantId : list) {
-                Y9LoginUserHolder.setTenantId(tenantId);
-                String sql = "SELECT count(t.id) FROM y9_common_tenant_system t"
-                    + " LEFT JOIN y9_common_system s on t.system_id = s.ID WHERE t.tenant_id = '" + tenantId
-                    + "' and s.NAME = 'itemAdmin'";
-                int count = jdbcTemplate4Public.queryForObject(sql, Integer.class);
-                if (count > 0) {
-                    self.syncYearTable(year0);
-                } else {
-                    LOGGER.info("********************该租户未租用事项管理系统:{}**********************", tenantId);
+                try {
+                    Y9LoginUserHolder.setTenantId(tenantId);
+                    String sql = "SELECT count(t.id) FROM y9_common_tenant_system t"
+                        + " LEFT JOIN y9_common_system s on t.system_id = s.ID WHERE t.tenant_id = ? and s.NAME = 'itemAdmin'";
+                    int count = jdbcTemplate4Public.queryForObject(sql, Integer.class, tenantId);
+                    if (count > 0) {
+                        self.syncYearTable(year0);
+                    } else {
+                        LOGGER.info("********************该租户未租用事项管理系统:{}**********************", tenantId);
+                    }
+                } catch (Exception e) {
+                    LOGGER.error("处理租户 {} 年度表结构时发生异常", tenantId, e);
                 }
             }
             LOGGER.info("********************定时生成年度表结构结束**********************");
@@ -111,6 +112,7 @@ public class SyncYearTableServiceImpl implements SyncYearTableService {
      */
     @Transactional
     @Override
+    @SuppressWarnings("java:S2077")
     public Map<String, Object> syncYearTable(String year) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);

@@ -15,7 +15,7 @@ public interface CustomRuntimeService {
 
     /**
      *
-     * Description: 加签
+     * 加签
      *
      * @param activityId 执行实例id
      * @param parentExecutionId 父执行实例id
@@ -71,14 +71,14 @@ public interface CustomRuntimeService {
     List<ProcessInstance> listProcessInstancesByKey(String processDefinitionKey);
 
     /**
-     * Description: 恢复设置办结的件，其实是先激活流程，再设置流程的结束时间为null
+     * 恢复设置办结的件，其实是先激活流程，再设置流程的结束时间为null
      *
      * @param processInstanceId
      */
     void recovery4SetUpCompleted(String processInstanceId);
 
     /**
-     * Description: 恢复待办
+     * 恢复待办
      *
      * @param processInstanceId
      * @param year

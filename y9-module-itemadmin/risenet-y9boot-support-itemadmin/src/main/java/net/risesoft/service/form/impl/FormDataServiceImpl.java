@@ -122,43 +122,69 @@ public class FormDataServiceImpl implements FormDataService {
             Item item = itemService.findById(itemId);
             ProcessDefinitionModel processDefinition =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
-            // 流程上绑定的表单
-            List<Y9FormItemBind> formList =
-                y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
-            List<String> allTableNameList = new ArrayList<>();
-            formList.forEach(bind -> {
-                // 表单中涉及的表，多个表单有可能会绑定同一张表
-                y9FormRepository.findBindTableName(bind.getFormId()).forEach(tableName -> {
-                    if (!allTableNameList.contains(tableName)) {
-                        allTableNameList.add(tableName);
-                    }
-                });
-            });
+            // 获取流程绑定的所有表名
+            List<String> allTableNameList = getBindTableNames(itemId, processDefinition);
             // 复制数据
-            allTableNameList.forEach(tableName -> {
-                Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN)) {
-                    try {
-                        Map<String, Object> map = jdbcTemplate.queryForMap(
-                            "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", sourceProcessSerialNumber);
-                        StringBuilder columnSql = new StringBuilder();
-                        map.entrySet()
-                            .stream()
-                            .filter(entry -> !"guid".equalsIgnoreCase(entry.getKey()))
-                            .forEach(entry -> columnSql.append(",").append(entry.getKey()));
-                        String sql = "INSERT INTO " + tableName + " (guid" + columnSql + ") " + "SELECT ?" + columnSql
-                            + " FROM " + tableName + " WHERE guid = ?";
-                        jdbcTemplate.update(sql, targetProcessSerialNumber, sourceProcessSerialNumber);
-                    } catch (EmptyResultDataAccessException ex) {
-                        LOGGER.error("表{}没有guid:{}的数据", tableName, sourceProcessSerialNumber);
-                    }
-                }
-            });
+            allTableNameList.forEach(
+                tableName -> copyMainTableData(tableName, sourceProcessSerialNumber, targetProcessSerialNumber));
             return Y9Result.successMsg("复制成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("复制流程数据失败", e);
+            return Y9Result.failure("复制失败");
         }
-        return Y9Result.failure("复制失败");
+    }
+
+    /**
+     * 获取流程绑定的所有表名
+     *
+     * @param itemId 事项ID
+     * @param processDefinition 流程定义
+     * @return 表名列表
+     */
+    private List<String> getBindTableNames(String itemId, ProcessDefinitionModel processDefinition) {
+        List<String> allTableNameList = new ArrayList<>();
+        List<Y9FormItemBind> formList =
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+
+        formList.forEach(bind -> {
+            // 表单中涉及的表，多个表单有可能会绑定同一张表
+            y9FormRepository.findBindTableName(bind.getFormId()).forEach(tableName -> {
+                if (!allTableNameList.contains(tableName)) {
+                    allTableNameList.add(tableName);
+                }
+            });
+        });
+
+        return allTableNameList;
+    }
+
+    /**
+     * 复制主表数据
+     *
+     * @param tableName 表名
+     * @param sourceProcessSerialNumber 源流程序列号
+     * @param targetProcessSerialNumber 目标流程序列号
+     */
+    @SuppressWarnings("java:S2077")
+    private void copyMainTableData(String tableName, String sourceProcessSerialNumber,
+        String targetProcessSerialNumber) {
+        Y9Table y9Table = y9TableService.findByTableName(tableName);
+        if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN)) {
+            try {
+                Map<String, Object> map = jdbcTemplate.queryForMap(
+                    "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", sourceProcessSerialNumber);
+                StringBuilder columnSql = new StringBuilder();
+                map.entrySet()
+                    .stream()
+                    .filter(entry -> !"guid".equalsIgnoreCase(entry.getKey()))
+                    .forEach(entry -> columnSql.append(",").append(entry.getKey()));
+                String sql = "INSERT INTO " + tableName + " (guid" + columnSql + ") " + "SELECT ?" + columnSql
+                    + " FROM " + tableName + " WHERE guid = ?";
+                jdbcTemplate.update(sql, targetProcessSerialNumber, sourceProcessSerialNumber);
+            } catch (EmptyResultDataAccessException ex) {
+                LOGGER.error("表{}没有guid:{}的数据", tableName, sourceProcessSerialNumber);
+            }
+        }
     }
 
     @Override
@@ -223,6 +249,7 @@ public class FormDataServiceImpl implements FormDataService {
         return retMap;
     }
 
+    @SuppressWarnings("java:S2077")
     @Override
     public Map<String, Map<String, Object>> getDataByProcessSerialNumbers(String itemId,
         List<String> processSerialNumbers) {
@@ -300,14 +327,15 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
+    @SuppressWarnings("java:S2077")
     public Y9Result<Map<String, Object>> getData4TableAlias(String guid, String tableAlias) {
         Y9Table y9Table = y9TableService.findByTableAlias(tableAlias);
         if (null == y9Table) {
             LOGGER.error("表简称[{}]对应的字段不存在", tableAlias);
             return Y9Result.failure("表简称[" + tableAlias + "]对应的字段不存在");
         }
-        String selectSql = "SELECT * FROM " + y9Table.getTableName() + " WHERE GUID ='" + guid + "'";
-        List<Map<String, Object>> list = jdbcTemplate.queryForList(selectSql);
+        String selectSql = "SELECT * FROM " + y9Table.getTableName() + " WHERE GUID = ?";
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(selectSql, guid);
         return Y9Result.success(!list.isEmpty() ? list.get(0) : null);
     }
 
@@ -383,43 +411,58 @@ public class FormDataServiceImpl implements FormDataService {
 
     @Override
     @Transactional
+    @SuppressWarnings("java:S2077")
     public Y9Result<String> insertFormData(String tableName, String guid, String formData) {
         try {
+            // 验证输入参数
+            if (StringUtils.isBlank(tableName) || StringUtils.isBlank(guid) || StringUtils.isBlank(formData)) {
+                return Y9Result.failure("参数不能为空");
+            }
             Map<String, Object> formDataMap = Y9JsonUtil.readHashMap(formData);
-            assert formDataMap != null;
+            if (formDataMap == null) {
+                return Y9Result.failure("表单数据格式错误");
+            }
             Y9Table y9Table = y9TableService.findByTableName(tableName);
             if (null == y9Table) {
                 return Y9Result.failure("表不存在：{}", tableName);
             }
+            // 检查主键是否已存在
             List<Map<String, Object>> list =
-                jdbcTemplate.queryForList("SELECT * FROM " + tableName + " WHERE GUID ='" + guid + "'");
+                jdbcTemplate.queryForList("SELECT * FROM " + tableName + " WHERE GUID = ?", guid);
             if (!list.isEmpty()) {
                 return Y9Result.failure("主键已存在：{}", guid);
             }
-            StringBuilder columns = new StringBuilder();
-            StringBuilder values = new StringBuilder();
+            // 构建参数化SQL语句
+            List<String> columns = new ArrayList<>();
+            List<Object> values = new ArrayList<>();
+            List<String> placeholders = new ArrayList<>();
             for (Map.Entry<String, Object> entry : formDataMap.entrySet()) {
                 String column = entry.getKey();
                 Object value = entry.getValue();
                 if (value != null) {
-                    columns.append(column).append(",");
-                    values.append("'").append(value).append("',");
+                    columns.add(column);
+                    values.add(value);
+                    placeholders.add("?");
                 }
             }
-            if (columns.length() > 0) {
-                columns.deleteCharAt(columns.length() - 1);
+            if (columns.isEmpty()) {
+                return Y9Result.failure("没有有效的数据字段");
             }
-            if (values.length() > 0) {
-                values.deleteCharAt(values.length() - 1);
-            }
-            String insertSql = String.format("INSERT INTO " + tableName + " (%s) VALUES (%s)", columns, values);
-            jdbcTemplate.execute(insertSql);
+            // 添加GUID字段
+            columns.add(0, "guid");
+            values.add(0, guid);
+            placeholders.add(0, "?");
+
+            String columnStr = String.join(",", columns);
+            String placeholderStr = String.join(",", placeholders);
+            String insertSql = String.format("INSERT INTO %s (%s) VALUES (%s)", tableName, columnStr, placeholderStr);
+
+            jdbcTemplate.update(insertSql, values.toArray());
             return Y9Result.success("操作成功");
         } catch (Exception e) {
-            LOGGER.error("****************************[insertFormData]插入表单数据异常：{}，表单数据：{}", e, formData);
-            e.printStackTrace();
+            LOGGER.error("插入表单数据异常，表名：{}，GUID：{}，表单数据：{}", tableName, guid, formData, e);
+            return Y9Result.failure("数据插入失败：" + e.getMessage());
         }
-        return Y9Result.failure("发生异常");
     }
 
     @Override
@@ -517,6 +560,7 @@ public class FormDataServiceImpl implements FormDataService {
             map.put("name", "form_Id");
             map.put("value", formId);
             listMap.add(map);
+            assert mapFormJsonData != null;
             for (String columnName : mapFormJsonData.keySet()) {
                 // 根据数据库表名获取列名
                 String value = mapFormJsonData.get(columnName).toString();
@@ -599,6 +643,7 @@ public class FormDataServiceImpl implements FormDataService {
             map.put("name", "form_Id");
             map.put("value", formId);
             listMap.add(map);
+            assert mapFormJsonData != null;
             for (String columnName : mapFormJsonData.keySet()) {
                 // 根据数据库表名获取列名
                 String value = mapFormJsonData.get(columnName).toString();

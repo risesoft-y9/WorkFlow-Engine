@@ -259,8 +259,7 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
     @Override
     public List<IdentityLinkModel> listIdentityLinksForTaskByTaskId(String taskId) {
         String sql =
-            "SELECT TASK_ID_ as taskId,TYPE_ as type ,user_id_ as userId FROM ACT_HI_IDENTITYLINK WHERE TASK_ID_ = '"
-                + taskId + "'";
-        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(IdentityLinkModel.class));
+            "SELECT TASK_ID_ as taskId,TYPE_ as type ,user_id_ as userId FROM ACT_HI_IDENTITYLINK WHERE TASK_ID_ = ?";
+        return jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(IdentityLinkModel.class), taskId);
     }
 }
