@@ -1,6 +1,5 @@
 package net.risesoft.controller.opinion;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -20,18 +19,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.opinion.OpinionApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
-import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
-import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DateTimeUtils;
@@ -51,12 +44,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequestMapping(value = "/vue/opinion", produces = MediaType.APPLICATION_JSON_VALUE)
 public class OpinionRestController {
 
-    private static final String ORGTYPE_KEY = "orgType";
-    private static final String PARENTID_KEY = "parentId";
-    private static final String ISPARENT_KEY = "isParent";
     private final OpinionApi opinionApi;
-    private final OrgUnitApi orgUnitApi;
-    private final PersonApi personApi;
 
     /**
      * 验证是否签写意见
@@ -116,43 +104,6 @@ public class OpinionRestController {
     }
 
     /**
-     * 委办局树搜索
-     *
-     * @param name 人员名称
-     * @return Y9Result<List < Map < String, Object>>>
-     */
-    @GetMapping(value = "/bureauTreeSearch")
-    public Y9Result<List<Map<String, Object>>> deptTreeSearch(@RequestParam(required = false) String name) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<Map<String, Object>> item = new ArrayList<>();
-        OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
-        if (bureau != null) {
-            List<OrgUnit> orgUnitList =
-                orgUnitApi.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON, bureau.getDn()).getData();
-            for (OrgUnit orgUnit : orgUnitList) {
-                Map<String, Object> map = new HashMap<>(16);
-                map.put("id", orgUnit.getId());
-                map.put("name", orgUnit.getName());
-                map.put(ORGTYPE_KEY, orgUnit.getOrgType());
-                map.put(PARENTID_KEY, orgUnit.getParentId());
-                map.put(ISPARENT_KEY, true);
-                if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
-                    Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
-                    if (per.getDisabled()) {
-                        continue;
-                    }
-                    map.put("sex", per.getSex());
-                    map.put("duty", per.getDuty());
-                    map.put(ISPARENT_KEY, false);
-                    map.put(PARENTID_KEY, orgUnit.getParentId());
-                }
-                item.add(map);
-            }
-        }
-        return Y9Result.success(item, "获取成功");
-    }
-
-    /**
      * 获取事项绑定的意见框列表
      *
      * @param itemId 事项id
@@ -164,53 +115,6 @@ public class OpinionRestController {
         @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return opinionApi.getBindOpinionFrame(tenantId, itemId, processDefinitionId);
-    }
-
-    /**
-     * 获取委办局树
-     *
-     * @param id 父节点id
-     * @return Y9Result<List < Map < String, Object>>>
-     */
-    @GetMapping(value = "/getBureauTree")
-    public Y9Result<List<Map<String, Object>>> getBureauTree(@RequestParam(required = false) String id) {
-        List<Map<String, Object>> item = new ArrayList<>();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        if (StringUtils.isBlank(id)) {
-            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getUserInfo().getPersonId()).getData();
-            if (orgUnit != null) {
-                Map<String, Object> m = new HashMap<>(16);
-                m.put("id", orgUnit.getId());
-                m.put("name", orgUnit.getName());
-                m.put(PARENTID_KEY, orgUnit.getParentId());
-                m.put(ORGTYPE_KEY, orgUnit.getOrgType());
-                m.put(ISPARENT_KEY, true);
-                item.add(m);
-            }
-        } else {
-            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_ORG).getData();
-            for (OrgUnit orgUnit : list) {
-                Map<String, Object> m = new HashMap<>(16);
-                m.put("id", orgUnit.getId());
-                m.put("name", orgUnit.getName());
-                m.put(PARENTID_KEY, orgUnit.getParentId());
-                m.put(ORGTYPE_KEY, orgUnit.getOrgType());
-                m.put(ISPARENT_KEY, true);
-                if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)) {
-                    m.put(ISPARENT_KEY, false);
-                    Person person = personApi.get(tenantId, orgUnit.getId()).getData();
-                    if (person.getDisabled()) {
-                        continue;
-                    }
-                    m.put("sex", person.getSex());
-                }
-                if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON)
-                    || orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                    item.add(m);
-                }
-            }
-        }
-        return Y9Result.success(item, "获取成功");
     }
 
     /**
