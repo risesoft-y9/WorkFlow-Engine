@@ -23,6 +23,8 @@ public class ItemConsts {
     public static final String REMARKS_KEY = "remarks";
     public static final String OUTLINE_KEY = "outline";
     public static final String SEND_KEY = "send";
+    public static final String SENDNAME_KEY = "sendName";
+    public static final String SENDKEY_KEY = "sendKey";
     public static final String TYPE_KEY = "type";
     public static final String GUID_KEY = "guid";
     public static final String PROCESSINSTANCEID_KEY = "processInstanceId";
@@ -46,6 +48,13 @@ public class ItemConsts {
     public static final String ITEMID_KEY = "itemId";
     public static final String FIELDLIST_KEY = "fieldlist";
     public static final String EXISTPOSITION_KEY = "existPosition";
+    public static final String ISFORWARDING_KEY = "isForwarding";
+    public static final String MENUNAME_KEY = "menuName";
+    public static final String MENU_KEY = "menuKey";
+    public static final String EXCLUSIVE_GATEWAY_KEY = "Exclusive Gateway";
+    public static final String SUBPROCESSNUM_KEY = "subProcessNum";
+    public static final String ROUTETOTASKID_KEY = "routeToTaskId";
+    public static final String TABINDEX_KEY = "tabIndex";
     /** 自由流办件processDefineKey */
     public static String freeFlowKey = "ziyouliucheng";
     /** 所有事项ID */
