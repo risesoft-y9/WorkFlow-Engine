@@ -83,7 +83,7 @@ public class TableManagerService {
                     // 修改老表值
                     td.setOldTableName(td.getTableName());
                     this.saveOrUpdate(td);
-                    LOGGER.info("修改表正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
+                    LOGGER.info("修改表正常：原表名称{}--->修改后表名称{}", td.getOldTableName(), tableName);
                 }
                 ddLmysql.addTableColumn(dataSource, tableName, dbColumnList);
             } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
@@ -93,7 +93,7 @@ public class TableManagerService {
                     // 修改老表值
                     td.setOldTableName(td.getTableName());
                     this.saveOrUpdate(td);
-                    LOGGER.info("修改表正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
+                    LOGGER.info("修改表名称正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
                 }
                 ddLoracle.addTableColumn(dataSource, tableName, dbColumnList);
             } else if (DialectEnum.DM.getValue().equals(dialect)) {
@@ -103,7 +103,7 @@ public class TableManagerService {
                     // 修改老表值
                     td.setOldTableName(td.getTableName());
                     this.saveOrUpdate(td);
-                    LOGGER.info("修改表正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
+                    LOGGER.info("修改表正常：原表名{}--->修改后的表名{}", td.getOldTableName(), tableName);
                 }
                 ddLoracle.addTableColumn(dataSource, tableName, dbColumnList);
             } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {

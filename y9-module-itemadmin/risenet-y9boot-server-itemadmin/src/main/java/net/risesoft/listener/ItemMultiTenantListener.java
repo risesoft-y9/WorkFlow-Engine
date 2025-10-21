@@ -12,6 +12,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.api.platform.tenant.TenantApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.enums.platform.org.ManagerLevelEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -69,13 +70,13 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
         try {
             System y9System = systemApi.getByName("itemAdmin").getData();
             if (null != y9System) {
-                App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian").getData();
+                App app = appApi.findBySystemIdAndCustomId(y9System.getId(), ItemConsts.BANJIAN_KEY).getData();
                 if (null == app) {
                     String sql =
                         "INSERT INTO y9_common_app_store (ID,NAME, TAB_INDEX, URL, CHECKED, OPEN_TYPE,SYSTEM_ID,CREATE_TIME,CUSTOM_ID,TYPE,INHERIT,RESOURCE_TYPE,SHOW_NUMBER,ENABLED,HIDDEN) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
                     jdbcTemplate.update(sql, Y9IdGenerator.genId(IdType.SNOWFLAKE), "办件", 0,
                         y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ITEM_ID, 1, 1, y9System.getId(),
-                        Y9DateTimeUtils.formatCurrentDateTime(), "banjian", 2, 0, 0, 0, 1, 0);
+                        Y9DateTimeUtils.formatCurrentDateTime(), ItemConsts.BANJIAN_KEY, 2, 0, 0, 0, 1, 0);
                 }
             }
         } catch (Exception e) {
@@ -87,7 +88,7 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
         try {
             System y9System = systemApi.getByName("itemAdmin").getData();
             if (null != y9System) {
-                App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian").getData();
+                App app = appApi.findBySystemIdAndCustomId(y9System.getId(), ItemConsts.BANJIAN_KEY).getData();
                 if (null != app) {
                     String sql = "select ID from y9_common_tenant_app where TENANT_ID = ? and APP_ID = ?";
                     List<Map<String, Object>> qlist = jdbcTemplate.queryForList(sql, tenant.getId(), app.getId());
