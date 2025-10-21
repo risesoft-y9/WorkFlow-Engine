@@ -24,7 +24,9 @@ import net.risesoft.y9.sqlddl.pojo.DbColumn;
  * @date 2022/12/21
  */
 public class DdlKingbase {
-
+    private static final String ALTER_TABLE_KEY = "ALTER TABLE \"";
+    private static final String COMMENT_ON_KEY = "COMMENT ON COLUMN \"";
+    private static final String IS_KEY = " IS '";
     @Autowired
     private Y9TableFieldRepository y9TableFieldRepository;
 
@@ -75,7 +77,7 @@ public class DdlKingbase {
 
     private String buildColumnTypeDdl(DataSource dataSource, String tableName, DbColumn dbc, ColumnInfo columnInfo) {
         StringBuilder sb = new StringBuilder();
-        sb.append("ALTER TABLE \"").append(tableName).append("\"");
+        sb.append(ALTER_TABLE_KEY).append(tableName).append("\"");
         determineColumnTypeOperation(dataSource, sb, dbc, columnInfo);
         appendColumnTypeDefinition(sb, dbc);
         return sb.toString();
@@ -104,7 +106,7 @@ public class DdlKingbase {
     private void handleColumnRename(DataSource dataSource, String tableName, String oldName, String newName) {
         try {
             StringBuilder renameSql = new StringBuilder();
-            renameSql.append("ALTER TABLE \"").append(tableName).append("\"");
+            renameSql.append(ALTER_TABLE_KEY).append(tableName).append("\"");
             DbMetaDataUtil.executeDdl(dataSource,
                 renameSql.append(" RENAME COLUMN ").append(oldName).append(" TO ").append(newName).toString());
         } catch (Exception e) {
@@ -140,7 +142,7 @@ public class DdlKingbase {
         if (columnInfo.isAddOperation) {
             if (!dbc.getNullable()) {
                 String sb =
-                    "ALTER TABLE \"" + tableName + "\"" + " ALTER COLUMN " + dbc.getColumnName() + " SET NOT NULL";
+                    ALTER_TABLE_KEY + tableName + "\"" + " ALTER COLUMN " + dbc.getColumnName() + " SET NOT NULL";
                 DbMetaDataUtil.executeDdl(dataSource, sb);
             }
         } else {
@@ -152,19 +154,19 @@ public class DdlKingbase {
     private void handleExistingColumnNullable(DataSource dataSource, String tableName, DbColumn dbc,
         ColumnInfo columnInfo) throws Exception {
         if (dbc.getNullable() && "NO".equals(columnInfo.nullable)) {
-            String sb = "ALTER TABLE \"" + tableName + "\"" + " ALTER COLUMN " + dbc.getColumnName() + " DROP NOT NULL";
+            String sb = ALTER_TABLE_KEY + tableName + "\"" + " ALTER COLUMN " + dbc.getColumnName() + " DROP NOT NULL";
             DbMetaDataUtil.executeDdl(dataSource, sb);
         }
         if (!dbc.getNullable() && "YES".equals(columnInfo.nullable)) {
-            String sb = "ALTER TABLE \"" + tableName + "\"" + " ALTER COLUMN " + dbc.getColumnName() + " SET NOT NULL";
+            String sb = ALTER_TABLE_KEY + tableName + "\"" + " ALTER COLUMN " + dbc.getColumnName() + " SET NOT NULL";
             DbMetaDataUtil.executeDdl(dataSource, sb);
         }
     }
 
     private void handleColumnComment(DataSource dataSource, String tableName, DbColumn dbc) throws Exception {
         if (StringUtils.hasText(dbc.getComment())) {
-            DbMetaDataUtil.executeDdl(dataSource, "COMMENT ON COLUMN \"" + tableName + "\"."
-                + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
+            DbMetaDataUtil.executeDdl(dataSource, COMMENT_ON_KEY + tableName + "\"."
+                + dbc.getColumnName().trim().toUpperCase() + IS_KEY + dbc.getComment() + "'");
         }
     }
 
@@ -177,7 +179,7 @@ public class DdlKingbase {
         for (DbColumn dbc : dbColumnArr) {
             if (StringUtils.hasText(dbc.getColumnNameOld())) {
                 StringBuilder sb = new StringBuilder();
-                sb.append("ALTER TABLE \"").append(tableName).append("\"");
+                sb.append(ALTER_TABLE_KEY).append(tableName).append("\"");
                 // 字段名称有改变
                 if (!dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())) {
                     try {
@@ -224,8 +226,8 @@ public class DdlKingbase {
                 DbMetaDataUtil.executeDdl(dataSource, sb.toString());
                 if (StringUtils.hasText(dbc.getComment())) {
                     if (!list.get(0).getComment().equals(dbc.getComment())) {
-                        DbMetaDataUtil.executeDdl(dataSource, "COMMENT ON COLUMN \"" + tableName + "\"."
-                            + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
+                        DbMetaDataUtil.executeDdl(dataSource, COMMENT_ON_KEY + tableName + "\"."
+                            + dbc.getColumnName().trim().toUpperCase() + IS_KEY + dbc.getComment() + "'");
                     }
                 }
             }
@@ -274,8 +276,8 @@ public class DdlKingbase {
     private void handleTableComments(DataSource dataSource, String tableName, DbColumn[] dbColumnArr) throws Exception {
         for (DbColumn dbc : dbColumnArr) {
             if (StringUtils.hasText(dbc.getComment())) {
-                String commentSql = "COMMENT ON COLUMN \"" + tableName + "\"."
-                    + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'";
+                String commentSql = COMMENT_ON_KEY + tableName + "\"." + dbc.getColumnName().trim().toUpperCase()
+                    + IS_KEY + dbc.getComment() + "'";
                 DbMetaDataUtil.executeDdl(dataSource, commentSql);
             }
         }
@@ -288,7 +290,7 @@ public class DdlKingbase {
     }
 
     public void dropTableColumn(DataSource dataSource, String tableName, String columnName) throws Exception {
-        DbMetaDataUtil.executeDdl(dataSource, "ALTER TABLE \"" + tableName + "\" DROP COLUMN " + columnName);
+        DbMetaDataUtil.executeDdl(dataSource, ALTER_TABLE_KEY + tableName + "\" DROP COLUMN " + columnName);
     }
 
     public void renameTable(DataSource dataSource, String tableNameOld, String tableNameNew) throws Exception {

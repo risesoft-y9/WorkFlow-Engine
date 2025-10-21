@@ -75,6 +75,8 @@ public class ItemConsts {
     public static final String STARTTIME_VAL_KEY = " 00:00:00";
     public static final String ENDTIME_VAL_KEY = " 23:59:59";
     public static final String CUSTOMGROUP_KEY = "customGroup";
+    public static final String COMMON_KEY = "common";
+    public static final String SUCCESS_KEY = "success";
     /** 自由流办件processDefineKey */
     public static String freeFlowKey = "ziyouliucheng";
     /** 所有事项ID */
