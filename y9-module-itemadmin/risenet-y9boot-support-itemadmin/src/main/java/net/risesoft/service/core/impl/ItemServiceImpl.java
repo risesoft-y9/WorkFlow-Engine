@@ -21,6 +21,7 @@ import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemMappingConf;
@@ -115,8 +116,8 @@ public class ItemServiceImpl implements ItemService {
             itemWordConfService.copyWordConf(itemId, processDefinitionId);
             return Y9Result.successMsg("复制成功");
         } catch (Exception e) {
-            LOGGER.error("复制事项异常", e);
-            return Y9Result.failure("复制事项异常");
+            LOGGER.error("复制事项出现异常，问题打印：", e);
+            return Y9Result.failure("复制事项异常！");
         }
     }
 
@@ -182,8 +183,8 @@ public class ItemServiceImpl implements ItemService {
             }
             return Y9Result.failure("复制事项异常,事项不存在");
         } catch (Exception e) {
-            LOGGER.error("复制事项异常", e);
-            return Y9Result.failure("复制事项异常");
+            LOGGER.error("复制事项异常，异常打印：", e);
+            return Y9Result.failure("复制事项异常，请检查！");
         }
     }
 
@@ -284,17 +285,17 @@ public class ItemServiceImpl implements ItemService {
 
     @Override
     public List<Item> list() {
-        return itemRepository.findAll(Sort.by(Sort.Direction.ASC, "tabIndex"));
+        return itemRepository.findAll(Sort.by(Sort.Direction.ASC, ItemConsts.TABINDEX_KEY));
     }
 
     @Override
     public List<Item> findBySystemName(String systemName) {
-        return itemRepository.findBySystemName(systemName, Sort.by(Sort.Direction.ASC, "tabIndex"));
+        return itemRepository.findBySystemName(systemName, Sort.by(Sort.Direction.ASC, ItemConsts.TABINDEX_KEY));
     }
 
     @Override
     public Page<Item> page(Integer page, Integer rows) {
-        PageRequest pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.ASC, "tabIndex"));
+        PageRequest pageable = PageRequest.of(page - 1, rows, Sort.by(Sort.Direction.ASC, ItemConsts.TABINDEX_KEY));
         return itemRepository.findAll(pageable);
     }
 

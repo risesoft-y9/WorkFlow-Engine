@@ -38,6 +38,7 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ActRuDetail;
@@ -148,90 +149,50 @@ import net.risesoft.y9.util.Y9Util;
 @RequiredArgsConstructor
 public class DocumentServiceImpl implements DocumentService {
 
+    private static final String TRUE_STR_KEY = "true:";
+    private static final String ITEMID_URL_KEY = "itemId=";
     private final ActivitiOptServiceImpl activitiOptService;
-
     private final ItemService itemService;
-
     private final ItemRepository itemRepository;
-
     private final ItemTaskConfService taskConfService;
-
     private final ItemPermissionService itemPermissionService;
-
     private final Y9FormItemBindService y9FormItemBindService;
-
     private final ItemButtonBindService buttonItemBindService;
-
     private final TaskApi taskApi;
-
     private final CustomGroupApi customGroupApi;
-
     private final ProcessDefinitionApi processDefinitionApi;
-
     private final VariableApi variableApi;
-
     private final OrgUnitApi orgUnitApi;
-
     private final RepositoryApi repositoryApi;
-
     private final PositionApi positionApi;
-
     private final PositionRoleApi positionRoleApi;
-
     private final DepartmentApi departmentApi;
-
     private final HistoricProcessApi historicProcessApi;
-
     private final HistoricTaskApi historictaskApi;
-
     private final RuntimeApi runtimeApi;
-
     private final ProcessParamService processParamService;
-
     private final ProcessTodoApi processTodoApi;
-
     private final ItemPrintTemplateBindRepository itemPrintTemplateBindRepository;
-
     private final OfficeDoneInfoService officeDoneInfoService;
-
     private final TaskVariableRepository taskVariableRepository;
-
     private final AsyncHandleService asyncHandleService;
-
     private final Y9FormRepository y9FormRepository;
-
     private final Process4SearchService process4SearchService;
-
     private final ErrorLogService errorLogService;
-
     private final ItemStartNodeRoleService itemStartNodeRoleService;
-
     private final ItemTaskConfRepository taskConfRepository;
-
     private final DynamicRoleMemberService dynamicRoleMemberService;
-
     private final DynamicRoleService dynamicRoleService;
-
     private final ConditionParserApi conditionParserApi;
-
     private final Y9FormService y9FormService;
-
     private final RoleService roleService;
-
     private final HistoricActivityApi historicActivityApi;
-
     private final ActRuDetailService actRuDetailService;
-
     private final SignDeptDetailService signDeptDetailService;
-
     private final AppApi appApi;
-
     private final ButtonService buttonService;
-
     private final AttachmentService attachmentService;
-
     private final Y9WordService y9WordService;
-
     private final AssociatedFileService associatedFileService;
     private final SpeakInfoService speakInfoService;
     private final OfficeFollowService officeFollowService;
@@ -831,17 +792,18 @@ public class DocumentServiceImpl implements DocumentService {
              */
             tooMuch = num > 20;
             if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance()) && tooMuch) {
-                TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
+                TaskVariable taskVariable =
+                    taskVariableRepository.findByTaskIdAndKeyName(taskId, ItemConsts.ISFORWARDING_KEY);
                 if (taskVariable == null) {
                     taskVariable = new TaskVariable();
                     taskVariable.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     taskVariable.setProcessInstanceId(processInstanceId);
                     taskVariable.setTaskId(taskId);
-                    taskVariable.setKeyName("isForwarding");
+                    taskVariable.setKeyName(ItemConsts.ISFORWARDING_KEY);
                     taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 }
                 taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                taskVariable.setText("true:" + num);
+                taskVariable.setText(TRUE_STR_KEY + num);
                 taskVariableRepository.save(taskVariable);
                 asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
                     sponsorGuid, taskId, flowElementModel, variables, userList);
@@ -856,17 +818,17 @@ public class DocumentServiceImpl implements DocumentService {
                     tooMuch = taskNextList1.size() > 10;
                     if (tooMuch) {
                         TaskVariable taskVariable =
-                            taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
+                            taskVariableRepository.findByTaskIdAndKeyName(taskId, ItemConsts.ISFORWARDING_KEY);
                         if (taskVariable == null) {
                             taskVariable = new TaskVariable();
                             taskVariable.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                             taskVariable.setProcessInstanceId(processInstanceId);
                             taskVariable.setTaskId(taskId);
-                            taskVariable.setKeyName("isForwarding");
+                            taskVariable.setKeyName(ItemConsts.ISFORWARDING_KEY);
                             taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                         }
                         taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                        taskVariable.setText("true:" + num);
+                        taskVariable.setText(TRUE_STR_KEY + num);
                         taskVariableRepository.save(taskVariable);
                         asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
                             sponsorGuid, taskId, flowElementModel, variables, userList);
@@ -1111,10 +1073,10 @@ public class DocumentServiceImpl implements DocumentService {
                 if (StringUtils.isBlank(url)) {
                     continue;
                 }
-                if (!url.contains("itemId=")) {
+                if (!url.contains(ITEMID_URL_KEY)) {
                     continue;
                 }
-                return url.split("itemId=")[1];
+                return url.split(ITEMID_URL_KEY)[1];
             }
         } catch (Exception e) {
             LOGGER.error("获取第一个任务失败！", e);
@@ -1200,10 +1162,10 @@ public class DocumentServiceImpl implements DocumentService {
                 if (StringUtils.isBlank(url)) {
                     continue;
                 }
-                if (!url.contains("itemId=")) {
+                if (!url.contains(ITEMID_URL_KEY)) {
                     continue;
                 }
-                String itemId = url.split("itemId=")[1];
+                String itemId = url.split(ITEMID_URL_KEY)[1];
                 model.setId(r.getId());
                 model.setUrl(itemId);
                 model.setItemId(itemId);
@@ -1244,10 +1206,10 @@ public class DocumentServiceImpl implements DocumentService {
                 if (StringUtils.isBlank(url)) {
                     continue;
                 }
-                if (!url.contains("itemId=")) {
+                if (!url.contains(ITEMID_URL_KEY)) {
                     continue;
                 }
-                String itemId = url.split("itemId=")[1];
+                String itemId = url.split(ITEMID_URL_KEY)[1];
                 model.setId(r.getId());
                 model.setItemId(itemId);
                 model.setAppIcon("");
@@ -1304,8 +1266,8 @@ public class DocumentServiceImpl implements DocumentService {
                         List<String> roleIds = bind.getRoleIds();
                         if (roleIds.isEmpty()) {
                             Map<String, Object> mapTemp = new HashMap<>(16);
-                            mapTemp.put("menuName", buttonName);
-                            mapTemp.put("menuKey", buttonCustomId);
+                            mapTemp.put(ItemConsts.MENUNAME_KEY, buttonName);
+                            mapTemp.put(ItemConsts.MENU_KEY, buttonCustomId);
                             menuName = Y9Util.genCustomStr(menuName, buttonName);
                             menuKey = Y9Util.genCustomStr(menuKey, buttonCustomId);
                             menuMap.add(mapTemp);
@@ -1314,8 +1276,8 @@ public class DocumentServiceImpl implements DocumentService {
                                 boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
                                 if (hasRole) {
                                     Map<String, Object> mapTemp = new HashMap<>(16);
-                                    mapTemp.put("menuName", buttonName);
-                                    mapTemp.put("menuKey", buttonCustomId);
+                                    mapTemp.put(ItemConsts.MENUNAME_KEY, buttonName);
+                                    mapTemp.put(ItemConsts.MENU_KEY, buttonCustomId);
                                     menuName = Y9Util.genCustomStr(menuName, buttonName);
                                     menuKey = Y9Util.genCustomStr(menuKey, buttonCustomId);
                                     menuMap.add(mapTemp);
@@ -1343,8 +1305,8 @@ public class DocumentServiceImpl implements DocumentService {
                         List<String> roleIds = bib.getRoleIds();
                         if (roleIds.isEmpty()) {
                             Map<String, Object> mapTemp = new HashMap<>(16);
-                            mapTemp.put("menuName", bib.getButtonName());
-                            mapTemp.put("menuKey", bib.getButtonCustomId());
+                            mapTemp.put(ItemConsts.MENUNAME_KEY, bib.getButtonName());
+                            mapTemp.put(ItemConsts.MENU_KEY, bib.getButtonCustomId());
                             menuName = Y9Util.genCustomStr(menuName, bib.getButtonName());
                             menuKey = Y9Util.genCustomStr(menuKey, bib.getButtonCustomId());
                             menuMap.add(mapTemp);
@@ -1356,8 +1318,8 @@ public class DocumentServiceImpl implements DocumentService {
                                 boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
                                 if (hasRole) {
                                     Map<String, Object> mapTemp = new HashMap<>(16);
-                                    mapTemp.put("menuName", bib.getButtonName());
-                                    mapTemp.put("menuKey", bib.getButtonCustomId());
+                                    mapTemp.put(ItemConsts.MENUNAME_KEY, bib.getButtonName());
+                                    mapTemp.put(ItemConsts.MENU_KEY, bib.getButtonCustomId());
                                     menuName = Y9Util.genCustomStr(menuName, bib.getButtonName());
                                     menuKey = Y9Util.genCustomStr(menuKey, bib.getButtonCustomId());
                                     menuMap.add(mapTemp);
@@ -1374,8 +1336,8 @@ public class DocumentServiceImpl implements DocumentService {
                      * 没有配置自定义“发送”按钮的话，添加上默认的“发送”按钮
                      */
                     Map<String, Object> map1 = new HashMap<>(16);
-                    map1.put("menuName", buttonNames[k]);
-                    map1.put("menuKey", buttonIds[k]);
+                    map1.put(ItemConsts.MENUNAME_KEY, buttonNames[k]);
+                    map1.put(ItemConsts.MENU_KEY, buttonIds[k]);
                     menuName = Y9Util.genCustomStr(menuName, buttonNames[k]);
                     menuKey = Y9Util.genCustomStr(menuKey, buttonIds[k]);
                     menuMap.add(map1);
@@ -1387,11 +1349,12 @@ public class DocumentServiceImpl implements DocumentService {
                     for (TargetModel m : routeToTasks) {
                         Map<String, Object> map2 = new HashMap<>(16);
                         // 退回、路由网关不显示在发送下面
-                        if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
+                        if (!"退回".equals(m.getTaskDefName())
+                            && !ItemConsts.EXCLUSIVE_GATEWAY_KEY.equals(m.getTaskDefName())) {
                             sendName = Y9Util.genCustomStr(sendName, m.getTaskDefName());
                             sendKey = Y9Util.genCustomStr(sendKey, m.getTaskDefKey());
-                            map2.put("sendName", m.getTaskDefName());
-                            map2.put("sendKey", m.getTaskDefKey());
+                            map2.put(ItemConsts.SENDNAME_KEY, m.getTaskDefName());
+                            map2.put(ItemConsts.SENDKEY_KEY, m.getTaskDefKey());
                             sendMap.add(map2);
                         }
                     }
@@ -1407,8 +1370,8 @@ public class DocumentServiceImpl implements DocumentService {
                             Map<String, Object> mapTemp = new HashMap<>(16);
                             sendName = Y9Util.genCustomStr(sendName, buttonName);
                             sendKey = Y9Util.genCustomStr(sendKey, buttonCustomId);
-                            mapTemp.put("sendName", buttonName);
-                            mapTemp.put("sendKey", buttonCustomId);
+                            mapTemp.put(ItemConsts.SENDNAME_KEY, buttonName);
+                            mapTemp.put(ItemConsts.SENDKEY_KEY, buttonCustomId);
                             sendMap.add(mapTemp);
                         } else {
                             for (String roleId : roleIds) {
@@ -1417,8 +1380,8 @@ public class DocumentServiceImpl implements DocumentService {
                                     Map<String, Object> mapTemp = new HashMap<>(16);
                                     sendName = Y9Util.genCustomStr(sendName, buttonName);
                                     sendKey = Y9Util.genCustomStr(sendKey, buttonCustomId);
-                                    mapTemp.put("sendName", buttonName);
-                                    mapTemp.put("sendKey", buttonCustomId);
+                                    mapTemp.put(ItemConsts.SENDNAME_KEY, buttonName);
+                                    mapTemp.put(ItemConsts.SENDKEY_KEY, buttonCustomId);
                                     sendMap.add(mapTemp);
                                     break;
                                 }
@@ -1457,8 +1420,8 @@ public class DocumentServiceImpl implements DocumentService {
 
             if (k != 1 && isButtonShow[k]) {
                 Map<String, Object> map1 = new HashMap<>(16);
-                map1.put("menuName", buttonNames[k]);
-                map1.put("menuKey", buttonIds[k]);
+                map1.put(ItemConsts.MENUNAME_KEY, buttonNames[k]);
+                map1.put(ItemConsts.MENU_KEY, buttonIds[k]);
                 menuName = Y9Util.genCustomStr(menuName, buttonNames[k]);
                 menuKey = Y9Util.genCustomStr(menuKey, buttonIds[k]);
                 menuMap.add(map1);
@@ -1512,7 +1475,7 @@ public class DocumentServiceImpl implements DocumentService {
                 processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
             for (TargetModel m : routeToTasks) {
                 // 退回、路由网关不显示在发送下面
-                if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
+                if (!"退回".equals(m.getTaskDefName()) && !ItemConsts.EXCLUSIVE_GATEWAY_KEY.equals(m.getTaskDefName())) {
                     buttonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND));
                 }
             }
@@ -1567,7 +1530,7 @@ public class DocumentServiceImpl implements DocumentService {
                 processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
             for (TargetModel m : routeToTasks) {
                 // 退回、路由网关不显示在发送下面
-                if (!"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName())) {
+                if (!"退回".equals(m.getTaskDefName()) && !ItemConsts.EXCLUSIVE_GATEWAY_KEY.equals(m.getTaskDefName())) {
                     buttonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND));
                 }
             }
@@ -1674,7 +1637,8 @@ public class DocumentServiceImpl implements DocumentService {
                 List<TargetModel> routeToTasks =
                     processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
                 routeToTasks.stream()
-                    .filter(m -> !"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName()))
+                    .filter(m -> !"退回".equals(m.getTaskDefName())
+                        && !ItemConsts.EXCLUSIVE_GATEWAY_KEY.equals(m.getTaskDefName()))
                     .forEach(m -> buttonList
                         .add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND)));
                 /*
@@ -1968,12 +1932,12 @@ public class DocumentServiceImpl implements DocumentService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (!variables.isEmpty()) {
             variableApi.setVariables(tenantId, taskId, variables);
-            if (variables.get("subProcessNum") != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
+            if (variables.get(ItemConsts.SUBPROCESSNUM_KEY) != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
                 String type =
                     processDefinitionApi.getNodeType(tenantId, model.getProcessDefinitionId(), routeToTaskId).getData();
                 if (SysVariables.PARALLEL.equals(type)) {// 并行节点才执行
                     String userId = userList.get(0);
-                    int subProcessNum = Integer.parseInt(variables.get("subProcessNum").toString());
+                    int subProcessNum = Integer.parseInt(variables.get(ItemConsts.SUBPROCESSNUM_KEY).toString());
                     if (subProcessNum > 1 && userList.size() == 1) {
                         for (int i = 1; i < subProcessNum; i++) {
                             userList.add(userId);
@@ -2040,7 +2004,7 @@ public class DocumentServiceImpl implements DocumentService {
                 variables, userList);
             return Y9Result.successMsg("提交成功");
         } catch (Exception e) {
-            LOGGER.error("提交失败！", e);
+            LOGGER.error("提交失败！异常：", e);
         }
         return Y9Result.failure("提交失败！");
     }
@@ -2148,17 +2112,18 @@ public class DocumentServiceImpl implements DocumentService {
             // 并行发送超过20人时，启用异步后台处理。
             boolean tooMuch = num > 20;
             if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance()) && tooMuch) {
-                TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
+                TaskVariable taskVariable =
+                    taskVariableRepository.findByTaskIdAndKeyName(taskId, ItemConsts.ISFORWARDING_KEY);
                 if (taskVariable == null) {
                     taskVariable = new TaskVariable();
                     taskVariable.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     taskVariable.setProcessInstanceId(processInstanceId);
                     taskVariable.setTaskId(taskId);
-                    taskVariable.setKeyName("isForwarding");
+                    taskVariable.setKeyName(ItemConsts.ISFORWARDING_KEY);
                     taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 }
                 taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                taskVariable.setText("true:" + num);
+                taskVariable.setText(TRUE_STR_KEY + num);
                 taskVariableRepository.save(taskVariable);
                 asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, "", sponsorGuid,
                     taskId, flowElementModel, variables, userList);
@@ -2204,9 +2169,9 @@ public class DocumentServiceImpl implements DocumentService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> vars = new HashMap<>(16);
             Item item = itemRepository.findById(itemId).orElse(null);
-            vars.put("tenantId", tenantId);
+            vars.put(ItemConsts.TENANTID_KEY, tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
-            vars.put("routeToTaskId", startTaskDefKey);
+            vars.put(ItemConsts.ROUTETOTASKID_KEY, startTaskDefKey);
             vars.put("_FLOWABLE_SKIP_EXPRESSION_ENABLED", true);
             assert item != null;
             if (item.isShowSubmitButton()) {
@@ -2255,7 +2220,7 @@ public class DocumentServiceImpl implements DocumentService {
             model.setTaskId(task.getId());
             model.setTaskDefKey(task.getTaskDefinitionKey());
         } catch (Exception e) {
-            LOGGER.error("启动流程失败！", e);
+            LOGGER.error("当前人启动流程失败！异常：", e);
         }
         return model;
     }
@@ -2269,9 +2234,9 @@ public class DocumentServiceImpl implements DocumentService {
             OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
             Map<String, Object> vars = new HashMap<>(16);
             Item item = itemRepository.findById(itemId).orElse(null);
-            vars.put("tenantId", tenantId);
+            vars.put(ItemConsts.TENANTID_KEY, tenantId);
             String startTaskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
-            vars.put("routeToTaskId", startTaskDefKey);
+            vars.put(ItemConsts.ROUTETOTASKID_KEY, startTaskDefKey);
 
             CommonOpt.setVariables(orgUnit.getId(), orgUnit.getName(), "", Arrays.asList(userIds.split(",")),
                 processSerialNumber, null, vars);
@@ -2304,7 +2269,7 @@ public class DocumentServiceImpl implements DocumentService {
             model.setTaskDefKey(task.getTaskDefinitionKey());
             return model;
         } catch (Exception e) {
-            LOGGER.error("启动流程失败！", e);
+            LOGGER.error("启动流程失败！异常：", e);
         }
         return model;
     }
@@ -2318,7 +2283,7 @@ public class DocumentServiceImpl implements DocumentService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> vars = new HashMap<>(16);
             Item item = itemRepository.findById(itemId).orElse(null);
-            vars.put("tenantId", tenantId);
+            vars.put(ItemConsts.TENANTID_KEY, tenantId);
             vars.put(SysVariables.ROUTE_TO_TASK_ID, startRouteToTaskId);
             assert item != null;
             TaskModel task = activitiOptService.startProcess(processSerialNumber, processDefinitionKey,
@@ -2345,7 +2310,7 @@ public class DocumentServiceImpl implements DocumentService {
 
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
-            LOGGER.error("启动流程失败！", e);
+            LOGGER.error("根据任务key启动流程失败！", e);
         }
         return map;
     }
@@ -2360,8 +2325,8 @@ public class DocumentServiceImpl implements DocumentService {
                 : startTaskDefKey;
             Map<String, Object> vars = new HashMap<>(16);
             Item item = itemRepository.findById(itemId).orElse(null);
-            vars.put("tenantId", tenantId);
-            vars.put("routeToTaskId", startTaskDefKey);
+            vars.put(ItemConsts.TENANTID_KEY, tenantId);
+            vars.put(ItemConsts.ROUTETOTASKID_KEY, startTaskDefKey);
             vars.put("_FLOWABLE_SKIP_EXPRESSION_ENABLED", true);
             assert item != null;
             if (item.isShowSubmitButton()) {
@@ -2404,7 +2369,7 @@ public class DocumentServiceImpl implements DocumentService {
             model.setTaskId(task.getId());
             model.setTaskDefKey(task.getTaskDefinitionKey());
         } catch (Exception e) {
-            LOGGER.error("启动流程失败！", e);
+            LOGGER.error("启动流程失败！异常打印：", e);
         }
         return model;
     }
@@ -2440,7 +2405,8 @@ public class DocumentServiceImpl implements DocumentService {
             Map<String, Object> variables =
                 CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
             String subProcessStr =
-                variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, "subProcessNum").getData();
+                variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, ItemConsts.SUBPROCESSNUM_KEY)
+                    .getData();
             if (subProcessStr != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
                 if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {// 并行节点才执行
                     String userChoice = userList.get(0);
@@ -2457,9 +2423,9 @@ public class DocumentServiceImpl implements DocumentService {
                 variables, userList);
             return Y9Result.successMsg("提交成功");
         } catch (Exception e) {
-            LOGGER.error("提交失败！", e);
+            LOGGER.error("启动流程并提交失败！", e);
         }
-        return Y9Result.failure("提交失败！");
+        return Y9Result.failure("提交失败！！");
     }
 
 }
