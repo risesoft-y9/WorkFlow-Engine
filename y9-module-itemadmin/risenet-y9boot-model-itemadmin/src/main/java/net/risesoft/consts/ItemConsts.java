@@ -63,6 +63,7 @@ public class ItemConsts {
     public static final String DOUBLE_UP_KEY = "DOUBLE";
     public static final String FLOAT_UP_KEY = "FLOAT";
     public static final String TIMESTAMP_UP_KEY = "TIMESTAMP";
+    public static final String NEXTNODE_KEY = "nextNode";
     /** 自由流办件processDefineKey */
     public static String freeFlowKey = "ziyouliucheng";
     /** 所有事项ID */

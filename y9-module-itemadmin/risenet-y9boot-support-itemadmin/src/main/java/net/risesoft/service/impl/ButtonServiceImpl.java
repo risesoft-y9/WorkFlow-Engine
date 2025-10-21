@@ -22,6 +22,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.entity.Item;
@@ -187,7 +188,7 @@ public class ButtonServiceImpl implements ButtonService {
                 }
             }
             // 用于判定是否需要发送下一个节点
-            map.put("nextNode", false);
+            map.put(ItemConsts.NEXTNODE_KEY, false);
             // 节点类型，用于判定按钮调用的方法
             map.put("multiInstance", multiInstance);
             if (task != null) {
@@ -271,7 +272,7 @@ public class ButtonServiceImpl implements ButtonService {
                             // 不显示发送
                             isButtonShow[1] = false;
                             // 用于判定是否需要发送下一个节点
-                            map.put("nextNode", true);
+                            map.put(ItemConsts.NEXTNODE_KEY, true);
                         }
                     }
                     // 没有发送按钮的时候，串并行显示加减签按钮
@@ -470,7 +471,7 @@ public class ButtonServiceImpl implements ButtonService {
                                 // 办理完成按钮隐藏
                                 isButtonShow[8] = false;
                                 // 用于判定是否需要发送下一个节点
-                                map.put("nextNode", true);
+                                map.put(ItemConsts.NEXTNODE_KEY, true);
                             }
                         } else {// 如果当前运行任务的下一个节点不是办结,隐藏办结按钮
                             isButtonShow[11] = false;
