@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
@@ -61,28 +62,18 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class FormDataServiceImpl implements FormDataService {
 
+    private static final String FORM_ID_KEY = "form_Id";
     private final JdbcTemplate jdbcTemplate;
-
     private final ItemService itemService;
-
     private final Y9FormItemBindService y9FormItemBindService;
-
     private final Y9PreFormItemBindService y9PreFormItemBindService;
-
     private final Y9FormFieldService y9FormFieldService;
-
     private final Y9FormService y9FormService;
-
     private final Y9FormRepository y9FormRepository;
-
     private final RepositoryApi repositoryApi;
-
     private final Y9FieldPermRepository y9FieldPermRepository;
-
     private final PositionRoleApi positionRoleApi;
-
     private final Y9TableService y9TableService;
-
     private final ProcessParamService processParamService;
 
     public FormDataServiceImpl(
@@ -557,8 +548,8 @@ public class FormDataServiceImpl implements FormDataService {
             Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formData, Map.class);
             List<Map<String, Object>> listMap = new ArrayList<>();
             Map<String, Object> map = new HashMap<>(16);
-            map.put("name", "form_Id");
-            map.put("value", formId);
+            map.put("name", FORM_ID_KEY);
+            map.put(ItemConsts.VALUE_KEY, formId);
             listMap.add(map);
             assert mapFormJsonData != null;
             for (String columnName : mapFormJsonData.keySet()) {
@@ -566,7 +557,7 @@ public class FormDataServiceImpl implements FormDataService {
                 String value = mapFormJsonData.get(columnName).toString();
                 map = new HashMap<>(16);
                 map.put("name", columnName);
-                map.put("value", value);
+                map.put(ItemConsts.VALUE_KEY, value);
                 listMap.add(map);
             }
             formData = Y9JsonUtil.writeValueAsString(listMap);
@@ -591,12 +582,12 @@ public class FormDataServiceImpl implements FormDataService {
             if (!bindFormId.isEmpty()) {
                 List<Map<String, Object>> list1 = Y9JsonUtil.readValue(formData, List.class);
                 for (Map<String, Object> map1 : list1) {
-                    if (map1.get("name").equals("form_Id")) {// 重设表单id
-                        map1.put("value", bindFormId);
+                    if (map1.get("name").equals(FORM_ID_KEY)) {// 重设表单id
+                        map1.put(ItemConsts.VALUE_KEY, bindFormId);
                     } else if (map1.get("name").equals("guid")) {// 重设主键id
-                        map1.put("value", processSerialNumber);
+                        map1.put(ItemConsts.VALUE_KEY, processSerialNumber);
                     } else if (map1.get("name").equals("GUID")) {// 重设主键id
-                        map1.put("value", processSerialNumber);
+                        map1.put(ItemConsts.VALUE_KEY, processSerialNumber);
                     }
                 }
                 formData = Y9JsonUtil.writeValueAsString(list1);
@@ -640,8 +631,8 @@ public class FormDataServiceImpl implements FormDataService {
             Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formData, Map.class);
             List<Map<String, Object>> listMap = new ArrayList<>();
             Map<String, Object> map = new HashMap<>(16);
-            map.put("name", "form_Id");
-            map.put("value", formId);
+            map.put("name", FORM_ID_KEY);
+            map.put(ItemConsts.VALUE_KEY, formId);
             listMap.add(map);
             assert mapFormJsonData != null;
             for (String columnName : mapFormJsonData.keySet()) {
@@ -649,7 +640,7 @@ public class FormDataServiceImpl implements FormDataService {
                 String value = mapFormJsonData.get(columnName).toString();
                 map = new HashMap<>(16);
                 map.put("name", columnName);
-                map.put("value", value);
+                map.put(ItemConsts.VALUE_KEY, value);
                 listMap.add(map);
             }
             formData = Y9JsonUtil.writeValueAsString(listMap);
@@ -676,14 +667,14 @@ public class FormDataServiceImpl implements FormDataService {
             Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formData, Map.class);
             List<Map<String, Object>> listMap = new ArrayList<>();
             Map<String, Object> map = new HashMap<>(16);
-            map.put("name", "form_Id");
-            map.put("value", formId);
+            map.put("name", FORM_ID_KEY);
+            map.put(ItemConsts.VALUE_KEY, formId);
             listMap.add(map);
             for (String columnName : mapFormJsonData.keySet()) {
                 // 根据数据库表名获取列名
                 map = new HashMap<>(16);
                 map.put("name", columnName);
-                map.put("value", mapFormJsonData.get(columnName));
+                map.put(ItemConsts.VALUE_KEY, mapFormJsonData.get(columnName));
                 listMap.add(map);
             }
             formData = Y9JsonUtil.writeValueAsString(listMap);

@@ -158,12 +158,12 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
         Map<String, Object> map = new HashMap<>(16);
         map.put(ItemConsts.EXISTPOSITION_KEY, false);
-        map.put("existDepartment", false);
+        map.put(ItemConsts.EXISTDEPARTMENT_KEY, false);
         for (ItemPermission o : objectPermList) {
             if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT)) {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData();
                 if (null != orgUnit) {
-                    map.put("existDepartment", true);
+                    map.put(ItemConsts.EXISTDEPARTMENT_KEY, true);
                 }
             } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE_DYNAMIC)) {
                 DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
@@ -183,7 +183,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                                 break;
                             } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
                                 || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
-                                map.put("existDepartment", true);
+                                map.put(ItemConsts.EXISTDEPARTMENT_KEY, true);
                                 break;
                             }
                         }
@@ -246,6 +246,9 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 if (null != dr) {
                     roleName = dr.getName();
                 }
+                break;
+            default:
+                roleName = "角色不存在";
                 break;
         }
         return roleName;
