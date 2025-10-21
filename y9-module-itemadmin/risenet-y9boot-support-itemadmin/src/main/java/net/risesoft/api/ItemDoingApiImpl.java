@@ -182,19 +182,17 @@ public class ItemDoingApiImpl implements ItemDoingApi {
     public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
         @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
-        assert searchMap != null;
-        List<String> sqlList = y9TableService.getSql(searchMap);
-        String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
-            assigneeNameWhereSql = sqlList.get(3);
+        SqlComponents sqlComponents = buildSearchSqlComponents(searchMapStr);
         String sql =
             "SELECT A.* FROM ( SELECT T.*,ROW_NUMBER() OVER ( PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC ) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? "
-                + whereSql + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM= 1";
+                + sqlComponents.innerSql + sqlComponents.assigneeNameInnerSql
+                + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? " + sqlComponents.whereSql
+                + sqlComponents.assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         String countSql =
             "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ?"
-                + whereSql + assigneeNameWhereSql + " ) A WHERE A.RS_NUM = 1) ALIAS";
+                + sqlComponents.innerSql + sqlComponents.assigneeNameInnerSql
+                + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ?" + sqlComponents.whereSql
+                + sqlComponents.assigneeNameWhereSql + " ) A WHERE A.RS_NUM = 1) ALIAS";
         Object[] args = {systemName};
         ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
@@ -202,10 +200,28 @@ public class ItemDoingApiImpl implements ItemDoingApi {
             itemPage.getRows());
     }
 
+    @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam String tenantId,
         @RequestParam String systemName, @RequestBody String searchMapStr) {
         Y9LoginUserHolder.setTenantId(tenantId);
+        SqlComponents sqlComponents = buildSearchSqlComponents(searchMapStr);
+        String sql =
+            "SELECT A.* FROM ( SELECT T.*, ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
+                + sqlComponents.innerSql + sqlComponents.assigneeNameInnerSql
+                + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? " + sqlComponents.whereSql
+                + sqlComponents.assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+
+        Object[] args = {systemName};
+        List<ActRuDetailModel> content =
+            jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class), args);
+        return Y9Result.success(content);
+    }
+
+    /**
+     * 构建搜索SQL组件
+     */
+    private SqlComponents buildSearchSqlComponents(String searchMapStr) {
         String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";
         if (StringUtils.isNotBlank(searchMapStr)) {
             Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
@@ -216,14 +232,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
             assigneeNameInnerSql = sqlList.get(2);
             assigneeNameWhereSql = sqlList.get(3);
         }
-        String sql =
-            "SELECT A.* FROM ( SELECT T.*, ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.ENDED = FALSE AND T.SYSTEMNAME = ? "
-                + whereSql + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM =1";
-        Object[] args = {systemName};
-        List<ActRuDetailModel> content =
-            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
-        return Y9Result.success(content);
+        return new SqlComponents(innerSql, whereSql, assigneeNameInnerSql, assigneeNameWhereSql);
     }
 
     /**
@@ -312,6 +321,7 @@ public class ItemDoingApiImpl implements ItemDoingApi {
             itemPage.getRows());
     }
 
+    @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<List<ActRuDetailModel>> searchListByDeptIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String deptId, @RequestParam boolean isBureau, @RequestParam String systemName,
@@ -335,7 +345,24 @@ public class ItemDoingApiImpl implements ItemDoingApi {
                 + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC ) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName, deptId};
         List<ActRuDetailModel> content =
-            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+            jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class), args);
         return Y9Result.success(content);
+    }
+
+    /**
+     * SQL组件数据类
+     */
+    private static class SqlComponents {
+        final String innerSql;
+        final String whereSql;
+        final String assigneeNameInnerSql;
+        final String assigneeNameWhereSql;
+
+        SqlComponents(String innerSql, String whereSql, String assigneeNameInnerSql, String assigneeNameWhereSql) {
+            this.innerSql = innerSql;
+            this.whereSql = whereSql;
+            this.assigneeNameInnerSql = assigneeNameInnerSql;
+            this.assigneeNameWhereSql = assigneeNameWhereSql;
+        }
     }
 }

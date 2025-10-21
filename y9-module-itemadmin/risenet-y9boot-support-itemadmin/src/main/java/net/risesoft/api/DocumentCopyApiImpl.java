@@ -16,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.itemadmin.DocumentCopyApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
@@ -46,6 +48,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  **/
 @Validated
 @RestController
+@Slf4j
 @RequestMapping(value = "/services/rest/documentCopy", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentCopyApiImpl implements DocumentCopyApi {
 
@@ -85,66 +88,74 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         QueryParamModel queryParamModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         int page = queryParamModel.getPage(), rows = queryParamModel.getRows();
-        String systemNameSql = "";
-        StringBuilder paramSql = new StringBuilder();
-        Object object = queryParamModel;
-        Class queryParamModelClazz = object.getClass();
+        StringBuilder whereSql = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(orgUnitId);
+        buildQueryConditions(queryParamModel, whereSql, params);
+        String leftJoinSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
+        String bySql = "ORDER BY P.CREATETIME DESC ) A WHERE A.RS_NUM = 1";
+        // 使用参数化SQL
+        String allSql =
+            "SELECT A.* FROM (SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY C "
+                + leftJoinSql + " WHERE C.STATUS < ? AND USERID = ? " + whereSql + bySql;
+        String countSql =
+            "SELECT COUNT(*) FROM ( SELECT ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM  FROM FF_DOCUMENT_COPY C "
+                + leftJoinSql + " WHERE C.STATUS < ? AND USERID = ? " + whereSql + ") ALIAS WHERE RS_NUM = 1";
+        List<Object> countParams = new ArrayList<>();
+        countParams.add(DocumentCopyStatusEnum.CANCEL.getValue());
+        countParams.add(orgUnitId);
+        countParams.addAll(params.subList(1, params.size()));
+        Object[] args = params.toArray();
+        ItemPage<DocumentCopyModel> ardModelPage = itemPageService.page(allSql, args,
+            new BeanPropertyRowMapper<>(DocumentCopyModel.class), countSql, countParams.toArray(), page, rows);
+        return Y9Page.success(page, ardModelPage.getTotalpages(), ardModelPage.getTotal(), ardModelPage.getRows());
+    }
+
+    /**
+     * 构建查询条件
+     */
+    private void buildQueryConditions(QueryParamModel queryParamModel, StringBuilder whereSql, List<Object> params) {
+        Class<?> queryParamModelClazz = queryParamModel.getClass();
         Field[] fields = queryParamModelClazz.getDeclaredFields();
         for (Field f : fields) {
             f.setAccessible(true);
             if ("serialVersionUID".equals(f.getName()) || "page".equals(f.getName()) || "rows".equals(f.getName())) {
                 continue;
             }
-            Object fieldValue;
             try {
-                fieldValue = f.get(object);
+                Object fieldValue = f.get(queryParamModel);
                 if (null != fieldValue) {
                     if ("systemName".equals(f.getName())) {
-                        systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
-                            : " AND P.SYSTEMNAME = '" + fieldValue + "' ";
+                        if (StringUtils.isNotBlank(queryParamModel.getSystemName())) {
+                            whereSql.append(" AND P.SYSTEMNAME = ? ");
+                            params.add(fieldValue);
+                        }
                     } else if ("bureauIds".equals(f.getName())) {
-                        paramSql.append(" AND P.HOSTDEPTID = '").append(fieldValue).append("' ");
+                        whereSql.append(" AND P.HOSTDEPTID = ? ");
+                        params.add(fieldValue);
                     } else {
-                        paramSql.append(" AND INSTR(P.")
-                            .append(f.getName().toUpperCase())
-                            .append(",'")
-                            .append(fieldValue)
-                            .append("') > 0 ");
+                        whereSql.append(" AND INSTR(P.").append(f.getName().toUpperCase()).append(",?) > 0 ");
+                        params.add(fieldValue);
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("构建查询条件异常", e);
             }
         }
-        String leftJoinSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
-        String bySql = "ORDER BY P.CREATETIME DESC ) A WHERE A.RS_NUM = 1";
-        String allSql =
-            "SELECT A.* FROM (SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY C "
-                + leftJoinSql + " WHERE C.STATUS< " + DocumentCopyStatusEnum.CANCEL.getValue() + " AND USERID = ? "
-                + paramSql + systemNameSql + bySql;
-        String countSql =
-            "SELECT COUNT(*) FROM ( SELECT ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM  FROM FF_DOCUMENT_COPY C "
-                + leftJoinSql + " WHERE C.STATUS <" + DocumentCopyStatusEnum.CANCEL.getValue() + " AND USERID = ? "
-                + paramSql + systemNameSql + ") ALIAS WHERE RS_NUM =1";
-        Object[] args = new Object[1];
-        args[0] = orgUnitId;
-        ItemPage<DocumentCopyModel> ardModelPage = itemPageService.page(allSql, args,
-            new BeanPropertyRowMapper<>(DocumentCopyModel.class), countSql, args, page, rows);
-        return Y9Page.success(page, ardModelPage.getTotalpages(), ardModelPage.getTotal(), ardModelPage.getRows());
     }
 
+    @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<List<DocumentCopyModel>> findByProcessSerialNumbers(String tenantId, String userId,
         String orgUnitId, String[] processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
         StringBuilder sb = new StringBuilder();
-        Arrays.stream(processSerialNumbers).forEach(processSerialNumber -> {
-            if (StringUtils.isBlank(sb.toString())) {
-                sb.append("'").append(processSerialNumber).append("'");
-            } else {
-                sb.append(",'").append(processSerialNumber).append("'");
+        for (int i = 0; i < processSerialNumbers.length; i++) {
+            if (i > 0) {
+                sb.append(",");
             }
-        });
+            sb.append("'").append(processSerialNumbers[i]).append("'");
+        }
         String sql =
             "SELECT A.* FROM (SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY C LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER WHERE C.PROCESSSERIALNUMBER IN ( "
                 + sb + ") ORDER BY P.CREATETIME DESC ) A WHERE A.RS_NUM = 1";
@@ -156,48 +167,27 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
     public Y9Result<List<DocumentCopyModel>> findListByUserId(String tenantId, String userId, String orgUnitId,
         @RequestBody(required = false) QueryParamModel queryParamModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        String systemNameSql = "";
-        StringBuilder paramSql = new StringBuilder();
+        StringBuilder whereSql = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(orgUnitId);
         if (null != queryParamModel) {
-            Object object = queryParamModel;
-            Class queryParamModelClazz = object.getClass();
-            Field[] fields = queryParamModelClazz.getDeclaredFields();
-            for (Field f : fields) {
-                f.setAccessible(true);
-                if ("serialVersionUID".equals(f.getName()) || "page".equals(f.getName())
-                    || "rows".equals(f.getName())) {
-                    continue;
-                }
-                Object fieldValue;
-                try {
-                    fieldValue = f.get(object);
-                    if (null != fieldValue) {
-                        if ("systemName".equals(f.getName())) {
-                            systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
-                                : " AND P.SYSTEMNAME = '" + fieldValue + "' ";
-                        } else {
-                            paramSql.append(" AND INSTR(P.")
-                                .append(f.getName().toUpperCase())
-                                .append(",'")
-                                .append(fieldValue)
-                                .append("') > 0 ");
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
+            buildQueryConditions(queryParamModel, whereSql, params);
         }
+        String allSql = buildAllSql(whereSql.toString());
+        List<Object> finalParams = new ArrayList<>();
+        finalParams.add(DocumentCopyStatusEnum.CANCEL.getValue());
+        finalParams.addAll(params);
+        List<DocumentCopyModel> content =
+            jdbcTemplate.query(allSql, new BeanPropertyRowMapper<>(DocumentCopyModel.class), finalParams.toArray());
+        return Y9Result.success(content);
+    }
+
+    private String buildAllSql(String whereSql) {
         String processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON D.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
         String bySql = " ORDER BY P.CREATETIME DESC) A WHERE A.RS_NUM = 1";
-        String allSql =
-            "SELECT A.* FROM (SELECT D.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY D.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY D "
-                + processParamSql + " WHERE D.STATUS < " + DocumentCopyStatusEnum.CANCEL.getValue() + paramSql
-                + systemNameSql + " AND D.USERID = ? " + bySql;
-        Object[] args = {orgUnitId};
-        List<DocumentCopyModel> content =
-            jdbcTemplate.query(allSql, args, new BeanPropertyRowMapper<>(DocumentCopyModel.class));
-        return Y9Result.success(content);
+        return "SELECT A.* FROM (SELECT D.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,"
+            + "ROW_NUMBER() OVER (PARTITION BY D.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM "
+            + "FROM FF_DOCUMENT_COPY D " + processParamSql + " WHERE D.STATUS < ? AND D.USERID = ? " + whereSql + bySql;
     }
 
     @Override

@@ -97,8 +97,7 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
             "SELECT A.* FROM ( SELECT T.*, ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.STATUS = 0 AND T.DELETED = FALSE AND T.SYSTEMNAME = ? ORDER BY T.LASTTIME DESC) A WHERE A.RS_NUM=1";
         String countSql =
             "SELECT COUNT(DISTINCT T.PROCESSSERIALNUMBER) FROM FF_ACT_RU_DETAIL T WHERE T.SYSTEMNAME= ? AND T.STATUS=0 AND T.DELETED = FALSE ";
-        Object[] args = new Object[1];
-        args[0] = systemName;
+        Object[] args = {systemName};
         ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
@@ -152,30 +151,42 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
         @RequestParam String tableName, @RequestBody String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        String sql0 = "LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
-        StringBuilder sql1 = new StringBuilder();
-        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
-        assert searchMap != null;
-        for (String columnName : searchMap.keySet()) {
-            sql1.append("AND INSTR(F.")
-                .append(columnName.toUpperCase())
-                .append(",'")
-                .append(searchMap.get(columnName).toString())
-                .append("') > 0 ");
+        String safeTableName = validateAndSanitizeTableName(tableName);
+        String sql0 = "LEFT JOIN " + safeTableName + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
+        StringBuilder whereSql = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(systemName);
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+            assert searchMap != null;
+            for (String columnName : searchMap.keySet()) {
+                whereSql.append("AND INSTR(F.").append(columnName.toUpperCase()).append(",?) > 0 ");
+                params.add(searchMap.get(columnName).toString());
+            }
         }
         String orderBy = "T.LASTTIME DESC";
         String sql =
             "SELECT A.* FROM ( SELECT T.*, ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + sql0 + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1 + " AND T.SYSTEMNAME = ?  ORDER BY "
+                + sql0 + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + whereSql + " AND T.SYSTEMNAME = ?  ORDER BY "
                 + orderBy + ") A WHERE A.RS_NUM=1";
         String countSql = "SELECT COUNT(DISTINCT T.PROCESSSERIALNUMBER) FROM FF_ACT_RU_DETAIL T " + sql0
-            + " WHERE T.SYSTEMNAME= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1;
-        Object[] args = new Object[1];
-        args[0] = systemName;
+            + " WHERE T.SYSTEMNAME= ? AND T.STATUS=0 AND T.DELETED = FALSE " + whereSql;
+        Object[] args = params.toArray();
         ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
             itemPage.getRows());
+    }
+
+    /**
+     * 验证并清理表名，防止SQL注入
+     */
+    private String validateAndSanitizeTableName(String tableName) {
+        // 只允许字母、数字和下划线
+        if (!tableName.matches("^[a-zA-Z0-9_]+$")) {
+            throw new IllegalArgumentException("Invalid table name: " + tableName);
+        }
+        return tableName.toUpperCase();
     }
 
     /**
@@ -190,35 +201,43 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 - rows 是流转详细信息
      * @since 9.6.6
      */
+    @SuppressWarnings("java:S2077")
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
-        assert searchMap != null;
-        List<String> sqlList = y9TableService.getSql(searchMap);
-        String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
-            assigneeNameWhereSql = sqlList.get(3);
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.STATUS = 1 AND T.SYSTEMNAME =? AND T.ASSIGNEE = ? " + whereSql
-            + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC";
-        String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.STATUS =1 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql
-            + assigneeNameWhereSql;
-        Object[] args = new Object[2];
-        args[0] = systemName;
-        args[1] = userId;
+        SqlComponents sqlComponents = buildSearchSqlComponents(searchMapStr);
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sqlComponents.innerSql + sqlComponents.assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.STATUS = 1 AND T.SYSTEMNAME =? AND T.ASSIGNEE = ? "
+            + sqlComponents.whereSql + sqlComponents.assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC";
+        String countSql =
+            "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + sqlComponents.innerSql + sqlComponents.assigneeNameInnerSql
+                + " WHERE T.DELETED = FALSE AND T.STATUS =1 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? "
+                + sqlComponents.whereSql + sqlComponents.assigneeNameWhereSql;
+        Object[] args = {systemName, userId};
         ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
             itemPage.getRows());
     }
 
+    @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr) {
         Y9LoginUserHolder.setTenantId(tenantId);
+        SqlComponents sqlComponents = buildSearchSqlComponents(searchMapStr);
+        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sqlComponents.innerSql + sqlComponents.assigneeNameInnerSql
+            + " WHERE T.DELETED =FALSE AND T.STATUS = 1 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? "
+            + sqlComponents.whereSql + sqlComponents.assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC";
+        Object[] args = {systemName, userId};
+        List<ActRuDetailModel> content =
+            jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class), args);
+        return Y9Result.success(content);
+    }
+
+    private SqlComponents buildSearchSqlComponents(String searchMapStr) {
         String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";
         if (StringUtils.isNotBlank(searchMapStr)) {
             Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
@@ -229,12 +248,23 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
             assigneeNameInnerSql = sqlList.get(2);
             assigneeNameWhereSql = sqlList.get(3);
         }
-        String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED =FALSE AND T.STATUS = 1 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql
-            + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC";
-        Object[] args = {systemName, userId};
-        List<ActRuDetailModel> content =
-            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
-        return Y9Result.success(content);
+        return new SqlComponents(innerSql, whereSql, assigneeNameInnerSql, assigneeNameWhereSql);
+    }
+
+    /**
+     * SQL组件数据类
+     */
+    private static class SqlComponents {
+        final String innerSql;
+        final String whereSql;
+        final String assigneeNameInnerSql;
+        final String assigneeNameWhereSql;
+
+        SqlComponents(String innerSql, String whereSql, String assigneeNameInnerSql, String assigneeNameWhereSql) {
+            this.innerSql = innerSql;
+            this.whereSql = whereSql;
+            this.assigneeNameInnerSql = assigneeNameInnerSql;
+            this.assigneeNameWhereSql = assigneeNameWhereSql;
+        }
     }
 }
