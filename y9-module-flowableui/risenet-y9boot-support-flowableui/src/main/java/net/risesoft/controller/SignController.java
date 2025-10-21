@@ -3,7 +3,6 @@ package net.risesoft.controller;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Objects;
 
@@ -45,9 +44,9 @@ public class SignController {
     public String daysBetween(String startDate, String endDate) {
         String day = "0";
         try {
-            Date startTime1 = Y9DateTimeUtils.parseDate(startDate);
-            Date endTime1 = Y9DateTimeUtils.parseDate(endDate);
-            long difference = (endTime1.getTime() - startTime1.getTime()) / 86400000;
+            Date startTime = Y9DateTimeUtils.parseDate(startDate);
+            Date endTime = Y9DateTimeUtils.parseDate(endDate);
+            long difference = (endTime.getTime() - startTime.getTime()) / 86400000;
             day = String.valueOf(Math.abs(difference) + 1);
         } catch (Exception e) {
             LOGGER.error("日期格式错误", e);
@@ -57,26 +56,25 @@ public class SignController {
 
     // 获取两个日期之间相隔天数，去除节假日
     public String daysBetween(String startDate, String endDate, String everyYearHoliday) {
-        int days = 0;
         try {
-            Calendar cal = Calendar.getInstance();
-            Date startDate1 = Y9DateTimeUtils.parseDate(startDate);
-            Date endDate1 = Y9DateTimeUtils.parseDate(endDate);
-            // startTime1不大于endTime1则进入
-            while (startDate1.compareTo(endDate1) <= 0) {
-                cal.setTime(startDate1);
-                String time1 = Y9DateTimeUtils.formatDate(startDate1);
-                // 开始时间加1天继续判断
-                if (!everyYearHoliday.contains(time1)) {
-                    days += 1;
-                }
-                cal.add(Calendar.DAY_OF_MONTH, +1);// 开始时间加1天继续判断
-                startDate1 = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatDate(cal.getTime()));
-            }
+            return String.valueOf(calculateWorkDays(startDate, endDate, everyYearHoliday));
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("计算工作日天数异常", e);
+            return "0";
         }
-        return String.valueOf(days);
+    }
+
+    // 新增公共方法用于计算不含节假日的工作日天数
+    private int calculateWorkDays(String startDate, String endDate, String holidayStr) throws Exception {
+        int count = 0;
+        String currentDate = startDate;
+        while (currentDate.compareTo(endDate) <= 0) {
+            if (!holidayStr.contains(currentDate)) {
+                count++;
+            }
+            currentDate = getNextDay(currentDate);
+        }
+        return count;
     }
 
     /**
@@ -126,179 +124,17 @@ public class SignController {
         @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime,
         @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType) {
         try {
-            String dayStr;
-            CalendarConfigModel calendarConfig =
-                calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), leaveEndTime.split("-")[0]).getData();
-            dayStr = calendarConfig.getEveryYearHoliday();
-            switch (type) {
-                case "天": {
-                    boolean isDel = !StringUtils.isNotBlank(leaveType) || (!leaveType.equals("离京报备")
-                        && !leaveType.equals("产假") && !leaveType.equals("婚假") && !leaveType.equals("陪产假"));
-                    // 产假不排除节假日，直接算天数
-                    if (leaveStartTime.equals(leaveEndTime)) {
-                        if (isDel && dayStr.contains(leaveStartTime)) {
-                            return Y9Result.success("0", "获取成功");
-                        }
-                    }
-                    String tmp = leaveStartTime;
-                    int num = 0;
-                    while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp1={}", tmp);
-                        if (isDel) {
-                            if (!dayStr.contains(tmp)) {
-                                num++;
-                            }
-                        } else {
-                            num++;
-                        }
-                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                    }
-                    return Y9Result.success(String.valueOf(num), "获取成功");
-                }
-                case "半天": {
-                    if (leaveStartTime.equals(leaveEndTime)) {
-                        if (dayStr.contains(leaveStartTime)) {
-                            return Y9Result.success("0", "获取成功");
-                        }
-                    }
-                    String tmp = leaveStartTime;
-                    int num = 0;
-                    double start = 0;
-                    while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp2={}", tmp);
-                        if (!dayStr.contains(tmp)) {
-                            if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel)
-                                && startSel.equals("下午")) {// 开始日期选择下午，算半天
-                                start += 0.5;
-                                long time =
-                                    Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                                tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                                continue;
-                            }
-                            if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(endSel) && endSel.equals("上午")) {// 结束日期选择上午，算半天
-                                start += 0.5;
-                                long time =
-                                    Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                                tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                                continue;
-                            }
-                            num++;
-                        }
-                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                    }
-                    if (start > 0) {
-                        return Y9Result.success(String.valueOf(num + start), "获取成功");
-                    }
-                    return Y9Result.success(String.valueOf(num), "获取成功");
-                }
-                case "小时": {
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                    if (leaveStartTime.equals(leaveEndTime)) {
-                        if (dayStr.contains(leaveStartTime)) {
-                            return Y9Result.success("0", "获取成功");
-                        } else {// 同一天，计算时间
-                            if (StringUtils.isBlank(selStartTime)) {
-                                selStartTime = STARTTIME_KEY;
-                            }
-                            if (StringUtils.isBlank(selEndTime)) {
-                                selEndTime = ENDTIME_KEY;
-                            }
-                            long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
-                            double hours = (double)time / (60 * 60 * 1000);
-                            BigDecimal a = BigDecimal.valueOf(hours);
-                            double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
-                            // 减去中间包含的1.5个小时
-                            if (Integer.parseInt(selStartTime.split(":")[0]) < 12
-                                && Integer.parseInt(selEndTime.split(":")[0]) > 12) {
-                                waitTime = waitTime - 1.5;
-                            }
-                            return Y9Result.success(String.valueOf(waitTime), "获取成功");
-                        }
-                    }
-
-                    if (leaveType.equals("哺乳假")) {
-                        // 计算天数
-                        String tmp = leaveStartTime;
-                        int num = 0;
-                        while (tmp.compareTo(leaveEndTime) <= 0) {
-                            LOGGER.debug("tmp3={}", tmp);
-                            if (!dayStr.contains(tmp)) {
-                                num++;
-                            }
-                            long time =
-                                Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                            tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                        }
-                        // 计算小时
-                        if (StringUtils.isBlank(selStartTime)) {
-                            selStartTime = STARTTIME_KEY;
-                        }
-                        if (StringUtils.isBlank(selEndTime)) {
-                            selEndTime = ENDTIME_KEY;
-                        }
-                        long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
-                        double hours = (double)time / (60 * 60 * 1000);
-                        BigDecimal a = BigDecimal.valueOf(hours);
-                        double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
-                        // 减去中间包含的1.5个小时
-                        if (Integer.parseInt(selStartTime.split(":")[0]) < 12
-                            && Integer.parseInt(selEndTime.split(":")[0]) > 12) {
-                            waitTime = waitTime - 1.5;
-                        }
-                        return Y9Result.success(String.valueOf(num * waitTime), "获取成功");
-                    }
-
-                    String tmp = leaveStartTime;
-                    double timeCount = 0.0;
-                    while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp4={}", tmp);
-                        if (!dayStr.contains(tmp)) {
-                            if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {// 开始日期选择时间
-                                long time = sdf.parse(ENDTIME_KEY).getTime() - sdf.parse(selStartTime).getTime();
-                                double hours = (double)time / (60 * 60 * 1000);
-                                BigDecimal a = BigDecimal.valueOf(hours);
-                                double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
-                                if (Integer.parseInt(selStartTime.split(":")[0]) < 12) {
-                                    waitTime = waitTime - 1.5;
-                                }
-                                timeCount = timeCount + waitTime;
-                                long timeTemp =
-                                    Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                                tmp = Y9DateTimeUtils.formatDate(new Date(timeTemp));
-                                continue;
-                            }
-                            if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
-                                long time = sdf.parse(selEndTime).getTime() - sdf.parse(STARTTIME_KEY).getTime();
-                                double hours = (double)time / (60 * 60 * 1000);
-                                BigDecimal a = BigDecimal.valueOf(hours);
-                                double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
-                                if (Integer.parseInt(selEndTime.split(":")[0]) > 12) {
-                                    waitTime = waitTime - 1.5;
-                                }
-                                timeCount = timeCount + waitTime;
-                                long timeTemp =
-                                    Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                                tmp = Y9DateTimeUtils.formatDate(new Date(timeTemp));
-                                continue;
-                            }
-                            timeCount = timeCount + 7;// 其余时间每天加7小时
-                        }
-                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                    }
-                    return Y9Result.success(String.valueOf(timeCount), "获取成功");
-                }
-                default: {
-                    LOGGER.error("无效:{}", type);
-                }
-            }
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String year = leaveEndTime.split("-")[0];
+            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(tenantId, year).getData();
+            String holidayStr = calendarConfig.getEveryYearHoliday();
+            String result = calculateLeaveDuration(type, leaveStartTime, leaveEndTime, startSel, endSel, selStartTime,
+                selEndTime, leaveType, holidayStr);
+            return Y9Result.success(result, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取请假时长失败", e);
             return Y9Result.failure("获取失败");
         }
-        return Y9Result.success("", "获取成功");
     }
 
     /**
@@ -319,121 +155,327 @@ public class SignController {
         @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime,
         @RequestParam(required = false) String selEndTime) {
         try {
-            switch (type) {
-                case "天": {
-                    if (leaveStartTime.equals(leaveEndTime)) {
-                        return Y9Result.success("0", "获取成功");
-                    }
-                    String tmp = leaveStartTime;
-                    int num = 0;
-                    while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp5={}", tmp);
-                        num++;
-                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                    }
-                    return Y9Result.success(String.valueOf(num), "获取成功");
-                }
-                case "半天": {
-                    if (leaveStartTime.equals(leaveEndTime)) {
-                        return Y9Result.success("0", "获取成功");
-                    }
-                    String tmp = leaveStartTime;
-                    int num = 0;
-                    double start = 0;
-                    while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp6={}", tmp);
-                        if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(startSel) && startSel.equals("下午")) {// 开始日期选择下午，算半天
-                            start += 0.5;
-                            long time =
-                                Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                            tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                            continue;
-                        }
-                        if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(endSel) && endSel.equals("上午")) {// 结束日期选择上午，算半天
-                            start += 0.5;
-                            long time =
-                                Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                            tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                            continue;
-                        }
-                        num++;
-                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                    }
-                    if (start > 0) {
-                        return Y9Result.success(String.valueOf(num + start), "获取成功");
-                    }
-                    return Y9Result.success(String.valueOf(num), "获取成功");
-                }
-                case "小时": {
-                    SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
-                    if (leaveStartTime.equals(leaveEndTime)) {
-                        // 同一天，计算时间
-                        if (StringUtils.isBlank(selStartTime)) {
-                            selStartTime = STARTTIME_KEY;
-                        }
-                        if (StringUtils.isBlank(selEndTime)) {
-                            selEndTime = ENDTIME_KEY;
-                        }
-                        long time = sdf.parse(selEndTime).getTime() - sdf.parse(selStartTime).getTime();
-                        double hours = (double)time / (60 * 60 * 1000);
-                        BigDecimal a = BigDecimal.valueOf(hours);
-                        double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
-                        // 减去中间包含的1.5个小时
-                        if (Integer.parseInt(selStartTime.split(":")[0]) < 12
-                            && Integer.parseInt(selEndTime.split(":")[0]) > 12) {
-                            waitTime = waitTime - 1.5;
-                        }
-                        return Y9Result.success(String.valueOf(waitTime), "获取成功");
-                    }
-                    String tmp = leaveStartTime;
-                    double timeCount = 0.0;
-                    while (tmp.compareTo(leaveEndTime) <= 0) {
-                        LOGGER.debug("tmp8={}", tmp);
-                        if (tmp.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {// 开始日期选择时间
-                            long time = sdf.parse(ENDTIME_KEY).getTime() - sdf.parse(selStartTime).getTime();
-                            double hours = (double)time / (60 * 60 * 1000);
-                            BigDecimal a = BigDecimal.valueOf(hours);
-                            double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
-                            if (Integer.parseInt(selStartTime.split(":")[0]) < 12) {
-                                waitTime = waitTime - 1.5;
-                            }
-                            timeCount = timeCount + waitTime;
-                            long timeTemp =
-                                Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                            tmp = Y9DateTimeUtils.formatDate(new Date(timeTemp));
-                            continue;
-                        }
-                        if (tmp.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {// 结束日期选择时间
-                            long time = sdf.parse(selEndTime).getTime() - sdf.parse(STARTTIME_KEY).getTime();
-                            double hours = (double)time / (60 * 60 * 1000);
-                            BigDecimal a = BigDecimal.valueOf(hours);
-                            double waitTime = a.setScale(2, RoundingMode.HALF_UP).doubleValue();
-                            if (Integer.parseInt(selEndTime.split(":")[0]) > 12) {
-                                waitTime = waitTime - 1.5;
-                            }
-                            timeCount = timeCount + waitTime;
-                            long timeTemp =
-                                Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                            tmp = Y9DateTimeUtils.formatDate(new Date(timeTemp));
-                            continue;
-                        }
-                        timeCount = timeCount + 7;// 其余时间每天加7小时
-                        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(tmp)).getTime() + 3600 * 24 * 1000;
-                        tmp = Y9DateTimeUtils.formatDate(new Date(time));
-                    }
-                    return Y9Result.success(String.valueOf(timeCount), "获取成功");
-                }
-                default: {
-                    LOGGER.error("无效:{}", type);
-                }
-            }
+            String result = calculateCommonLeaveDuration(type, leaveStartTime, leaveEndTime, startSel, endSel,
+                selStartTime, selEndTime);
+            return Y9Result.success(result, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取时间日期时长失败", e);
             return Y9Result.failure("获取失败");
         }
-        return Y9Result.success("", "获取成功");
     }
 
+    /**
+     * 计算请假时长
+     */
+    private String calculateLeaveDuration(String type, String leaveStartTime, String leaveEndTime, String startSel,
+        String endSel, String selStartTime, String selEndTime, String leaveType, String holidayStr) throws Exception {
+        switch (type) {
+            case "天":
+                return calculateDays(leaveStartTime, leaveEndTime, leaveType, holidayStr);
+            case "半天":
+                return calculateHalfDays(leaveStartTime, leaveEndTime, startSel, endSel, holidayStr);
+            case "小时":
+                return calculateHours(leaveStartTime, leaveEndTime, selStartTime, selEndTime, leaveType, holidayStr);
+            default:
+                LOGGER.error("无效的计算类型: {}", type);
+                return "";
+        }
+    }
+
+    /**
+     * 计算天数
+     */
+    private String calculateDays(String leaveStartTime, String leaveEndTime, String leaveType, String holidayStr)
+        throws Exception {
+        boolean excludeHolidays = shouldExcludeHolidays(leaveType);
+        if (leaveStartTime.equals(leaveEndTime)) {
+            if (excludeHolidays && holidayStr.contains(leaveStartTime)) {
+                return "0";
+            }
+        }
+        int count = 0;
+        String currentDate = leaveStartTime;
+        while (currentDate.compareTo(leaveEndTime) <= 0) {
+            if (excludeHolidays) {
+                if (!holidayStr.contains(currentDate)) {
+                    count++;
+                }
+            } else {
+                count++;
+            }
+            currentDate = getNextDay(currentDate);
+        }
+        return String.valueOf(count);
+    }
+
+    /**
+     * 判断是否需要排除节假日
+     */
+    private boolean shouldExcludeHolidays(String leaveType) {
+        return !StringUtils.isNotBlank(leaveType) || (!"离京报备".equals(leaveType) && !"产假".equals(leaveType)
+            && !"婚假".equals(leaveType) && !"陪产假".equals(leaveType));
+    }
+
+    /**
+     * 计算半天数
+     */
+    private String calculateHalfDays(String leaveStartTime, String leaveEndTime, String startSel, String endSel,
+        String holidayStr) throws Exception {
+        if (leaveStartTime.equals(leaveEndTime)) {
+            if (holidayStr.contains(leaveStartTime)) {
+                return "0";
+            }
+        }
+        return calculateHalfDaysInternal(leaveStartTime, leaveEndTime, startSel, endSel, holidayStr, true);
+    }
+
+    /**
+     * 计算通用半天数（不考虑节假日）
+     */
+    private String calculateCommonHalfDays(String leaveStartTime, String leaveEndTime, String startSel, String endSel)
+        throws Exception {
+        if (leaveStartTime.equals(leaveEndTime)) {
+            return "0";
+        }
+        return calculateHalfDaysInternal(leaveStartTime, leaveEndTime, startSel, endSel, null, false);
+    }
+
+    /**
+     * 计算半天数的内部实现方法
+     *
+     * @param leaveStartTime 开始时间
+     * @param leaveEndTime 结束时间
+     * @param startSel 开始时间选项（上午/下午）
+     * @param endSel 结束时间选项（上午/下午）
+     * @param holidayStr 节假日字符串（为null时表示不考虑节假日）
+     * @param checkHoliday 是否检查节假日
+     * @return 计算结果
+     */
+    private String calculateHalfDaysInternal(String leaveStartTime, String leaveEndTime, String startSel, String endSel,
+        String holidayStr, boolean checkHoliday) throws Exception {
+        String currentDate = leaveStartTime;
+        int fullDays = 0;
+        double halfDays = 0.0;
+        while (currentDate.compareTo(leaveEndTime) <= 0) {
+            // 如果需要检查节假日且当前日期是节假日，则跳过
+            if (checkHoliday && holidayStr != null && holidayStr.contains(currentDate)) {
+                currentDate = getNextDay(currentDate);
+                continue;
+            }
+            if (currentDate.equals(leaveStartTime) && StringUtils.isNotBlank(startSel) && "下午".equals(startSel)) {
+                halfDays += 0.5;
+            } else if (currentDate.equals(leaveEndTime) && StringUtils.isNotBlank(endSel) && "上午".equals(endSel)) {
+                halfDays += 0.5;
+            } else {
+                fullDays++;
+            }
+            currentDate = getNextDay(currentDate);
+        }
+        return String.valueOf(fullDays + halfDays);
+    }
+
+    /**
+     * 计算小时数
+     */
+    private String calculateHours(String leaveStartTime, String leaveEndTime, String selStartTime, String selEndTime,
+        String leaveType, String holidayStr) throws Exception {
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+        if (leaveStartTime.equals(leaveEndTime)) {
+            return calculateSameDayHours(leaveStartTime, selStartTime, selEndTime, holidayStr, sdf);
+        }
+        if ("哺乳假".equals(leaveType)) {
+            return calculateNursingLeaveHours(leaveStartTime, leaveEndTime, selStartTime, selEndTime, holidayStr, sdf);
+        }
+        return calculateMultiDayHours(leaveStartTime, leaveEndTime, selStartTime, selEndTime, holidayStr, sdf);
+    }
+
+    /**
+     * 计算同一天的小时数
+     */
+    private String calculateSameDayHours(String leaveStartTime, String selStartTime, String selEndTime,
+        String holidayStr, SimpleDateFormat sdf) throws Exception {
+        if (holidayStr.contains(leaveStartTime)) {
+            return "0";
+        }
+        if (StringUtils.isBlank(selStartTime)) {
+            selStartTime = STARTTIME_KEY;
+        }
+        if (StringUtils.isBlank(selEndTime)) {
+            selEndTime = ENDTIME_KEY;
+        }
+        double hours = calculateWorkHours(selStartTime, selEndTime, sdf);
+        return String.valueOf(hours);
+    }
+
+    /**
+     * 计算哺乳假小时数
+     */
+    private String calculateNursingLeaveHours(String leaveStartTime, String leaveEndTime, String selStartTime,
+        String selEndTime, String holidayStr, SimpleDateFormat sdf) throws Exception {
+        // 计算天数
+        int days = 0;
+        String currentDate = leaveStartTime;
+        while (currentDate.compareTo(leaveEndTime) <= 0) {
+            if (!holidayStr.contains(currentDate)) {
+                days++;
+            }
+            currentDate = getNextDay(currentDate);
+        }
+        // 计算每天小时数
+        if (StringUtils.isBlank(selStartTime)) {
+            selStartTime = STARTTIME_KEY;
+        }
+        if (StringUtils.isBlank(selEndTime)) {
+            selEndTime = ENDTIME_KEY;
+        }
+        double hoursPerDay = calculateWorkHours(selStartTime, selEndTime, sdf);
+        return String.valueOf(days * hoursPerDay);
+    }
+
+    /**
+     * 计算多天的小时数
+     */
+    private String calculateMultiDayHours(String leaveStartTime, String leaveEndTime, String selStartTime,
+        String selEndTime, String holidayStr, SimpleDateFormat sdf) throws Exception {
+        String currentDate = leaveStartTime;
+        double totalHours = 0.0;
+        while (currentDate.compareTo(leaveEndTime) <= 0) {
+            if (!holidayStr.contains(currentDate)) {
+                double dayHours =
+                    calculateDayHours(currentDate, leaveStartTime, leaveEndTime, selStartTime, selEndTime, sdf);
+                totalHours += dayHours;
+            }
+            currentDate = getNextDay(currentDate);
+        }
+        return String.valueOf(totalHours);
+    }
+
+    /**
+     * 计算单天小时数
+     */
+    private double calculateDayHours(String currentDate, String leaveStartTime, String leaveEndTime,
+        String selStartTime, String selEndTime, SimpleDateFormat sdf) throws Exception {
+        if (currentDate.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {
+            // 开始日期选择时间
+            double waitTime = calculateHoursBetween(selStartTime, selEndTime, sdf);
+            if (Integer.parseInt(selStartTime.split(":")[0]) < 12) {
+                waitTime = waitTime - 1.5;
+            }
+            return waitTime;
+        } else if (currentDate.equals(leaveEndTime) && StringUtils.isNotBlank(selEndTime)) {
+            // 结束日期选择时间
+            double waitTime = calculateHoursBetween(selStartTime, selEndTime, sdf);
+            if (Integer.parseInt(selEndTime.split(":")[0]) > 12) {
+                waitTime = waitTime - 1.5;
+            }
+            return waitTime;
+        } else {
+            // 其余时间每天加7小时
+            return 7.0;
+        }
+    }
+
+    /**
+     * 计算工作小时数（减去午休时间）
+     */
+    private double calculateWorkHours(String startTime, String endTime, SimpleDateFormat sdf) throws Exception {
+        double waitTime = calculateHoursBetween(startTime, endTime, sdf);
+        // 减去中间包含的1.5个小时午休时间
+        if (Integer.parseInt(startTime.split(":")[0]) < 12 && Integer.parseInt(endTime.split(":")[0]) > 12) {
+            waitTime = waitTime - 1.5;
+        }
+        return waitTime;
+    }
+
+    /**
+     * 获取下一天日期
+     */
+    private String getNextDay(String currentDate) throws Exception {
+        long time = Objects.requireNonNull(Y9DateTimeUtils.parseDate(currentDate)).getTime() + 3600 * 24 * 1000;
+        return Y9DateTimeUtils.formatDate(new Date(time));
+    }
+
+    /**
+     * 计算通用请假时长（不考虑节假日）
+     */
+    private String calculateCommonLeaveDuration(String type, String leaveStartTime, String leaveEndTime,
+        String startSel, String endSel, String selStartTime, String selEndTime) throws Exception {
+        switch (type) {
+            case "天":
+                return calculateCommonDays(leaveStartTime, leaveEndTime);
+            case "半天":
+                return calculateCommonHalfDays(leaveStartTime, leaveEndTime, startSel, endSel);
+            case "小时":
+                return calculateCommonHours(leaveStartTime, leaveEndTime, selStartTime, selEndTime);
+            default:
+                LOGGER.error("无效:{}", type);
+                return "";
+        }
+    }
+
+    /**
+     * 计算通用天数（不考虑节假日）
+     */
+    private String calculateCommonDays(String leaveStartTime, String leaveEndTime) throws Exception {
+        if (leaveStartTime.equals(leaveEndTime)) {
+            return "0";
+        }
+        int count = 0;
+        String currentDate = leaveStartTime;
+        while (currentDate.compareTo(leaveEndTime) <= 0) {
+            count++;
+            currentDate = getNextDay(currentDate);
+        }
+        return String.valueOf(count);
+    }
+
+    /**
+     * 计算通用小时数（不考虑节假日）
+     */
+    private String calculateCommonHours(String leaveStartTime, String leaveEndTime, String selStartTime,
+        String selEndTime) throws Exception {
+
+        SimpleDateFormat sdf = new SimpleDateFormat("HH:mm");
+
+        if (leaveStartTime.equals(leaveEndTime)) {
+            // 同一天，计算时间
+            if (StringUtils.isBlank(selStartTime)) {
+                selStartTime = STARTTIME_KEY;
+            }
+            if (StringUtils.isBlank(selEndTime)) {
+                selEndTime = ENDTIME_KEY;
+            }
+            double waitTime = calculateWorkHours(selStartTime, selEndTime, sdf);
+            return Y9Result.success(String.valueOf(waitTime), "获取成功").getData();
+        }
+
+        return String
+            .valueOf(calculateCommonMultiDayHours(leaveStartTime, leaveEndTime, selStartTime, selEndTime, sdf));
+    }
+
+    /**
+     * 计算通用多天小时数（不考虑节假日）
+     */
+    private double calculateCommonMultiDayHours(String leaveStartTime, String leaveEndTime, String selStartTime,
+        String selEndTime, SimpleDateFormat sdf) throws Exception {
+
+        String currentDate = leaveStartTime;
+        double totalHours = 0.0;
+
+        while (currentDate.compareTo(leaveEndTime) <= 0) {
+            double dayHours =
+                calculateDayHours(currentDate, leaveStartTime, leaveEndTime, selStartTime, selEndTime, sdf);
+            totalHours += dayHours;
+            currentDate = getNextDay(currentDate);
+        }
+
+        return totalHours;
+    }
+
+    private double calculateHoursBetween(String startTime, String endTime, SimpleDateFormat sdf) throws Exception {
+        long time = sdf.parse(endTime).getTime() - sdf.parse(startTime).getTime();
+        double hours = (double)time / (60 * 60 * 1000);
+        BigDecimal a = BigDecimal.valueOf(hours);
+        return a.setScale(2, RoundingMode.HALF_UP).doubleValue();
+    }
 }

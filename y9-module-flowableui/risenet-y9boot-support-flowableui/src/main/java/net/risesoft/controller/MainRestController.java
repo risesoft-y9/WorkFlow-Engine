@@ -58,15 +58,15 @@ import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
 @RequestMapping(value = "/vue/main", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MainRestController {
 
-    private static final String DRAFTCOUNT_KEY = "draftCount";
-    private static final String TODOCOUNT_KEY = "todoCount";
-    private static final String DOINGCOUNT_KEY = "doingCount";
-    private static final String DONECOUNT_KEY = "doneCount";
-    private static final String DRAFTRECYCLECOUNT_KEY = "draftRecycleCount";
-    private static final String MONITORDOING_KEY = "monitorDoing";
-    private static final String MONITORDONE_KEY = "monitorDone";
-    private static final String MONITORRECYCLE_KEY = "monitorRecycle";
-    private static final String MONITORMANAGE_KEY = "monitorManage";
+    private static final String DRAFT_COUNT_KEY = "draftCount";
+    private static final String TODO_COUNT_KEY = "todoCount";
+    private static final String DOING_COUNT_KEY = "doingCount";
+    private static final String DONE_COUNT_KEY = "doneCount";
+    private static final String DRAFT_RECYCLE_COUNT_KEY = "draftRecycleCount";
+    private static final String MONITOR_DOING_KEY = "monitorDoing";
+    private static final String MONITOR_DONE_KEY = "monitorDone";
+    private static final String MONITOR_RECYCLE_KEY = "monitorRecycle";
+    private static final String MONITOR_MANAGE_KEY = "monitorManage";
     private final ItemApi itemApi;
     private final HistoricProcessApi historicProcessApi;
     private final PositionRoleApi positionRoleApi;
@@ -113,15 +113,15 @@ public class MainRestController {
         long monitorDone = 0;
         long recycleCount = 0;
 
-        map.put(DRAFTCOUNT_KEY, draftCount);
-        map.put(TODOCOUNT_KEY, todoCount);
-        map.put(DOINGCOUNT_KEY, doingCount);
-        map.put(DONECOUNT_KEY, doneCount);
-        map.put(DRAFTRECYCLECOUNT_KEY, draftRecycleCount);
+        map.put(DRAFT_COUNT_KEY, draftCount);
+        map.put(TODO_COUNT_KEY, todoCount);
+        map.put(DOING_COUNT_KEY, doingCount);
+        map.put(DONE_COUNT_KEY, doneCount);
+        map.put(DRAFT_RECYCLE_COUNT_KEY, draftRecycleCount);
 
-        map.put(MONITORDOING_KEY, monitorDoing);
-        map.put(MONITORDONE_KEY, monitorDone);
-        map.put(MONITORRECYCLE_KEY, recycleCount);
+        map.put(MONITOR_DOING_KEY, monitorDoing);
+        map.put(MONITOR_DONE_KEY, monitorDone);
+        map.put(MONITOR_RECYCLE_KEY, recycleCount);
         try {
             ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = itemModel.getWorkflowGuid();
@@ -140,11 +140,11 @@ public class MainRestController {
                     LOGGER.error("获取事项办结件数量统计失败", e);
                 }
             }
-            map.put(DRAFTCOUNT_KEY, draftCount);
-            map.put(TODOCOUNT_KEY, todoCount);
-            map.put(DOINGCOUNT_KEY, doingCount);
-            map.put(DONECOUNT_KEY, doneCount);
-            map.put(DRAFTRECYCLECOUNT_KEY, draftRecycleCount);
+            map.put(DRAFT_COUNT_KEY, draftCount);
+            map.put(TODO_COUNT_KEY, todoCount);
+            map.put(DOING_COUNT_KEY, doingCount);
+            map.put(DONE_COUNT_KEY, doneCount);
+            map.put(DRAFT_RECYCLE_COUNT_KEY, draftRecycleCount);
 
             if (person.isGlobalManager()) {
                 try {
@@ -153,11 +153,9 @@ public class MainRestController {
                 } catch (Exception e) {
                     LOGGER.error("获取事项监控在办和办结件数量统计失败", e);
                 }
-                // recycleCount = monitorManager.getRecycleCountByProcessDefinitionKey(tenantId,
-                // processDefinitionKey);
-                map.put(MONITORDOING_KEY, monitorDoing);
-                map.put(MONITORDONE_KEY, monitorDone);
-                map.put(MONITORRECYCLE_KEY, recycleCount);
+                map.put(MONITOR_DOING_KEY, monitorDoing);
+                map.put(MONITOR_DONE_KEY, monitorDone);
+                map.put(MONITOR_RECYCLE_KEY, recycleCount);
             }
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
@@ -186,14 +184,14 @@ public class MainRestController {
         long monitorDoing = 0;
         long monitorDone = 0;
 
-        map.put(DRAFTCOUNT_KEY, draftCount);
-        map.put(TODOCOUNT_KEY, todoCount);
-        map.put(DOINGCOUNT_KEY, doingCount);
-        map.put(DONECOUNT_KEY, doneCount);
-        map.put(DRAFTRECYCLECOUNT_KEY, draftRecycleCount);
+        map.put(DRAFT_COUNT_KEY, draftCount);
+        map.put(TODO_COUNT_KEY, todoCount);
+        map.put(DOING_COUNT_KEY, doingCount);
+        map.put(DONE_COUNT_KEY, doneCount);
+        map.put(DRAFT_RECYCLE_COUNT_KEY, draftRecycleCount);
 
-        map.put(MONITORDOING_KEY, monitorDoing);
-        map.put(MONITORDONE_KEY, monitorDone);
+        map.put(MONITOR_DOING_KEY, monitorDoing);
+        map.put(MONITOR_DONE_KEY, monitorDone);
         try {
             draftCount = draftApi.countBySystemName(tenantId, positionId, systemName).getData();
             // draftRecycleCount = draftApi.getDeleteDraftCount(tenantId, positionId, systemName);
@@ -206,11 +204,11 @@ public class MainRestController {
             } catch (Exception e) {
                 LOGGER.error("获取事项流程办结件统计失败", e);
             }
-            map.put(DRAFTCOUNT_KEY, draftCount);
-            map.put(TODOCOUNT_KEY, todoCount);
-            map.put(DOINGCOUNT_KEY, doingCount);
-            map.put(DONECOUNT_KEY, doneCount);
-            map.put(DRAFTRECYCLECOUNT_KEY, draftRecycleCount);
+            map.put(DRAFT_COUNT_KEY, draftCount);
+            map.put(TODO_COUNT_KEY, todoCount);
+            map.put(DOING_COUNT_KEY, doingCount);
+            map.put(DONE_COUNT_KEY, doneCount);
+            map.put(DRAFT_RECYCLE_COUNT_KEY, draftRecycleCount);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             LOGGER.error("根据系统名称获取事项办件分类数量统计失败", e);
@@ -238,7 +236,7 @@ public class MainRestController {
             .getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
-        map.put(MONITORMANAGE_KEY, b);
+        map.put(MONITOR_MANAGE_KEY, b);
         boolean b1 =
             positionRoleApi
                 .hasPublicRole(tenantId, y9FlowableProperties.getRepositionManagerRoleName(),
@@ -262,7 +260,7 @@ public class MainRestController {
         boolean b = positionRoleApi
             .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
             .getData();
-        map.put(MONITORMANAGE_KEY, b);
+        map.put(MONITOR_MANAGE_KEY, b);
         boolean b1 =
             positionRoleApi
                 .hasPublicRole(tenantId, y9FlowableProperties.getRepositionManagerRoleName(),
@@ -302,9 +300,9 @@ public class MainRestController {
             doingCount = y9Page.getTotal();
             // 统计历史办结件
             doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, "").getData();
-            map.put(TODOCOUNT_KEY, todoCount);
-            map.put(DOINGCOUNT_KEY, doingCount);
-            map.put(DONECOUNT_KEY, doneCount);
+            map.put(TODO_COUNT_KEY, todoCount);
+            map.put(DOING_COUNT_KEY, doingCount);
+            map.put(DONE_COUNT_KEY, doneCount);
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取事项流程与当前人相关的办件数量统计失败", e);
@@ -315,7 +313,7 @@ public class MainRestController {
     /**
      * 获取当前人所有的岗位信息和当前岗被委托的记录
      *
-     * @return Y9Result<Map < String, Object>>
+     * @return Y9Result<Map<String, Object>>
      */
     @GetMapping(value = "/getPositionList")
     public Y9Result<Map<String, Object>> getPositionList(@RequestParam(required = false) String count,
@@ -323,85 +321,100 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> resMap = new HashMap<>(16);
         List<Map<String, Object>> resList = new ArrayList<>();
-        List<Position> list = positionApi.listByPersonId(tenantId, Y9LoginUserHolder.getPersonId()).getData();
         long allCount = 0;
-        for (Position p : list) {
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("id", p.getId());
-            map.put("name", p.getName());
-            long todoCount = 0;
-            // 是否统计待办数量
-            if (StringUtils.isNotBlank(count)) {
-                // 单个事项获取待办数量
-                if (StringUtils.isNotBlank(itemId)) {
-                    ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
-                    todoCount = processTodoApi
-                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, p.getId(), itemModel.getWorkflowGuid())
-                        .getData();
-                    allCount = allCount + todoCount;
-                } else if (StringUtils.isNotBlank(systemName)) {
-                    // 单个事项获取待办数量
-                    todoCount =
-                        processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, p.getId(), systemName).getData();
-                    allCount = allCount + todoCount;
-                } else {// 工作台获取所有待办数量
-                    try {
-                        todoCount = itemTodoApi.countByUserId(tenantId, p.getId()).getData();
-                        allCount = allCount + todoCount;
-                    } catch (Exception e) {
-                        LOGGER.error("获取待办数量失败", e);
-                    }
-                }
-            }
-            map.put(TODOCOUNT_KEY, todoCount);
-            resList.add(map);
-
-            // 获取当前岗被委托记录
-            List<EntrustModel> list1 = entrustApi.getMyEntrustList(tenantId, p.getId()).getData();
-            for (EntrustModel model : list1) {
-                if (model.getUsed().equals(1)) {// 使用中的委托，将委托岗位加入岗位列表
-                    Map<String, Object> map1 = new HashMap<>(16);
-                    String ownerId = model.getOwnerId();
-                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, ownerId).getData();
-                    if (orgUnit != null) {
-                        map1.put("id", orgUnit.getId());
-                        map1.put("name", orgUnit.getName());
-                        long todoCount1 = 0;
-                        if (StringUtils.isNotBlank(count)) {
-                            // 是否统计待办数量
-                            if (StringUtils.isNotBlank(itemId)) {
-                                // 单个事项获取待办数量
-                                ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
-                                todoCount1 =
-                                    processTodoApi
-                                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, orgUnit.getId(),
-                                            itemModel.getWorkflowGuid())
-                                        .getData();
-                                allCount = allCount + todoCount1;
-                            } else if (StringUtils.isNotBlank(systemName)) {
-                                // 单个事项获取待办数量
-                                todoCount1 = processTodoApi
-                                    .getTodoCountByUserIdAndSystemName(tenantId, orgUnit.getId(), systemName)
-                                    .getData();
-                                allCount = allCount + todoCount1;
-                            } else {// 工作台获取所有待办数量
-                                try {
-                                    todoCount1 = itemTodoApi.countByUserId(tenantId, orgUnit.getId()).getData();
-                                    allCount = allCount + todoCount1;
-                                } catch (Exception e) {
-                                    LOGGER.error("获取待办数量失败", e);
-                                }
-                            }
+        try {
+            List<Position> positions = positionApi.listByPersonId(tenantId, Y9LoginUserHolder.getPersonId()).getData();
+            for (Position position : positions) {
+                // 处理当前岗位
+                PositionInfo positionInfo = buildPositionInfo(position, tenantId, count, itemId, systemName);
+                resList.add(positionInfo.positionMap);
+                allCount += positionInfo.todoCount;
+                // 处理委托岗位
+                List<EntrustModel> entrustList = entrustApi.getMyEntrustList(tenantId, position.getId()).getData();
+                for (EntrustModel model : entrustList) {
+                    if (model.getUsed().equals(1)) { // 使用中的委托
+                        PositionInfo entrustInfo = buildEntrustPositionInfo(model, tenantId, count, itemId, systemName);
+                        if (entrustInfo != null) {
+                            resList.add(entrustInfo.positionMap);
+                            allCount += entrustInfo.todoCount;
                         }
-                        map1.put(TODOCOUNT_KEY, todoCount1);
-                        resList.add(map1);
                     }
                 }
             }
+            resMap.put("allCount", allCount);
+            resMap.put("positionList", resList);
+            return Y9Result.success(resMap, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取岗位列表失败", e);
+            return Y9Result.failure("获取失败");
         }
-        resMap.put("allCount", allCount);
-        resMap.put("positionList", resList);
-        return Y9Result.success(resMap, "获取成功");
+    }
+
+    /**
+     * 构建岗位信息
+     */
+    private PositionInfo buildPositionInfo(Position position, String tenantId, String count, String itemId,
+        String systemName) {
+        Map<String, Object> positionMap = new HashMap<>(16);
+        positionMap.put("id", position.getId());
+        positionMap.put("name", position.getName());
+
+        long todoCount = 0;
+        if (StringUtils.isNotBlank(count)) {
+            todoCount = getTodoCount(tenantId, position.getId(), itemId, systemName);
+        }
+
+        positionMap.put(TODO_COUNT_KEY, todoCount);
+        return new PositionInfo(positionMap, todoCount);
+    }
+
+    /**
+     * 构建委托岗位信息
+     */
+    private PositionInfo buildEntrustPositionInfo(EntrustModel model, String tenantId, String count, String itemId,
+        String systemName) {
+        try {
+            String ownerId = model.getOwnerId();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, ownerId).getData();
+            if (orgUnit != null) {
+                Map<String, Object> positionMap = new HashMap<>(16);
+                positionMap.put("id", orgUnit.getId());
+                positionMap.put("name", orgUnit.getName());
+                long todoCount = 0;
+                if (StringUtils.isNotBlank(count)) {
+                    todoCount = getTodoCount(tenantId, orgUnit.getId(), itemId, systemName);
+                }
+                positionMap.put(TODO_COUNT_KEY, todoCount);
+                return new PositionInfo(positionMap, todoCount);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取委托岗位信息失败: ownerId={}", model.getOwnerId(), e);
+        }
+        return null;
+    }
+
+    /**
+     * 获取待办数量
+     */
+    private long getTodoCount(String tenantId, String userId, String itemId, String systemName) {
+        try {
+            if (StringUtils.isNotBlank(itemId)) {
+                // 单个事项获取待办数量
+                ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
+                return processTodoApi
+                    .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId, itemModel.getWorkflowGuid())
+                    .getData();
+            } else if (StringUtils.isNotBlank(systemName)) {
+                // 按系统名称获取待办数量
+                return processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, userId, systemName).getData();
+            } else {
+                // 工作台获取所有待办数量
+                return itemTodoApi.countByUserId(tenantId, userId).getData();
+            }
+        } catch (Exception e) {
+            LOGGER.error("获取待办数量失败: userId={}, itemId={}, systemName={}", userId, itemId, systemName, e);
+            return 0;
+        }
     }
 
     /**
@@ -435,21 +448,20 @@ public class MainRestController {
             .getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
-        map.put(MONITORMANAGE_KEY, b);
+        map.put(MONITOR_MANAGE_KEY, b);
         return Y9Result.success(map, "获取成功");
     }
 
     /**
      * 获取流程任务信息
      *
-     * @param taskId 任务id
      * @param processInstanceId 流程实例id
      * @param type 类型
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/getTaskOrProcessInfo")
-    public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam(required = false) String taskId,
-        @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String type) {
+    public Y9Result<Map<String, Object>> getTaskOrProcessInfo(@RequestParam(required = false) String processInstanceId,
+        @RequestParam @NotBlank String type) {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
         String processSerialNumber = "";
@@ -489,5 +501,18 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
         return itemApi.getMyItemList(tenantId, userId);
+    }
+
+    /**
+     * 岗位信息封装类
+     */
+    private static class PositionInfo {
+        final Map<String, Object> positionMap;
+        final long todoCount;
+
+        PositionInfo(Map<String, Object> positionMap, long todoCount) {
+            this.positionMap = positionMap;
+            this.todoCount = todoCount;
+        }
     }
 }

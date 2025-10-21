@@ -467,7 +467,7 @@ public class RoleServiceImpl implements RoleService {
                     item.add(model);
                 }
             }
-        } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
+        } else if (ItemPrincipalTypeEnum.GROUP_CUSTOM.getValue().equals(principalType)) {
             try {
                 List<CustomGroup> grouplist = customGroupApi.listCustomGroupByPersonId(tenantId, userId).getData();
                 for (CustomGroup customGroup : grouplist) {
@@ -676,7 +676,7 @@ public class RoleServiceImpl implements RoleService {
                         allItemList.add(model);
                     }
                 }
-            } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
+            } else if (ItemPrincipalTypeEnum.GROUP_CUSTOM.getValue().equals(principalType)) {
                 List<CustomGroup> customGrouplist =
                     customGroupApi.listCustomGroupByPersonId(tenantId, Y9LoginUserHolder.getPersonId()).getData();
                 if (StringUtils.isBlank(id)) {
@@ -910,7 +910,7 @@ public class RoleServiceImpl implements RoleService {
                     }
                 }
             }
-        } else if (ItemPrincipalTypeEnum.CUSTOMGROUP.getValue().equals(principalType)) {
+        } else if (ItemPrincipalTypeEnum.GROUP_CUSTOM.getValue().equals(principalType)) {
             try {
                 List<CustomGroup> grouplist =
                     customGroupApi.listCustomGroupByPersonId(tenantId, Y9LoginUserHolder.getPersonId()).getData();

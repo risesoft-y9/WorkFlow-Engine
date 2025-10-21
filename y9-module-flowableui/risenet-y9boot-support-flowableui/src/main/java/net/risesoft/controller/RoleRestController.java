@@ -21,6 +21,7 @@ import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
@@ -179,29 +180,68 @@ public class RoleRestController {
      */
     @GetMapping(value = "/getUserCount")
     public Y9Result<Integer> getUserCount(@RequestParam @NotBlank String userChoice) {
-        List<String> userIds = new ArrayList<>();
-        if (StringUtils.isNotBlank(userChoice)) {
-            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
-            for (String s : userChoices) {
-                if (userIds.size() > 100) {
-                    break;
-                }
-                String[] s2 = s.split(SysVariables.COLON);
-                int principalType = Integer.parseInt(s2[0]);
-                if (principalType == 6) {
-                    this.addUserIds(userIds, s2[1]);
-                } else if (principalType == 2) {// 选取的是部门，获取部门下的所有人员
-                    List<Position> list = this.getAllPositionByDeptId(s2[1]);
-                    for (Position pTemp : list) {
-                        if (userIds.size() > 100) {
-                            break;
-                        }
-                        this.addUserIds(userIds, pTemp.getId());
-                    }
-                }
+        try {
+            List<String> userIds = new ArrayList<>();
+            if (StringUtils.isNotBlank(userChoice)) {
+                parseUserChoices(userChoice, userIds);
             }
+            return Y9Result.success(userIds.size(), "获取成功");
+        } catch (Exception e) {
+            return Y9Result.failure("解析用户选择失败: " + e.getMessage());
         }
-        return Y9Result.success(userIds.size(), "获取成功");
+    }
+
+    /**
+     * 解析用户选择并填充用户ID列表
+     */
+    private void parseUserChoices(String userChoice, List<String> userIds) {
+        String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
+        for (String choice : userChoices) {
+            if (userIds.size() >= 100) {
+                break;
+            }
+            processUserChoice(choice, userIds);
+        }
+    }
+
+    /**
+     * 处理单个用户选择项
+     */
+    private void processUserChoice(String choice, List<String> userIds) {
+        try {
+            String[] parts = choice.split(SysVariables.COLON);
+            if (parts.length < 2) {
+                return;
+            }
+            int principalType = Integer.parseInt(parts[0]);
+            String id = parts[1];
+            switch (ItemPrincipalTypeEnum.valueOf(principalType)) {
+                case POSITION:
+                    addUserIds(userIds, id);
+                    break;
+                case DEPT:
+                    addDepartmentPositions(id, userIds);
+                    break;
+                default:
+                    // 忽略不支持的类型
+                    break;
+            }
+        } catch (NumberFormatException e) {
+            // 忽略格式错误的选项
+        }
+    }
+
+    /**
+     * 添加部门下的所有岗位
+     */
+    private void addDepartmentPositions(String deptId, List<String> userIds) {
+        List<Position> positions = getAllPositionByDeptId(deptId);
+        for (Position position : positions) {
+            if (userIds.size() >= 100) {
+                break;
+            }
+            addUserIds(userIds, position.getId());
+        }
     }
 
     private void recursionAllPosition(String parentID, List<Position> list) {
