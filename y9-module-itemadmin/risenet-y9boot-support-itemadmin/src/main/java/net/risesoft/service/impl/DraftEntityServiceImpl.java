@@ -18,6 +18,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RepositoryApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.Item;
@@ -176,12 +177,12 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     }
 
     void formatFormData(Map<String, Object> map) {
-        if (map.get("leaveType") != null) {
-            String leaveType = (String)map.get("leaveType");
+        if (map.get(ItemConsts.LEAVETYPE_KEY) != null) {
+            String leaveType = (String)map.get(ItemConsts.LEAVETYPE_KEY);
             ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
             for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
                 if (leaveType.equals(leaveTypeEnum.getValue())) {
-                    map.put("leaveType", leaveTypeEnum.getName());
+                    map.put(ItemConsts.LEAVETYPE_KEY, leaveTypeEnum.getName());
                     break;
                 }
             }

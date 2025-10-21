@@ -434,7 +434,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                             this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
                                 .getData();
                         if (j < 5) {
-                            Y9Util.genCustomStr(assignees, ownerUser == null ? "岗位不存在" : ownerUser.getName(), "、");
+                            Y9Util.genCustomStr(assignees, ownerUser == null ? "办理人对应的岗位不存在" : ownerUser.getName(),
+                                "、");
                         } else {
                             assignees.append("等，共").append(iList.size()).append("人");
                             break;
@@ -570,7 +571,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                         OrgUnit employee =
                             this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), user).getData();
                         HistoryProcessModel history = new HistoryProcessModel();
-                        history.setAssignee(employee != null ? employee.getName() : "岗位不存在");
+                        history.setAssignee(employee != null ? employee.getName() : "不存在办理人岗位数据");
                         history.setName("串行办理");
                         history.setDescription("");
                         history.setOpinion("");
@@ -654,7 +655,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                             this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
                                 .getData();
                         if (j < 5) {
-                            Y9Util.genCustomStr(assignees, ownerUser != null ? ownerUser.getName() : "岗位不存在", "、");
+                            Y9Util.genCustomStr(assignees, ownerUser != null ? ownerUser.getName() : "岗位数据不存在", "、");
                         } else {
                             assignees.append("等，共").append(iList.size()).append("人");
                             break;
@@ -715,7 +716,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                         OrgUnit employee =
                             this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), user).getData();
                         HistoryProcessModel history2 = new HistoryProcessModel();
-                        history2.setAssignee(employee != null ? employee.getName() : "岗位不存在");
+                        history2.setAssignee(employee != null ? employee.getName() : "对应岗位不存在");
                         history2.setName("串行办理");
                         history2.setDescription("");
                         history2.setOpinion("");

@@ -27,6 +27,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
@@ -79,9 +80,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public int countByItemId(String itemId) {
         try {
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists();
+            Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+                .and(ItemConsts.ENDTIME_KEY)
+                .exists();
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
+                criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
             }
             Query query = new CriteriaQuery(criteria);
 
@@ -95,13 +98,13 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public int countByUserId(String userId, String itemId) {
         try {
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
-                .and("endTime")
+            Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+                .and(ItemConsts.ENDTIME_KEY)
                 .exists()
-                .and("allUserId")
+                .and(ItemConsts.ALLUSERID_KEY)
                 .contains(userId);
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
+                criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
             }
             Query query = new CriteriaQuery(criteria);
             long count = elasticsearchOperations.count(query, INDEX);
@@ -115,13 +118,13 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public int countByUserIdAndSystemName(String orgUnitId, String systemName) {
         try {
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
-                .and("endTime")
+            Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+                .and(ItemConsts.ENDTIME_KEY)
                 .exists()
-                .and("allUserId")
+                .and(ItemConsts.ALLUSERID_KEY)
                 .contains(orgUnitId);
             if (StringUtils.isNotBlank(systemName)) {
-                criteria.subCriteria(new Criteria("systemName").is(systemName));
+                criteria.subCriteria(new Criteria(ItemConsts.SYSTEMNAME_KEY).is(systemName));
             }
             Query query = new CriteriaQuery(criteria);
             long count = elasticsearchOperations.count(query, INDEX);
@@ -135,9 +138,11 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
     @Override
     public long countDoingByItemId(String itemId) {
         try {
-            Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("endTime").exists();
+            Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+                .and(ItemConsts.ENDTIME_KEY)
+                .exists();
             if (StringUtils.isNotBlank(itemId)) {
-                criteria.subCriteria(new Criteria("itemId").is(itemId));
+                criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
             }
             Query query = new CriteriaQuery(criteria);
             long count = elasticsearchOperations.count(query, INDEX);
@@ -186,16 +191,18 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("meeting").is("1");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.STARTTIME_KEY);
+        Criteria criteria =
+            new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId()).and("meeting").is("1");
         if (StringUtils.isNotBlank(title)) {
-            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.TITLE_KEY).contains(title).or(ItemConsts.DOCNUMBER_KEY).contains(title));
         }
         if (StringUtils.isNotBlank(deptName)) {
             criteria.subCriteria(new Criteria("deptName").contains(deptName));
         }
         if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("creatUserName").contains(userName));
+            criteria.subCriteria(new Criteria(ItemConsts.CREATUSERNAME_KEY).contains(userName));
         }
         if (StringUtils.isNotBlank(meetingType)) {
             criteria.subCriteria(new Criteria("meetingType").is(meetingType).and("meetingType").exists());
@@ -273,30 +280,32 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.STARTTIME_KEY);
         if (StringUtils.isNotBlank(state)) {
             if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.ENDTIME_KEY);
             }
         }
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("deptId").contains(deptId);
+        Criteria criteria =
+            new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId()).and("deptId").contains(deptId);
         if (StringUtils.isNotBlank(title)) {
-            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.TITLE_KEY).contains(title).or(ItemConsts.DOCNUMBER_KEY).contains(title));
         }
         if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+            criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
         }
         if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("creatUserName").contains(userName));
+            criteria.subCriteria(new Criteria(ItemConsts.CREATUSERNAME_KEY).contains(userName));
         }
         if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("startTime").startsWith(year));
+            criteria.subCriteria(new Criteria(ItemConsts.STARTTIME_KEY).startsWith(year));
         }
         if (StringUtils.isNotBlank(state)) {
             if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                criteria.subCriteria(new Criteria("endTime").not().exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).not().exists());
             } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                criteria.subCriteria(new Criteria("endTime").exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).exists());
             }
         }
 
@@ -327,37 +336,41 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.STARTTIME_KEY);
         if (StringUtils.isNotBlank(state)) {
             if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.ENDTIME_KEY);
             }
         }
-        Criteria criteria =
-            new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(userId);
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+            .and(ItemConsts.ALLUSERID_KEY)
+            .contains(userId);
         if (StringUtils.isNotBlank(title)) {
-            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.TITLE_KEY).contains(title).or(ItemConsts.DOCNUMBER_KEY).contains(title));
         }
         if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+            criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
         }
         if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("creatUserName").contains(userName));
+            criteria.subCriteria(new Criteria(ItemConsts.CREATUSERNAME_KEY).contains(userName));
         }
         if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("startTime").startsWith(year));
+            criteria.subCriteria(new Criteria(ItemConsts.STARTTIME_KEY).startsWith(year));
         }
         if (StringUtils.isNotBlank(startDate)) {
-            criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startDate + " 00:00:00"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).greaterThanEqual(startDate + ItemConsts.STARTTIME_VAL_KEY));
         }
         if (StringUtils.isNotBlank(endDate)) {
-            criteria.subCriteria(new Criteria("startTime").lessThanEqual(endDate + " 23:59:59"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).lessThanEqual(endDate + ItemConsts.ENDTIME_VAL_KEY));
         }
         if (StringUtils.isNotBlank(state)) {
             if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                criteria.subCriteria(new Criteria("endTime").not().exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).not().exists());
             } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                criteria.subCriteria(new Criteria("endTime").exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).exists());
             }
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -387,37 +400,41 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.STARTTIME_KEY);
         if (StringUtils.isNotBlank(state)) {
             if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.ENDTIME_KEY);
             }
         }
-        Criteria criteria =
-            new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId()).and("allUserId").contains(orgUnitId);
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+            .and(ItemConsts.ALLUSERID_KEY)
+            .contains(orgUnitId);
         if (StringUtils.isNotBlank(systemName)) {
-            criteria.subCriteria(new Criteria("systemName").is(systemName));
+            criteria.subCriteria(new Criteria(ItemConsts.SYSTEMNAME_KEY).is(systemName));
         }
         if (StringUtils.isNotBlank(title)) {
-            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.TITLE_KEY).contains(title).or(ItemConsts.DOCNUMBER_KEY).contains(title));
         }
         if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+            criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
         }
         if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("startTime").startsWith(year));
+            criteria.subCriteria(new Criteria(ItemConsts.STARTTIME_KEY).startsWith(year));
         }
         if (StringUtils.isNotBlank(startDate)) {
-            criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startDate + " 00:00:00"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).greaterThanEqual(startDate + ItemConsts.STARTTIME_VAL_KEY));
         }
         if (StringUtils.isNotBlank(endDate)) {
-            criteria.subCriteria(new Criteria("startTime").lessThanEqual(endDate + " 23:59:59"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).lessThanEqual(endDate + ItemConsts.ENDTIME_VAL_KEY));
         }
         if (StringUtils.isNotBlank(state)) {
             if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                criteria.subCriteria(new Criteria("endTime").not().exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).not().exists());
             } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                criteria.subCriteria(new Criteria("endTime").exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).exists());
             }
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -448,42 +465,45 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.STARTTIME_KEY);
         if (StringUtils.isNotBlank(state)) {
             if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.ENDTIME_KEY);
             }
         }
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId());
         if (StringUtils.isNotBlank(orgUnitId)) {
-            criteria.subCriteria(new Criteria("allUserId").contains(orgUnitId));
+            criteria.subCriteria(new Criteria(ItemConsts.ALLUSERID_KEY).contains(orgUnitId));
         }
         if (StringUtils.isNotBlank(systemName)) {
-            criteria.subCriteria(new Criteria("systemName").is(systemName));
+            criteria.subCriteria(new Criteria(ItemConsts.SYSTEMNAME_KEY).is(systemName));
         }
         if (StringUtils.isNotBlank(title)) {
-            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.TITLE_KEY).contains(title).or(ItemConsts.DOCNUMBER_KEY).contains(title));
         }
         if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+            criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
         }
         if (StringUtils.isNotBlank(target)) {
             criteria.subCriteria(new Criteria("target").is(target));
         }
         if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("startTime").startsWith(year));
+            criteria.subCriteria(new Criteria(ItemConsts.STARTTIME_KEY).startsWith(year));
         }
         if (StringUtils.isNotBlank(startDate)) {
-            criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startDate + " 00:00:00"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).greaterThanEqual(startDate + ItemConsts.STARTTIME_VAL_KEY));
         }
         if (StringUtils.isNotBlank(endDate)) {
-            criteria.subCriteria(new Criteria("startTime").lessThanEqual(endDate + " 23:59:59"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).lessThanEqual(endDate + ItemConsts.ENDTIME_VAL_KEY));
         }
         if (StringUtils.isNotBlank(state)) {
             if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                criteria.subCriteria(new Criteria("endTime").not().exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).not().exists());
             } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                criteria.subCriteria(new Criteria("endTime").exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).exists());
             }
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -513,30 +533,32 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.STARTTIME_KEY);
         if (StringUtils.isNotBlank(state)) {
             if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.ENDTIME_KEY);
             }
         }
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId());
         if (StringUtils.isNotBlank(searchName)) {
-            criteria.subCriteria(new Criteria("title").contains(searchName).or("docNumber").contains(searchName));
+            criteria.subCriteria(new Criteria(ItemConsts.TITLE_KEY).contains(searchName)
+                .or(ItemConsts.DOCNUMBER_KEY)
+                .contains(searchName));
         }
         if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+            criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
         }
         if (StringUtils.isNotBlank(userName)) {
-            criteria.subCriteria(new Criteria("creatUserName").contains(userName));
+            criteria.subCriteria(new Criteria(ItemConsts.CREATUSERNAME_KEY).contains(userName));
         }
         if (StringUtils.isNotBlank(year)) {
-            criteria.subCriteria(new Criteria("startTime").startsWith(year));
+            criteria.subCriteria(new Criteria(ItemConsts.STARTTIME_KEY).startsWith(year));
         }
         if (StringUtils.isNotBlank(state)) {
             if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                criteria.subCriteria(new Criteria("endTime").not().exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).not().exists());
             } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                criteria.subCriteria(new Criteria("endTime").exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).exists());
             }
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -566,34 +588,36 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "startTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.STARTTIME_KEY);
         if (StringUtils.isNotBlank(state)) {
             if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+                pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.ENDTIME_KEY);
             }
         }
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId());
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId());
         if (StringUtils.isNotBlank(title)) {
-            criteria.subCriteria(new Criteria("title").contains(title)
-                .or("docNumber")
+            criteria.subCriteria(new Criteria(ItemConsts.TITLE_KEY).contains(title)
+                .or(ItemConsts.DOCNUMBER_KEY)
                 .contains(title)
-                .or("creatUserName")
+                .or(ItemConsts.CREATUSERNAME_KEY)
                 .contains(title));
         }
         if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+            criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
         }
         if (StringUtils.isNotBlank(startdate)) {
-            criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).greaterThanEqual(startdate + ItemConsts.STARTTIME_VAL_KEY));
         }
         if (StringUtils.isNotBlank(enddate)) {
-            criteria.subCriteria(new Criteria("startTime").lessThanEqual(enddate + " 23:59:59"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).lessThanEqual(enddate + ItemConsts.ENDTIME_VAL_KEY));
         }
         if (StringUtils.isNotBlank(state)) {
             if (ItemBoxTypeEnum.TODO.getValue().equals(state)) {
-                criteria.subCriteria(new Criteria("endTime").not().exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).not().exists());
             } else if (state.equals(ItemBoxTypeEnum.DONE.getValue())) {
-                criteria.subCriteria(new Criteria("endTime").exists());
+                criteria.subCriteria(new Criteria(ItemConsts.ENDTIME_KEY).exists());
             }
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
@@ -624,24 +648,27 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.ENDTIME_KEY);
 
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
-            .and("allUserId")
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+            .and(ItemConsts.ALLUSERID_KEY)
             .contains(userId)
-            .and("endTime")
+            .and(ItemConsts.ENDTIME_KEY)
             .exists();
         if (StringUtils.isNotBlank(title)) {
-            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.TITLE_KEY).contains(title).or(ItemConsts.DOCNUMBER_KEY).contains(title));
         }
         if (StringUtils.isNotBlank(itemId)) {
-            criteria.subCriteria(new Criteria("itemId").is(itemId));
+            criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
         }
         if (StringUtils.isNotBlank(startdate)) {
-            criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).greaterThanEqual(startdate + ItemConsts.STARTTIME_VAL_KEY));
         }
         if (StringUtils.isNotBlank(enddate)) {
-            criteria.subCriteria(new Criteria("startTime").lessThanEqual(enddate + " 23:59:59"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).lessThanEqual(enddate + ItemConsts.ENDTIME_VAL_KEY));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
@@ -671,25 +698,28 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (page < 1) {
             page = 1;
         }
-        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, "endTime");
+        Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.ENDTIME_KEY);
 
-        Criteria criteria = new Criteria("tenantId").is(Y9LoginUserHolder.getTenantId())
-            .and("allUserId")
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+            .and(ItemConsts.ALLUSERID_KEY)
             .contains(orgUnitId)
-            .and("endTime")
+            .and(ItemConsts.ENDTIME_KEY)
             .exists();
         if (StringUtils.isNotBlank(title)) {
-            criteria.subCriteria(new Criteria("title").contains(title).or("docNumber").contains(title));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.TITLE_KEY).contains(title).or(ItemConsts.DOCNUMBER_KEY).contains(title));
         }
         if (StringUtils.isNotBlank(systemName)) {
-            criteria.subCriteria(new Criteria("systemName").is(systemName));
+            criteria.subCriteria(new Criteria(ItemConsts.SYSTEMNAME_KEY).is(systemName));
         }
 
         if (StringUtils.isNotBlank(startdate)) {
-            criteria.subCriteria(new Criteria("startTime").greaterThanEqual(startdate + " 00:00:00"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).greaterThanEqual(startdate + ItemConsts.STARTTIME_VAL_KEY));
         }
         if (StringUtils.isNotBlank(enddate)) {
-            criteria.subCriteria(new Criteria("startTime").lessThanEqual(enddate + " 23:59:59"));
+            criteria.subCriteria(
+                new Criteria(ItemConsts.STARTTIME_KEY).lessThanEqual(enddate + ItemConsts.ENDTIME_VAL_KEY));
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);

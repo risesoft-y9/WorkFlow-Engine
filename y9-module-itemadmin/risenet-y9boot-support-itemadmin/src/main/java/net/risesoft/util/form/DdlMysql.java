@@ -26,6 +26,9 @@ import net.risesoft.y9.sqlddl.pojo.DbColumn;
  */
 public class DdlMysql {
 
+    private static final String NOT_NULL_KEY = " NOT NULL";
+    private static final String COMMENT_KEY = " COMMENT '";
+
     @Autowired
     private Y9TableFieldRepository y9TableFieldRepository;
 
@@ -113,10 +116,10 @@ public class DdlMysql {
         if (dbc.getNullable()) {
             ddlBuilder.append(" DEFAULT NULL");
         } else {
-            ddlBuilder.append(" NOT NULL");
+            ddlBuilder.append(NOT_NULL_KEY);
         }
         if (!dbc.getComment().isEmpty()) {
-            ddlBuilder.append(" COMMENT '").append(dbc.getComment()).append("'");
+            ddlBuilder.append(COMMENT_KEY).append(dbc.getComment()).append("'");
         }
     }
 
@@ -150,10 +153,10 @@ public class DdlMysql {
             if (dbc.getNullable()) {
                 ddl += " DEFAULT NULL";
             } else {
-                ddl += " NOT NULL";
+                ddl += NOT_NULL_KEY;
             }
             if (!dbc.getComment().isEmpty()) {
-                ddl += " COMMENT '" + dbc.getComment() + "'";
+                ddl += COMMENT_KEY + dbc.getComment() + "'";
             }
             DbMetaDataUtil.executeDdl(dataSource, ddl);
         }
@@ -185,10 +188,10 @@ public class DdlMysql {
                 sb.append(sType);
             }
             if (!dbc.getNullable()) {
-                sb.append(" NOT NULL");
+                sb.append(NOT_NULL_KEY);
             }
             if (!dbc.getComment().isEmpty()) {
-                sb.append(" COMMENT '").append(dbc.getComment()).append("'");
+                sb.append(COMMENT_KEY).append(dbc.getComment()).append("'");
             }
             sb.append(",\r\n");
         }
