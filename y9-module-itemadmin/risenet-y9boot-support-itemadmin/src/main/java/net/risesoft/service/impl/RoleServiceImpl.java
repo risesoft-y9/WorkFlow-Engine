@@ -14,6 +14,7 @@ import net.risesoft.api.platform.org.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ItemPermission;
@@ -326,7 +327,7 @@ public class RoleServiceImpl implements RoleService {
                         model.setParentId("");
                         model.setName(customGroup.getGroupName());
                         model.setIsParent(true);
-                        model.setOrgType("customGroup");
+                        model.setOrgType(ItemConsts.CUSTOMGROUP_KEY);
                         model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
                         if (item.contains(model)) {
                             continue;// 去重
@@ -475,7 +476,7 @@ public class RoleServiceImpl implements RoleService {
                     model.setId(customGroup.getId());
                     model.setParentId("");
                     model.setName(customGroup.getGroupName());
-                    model.setOrgType("customGroup");
+                    model.setOrgType(ItemConsts.CUSTOMGROUP_KEY);
                     model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
                     model.setIsParent(true);
                     if (item.contains(model)) {
@@ -686,7 +687,7 @@ public class RoleServiceImpl implements RoleService {
                         model.setParentId("");
                         model.setName(customGroup.getGroupName());
                         model.setIsParent(true);
-                        model.setOrgType("customGroup");
+                        model.setOrgType(ItemConsts.CUSTOMGROUP_KEY);
                         model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
                         if (allItemList.contains(model)) {
                             continue;// 去重
@@ -918,7 +919,7 @@ public class RoleServiceImpl implements RoleService {
                     ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
                     model.setId(customGroup.getId());
                     model.setName(customGroup.getGroupName());
-                    model.setOrgType("customGroup");
+                    model.setOrgType(ItemConsts.CUSTOMGROUP_KEY);
                     model.setParentId("");
                     model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
                     model.setIsParent(true);

@@ -31,6 +31,8 @@ public class ItemConsts {
     public static final String PROCESSINSTANCEID_KEY = "processInstanceId";
     public static final String CREATETIME_KEY = "createTime";
     public static final String LASTTIME_KEY = "lastTime";
+    public static final String STARTTIME_KEY = "startTime";
+    public static final String ENDTIME_KEY = "endTime";
     public static final String DEPTID_KEY = "DEPTID";
     public static final String BUREAUID_KEY = "BUREAUID";
     public static final String ASSIGNEENAME_KEY = "assigneeName";
@@ -45,6 +47,8 @@ public class ItemConsts {
     public static final String SENDERNAME_KEY = "senderName";
     public static final String USERID_KEY = "userId";
     public static final String USERNAME_KEY = "userName";
+    public static final String CREATUSERNAME_KEY = "creatUserName";
+    public static final String ALLUSERID_KEY = "allUserId";
     public static final String STATUS_KEY = "status";
     public static final String ITEMID_KEY = "itemId";
     public static final String FIELDLIST_KEY = "fieldlist";
@@ -64,6 +68,13 @@ public class ItemConsts {
     public static final String FLOAT_UP_KEY = "FLOAT";
     public static final String TIMESTAMP_UP_KEY = "TIMESTAMP";
     public static final String NEXTNODE_KEY = "nextNode";
+    public static final String LEAVETYPE_KEY = "leaveType";
+    public static final String INTERFACEID_KEY = "interfaceId";
+    public static final String SYSTEMNAME_KEY = "systemName";
+    public static final String DOCNUMBER_KEY = "docNumber";
+    public static final String STARTTIME_VAL_KEY = " 00:00:00";
+    public static final String ENDTIME_VAL_KEY = " 23:59:59";
+    public static final String CUSTOMGROUP_KEY = "customGroup";
     /** 自由流办件processDefineKey */
     public static String freeFlowKey = "ziyouliucheng";
     /** 所有事项ID */

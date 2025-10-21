@@ -25,6 +25,12 @@ import net.risesoft.y9.sqlddl.pojo.DbColumn;
  */
 public class DdlOracle {
 
+    private static final String ALTER_TABLE_KEY = "ALTER TABLE \"";
+    private static final String MODIFY_KEY = " MODIFY ";
+    private static final String NULL_KEY = " NULL";
+    private static final String NOT_NULL_KEY = " NOT NULL";
+    private static final String COMMENT_ON_KEY = "COMMENT ON COLUMN \"";
+    private static final String IS_KEY = " IS '";
     @Autowired
     private Y9TableFieldRepository y9TableFieldRepository;
 
@@ -75,7 +81,7 @@ public class DdlOracle {
 
     private String buildAlterTableDdl(DataSource dataSource, String tableName, DbColumn dbc, ColumnInfo columnInfo) {
         StringBuilder sb = new StringBuilder();
-        sb.append("ALTER TABLE \"").append(tableName).append("\"");
+        sb.append(ALTER_TABLE_KEY).append(tableName).append("\"");
         boolean isAddOperation = determineOperationType(dataSource, sb, dbc, columnInfo);
         appendColumnType(sb, dbc);
         appendNullableConstraint(sb, dbc, columnInfo, isAddOperation);
@@ -94,12 +100,12 @@ public class DdlOracle {
             // 存在旧字段，字段名称没有改变则修改属性
             if (dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())
                 || org.apache.commons.lang3.StringUtils.isBlank(dbc.getColumnNameOld())) {
-                sb.append(" MODIFY ").append(dbc.getColumnName()).append(" ");
+                sb.append(MODIFY_KEY).append(dbc.getColumnName()).append(" ");
             } else {
                 // 存在旧字段，字段名称改变则修改字段名称及属性
                 handleColumnRename(dataSource, dbc.getTableName(), dbc.getColumnNameOld(), dbc.getColumnName());
                 // 重命名之后再MODIFY
-                sb.append(" MODIFY ").append(dbc.getColumnName()).append(" ");
+                sb.append(MODIFY_KEY).append(dbc.getColumnName()).append(" ");
             }
         }
         return isAdd;
@@ -108,7 +114,7 @@ public class DdlOracle {
     private void handleColumnRename(DataSource dataSource, String tableName, String oldName, String newName) {
         try {
             StringBuilder renameSql = new StringBuilder();
-            renameSql.append("ALTER TABLE \"").append(tableName).append("\"");
+            renameSql.append(ALTER_TABLE_KEY).append(tableName).append("\"");
             DbMetaDataUtil.executeDdl(dataSource,
                 renameSql.append(" RENAME COLUMN ").append(oldName).append(" TO ").append(newName).toString());
         } catch (Exception e) {
@@ -121,25 +127,25 @@ public class DdlOracle {
         if (isAddOperation) {
             // 新增字段
             if (dbc.getNullable()) {
-                sb.append(" NULL");
+                sb.append(NULL_KEY);
             } else {
-                sb.append(" NOT NULL");
+                sb.append(NOT_NULL_KEY);
             }
         } else {
             // 修改字段
             if (dbc.getNullable() && "NO".equals(columnInfo.nullable)) {
-                sb.append(" NULL");
+                sb.append(NULL_KEY);
             }
             if (!dbc.getNullable() && "YES".equals(columnInfo.nullable)) {
-                sb.append(" NOT NULL");
+                sb.append(NOT_NULL_KEY);
             }
         }
     }
 
     private void handleColumnComment(DataSource dataSource, String tableName, DbColumn dbc) throws Exception {
         if (StringUtils.hasText(dbc.getComment())) {
-            DbMetaDataUtil.executeDdl(dataSource, "COMMENT ON COLUMN \"" + tableName + "\"."
-                + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
+            DbMetaDataUtil.executeDdl(dataSource, COMMENT_ON_KEY + tableName + "\"."
+                + dbc.getColumnName().trim().toUpperCase() + IS_KEY + dbc.getComment() + "'");
         }
     }
 
@@ -171,7 +177,7 @@ public class DdlOracle {
     private void handleColumnRename(DataSource dataSource, String tableName, DbColumn dbc) {
         if (!dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())) {
             try {
-                String renameSql = "ALTER TABLE \"" + tableName + "\"" + " RENAME COLUMN " + dbc.getColumnNameOld()
+                String renameSql = ALTER_TABLE_KEY + tableName + "\"" + " RENAME COLUMN " + dbc.getColumnNameOld()
                     + " TO " + dbc.getColumnName();
                 DbMetaDataUtil.executeDdl(dataSource, renameSql);
             } catch (Exception e) {
@@ -182,8 +188,8 @@ public class DdlOracle {
 
     private StringBuilder buildModifyStatement(DataSource dataSource, String tableName, DbColumn dbc) throws Exception {
         StringBuilder sb = new StringBuilder();
-        sb.append("ALTER TABLE \"").append(tableName).append("\"");
-        sb.append(" MODIFY ").append(dbc.getColumnName()).append(" ");
+        sb.append(ALTER_TABLE_KEY).append(tableName).append("\"");
+        sb.append(MODIFY_KEY).append(dbc.getColumnName()).append(" ");
         appendColumnType(sb, dbc);
         appendNullableConstraint(dataSource, tableName, sb, dbc);
         return sb;
@@ -216,11 +222,11 @@ public class DdlOracle {
         List<DbColumn> list = DbMetaDataUtil.listAllColumns(dataSource, tableName, dbc.getColumnNameOld());
         if (dbc.getNullable()) {
             if (!list.get(0).getNullable()) {
-                sb.append(" NULL");
+                sb.append(NULL_KEY);
             }
         } else {
             if (list.get(0).getNullable()) {
-                sb.append(" NOT NULL");
+                sb.append(NOT_NULL_KEY);
             }
         }
     }
@@ -229,8 +235,8 @@ public class DdlOracle {
         if (StringUtils.hasText(dbc.getComment())) {
             List<DbColumn> list = DbMetaDataUtil.listAllColumns(dataSource, tableName, dbc.getColumnNameOld());
             if (!list.get(0).getComment().equals(dbc.getComment())) {
-                String commentSql = "COMMENT ON COLUMN \"" + tableName + "\"."
-                    + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'";
+                String commentSql = COMMENT_ON_KEY + tableName + "\"." + dbc.getColumnName().trim().toUpperCase()
+                    + IS_KEY + dbc.getComment() + "'";
                 DbMetaDataUtil.executeDdl(dataSource, commentSql);
             }
         }
@@ -263,7 +269,7 @@ public class DdlOracle {
             }
 
             if (!dbc.getNullable()) {
-                sb.append(" NOT NULL");
+                sb.append(NOT_NULL_KEY);
             }
             sb.append(",\r\n");
         }
@@ -272,7 +278,7 @@ public class DdlOracle {
 
         for (DbColumn dbc : dbcs) {
             if (StringUtils.hasText(dbc.getComment())) {
-                DbMetaDataUtil.executeDdl(dataSource, "COMMENT ON COLUMN \"" + tableName + "\"." + dbc.getColumnName().trim().toUpperCase() + " IS '" + dbc.getComment() + "'");
+                DbMetaDataUtil.executeDdl(dataSource, COMMENT_ON_KEY + tableName + "\"." + dbc.getColumnName().trim().toUpperCase() + IS_KEY + dbc.getComment() + "'");
             }
         }
     }
@@ -284,7 +290,7 @@ public class DdlOracle {
     }
 
     public void dropTableColumn(DataSource dataSource, String tableName, String columnName) throws Exception {
-        DbMetaDataUtil.executeDdl(dataSource, "ALTER TABLE \"" + tableName + "\" DROP COLUMN " + columnName);
+        DbMetaDataUtil.executeDdl(dataSource, ALTER_TABLE_KEY + tableName + "\" DROP COLUMN " + columnName);
     }
 
     public void renameTable(DataSource dataSource, String tableNameOld, String tableNameNew) throws Exception {

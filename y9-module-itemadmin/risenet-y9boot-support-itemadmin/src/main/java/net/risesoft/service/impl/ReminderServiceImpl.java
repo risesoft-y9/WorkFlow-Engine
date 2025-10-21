@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Reminder;
 import net.risesoft.id.IdType;
@@ -95,7 +96,7 @@ public class ReminderServiceImpl implements ReminderService {
     @Override
     public Y9Page<ReminderModel> pageByProcessInstanceId(String processInstanceId, int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<Reminder> pageList = reminderRepository.findByProcInstId(processInstanceId, pageable);
         List<Reminder> reminderList = pageList.getContent();
@@ -134,7 +135,7 @@ public class ReminderServiceImpl implements ReminderService {
     public Y9Page<ReminderModel> pageBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId,
         int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         List<String> taskIds = new ArrayList<>();
@@ -176,7 +177,7 @@ public class ReminderServiceImpl implements ReminderService {
     @Override
     public Y9Page<ReminderModel> pageByTaskId(String taskId, int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         Page<Reminder> pageList = reminderRepository.findByTaskId(taskId, pageable);
         List<Reminder> reminderList = pageList.getContent();
