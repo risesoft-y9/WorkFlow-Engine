@@ -8,6 +8,7 @@ public class ItemConsts {
     public static final String NUMBER_KEY = "number";
     public static final String TITLE_KEY = "title";
     public static final String CREATEDATE_KEY = "createDate";
+    public static final String UPDATETIME_KEY = "updateTime";
     public static final String WORDSIZE_KEY = "wordSize";
     public static final String DEPARTMENT_KEY = "department";
     public static final String DEPARTMENT_D_KEY = "Department";
@@ -48,6 +49,7 @@ public class ItemConsts {
     public static final String ITEMID_KEY = "itemId";
     public static final String FIELDLIST_KEY = "fieldlist";
     public static final String EXISTPOSITION_KEY = "existPosition";
+    public static final String EXISTDEPARTMENT_KEY = "existDepartment";
     public static final String ISFORWARDING_KEY = "isForwarding";
     public static final String MENUNAME_KEY = "menuName";
     public static final String MENU_KEY = "menuKey";
@@ -55,6 +57,12 @@ public class ItemConsts {
     public static final String SUBPROCESSNUM_KEY = "subProcessNum";
     public static final String ROUTETOTASKID_KEY = "routeToTaskId";
     public static final String TABINDEX_KEY = "tabIndex";
+    public static final String BANJIAN_KEY = "banjian";
+    public static final String ITEMADMIN_KEY = "itemAdmin";
+    public static final String EDITTYPE_KEY = "edittype";
+    public static final String DOUBLE_UP_KEY = "DOUBLE";
+    public static final String FLOAT_UP_KEY = "FLOAT";
+    public static final String TIMESTAMP_UP_KEY = "TIMESTAMP";
     /** 自由流办件processDefineKey */
     public static String freeFlowKey = "ziyouliucheng";
     /** 所有事项ID */

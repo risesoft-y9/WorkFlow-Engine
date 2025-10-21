@@ -220,7 +220,7 @@ public class EntrustServiceImpl implements EntrustService {
                 if (null != itemTemp) {
                     entrust.setItemName(itemTemp.getName());
                 } else {
-                    entrust.setItemName("事项已删除");
+                    entrust.setItemName("事项不存在");
                 }
             }
             /**
@@ -270,7 +270,7 @@ public class EntrustServiceImpl implements EntrustService {
                 if (null != itemTemp) {
                     entrust.setItemName(itemTemp.getName());
                 } else {
-                    entrust.setItemName("事项已删除");
+                    entrust.setItemName("当前对应的事项不存在");
                 }
             }
             /**
@@ -320,7 +320,7 @@ public class EntrustServiceImpl implements EntrustService {
                 if (null != itemTemp) {
                     entrust.setItemName(itemTemp.getName());
                 } else {
-                    entrust.setItemName("事项已删除");
+                    entrust.setItemName("不存在此事项");
                 }
             }
             /**
