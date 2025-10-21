@@ -210,32 +210,41 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     @Override
+    @SuppressWarnings("java:S2077")
     public Map<String, Object> getData(String itemId, String processSerialNumber) {
         Map<String, Object> retMap = new HashMap<>(16);
         try {
             Item item = itemService.findById(itemId);
+            if (item == null) {
+                LOGGER.warn("未找到ID为{}的事项", itemId);
+                return retMap;
+            }
             String processDefineKey = item.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition =
-                repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey)
-                    .getData();
+            Y9Result<ProcessDefinitionModel> processDefinitionResult =
+                repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey);
+            if (!processDefinitionResult.isSuccess() || processDefinitionResult.getData() == null) {
+                LOGGER.warn("未找到事项{}对应的工作流定义", itemId);
+                return retMap;
+            }
+            ProcessDefinitionModel processDefinition = processDefinitionResult.getData();
             List<Y9FormItemBind> formList =
                 y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
-            formList.forEach(bind -> {
+            for (Y9FormItemBind bind : formList) {
                 String formId = bind.getFormId();
                 List<String> tableNameList = y9FormRepository.findBindTableName(formId);
-                tableNameList.forEach(tableName -> {
+                for (String tableName : tableNameList) {
                     Y9Table y9Table = y9TableService.findByTableName(tableName);
-                    if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN)) {
-                        List<Map<String, Object>> list = jdbcTemplate.queryForList(
-                            "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", processSerialNumber);
+                    if (y9Table != null && y9Table.getTableType().equals(ItemTableTypeEnum.MAIN)) {
+                        String sql = "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?";
+                        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, processSerialNumber);
                         if (!list.isEmpty()) {
                             retMap.putAll(list.get(0));
                         }
                     }
-                });
-            });
+                }
+            }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取表单数据失败，itemId: {}, processSerialNumber: {}", itemId, processSerialNumber, e);
         }
         return retMap;
     }
@@ -671,7 +680,6 @@ public class FormDataServiceImpl implements FormDataService {
             map.put(ItemConsts.VALUE_KEY, formId);
             listMap.add(map);
             for (String columnName : mapFormJsonData.keySet()) {
-                // 根据数据库表名获取列名
                 map = new HashMap<>(16);
                 map.put("name", columnName);
                 map.put(ItemConsts.VALUE_KEY, mapFormJsonData.get(columnName));

@@ -2,7 +2,6 @@ package net.risesoft.api;
 
 import java.lang.reflect.Field;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 
@@ -17,6 +16,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.worklist.ItemAllApi;
 import net.risesoft.consts.ItemConsts;
@@ -40,6 +41,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @author qinman
  * @date 2024/12/19
  */
+@Slf4j
 @RestController
 @RequestMapping(value = "/services/rest/itemAll", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemAllApiImpl implements ItemAllApi {
@@ -97,16 +99,7 @@ public class ItemAllApiImpl implements ItemAllApi {
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         Page<ActRuDetail> ardPage =
             actRuDetailService.pageBySystemNameAndAssignee(systemName, userId, rows, page, sort);
-        List<ActRuDetail> ardList = ardPage.getContent();
-        ActRuDetailModel actRuDetailModel;
-        List<ActRuDetailModel> modelList = new ArrayList<>();
-        for (ActRuDetail actRuDetail : ardList) {
-            actRuDetailModel = new ActRuDetailModel();
-            Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
-            modelList.add(actRuDetailModel);
-        }
-
-        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
+        return convertToY9Page(ardPage, page);
     }
 
     @Override
@@ -115,15 +108,20 @@ public class ItemAllApiImpl implements ItemAllApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemName(systemName, rows, page, sort);
+        return convertToY9Page(ardPage, page);
+    }
+
+    /**
+     * 将 Page<ActRuDetail> 转换为 Y9Page<ActRuDetailModel>
+     */
+    private Y9Page<ActRuDetailModel> convertToY9Page(Page<ActRuDetail> ardPage, int page) {
         List<ActRuDetail> ardList = ardPage.getContent();
-        ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();
         for (ActRuDetail actRuDetail : ardList) {
-            actRuDetailModel = new ActRuDetailModel();
+            ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
             Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
             modelList.add(actRuDetailModel);
         }
-
         return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
     }
 
@@ -147,44 +145,16 @@ public class ItemAllApiImpl implements ItemAllApi {
         if (isEmpty) {
             ardPage = actRuDetailService.pageByAssigneeAndStatus(userId, ActRuDetailStatusEnum.TODO, rows, page, sort);
         } else {
-            String systemNameSql = "",
-                processParamSql = "LEFT JOIN FF_PROCESS_PARAM F ON T.PROCESSSERIALNUMBER = F.PROCESSSERIALNUMBER ";
-            StringBuilder sql1 = new StringBuilder();
-            Object object = queryParamModel;
-            Class queryParamModelClazz = object.getClass();
-            Field[] fields = queryParamModelClazz.getDeclaredFields();
-            for (Field f : fields) {
-                f.setAccessible(true);
-                if ("serialVersionUID".equals(f.getName()) || "page".equals(f.getName())
-                    || "rows".equals(f.getName())) {
-                    continue;
-                }
-                Object fieldValue;
-                try {
-                    fieldValue = f.get(object);
-                    if (null != fieldValue) {
-                        if ("systemName".equals(f.getName())) {
-                            systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
-                                : "AND T.SYSTEMNAME = '" + fieldValue + "' ";
-                        } else {
-                            sql1.append("AND INSTR(F.")
-                                .append(f.getName().toUpperCase())
-                                .append(",'")
-                                .append(fieldValue)
-                                .append("') > 0 ");
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            String orderBy = "T.CREATETIME DESC";
-            String sql = COMMON_SQL + processParamSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1
-                + systemNameSql + " AND T.ASSIGNEE = ? ORDER BY " + orderBy;
+            String processParamSql = "LEFT JOIN FF_PROCESS_PARAM F ON T.PROCESSSERIALNUMBER = F.PROCESSSERIALNUMBER ";
+            StringBuilder whereSql = new StringBuilder();
+            List<Object> params = new ArrayList<>();
+            params.add(userId);
+            buildQueryConditions(queryParamModel, whereSql, params);
+            String sql = COMMON_SQL + processParamSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + whereSql
+                + " AND T.ASSIGNEE = ? ORDER BY T.CREATETIME DESC";
             String countSql = "SELECT COUNT(T.ID) FROM FF_ACT_RU_DETAIL T " + processParamSql
-                + " WHERE T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1 + systemNameSql;
-            Object[] args = new Object[1];
-            args[0] = userId;
+                + " WHERE T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + whereSql;
+            Object[] args = params.toArray();
             ItemPage<ActRuDetailModel> ardModelPage = itemPageService.page(sql, args,
                 new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
             return Y9Page.success(page, ardModelPage.getTotalpages(), ardModelPage.getTotal(), ardModelPage.getRows());
@@ -198,6 +168,36 @@ public class ItemAllApiImpl implements ItemAllApi {
             modelList.add(actRuDetailModel);
         }
         return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
+    }
+
+    /**
+     * 构建查询条件
+     */
+    private void buildQueryConditions(QueryParamModel queryParamModel, StringBuilder whereSql, List<Object> params) {
+        Class<?> queryParamModelClazz = queryParamModel.getClass();
+        Field[] fields = queryParamModelClazz.getDeclaredFields();
+        for (Field f : fields) {
+            f.setAccessible(true);
+            if ("serialVersionUID".equals(f.getName()) || "page".equals(f.getName()) || "rows".equals(f.getName())) {
+                continue;
+            }
+            try {
+                Object fieldValue = f.get(queryParamModel);
+                if (null != fieldValue) {
+                    if ("systemName".equals(f.getName())) {
+                        if (StringUtils.isNotBlank(queryParamModel.getSystemName())) {
+                            whereSql.append("AND T.SYSTEMNAME = ? ");
+                            params.add(fieldValue);
+                        }
+                    } else {
+                        whereSql.append("AND INSTR(F.").append(f.getName().toUpperCase()).append(",?) > 0 ");
+                        params.add(fieldValue);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("构建查询条件异常", e);
+            }
+        }
     }
 
     public boolean checkObjAllFieldsIsNull(Object object) {
@@ -270,7 +270,7 @@ public class ItemAllApiImpl implements ItemAllApi {
                 + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         String countSql =
             "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER () OVER ( PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC ) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ?" + whereSql
+                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? " + whereSql
                 + assigneeNameWhereSql + " ) A WHERE A.RS_NUM = 1) ALIAS";
         Object[] args = {systemName};
         ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
@@ -279,6 +279,7 @@ public class ItemAllApiImpl implements ItemAllApi {
             itemPage.getRows());
     }
 
+    @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr) {
@@ -294,10 +295,11 @@ public class ItemAllApiImpl implements ItemAllApi {
                 + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName};
         List<ActRuDetailModel> content =
-            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+            jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class), args);
         return Y9Result.success(content);
     }
 
+    @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String systemName,
@@ -318,26 +320,30 @@ public class ItemAllApiImpl implements ItemAllApi {
             + " ORDER BY T.CREATETIME DESC";
         Object[] args = {userId, systemName};
         List<ActRuDetailModel> content =
-            jdbcTemplate.query(sql, args, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+            jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class), args);
         return Y9Result.success(content);
     }
 
+    @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String[] processSerialNumbers) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        StringBuilder sb = new StringBuilder();
-        Arrays.stream(processSerialNumbers).forEach(processSerialNumber -> {
-            if (StringUtils.isBlank(sb.toString())) {
-                sb.append("'").append(processSerialNumber).append("'");
-            } else {
-                sb.append(",'").append(processSerialNumber).append("'");
+        if (processSerialNumbers == null || processSerialNumbers.length == 0) {
+            return Y9Result.success(new ArrayList<>());
+        }
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < processSerialNumbers.length; i++) {
+            if (i > 0) {
+                placeholders.append(",");
             }
-        });
+            placeholders.append("?");
+        }
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.PROCESSSERIALNUMBER IN ("
-                + sb + ") ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
-        List<ActRuDetailModel> content = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+                + placeholders + ") ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+        List<ActRuDetailModel> content = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class),
+            (Object[])processSerialNumbers);
         return Y9Result.success(content);
     }
 }

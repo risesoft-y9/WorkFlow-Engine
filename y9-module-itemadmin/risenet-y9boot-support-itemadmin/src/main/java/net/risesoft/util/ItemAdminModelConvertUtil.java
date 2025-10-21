@@ -3,12 +3,14 @@ package net.risesoft.util;
 import java.util.ArrayList;
 import java.util.List;
 
+import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.entity.SpeakInfo;
 import net.risesoft.entity.entrust.EntrustHistory;
 import net.risesoft.model.itemadmin.EntrustHistoryModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
+import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -48,4 +50,13 @@ public class ItemAdminModelConvertUtil {
         return siModelList;
     }
 
+    public static List<ActRuDetailModel> convertActRuDetailsToModels(List<ActRuDetail> actRuDetails) {
+        List<ActRuDetailModel> modelList = new ArrayList<>();
+        for (ActRuDetail actRuDetail : actRuDetails) {
+            ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
+            Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
+            modelList.add(actRuDetailModel);
+        }
+        return modelList;
+    }
 }
