@@ -31,7 +31,7 @@ import net.sf.sevenzipjbinding.simple.ISimpleInArchiveItem;
 
 @Component
 public class CompressFileReader {
-    private static final String fileDir = ConfigConstants.getFileDir();
+    private static final String FILE_DIR = ConfigConstants.getFileDir();
     private final FileHandlerService fileHandlerService;
 
     public CompressFileReader(FileHandlerService fileHandlerService) {
@@ -43,11 +43,11 @@ public class CompressFileReader {
         List<String> imgUrls = new ArrayList<>();
         String baseUrl = BaseUrlFilter.getBaseUrl();
         String packagePath = "_";
-        String folderName = filePath.replace(fileDir, ""); // 修复压缩包 多重目录获取路径错误
+        String folderName = filePath.replace(FILE_DIR, ""); // 修复压缩包 多重目录获取路径错误
         if (fileAttribute.isCompressFile()) {
             folderName = "_decompression" + folderName;
         }
-        Path folderPath = Paths.get(fileDir, folderName + packagePath);
+        Path folderPath = Paths.get(FILE_DIR, folderName + packagePath);
         Files.createDirectories(folderPath);
 
         try (RandomAccessFile randomAccessFile = new RandomAccessFile(filePath, "r");

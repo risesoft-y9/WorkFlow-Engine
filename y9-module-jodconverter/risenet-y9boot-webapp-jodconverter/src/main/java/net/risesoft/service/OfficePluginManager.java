@@ -35,17 +35,14 @@ import net.risesoft.utils.LocalOfficeUtils;
 @Slf4j
 public class OfficePluginManager {
 
+    private static final String SOFFICE_BIN = "soffice.bin";
     private LocalOfficeManager officeManager;
-
     @Value("${office.plugin.server.ports:2001,2002}")
     private String serverPorts;
-
     @Value("${office.plugin.task.timeout:5m}")
     private String timeOut;
-
     @Value("${office.plugin.task.taskexecutiontimeout:5m}")
     private String taskExecutionTimeout;
-
     @Value("${office.plugin.task.maxtasksperprocess:5}")
     private int maxTasksPerProcess;
 
@@ -95,12 +92,12 @@ public class OfficePluginManager {
                     baos.write(b);
                 }
                 String s = baos.toString();
-                Runtime.getRuntime().exec("taskkill /im " + "soffice.bin" + " /f");
-                if (s.contains("soffice.bin")) {
+                Runtime.getRuntime().exec("taskkill /im " + SOFFICE_BIN + " /f");
+                if (s.contains(SOFFICE_BIN)) {
                     flag = true;
                 }
             } else if (OSUtils.IS_OS_MAC || OSUtils.IS_OS_MAC_OSX) {
-                Process p = Runtime.getRuntime().exec(new String[] {"sh", "-c", "ps -ef | grep " + "soffice.bin"});
+                Process p = Runtime.getRuntime().exec(new String[] {"sh", "-c", "ps -ef | grep " + SOFFICE_BIN});
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 InputStream os = p.getInputStream();
                 byte[] b = new byte[256];
@@ -108,14 +105,14 @@ public class OfficePluginManager {
                     baos.write(b);
                 }
                 String s = baos.toString();
-                if (StringUtils.ordinalIndexOf(s, "soffice.bin", 3) > 0) {
-                    String[] cmd = {"sh", "-c", "kill -15 `ps -ef|grep " + "soffice.bin" + "|awk 'NR==1{print $2}'`"};
+                if (StringUtils.ordinalIndexOf(s, SOFFICE_BIN, 3) > 0) {
+                    String[] cmd = {"sh", "-c", "kill -15 `ps -ef|grep " + SOFFICE_BIN + "|awk 'NR==1{print $2}'`"};
                     Runtime.getRuntime().exec(cmd);
                     flag = true;
                 }
             } else {
                 Process p = Runtime.getRuntime()
-                    .exec(new String[] {"sh", "-c", "ps -ef | grep " + "soffice.bin" + " |grep -v grep | wc -l"});
+                    .exec(new String[] {"sh", "-c", "ps -ef | grep " + SOFFICE_BIN + " |grep -v grep | wc -l"});
                 ByteArrayOutputStream baos = new ByteArrayOutputStream();
                 InputStream os = p.getInputStream();
                 byte[] b = new byte[256];

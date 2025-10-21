@@ -196,6 +196,8 @@ public class FileHandlerService implements InitializingBean {
                         TiffOptions.setVectorRasterizationOptions(cadRasterizationOptions);
                         TiffOptions.setInterruptionToken(source.getToken());
                         break;
+                    default:
+                        break;
                 }
                 Callable<String> call = () -> {
                     try (OutputStream stream = new FileOutputStream(outputFile)) {
@@ -208,6 +210,8 @@ public class FileHandlerService implements InitializingBean {
                                 break;
                             case "tif":
                                 cadImage.save(stream, TiffOptions);
+                                break;
+                            default:
                                 break;
                         }
                     } catch (IOException e) {
@@ -477,7 +481,7 @@ public class FileHandlerService implements InitializingBean {
         String pdfFolder = pdfFilePath.substring(0, pdfFilePath.length() - 4);
         String urlPrefix;
         try {
-            urlPrefix = baseUrl + URLEncoder.encode(pdfFolder, uriEncoding).replaceAll("\\+", "%20");
+            urlPrefix = baseUrl + URLEncoder.encode(pdfFolder, uriEncoding).replace("+", "%20");
         } catch (UnsupportedEncodingException e) {
             LOGGER.error("UnsupportedEncodingException", e);
             urlPrefix = baseUrl + pdfFolder;
