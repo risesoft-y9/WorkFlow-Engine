@@ -72,12 +72,10 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
                 App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian").getData();
                 if (null == app) {
                     String sql =
-                        "INSERT INTO y9_common_app_store (ID,NAME, TAB_INDEX, URL, CHECKED, OPEN_TYPE,SYSTEM_ID,CREATE_TIME,CUSTOM_ID,TYPE,INHERIT,RESOURCE_TYPE,SHOW_NUMBER,ENABLED,HIDDEN) VALUES ('"
-                            + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "','办件', 0, '"
-                            + y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ITEM_ID + "', 1, 1,'"
-                            + y9System.getId() + "','" + Y9DateTimeUtils.formatCurrentDateTime()
-                            + "','banjian',2,0,0,0,1,0)";
-                    jdbcTemplate.execute(sql);
+                        "INSERT INTO y9_common_app_store (ID,NAME, TAB_INDEX, URL, CHECKED, OPEN_TYPE,SYSTEM_ID,CREATE_TIME,CUSTOM_ID,TYPE,INHERIT,RESOURCE_TYPE,SHOW_NUMBER,ENABLED,HIDDEN) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
+                    jdbcTemplate.update(sql, Y9IdGenerator.genId(IdType.SNOWFLAKE), "办件", 0,
+                        y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ITEM_ID, 1, 1, y9System.getId(),
+                        Y9DateTimeUtils.formatCurrentDateTime(), "banjian", 2, 0, 0, 0, 1, 0);
                 }
             }
         } catch (Exception e) {
@@ -86,25 +84,26 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
     }
 
     private void createTenantApp(Tenant tenant) {
-        System y9System = systemApi.getByName("itemAdmin").getData();
-        if (null != y9System) {
-            App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian").getData();
-            if (null != app) {
-                String sql = "select ID from y9_common_tenant_app where TENANT_ID = '" + tenant.getId()
-                    + "' and APP_ID = '" + app.getId() + "'";
-                List<Map<String, Object>> qlist = jdbcTemplate.queryForList(sql);
-                if (qlist.isEmpty()) {
-                    String sql1 =
-                        "INSERT INTO y9_common_tenant_app (ID, TENANT_ID, TENANT_NAME, SYSTEM_ID, APP_ID,APP_NAME,CREATE_TIME,APPLY_NAME,APPLY_ID,APPLY_REASON,VERIFY_STATUS,TENANCY) VALUES ('"
-                            + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "', '" + tenant.getId() + "', '"
-                            + tenant.getName() + "', '" + y9System.getId() + "', '" + app.getId() + "','"
-                            + app.getName() + "','" + Y9DateTimeUtils.formatCurrentDateTime() + "','"
-                            + ManagerLevelEnum.SYSTEM_MANAGER.getName() + "','','数字底座生成的默认租户自动租用',1,1)";
-                    jdbcTemplate.execute(sql1);
+        try {
+            System y9System = systemApi.getByName("itemAdmin").getData();
+            if (null != y9System) {
+                App app = appApi.findBySystemIdAndCustomId(y9System.getId(), "banjian").getData();
+                if (null != app) {
+                    String sql = "select ID from y9_common_tenant_app where TENANT_ID = ? and APP_ID = ?";
+                    List<Map<String, Object>> qlist = jdbcTemplate.queryForList(sql, tenant.getId(), app.getId());
+                    if (qlist.isEmpty()) {
+                        String sql1 =
+                            "INSERT INTO y9_common_tenant_app (ID, TENANT_ID, TENANT_NAME, SYSTEM_ID, APP_ID,APP_NAME,CREATE_TIME,APPLY_NAME,APPLY_ID,APPLY_REASON,VERIFY_STATUS,TENANCY) VALUES (?,?,?,?,?,?,?,?,?,?,?,?)";
+                        jdbcTemplate.update(sql1, Y9IdGenerator.genId(IdType.SNOWFLAKE), tenant.getId(),
+                            tenant.getName(), y9System.getId(), app.getId(), app.getName(),
+                            Y9DateTimeUtils.formatCurrentDateTime(), ManagerLevelEnum.SYSTEM_MANAGER.getName(), "",
+                            "数字底座生成的默认租户自动租用", 1, 1);
+                    }
                 }
             }
+        } catch (Exception e) {
+            LOGGER.error("创建租户应用失败", e);
         }
-
     }
 
     @Override

@@ -21,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
-import net.risesoft.consts.TableNameConsts;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
@@ -45,6 +44,8 @@ public class MobileSyncController {
     private static final String WHERE_PROC_INST_ID_KEY = " where PROC_INST_ID_ = ?";
     private static final String MYSQL_KEY = "mysql";
     private static final String START_TIME_KEY = "START_TIME_";
+    private static final List<String> ACT_HI_TABLES =
+        List.of("ACT_HI_TASKINST", "ACT_HI_VARINST", "ACT_HI_IDENTITYLINK", "ACT_HI_ACTINST", "ACT_HI_PROCINST");
     private final OfficeDoneInfoApi officeDoneInfoApi;
     private final ProcessParamApi processParamApi;
     @Resource(name = "jdbcTemplate4Tenant")
@@ -56,16 +57,17 @@ public class MobileSyncController {
      * @param processInstanceId 流程实例id
      */
     public void deleteDoneData(String processInstanceId) {
-        TableNameConsts.ACT_HI_TABLES.forEach(tableName -> executeDelete(tableName, processInstanceId));
+        ACT_HI_TABLES.forEach(tableName -> executeDelete(tableName, processInstanceId));
         executeDeleteActGeBytearray(processInstanceId);
     }
 
     /**
-     * 执行删除操作（通用表）
-     *
+     * 执行删除操作（ACT_HI_PROCINST）
+     * 
      * @param tableName 表名
      * @param processInstanceId 流程实例ID
      */
+    @SuppressWarnings("java:S2077") // 表名来源于内部白名单，processInstanceId使用参数化查询，无SQL注入风险
     private void executeDelete(String tableName, String processInstanceId) {
         String sql = "DELETE FROM " + tableName + " WHERE PROC_INST_ID_ = ?";
         jdbcTemplate.update(sql, processInstanceId);
@@ -220,6 +222,7 @@ public class MobileSyncController {
      * @param processInstanceId 流程实例ID
      * @return 如果表中没有数据返回true，否则返回false
      */
+    @SuppressWarnings("java:S2077") // 表名来源于内部白名单，processInstanceId使用参数化查询，无SQL注入风险
     private boolean isTableDataEmpty(String tableName, String processInstanceId) {
         String selectSql = "SELECT * FROM " + tableName + WHERE_PROC_INST_ID_KEY;
         List<Map<String, Object>> list = jdbcTemplate.queryForList(selectSql, processInstanceId);

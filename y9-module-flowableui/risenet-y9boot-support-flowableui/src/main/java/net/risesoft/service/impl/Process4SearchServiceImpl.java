@@ -73,9 +73,8 @@ public class Process4SearchServiceImpl implements Process4SearchService {
                 officeDoneInfo.setBureauId(processParam.getBureauIds());
                 officeDoneInfo.setEndTime(null);
                 // 处理参与人
-                String sql =
-                    "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
-                List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
+                String sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = ?";
+                List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql, processInstanceId);
                 String allUserId = "";
                 String deptIds = "";
                 for (Map<String, Object> m : list3) {
@@ -149,9 +148,8 @@ public class Process4SearchServiceImpl implements Process4SearchService {
                 officeDoneInfo.setBureauId(processParam.getBureauIds());
                 officeDoneInfo.setEndTime(null);
                 // 处理参与人
-                String sql =
-                    "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = '" + processInstanceId + "'";
-                List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
+                String sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = ?";
+                List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql, processInstanceId);
                 String allUserId = "";
                 String deptIds = "";
                 for (Map<String, Object> m : list3) {

@@ -71,41 +71,66 @@ public class Task4ListenerServiceImpl implements Task4ListenerService {
         String tenantId = (String)variables.get("tenantId");
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        /*
-         * "ACT_HI_TASKINST"的SCOPE_TYPE_字段记录岗位/人员名称，历程显示该字段名称，避免岗位换人或人员删除历程显示问题
-         * ACT_HI_ACTINST的TENANT_ID_字段记录岗位/人员名称，历程显示该字段名称，避免岗位换人或人员删除历程显示问题
-         */
         String orgUnitName = "";
         try {
             if (StringUtils.isNotBlank(task.getAssignee())) {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, task.getAssignee()).getData();
                 orgUnitName = orgUnit != null ? orgUnit.getName() : "";
-                String updateSql = "UPDATE ACT_HI_TASKINST T SET T.SCOPE_TYPE_ = '" + orgUnitName + "' WHERE T.ID_= '"
-                    + task.getId() + "'";
-                jdbcTemplate.execute(updateSql);
-
-                String updateSql0 = "UPDATE ACT_HI_ACTINST T SET T.TENANT_ID_ = '" + orgUnitName
-                    + "' WHERE T.TASK_ID_= '" + task.getId() + "'";
-                jdbcTemplate.execute(updateSql0);
+                updateTaskInstScopeType(task.getId(), orgUnitName);
+                updateActInstTenantId(task.getId(), orgUnitName);
             }
         } catch (Exception e) {
-            final Writer msgResult = getWriter();
-            final PrintWriter print = getPrintWriter(msgResult);
-            extracted(e, print);
-            String msg = getMsg(msgResult);
-            String time = Y9DateTimeUtils.formatCurrentDateTime();
-            ErrorLogModel errorLogModel = new ErrorLogModel();
-            errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLogModel.setCreateTime(time);
-            errorLogModel.setErrorFlag("update orgUnitName");
-            errorLogModel.setErrorType(ErrorLogModel.ERROR_TASK);
-            errorLogModel.setExtendField("更新SCOPE_TYPE_,TENANT_ID_字段失败:任务key【" + task.getTaskDefinitionKey()
-                + "】,orgUnitName【" + orgUnitName + "】");
-            errorLogModel.setProcessInstanceId(task.getProcessInstanceId());
-            errorLogModel.setTaskId(task.getId());
-            errorLogModel.setText(msg);
-            errorLogModel.setUpdateTime(time);
-            errorLogApi.saveErrorLog(tenantId, errorLogModel);
+            handleTaskDeleteException(e, task, orgUnitName, tenantId);
         }
+    }
+
+    /**
+     * 更新ACT_HI_TASKINST表的SCOPE_TYPE_字段，记录岗位/人员名称，历程显示该字段名称，避免岗位换人或人员删除历程显示问题
+     *
+     * @param taskId 任务ID
+     * @param orgUnitName 组织单元名称
+     */
+    private void updateTaskInstScopeType(String taskId, String orgUnitName) {
+        String updateSql = "UPDATE ACT_HI_TASKINST T SET T.SCOPE_TYPE_ = ? WHERE T.ID_= ?";
+        jdbcTemplate.update(updateSql, orgUnitName, taskId);
+    }
+
+    /**
+     * 更新ACT_HI_ACTINST表的TENANT_ID_字段，记录岗位/人员名称，历程显示该字段名称，避免岗位换人或人员删除历程显示问题
+     *
+     * @param taskId 任务ID
+     * @param orgUnitName 组织单元名称
+     */
+    private void updateActInstTenantId(String taskId, String orgUnitName) {
+        String updateSql = "UPDATE ACT_HI_ACTINST T SET T.TENANT_ID_ = ? WHERE T.TASK_ID_= ?";
+        jdbcTemplate.update(updateSql, orgUnitName, taskId);
+    }
+
+    /**
+     * 处理任务删除监听器异常
+     *
+     * @param e 异常对象
+     * @param task 委托任务
+     * @param orgUnitName 组织单元名称
+     * @param tenantId 租户ID
+     */
+    private void handleTaskDeleteException(Exception e, DelegateTask task, String orgUnitName, String tenantId) {
+        final Writer msgResult = getWriter();
+        final PrintWriter print = getPrintWriter(msgResult);
+        extracted(e, print);
+        String msg = getMsg(msgResult);
+        String time = Y9DateTimeUtils.formatCurrentDateTime();
+        ErrorLogModel errorLogModel = new ErrorLogModel();
+        errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        errorLogModel.setCreateTime(time);
+        errorLogModel.setErrorFlag("update orgUnitName");
+        errorLogModel.setErrorType(ErrorLogModel.ERROR_TASK);
+        errorLogModel.setExtendField(
+            "更新SCOPE_TYPE_,TENANT_ID_字段失败:任务key【" + task.getTaskDefinitionKey() + "】,orgUnitName【" + orgUnitName + "】");
+        errorLogModel.setProcessInstanceId(task.getProcessInstanceId());
+        errorLogModel.setTaskId(task.getId());
+        errorLogModel.setText(msg);
+        errorLogModel.setUpdateTime(time);
+        errorLogApi.saveErrorLog(tenantId, errorLogModel);
     }
 }

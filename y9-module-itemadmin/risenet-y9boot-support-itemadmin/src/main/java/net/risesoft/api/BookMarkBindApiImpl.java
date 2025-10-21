@@ -4,7 +4,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -32,7 +31,8 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
     private final JdbcTemplate jdbcTemplate;
     private final BookMarkBindService bookMarkBindService;
 
-    public BookMarkBindApiImpl(@Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
+    public BookMarkBindApiImpl(
+        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
         BookMarkBindService bookMarkBindService) {
         this.jdbcTemplate = jdbcTemplate;
         this.bookMarkBindService = bookMarkBindService;
@@ -47,6 +47,7 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
      * @return {@code Y9Result<Map < String, Object>>} 通用请求返回对象 - data 是书签对应的值
      * @since 9.6.6
      */
+    @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<Map<String, Object>> getBookMarkData(@RequestParam String tenantId,
         @RequestParam String wordTemplateId, @RequestParam String processSerialNumber) {
@@ -55,16 +56,16 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
         List<BookMarkBind> bookMarkBindList = bookMarkBindService.listByWordTemplateId(wordTemplateId);
         if (!bookMarkBindList.isEmpty()) {
             String tableName = bookMarkBindList.get(0).getTableName();
-            String columnName = "";
-            for (BookMarkBind boorMark : bookMarkBindList) {
-                if (StringUtils.isBlank(columnName)) {
-                    columnName = boorMark.getColumnName() + " AS " + boorMark.getBookMarkName();
-                } else {
-                    columnName += "," + boorMark.getColumnName() + " AS " + boorMark.getBookMarkName();
+            StringBuilder columnBuilder = new StringBuilder();
+            for (BookMarkBind bookMark : bookMarkBindList) {
+                if (columnBuilder.length() > 0) {
+                    columnBuilder.append(",");
                 }
+                columnBuilder.append(bookMark.getColumnName()).append(" AS ").append(bookMark.getBookMarkName());
             }
-            String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE GUID='" + processSerialNumber + "'";
-            map = jdbcTemplate.queryForMap(sql);
+            String columnName = columnBuilder.toString();
+            String sql = "SELECT " + columnName + " FROM " + tableName + " WHERE GUID=?";
+            map = jdbcTemplate.queryForMap(sql, processSerialNumber);
         }
         return Y9Result.success(map);
     }
