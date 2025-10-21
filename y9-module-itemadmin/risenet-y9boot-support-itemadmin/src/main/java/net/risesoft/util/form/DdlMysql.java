@@ -28,6 +28,10 @@ public class DdlMysql {
 
     private static final String NOT_NULL_KEY = " NOT NULL";
     private static final String COMMENT_KEY = " COMMENT '";
+    private static final String ALTER_TABLE_KEY = "ALTER TABLE ";
+    private static final String VARCHAR_KEY = "VARCHAR";
+    private static final String DECIMAL_KEY = "DECIMAL";
+    private static final String NUMERIC_KEY = "NUMERIC";
 
     @Autowired
     private Y9TableFieldRepository y9TableFieldRepository;
@@ -56,7 +60,7 @@ public class DdlMysql {
 
     private String buildAlterTableDdl(DataSource dataSource, String tableName, DbColumn dbc) throws Exception {
         String dbColumnName = getExistingColumnName(dataSource, tableName, dbc.getColumnName());
-        StringBuilder ddlBuilder = new StringBuilder("ALTER TABLE ").append(tableName);
+        StringBuilder ddlBuilder = new StringBuilder(ALTER_TABLE_KEY).append(tableName);
         // 确定操作类型
         String operation = determineOperation(dbColumnName, dbc);
         ddlBuilder.append(operation).append(dbc.getColumnName()).append(" ");
@@ -94,9 +98,9 @@ public class DdlMysql {
 
     private void appendColumnType(StringBuilder ddlBuilder, DbColumn dbc) {
         String sType = dbc.getTypeName().toUpperCase();
-        if ("CHAR".equals(sType) || "VARCHAR".equals(sType)) {
+        if ("CHAR".equals(sType) || VARCHAR_KEY.equals(sType)) {
             ddlBuilder.append(sType).append("(").append(dbc.getDataLength()).append(")");
-        } else if ("DECIMAL".equals(sType) || "NUMERIC".equals(sType)) {
+        } else if (DECIMAL_KEY.equals(sType) || NUMERIC_KEY.equals(sType)) {
             if (dbc.getDataScale() == null) {
                 ddlBuilder.append(sType).append("(").append(dbc.getDataLength()).append(")");
             } else {
@@ -130,7 +134,7 @@ public class DdlMysql {
         DbColumn[] dbColumnArr = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
             TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
         for (DbColumn dbc : dbColumnArr) {
-            String ddl = "ALTER TABLE " + tableName;
+            String ddl = ALTER_TABLE_KEY + tableName;
             // 字段名称没有改变
             if (dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())) {
                 ddl += " MODIFY COLUMN " + dbc.getColumnName() + " ";
@@ -138,9 +142,9 @@ public class DdlMysql {
                 ddl += " CHANGE COLUMN " + dbc.getColumnNameOld() + " " + dbc.getColumnName() + " ";
             }
             String sType = dbc.getTypeName().toUpperCase();
-            if ("CHAR".equals(sType) || "VARCHAR".equals(sType)) {
+            if ("CHAR".equals(sType) || VARCHAR_KEY.equals(sType)) {
                 ddl += sType + "(" + dbc.getDataLength() + ")";
-            } else if ("DECIMAL".equals(sType) || "NUMERIC".equals(sType)) {
+            } else if (DECIMAL_KEY.equals(sType) || NUMERIC_KEY.equals(sType)) {
                 if (dbc.getDataScale() == null) {
                     ddl += sType + "(" + dbc.getDataLength() + ")";
                 } else {
@@ -176,9 +180,9 @@ public class DdlMysql {
             }
             sb.append(columnName).append(" ");
             String sType = dbc.getTypeName().toUpperCase();
-            if ("CHAR".equals(sType) || "VARCHAR".equals(sType)) {
+            if ("CHAR".equals(sType) || VARCHAR_KEY.equals(sType)) {
                 sb.append(sType).append("(").append(dbc.getDataLength()).append(")");
-            } else if ("DECIMAL".equals(sType) || "NUMERIC".equals(sType)) {
+            } else if (DECIMAL_KEY.equals(sType) || NUMERIC_KEY.equals(sType)) {
                 if (dbc.getDataScale() == null) {
                     sb.append(sType).append("(").append(dbc.getDataLength()).append(")");
                 } else {
@@ -204,10 +208,10 @@ public class DdlMysql {
     }
 
     public void dropTableColumn(DataSource dataSource, String tableName, String columnName) throws Exception {
-        DbMetaDataUtil.executeDdl(dataSource, "ALTER TABLE " + tableName + " DROP COLUMN " + columnName);
+        DbMetaDataUtil.executeDdl(dataSource, ALTER_TABLE_KEY + tableName + " DROP COLUMN " + columnName);
     }
 
     public void renameTable(DataSource dataSource, String tableNameOld, String tableNameNew) throws Exception {
-        DbMetaDataUtil.executeDdl(dataSource, "ALTER TABLE " + tableNameOld + " RENAME " + tableNameNew);
+        DbMetaDataUtil.executeDdl(dataSource, ALTER_TABLE_KEY + tableNameOld + " RENAME " + tableNameNew);
     }
 }

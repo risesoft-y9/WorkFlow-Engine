@@ -28,6 +28,9 @@ import net.risesoft.y9.Y9Context;
 @Slf4j
 public class WebConfig implements WebMvcConfigurer {
 
+    private static final String ONLINEPREVIEW_PATH = "/onlinePreview";
+    private static final String PICTURESPREVIEW_PATH = "/picturesPreview";
+
     @Bean
     @ConditionalOnMissingBean
     public Y9Context y9Context() {
@@ -41,8 +44,9 @@ public class WebConfig implements WebMvcConfigurer {
     public void addResourceHandlers(ResourceHandlerRegistry registry) {
         String filePath = ConfigConstants.getFileDir();
         LOGGER.info("Add resource locations: {}", filePath);
-        registry.addResourceHandler("/**").addResourceLocations("classpath:/META-INF/resources/",
-            "classpath:/resources/", "classpath:/static/", "classpath:/public/", "file:" + filePath);
+        registry.addResourceHandler("/**")
+            .addResourceLocations("classpath:/META-INF/resources/", "classpath:/resources/", "classpath:/static/",
+                "classpath:/public/", "file:" + filePath);
     }
 
     /**
@@ -74,8 +78,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<TrustHostFilter> getTrustHostFilter() {
         Set<String> filterUri = new HashSet<>();
-        filterUri.add("/onlinePreview");
-        filterUri.add("/picturesPreview");
+        filterUri.add(ONLINEPREVIEW_PATH);
+        filterUri.add(PICTURESPREVIEW_PATH);
         filterUri.add("/getCorsFile");
         TrustHostFilter filter = new TrustHostFilter();
         FilterRegistrationBean<TrustHostFilter> registrationBean = new FilterRegistrationBean<>();
@@ -87,8 +91,8 @@ public class WebConfig implements WebMvcConfigurer {
     @Bean
     public FilterRegistrationBean<TrustDirFilter> getTrustDirFilter() {
         Set<String> filterUri = new HashSet<>();
-        filterUri.add("/onlinePreview");
-        filterUri.add("/picturesPreview");
+        filterUri.add(ONLINEPREVIEW_PATH);
+        filterUri.add(PICTURESPREVIEW_PATH);
         filterUri.add("/getCorsFile");
         TrustDirFilter filter = new TrustDirFilter();
         FilterRegistrationBean<TrustDirFilter> registrationBean = new FilterRegistrationBean<>();
@@ -102,8 +106,8 @@ public class WebConfig implements WebMvcConfigurer {
         Set<String> filterUri = new HashSet<>();
         // filterUri.add("/index");
         // filterUri.add("/");
-        // filterUri.add("/onlinePreview");
-        // filterUri.add("/picturesPreview");
+        // filterUri.add(ONLINEPREVIEW_PATH);
+        // filterUri.add(PICTURESPREVIEW_PATH);
         BaseUrlFilter filter = new BaseUrlFilter();
         FilterRegistrationBean<BaseUrlFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(filter);
@@ -126,8 +130,8 @@ public class WebConfig implements WebMvcConfigurer {
         Set<String> filterUri = new HashSet<>();
         filterUri.add("/index");
         filterUri.add("/");
-        filterUri.add("/onlinePreview");
-        filterUri.add("/picturesPreview");
+        filterUri.add(ONLINEPREVIEW_PATH);
+        filterUri.add(PICTURESPREVIEW_PATH);
         AttributeSetFilter filter = new AttributeSetFilter();
         FilterRegistrationBean<AttributeSetFilter> registrationBean = new FilterRegistrationBean<>();
         registrationBean.setFilter(filter);
