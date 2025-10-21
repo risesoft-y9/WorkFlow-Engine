@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.view.ViewType;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -54,13 +55,13 @@ public class ViewTypeServiceImpl implements ViewTypeService {
 
     @Override
     public List<ViewType> listAll() {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
+        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATEDATE_KEY);
         return viewTypeRepository.findAll(sort);
     }
 
     @Override
     public Page<ViewType> pageAll(int page, int rows) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
+        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATEDATE_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return viewTypeRepository.findAll(pageable);
     }
@@ -119,7 +120,7 @@ public class ViewTypeServiceImpl implements ViewTypeService {
 
     @Override
     public Page<ViewType> search(int page, int rows, final String name) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
+        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATEDATE_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return viewTypeRepository.findByNameContaining(name, pageable);
     }

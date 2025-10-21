@@ -77,7 +77,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
         try {
             itemPrintTemplateBindRepository.deleteByItemId(itemId);
         } catch (Exception e) {
-            LOGGER.error("删除绑定信息失败", e);
+            LOGGER.error("删除绑定信息失败，异常：", e);
         }
     }
 
@@ -91,8 +91,8 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
             }
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            LOGGER.error("删除绑定信息失败", e);
-            return Y9Result.failure("删除绑定信息失败");
+            LOGGER.error("删除绑定打印模板信息失败，异常：", e);
+            return Y9Result.failure("删除绑定打印模板信息失败");
         }
     }
 

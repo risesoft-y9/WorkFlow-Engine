@@ -24,6 +24,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.cache.PersonRoleApi;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.PunctuationConsts;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.organword.ItemOrganWordBind;
@@ -130,7 +131,7 @@ public class OrganWordServiceImpl implements OrganWordService {
             OrganWord organWord = this.findByCustom(custom);
             if (null != organWord) {
                 if (1 == common) {
-                    itemId = "common";
+                    itemId = ItemConsts.COMMON_KEY;
                 }
                 OrganWordDetail owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom,
                     characterValue, year, itemId);
@@ -196,7 +197,7 @@ public class OrganWordServiceImpl implements OrganWordService {
             OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
             String deptName = bureau.getName();
             if (1 == common) {
-                itemId = "common";
+                itemId = ItemConsts.COMMON_KEY;
             }
             OrganWordDetail owd =
                 organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, deptName, year, itemId);
@@ -394,7 +395,7 @@ public class OrganWordServiceImpl implements OrganWordService {
             OrganWord organWord = this.findByCustom(custom);
             if (null != organWord) {
                 if (1 == common) {
-                    itemId = "common";
+                    itemId = ItemConsts.COMMON_KEY;
                 }
                 owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year,
                     itemId);
@@ -477,7 +478,7 @@ public class OrganWordServiceImpl implements OrganWordService {
             OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
             String deptName = bureau.getName();
             if (1 == common) {
-                itemId = "common";
+                itemId = ItemConsts.COMMON_KEY;
             }
             OrganWordDetail owd =
                 organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, deptName, year, itemId);
@@ -510,7 +511,7 @@ public class OrganWordServiceImpl implements OrganWordService {
             OrganWord organWord = this.findByCustom(custom);
             if (null != organWord) {
                 if (1 == common) {
-                    itemId = "common";
+                    itemId = ItemConsts.COMMON_KEY;
                 }
                 owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year,
                     itemId);
@@ -820,23 +821,23 @@ public class OrganWordServiceImpl implements OrganWordService {
                 history.setTenantId(tenantId);
                 history.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 organWordUseHistoryService.save(history);
-                retMap.put("success", true);
+                retMap.put(ItemConsts.SUCCESS_KEY, true);
                 retMap.put("msg", "保存编号成功");
             } else {
                 OrganWordUseHistory history =
                     organWordUseHistoryService.findByItemIdAndNumberStrAndCustomAndProcessSerialNumber(itemId,
                         numberString, custom, processSerialNumber);
                 if (null != history) {
-                    retMap.put("success", true);
+                    retMap.put(ItemConsts.SUCCESS_KEY, true);
                     retMap.put("msg", "当前编号已经保存");
                 } else {
-                    retMap.put("success", false);
+                    retMap.put(ItemConsts.SUCCESS_KEY, false);
                     retMap.put("msg", "当前编号已经被占用，请双击编号框重新生成新的编号！");
                 }
             }
         } catch (Exception e) {
             e.printStackTrace();
-            retMap.put("success", false);
+            retMap.put(ItemConsts.SUCCESS_KEY, false);
             retMap.put("msg", "出现异常，保存编号失败");
         }
         return retMap;
