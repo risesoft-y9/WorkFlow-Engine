@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.interfaceinfo.InterfaceInfo;
 import net.risesoft.entity.interfaceinfo.InterfaceRequestParams;
@@ -60,17 +61,17 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @Override
     public List<InterfaceInfo> findAll() {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         return interfaceInfoRepository.findAll(sort);
     }
 
     @Override
     public List<ItemInterfaceBind> listInterfaceById(String id) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         List<ItemInterfaceBind> list =
             itemInterfaceBindRepository.findAll((Specification<ItemInterfaceBind>)(root, query, builder) -> {
                 List<Predicate> list1 = new ArrayList<>();
-                list1.add(builder.equal(root.get("interfaceId"), id));
+                list1.add(builder.equal(root.get(ItemConsts.INTERFACEID_KEY), id));
                 Predicate[] predicates = new Predicate[list1.size()];
                 list1.toArray(predicates);
                 return builder.and(predicates);
@@ -84,7 +85,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @Override
     public List<InterfaceInfo> listInterfaces(String name, String type, String address) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         return interfaceInfoRepository.findAll((Specification<InterfaceInfo>)(root, query, builder) -> {
             List<Predicate> list = new ArrayList<>();
             if (StringUtils.isNotBlank(name)) {
@@ -104,7 +105,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @Override
     public List<InterfaceRequestParams> listRequestParams(String name, String type, String id) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         return interfaceRequestParamsRepository
             .findAll((Specification<InterfaceRequestParams>)(root, query, builder) -> {
                 List<Predicate> list = new ArrayList<>();
@@ -112,7 +113,7 @@ public class InterfaceServiceImpl implements InterfaceService {
                     list.add(builder.like(root.get("parameterName"), "%" + name + "%"));
                 }
                 if (StringUtils.isNotBlank(id)) {
-                    list.add(builder.equal(root.get("interfaceId"), id));
+                    list.add(builder.equal(root.get(ItemConsts.INTERFACEID_KEY), id));
                 }
                 if (StringUtils.isNotBlank(type)) {
                     list.add(builder.equal(root.get("parameterType"), type));
@@ -125,7 +126,7 @@ public class InterfaceServiceImpl implements InterfaceService {
 
     @Override
     public List<InterfaceResponseParams> listResponseParamsByNameAndId(String name, String id) {
-        Sort sort = Sort.by(Sort.Direction.DESC, "createTime");
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         return interfaceResponseParamsRepository
             .findAll((Specification<InterfaceResponseParams>)(root, query, builder) -> {
                 List<Predicate> list = new ArrayList<>();
@@ -133,7 +134,7 @@ public class InterfaceServiceImpl implements InterfaceService {
                     list.add(builder.like(root.get("parameterName"), "%" + name + "%"));
                 }
                 if (StringUtils.isNotBlank(id)) {
-                    list.add(builder.equal(root.get("interfaceId"), id));
+                    list.add(builder.equal(root.get(ItemConsts.INTERFACEID_KEY), id));
                 }
                 Predicate[] predicates = new Predicate[list.size()];
                 list.toArray(predicates);
