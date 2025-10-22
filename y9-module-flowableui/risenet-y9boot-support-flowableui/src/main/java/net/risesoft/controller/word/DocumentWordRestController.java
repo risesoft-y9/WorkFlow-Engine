@@ -64,39 +64,9 @@ public class DocumentWordRestController {
     @FlowableLog(operationName = "下载正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @GetMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            DocumentWordModel model = documentWordApi.findWordById(tenantId, id).getData();
-            String title = model.getFileName();
-            title = ToolUtil.replaceSpecialStr(title);
-            String userAgent = request.getHeader("User-Agent");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
-                response.reset();
-                response.setHeader(CONTENT_DIS_KEY, ATTACHMENT_KEY + title + "\"");
-                response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=GBK");
-                response.setContentType(APPLICATION_OCT_KEY);
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
-                        + "?=";
-                } else {
-                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader(CONTENT_DIS_KEY, ATTACHMENT_KEY + title + "\"");
-                response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=UTF-8");
-                response.setContentType(APPLICATION_OCT_KEY);
-            }
-            OutputStream out = response.getOutputStream();
-            y9FileStoreService.downloadFileToOutputStream(model.getFileStoreId(), out);
-            out.flush();
-            out.close();
-        } catch (Exception e) {
-            LOGGER.error("下载正文异常", e);
-        }
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        DocumentWordModel model = documentWordApi.findWordById(tenantId, id).getData();
+        downloadCommon(model, response, request);
     }
 
     /**
@@ -108,9 +78,13 @@ public class DocumentWordRestController {
     @GetMapping(value = "/downloadHis")
     public void downloadHis(@RequestParam @NotBlank String id, HttpServletResponse response,
         HttpServletRequest request) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            DocumentWordModel model = documentWordApi.findHisWordById(tenantId, id).getData();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        DocumentWordModel model = documentWordApi.findHisWordById(tenantId, id).getData();
+        downloadCommon(model, response, request);
+    }
+
+    private void downloadCommon(DocumentWordModel model, HttpServletResponse response, HttpServletRequest request) {
+        try (OutputStream out = response.getOutputStream()) {
             String title = model.getFileName();
             title = ToolUtil.replaceSpecialStr(title);
             String userAgent = request.getHeader("User-Agent");
@@ -134,10 +108,7 @@ public class DocumentWordRestController {
                 response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=UTF-8");
                 response.setContentType(APPLICATION_OCT_KEY);
             }
-            OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(model.getFileStoreId(), out);
-            out.flush();
-            out.close();
         } catch (Exception e) {
             LOGGER.error("下载正文异常", e);
         }
