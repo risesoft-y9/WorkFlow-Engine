@@ -15,16 +15,12 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDoingApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
@@ -50,10 +46,8 @@ public class DoingServiceImpl implements DoingService {
     private final ProcessDoingApi processDoingApi;
     private final TaskApi taskApi;
     private final ItemApi itemApi;
-    private final OrgUnitApi orgUnitApi;
     private final ProcessParamApi processParamApi;
     private final HandleFormDataService handleFormDataService;
-    private final IdentityApi identityApi;
     private final UtilService utilService;
 
     /**
@@ -149,7 +143,7 @@ public class DoingServiceImpl implements DoingService {
                         piModel.getEndTime() != null ? Y9DateTimeUtils.formatDateTimeMinute(endTime) : "";
                     mapTemp.put(TASKCREATETIME_KEY, taskCreateTime);
                 }
-                mapTemp.put(TASKASSIGNEE_KEY, this.getAssigneeNames(taskList));
+                mapTemp.put(TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList));
             }
             // 设置公共数据
             utilService.setPublicData(mapTemp, processInstanceId, taskList, ItemBoxTypeEnum.DOING);
@@ -217,124 +211,6 @@ public class DoingServiceImpl implements DoingService {
             LOGGER.error("获取在办件列表失败", e);
             return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
         }
-    }
-
-    /**
-     * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
-     *
-     * @param taskList 任务列表
-     * @return 办理人名称字符串
-     */
-    private String getAssigneeNames(List<TaskModel> taskList) {
-        if (taskList.isEmpty()) {
-            return "";
-        }
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<String> assigneeNameList = new ArrayList<>();
-        for (TaskModel task : taskList) {
-            String name = getTaskAssigneeName(task, tenantId);
-            if (name != null && !name.isEmpty()) {
-                assigneeNameList.add(name);
-            }
-        }
-        return formatAssigneeNames(assigneeNameList, taskList.size());
-    }
-
-    /**
-     * 获取任务办理人名称
-     *
-     * @param task 任务对象
-     * @param tenantId 租户ID
-     * @return 办理人名称
-     */
-    private String getTaskAssigneeName(TaskModel task, String tenantId) {
-        if (StringUtils.isNotBlank(task.getAssignee())) {
-            return getAssignedTaskAssigneeName(task, tenantId);
-        } else {
-            return getUnassignedTaskAssigneeNames(task, tenantId);
-        }
-    }
-
-    /**
-     * 格式化办理人名称列表
-     *
-     * @param assigneeNames 办理人名称列表
-     * @param totalCount 总任务数
-     * @return 格式化后的字符串
-     */
-    private String formatAssigneeNames(List<String> assigneeNames, int totalCount) {
-        if (assigneeNames.isEmpty()) {
-            return "";
-        }
-        int maxDisplayCount = 5;
-        StringBuilder result = new StringBuilder();
-        // 如果只有一个办理人，直接返回
-        if (assigneeNames.size() == 1) {
-            return assigneeNames.get(0);
-        }
-        // 如果办理人数不超过最大显示数，全部显示
-        if (assigneeNames.size() <= maxDisplayCount) {
-            return String.join("、", assigneeNames);
-        }
-        // 超过最大显示数，截取并添加"等"提示
-        for (int i = 0; i < maxDisplayCount; i++) {
-            if (result.length() > 0) {
-                result.append("、");
-            }
-            result.append(assigneeNames.get(i));
-        }
-        result.append("等，共").append(totalCount).append("人");
-        return result.toString();
-    }
-
-    /**
-     * 处理已分配的任务，获取办理人名称
-     *
-     * @param task 任务对象
-     * @param tenantId 租户ID
-     * @return 办理人名称，如果获取失败返回null
-     */
-    private String getAssignedTaskAssigneeName(TaskModel task, String tenantId) {
-        String assignee = task.getAssignee();
-        if (StringUtils.isNotBlank(assignee)) {
-            OrgUnit personTemp = this.orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-            if (personTemp != null) {
-                return personTemp.getName();
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 处理未分配的任务，获取候选办理人名称
-     *
-     * @param task 任务对象
-     * @param tenantId 租户ID
-     * @return 候选办理人名称列表
-     */
-    private String getUnassignedTaskAssigneeNames(TaskModel task, String tenantId) {
-        StringBuilder assigneeNames = new StringBuilder();
-        List<IdentityLinkModel> identityLinks =
-            this.identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
-
-        if (!identityLinks.isEmpty()) {
-            int maxDisplayCount = Math.min(identityLinks.size(), 5);
-            for (int j = 0; j < maxDisplayCount; j++) {
-                IdentityLinkModel identityLink = identityLinks.get(j);
-                String assigneeId = identityLink.getUserId();
-                OrgUnit ownerUser =
-                    this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
-                if (assigneeNames.length() > 0) {
-                    assigneeNames.append("、");
-                }
-                assigneeNames.append(ownerUser.getName());
-            }
-
-            if (identityLinks.size() > 5) {
-                assigneeNames.append("等，共").append(identityLinks.size()).append("人");
-            }
-        }
-        return assigneeNames.toString();
     }
 
     /**
