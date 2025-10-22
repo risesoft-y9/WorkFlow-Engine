@@ -31,8 +31,11 @@ public class FlowableUiConsts {
     public static final String ACTRUDETAILID_KEY = "actRuDetailId";
     public static final String EXECUTIONID_KEY = "executionId";
     public static final String SYSTEMCNNAME_KEY = "systemCNName";
+    public static final String SYSTEMNAME_KEY = "systemName";
+    public static final String PARALLELDOING_KEY = "parallelDoing";
     public static final String BUREAUNAME_KEY = "bureauName";
     public static final String COMPLETER_KEY = "completer";
+    public static final String COUNT_KEY = "count";
 
     /**
      * 私有构造函数，防止实例化

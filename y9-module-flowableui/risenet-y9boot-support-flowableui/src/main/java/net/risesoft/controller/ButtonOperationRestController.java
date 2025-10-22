@@ -518,7 +518,7 @@ public class ButtonOperationRestController {
                 OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
                 map.put("user", employee != null ? employee.getName() : "未知用户");
             } catch (Exception e) {
-                LOGGER.warn("获取用户信息失败: {}", user, e);
+                LOGGER.warn("处理普通单实例任务时，获取用户信息失败,异常用户: {}", user, e);
                 map.put("user", "未知用户");
             }
 
@@ -557,7 +557,7 @@ public class ButtonOperationRestController {
                 OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskInfo.users.get(i)).getData();
                 map.put("user", employee != null ? employee.getName() : "未知用户");
             } catch (Exception e) {
-                LOGGER.warn("获取用户信息失败: {}", taskInfo.users.get(i), e);
+                LOGGER.warn("处理串行实例任务时，获取用户信息失败: {}", taskInfo.users.get(i), e);
                 map.put("user", "未知用户");
             }
 
@@ -635,7 +635,7 @@ public class ButtonOperationRestController {
                 map.put("user", hai.getScopeType());
             }
         } catch (Exception e) {
-            LOGGER.warn("获取用户信息失败: {}", hai.getAssignee(), e);
+            LOGGER.warn("填充并行任务用户信息时，获取用户信息失败: {}", hai.getAssignee(), e);
             map.put("user", "未知用户");
         }
     }

@@ -15,20 +15,32 @@ import org.apache.pdfbox.pdmodel.graphics.state.PDExtendedGraphicsState;
 public class NotResourceCache extends DefaultResourceCache {
 
     @Override
-    public void put(COSObject indirect, PDColorSpace colorSpace) {}
+    public void put(COSObject indirect, PDColorSpace colorSpace) {
+        // 空实现以避免缓存颜色空间对象，防止因 SoftReference 导致的内存无法回收问题
+    }
 
     @Override
-    public void put(COSObject indirect, PDExtendedGraphicsState extGState) {}
+    public void put(COSObject indirect, PDExtendedGraphicsState extGState) {
+        // 空实现以避免缓存图形状态对象，防止因 SoftReference 导致的内存无法回收问题
+    }
 
     @Override
-    public void put(COSObject indirect, PDShading shading) {}
+    public void put(COSObject indirect, PDShading shading) {
+        // 空实现以避免缓存阴影对象，防止因 SoftReference 导致的内存无法回收问题
+    }
 
     @Override
-    public void put(COSObject indirect, PDAbstractPattern pattern) {}
+    public void put(COSObject indirect, PDAbstractPattern pattern) {
+        // 空实现以避免缓存图案对象，防止因 SoftReference 导致的内存无法回收问题
+    }
 
     @Override
-    public void put(COSObject indirect, PDPropertyList propertyList) {}
+    public void put(COSObject indirect, PDPropertyList propertyList) {
+        // 空实现以避免缓存属性列表对象，防止因 SoftReference 导致的内存无法回收问题
+    }
 
     @Override
-    public void put(COSObject indirect, PDXObject xobject) {}
+    public void put(COSObject indirect, PDXObject xobject) {
+        // 空实现以避免缓存XObject对象，防止因 SoftReference 导致的内存无法回收问题
+    }
 }

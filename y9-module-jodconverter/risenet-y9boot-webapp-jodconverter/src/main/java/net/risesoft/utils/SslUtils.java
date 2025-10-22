@@ -44,10 +44,18 @@ public class SslUtils {
         }
 
         @Override
-        public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {}
+        public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+            // 空实现 - 用于创建信任所有服务器证书的TrustManager
+            // 在开发/测试环境中绕过SSL证书验证时使用
+            // 注意：在生产环境中不应使用此实现，存在安全风险
+        }
 
         @Override
-        public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {}
+        public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+            // 空实现 - 用于创建信任所有客户端证书的TrustManager
+            // 在开发/测试环境中绕过SSL证书验证时使用
+            // 注意：在生产环境中不应使用此实现，存在安全风险
+        }
     }
 
 }

@@ -35,7 +35,7 @@ import io.mola.galimatias.GalimatiasParseException;
 @Slf4j
 public class DownloadUtils {
 
-    private static final String fileDir = ConfigConstants.getFileDir();
+    private static final String FILEDIR = ConfigConstants.getFileDir();
     private static final String URL_PARAM_FTP_USERNAME = "ftp.username";
     private static final String URL_PARAM_FTP_PASSWORD = "ftp.password";
     private static final String URL_PARAM_FTP_CONTROL_ENCODING = "ftp.control.encoding";
@@ -53,7 +53,7 @@ public class DownloadUtils {
         String urlStr = null;
         try {
             SslUtils.ignoreSsl();
-            urlStr = fileAttribute.getUrl().replaceAll("\\+", "%20").replaceAll(" ", "%20");
+            urlStr = fileAttribute.getUrl().replace("+", "%20").replace(" ", "%20");
         } catch (Exception e) {
             LOGGER.error("忽略SSL证书异常:", e);
         }
@@ -74,7 +74,7 @@ public class DownloadUtils {
             return response;
         }
         if (fileAttribute.isCompressFile()) { // 压缩包文件 直接赋予路径 不予下载
-            response.setContent(fileDir + fileName);
+            response.setContent(FILEDIR + fileName);
             response.setMsg(fileName);
             return response;
         }
@@ -158,10 +158,10 @@ public class DownloadUtils {
             fileName = fileName.replace(fileName.substring(fileName.lastIndexOf(".") + 1), type);
         }
 
-        String realPath = fileDir + fileName;
-        File dirFile = new File(fileDir);
+        String realPath = FILEDIR + fileName;
+        File dirFile = new File(FILEDIR);
         if (!dirFile.exists() && !dirFile.mkdirs()) {
-            LOGGER.error("创建目录【{}】失败,可能是权限不够，请检查", fileDir);
+            LOGGER.error("创建目录【{}】失败,可能是权限不够，请检查", FILEDIR);
         }
         return realPath;
     }
