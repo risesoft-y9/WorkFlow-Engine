@@ -46,7 +46,7 @@ import net.risesoft.model.itemadmin.Y9WordModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Person;
-import net.risesoft.util.ToolUtil;
+import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -117,15 +117,11 @@ public class FormNTKOController {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        Y9WordHistoryModel map = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
-        String fileStoreId = map.getFileStoreId();
-        ServletOutputStream out;
-        try {
-            setResponse(response, request, processSerialNumber, fileType);
-            out = response.getOutputStream();
+        Y9WordHistoryModel model = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        String fileStoreId = model.getFileStoreId();
+        try (ServletOutputStream out = response.getOutputStream()) {
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber) + fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
-            out.flush();
-            out.close();
         } catch (Exception e) {
             LOGGER.error("下载历史正文失败", e);
         }
@@ -147,7 +143,7 @@ public class FormNTKOController {
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             initializeUserContext(tenantId, userId);
-            setResponse(response, request, processSerialNumber, fileType);
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber) + fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(id, out);
             out.flush();
@@ -160,38 +156,11 @@ public class FormNTKOController {
     /**
      * 设置文件下载响应头
      */
-    private void setResponse(HttpServletResponse response, HttpServletRequest request, String processSerialNumber,
-        String fileType) {
-        try {
-            // 获取流程参数模型
-            ProcessParamModel processModel =
-                processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
-            String title = StringUtils.isNotBlank(processModel.getTitle()) ? processModel.getTitle() : "正文";
-            title = ToolUtil.replaceSpecialStr(title);
-            // 编码文件名
-            String encodedTitle = encodeFileName(title, request.getHeader("User-Agent"));
-            // 重置响应
-            response.reset();
-            // 设置通用响应头
-            response.setContentType(OCTET_STREAM);
-            // 根据浏览器类型设置不同的编码方式
-            String userAgent = request.getHeader("User-Agent");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                // IE浏览器特殊处理
-                response.setHeader("Content-disposition", "attachment; filename=\"" + encodedTitle + fileType + "\"");
-                response.setHeader(CONTENT_TYPE, "text/html;charset=GBK");
-            } else {
-                // 其他浏览器
-                response.setHeader("Content-disposition", "attachment; filename=\"" + encodedTitle + fileType + "\"");
-                response.setHeader(CONTENT_TYPE, "text/html;charset=UTF-8");
-            }
-        } catch (Exception e) {
-            LOGGER.warn("设置响应头失败，使用默认设置", e);
-            // 出现异常时使用默认设置
-            response.reset();
-            response.setContentType(OCTET_STREAM);
-            response.setHeader(CONTENT_TYPE, "text/html;charset=UTF-8");
-        }
+    private String getTitle(String processSerialNumber) {
+        // 获取流程参数模型
+        ProcessParamModel processModel =
+            processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        return StringUtils.isNotBlank(processModel.getTitle()) ? processModel.getTitle() : "正文";
     }
 
     /**
@@ -213,7 +182,7 @@ public class FormNTKOController {
             Y9LoginUserHolder.setPerson(person);
             Y9WordModel word = y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String fileStoreId = word.getFileStoreId();
-            setResponse(response, request, processSerialNumber, fileType);
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber) + fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
             out.flush();
@@ -241,7 +210,7 @@ public class FormNTKOController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            setResponse(response, request, processSerialNumber, fileType);
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber) + fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(id, out);
             out.flush();
@@ -682,13 +651,13 @@ public class FormNTKOController {
             // 初始化用户上下文
             initializeUserContext(tenantId, userId);
             // 处理文件名
-            String fileName = extractFileName(file.getOriginalFilename());
+            String fileName = Y9DownloadUtil.extractFileName(file.getOriginalFilename());
             if (StringUtils.isBlank(fileName)) {
                 return createErrorResult("文件名不能为空");
             }
             // 验证文件类型
             String fileType = getFileExtension(fileName);
-            if (!isValidFileType(fileType)) {
+            if (Y9DownloadUtil.isValidFileType(fileType)) {
                 return createErrorResult("请上传后缀名为.doc,.docx,.pdf,.tif文件");
             }
             // 获取文档标题
@@ -742,24 +711,6 @@ public class FormNTKOController {
     }
 
     /**
-     * 提取文件名（去除路径）
-     */
-    private String extractFileName(String originalFileName) {
-        if (StringUtils.isBlank(originalFileName)) {
-            return null;
-        }
-        String fileName = originalFileName;
-        // 处理不同操作系统的路径分隔符
-        if (fileName.contains(File.separator)) {
-            fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
-        }
-        if (fileName.contains("\\")) {
-            fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
-        }
-        return fileName;
-    }
-
-    /**
      * 获取文件扩展名
      */
     private String getFileExtension(String fileName) {
@@ -771,14 +722,6 @@ public class FormNTKOController {
             return null;
         }
         return fileName.substring(lastDotIndex).toLowerCase();
-    }
-
-    /**
-     * 验证文件类型是否有效
-     */
-    private boolean isValidFileType(String fileType) {
-        return fileType != null && (fileType.equals(".doc") || fileType.equals(".docx") || fileType.equals(".pdf")
-            || fileType.equals(".tif"));
     }
 
     /**

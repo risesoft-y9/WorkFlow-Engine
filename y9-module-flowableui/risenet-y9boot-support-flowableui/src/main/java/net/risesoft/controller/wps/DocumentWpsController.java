@@ -4,7 +4,6 @@ import java.io.File;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -30,7 +29,6 @@ import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.documentword.DocumentWpsApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
@@ -40,8 +38,8 @@ import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.service.impl.TaoHongServiceImpl;
-import net.risesoft.util.ToolUtil;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -78,7 +76,7 @@ public class DocumentWpsController {
     /**
      * 云文档路径
      */
-    private static final String YUN_WPS_BASE_PATH = "http://yun.test.cn";
+    private static final String YUN_WPS_BASE_PATH = "https://yun.test.cn";
     /**
      * 应用id
      */
@@ -110,7 +108,7 @@ public class DocumentWpsController {
     /**
      * 云文档下载路径
      */
-    private static final String YUN_WPS_DOWNLOAD_PATH = "http://yun.test.cn/minio";
+    private static final String YUN_WPS_DOWNLOAD_PATH = "https://yun.test.cn/minio";
     /**
      * 卷标识
      */
@@ -122,11 +120,10 @@ public class DocumentWpsController {
     /**
      * 云文档路径
      */
-    private static final String YUN_WPS_BASE_PATH_GRAPH = "http://yun.test.cn/graph";
-    private static final String DOCURL_KEY = "docUrl";
+    private static final String YUN_WPS_BASE_PATH_GRAPH = "https://yun.test.cn/graph";
+    private static final String DOC_URL_KEY = "docUrl";
     private static final String DOCX_KEY = ".docx";
     private final DraftApi draftApi;
-    private final OrgUnitApi orgUnitApi;
     private final ProcessParamApi processParamApi;
     private final DocumentWpsApi documentWpsApi;
     private final Y9FileStoreService y9FileStoreService;
@@ -140,6 +137,23 @@ public class DocumentWpsController {
     }
 
     /**
+     * 创建并初始化WebOffice编辑器URL请求对象
+     *
+     * @param user 用户信息
+     * @return WebofficeEditorGetUrlRequest 对象
+     */
+    private WebofficeEditorGetUrlRequest createWebofficeEditorRequest(User user) {
+        WebofficeEditorGetUrlRequest request = new WebofficeEditorGetUrlRequest();
+        request.setWrite("1");
+        request.setExtUserid(user.getId());
+        request.setExtUsername(user.getDisplayName());
+        request.setWatermarkText("");
+        request.setAccountSync("1");
+        request.setHistory("0");
+        return request;
+    }
+
+    /**
      * 下载正文
      *
      * @param id 正文id
@@ -149,29 +163,7 @@ public class DocumentWpsController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             DocumentWpsModel documentWps = documentWpsApi.findById(tenantId, id).getData();
-            String title = documentWps.getFileName();
-            title = ToolUtil.replaceSpecialStr(title);
-            String userAgent = request.getHeader("User-Agent");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + "\"");
-                response.setHeader("Content-type", "text/html;charset=GBK");
-                response.setContentType("application/octet-stream");
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
-                        + "?=";
-                } else {
-                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader("Content-disposition", "attachment; filename=\"" + title + "\"");
-                response.setHeader("Content-type", "text/html;charset=UTF-8");
-                response.setContentType("application/octet-stream");
-            }
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request, documentWps.getFileName());
             OutputStream out = response.getOutputStream();
             HttpURLConnection conn;
             try {
@@ -243,157 +235,274 @@ public class DocumentWpsController {
     public String showWord(@RequestParam String processSerialNumber, @RequestParam String processInstanceId,
         @RequestParam String itembox, Model model) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
-        String documentTitle;
+        String userId = person.getPersonId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            // String destDocx = "C:\\Users\\10858\\Desktop\\套红.docx";
-            // String content = "C:\\Users\\10858\\Desktop\\工作流相关文档.docx";
-            // TaoHongService taoHongService = new TaoHongService();
-            // TaoHongService.word2RedDocument(content, destDocx);
-
-            String wpsSid = new YunApi(YUN_WPS_BASE_PATH).yunLogin(YUN_WPS_USER_NAME, YUN_WPS_USER_PD);
-            LOGGER.debug("wpsSid:{}", wpsSid);
-
-            UserOrgApi apiInstance0 = new UserOrgApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET,
-                YUN_WPS_REDIRECT_URI, YUN_WPS_USER_SCOPE, wpsSid);
-            User result0 = apiInstance0.userGetProfile();
-            LOGGER.debug("User:{}", result0);
-
-            AppFilesApi apiInstance =
-                new AppFilesApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
-
+            // 初始化模型属性
+            initializeModelAttributes(model, itembox, processInstanceId, processSerialNumber, userId, tenantId);
+            // 登录WPS并获取用户信息
+            String wpsSid = loginWpsAndGetSid();
+            User user = getUserProfile(wpsSid);
+            // 获取WPS API实例
+            AppFilesApi apiInstance = getWpsApiInstance();
+            // 查找现有文档
             DocumentWpsModel documentWps =
                 documentWpsApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            model.addAttribute(DOCURL_KEY, "");
-            model.addAttribute("itembox", itembox);
-            model.addAttribute("hasContent", "0");
-            model.addAttribute("processInstanceId", processInstanceId);
-            model.addAttribute("processSerialNumber", processSerialNumber);
-            model.addAttribute("id", "");
-            model.addAttribute("userId", userId);
-            model.addAttribute("tenantId", tenantId);
-            if (documentWps != null) {// 获取文件编辑地址
-                if ((itembox.equals(ItemBoxTypeEnum.TODO.getValue())
-                    || itembox.equals(ItemBoxTypeEnum.DRAFT.getValue()))) {
-                    String documentChallenge = ""; // String | 文档口令
-                    String expiration = ""; // String | 过期时间
-                    Boolean printable = true; // Boolean | 内容可打印
-                    Boolean copyable = true; // Boolean | 内容可复制
-                    String watermarkText = ""; // String | 水印文本
-                    String watermarkImageUrl = ""; // String | 水印图片
-                    String extCompanyid = ""; // String | 外部公司ID
-                    String extUserid = ""; // String | 外部用户ID
-                    try {
-                        FilePreview result = apiInstance.appGetFilePreview(documentWps.getVolumeId(),
-                            documentWps.getFileId(), documentChallenge, expiration, printable, copyable, watermarkText,
-                            watermarkImageUrl, wpsSid, extCompanyid, extUserid);
-                        LOGGER.debug("获取wps文件预览信息result:{}", result);
-                        model.addAttribute(DOCURL_KEY, result.getUrl());
-                    } catch (Exception e) {
-                        LOGGER.warn("Exception when calling AppFilesApi#appGetFileContent", e);
-                    }
-                } else {
-                    WebofficeEditorGetUrlRequest body1 = new WebofficeEditorGetUrlRequest(); // WebofficeEditorGetUrlRequest
-                    // |
-                    body1.setWrite("1");
-                    body1.setExtUserid(result0.getId());
-                    body1.setExtUsername(result0.getDisplayName());
-                    body1.setWatermarkText("");
-                    body1.setAccountSync("1");
-                    body1.setHistory("0");
-                    try {
-                        FileEditor result1 =
-                            apiInstance.appGetFileEditor(documentWps.getVolumeId(), documentWps.getFileId(), body1);
-                        String docUrl = result1.getUrl();
-                        model.addAttribute(DOCURL_KEY, docUrl);
-                    } catch (ApiException e) {
-                        LOGGER.warn("Exception when calling AppFilesApi#appGetFileEditor", e);
-                    }
-                }
-                model.addAttribute("hasContent", documentWps.getHasContent());
-                try {
-                    FileContent result =
-                        apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
-                    LOGGER.debug("获取wps文件内容，结果result:{}", result);
-                    model.addAttribute("downloadUrl", YUN_WPS_DOWNLOAD_PATH + result.getUrl());
-                } catch (Exception e) {
-                    LOGGER.warn("Exception when calling AppFilesApi#appGetFileContent", e);
-                }
-                model.addAttribute("id", documentWps.getId());
-            } else {// 创建空文件，并获取文件编辑地址
-                if (StringUtils.isBlank(processInstanceId)) {
-                    DraftModel model1 = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    documentTitle = model1.getTitle();
-                } else {
-                    ProcessParamModel processModel =
-                        processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                    documentTitle = processModel.getTitle();
-                    processInstanceId = processModel.getProcessInstanceId();
-                }
-                documentTitle = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
-
-                CreateEmptyRequest body = new CreateEmptyRequest(); // CreateEmptyRequest |
-                body.setFileName(documentTitle + DOCX_KEY);
-                EmptyFile result = apiInstance.appCreateEmpty(VOLUME, ROOT, body);
-                LOGGER.debug("获取空文件结果result:{}", result);
-
-                FilePermissionCreateRequest body0 = new FilePermissionCreateRequest(); // FilePermissionCreateRequest |
-                Grantee grantedTo = new Grantee();
-                Identity identity = new Identity();
-                FilePrivileges filePrivileges = new FilePrivileges();
-
-                identity.setId(result0.getId());
-                identity.setDisplayName(result0.getDisplayName());
-
-                grantedTo.setUser(identity);
-                grantedTo.setScope(Scope.ANONYMOUS);
-
-                filePrivileges.add(FilePrivilege.READ);
-                filePrivileges.add(FilePrivilege.UPDATE);
-                filePrivileges.add(FilePrivilege.UPLOAD);
-                filePrivileges.add(FilePrivilege.DOWNLOAD);
-
-                body0.setGrantedTo(grantedTo);
-                body0.setPrivileges(filePrivileges);
-                // FilePermission resultFilePermission =
-                // apiInstance.appCreateFilePermission(result.getVolumeId(), result.getId(),
-                // body0);
-
-                WebofficeEditorGetUrlRequest body1 = new WebofficeEditorGetUrlRequest(); // WebofficeEditorGetUrlRequest
-                // |
-                body1.setWrite("1");
-                body1.setExtUserid(result0.getId());
-                body1.setExtUsername(result0.getDisplayName());
-                body1.setWatermarkText("");
-                body1.setAccountSync("1");
-                body1.setHistory("0");
-                FileEditor result1 = apiInstance.appGetFileEditor(result.getVolumeId(), result.getId(), body1);
-                String docUrl = result1.getUrl();
-                model.addAttribute(DOCURL_KEY, docUrl);
-                LOGGER.debug("result1:{}", result1);
-
-                documentWps = new DocumentWpsModel();
-                documentWps.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                documentWps.setFileId(result.getId());
-                documentWps.setFileName(documentTitle + DOCX_KEY);
-                documentWps.setFileType("docx");
-                documentWps.setHasContent("0");
-                documentWps.setIstaohong("0");
-                documentWps.setProcessInstanceId(processInstanceId);
-                documentWps.setProcessSerialNumber(processSerialNumber);
-                documentWps.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
-                documentWps.setTenantId(tenantId);
-                documentWps.setUserId(userId);
-                documentWps.setVolumeId(result.getVolumeId());
-                documentWpsApi.saveDocumentWps(tenantId, documentWps);
-
-                model.addAttribute("id", documentWps.getId());
+            if (documentWps != null) {
+                // 处理已存在的文档
+                handleExistingDocument(documentWps, itembox, apiInstance, user, wpsSid, model);
+            } else {
+                // 创建新文档
+                DocumentWpsModel newDocument = createNewDocument(tenantId, processSerialNumber, processInstanceId,
+                    userId, apiInstance, user, model);
+                model.addAttribute("id", newDocument.getId());
             }
         } catch (Exception e) {
-            model.addAttribute(DOCURL_KEY, "发生异常");
+            model.addAttribute(DOC_URL_KEY, "发生异常");
             LOGGER.error("发生异常", e);
         }
+
         return "intranet/webOfficeWps";
+    }
+
+    /**
+     * 获取文档标题
+     *
+     * @param tenantId 租户ID
+     * @param processSerialNumber 流程编号
+     * @param processInstanceId 流程实例ID
+     * @return 文档标题
+     */
+    private String getDocumentTitle(String tenantId, String processSerialNumber, String processInstanceId) {
+        try {
+            if (StringUtils.isBlank(processInstanceId)) {
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                return model.getTitle();
+            } else {
+                ProcessParamModel processModel =
+                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                return processModel.getTitle();
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取文档标题失败，使用默认标题", e);
+            return "正文";
+        }
+    }
+
+    /**
+     * 处理已存在的WPS文档
+     *
+     * @param documentWps WPS文档模型
+     * @param itembox 文档箱类型
+     * @param apiInstance WPS文件API实例
+     * @param result0 用户信息
+     * @param wpsSid WPS会话ID
+     * @param model Spring Model对象
+     */
+    private void handleExistingDocument(DocumentWpsModel documentWps, String itembox, AppFilesApi apiInstance,
+        User result0, String wpsSid, Model model) {
+        try {
+            if (isPreviewMode(itembox)) {
+                handlePreviewMode(documentWps, apiInstance, wpsSid, model);
+            } else {
+                handleEditMode(documentWps, apiInstance, result0, model);
+            }
+
+            // 公共属性设置
+            model.addAttribute("hasContent", documentWps.getHasContent());
+            model.addAttribute("id", documentWps.getId());
+
+            // 获取下载URL
+            try {
+                FileContent result =
+                    apiInstance.appGetFileContent(documentWps.getVolumeId(), documentWps.getFileId(), null);
+                LOGGER.debug("获取wps文件内容，结果result:{}", result);
+                model.addAttribute("downloadUrl", YUN_WPS_DOWNLOAD_PATH + result.getUrl());
+            } catch (Exception e) {
+                LOGGER.warn("Exception when calling AppFilesApi#appGetFileContent", e);
+            }
+        } catch (Exception e) {
+            LOGGER.error("处理已存在文档异常", e);
+        }
+    }
+
+    /**
+     * 判断是否为预览模式
+     *
+     * @param itembox 文档箱类型
+     * @return 是否为预览模式
+     */
+    private boolean isPreviewMode(String itembox) {
+        return itembox.equals(ItemBoxTypeEnum.TODO.getValue()) || itembox.equals(ItemBoxTypeEnum.DRAFT.getValue());
+    }
+
+    /**
+     * 处理预览模式
+     *
+     * @param documentWps WPS文档模型
+     * @param apiInstance WPS文件API实例
+     * @param wpsSid WPS会话ID
+     * @param model Spring Model对象
+     */
+    private void handlePreviewMode(DocumentWpsModel documentWps, AppFilesApi apiInstance, String wpsSid, Model model) {
+        try {
+            FilePreview result = apiInstance.appGetFilePreview(documentWps.getVolumeId(), documentWps.getFileId(), "",
+                "", true, true, "", "", wpsSid, "", "");
+            LOGGER.debug("获取wps文件预览信息result:{}", result);
+            model.addAttribute(DOC_URL_KEY, result.getUrl());
+        } catch (Exception e) {
+            LOGGER.warn("Exception when calling AppFilesApi#appGetFileContent", e);
+        }
+    }
+
+    /**
+     * 处理编辑模式
+     *
+     * @param documentWps WPS文档模型
+     * @param apiInstance WPS文件API实例
+     * @param result0 用户信息
+     * @param model Spring Model对象
+     */
+    private void handleEditMode(DocumentWpsModel documentWps, AppFilesApi apiInstance, User result0, Model model) {
+        try {
+            WebofficeEditorGetUrlRequest body1 = createWebofficeEditorRequest(result0);
+            FileEditor result1 =
+                apiInstance.appGetFileEditor(documentWps.getVolumeId(), documentWps.getFileId(), body1);
+            String docUrl = result1.getUrl();
+            model.addAttribute(DOC_URL_KEY, docUrl);
+        } catch (ApiException e) {
+            LOGGER.warn("Exception when calling AppFilesApi#appGetFileEditor", e);
+        }
+    }
+
+    /**
+     * 创建新的WPS文档
+     *
+     * @param tenantId 租户ID
+     * @param processSerialNumber 流程编号
+     * @param processInstanceId 流程实例ID
+     * @param userId 用户ID
+     * @param apiInstance WPS文件API实例
+     * @param result0 用户信息
+     * @param model Spring Model对象
+     * @return 创建的文档模型
+     */
+    private DocumentWpsModel createNewDocument(String tenantId, String processSerialNumber, String processInstanceId,
+        String userId, AppFilesApi apiInstance, User result0, Model model) {
+        try {
+            String documentTitle = getDocumentTitle(tenantId, processSerialNumber, processInstanceId);
+            documentTitle = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
+
+            // 创建空文件
+            CreateEmptyRequest body = new CreateEmptyRequest();
+            body.setFileName(documentTitle + DOCX_KEY);
+            EmptyFile result = apiInstance.appCreateEmpty(VOLUME, ROOT, body);
+            LOGGER.debug("获取空文件结果result:{}", result);
+            // 设置文件权限
+            setFilePermissions(result0);
+            // 获取编辑URL
+            WebofficeEditorGetUrlRequest body1 = createWebofficeEditorRequest(result0);
+
+            FileEditor result1 = apiInstance.appGetFileEditor(result.getVolumeId(), result.getId(), body1);
+            String docUrl = result1.getUrl();
+            model.addAttribute(DOC_URL_KEY, docUrl);
+            LOGGER.debug("result1:{}", result1);
+
+            // 保存文档信息
+            DocumentWpsModel documentWps = new DocumentWpsModel();
+            documentWps.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            documentWps.setFileId(result.getId());
+            documentWps.setFileName(documentTitle + DOCX_KEY);
+            documentWps.setFileType("docx");
+            documentWps.setHasContent("0");
+            documentWps.setIstaohong("0");
+            documentWps.setProcessInstanceId(processInstanceId);
+            documentWps.setProcessSerialNumber(processSerialNumber);
+            documentWps.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
+            documentWps.setTenantId(tenantId);
+            documentWps.setUserId(userId);
+            documentWps.setVolumeId(result.getVolumeId());
+
+            documentWpsApi.saveDocumentWps(tenantId, documentWps);
+
+            return documentWps;
+        } catch (Exception e) {
+            LOGGER.error("创建新文档异常", e);
+            throw new RuntimeException("创建新文档失败", e);
+        }
+    }
+
+    /**
+     * 设置文件权限
+     *
+     * @param result0 用户信息
+     */
+    private void setFilePermissions(User result0) {
+        try {
+            FilePermissionCreateRequest body0 = new FilePermissionCreateRequest();
+            Grantee grantedTo = new Grantee();
+            Identity identity = new Identity();
+            FilePrivileges filePrivileges = new FilePrivileges();
+
+            identity.setId(result0.getId());
+            identity.setDisplayName(result0.getDisplayName());
+
+            grantedTo.setUser(identity);
+            grantedTo.setScope(Scope.ANONYMOUS);
+            filePrivileges.add(FilePrivilege.READ);
+            filePrivileges.add(FilePrivilege.UPDATE);
+            filePrivileges.add(FilePrivilege.UPLOAD);
+            filePrivileges.add(FilePrivilege.DOWNLOAD);
+
+            body0.setGrantedTo(grantedTo);
+            body0.setPrivileges(filePrivileges);
+            // 注释掉的权限设置代码可以根据需要启用
+            // apiInstance.appCreateFilePermission(result.getVolumeId(), result.getId(), body0);
+        } catch (Exception e) {
+            LOGGER.warn("设置文件权限异常", e);
+        }
+    }
+
+    /**
+     * 初始化模型属性
+     */
+    private void initializeModelAttributes(Model model, String itembox, String processInstanceId,
+        String processSerialNumber, String userId, String tenantId) {
+        model.addAttribute(DOC_URL_KEY, "");
+        model.addAttribute("itembox", itembox);
+        model.addAttribute("hasContent", "0");
+        model.addAttribute("processInstanceId", processInstanceId);
+        model.addAttribute("processSerialNumber", processSerialNumber);
+        model.addAttribute("id", "");
+        model.addAttribute("userId", userId);
+        model.addAttribute("tenantId", tenantId);
+    }
+
+    /**
+     * 登录WPS并获取会话ID
+     */
+    private String loginWpsAndGetSid() throws Exception {
+        String wpsSid = new YunApi(YUN_WPS_BASE_PATH).yunLogin(YUN_WPS_USER_NAME, YUN_WPS_USER_PD);
+        LOGGER.debug("wpsSid:{}", wpsSid);
+        return wpsSid;
+    }
+
+    /**
+     * 获取用户配置信息
+     */
+    private User getUserProfile(String wpsSid) throws Exception {
+        UserOrgApi apiInstance0 = new UserOrgApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET,
+            YUN_WPS_REDIRECT_URI, YUN_WPS_USER_SCOPE, wpsSid);
+        User result0 = apiInstance0.userGetProfile();
+        LOGGER.debug("User:{}", result0);
+        return result0;
+    }
+
+    /**
+     * 获取WPS API实例
+     */
+    private AppFilesApi getWpsApiInstance() {
+        return new AppFilesApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
     }
 
     /**
