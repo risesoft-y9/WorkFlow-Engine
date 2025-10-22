@@ -24,17 +24,23 @@ public class CacheServiceRedisImpl implements CacheService {
     }
 
     @Override
-    public void initPDFCachePool(Integer capacity) {}
+    public void initPDFCachePool(Integer capacity) {
+        // Redis实现使用Redisson的RMapCache，无需预初始化缓存池大小
+    }
 
     @Override
-    public void initIMGCachePool(Integer capacity) {}
+    public void initIMGCachePool(Integer capacity) {
+        // Redis实现使用Redisson的RMapCache，无需预初始化缓存池大小
+    }
 
     @Override
-    public void initPdfImagesCachePool(Integer capacity) {}
+    public void initPdfImagesCachePool(Integer capacity) {
+        // Redis实现使用Redisson的RMapCache，无需预初始化缓存池大小
+    }
 
     @Override
     public void initMediaConvertCachePool(Integer capacity) {
-
+        // Redis实现使用Redisson的RMapCache，无需预初始化缓存池大小
     }
 
     @Override

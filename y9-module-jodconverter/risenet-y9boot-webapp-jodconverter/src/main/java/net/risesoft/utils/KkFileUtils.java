@@ -110,7 +110,7 @@ public class KkFileUtils {
     public static String htmlEscape(String input) {
         if (StringUtils.hasText(input)) {
             // input = input.replaceAll("\\{", "%7B").replaceAll("}", "%7D").replaceAll("\\\\", "%5C");
-            String htmlStr = HtmlUtils.htmlEscape(input, "UTF-8");
+            String htmlStr = HtmlUtils.htmlEscape(input, DEFAULT_FILE_ENCODING);
             // & -> &amp;
             return htmlStr.replace("&amp;", "&");
         }

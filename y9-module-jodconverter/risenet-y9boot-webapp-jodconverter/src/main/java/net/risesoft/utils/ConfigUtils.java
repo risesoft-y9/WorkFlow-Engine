@@ -21,6 +21,7 @@ import net.risesoft.y9.Y9Context;
 @DependsOn("y9Context")
 public class ConfigUtils {
     private static final String MAIN_DIRECTORY_NAME = "jodconverter";
+    private static final String APPLICATION_YML = "application.yml";
 
     public static String getHomePath() {
         String userDir = System.getenv("KKFILEVIEW_BIN_FOLDER");
@@ -88,8 +89,8 @@ public class ConfigUtils {
         }
 
         String separator = java.io.File.separator;
-        LOGGER.info("配置文件路径:::{}{}{}", absolutePath, separator, "application.yml");
-        return absolutePath + separator + "application.yml";
+        LOGGER.info("配置文件路径:::{}{}{}", absolutePath, separator, APPLICATION_YML);
+        return absolutePath + separator + APPLICATION_YML;
     }
 
     public synchronized static void restorePropertiesFromEnvFormat(Properties properties) {
@@ -127,12 +128,12 @@ public class ConfigUtils {
         YamlPropertiesFactoryBean yamlPropertiesFactoryBean = new YamlPropertiesFactoryBean();
 
         // 加载yml配置文件
-        yamlPropertiesFactoryBean.setResources(new ClassPathResource("application.yml"));
+        yamlPropertiesFactoryBean.setResources(new ClassPathResource(APPLICATION_YML));
         // 2:将加载的配置文件交给 YamlPropertiesFactoryBean
 
         if (activeProfiles != null && activeProfiles.length > 0) {
             ClassPathResource[] resources = new ClassPathResource[activeProfiles.length + 1];
-            resources[0] = new ClassPathResource("application.yml");
+            resources[0] = new ClassPathResource(APPLICATION_YML);
             for (int i = 1; i <= activeProfiles.length; i++) {
                 resources[i] = new ClassPathResource("application-" + activeProfiles[i - 1] + ".yml");
             }
