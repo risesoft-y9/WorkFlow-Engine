@@ -244,103 +244,131 @@ public class MobileSyncController {
      *
      * @param tenantId 租户id
      */
-
     @GetMapping(value = "/sync2DataCenter")
     public void sync2DataCenter(String tenantId, HttpServletResponse response) {
         Map<String, Object> resMap = new HashMap<>(16);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            String sql = "SELECT P.PROC_INST_ID_,TO_CHAR(P.START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-                + " TO_CHAR(P.END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_ FROM"
-                + " ACT_HI_PROCINST_2020 P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
-                + " ORDER BY P.END_TIME_ DESC";
+            // 构建查询SQL
+            String sql = buildProcInstQuerySql();
             DataSource dataSource = jdbcTemplate.getDataSource();
             String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (dialectName.equals(MYSQL_KEY)) {
-                sql =
-                    "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,SUBSTRING(P.END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
-                        + " FROM ACT_HI_PROCINST_2020 P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null ORDER BY P.END_TIME_ DESC";
+                sql = buildProcInstQuerySqlForMySQL();
             }
             List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
             LOGGER.info("*********************同步年度办结件至数据中心,共{}条数据***************************", list.size());
-            int i = 0;
+            int failedCount = 0;
             for (Map<String, Object> map : list) {
-                String PROC_INST_ID_;
                 try {
-                    PROC_INST_ID_ = (String)map.get(PROC_INST_ID_KEY);
-                    String PROC_DEF_ID_ = (String)map.get("PROC_DEF_ID_");
-                    String START_TIME_ = (String)map.get(START_TIME_KEY);
-                    String END_TIME_ = (String)map.get("END_TIME_");
-                    ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
-                    OfficeDoneInfoModel officeDoneInfo =
-                        officeDoneInfoApi.findByProcessInstanceId(tenantId, PROC_INST_ID_).getData();
-                    if (officeDoneInfo == null) {
-                        officeDoneInfo = new OfficeDoneInfoModel();
-                        officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    }
-                    if (processParamModel != null) {
-                        officeDoneInfo.setBureauId(StringUtils.isBlank(processParamModel.getBureauIds()) ? ""
-                            : processParamModel.getBureauIds());
-                        officeDoneInfo.setDeptId(
-                            StringUtils.isBlank(processParamModel.getDeptIds()) ? "" : processParamModel.getDeptIds());
-                        officeDoneInfo.setCreatUserId(
-                            StringUtils.isBlank(processParamModel.getStartor()) ? "" : processParamModel.getStartor());
-                        officeDoneInfo.setCreatUserName(StringUtils.isBlank(processParamModel.getStartorName()) ? ""
-                            : processParamModel.getStartorName());
-                        officeDoneInfo.setDocNumber(StringUtils.isBlank(processParamModel.getCustomNumber()) ? ""
-                            : processParamModel.getCustomNumber());
-                        officeDoneInfo.setItemId(
-                            StringUtils.isBlank(processParamModel.getItemId()) ? "" : processParamModel.getItemId());
-                        officeDoneInfo.setItemName(StringUtils.isBlank(processParamModel.getItemName()) ? ""
-                            : processParamModel.getItemName());
-                        officeDoneInfo
-                            .setProcessSerialNumber(StringUtils.isBlank(processParamModel.getProcessSerialNumber()) ? ""
-                                : processParamModel.getProcessSerialNumber());
-                        officeDoneInfo.setSystemCnName(StringUtils.isBlank(processParamModel.getSystemCnName()) ? ""
-                            : processParamModel.getSystemCnName());
-                        officeDoneInfo.setSystemName(StringUtils.isBlank(processParamModel.getSystemName()) ? ""
-                            : processParamModel.getSystemName());
-                        officeDoneInfo.setTitle(
-                            StringUtils.isBlank(processParamModel.getTitle()) ? "" : processParamModel.getTitle());
-                        officeDoneInfo.setUrgency(StringUtils.isBlank(processParamModel.getCustomLevel()) ? ""
-                            : processParamModel.getCustomLevel());
-                        officeDoneInfo.setUserComplete(StringUtils.isBlank(processParamModel.getCompleter()) ? ""
-                            : processParamModel.getCompleter());
-                        officeDoneInfo.setTarget(
-                            StringUtils.isBlank(processParamModel.getTarget()) ? "" : processParamModel.getTarget());
-                    }
-                    // 处理参与人
-                    sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK_2020 i where i.PROC_INST_ID_ = '" + PROC_INST_ID_
-                        + "'";
-                    List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql);
-                    String allUserId = "";
-                    for (Map<String, Object> m : list3) {
-                        String USER_ID_ = (String)m.get("USER_ID_");
-                        if (!allUserId.contains(USER_ID_)) {
-                            allUserId = Y9Util.genCustomStr(allUserId, USER_ID_);
-                        }
-                    }
-                    officeDoneInfo.setAllUserId(allUserId);
-                    officeDoneInfo.setEndTime(END_TIME_);
-                    officeDoneInfo.setProcessDefinitionId(PROC_DEF_ID_);
-                    officeDoneInfo.setProcessDefinitionKey(PROC_DEF_ID_.split(":")[0]);
-                    officeDoneInfo.setProcessInstanceId(PROC_INST_ID_);
-                    officeDoneInfo.setStartTime(START_TIME_);
-                    officeDoneInfo.setTenantId(tenantId);
-                    officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
+                    processProcInstanceData(tenantId, map);
                 } catch (Exception e) {
-                    i = i + 1;
-                    LOGGER.error("同步失败", e);
+                    failedCount++;
+                    LOGGER.error("同步单条数据失败, PROC_INST_ID_: {}", map.get(PROC_INST_ID_KEY), e);
                 }
             }
-            LOGGER.info("********************同步年度办结件至数据中心失败{}条数据***************************", i);
+            LOGGER.info("********************同步年度办结件至数据中心失败{}条数据***************************", failedCount);
             resMap.put("总数", list.size());
-            resMap.put("同步失败", i);
+            resMap.put("同步失败", failedCount);
         } catch (Exception e) {
-            LOGGER.error("同步失败", e);
+            LOGGER.error("同步年度办结件至数据中心失败", e);
+            resMap.put("错误", e.getMessage());
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
+    }
+
+    /**
+     * 构建Oracle/PostgresSQL的查询SQL
+     */
+    private String buildProcInstQuerySql() {
+        return "SELECT P.PROC_INST_ID_,TO_CHAR(P.START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+            + " TO_CHAR(P.END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_ FROM"
+            + " ACT_HI_PROCINST_2020 P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
+            + " ORDER BY P.END_TIME_ DESC";
+    }
+
+    /**
+     * 构建MySQL的查询SQL
+     */
+    private String buildProcInstQuerySqlForMySQL() {
+        return "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
+            + "SUBSTRING(P.END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
+            + " FROM ACT_HI_PROCINST_2020 P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
+            + " ORDER BY P.END_TIME_ DESC";
+    }
+
+    /**
+     * 处理单个流程实例数据
+     */
+    private void processProcInstanceData(String tenantId, Map<String, Object> map) throws Exception {
+        String procInstId = (String)map.get(PROC_INST_ID_KEY);
+        String procDefId = (String)map.get("PROC_DEF_ID_");
+        String startTime = (String)map.get(START_TIME_KEY);
+        String endTime = (String)map.get("END_TIME_");
+        // 获取流程参数和办结信息
+        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, procInstId).getData();
+        OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(tenantId, procInstId).getData();
+        // 初始化办结信息对象
+        if (officeDoneInfo == null) {
+            officeDoneInfo = new OfficeDoneInfoModel();
+            officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        }
+        // 填充办结信息
+        populateOfficeDoneInfo(officeDoneInfo, processParamModel, tenantId, procInstId, procDefId, startTime, endTime);
+        // 处理参与人信息
+        String allUserId = processParticipantUsers(procInstId);
+        officeDoneInfo.setAllUserId(allUserId);
+        // 保存办结信息
+        officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
+    }
+
+    /**
+     * 填充办结信息
+     */
+    private void populateOfficeDoneInfo(OfficeDoneInfoModel officeDoneInfo, ProcessParamModel processParamModel,
+        String tenantId, String procInstId, String procDefId, String startTime, String endTime) {
+        if (processParamModel != null) {
+            officeDoneInfo.setBureauId(StringUtils.defaultString(processParamModel.getBureauIds()));
+            officeDoneInfo.setDeptId(StringUtils.defaultString(processParamModel.getDeptIds()));
+            officeDoneInfo.setCreatUserId(StringUtils.defaultString(processParamModel.getStartor()));
+            officeDoneInfo.setCreatUserName(StringUtils.defaultString(processParamModel.getStartorName()));
+            officeDoneInfo.setDocNumber(StringUtils.defaultString(processParamModel.getCustomNumber()));
+            officeDoneInfo.setItemId(StringUtils.defaultString(processParamModel.getItemId()));
+            officeDoneInfo.setItemName(StringUtils.defaultString(processParamModel.getItemName()));
+            officeDoneInfo
+                .setProcessSerialNumber(StringUtils.defaultString(processParamModel.getProcessSerialNumber()));
+            officeDoneInfo.setSystemCnName(StringUtils.defaultString(processParamModel.getSystemCnName()));
+            officeDoneInfo.setSystemName(StringUtils.defaultString(processParamModel.getSystemName()));
+            officeDoneInfo.setTitle(StringUtils.defaultString(processParamModel.getTitle()));
+            officeDoneInfo.setUrgency(StringUtils.defaultString(processParamModel.getCustomLevel()));
+            officeDoneInfo.setUserComplete(StringUtils.defaultString(processParamModel.getCompleter()));
+            officeDoneInfo.setTarget(StringUtils.defaultString(processParamModel.getTarget()));
+        }
+
+        officeDoneInfo.setEndTime(endTime);
+        officeDoneInfo.setProcessDefinitionId(procDefId);
+        officeDoneInfo.setProcessDefinitionKey(procDefId.split(":")[0]);
+        officeDoneInfo.setProcessInstanceId(procInstId);
+        officeDoneInfo.setStartTime(startTime);
+        officeDoneInfo.setTenantId(tenantId);
+    }
+
+    /**
+     * 处理参与人信息
+     */
+    private String processParticipantUsers(String procInstId) {
+        // 使用参数化查询避免SQL注入
+        String sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK_2020 i where i.PROC_INST_ID_ = ?";
+        List<Map<String, Object>> userList = jdbcTemplate.queryForList(sql, procInstId);
+
+        String allUserId = "";
+        for (Map<String, Object> userMap : userList) {
+            String userId = (String)userMap.get("USER_ID_");
+            if (StringUtils.isNotBlank(userId) && !allUserId.contains(userId)) {
+                allUserId = Y9Util.genCustomStr(allUserId, userId);
+            }
+        }
+        return allUserId;
     }
 
     /**

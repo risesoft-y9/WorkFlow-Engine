@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
@@ -70,6 +69,12 @@ public class FormNTKOController {
     private static final String UTF8LINK_KEY = "=?UTF-8?B?";
     private static final String CONTENT_DIS_KEY = "Content-Disposition";
     private static final String USER_AGENT_KEY = "USER-AGENT";
+    private static final String PARAM_NULL_KEY = "必要参数为空";
+    private static final String FILE_NOT_EXIST_KEY = "文件不存在";
+    private static final String OCTET_STREAM = "application/octet-stream";
+    private static final String CONTENT_TYPE = "Content-type";
+    private static final String SUCCESS_FALSE = "success:false";
+    private static final String SAVE_ERROR = "保存正文信息失败";
     private final Y9FileStoreService y9FileStoreService;
     private final PersonApi personApi;
     private final OrgUnitApi orgUnitApi;
@@ -141,9 +146,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String processSerialNumber, @RequestParam String tenantId,
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
+            initializeUserContext(tenantId, userId);
             setResponse(response, request, processSerialNumber, fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(id, out);
@@ -154,30 +157,40 @@ public class FormNTKOController {
         }
     }
 
+    /**
+     * 设置文件下载响应头
+     */
     private void setResponse(HttpServletResponse response, HttpServletRequest request, String processSerialNumber,
-        String fileType) throws UnsupportedEncodingException {
-        ProcessParamModel processModel =
-            processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
-        String title = StringUtils.isNotBlank(processModel.getTitle()) ? processModel.getTitle() : "正文";
-        title = ToolUtil.replaceSpecialStr(title);
-        String userAgent = request.getHeader("User-Agent");
-        if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-            title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
+        String fileType) {
+        try {
+            // 获取流程参数模型
+            ProcessParamModel processModel =
+                processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+            String title = StringUtils.isNotBlank(processModel.getTitle()) ? processModel.getTitle() : "正文";
+            title = ToolUtil.replaceSpecialStr(title);
+            // 编码文件名
+            String encodedTitle = encodeFileName(title, request.getHeader("User-Agent"));
+            // 重置响应
             response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-            response.setHeader("Content-type", "text/html;charset=GBK");
-            response.setContentType("application/octet-stream");
-        } else {
-            if (userAgent.contains(FIREFOX_KEY)) {
-                title = UTF8LINK_KEY + (new String(Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8)))) + "?=";
+            // 设置通用响应头
+            response.setContentType(OCTET_STREAM);
+            // 根据浏览器类型设置不同的编码方式
+            String userAgent = request.getHeader("User-Agent");
+            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
+                // IE浏览器特殊处理
+                response.setHeader("Content-disposition", "attachment; filename=\"" + encodedTitle + fileType + "\"");
+                response.setHeader(CONTENT_TYPE, "text/html;charset=GBK");
             } else {
-                title = URLEncoder.encode(title, StandardCharsets.UTF_8);
-                title = StringUtils.replace(title, "+", "%20");// 替换空格
+                // 其他浏览器
+                response.setHeader("Content-disposition", "attachment; filename=\"" + encodedTitle + fileType + "\"");
+                response.setHeader(CONTENT_TYPE, "text/html;charset=UTF-8");
             }
+        } catch (Exception e) {
+            LOGGER.warn("设置响应头失败，使用默认设置", e);
+            // 出现异常时使用默认设置
             response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-            response.setHeader("Content-type", "text/html;charset=UTF-8");
-            response.setContentType("application/octet-stream");
+            response.setContentType(OCTET_STREAM);
+            response.setHeader(CONTENT_TYPE, "text/html;charset=UTF-8");
         }
     }
 
@@ -261,29 +274,33 @@ public class FormNTKOController {
     @FlowableLog(operationName = "新建正文空白模板", operationType = FlowableOperationTypeEnum.ADD)
     @GetMapping("/openBlankWordTemplate")
     public void openBlankWordTemplate(HttpServletRequest request, HttpServletResponse response) {
-        String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator + "tags"
-            + File.separator + "template" + File.separator + "blankTemplate.doc";
-        File file = new File(filePath);
-        try (ServletOutputStream out = response.getOutputStream(); FileInputStream fs = new FileInputStream(file);
-            BufferedInputStream bi = IOUtils.buffer(fs)) {
-            String fileName = file.getName();
-            String agent = request.getHeader(USER_AGENT_KEY);
-            if (agent.contains(FIREFOX_KEY)) {
-                fileName =
-                    UTF8LINK_KEY + (new String(Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8)))) + "?=";
-            } else {
-                fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-                fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
+        try {
+            String filePath = request.getSession().getServletContext().getRealPath("/") + "static" + File.separator
+                + "tags" + File.separator + "template" + File.separator + "blankTemplate.doc";
+            File file = new File(filePath);
+
+            // 验证文件是否存在
+            if (!file.exists() || !file.isFile()) {
+                LOGGER.warn("空白模板文件不存在: {}", filePath);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "模板文件不存在");
+                return;
             }
-            response.reset();
-            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + fileName);
-            int b;
-            byte[] by = new byte[1024];
-            while ((b = bi.read(by)) != -1) {
-                out.write(by, 0, b);
+
+            try (ServletOutputStream out = response.getOutputStream(); FileInputStream fs = new FileInputStream(file);
+                BufferedInputStream bi = IOUtils.buffer(fs)) {
+
+                String fileName = file.getName();
+                // 使用统一的文件名编码方法
+                setFileDownloadResponse(response, request, fileName);
+
+                int b;
+                byte[] by = new byte[1024];
+                while ((b = bi.read(by)) != -1) {
+                    out.write(by, 0, b);
+                }
             }
         } catch (Exception e) {
-            LOGGER.error("新建正文空白模板失败", e);
+            handleFileDownloadError(response, "新建正文空白模板失败", e);
         }
     }
 
@@ -292,6 +309,7 @@ public class FormNTKOController {
      *
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
+     * @param bindValue 绑定值
      * @param tenantId 租户id
      * @param userId 人员id
      */
@@ -299,37 +317,37 @@ public class FormNTKOController {
     public void openDoc(@RequestParam String processSerialNumber, @RequestParam String itemId,
         @RequestParam(required = false) String bindValue, @RequestParam String tenantId, @RequestParam String userId,
         HttpServletResponse response, HttpServletRequest request) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId =
-            y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
-        try (ServletOutputStream out = response.getOutputStream()) {
-            String agent = request.getHeader(USER_AGENT_KEY);
+        try {
+            // 验证必要参数
+            if (validateRequiredParams(processSerialNumber, itemId, tenantId, userId)) {
+                handleFileDownloadError(response, PARAM_NULL_KEY, new IllegalArgumentException(PARAM_NULL_KEY));
+                return;
+            }
+            // 初始化用户上下文
+            initializeUserContext(tenantId, userId);
+            // 获取文件存储ID
+            String y9FileStoreId =
+                y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
+            if (StringUtils.isBlank(y9FileStoreId)) {
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, FILE_NOT_EXIST_KEY);
+                return;
+            }
+            // 获取文件存储信息
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
-            String fileName = y9FileStore.getFileName();
-            if (agent.contains(FIREFOX_KEY)) {
-                Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
-            } else {
-                fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-                StringUtils.replace(fileName, "+", "%20");
+            if (y9FileStore == null) {
+                logFileStoreNotFound(y9FileStoreId);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, FILE_NOT_EXIST_KEY);
+                return;
             }
-            response.reset();
-            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=zhengwen." + y9FileStore.getFileExt());
-            byte[] buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
-            ByteArrayInputStream bin = null;
-            if (buf != null) {
-                bin = new ByteArrayInputStream(buf);
-            }
-            int b;
-            byte[] by = new byte[1024];
-            if (bin != null) {
-                while ((b = bin.read(by)) != -1) {
-                    out.write(by, 0, b);
-                }
+            // 设置响应头
+            setFileDownloadResponse(response, request, "zhengWen." + y9FileStore.getFileExt());
+            // 输出文件内容
+            try (ServletOutputStream out = response.getOutputStream()) {
+                y9FileStoreService.downloadFileToOutputStream(y9FileStoreId, out);
+                out.flush();
             }
         } catch (Exception e) {
-            LOGGER.error("打开正文文件失败", e);
+            handleFileDownloadError(response, "打开正文文件失败", e);
         }
     }
 
@@ -344,24 +362,40 @@ public class FormNTKOController {
     @GetMapping(value = "/openTaohongTemplate")
     public void openDocumentTemplate(@RequestParam String templateGUID, @RequestParam String processSerialNumber,
         @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");// 删除未套红的正文
-        String content = y9WordApi.openDocumentTemplate(tenantId, userId, templateGUID).getData();
-        try (ServletOutputStream out = response.getOutputStream()) {
-            byte[] result = java.util.Base64.getDecoder().decode(content);
-            ByteArrayInputStream bin = new ByteArrayInputStream(result);
-            int b;
-            byte[] by = new byte[1024];
-            response.reset();
-            response.setHeader("Content-Type", "application/msword");
-            response.setHeader("Content-Length", String.valueOf(result.length));
-            while ((b = bin.read(by)) != -1) {
-                out.write(by, 0, b);
+        try {
+            // 验证必要参数
+            if (validateRequiredParams(templateGUID, processSerialNumber, tenantId, userId)) {
+                handleFileDownloadError(response, PARAM_NULL_KEY, new IllegalArgumentException(PARAM_NULL_KEY));
+                return;
             }
-        } catch (IOException e) {
-            LOGGER.error("套红正文失败", e);
+            // 初始化用户上下文
+            initializeUserContext(tenantId, userId);
+            // 删除未套红的正文
+            y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "0");
+            // 获取套红模板内容
+            String content = y9WordApi.openDocumentTemplate(tenantId, userId, templateGUID).getData();
+            if (StringUtils.isBlank(content)) {
+                LOGGER.warn("套红模板内容为空: templateGUID={}", templateGUID);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "模板内容不存在");
+                return;
+            }
+            byte[] result = java.util.Base64.getDecoder().decode(content);
+            response.reset();
+            response.setHeader(CONTENT_TYPE, "application/msword");
+            response.setHeader("Content-Length", String.valueOf(result.length));
+            // 使用统一的文件下载响应头设置
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=taoHong_template.doc");
+            try (ServletOutputStream out = response.getOutputStream();
+                ByteArrayInputStream bin = new ByteArrayInputStream(result)) {
+                int b;
+                byte[] by = new byte[1024];
+                while ((b = bin.read(by)) != -1) {
+                    out.write(by, 0, b);
+                }
+                out.flush();
+            }
+        } catch (Exception e) {
+            handleFileDownloadError(response, "套红正文失败", e);
         }
     }
 
@@ -375,37 +409,72 @@ public class FormNTKOController {
     @GetMapping(value = "/openHistoryVersionDoc")
     public void openHistoryVersionDoc(@RequestParam(required = false) String taskId, @RequestParam String tenantId,
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        Y9WordHistoryModel map = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
-        String fileStoreId = map.getFileStoreId();
-        try (ServletOutputStream out = response.getOutputStream()) {
-            String agent = request.getHeader(USER_AGENT_KEY);
-            Y9FileStore y9FileStore = y9FileStoreService.getById(fileStoreId);
-            String fileName = y9FileStore.getFileName();
-            if (agent.contains(FIREFOX_KEY)) {
-                Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8));
-            } else {
-                fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-                StringUtils.replace(fileName, "+", "%20");
+        try {
+            // 初始化用户上下文
+            initializeUserContext(tenantId, userId);
+            // 获取历史版本文档信息
+            Y9WordHistoryModel historyModel = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+            if (historyModel == null || StringUtils.isBlank(historyModel.getFileStoreId())) {
+                LOGGER.warn("历史版本文档不存在: taskId={}", taskId);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, "文档不存在");
+                return;
             }
-            response.reset();
-            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=zhengwen." + y9FileStore.getFileExt());
-            byte[] buf = y9FileStoreService.downloadFileToBytes(fileStoreId);
-            ByteArrayInputStream bin = null;
-            if (buf != null) {
-                bin = new ByteArrayInputStream(buf);
+            String y9FileStoreId = historyModel.getFileStoreId();
+            Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
+            if (y9FileStore == null) {
+                logFileStoreNotFound(y9FileStoreId);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, FILE_NOT_EXIST_KEY);
+                return;
             }
-            int b;
-            byte[] by = new byte[1024];
-            if (bin != null) {
-                while ((b = bin.read(by)) != -1) {
-                    out.write(by, 0, b);
+            // 设置响应头
+            setFileDownloadResponse(response, request, "zhengWen." + y9FileStore.getFileExt());
+            // 下载并输出文件
+            try (ServletOutputStream out = response.getOutputStream()) {
+                byte[] fileBytes = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
+                if (fileBytes != null && fileBytes.length > 0) {
+                    out.write(fileBytes);
+                    out.flush();
                 }
             }
         } catch (Exception e) {
-            LOGGER.error("打开历史版本正文文件失败", e);
+            handleFileDownloadError(response, "打开历史版本正文文件失败", e);
+        }
+    }
+
+    /**
+     * 设置文件下载响应头
+     */
+    private void setFileDownloadResponse(HttpServletResponse response, HttpServletRequest request, String fileName) {
+        String userAgent = request.getHeader(USER_AGENT_KEY);
+        String encodedFileName = encodeFileName(fileName, userAgent);
+        response.reset();
+        response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + encodedFileName);
+        response.setContentType(OCTET_STREAM);
+    }
+
+    /**
+     * 编码文件名以适配不同浏览器
+     */
+    private String encodeFileName(String fileName, String userAgent) {
+        if (userAgent.contains(FIREFOX_KEY)) {
+            return UTF8LINK_KEY + (new String(Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8)))) + "?=";
+        } else {
+            String encodedName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
+            return StringUtils.replace(encodedName, "+", "%20"); // 替换空格
+        }
+    }
+
+    /**
+     * 处理文件下载错误
+     */
+    private void handleFileDownloadError(HttpServletResponse response, String errorMsg, Exception e) {
+        LOGGER.error(errorMsg, e);
+        try {
+            if (!response.isCommitted()) {
+                response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "文件下载失败");
+            }
+        } catch (IOException ioException) {
+            LOGGER.error("发送错误响应失败", ioException);
         }
     }
 
@@ -419,31 +488,40 @@ public class FormNTKOController {
     @GetMapping(value = "/openPdf")
     public void openPdf(@RequestParam String processSerialNumber, @RequestParam String tenantId,
         @RequestParam String userId, HttpServletResponse response) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        String y9FileStoreId = y9WordApi.openPdf(tenantId, userId, processSerialNumber).getData();
-
-        try (ServletOutputStream out = response.getOutputStream()) {
-            byte[] buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
-            ByteArrayInputStream bin = null;
-            if (buf != null) {
-                bin = new ByteArrayInputStream(buf);
+        try {
+            // 验证必要参数
+            if (validateRequiredParams(processSerialNumber, tenantId, userId)) {
+                response.sendError(HttpServletResponse.SC_BAD_REQUEST, PARAM_NULL_KEY);
+                return;
             }
-            int b;
-            byte[] by = new byte[1024];
+            // 初始化用户上下文
+            initializeUserContext(tenantId, userId);
+            // 获取PDF文件存储ID
+            String y9FileStoreId = y9WordApi.openPdf(tenantId, userId, processSerialNumber).getData();
+            if (StringUtils.isBlank(y9FileStoreId)) {
+                LOGGER.warn("PDF文件存储ID为空: processSerialNumber={}", processSerialNumber);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, FILE_NOT_EXIST_KEY);
+                return;
+            }
+            // 获取文件存储信息
+            Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
+            if (y9FileStore == null) {
+                logFileStoreNotFound(y9FileStoreId);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, FILE_NOT_EXIST_KEY);
+                return;
+            }
+            // 设置响应头
             response.reset();
-            if (buf != null) {
-                response.setHeader("Content-Length", String.valueOf(buf.length));
-            }
-            if (bin != null) {
-                while ((b = bin.read(by)) != -1) {
-                    out.write(by, 0, b);
-                    out.flush();
-                }
+            response.setContentType(OCTET_STREAM);
+            response.setHeader("Content-Length", String.valueOf(y9FileStore.getFileSize()));
+            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + y9FileStore.getFileName());
+            // 输出文件内容
+            try (ServletOutputStream out = response.getOutputStream()) {
+                y9FileStoreService.downloadFileToOutputStream(y9FileStoreId, out);
+                out.flush();
             }
         } catch (Exception e) {
-            LOGGER.error("打开PDF或者TIF文件失败", e);
+            handleFileDownloadError(response, "打开PDF或者TIF文件失败", e);
         }
     }
 
@@ -459,41 +537,40 @@ public class FormNTKOController {
     public void openRevokePDFAfterDocument(@RequestParam String processSerialNumber,
         @RequestParam(required = false) String istaohong, @RequestParam String tenantId, @RequestParam String userId,
         HttpServletResponse response, HttpServletRequest request) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        // 删除转PDF的文件
-        y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "3");
-        String y9FileStoreId =
-            y9WordApi.openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong).getData();
-        try (ServletOutputStream out = response.getOutputStream()) {
-            String agent = request.getHeader(USER_AGENT_KEY);
+        try {
+            // 验证必要参数
+            if (validateRequiredParams(processSerialNumber, tenantId, userId)) {
+                handleFileDownloadError(response, PARAM_NULL_KEY, new IllegalArgumentException(PARAM_NULL_KEY));
+                return;
+            }
+            // 初始化用户上下文
+            initializeUserContext(tenantId, userId);
+            // 删除转PDF的文件
+            y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "3");
+            // 获取撤销PDF后的文件存储ID
+            String y9FileStoreId =
+                y9WordApi.openRevokePdfAfterDocument(tenantId, userId, processSerialNumber, istaohong).getData();
+            if (StringUtils.isBlank(y9FileStoreId)) {
+                LOGGER.warn("撤销PDF后的文件存储ID为空: processSerialNumber={}", processSerialNumber);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, FILE_NOT_EXIST_KEY);
+                return;
+            }
+            // 获取文件存储信息
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
-            String fileName = y9FileStore.getFileName();
-            if (agent.contains(FIREFOX_KEY)) {
-                fileName =
-                    UTF8LINK_KEY + (new String(Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8)))) + "?=";
-            } else {
-                fileName = URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-                fileName = StringUtils.replace(fileName, "+", "%20");// 替换空格
+            if (y9FileStore == null) {
+                logFileStoreNotFound(y9FileStoreId);
+                response.sendError(HttpServletResponse.SC_NOT_FOUND, FILE_NOT_EXIST_KEY);
+                return;
             }
-            response.reset();
-            response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + fileName);
-
-            byte[] buf = y9FileStoreService.downloadFileToBytes(y9FileStoreId);
-            ByteArrayInputStream bin = null;
-            if (buf != null) {
-                bin = new ByteArrayInputStream(buf);
-            }
-            int b;
-            byte[] by = new byte[1024];
-            if (bin != null) {
-                while ((b = bin.read(by)) != -1) {
-                    out.write(by, 0, b);
-                }
+            // 设置响应头
+            setFileDownloadResponse(response, request, y9FileStore.getFileName());
+            // 输出文件内容
+            try (ServletOutputStream out = response.getOutputStream()) {
+                y9FileStoreService.downloadFileToOutputStream(y9FileStoreId, out);
+                out.flush();
             }
         } catch (Exception e) {
-            LOGGER.error("打开撤销PDF后的正文失败", e);
+            handleFileDownloadError(response, "打开撤销PDF后的正文失败", e);
         }
     }
 
@@ -510,49 +587,57 @@ public class FormNTKOController {
      * @return String
      */
     @FlowableLog(operationName = "保存word转PDF的正文", operationType = FlowableOperationTypeEnum.SAVE)
-    @SuppressWarnings("unused")
     @PostMapping(value = "/saveAsPDFFile")
     public String saveAsPDFFile(@RequestParam(required = false) String fileType,
         @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String isTaoHong, @RequestParam(required = false) String taskId,
         @RequestParam String tenantId, @RequestParam String userId, HttpServletRequest request,
         HttpServletResponse response) {
+        // 设置响应头
         response.setContentType("text/html; charset=utf-8");
         response.setHeader("Cache-Control", "no-cache");
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
-        MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
-        String title;
-        String result = "success:false";
         try {
-            String documentTitle = "";
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                if (draftModel != null) {
-                    documentTitle = draftModel.getTitle();
-                }
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
+            // 初始化用户上下文
+            initializeUserContext(tenantId, userId);
+            // 获取上传文件
+            MultipartFile multipartFile = getUploadedFile(request);
+            if (multipartFile == null || multipartFile.isEmpty()) {
+                logUploadFileEmpty();
+                return SUCCESS_FALSE;
             }
-            title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
-            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            Boolean result2 =
-                y9WordApi
-                    .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
-                        y9FileStore.getDisplayFileSize(), y9FileStore.getId())
-                    .getData();
-            if (Boolean.TRUE.equals(result2)) {
-                result = "success:true";
-            }
+            // 获取文档标题
+            String title = getDocumentTitle(tenantId, processSerialNumber, processInstanceId);
+            // 上传文件
+            Y9FileStore y9FileStore = uploadPDFFile(multipartFile, tenantId, processSerialNumber, title, fileType);
+            // 保存正文信息
+            boolean saveSuccess =
+                saveWordInfo(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore);
+            return saveSuccess ? "success:true" : SUCCESS_FALSE;
         } catch (Exception e) {
-            LOGGER.error("保存正文失败", e);
+            LOGGER.error("保存word转PDF的正文失败", e);
+            return SUCCESS_FALSE;
         }
-        return result;
+    }
+
+    /**
+     * 获取上传的文件
+     */
+    private MultipartFile getUploadedFile(HttpServletRequest request) {
+        if (!(request instanceof MultipartHttpServletRequest)) {
+            LOGGER.warn("请求不是MultipartHttpServletRequest类型");
+            return null;
+        }
+        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
+        return multipartRequest.getFile("currentDoc");
+    }
+
+    /**
+     * 上传PDF文件到文件存储服务
+     */
+    private Y9FileStore uploadPDFFile(MultipartFile file, String tenantId, String processSerialNumber, String title,
+        String fileType) throws Exception {
+        String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
+        return y9FileStoreService.uploadFile(file, fullPath, title + fileType);
     }
 
     /**
@@ -592,69 +677,175 @@ public class FormNTKOController {
     public Map<String, Object> upload(@RequestParam String processSerialNumber,
         @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String taskId,
         @RequestParam String tenantId, @RequestParam String userId, @RequestParam MultipartFile file) {
+        Map<String, Object> result = createDefaultResult();
+        try {
+            // 初始化用户上下文
+            initializeUserContext(tenantId, userId);
+            // 处理文件名
+            String fileName = extractFileName(file.getOriginalFilename());
+            if (StringUtils.isBlank(fileName)) {
+                return createErrorResult("文件名不能为空");
+            }
+            // 验证文件类型
+            String fileType = getFileExtension(fileName);
+            if (!isValidFileType(fileType)) {
+                return createErrorResult("请上传后缀名为.doc,.docx,.pdf,.tif文件");
+            }
+            // 获取文档标题
+            String title = getDocumentTitle(tenantId, processSerialNumber, processInstanceId);
+            // 确定是否套红
+            String isTaoHong = determineTaoHongStatus(fileType);
+            // 上传文件
+            Y9FileStore y9FileStore = uploadFile(file, tenantId, processSerialNumber, title, fileType);
+            // 保存正文信息
+            boolean uploadSuccess =
+                saveWordInfo(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore);
+            if (uploadSuccess) {
+                updateSuccessResult(result, fileType);
+            } else {
+                return createErrorResult(SAVE_ERROR);
+            }
+        } catch (Exception e) {
+            LOGGER.error("上传正文失败", e);
+            return createErrorResult("上传正文失败: " + e.getMessage());
+        }
+        return result;
+    }
+
+    /**
+     * 创建默认返回结果
+     */
+    private Map<String, Object> createDefaultResult() {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("msg", "上传成功");
+        return map;
+    }
+
+    /**
+     * 创建错误返回结果
+     */
+    private Map<String, Object> createErrorResult(String errorMsg) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put(UtilConsts.SUCCESS, false);
+        map.put("msg", errorMsg);
+        return map;
+    }
+
+    /**
+     * 初始化用户上下文
+     */
+    private void initializeUserContext(String tenantId, String userId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Person person = personApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setPerson(person);
+    }
+
+    /**
+     * 提取文件名（去除路径）
+     */
+    private String extractFileName(String originalFileName) {
+        if (StringUtils.isBlank(originalFileName)) {
+            return null;
+        }
+        String fileName = originalFileName;
+        // 处理不同操作系统的路径分隔符
+        if (fileName.contains(File.separator)) {
+            fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
+        }
+        if (fileName.contains("\\")) {
+            fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
+        }
+        return fileName;
+    }
+
+    /**
+     * 获取文件扩展名
+     */
+    private String getFileExtension(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return null;
+        }
+        int lastDotIndex = fileName.lastIndexOf('.');
+        if (lastDotIndex == -1) {
+            return null;
+        }
+        return fileName.substring(lastDotIndex).toLowerCase();
+    }
+
+    /**
+     * 验证文件类型是否有效
+     */
+    private boolean isValidFileType(String fileType) {
+        return fileType != null && (fileType.equals(".doc") || fileType.equals(".docx") || fileType.equals(".pdf")
+            || fileType.equals(".tif"));
+    }
+
+    /**
+     * 获取文档标题
+     */
+    private String getDocumentTitle(String tenantId, String processSerialNumber, String processInstanceId) {
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
-            String fileName = file.getOriginalFilename();
-            LOGGER.debug("fileName={}", fileName);
-            if (fileName != null && fileName.contains(File.separator)) {
-                fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
-            }
-            if (fileName != null && fileName.contains("\\")) {
-                fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
-            }
-            String fileType = null;// 文件类型
-            if (fileName != null) {
-                fileType = fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
-            }
-            if (fileType != null && !(fileType.equals(".doc") || fileType.equals(".docx") || fileType.equals(".pdf")
-                || fileType.equals(".tif"))) {
-                map.put(UtilConsts.SUCCESS, false);
-                map.put("msg", "请上传后缀名为.doc,.docx,.pdf,.tif文件");
-                return map;
-            }
-            String isTaoHong = "";
-            if (fileType != null) {
-                if (fileType.equals(".pdf") || fileType.equals(".tif")) {
-                    isTaoHong = "2";
-                } else {
-                    isTaoHong = "0";
-                }
-            }
-            String documentTitle = "";
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                if (draftModel != null) {
-                    documentTitle = draftModel.getTitle();
-                }
+                return draftModel != null ? draftModel.getTitle() : "正文";
             } else {
                 ProcessParamModel processModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
+                return processModel != null ? processModel.getTitle() : "正文";
             }
-            String title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
-            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, title + fileType);
+        } catch (Exception e) {
+            LOGGER.warn("获取文档标题失败", e);
+            return "正文";
+        }
+    }
+
+    /**
+     * 确定套红状态
+     */
+    private String determineTaoHongStatus(String fileType) {
+        if (fileType == null) {
+            return "";
+        }
+        // PDF或TIF文件标记为类型2，其他文档标记为类型0
+        return fileType.equals(".pdf") || fileType.equals(".tif") ? "2" : "0";
+    }
+
+    /**
+     * 上传文件到文件存储服务
+     */
+    private Y9FileStore uploadFile(MultipartFile file, String tenantId, String processSerialNumber, String title,
+        String fileType) throws Exception {
+        String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
+        return y9FileStoreService.uploadFile(file, fullPath, title + fileType);
+    }
+
+    /**
+     * 保存正文信息
+     */
+    private boolean saveWordInfo(String tenantId, String userId, String title, String fileType,
+        String processSerialNumber, String isTaoHong, String taskId, Y9FileStore y9FileStore) {
+        try {
             Boolean result =
                 y9WordApi
                     .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
                         y9FileStore.getDisplayFileSize(), y9FileStore.getId())
                     .getData();
-            if (Boolean.TRUE.equals(result)) {
-                map.put(UtilConsts.SUCCESS, true);
-                if (fileType != null && (fileType.equals(".pdf") || fileType.equals(".tif"))) {
-                    map.put("isPdf", true);
-                }
-            }
+            return Boolean.TRUE.equals(result);
         } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            LOGGER.error("上传正文失败", e);
+            LOGGER.error(SAVE_ERROR, e);
+            return false;
         }
-        return map;
+    }
+
+    /**
+     * 更新成功结果
+     */
+    private void updateSuccessResult(Map<String, Object> result, String fileType) {
+        result.put(UtilConsts.SUCCESS, true);
+        if (fileType != null && (fileType.equals(".pdf") || fileType.equals(".tif"))) {
+            result.put("isPdf", true);
+        }
     }
 
     /**
@@ -677,39 +868,74 @@ public class FormNTKOController {
         @RequestParam String processSerialNumber, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam String tenantId, @RequestParam String userId,
         HttpServletRequest request) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
-        MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
-        String title;
-        String result = "success:false";
         try {
-            String documentTitle = "";
-            if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
-                if (draftModel != null) {
-                    documentTitle = draftModel.getTitle();
-                }
-            } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                documentTitle = processModel.getTitle();
+            // 初始化用户上下文
+            initializeUserContext(tenantId, userId);
+            // 验证必要参数
+            if (validateRequiredParams(tenantId, userId, processSerialNumber)) {
+                return SUCCESS_FALSE;
             }
-            title = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
-            String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
-            Boolean result2 =
+            // 获取上传文件
+            MultipartFile multipartFile = getUploadedFile(request);
+            if (multipartFile == null || multipartFile.isEmpty()) {
+                logUploadFileEmpty();
+                return SUCCESS_FALSE;
+            }
+            // 获取文档标题
+            String title = getDocumentTitle(tenantId, processSerialNumber, processInstanceId);
+            // 上传文件
+            Y9FileStore y9FileStore = uploadFile(multipartFile, tenantId, processSerialNumber, title, fileType);
+            // 保存正文信息
+            boolean saveSuccess = saveWordInfo(tenantId, userId, title, fileType, processSerialNumber, isTaoHong,
+                docCategory, taskId, y9FileStore);
+            return saveSuccess ? "success:true" : SUCCESS_FALSE;
+        } catch (Exception e) {
+            LOGGER.error("上传正文失败", e);
+            return SUCCESS_FALSE;
+        }
+    }
+
+    /**
+     * 保存正文信息（带文档类别）
+     */
+    private boolean saveWordInfo(String tenantId, String userId, String title, String fileType,
+        String processSerialNumber, String isTaoHong, String docCategory, String taskId, Y9FileStore y9FileStore) {
+        try {
+            Boolean result =
                 y9WordApi
                     .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, docCategory, taskId,
                         y9FileStore.getDisplayFileSize(), y9FileStore.getId())
                     .getData();
-            if (Boolean.TRUE.equals(result2)) {
-                result = "success:true";
-            }
+            return Boolean.TRUE.equals(result);
         } catch (Exception e) {
-            LOGGER.error("上传正文失败", e);
+            LOGGER.error(SAVE_ERROR, e);
+            return false;
         }
-        return result;
+    }
+
+    /**
+     * 记录文件存储记录不存在的日志
+     */
+    private void logFileStoreNotFound(String fileStoreId) {
+        LOGGER.warn("文件存储记录不存在: fileStoreId={}", fileStoreId);
+    }
+
+    /**
+     * 验证必要参数是否为空
+     */
+    private boolean validateRequiredParams(String... params) {
+        for (String param : params) {
+            if (StringUtils.isBlank(param)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 记录上传文件为空的日志
+     */
+    private void logUploadFileEmpty() {
+        LOGGER.warn("上传文件为空");
     }
 }
