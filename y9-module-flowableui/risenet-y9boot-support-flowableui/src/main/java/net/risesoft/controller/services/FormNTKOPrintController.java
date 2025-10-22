@@ -2,7 +2,6 @@ package net.risesoft.controller.services;
 
 import java.io.ByteArrayInputStream;
 import java.io.OutputStream;
-import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 
 import jakarta.servlet.ServletOutputStream;
@@ -22,11 +21,10 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.template.PrintApi;
-import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.Person;
-import net.risesoft.util.ToolUtil;
+import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -49,7 +47,6 @@ public class FormNTKOPrintController {
     private final PrintApi printApi;
     private final PersonApi personApi;
     private final ProcessParamApi processParamApi;
-    private final DraftApi draftApi;
     private final Y9WordApi y9WordApi;
 
     /**
@@ -69,40 +66,13 @@ public class FormNTKOPrintController {
             Y9LoginUserHolder.setTenantId(tenantId);
             Person person = personApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setPerson(person);
-            setResponse(response, request, processSerialNumber, fileType);
+            ProcessParamModel processModel =
+                processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+            String title = StringUtils.isNotBlank(processModel.getTitle()) ? processModel.getTitle() : "正文";
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request, title + fileType);
             y9FileStoreService.downloadFileToOutputStream(id, out);
         } catch (Exception e) {
             LOGGER.error("下载正文文件异常", e);
-        }
-    }
-
-    private void setResponse(HttpServletResponse response, HttpServletRequest request, String processSerialNumber,
-        String fileType) throws UnsupportedEncodingException {
-        ProcessParamModel processModel =
-            processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
-        String title = StringUtils.isNotBlank(processModel.getTitle()) ? processModel.getTitle() : "正文";
-        title = ToolUtil.replaceSpecialStr(title);
-        String userAgent = request.getHeader("User-Agent");
-        if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-            title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-            response.setHeader("Content-type", "text/html;charset=GBK");
-            response.setContentType("application/octet-stream");
-        } else {
-            if (userAgent.contains(FIREFOX_KEY)) {
-                title = "=?UTF-8?B?"
-                    + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
-                    + "?=";
-            } else {
-                title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                title = StringUtils.replace(title, "+", "%20");// 替换空格
-            }
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-            response.setHeader("Content-type", "text/html;charset=UTF-8");
-            response.setContentType("application/octet-stream");
         }
     }
 

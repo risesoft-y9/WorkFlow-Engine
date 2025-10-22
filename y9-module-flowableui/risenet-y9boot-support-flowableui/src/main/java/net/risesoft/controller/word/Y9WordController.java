@@ -6,7 +6,6 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -43,7 +42,7 @@ import net.risesoft.model.itemadmin.Y9WordHistoryModel;
 import net.risesoft.model.itemadmin.Y9WordModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;
-import net.risesoft.util.ToolUtil;
+import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -101,56 +100,11 @@ public class Y9WordController {
         Y9WordHistoryModel map = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
         String fileStoreId = map.getFileStoreId();
         try (ServletOutputStream out = response.getOutputStream()) {
-            setResponse(response, request, processSerialNumber, fileType);
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request,
+                getDocumentTitle(tenantId, processSerialNumber) + fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
         } catch (Exception e) {
             LOGGER.error("下载历史版本正文文件异常，异常：", e);
-        }
-    }
-
-    private void setResponse(HttpServletResponse response, HttpServletRequest request, String processSerialNumber,
-        String fileType) {
-        String userAgent = request.getHeader("User-Agent");
-        String title;
-        ProcessParamModel processModel =
-            processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
-        title = processModel.getTitle() != null ? processModel.getTitle() : "正文";
-        title = ToolUtil.replaceSpecialStr(title);
-        title = encodeFileName(title, userAgent);
-        response.reset();
-        response.setContentType("application/octet-stream");
-        response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-        if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-            response.setHeader("Content-type", "text/html;charset=GBK");
-        } else {
-            response.setHeader("Content-type", "text/html;charset=UTF-8");
-        }
-    }
-
-    /**
-     * 根据浏览器类型对文件名进行编码
-     *
-     * @param fileName 原始文件名
-     * @param userAgent 用户代理字符串
-     * @return 编码后的文件名
-     */
-    private String encodeFileName(String fileName, String userAgent) {
-        try {
-            if (userAgent.contains("Firefox")) {
-                return "=?UTF-8?B?"
-                    + new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(fileName.getBytes(StandardCharsets.UTF_8)))
-                    + "?=";
-            } else if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0")
-                || userAgent.contains("MSIE 7.0")) {
-                return java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-            } else {
-                String encodedName = java.net.URLEncoder.encode(fileName, StandardCharsets.UTF_8);
-                return StringUtils.replace(encodedName, "+", "%20"); // 替换空格
-            }
-        } catch (Exception e) {
-            LOGGER.error("文件名编码异常", e);
-            return fileName;
         }
     }
 
@@ -165,7 +119,8 @@ public class Y9WordController {
         @RequestParam(required = false) String processSerialNumber, HttpServletResponse response,
         HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
-            setResponse(response, request, processSerialNumber, fileType);
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request,
+                getDocumentTitle(Y9LoginUserHolder.getTenantId(), processSerialNumber) + fileType);
             y9FileStoreService.downloadFileToOutputStream(id, out);
         } catch (Exception e) {
             LOGGER.error("下载正文文件异常，异常：", e);
@@ -187,7 +142,8 @@ public class Y9WordController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Y9WordModel map = y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String fileStoreId = map.getFileStoreId();
-            setResponse(response, request, processSerialNumber, fileType);
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request,
+                getDocumentTitle(tenantId, processSerialNumber) + fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
         } catch (Exception e) {
             LOGGER.error("下载正文（抄送件）异常，异常：", e);
@@ -219,7 +175,7 @@ public class Y9WordController {
             BufferedInputStream bi = IOUtils.buffer(fs)) {
             String fileName = file.getName();
             String agent = request.getHeader("USER-AGENT");
-            fileName = encodeFileName(fileName, agent);
+            fileName = Y9DownloadUtil.encodeFileName(fileName, agent);
             response.reset();
             response.setHeader(CONTENT_DIS_KEY, "attachment; filename=" + fileName);
             int b;
@@ -472,10 +428,10 @@ public class Y9WordController {
             String userId = person.getPersonId();
             String tenantId = Y9LoginUserHolder.getTenantId();
             // 处理文件名
-            String fileName = extractFileName(file.getOriginalFilename());
+            String fileName = Y9DownloadUtil.extractFileName(file.getOriginalFilename());
             // 验证文件类型
             String fileType = getFileExtension(fileName);
-            if (!isValidFileType(fileType)) {
+            if (Y9DownloadUtil.isValidFileType(fileType)) {
                 result.put("msg", "请上传后缀名为.doc,.docx,.pdf,.tif文件");
                 return result;
             }
@@ -581,32 +537,6 @@ public class Y9WordController {
             LOGGER.warn("获取文档标题失败，使用默认标题", e);
             return "正文";
         }
-    }
-
-    /**
-     * 提取文件名（去除路径）
-     */
-    private String extractFileName(String originalFileName) {
-        if (StringUtils.isBlank(originalFileName)) {
-            return "";
-        }
-        String fileName = originalFileName;
-        // 处理不同操作系统的路径分隔符
-        if (fileName.contains(File.separator)) {
-            fileName = fileName.substring(fileName.lastIndexOf(File.separator) + 1);
-        }
-        if (fileName.contains("\\")) {
-            fileName = fileName.substring(fileName.lastIndexOf("\\") + 1);
-        }
-        return fileName;
-    }
-
-    /**
-     * 验证文件类型是否有效
-     */
-    private boolean isValidFileType(String fileType) {
-        return fileType != null && (fileType.equals(".doc") || fileType.equals(".docx") || fileType.equals(".pdf")
-            || fileType.equals(".tif"));
     }
 
     /**

@@ -1,7 +1,6 @@
 package net.risesoft.controller.word;
 
 import java.io.OutputStream;
-import java.nio.charset.StandardCharsets;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -9,7 +8,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import jakarta.validation.constraints.NotBlank;
 
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -29,8 +27,8 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.DocumentWordModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.util.ToolUtil;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -49,10 +47,6 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @RequestMapping(value = "/vue/docWord", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentWordRestController {
 
-    private static final String ATTACHMENT_KEY = "attachment; filename=\"";
-    private static final String CONTENT_DIS_KEY = "Content-disposition";
-    private static final String CONTENT_TYPE_KEY = "Content-type";
-    private static final String APPLICATION_OCT_KEY = "application/octet-stream";
     private final Y9FileStoreService y9FileStoreService;
     private final DocumentWordApi documentWordApi;
 
@@ -85,29 +79,7 @@ public class DocumentWordRestController {
 
     private void downloadCommon(DocumentWordModel model, HttpServletResponse response, HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
-            String title = model.getFileName();
-            title = ToolUtil.replaceSpecialStr(title);
-            String userAgent = request.getHeader("User-Agent");
-            if (userAgent.contains("MSIE 8.0") || userAgent.contains("MSIE 6.0") || userAgent.contains("MSIE 7.0")) {
-                title = new String(title.getBytes("gb2312"), "ISO8859-1");
-                response.reset();
-                response.setHeader(CONTENT_DIS_KEY, ATTACHMENT_KEY + title + "\"");
-                response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=GBK");
-                response.setContentType(APPLICATION_OCT_KEY);
-            } else {
-                if (userAgent.contains("Firefox")) {
-                    title = "=?UTF-8?B?" + (new String(
-                        org.apache.commons.codec.binary.Base64.encodeBase64(title.getBytes(StandardCharsets.UTF_8))))
-                        + "?=";
-                } else {
-                    title = java.net.URLEncoder.encode(title, StandardCharsets.UTF_8);
-                    title = StringUtils.replace(title, "+", "%20");// 替换空格
-                }
-                response.reset();
-                response.setHeader(CONTENT_DIS_KEY, ATTACHMENT_KEY + title + "\"");
-                response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=UTF-8");
-                response.setContentType(APPLICATION_OCT_KEY);
-            }
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request, model.getFileName());
             y9FileStoreService.downloadFileToOutputStream(model.getFileStoreId(), out);
         } catch (Exception e) {
             LOGGER.error("下载正文异常", e);
