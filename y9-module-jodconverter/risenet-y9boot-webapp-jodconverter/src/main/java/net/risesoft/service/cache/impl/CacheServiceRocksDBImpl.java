@@ -86,7 +86,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
             pdfCacheItem.put(key, value);
             db.put(FILE_PREVIEW_PDF_KEY.getBytes(), toByteArray(pdfCacheItem));
         } catch (RocksDBException | IOException e) {
-            LOGGER.error("Put into RocksDB Exception" + e);
+            LOGGER.error("putPDFCache Method Put into RocksDB Exception" + e);
         }
     }
 
@@ -97,7 +97,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
             imgCacheItem.put(key, value);
             db.put(FILE_PREVIEW_IMGS_KEY.getBytes(), toByteArray(imgCacheItem));
         } catch (RocksDBException | IOException e) {
-            LOGGER.error("Put into RocksDB Exception" + e);
+            LOGGER.error("putImgCache Method Put into RocksDB Exception" + e);
         }
     }
 
@@ -108,7 +108,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
         try {
             result = (Map<String, String>)toObject(db.get(FILE_PREVIEW_PDF_KEY.getBytes()));
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
-            LOGGER.error("Get from RocksDB Exception" + e);
+            LOGGER.error("getPDFCache Get from RocksDB Exception" + e);
         }
         return result;
     }
@@ -121,7 +121,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
             Map<String, String> map = (Map<String, String>)toObject(db.get(FILE_PREVIEW_PDF_KEY.getBytes()));
             result = map.get(key);
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
-            LOGGER.error("Get from RocksDB Exception" + e);
+            LOGGER.error("getPDFCache Method Get from RocksDB Exception" + e);
         }
         return result;
     }
@@ -133,7 +133,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
         try {
             result = (Map<String, List<String>>)toObject(db.get(FILE_PREVIEW_IMGS_KEY.getBytes()));
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
-            LOGGER.error("Get from RocksDB Exception" + e);
+            LOGGER.error("getImgCache Get from RocksDB Exception" + e);
         }
         return result;
     }
@@ -147,7 +147,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
             map = (Map<String, List<String>>)toObject(db.get(FILE_PREVIEW_IMGS_KEY.getBytes()));
             result = map.get(key);
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
-            LOGGER.error("Get from RocksDB Exception" + e);
+            LOGGER.error("getImgCache key Get from RocksDB Exception" + e);
         }
         return result;
     }
@@ -161,7 +161,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
             map = (Map<String, Integer>)toObject(db.get(FILE_PREVIEW_PDF_IMGS_KEY.getBytes()));
             result = map.get(key);
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
-            LOGGER.error("Get from RocksDB Exception" + e);
+            LOGGER.error("getPdfImageCache Get from RocksDB Exception" + e);
         }
         return result;
     }
@@ -173,7 +173,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
             pdfImageCacheItem.put(pdfFilePath, num);
             db.put(FILE_PREVIEW_PDF_IMGS_KEY.getBytes(), toByteArray(pdfImageCacheItem));
         } catch (RocksDBException | IOException e) {
-            LOGGER.error("Put into RocksDB Exception" + e);
+            LOGGER.error("putPdfImageCache Method Put into RocksDB Exception" + e);
         }
     }
 
@@ -184,7 +184,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
         try {
             result = (Map<String, String>)toObject(db.get(FILE_PREVIEW_MEDIA_CONVERT_KEY.getBytes()));
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
-            LOGGER.error("Get from RocksDB Exception" + e);
+            LOGGER.error("getMediaConvertCache Get from RocksDB Exception" + e);
         }
         return result;
     }
@@ -196,7 +196,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
             mediaConvertCacheItem.put(key, value);
             db.put(FILE_PREVIEW_MEDIA_CONVERT_KEY.getBytes(), toByteArray(mediaConvertCacheItem));
         } catch (RocksDBException | IOException e) {
-            LOGGER.error("Put into RocksDB Exception" + e);
+            LOGGER.error("putMediaConvertCache Method Put into RocksDB Exception" + e);
         }
     }
 
@@ -208,7 +208,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
             Map<String, String> map = (Map<String, String>)toObject(db.get(FILE_PREVIEW_MEDIA_CONVERT_KEY.getBytes()));
             result = map.get(key);
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
-            LOGGER.error("Get from RocksDB Exception" + e);
+            LOGGER.error("getMediaConvertCache Get from RocksDB Exception" + e);
         }
         return result;
     }
@@ -241,7 +241,7 @@ public class CacheServiceRocksDBImpl implements CacheService {
         try {
             map = (Map<String, Integer>)toObject(db.get(FILE_PREVIEW_PDF_IMGS_KEY.getBytes()));
         } catch (RocksDBException | IOException | ClassNotFoundException e) {
-            LOGGER.error("Get from RocksDB Exception" + e);
+            LOGGER.error("getPdfImageCaches Get from RocksDB Exception" + e);
         }
         return map;
     }

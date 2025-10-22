@@ -70,6 +70,7 @@ public class FormNTKOController {
     private static final String UTF8LINK_KEY = "=?UTF-8?B?";
     private static final String CONTENT_DIS_KEY = "Content-Disposition";
     private static final String USER_AGENT_KEY = "USER-AGENT";
+    private static final String CONTENT_TYPE_KEY = "Content-Type";
     private final Y9FileStoreService y9FileStoreService;
     private final PersonApi personApi;
     private final OrgUnitApi orgUnitApi;
@@ -165,7 +166,7 @@ public class FormNTKOController {
             title = new String(title.getBytes("gb2312"), StandardCharsets.ISO_8859_1);
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-            response.setHeader("Content-type", "text/html;charset=GBK");
+            response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=GBK");
             response.setContentType("application/octet-stream");
         } else {
             if (userAgent.contains(FIREFOX_KEY)) {
@@ -176,7 +177,7 @@ public class FormNTKOController {
             }
             response.reset();
             response.setHeader("Content-disposition", "attachment; filename=\"" + title + fileType + "\"");
-            response.setHeader("Content-type", "text/html;charset=UTF-8");
+            response.setHeader(CONTENT_TYPE_KEY, "text/html;charset=UTF-8");
             response.setContentType("application/octet-stream");
         }
     }
@@ -355,7 +356,7 @@ public class FormNTKOController {
             int b;
             byte[] by = new byte[1024];
             response.reset();
-            response.setHeader("Content-Type", "application/msword");
+            response.setHeader(CONTENT_TYPE_KEY, "application/msword");
             response.setHeader("Content-Length", String.valueOf(result.length));
             while ((b = bin.read(by)) != -1) {
                 out.write(by, 0, b);

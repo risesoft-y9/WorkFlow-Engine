@@ -43,7 +43,7 @@ public class WebUtils {
      *
      */
     public static String encodeFileName(String name) {
-        name = URLEncoder.encode(name, StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        name = URLEncoder.encode(name, StandardCharsets.UTF_8).replace("+", "%20");
         return name;
     }
 
@@ -77,12 +77,12 @@ public class WebUtils {
         }
         if (!UrlEncoderUtils.hasUrlEncoded(fullFileName)) { // 判断文件名是否转义
             urlStr = URLEncoder.encode(urlStr, StandardCharsets.UTF_8)
-                .replaceAll("\\+", "%20")
-                .replaceAll("%3A", ":")
-                .replaceAll("%2F", "/")
-                .replaceAll("%3F", "?")
-                .replaceAll("%26", "&")
-                .replaceAll("%3D", "=");
+                .replace("+", "%20")
+                .replace("%3A", ":")
+                .replace("%2F", "/")
+                .replace("%3F", "?")
+                .replace("%26", "&")
+                .replace("%3D", "=");
         }
         return urlStr;
     }
@@ -301,7 +301,7 @@ public class WebUtils {
          * https://github.com/kekingcn/kkFileView/pull/340
          */
         try {
-            return new String(Base64Utils.decodeFromString(source.replaceAll(" ", "+").replaceAll("\n", "")), charsets);
+            return new String(Base64Utils.decodeFromString(source.replace(" ", "+").replace("\n", "")), charsets);
         } catch (Exception e) {
             if (e.getMessage().toLowerCase().contains(BASE64_MSG)) {
                 LOGGER.error("url解码异常，接入方法错误未使用BASE64");

@@ -21,13 +21,15 @@ import net.risesoft.utils.KkFileUtils;
 @Service
 public class CompressFilePreviewImpl implements FilePreview {
 
-    private static final String Rar_PASSWORD_MSG = "password";
+    private static final String RAR_PASSWORD_MSG = "password";
     private static final Logger logger = org.slf4j.LoggerFactory.getLogger(CompressFileReader.class);
     private final FileHandlerService fileHandlerService;
     private final CompressFileReader compressFileReader;
     private final OtherFilePreviewImpl otherFilePreview;
 
-    public CompressFilePreviewImpl(FileHandlerService fileHandlerService, CompressFileReader compressFileReader,
+    public CompressFilePreviewImpl(
+        FileHandlerService fileHandlerService,
+        CompressFileReader compressFileReader,
         OtherFilePreviewImpl otherFilePreview) {
         this.fileHandlerService = fileHandlerService;
         this.compressFileReader = compressFileReader;
@@ -51,7 +53,7 @@ public class CompressFilePreviewImpl implements FilePreview {
             try {
                 fileTree = compressFileReader.unRar(filePath, filePassword, fileName, fileAttribute);
             } catch (Exception e) {
-                if (e.getMessage().toLowerCase().contains(Rar_PASSWORD_MSG)) {
+                if (e.getMessage().toLowerCase().contains(RAR_PASSWORD_MSG)) {
                     model.addAttribute("needFilePassword", true);
                     return EXEL_FILE_PREVIEW_PAGE;
                 } else {
