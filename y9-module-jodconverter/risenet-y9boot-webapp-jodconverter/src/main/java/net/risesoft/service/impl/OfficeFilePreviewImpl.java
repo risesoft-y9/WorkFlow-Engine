@@ -28,14 +28,17 @@ import net.risesoft.web.filter.BaseUrlFilter;
 @Service
 public class OfficeFilePreviewImpl implements FilePreview {
 
-    private static final String OFFICE_PASSWORD_MSG = "password";
     public static final String OFFICE_PREVIEW_TYPE_IMAGE = "image";
     public static final String OFFICE_PREVIEW_TYPE_ALL_IMAGES = "allImages";
+    public static final String NEEDFILE_PASSWORD = "needFilePassword";
+    private static final String OFFICE_PASSWORD_MSG = "password";
     private final FileHandlerService fileHandlerService;
     private final OfficeToPdfService officeToPdfService;
     private final OtherFilePreviewImpl otherFilePreview;
 
-    public OfficeFilePreviewImpl(FileHandlerService fileHandlerService, OfficeToPdfService officeToPdfService,
+    public OfficeFilePreviewImpl(
+        FileHandlerService fileHandlerService,
+        OfficeToPdfService officeToPdfService,
         OtherFilePreviewImpl otherFilePreview) {
         this.fileHandlerService = fileHandlerService;
         this.officeToPdfService = officeToPdfService;
@@ -55,7 +58,7 @@ public class OfficeFilePreviewImpl implements FilePreview {
             for (Throwable throwable : throwableArray) {
                 if (throwable instanceof IOException || throwable instanceof EncryptedDocumentException) {
                     if (e.getMessage().toLowerCase().contains(OFFICE_PASSWORD_MSG)) {
-                        model.addAttribute("needFilePassword", true);
+                        model.addAttribute(NEEDFILE_PASSWORD, true);
                         return EXEL_FILE_PREVIEW_PAGE;
                     }
                 }
@@ -110,7 +113,7 @@ public class OfficeFilePreviewImpl implements FilePreview {
             boolean isPwdProtectedOffice = OfficeUtils.isPwdProtected(filePath); // 判断是否加密文件
             if (isPwdProtectedOffice && !StringUtils.hasLength(filePassword)) {
                 // 加密文件需要密码
-                model.addAttribute("needFilePassword", true);
+                model.addAttribute(NEEDFILE_PASSWORD, true);
                 return EXEL_FILE_PREVIEW_PAGE;
             } else {
                 if (StringUtils.hasText(outFilePath)) {
@@ -119,7 +122,7 @@ public class OfficeFilePreviewImpl implements FilePreview {
                     } catch (OfficeException e) {
                         if (isPwdProtectedOffice && !OfficeUtils.isCompatible(filePath, filePassword)) {
                             // 加密文件密码错误，提示重新输入
-                            model.addAttribute("needFilePassword", true);
+                            model.addAttribute(NEEDFILE_PASSWORD, true);
                             model.addAttribute("filePasswordError", true);
                             return EXEL_FILE_PREVIEW_PAGE;
                         }

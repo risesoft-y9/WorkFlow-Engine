@@ -13,7 +13,7 @@ import net.risesoft.config.ConfigConstants;
 import net.risesoft.service.ZtreeNodeVo;
 
 public class RarUtils {
-    private static final String fileDir = ConfigConstants.getFileDir();
+    private static final String FILEDIR = ConfigConstants.getFileDir();
 
     public static byte[] getUTF8BytesFromGBKString(String gbkStr) {
         int n = gbkStr.length();
@@ -109,7 +109,7 @@ public class RarUtils {
      */
     public static List<ZtreeNodeVo> getTree(String rootPath) {
         List<ZtreeNodeVo> nodes = new ArrayList<>();
-        File file = new File(fileDir + rootPath);
+        File file = new File(FILEDIR + rootPath);
         ZtreeNodeVo node = traverse(file);
         nodes.add(node);
         return nodes;
@@ -117,9 +117,9 @@ public class RarUtils {
 
     private static ZtreeNodeVo traverse(File file) {
         ZtreeNodeVo pathNodeVo = new ZtreeNodeVo();
-        pathNodeVo.setId(file.getAbsolutePath().replace(fileDir, "").replace("\\", "/"));
+        pathNodeVo.setId(file.getAbsolutePath().replace(FILEDIR, "").replace("\\", "/"));
         pathNodeVo.setName(file.getName());
-        pathNodeVo.setPid(file.getParent().replace(fileDir, "").replace("\\", "/"));
+        pathNodeVo.setPid(file.getParent().replace(FILEDIR, "").replace("\\", "/"));
         if (file.isDirectory()) {
             List<ZtreeNodeVo> subNodeVos = new ArrayList<>();
             File[] subFiles = file.listFiles();

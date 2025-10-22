@@ -35,7 +35,7 @@ public class ConvertPicUtil {
 
     private static final int FIT_WIDTH = 500;
     private static final int FIT_HEIGHT = 900;
-    private final static String fileDir = ConfigConstants.getFileDir();
+    private final static String FILEDIR = ConfigConstants.getFileDir();
 
     /**
      * Tif 转 JPG。
@@ -53,13 +53,11 @@ public class ConvertPicUtil {
             return null;
         }
         strOutputFile = strOutputFile.replaceAll(".jpg", "");
-        FileSeekableStream fileSeekStream = null;
-        try {
+        try (FileSeekableStream fileSeekStream = new FileSeekableStream(strInputFile)) {
             JPEGEncodeParam jpegEncodeParam = new JPEGEncodeParam();
             TIFFEncodeParam tiffEncodeParam = new TIFFEncodeParam();
             tiffEncodeParam.setCompression(TIFFEncodeParam.COMPRESSION_GROUP4);
             tiffEncodeParam.setLittleEndian(false);
-            fileSeekStream = new FileSeekableStream(strInputFile);
             ImageDecoder imageDecoder = ImageCodec.createImageDecoder("TIFF", fileSeekStream, null);
             int intTifCount = imageDecoder.getNumPages();
             // logger.info("该tif文件共有【" + intTifCount + "】页");
@@ -84,7 +82,7 @@ public class ConvertPicUtil {
                     renderedOp.dispose();
                     // logger.info("每页分别保存至： " + fileJpg.getCanonicalPath());
                 }
-                strJpg = baseUrl + strJpg.replace(fileDir, "");
+                strJpg = baseUrl + strJpg.replace(FILEDIR, "");
                 listImageFiles.add(strJpg);
             }
         } catch (IOException e) {
@@ -92,10 +90,6 @@ public class ConvertPicUtil {
                 LOGGER.error("TIF转JPG异常，文件路径：" + strInputFile, e);
             }
             throw new Exception(e);
-        } finally {
-            if (fileSeekStream != null) {
-                fileSeekStream.close();
-            }
         }
         return listImageFiles;
     }
@@ -109,14 +103,13 @@ public class ConvertPicUtil {
     public static String convertJpg2Pdf(String strJpgFile, String strPdfFile) throws Exception {
         Document document = new Document();
         RandomAccessFileOrArray rafa = null;
-        FileOutputStream outputStream = null;
-        try {
-            RandomAccessFile aFile = new RandomAccessFile(strJpgFile, "r");
+        try (FileOutputStream outputStream = new FileOutputStream(strPdfFile);
+            RandomAccessFile aFile = new RandomAccessFile(strJpgFile, "r");) {
+
             FileChannel inChannel = aFile.getChannel();
             FileChannelRandomAccessSource fcra = new FileChannelRandomAccessSource(inChannel);
             rafa = new RandomAccessFileOrArray(fcra);
             int pages = TiffImage.getNumberOfPages(rafa);
-            outputStream = new FileOutputStream(strPdfFile);
             PdfWriter.getInstance(document, outputStream);
             document.open();
             Image image;
@@ -131,14 +124,11 @@ public class ConvertPicUtil {
             }
             throw new Exception(e);
         } finally {
-            if (document != null) {
+            if (document != null && document.isOpen()) {
                 document.close();
             }
             if (rafa != null) {
                 rafa.close();
-            }
-            if (outputStream != null) {
-                outputStream.close();
             }
         }
         return strPdfFile;

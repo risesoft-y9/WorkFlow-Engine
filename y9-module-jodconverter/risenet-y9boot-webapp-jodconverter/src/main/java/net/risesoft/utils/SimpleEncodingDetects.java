@@ -33,7 +33,7 @@ public class SimpleEncodingDetects {
      */
     public static String getJavaEncode(byte[] content) {
         BytesEncodingDetect s = new BytesEncodingDetect();
-        String fileCode = BytesEncodingDetect.javaname[s.detectEncoding(content)];
+        String fileCode = Encoding.javaname[s.detectEncoding(content)];
         return fileCode;
     }
 
@@ -4404,6 +4404,11 @@ class BytesEncodingDetect extends Encoding {
 class Encoding {
     public final static int SIMP = 0;
     public final static int TRAD = 1;
+    public static final String GB_CODE_18030 = "GB18030";
+    public static final String FONT_CODE_ASCII = "ASCII";
+    public static final String FONT_CODE_UTF8 = "UTF-8";
+    public static final String FONT_CODE_UTF16 = "UTF-16";
+    public static final String FONT_CODE_UNICODE = "Unicode";
     // Supported Encoding Types
     public static int GB2312 = 0;
     public static int GBK = 1;
@@ -4447,19 +4452,19 @@ class Encoding {
         // Assign encoding names
         javaname[GB2312] = "GB2312";
         javaname[GBK] = "GBK";
-        javaname[GB18030] = "GB18030";
-        javaname[HZ] = "ASCII"; // What to put here? Sun doesn't support HZ
+        javaname[GB18030] = GB_CODE_18030;
+        javaname[HZ] = FONT_CODE_ASCII; // What to put here? Sun doesn't support HZ
         javaname[ISO2022CN_GB] = "ISO2022CN_GB";
         javaname[BIG5] = "BIG5";
         javaname[CNS11643] = "EUC-TW";
         javaname[ISO2022CN_CNS] = "ISO2022CN_CNS";
         javaname[ISO2022CN] = "ISO2022CN";
-        javaname[UTF8] = "UTF-8";
-        javaname[UTF8T] = "UTF-8";
-        javaname[UTF8S] = "UTF-8";
-        javaname[UNICODE] = "Unicode";
-        javaname[UNICODET] = "Unicode";
-        javaname[UNICODES] = "Unicode";
+        javaname[UTF8] = FONT_CODE_UTF8;
+        javaname[UTF8T] = FONT_CODE_UTF8;
+        javaname[UTF8S] = FONT_CODE_UTF8;
+        javaname[UNICODE] = FONT_CODE_UNICODE;
+        javaname[UNICODET] = FONT_CODE_UNICODE;
+        javaname[UNICODES] = FONT_CODE_UNICODE;
         javaname[EUC_KR] = "EUC_KR";
         javaname[CP949] = "MS949";
         javaname[ISO2022KR] = "ISO2022KR";
@@ -4467,24 +4472,24 @@ class Encoding {
         javaname[SJIS] = "SJIS";
         javaname[EUC_JP] = "EUC_JP";
         javaname[ISO2022JP] = "ISO2022JP";
-        javaname[ASCII] = "ASCII";
+        javaname[ASCII] = FONT_CODE_ASCII;
         javaname[OTHER] = "ISO8859_1";
         // Assign encoding names
         htmlname[GB2312] = "GB2312";
         htmlname[GBK] = "GBK";
-        htmlname[GB18030] = "GB18030";
+        htmlname[GB18030] = GB_CODE_18030;
         htmlname[HZ] = "HZ-GB-2312";
         htmlname[ISO2022CN_GB] = "ISO-2022-CN-EXT";
         htmlname[BIG5] = "BIG5";
         htmlname[CNS11643] = "EUC-TW";
         htmlname[ISO2022CN_CNS] = "ISO-2022-CN-EXT";
         htmlname[ISO2022CN] = "ISO-2022-CN";
-        htmlname[UTF8] = "UTF-8";
-        htmlname[UTF8T] = "UTF-8";
-        htmlname[UTF8S] = "UTF-8";
-        htmlname[UNICODE] = "UTF-16";
-        htmlname[UNICODET] = "UTF-16";
-        htmlname[UNICODES] = "UTF-16";
+        htmlname[UTF8] = FONT_CODE_UTF8;
+        htmlname[UTF8T] = FONT_CODE_UTF8;
+        htmlname[UTF8S] = FONT_CODE_UTF8;
+        htmlname[UNICODE] = FONT_CODE_UTF16;
+        htmlname[UNICODET] = FONT_CODE_UTF16;
+        htmlname[UNICODES] = FONT_CODE_UTF16;
         htmlname[EUC_KR] = "EUC-KR";
         htmlname[CP949] = "x-windows-949";
         htmlname[ISO2022KR] = "ISO-2022-KR";
@@ -4492,22 +4497,22 @@ class Encoding {
         htmlname[SJIS] = "Shift_JIS";
         htmlname[EUC_JP] = "EUC-JP";
         htmlname[ISO2022JP] = "ISO-2022-JP";
-        htmlname[ASCII] = "ASCII";
+        htmlname[ASCII] = FONT_CODE_ASCII;
         htmlname[OTHER] = "ISO8859-1";
         // Assign Human readable names
         nicename[GB2312] = "GB-2312";
         nicename[GBK] = "GBK";
-        nicename[GB18030] = "GB18030";
+        nicename[GB18030] = GB_CODE_18030;
         nicename[HZ] = "HZ";
         nicename[ISO2022CN_GB] = "ISO2022CN-GB";
         nicename[BIG5] = "Big5";
         nicename[CNS11643] = "CNS11643";
         nicename[ISO2022CN_CNS] = "ISO2022CN-CNS";
         nicename[ISO2022CN] = "ISO2022 CN";
-        nicename[UTF8] = "UTF-8";
+        nicename[UTF8] = FONT_CODE_UTF8;
         nicename[UTF8T] = "UTF-8 (Trad)";
         nicename[UTF8S] = "UTF-8 (Simp)";
-        nicename[UNICODE] = "Unicode";
+        nicename[UNICODE] = FONT_CODE_UNICODE;
         nicename[UNICODET] = "Unicode (Trad)";
         nicename[UNICODES] = "Unicode (Simp)";
         nicename[EUC_KR] = "EUC-KR";
@@ -4517,7 +4522,7 @@ class Encoding {
         nicename[SJIS] = "Shift-JIS";
         nicename[EUC_JP] = "EUC-JP";
         nicename[ISO2022JP] = "ISO 2022 JP";
-        nicename[ASCII] = "ASCII";
+        nicename[ASCII] = FONT_CODE_ASCII;
         nicename[OTHER] = "OTHER";
     }
 

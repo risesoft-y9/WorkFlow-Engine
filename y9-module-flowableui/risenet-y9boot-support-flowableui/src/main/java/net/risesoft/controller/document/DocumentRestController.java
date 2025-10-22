@@ -37,6 +37,7 @@ import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.ProcessTodoApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
@@ -81,7 +82,6 @@ import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
 @RequestMapping(value = "/vue/document", produces = MediaType.APPLICATION_JSON_VALUE)
 public class DocumentRestController {
 
-    private static final String SYSTEMNAME_KEY = "systemName";
     private final ItemApi itemApi;
     private final DocumentApi documentApi;
     private final ButtonOperationService buttonOperationService;
@@ -576,20 +576,22 @@ public class DocumentRestController {
             List<ItemModel> listMap = itemApi.getAllItem(Y9LoginUserHolder.getTenantId()).getData();
             for (ItemModel itemModel : listMap) {
                 Map<String, Object> newmap = new HashMap<>(16);
-                newmap.put(SYSTEMNAME_KEY, itemModel.getSystemName());
+                newmap.put(FlowableUiConsts.SYSTEMNAME_KEY, itemModel.getSystemName());
                 newmap.put("systemCnName", itemModel.getSysLevel());
                 if (!list.contains(newmap)) {
                     list.add(newmap);
                 }
             }
             for (Map<String, Object> nmap : list) {
-                long todoCount = processTodoApi
-                    .getTodoCountByUserIdAndSystemName(tenantId, positionId, (String)nmap.get(SYSTEMNAME_KEY))
-                    .getData();
+                long todoCount =
+                    processTodoApi
+                        .getTodoCountByUserIdAndSystemName(tenantId, positionId,
+                            (String)nmap.get(FlowableUiConsts.SYSTEMNAME_KEY))
+                        .getData();
                 nmap.put("todoCount", todoCount);
                 List<ItemModel> itemList = new ArrayList<>();
                 for (ItemModel itemModel : listMap) {
-                    if (nmap.get(SYSTEMNAME_KEY).equals(itemModel.getSystemName())) {
+                    if (nmap.get(FlowableUiConsts.SYSTEMNAME_KEY).equals(itemModel.getSystemName())) {
                         itemList.add(itemModel);
                     }
                 }
@@ -639,8 +641,8 @@ public class DocumentRestController {
                 handleParallelInstance(result, tenantId, positionId, taskModel);
             } else {
                 result.put("isParallel", false);
-                result.put("parallelDoing", "");
-                result.put("count", 0);
+                result.put(FlowableUiConsts.PARALLELDOING_KEY, "");
+                result.put(FlowableUiConsts.COUNT_KEY, 0);
             }
             return Y9Result.success(result, "获取成功");
         } catch (Exception e) {
@@ -666,12 +668,12 @@ public class DocumentRestController {
             List<TaskModel> taskList =
                 taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), true).getData();
             ParallelProcessingResult processingResult = processAssistantTasks(tenantId, positionId, taskList);
-            result.put("parallelDoing", processingResult.assistantNames);
-            result.put("count", taskList != null ? taskList.size() - 1 : 0);
+            result.put(FlowableUiConsts.PARALLELDOING_KEY, processingResult.assistantNames);
+            result.put(FlowableUiConsts.COUNT_KEY, taskList != null ? taskList.size() - 1 : 0);
         } catch (Exception e) {
             LOGGER.warn("处理并行任务列表失败", e);
-            result.put("parallelDoing", "");
-            result.put("count", 0);
+            result.put(FlowableUiConsts.PARALLELDOING_KEY, "");
+            result.put(FlowableUiConsts.COUNT_KEY, 0);
         }
     }
 

@@ -20,7 +20,8 @@ import net.risesoft.utils.DownloadUtils;
 @Service
 public class MediaFilePreviewImpl implements FilePreview {
 
-    private static final String mp4 = "mp4";
+    private static final String MP4 = "mp4";
+    private static final String MEDIAURL = "mediaUrl";
     private final FileHandlerService fileHandlerService;
     private final OtherFilePreviewImpl otherFilePreview;
 
@@ -53,7 +54,7 @@ public class MediaFilePreviewImpl implements FilePreview {
             recorder.setAudioChannels(frameGrabber.getAudioChannels());
             // recorder.setImageHeight(640);
             // recorder.setImageWidth(480);
-            recorder.setFormat(mp4);
+            recorder.setFormat(MP4);
             recorder.setFrameRate(frameGrabber.getFrameRate());
             recorder.setSampleRate(frameGrabber.getSampleRate());
             // 视频编码属性配置 H.264 H.265 MPEG
@@ -124,14 +125,14 @@ public class MediaFilePreviewImpl implements FilePreview {
                     // 加入缓存
                     fileHandlerService.addConvertedFile(cacheName, fileHandlerService.getRelativePath(outFilePath));
                 }
-                model.addAttribute("mediaUrl", fileHandlerService.getRelativePath(outFilePath));
+                model.addAttribute(MEDIAURL, fileHandlerService.getRelativePath(outFilePath));
             } else {
-                model.addAttribute("mediaUrl", fileHandlerService.listConvertedFiles().get(cacheName));
+                model.addAttribute(MEDIAURL, fileHandlerService.listConvertedFiles().get(cacheName));
             }
             return MEDIA_FILE_PREVIEW_PAGE;
         }
         if (type.equals(FileType.MEDIA)) { // 支持输出 只限默认格式
-            model.addAttribute("mediaUrl", url);
+            model.addAttribute(MEDIAURL, url);
             return MEDIA_FILE_PREVIEW_PAGE;
         }
         return otherFilePreview.notSupportedFile(model, fileAttribute, "系统还不支持该格式文件的在线预览");
