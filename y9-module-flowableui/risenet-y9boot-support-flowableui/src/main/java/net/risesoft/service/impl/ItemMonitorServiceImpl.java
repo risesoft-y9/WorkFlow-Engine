@@ -10,9 +10,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.fasterxml.jackson.core.type.TypeReference;
-import com.fasterxml.jackson.databind.ObjectMapper;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -21,7 +18,6 @@ import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.form.FormDataApi;
 import net.risesoft.api.itemadmin.worklist.ItemMonitorApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.processadmin.SysVariables;
@@ -30,13 +26,11 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.ItemMonitorService;
+import net.risesoft.service.UtilService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9Util;
 
 @Slf4j
 @Service
@@ -52,13 +46,13 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
 
     private final ProcessParamApi processParamApi;
 
-    private final IdentityApi identityApi;
-
     private final ItemMonitorApi itemMonitorApi;
 
     private final ProcessDefinitionApi processDefinitionApi;
 
     private final FormDataApi formDataApi;
+
+    private final UtilService utilService;
 
     @Override
     public Y9Page<Map<String, Object>> pageTodoList(String itemId, Integer page, Integer rows) {
@@ -78,129 +72,134 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
     @Override
     public Y9Page<Map<String, Object>> pageAllList(String itemId, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9LoginUserHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemMonitorApi.findBySystemName(tenantId, positionId, item.getSystemName(), page, rows);
-            List<ActRuDetailModel> list = itemPage.getRows();
-            ObjectMapper objectMapper = new ObjectMapper();
-            List<ActRuDetailModel> taslList = objectMapper.convertValue(list, new TypeReference<>() {});
-            List<Map<String, Object>> items = new ArrayList<>();
-            int serialNumber = (page - 1) * rows;
-            Map<String, Object> mapTemp;
-            ProcessParamModel processParam;
-            String processInstanceId;
-            Map<String, Object> formData;
-            for (ActRuDetailModel ardModel : taslList) {
-                mapTemp = new HashMap<>(16);
-                String taskId = ardModel.getTaskId();
-                processInstanceId = ardModel.getProcessInstanceId();
-                try {
-                    String processSerialNumber = ardModel.getProcessSerialNumber();
-                    mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-                    processParam = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    boolean isSubProcessChildNode = processDefinitionApi.isSubProcessChildNode(tenantId,
-                        taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
-                    if (isSubProcessChildNode) {
-                        // 针对SubProcess
-                        mapTemp.put("taskName", "送会签");
-                        mapTemp.put("taskAssignee", "");
-                    } else {
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        mapTemp.put("taskName", taskList.get(0).getName());
-                        mapTemp.put("taskAssignee", listTemp.get(0));
-                    }
-                    mapTemp.put("systemCNName", processParam.getSystemCnName());
-                    mapTemp.put("bureauName",
-                        orgUnitApi.getBureau(tenantId, processParam.getStartor()).getData().getName());
-                    mapTemp.put("itemId", processParam.getItemId());
-                    mapTemp.put("processInstanceId", processInstanceId);
-                    mapTemp.put("taskId", taskId);
-                    /**
-                     * 暂时取表单所有字段数据
-                     */
-                    formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
-                    mapTemp.putAll(formData);
-
-                    if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO)) {
-                        mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
-                    } else {
-                        mapTemp.put(SysVariables.ITEM_BOX, StringUtils.isBlank(processParam.getCompleter())
-                            ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
-                    }
-                    mapTemp.put(SysVariables.ITEM_BOX, StringUtils.isBlank(processParam.getCompleter())
-                        ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
-                } catch (Exception e) {
-                    LOGGER.error("获取已办列表失败" + processInstanceId, e);
-                }
-                mapTemp.put("serialNumber", serialNumber + 1);
-                serialNumber += 1;
-                items.add(mapTemp);
-            }
+            List<Map<String, Object>> items = processActRuDetails(itemPage.getRows(), tenantId, itemId, page, rows);
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取监控列表异常", e);
+            return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
         }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
     }
 
     /**
-     * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
-     *
-     * @return List<String>
+     * 处理 ActRuDetailModel 列表
      */
-    private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String assigneeNames = "";
-        List<String> list = new ArrayList<>();
-        int i = 0;
-        for (TaskModel task : taskList) {
-            if (StringUtils.isEmpty(assigneeNames)) {
-                String assignee = task.getAssignee();
-                if (StringUtils.isNotBlank(assignee)) {
-                    OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                    if (personTemp != null) {
-                        assigneeNames = personTemp.getName();
-                        i += 1;
-                    }
-                } else {// 处理单实例未签收的当前办理人显示
-                    List<IdentityLinkModel> iList =
-                        identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
-                    if (!iList.isEmpty()) {
-                        int j = 0;
-                        for (IdentityLinkModel identityLink : iList) {
-                            String assigneeId = identityLink.getUserId();
-                            OrgUnit ownerUser = orgUnitApi
-                                .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
-                            if (j < 5) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-                            } else {
-                                assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
-                                break;
-                            }
-                            j++;
-                        }
-                    }
-                }
-            } else {
-                String assignee = task.getAssignee();
-                if (i < 5) {
-                    if (StringUtils.isNotBlank(assignee)) {
-                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                        if (personTemp != null) {
-                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");// 并行时，领导选取时存在顺序，因此这里也存在顺序
-                            i += 1;
-                        }
-                    }
+    private List<Map<String, Object>> processActRuDetails(List<ActRuDetailModel> actRuDetails, String tenantId,
+        String itemId, Integer page, Integer rows) {
+        List<Map<String, Object>> items = new ArrayList<>();
+        int serialNumber = (page - 1) * rows;
+        for (ActRuDetailModel ardModel : actRuDetails) {
+            Map<String, Object> itemMap = processSingleActRuDetail(ardModel, tenantId, itemId, ++serialNumber);
+            items.add(itemMap);
+        }
+
+        return items;
+    }
+
+    /**
+     * 处理单个 ActRuDetailModel
+     */
+    private Map<String, Object> processSingleActRuDetail(ActRuDetailModel ardModel, String tenantId, String itemId,
+        int serialNumber) {
+        Map<String, Object> mapTemp = new HashMap<>(16);
+        String processInstanceId = ardModel.getProcessInstanceId();
+        try {
+            String processSerialNumber = ardModel.getProcessSerialNumber();
+            mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
+            ProcessParamModel processParam =
+                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            // 处理任务信息
+            handleTaskInfo(mapTemp, tenantId, processInstanceId);
+            // 处理流程参数相关信息
+            handleProcessParamInfo(mapTemp, processParam, tenantId);
+            // 处理表单数据
+            handleFormData(mapTemp, tenantId, itemId, processSerialNumber);
+            // 设置状态
+            handleItemBoxStatus(mapTemp, ardModel, processParam);
+        } catch (Exception e) {
+            LOGGER.error("处理流程实例失败{}", processInstanceId, e);
+        }
+        mapTemp.put("serialNumber", serialNumber);
+        return mapTemp;
+    }
+
+    /**
+     * 处理任务相关信息
+     */
+    private void handleTaskInfo(Map<String, Object> mapTemp, String tenantId, String processInstanceId) {
+        try {
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            if (taskList != null && !taskList.isEmpty()) {
+                TaskModel firstTask = taskList.get(0);
+                boolean isSubProcessChildNode =
+                    processDefinitionApi
+                        .isSubProcessChildNode(tenantId, firstTask.getProcessDefinitionId(),
+                            firstTask.getTaskDefinitionKey())
+                        .getData();
+                if (isSubProcessChildNode) {
+                    // 针对SubProcess
+                    mapTemp.put("taskName", "送会签");
+                    mapTemp.put("taskAssignee", "");
+                } else {
+                    mapTemp.put("taskName", firstTask.getName());
+                    mapTemp.put("taskAssignee", utilService.getAssigneeNames(taskList));
                 }
             }
+        } catch (Exception e) {
+            LOGGER.warn("处理任务信息失败, processInstanceId: {}", processInstanceId, e);
         }
-        if (taskList.size() > 5) {
-            assigneeNames += "等，共" + taskList.size() + "人";
+    }
+
+    /**
+     * 处理流程参数相关信息
+     */
+    private void handleProcessParamInfo(Map<String, Object> mapTemp, ProcessParamModel processParam, String tenantId) {
+        if (processParam != null) {
+            mapTemp.put("systemCNName", processParam.getSystemCnName());
+            mapTemp.put("itemId", processParam.getItemId());
+            mapTemp.put("processInstanceId", processParam.getProcessInstanceId());
+            try {
+                String startor = processParam.getStartor();
+                if (StringUtils.isNotBlank(startor)) {
+                    mapTemp.put("bureauName", orgUnitApi.getBureau(tenantId, startor).getData().getName());
+                }
+            } catch (Exception e) {
+                LOGGER.warn("获取发起单位信息失败, startor: {}", processParam.getStartor(), e);
+            }
         }
-        list.add(assigneeNames);
-        return list;
+    }
+
+    /**
+     * 处理表单数据
+     */
+    private void handleFormData(Map<String, Object> mapTemp, String tenantId, String itemId,
+        String processSerialNumber) {
+        try {
+            // 暂时取表单所有字段数据
+            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            if (formData != null) {
+                mapTemp.putAll(formData);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取表单数据失败, processSerialNumber: {}", processSerialNumber, e);
+        }
+    }
+
+    /**
+     * 处理状态设置
+     */
+    private void handleItemBoxStatus(Map<String, Object> mapTemp, ActRuDetailModel ardModel,
+        ProcessParamModel processParam) {
+        if (Objects.equals(ardModel.getStatus(), ActRuDetailStatusEnum.TODO)) {
+            mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
+        } else {
+            mapTemp.put(SysVariables.ITEM_BOX, StringUtils.isBlank(processParam.getCompleter())
+                ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
+        }
     }
 
     @Override

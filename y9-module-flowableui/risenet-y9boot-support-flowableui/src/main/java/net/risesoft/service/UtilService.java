@@ -18,4 +18,6 @@ public interface UtilService {
      */
     void setPublicData(Map<String, Object> mapTemp, String processInstanceId, List<TaskModel> taskList,
         ItemBoxTypeEnum itemBoxTypeEnum);
+
+    String getAssigneeNames(List<TaskModel> taskList);
 }

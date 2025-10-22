@@ -35,6 +35,7 @@ import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.MonitorService;
+import net.risesoft.service.UtilService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -50,6 +51,7 @@ public class MonitorServiceImpl implements MonitorService {
     private final OfficeDoneInfoApi officeDoneInfoApi;
     private final ChaoSongApi chaoSongApi;
     private final IdentityApi identityApi;
+    private final UtilService utilService;
 
     /**
      * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
@@ -58,86 +60,8 @@ public class MonitorServiceImpl implements MonitorService {
      */
     private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String taskIds = "", assigneeNames = "";
-        List<String> list = new ArrayList<>();
-        int i = 0;
-        if (!taskList.isEmpty()) {
-            for (TaskModel task : taskList) {
-                if (StringUtils.isEmpty(taskIds)) {
-                    taskIds = task.getId();
-                    String assignee = task.getAssignee();
-                    if (StringUtils.isNotBlank(assignee)) {
-                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                        if (personTemp != null) {
-                            assigneeNames = personTemp.getName();
-                            i += 1;
-                        }
-                    } else {
-                        // 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList =
-                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
-                        if (!iList.isEmpty()) {
-                            int j = 0;
-                            for (IdentityLinkModel identityLink : iList) {
-                                String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser =
-                                    orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
-                                        .getData();
-                                if (j < 5) {
-                                    assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-                                } else {
-                                    assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
-                                    break;
-                                }
-                                j++;
-                            }
-                        }
-                    }
-                } else {
-                    taskIds = Y9Util.genCustomStr(taskIds, task.getId(), SysVariables.COMMA);
-                    String assignee = task.getAssignee();
-                    if (i < 5) {
-                        if (StringUtils.isNotBlank(assignee)) {
-                            // 并行时，领导选取时存在顺序，因此这里也存在顺序
-                            OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                            if (personTemp != null) {
-                                // 并行时，领导选取时存在顺序，因此这里也存在顺序
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
-                                i += 1;
-                            }
-                        }
-                    }
-                }
-            }
-            if (taskList.size() > 5) {
-                assigneeNames += "等，共" + taskList.size() + "人";
-            }
-        } else {
-            /*
-             * List<HistoricActivityInstance> historicActivityInstanceList =
-             * historyService.createHistoricActivityInstanceQuery().
-             * processInstanceId(processInstanceId).activityType(SysVariables.
-             * CALLACTIVITY).list(); if (historicActivityInstanceList != null &&
-             * historicActivityInstanceList.size() > 0) { Map<String, Object> record =
-             * setTodoElement(historicActivityInstanceList.get(0), existAssigneeId,
-             * existAssigneeName); items.add(record); }
-             */
-        }
-        list.add(taskIds);
-        list.add(assigneeNames);
-        return list;
-    }
-
-    /**
-     * 当并行的时候，会获取到多个task，为了并行时当前办理人显示多人，而不是显示多条记录，需要分开分别进行处理
-     *
-     * @return List<String>
-     */
-    private List<String> getAssigneeIdsAndAssigneeNames1(List<TaskModel> taskList) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getPersonId();
-        String taskIds = "", assigneeIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(),
-            taskId = "";
+        String taskIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
         List<String> list = new ArrayList<>();
         int i = 0;
         for (TaskModel task : taskList) {
@@ -145,7 +69,6 @@ public class MonitorServiceImpl implements MonitorService {
                 taskIds = task.getId();
                 String assignee = task.getAssignee();
                 if (StringUtils.isNotBlank(assignee)) {
-                    assigneeIds = assignee;
                     OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                     if (personTemp != null) {
                         assigneeNames = personTemp.getName();
@@ -167,7 +90,6 @@ public class MonitorServiceImpl implements MonitorService {
                                     .getData();
                             if (j < 5) {
                                 assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-                                assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
                             } else {
                                 assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
                                 break;
@@ -180,7 +102,6 @@ public class MonitorServiceImpl implements MonitorService {
                 String assignee = task.getAssignee();
                 if (StringUtils.isNotBlank(assignee)) {
                     if (i < 5) {
-                        assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
                         OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
                         if (personTemp != null) {
                             assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
@@ -198,7 +119,6 @@ public class MonitorServiceImpl implements MonitorService {
             assigneeNames += "等，共" + taskList.size() + "人";
         }
         list.add(taskIds);
-        list.add(assigneeIds);
         list.add(assigneeNames);
         list.add(itembox);
         list.add(taskId);
@@ -250,11 +170,11 @@ public class MonitorServiceImpl implements MonitorService {
                     if (StringUtils.isBlank(model.getEndTime())) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
-                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(2);
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(1);
                         mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
                         mapTemp.put(FlowableUiConsts.TASKID_KEY,
-                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                            listTemp.get(2).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(3));
                         mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
                         mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, new HashMap<String, String>(16));
                     }
@@ -284,46 +204,47 @@ public class MonitorServiceImpl implements MonitorService {
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             String processInstanceId;
-            for (OfficeDoneInfoModel hpim : hpiList) {
+            for (OfficeDoneInfoModel officeDoneInfo : hpiList) {
                 mapTemp = new HashMap<>(16);
-                processInstanceId = hpim.getProcessInstanceId();
+                processInstanceId = officeDoneInfo.getProcessInstanceId();
                 try {
-                    String processDefinitionId = hpim.getProcessDefinitionId();
-                    String startTime = hpim.getStartTime().substring(0, 16);
-                    String processSerialNumber = hpim.getProcessSerialNumber();
-                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                    String level = hpim.getUrgency();
-                    String number = hpim.getDocNumber();
-                    String completer = hpim.getUserComplete();
-                    mapTemp.put(FlowableUiConsts.ITEMNAME_KEY, hpim.getItemName());
+                    String processDefinitionId = officeDoneInfo.getProcessDefinitionId();
+                    String startTime = officeDoneInfo.getStartTime().substring(0, 16);
+                    String processSerialNumber = officeDoneInfo.getProcessSerialNumber();
+                    String documentTitle =
+                        StringUtils.isBlank(officeDoneInfo.getTitle()) ? "无标题" : officeDoneInfo.getTitle();
+                    String level = officeDoneInfo.getUrgency();
+                    String number = officeDoneInfo.getDocNumber();
+                    String completer = officeDoneInfo.getUserComplete();
+                    mapTemp.put(FlowableUiConsts.ITEMNAME_KEY, officeDoneInfo.getItemName());
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, processDefinitionId);
-                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, hpim.getProcessDefinitionKey());
+                    mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, officeDoneInfo.getProcessDefinitionKey());
                     mapTemp.put(FlowableUiConsts.STARTTIME_KEY, startTime);
-                    mapTemp.put(FlowableUiConsts.ENDTIME_KEY,
-                        StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
+                    mapTemp.put(FlowableUiConsts.ENDTIME_KEY, StringUtils.isBlank(officeDoneInfo.getEndTime()) ? "--"
+                        : officeDoneInfo.getEndTime().substring(0, 16));
                     mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, "");
                     mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, completer);
-                    mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, hpim.getCreatUserName());
-                    mapTemp.put(ITEMID_KEY, hpim.getItemId());
+                    mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, officeDoneInfo.getCreatUserName());
+                    mapTemp.put(ITEMID_KEY, officeDoneInfo.getItemId());
                     mapTemp.put(FlowableUiConsts.LEVEL_KEY, level == null ? "" : level);
                     mapTemp.put(FlowableUiConsts.NUMBER_KEY, number == null ? "" : number);
                     mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, ItemBoxTypeEnum.DONE.getValue());
-                    if (StringUtils.isBlank(hpim.getEndTime())) {
+                    if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames1(taskList);
-                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(2);
+                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
+                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(1);
                         mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
                         mapTemp.put(FlowableUiConsts.TASKID_KEY,
-                            listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
+                            listTemp.get(2).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(3));
                         mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
                         mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, listTemp.get(3));
                     }
                 } catch (Exception e) {
-                    LOGGER.error("获取任务信息失败" + processInstanceId, e);
+                    LOGGER.error("获取任务信息失败{}", processInstanceId, e);
                 }
                 mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, serialNumber + 1);
                 serialNumber += 1;
@@ -357,26 +278,15 @@ public class MonitorServiceImpl implements MonitorService {
         try {
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-            // if (StringUtils.isBlank(searchTerm)) {
-            // retMap = monitorApi.getDoingListByProcessDefinitionKey(tenantId, processDefinitionKey, page, rows);
-            // } else {
-            // retMap = monitorApi.searchDoingListByProcessDefinitionKey(tenantId, processDefinitionKey,
-            // searchTerm, page, rows);
-            // }
             y9Page = officeDoneInfoApi.searchByItemId(tenantId, searchTerm, itemId, ItemBoxTypeEnum.TODO.getValue(), "",
                 "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<OfficeDoneInfoModel> hpiList = objectMapper.convertValue(hpiModelList, new TypeReference<>() {});
-            // List<HistoricProcessInstanceModel> list = (List<HistoricProcessInstanceModel>)retMap.get("rows");
-            // ObjectMapper objectMapper = new ObjectMapper();
-            // List<HistoricProcessInstanceModel> hpiModelList = objectMapper.convertValue(list, new
-            // TypeReference<List<HistoricProcessInstanceModel>>() {});
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             String processInstanceId;
-            // ProcessParamModel processParam = null;
             for (OfficeDoneInfoModel model : hpiList) {
                 mapTemp = new HashMap<>(16);
                 processInstanceId = model.getProcessInstanceId();
@@ -399,16 +309,12 @@ public class MonitorServiceImpl implements MonitorService {
                     mapTemp.put(FlowableUiConsts.NUMBER_KEY, number == null ? "" : number);
                     mapTemp.put("status", 1);
                     mapTemp.put("taskDueDate", "");
-
                     List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                    String taskIds = listTemp.get(0), assigneeNames = listTemp.get(1);
                     Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                     mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
                     mapTemp.put("taskName", taskList.get(0).getName());
                     mapTemp.put("taskCreateTime", model.getStartTime().substring(0, 16));
-                    mapTemp.put(FlowableUiConsts.TASKID_KEY, taskIds);
-                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
+                    mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList));
                     mapTemp.put("isReminder", isReminder);
                 } catch (Exception e) {
                     LOGGER.error("获取列表失败{}", processInstanceId, e);
@@ -441,25 +347,26 @@ public class MonitorServiceImpl implements MonitorService {
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             String processInstanceId;
-            for (OfficeDoneInfoModel hpim : hpiList) {
+            for (OfficeDoneInfoModel officeDoneInfo : hpiList) {
                 mapTemp = new HashMap<>(16);
-                processInstanceId = hpim.getProcessInstanceId();
+                processInstanceId = officeDoneInfo.getProcessInstanceId();
                 try {
-                    String processDefinitionId = hpim.getProcessDefinitionId();
-                    String startTime = hpim.getStartTime().substring(0, 16),
-                        endTime = hpim.getEndTime().substring(0, 16);
-                    String processSerialNumber = hpim.getProcessSerialNumber();
-                    String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                    String level = hpim.getUrgency();
-                    String number = hpim.getDocNumber();
-                    String completer = hpim.getUserComplete();
+                    String processDefinitionId = officeDoneInfo.getProcessDefinitionId();
+                    String startTime = officeDoneInfo.getStartTime().substring(0, 16),
+                        endTime = officeDoneInfo.getEndTime().substring(0, 16);
+                    String processSerialNumber = officeDoneInfo.getProcessSerialNumber();
+                    String documentTitle =
+                        StringUtils.isBlank(officeDoneInfo.getTitle()) ? "无标题" : officeDoneInfo.getTitle();
+                    String level = officeDoneInfo.getUrgency();
+                    String number = officeDoneInfo.getDocNumber();
+                    String completer = officeDoneInfo.getUserComplete();
                     mapTemp.put(FlowableUiConsts.ITEMNAME_KEY, itemName);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
                     mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
                     mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, processDefinitionId);
                     mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, processDefinitionKey);
-                    mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, hpim.getCreatUserName());
+                    mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, officeDoneInfo.getCreatUserName());
                     mapTemp.put(FlowableUiConsts.STARTTIME_KEY, startTime);
                     mapTemp.put(FlowableUiConsts.ENDTIME_KEY, endTime);
                     mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, "");
@@ -468,7 +375,7 @@ public class MonitorServiceImpl implements MonitorService {
                     mapTemp.put(FlowableUiConsts.LEVEL_KEY, level);
                     mapTemp.put(FlowableUiConsts.NUMBER_KEY, number);
                 } catch (Exception e) {
-                    LOGGER.error("获取监控办结列表失败，processInstanceId：" + processInstanceId, e);
+                    LOGGER.error("获取监控办结列表失败，processInstanceId：{}", processInstanceId, e);
                 }
                 mapTemp.put(FlowableUiConsts.SERIALNUMBER_KEY, serialNumber + 1);
                 serialNumber += 1;
