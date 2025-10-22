@@ -26,6 +26,7 @@ import net.risesoft.utils.WebUtils;
 public class PdfFilePreviewImpl implements FilePreview {
 
     private static final String PDF_PASSWORD_MSG = "password";
+    private static final String PDF_URL = "pdfUrl";
     private final FileHandlerService fileHandlerService;
     private final OtherFilePreviewImpl otherFilePreview;
 
@@ -92,16 +93,16 @@ public class PdfFilePreviewImpl implements FilePreview {
                     if (response.isFailure()) {
                         return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
                     }
-                    model.addAttribute("pdfUrl", fileHandlerService.getRelativePath(response.getContent()));
+                    model.addAttribute(PDF_URL, fileHandlerService.getRelativePath(response.getContent()));
                     if (ConfigConstants.isCacheEnabled()) {
                         // 加入缓存
                         fileHandlerService.addConvertedFile(pdfName, fileHandlerService.getRelativePath(outFilePath));
                     }
                 } else {
-                    model.addAttribute("pdfUrl", WebUtils.encodeFileName(pdfName));
+                    model.addAttribute(PDF_URL, WebUtils.encodeFileName(pdfName));
                 }
             } else {
-                model.addAttribute("pdfUrl", url);
+                model.addAttribute(PDF_URL, url);
             }
         }
         return PDF_FILE_PREVIEW_PAGE;

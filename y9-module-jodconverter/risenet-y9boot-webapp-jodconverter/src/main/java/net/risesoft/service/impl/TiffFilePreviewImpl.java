@@ -22,6 +22,8 @@ import net.risesoft.utils.WebUtils;
 @Service
 public class TiffFilePreviewImpl implements FilePreview {
 
+    private static final String IMAURLS = "imgUrls";
+    private static final String CURRENTURL = "currentUrl";
     private final FileHandlerService fileHandlerService;
     private final OtherFilePreviewImpl otherFilePreview;
 
@@ -50,8 +52,8 @@ public class TiffFilePreviewImpl implements FilePreview {
                         ConvertPicUtil.convertJpg2Pdf(filePath, outFilePath);
                     } catch (Exception e) {
                         if (e.getMessage().contains("Bad endianness tag (not 0x4949 or 0x4d4d)")) {
-                            model.addAttribute("imgUrls", url);
-                            model.addAttribute("currentUrl", url);
+                            model.addAttribute(IMAURLS, url);
+                            model.addAttribute(CURRENTURL, url);
                             return PICTURE_FILE_PREVIEW_PAGE;
                         } else {
                             return otherFilePreview.notSupportedFile(model, fileAttribute, "TIF转pdf异常，请联系系统管理员!");
@@ -74,8 +76,8 @@ public class TiffFilePreviewImpl implements FilePreview {
                         listPic2Jpg = ConvertPicUtil.convertTif2Jpg(filePath, outFilePath, forceUpdatedCache);
                     } catch (Exception e) {
                         if (e.getMessage().contains("Bad endianness tag (not 0x4949 or 0x4d4d)")) {
-                            model.addAttribute("imgUrls", url);
-                            model.addAttribute("currentUrl", url);
+                            model.addAttribute(IMAURLS, url);
+                            model.addAttribute(CURRENTURL, url);
                             return PICTURE_FILE_PREVIEW_PAGE;
                         } else {
                             return otherFilePreview.notSupportedFile(model, fileAttribute, "TIF转JPG异常，请联系系统管理员!");
@@ -90,8 +92,8 @@ public class TiffFilePreviewImpl implements FilePreview {
                         fileHandlerService.putImgCache(cacheName, listPic2Jpg);
                         fileHandlerService.addConvertedFile(cacheName, fileHandlerService.getRelativePath(outFilePath));
                     }
-                    model.addAttribute("imgUrls", listPic2Jpg);
-                    model.addAttribute("currentUrl", listPic2Jpg.get(0));
+                    model.addAttribute(IMAURLS, listPic2Jpg);
+                    model.addAttribute(CURRENTURL, listPic2Jpg.get(0));
                     return PICTURE_FILE_PREVIEW_PAGE;
                 }
             }
@@ -99,8 +101,8 @@ public class TiffFilePreviewImpl implements FilePreview {
                 model.addAttribute("pdfUrl", WebUtils.encodeFileName(cacheName));
                 return PDF_FILE_PREVIEW_PAGE;
             } else if ("jpg".equalsIgnoreCase(tifPreviewType)) {
-                model.addAttribute("imgUrls", fileHandlerService.getImgCache(cacheName));
-                model.addAttribute("currentUrl", fileHandlerService.getImgCache(cacheName).get(0));
+                model.addAttribute(IMAURLS, fileHandlerService.getImgCache(cacheName));
+                model.addAttribute(CURRENTURL, fileHandlerService.getImgCache(cacheName).get(0));
                 return PICTURE_FILE_PREVIEW_PAGE;
             }
         }
@@ -112,17 +114,17 @@ public class TiffFilePreviewImpl implements FilePreview {
                 if (response.isFailure()) {
                     return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
                 }
-                model.addAttribute("currentUrl", fileHandlerService.getRelativePath(response.getContent()));
+                model.addAttribute(CURRENTURL, fileHandlerService.getRelativePath(response.getContent()));
                 if (ConfigConstants.isCacheEnabled()) {
                     // 加入缓存
                     fileHandlerService.addConvertedFile(fileName, fileHandlerService.getRelativePath(outFilePath));
                 }
             } else {
-                model.addAttribute("currentUrl", WebUtils.encodeFileName(fileName));
+                model.addAttribute(CURRENTURL, WebUtils.encodeFileName(fileName));
             }
             return TIFF_FILE_PREVIEW_PAGE;
         }
-        model.addAttribute("currentUrl", url);
+        model.addAttribute(CURRENTURL, url);
         return TIFF_FILE_PREVIEW_PAGE;
     }
 }

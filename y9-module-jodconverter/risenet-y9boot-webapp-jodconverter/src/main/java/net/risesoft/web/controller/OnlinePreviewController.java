@@ -49,6 +49,7 @@ import fr.opensagres.xdocreport.core.io.IOUtils;
 public class OnlinePreviewController {
 
     public static final String BASE64_DECODE_ERROR_MSG = "Base64解码失败，请检查你的 %s 是否采用 Base64 + urlEncode 双重编码了！";
+    private static final String CURRENTURL = "currentUrl";
     private static final RestTemplate restTemplate = new RestTemplate();
     private static final HttpComponentsClientHttpRequestFactory factory = new HttpComponentsClientHttpRequestFactory();
     private static final ObjectMapper mapper = new ObjectMapper();
@@ -57,8 +58,11 @@ public class OnlinePreviewController {
     private final FileHandlerService fileHandlerService;
     private final OtherFilePreviewImpl otherFilePreview;
 
-    public OnlinePreviewController(FilePreviewFactory filePreviewFactory, FileHandlerService fileHandlerService,
-        CacheService cacheService, OtherFilePreviewImpl otherFilePreview) {
+    public OnlinePreviewController(
+        FilePreviewFactory filePreviewFactory,
+        FileHandlerService fileHandlerService,
+        CacheService cacheService,
+        OtherFilePreviewImpl otherFilePreview) {
         this.previewFactory = filePreviewFactory;
         this.fileHandlerService = fileHandlerService;
         this.cacheService = cacheService;
@@ -110,13 +114,13 @@ public class OnlinePreviewController {
         String[] images = fileUrls.split("\\|");
         List<String> imgUrls = Arrays.asList(images);
         model.addAttribute("imgUrls", imgUrls);
-        String currentUrl = req.getParameter("currentUrl");
+        String currentUrl = req.getParameter(CURRENTURL);
         if (StringUtils.hasText(currentUrl)) {
             String decodedCurrentUrl = new String(Base64.decodeBase64(currentUrl));
             decodedCurrentUrl = KkFileUtils.htmlEscape(decodedCurrentUrl); // 防止XSS攻击
-            model.addAttribute("currentUrl", decodedCurrentUrl);
+            model.addAttribute(CURRENTURL, decodedCurrentUrl);
         } else {
-            model.addAttribute("currentUrl", imgUrls.get(0));
+            model.addAttribute(CURRENTURL, imgUrls.get(0));
         }
         return PICTURE_FILE_PREVIEW_PAGE;
     }
