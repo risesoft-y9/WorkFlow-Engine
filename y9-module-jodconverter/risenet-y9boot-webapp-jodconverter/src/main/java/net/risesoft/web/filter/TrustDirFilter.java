@@ -56,7 +56,7 @@ public class TrustDirFilter implements Filter {
 
     @Override
     public void destroy() {
-
+        // 空实现 - 该过滤器不需要在销毁时执行特定清理逻辑
     }
 
     private boolean allowPreview(String urlPath) {
@@ -69,7 +69,7 @@ public class TrustDirFilter implements Filter {
             if ("file".equals(url.getProtocol().toLowerCase(Locale.ROOT))) {
                 String filePath = URLDecoder.decode(url.getPath(), StandardCharsets.UTF_8.name());
                 if (OSUtils.IS_OS_WINDOWS) {
-                    filePath = filePath.replaceAll("/", "\\\\");
+                    filePath = filePath.replace("/", "\\\\");
                 }
                 return filePath.startsWith(ConfigConstants.getFileDir())
                     || filePath.startsWith(ConfigConstants.getLocalPreviewDir());
