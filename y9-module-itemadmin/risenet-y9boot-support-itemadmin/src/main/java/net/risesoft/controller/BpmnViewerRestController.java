@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -60,54 +59,82 @@ public class BpmnViewerRestController {
     @GetMapping(value = "/getTaskList")
     public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<HistoricActivityInstanceModel> list = new ArrayList<>();
+        List<HistoricActivityInstanceModel> list;
         try {
-            list = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, "").getData();
             String year = "";
+            list = historicActivityApi.getByProcessInstanceId(tenantId, processInstanceId).getData();
             if (list == null || list.isEmpty()) {
                 OfficeDoneInfo info = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                 year = info.getStartTime().substring(0, 4);
                 list = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, year).getData();
             }
             for (HistoricActivityInstanceModel task : list) {
-                String assignee = task.getAssignee();
-                task.setExecutionId("");
-                if (assignee != null) {
-                    // 意见
-                    List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
-                        task.getTaskId(), StringUtils.isBlank(assignee) ? "" : assignee);
-                    OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                    HistoricVariableInstanceModel zhuBan = null;
-                    try {
-                        zhuBan = historicVariableApi
-                            .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLEL_SPONSOR, year)
-                            .getData();
-                    } catch (Exception e) {
-                        LOGGER.error("获取主办人失败", e);
-                    }
-                    String employeeName = "";
-                    if (employee != null) {
-                        employeeName = employee.getName();
-                    }
-                    if (StringUtils.isNotBlank(task.getTenantId())) {// tenantId存的是岗位/人员名称，优先显示这个名称
-                        employeeName = task.getTenantId();
-                    }
-                    // 将TenantId字段存意见
-                    task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
-                    if (zhuBan != null) {// 办理人
-                        task.setCalledProcessInstanceId(employeeName + "(主办)");
-                    } else {
-                        task.setCalledProcessInstanceId(employeeName);
-                    }
-                    if (task.getStartTime() != null && task.getEndTime() != null) {// 办理时长
-                        task.setExecutionId(longTime(task.getStartTime(), task.getEndTime()));
-                    }
-                }
+                processTaskDetails(tenantId, task, year);
             }
         } catch (Exception e) {
-            LOGGER.error("获取流程实例节点列表失败", e);
+            LOGGER.error("获取流程实例节点列表失败，processInstanceId: {}", processInstanceId, e);
+            return Y9Result.failure("获取流程实例节点列表失败");
         }
+
         return Y9Result.success(list, "获取成功");
+    }
+
+    /**
+     * 处理任务详情信息
+     */
+    private void processTaskDetails(String tenantId, HistoricActivityInstanceModel task, String year) {
+        String assignee = task.getAssignee();
+        task.setExecutionId(""); // 重用字段存储办理时长
+        if (assignee != null) {
+            try {
+                // 获取意见信息
+                List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
+                    task.getTaskId(), StringUtils.defaultString(assignee));
+                // 获取办理人信息
+                OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                // 获取主办人信息
+                HistoricVariableInstanceModel zhuBan = getZhuBanInfo(tenantId, task, year);
+                // 设置办理人名称
+                String employeeName = getEmployeeName(task, employee);
+                // 将TenantId字段存储意见内容
+                task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
+                // 设置办理人显示名称（含主办标识）
+                task.setCalledProcessInstanceId(zhuBan != null ? employeeName + "(主办)" : employeeName);
+                // 计算并设置办理时长
+                if (task.getStartTime() != null && task.getEndTime() != null) {
+                    task.setExecutionId(longTime(task.getStartTime(), task.getEndTime()));
+                }
+            } catch (Exception e) {
+                LOGGER.error("处理任务详情信息失败，taskId: {}", task.getTaskId(), e);
+            }
+        }
+    }
+
+    /**
+     * 获取主办人信息
+     */
+    private HistoricVariableInstanceModel getZhuBanInfo(String tenantId, HistoricActivityInstanceModel task,
+        String year) {
+        try {
+            return historicVariableApi
+                .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLEL_SPONSOR, year)
+                .getData();
+        } catch (Exception e) {
+            LOGGER.error("获取主办人失败，taskId: {}", task.getTaskId(), e);
+            return null;
+        }
+    }
+
+    /**
+     * 获取办理人名称
+     */
+    private String getEmployeeName(HistoricActivityInstanceModel task, OrgUnit employee) {
+        // 如果tenantId字段已包含名称，则优先使用
+        if (StringUtils.isNotBlank(task.getTenantId())) {
+            return task.getTenantId();
+        }
+
+        return employee != null ? employee.getName() : "";
     }
 
     private String longTime(Date startTime, Date endTime) {

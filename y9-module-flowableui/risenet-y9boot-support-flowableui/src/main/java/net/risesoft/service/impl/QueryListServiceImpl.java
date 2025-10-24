@@ -19,22 +19,18 @@ import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.worklist.QueryListApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
-import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.QueryListService;
+import net.risesoft.service.UtilService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9Util;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -52,78 +48,9 @@ public class QueryListServiceImpl implements QueryListService {
 
     private final TaskApi taskApi;
 
-    private final OrgUnitApi orgUnitApi;
-
-    private final IdentityApi identityApi;
-
     private final OfficeDoneInfoApi officeDoneInfoApi;
 
-    private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPositionId();
-        String taskIds = "", assigneeNames = "", itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
-        List<String> list = new ArrayList<>();
-        int i = 0;
-        for (TaskModel task : taskList) {
-            if (StringUtils.isEmpty(taskIds)) {
-                taskIds = task.getId();
-                String assignee = task.getAssignee();
-                if (StringUtils.isNotBlank(assignee)) {
-                    OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                    if (personTemp != null) {
-                        assigneeNames = personTemp.getName();
-                    }
-                    i += 1;
-                    if (assignee.contains(userId)) {
-                        itembox = ItemBoxTypeEnum.TODO.getValue();
-                        taskId = task.getId();
-                    }
-                } else {// 处理单实例未签收的当前办理人显示
-                    List<IdentityLinkModel> iList =
-                        identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
-                    if (!iList.isEmpty()) {
-                        int j = 0;
-                        for (IdentityLinkModel identityLink : iList) {
-                            String assigneeId = identityLink.getUserId();
-                            OrgUnit ownerUser =
-                                orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
-                                    .getData();
-                            if (j < 5) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-                            } else {
-                                assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
-                                break;
-                            }
-                            j++;
-                        }
-                    }
-                }
-            } else {
-                String assignee = task.getAssignee();
-                if (StringUtils.isNotBlank(assignee)) {
-                    if (i < 5) {
-                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                        if (personTemp != null) {
-                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
-                        }
-                        i += 1;
-                    }
-                    if (assignee.contains(userId)) {
-                        itembox = ItemBoxTypeEnum.TODO.getValue();
-                        taskId = task.getId();
-                    }
-                }
-            }
-        }
-        if (taskList.size() > 5) {
-            assigneeNames += "等，共" + taskList.size() + "人";
-        }
-        list.add(taskIds);
-        list.add(assigneeNames);
-        list.add(itembox);
-        list.add(taskId);
-        return list;
-    }
+    private final UtilService utilService;
 
     @Override
     public Y9Page<Map<String, Object>> pageQueryList(String itemId, String state, String createDate, String tableName,
@@ -169,11 +96,11 @@ public class QueryListServiceImpl implements QueryListService {
                     if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                        String taskIds = listTemp.get(0), assigneeNames = listTemp.get(1);
+                        List<String> listTemp = utilService.getItemBoxAndTaskId(taskList);
+                        String assigneeNames = utilService.getAssigneeNames(taskList, null);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                         mapTemp.put("taskId",
-                            listTemp.get(2).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(3));
+                            listTemp.get(0).equals(ItemBoxTypeEnum.TODO.getValue()) ? listTemp.get(1) : "");
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(2));
                     }

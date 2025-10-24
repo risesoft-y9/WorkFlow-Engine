@@ -117,13 +117,13 @@ public class ChaoSongRestController {
     public Y9Page<ChaoSongModel> list(@RequestParam @NotBlank String type,
         @RequestParam(required = false) String userName, @RequestParam @NotBlank String processInstanceId,
         @RequestParam int rows, @RequestParam int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), senderId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
         try {
             if (type.equals("my")) {
-                return chaoSongApi.getListBySenderIdAndProcessInstanceId(tenantId, senderId, processInstanceId,
+                return chaoSongApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId,
                     userName, rows, page);
             } else {
-                return chaoSongApi.getListByProcessInstanceId(tenantId, senderId, processInstanceId, userName, rows,
+                return chaoSongApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, userName, rows,
                     page);
             }
         } catch (Exception e) {

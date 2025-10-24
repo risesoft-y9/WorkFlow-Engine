@@ -64,21 +64,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         name = "%" + name + "%";
         List<ReceiveDepartment> list = receiveDepartmentRepository.findByDeptNameLikeOrderByTabIndex(name);
         for (ReceiveDepartment receiveDepartment : list) {
-            Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
-            if (department == null || department.getId() == null) {
-                continue;
-            }
-            ReceiveOrgUnit orgUnit = new ReceiveOrgUnit();
-            orgUnit.setId(receiveDepartment.getDeptId());
-            orgUnit.setDisabled(department.getDisabled());
-            orgUnit.setParentId(receiveDepartment.getParentId());
-            orgUnit.setName(department.getName());
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, department.getId()).getData();
-            if (bureau != null && bureau.getId() != null && !bureau.getId().equals(department.getId())) {
-                orgUnit.setNameWithBureau(department.getName() + "(" + bureau.getName() + ")");
-            }
-            orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
-            listMap.add(orgUnit);
+            buildReceiveOrgUnit(tenantId, listMap, receiveDepartment, receiveDepartment.getParentId(), true);
         }
         return Y9Result.success(listMap);
     }
@@ -96,21 +82,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         List<ReceiveOrgUnit> listMap = new ArrayList<>();
         List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
         for (ReceiveDepartment receiveDepartment : list) {
-            Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
-            if (department == null || department.getId() == null) {
-                continue;
-            }
-            ReceiveOrgUnit orgUnit = new ReceiveOrgUnit();
-            orgUnit.setId(receiveDepartment.getDeptId());
-            orgUnit.setDisabled(department.getDisabled());
-            orgUnit.setParentId(receiveDepartment.getParentId());
-            orgUnit.setName(department.getName());
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, department.getId()).getData();
-            if (bureau != null && bureau.getId() != null && !bureau.getId().equals(department.getId())) {
-                orgUnit.setNameWithBureau(department.getName() + "(" + bureau.getName() + ")");
-            }
-            orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
-            listMap.add(orgUnit);
+            buildReceiveOrgUnit(tenantId, listMap, receiveDepartment, receiveDepartment.getParentId(), true);
         }
         return Y9Result.success(listMap);
     }
@@ -129,75 +101,54 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         @RequestParam String orgUnitId, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ReceiveOrgUnit> listMap = new ArrayList<>();
-        List<ReceiveDepartment> list;
         if (StringUtils.isNotBlank(name)) {
-            list = receiveDepartmentRepository.findByDeptNameContainingOrderByTabIndex(name);
+            List<ReceiveDepartment> list = receiveDepartmentRepository.findByDeptNameContainingOrderByTabIndex(name);
             for (ReceiveDepartment receiveDepartment : list) {
-                Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
-                if (department == null || department.getId() == null) {
-                    continue;
-                }
-                ReceiveOrgUnit orgUnit = new ReceiveOrgUnit();
-                orgUnit.setId(receiveDepartment.getDeptId());
-                orgUnit.setDisabled(department.getDisabled());
-                orgUnit.setParentId(receiveDepartment.getParentId());
-                orgUnit.setName(department.getName());
-                OrgUnit bureau = orgUnitApi.getBureau(tenantId, department.getId()).getData();
-                if (bureau != null && bureau.getId() != null && !bureau.getId().equals(department.getId())) {
-                    orgUnit.setNameWithBureau(department.getName() + "(" + bureau.getName() + ")");
-                }
-                Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
-                orgUnit.setIsParent(count > 0);
-                orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
-                if (listMap.contains(orgUnit)) {
-                    continue;// 去重
-                }
-                listMap.add(orgUnit);
+                buildReceiveOrgUnit(tenantId, listMap, receiveDepartment, receiveDepartment.getParentId(), true);
             }
         } else {
+            List<ReceiveDepartment> list;
             if (StringUtils.isBlank(orgUnitId)) {
                 list = receiveDepartmentRepository.findAll();
-                for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
-                    if (department == null || department.getId() == null) {
-                        continue;
-                    }
-                    ReceiveOrgUnit orgUnit = new ReceiveOrgUnit();
-                    orgUnit.setId(receiveDepartment.getDeptId());
-                    orgUnit.setDisabled(department.getDisabled());
-                    orgUnit.setParentId(receiveDepartment.getParentId());
-                    orgUnit.setName(department.getName());
-                    Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
-                    orgUnit.setIsParent(count > 0);
-                    orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
-                    if (listMap.contains(orgUnit)) {
-                        continue;// 去重
-                    }
-                    listMap.add(orgUnit);
-                }
             } else {
                 list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(orgUnitId);
-                for (ReceiveDepartment receiveDepartment : list) {
-                    Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
-                    if (department == null || department.getId() == null) {
-                        continue;
-                    }
-                    Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
-                    ReceiveOrgUnit orgUnit = new ReceiveOrgUnit();
-                    orgUnit.setId(receiveDepartment.getDeptId());
-                    orgUnit.setDisabled(department.getDisabled());
-                    orgUnit.setParentId(orgUnitId);
-                    orgUnit.setName(department.getName());
-                    orgUnit.setIsParent(count > 0);
-                    orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
-                    if (listMap.contains(orgUnit)) {
-                        continue;// 去重
-                    }
-                    listMap.add(orgUnit);
-                }
+            }
+            for (ReceiveDepartment receiveDepartment : list) {
+                String parentId = StringUtils.isNotBlank(orgUnitId) ? orgUnitId : receiveDepartment.getParentId();
+                buildReceiveOrgUnit(tenantId, listMap, receiveDepartment, parentId, false);
             }
         }
         return Y9Result.success(listMap);
+    }
+
+    /**
+     * 构建收发单位对象
+     */
+    private void buildReceiveOrgUnit(String tenantId, List<ReceiveOrgUnit> listMap, ReceiveDepartment receiveDepartment,
+        String parentId, boolean withBureau) {
+        Department department = departmentApi.get(tenantId, receiveDepartment.getDeptId()).getData();
+        if (department == null || department.getId() == null) {
+            return;
+        }
+        ReceiveOrgUnit orgUnit = new ReceiveOrgUnit();
+        orgUnit.setId(receiveDepartment.getDeptId());
+        orgUnit.setDisabled(department.getDisabled());
+        orgUnit.setParentId(parentId);
+        orgUnit.setName(department.getName());
+        // 根据条件决定是否添加 bureau 信息
+        if (withBureau) {
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, department.getId()).getData();
+            if (bureau != null && bureau.getId() != null && !bureau.getId().equals(department.getId())) {
+                orgUnit.setNameWithBureau(department.getName() + "(" + bureau.getName() + ")");
+            }
+        }
+        Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
+        orgUnit.setIsParent(count > 0);
+        orgUnit.setOrgType(ItemConsts.DEPARTMENT_D_KEY);
+        // 去重
+        if (!listMap.contains(orgUnit)) {
+            listMap.add(orgUnit);
+        }
     }
 
     /**

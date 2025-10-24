@@ -161,21 +161,34 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
         List<ItemWordConf> bindList = itemWordConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
             processDefinitionId, taskDefKey);
         for (ItemWordConf bind : bindList) {
-            String roleIds = bind.getRoleIds();
-            String roleNames = "";
-            if (StringUtils.isNotBlank(roleIds)) {
-                for (String roleId : roleIds.split(",")) {
-                    Role r = roleApi.getRole(roleId).getData();
-                    if (StringUtils.isEmpty(roleNames)) {
-                        roleNames = null == r ? "角色不存在" : r.getName();
-                    } else {
-                        roleNames += "、" + (null == r ? "角色不存在" : r.getName());
-                    }
-                }
-            }
+            String roleNames = getRoleNames(bind.getRoleIds());
             bind.setRoleNames(roleNames);
         }
         return bindList;
+    }
+
+    /**
+     * 根据角色ID列表获取角色名称
+     *
+     * @param roleIds 角色ID字符串，以逗号分隔
+     * @return 角色名称字符串，以"、"分隔
+     */
+    private String getRoleNames(String roleIds) {
+        if (StringUtils.isBlank(roleIds)) {
+            return "";
+        }
+        StringBuilder roleNamesBuilder = new StringBuilder();
+        String[] roleIdArray = roleIds.split(",");
+        for (int i = 0; i < roleIdArray.length; i++) {
+            Role role = roleApi.getRole(roleIdArray[i]).getData();
+            String roleName = (role == null) ? "角色不存在" : role.getName();
+            if (i == 0) {
+                roleNamesBuilder.append(roleName);
+            } else {
+                roleNamesBuilder.append("、").append(roleName);
+            }
+        }
+        return roleNamesBuilder.toString();
     }
 
     @Override

@@ -92,36 +92,63 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null;
-        String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestpd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
-        String latestpdId = latestpd.getId();
-        String previouspdId = processDefinitionId;
-        if (processDefinitionId.equals(latestpdId)) {
-            if (latestpd.getVersion() > 1) {
-                ProcessDefinitionModel previouspd =
-                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestpdId).getData();
-                previouspdId = previouspd.getId();
-            }
-        }
-        List<ItemPermission> previousipList =
-            itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, previouspdId);
-
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestpdId).getData();
+        // 获取最新和前一版本的流程定义
+        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(tenantId, item);
+        String latestProcessDefinitionId = latestProcessDefinition.getId();
+        String previousProcessDefinitionId =
+            getPreviousProcessDefinitionId(tenantId, processDefinitionId, latestProcessDefinition);
+        // 获取前一版本的权限列表
+        List<ItemPermission> previousPermissions =
+            itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, previousProcessDefinitionId);
+        // 获取最新流程定义的节点并复制权限
+        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestProcessDefinitionId).getData();
         /*
          * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的角色，没有就保存
          */
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
-            for (ItemPermission ip : previousipList) {
-                String taskDefKeyTemp = ip.getTaskDefKey(), roleId = ip.getRoleId();
-                ItemPermissionEnum roleType = ip.getRoleType();
-                if (currentTaskDefKey.equals(taskDefKeyTemp)) {
-                    ItemPermission ipTemp =
-                        itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
-                            latestpdId, currentTaskDefKey, roleId);
-                    if (null == ipTemp) {
-                        self.save(itemId, latestpdId, currentTaskDefKey, roleId, roleType);
-                    }
+            copyPermissionsForNode(itemId, latestProcessDefinitionId, currentTaskDefKey, previousPermissions);
+        }
+    }
+
+    /**
+     * 获取最新流程定义
+     */
+    private ProcessDefinitionModel getLatestProcessDefinition(String tenantId, Item item) {
+        String processDefinitionKey = item.getWorkflowGuid();
+        return repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+    }
+
+    /**
+     * 获取前一版本流程定义ID
+     */
+    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
+        ProcessDefinitionModel latestProcessDefinition) {
+        String previousProcessDefinitionId = processDefinitionId;
+        String latestProcessDefinitionId = latestProcessDefinition.getId();
+        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
+            ProcessDefinitionModel previousProcessDefinition =
+                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
+            previousProcessDefinitionId = previousProcessDefinition.getId();
+        }
+        return previousProcessDefinitionId;
+    }
+
+    /**
+     * 为指定节点复制权限
+     */
+    private void copyPermissionsForNode(String itemId, String latestProcessDefinitionId, String currentTaskDefKey,
+        List<ItemPermission> previousPermissions) {
+        for (ItemPermission permission : previousPermissions) {
+            String taskDefKeyTemp = permission.getTaskDefKey();
+            String roleId = permission.getRoleId();
+            ItemPermissionEnum roleType = permission.getRoleType();
+            if (currentTaskDefKey.equals(taskDefKeyTemp)) {
+                ItemPermission existingPermission =
+                    itemPermissionRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
+                        latestProcessDefinitionId, currentTaskDefKey, roleId);
+                if (null == existingPermission) {
+                    self.save(itemId, latestProcessDefinitionId, currentTaskDefKey, roleId, roleType);
                 }
             }
         }
@@ -159,44 +186,82 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         Map<String, Object> map = new HashMap<>(16);
         map.put(ItemConsts.EXISTPOSITION_KEY, false);
         map.put(ItemConsts.EXISTDEPARTMENT_KEY, false);
-        for (ItemPermission o : objectPermList) {
-            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT)) {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData();
-                if (null != orgUnit) {
-                    map.put(ItemConsts.EXISTDEPARTMENT_KEY, true);
-                }
-            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE_DYNAMIC)) {
-                DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
-                if (dynamicRole.getClassPath().contains("4SubProcess")) {// 针对岗位,加入岗位集合
-                    List<Position> pList = dynamicRoleMemberService.listByDynamicRoleIdAndTaskId(dynamicRole, taskId);
-                    if (!pList.isEmpty()) {
-                        map.put(ItemConsts.EXISTPOSITION_KEY, true);
-                    }
-                } else {
-                    if (null == dynamicRole.getKinds() || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
-                        // 动态角色种类为【无】或null时，针对岗位或部门
-                        List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
-                            .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
-                        for (OrgUnit orgUnit : orgUnitList1) {
-                            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                                map.put(ItemConsts.EXISTPOSITION_KEY, true);
-                                break;
-                            } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                                || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
-                                map.put(ItemConsts.EXISTDEPARTMENT_KEY, true);
-                                break;
-                            }
-                        }
-                    } else {// 动态角色种类为【角色】或【部门配置分类】时，针对岗位
-                        map.put(ItemConsts.EXISTPOSITION_KEY, true);
-                    }
-                }
-            } else {
-                map.put(ItemConsts.EXISTPOSITION_KEY, true);
+        for (ItemPermission permission : objectPermList) {
+            updateTabMapForPermission(map, permission, tenantId, processInstanceId, taskId);
+            // 如果两个标识都为true，可以提前退出循环
+            if ((Boolean)map.get(ItemConsts.EXISTPOSITION_KEY) && (Boolean)map.get(ItemConsts.EXISTDEPARTMENT_KEY)) {
+                break;
             }
-
         }
         return map;
+    }
+
+    /**
+     * 根据权限类型更新tabMap
+     */
+    private void updateTabMapForPermission(Map<String, Object> map, ItemPermission permission, String tenantId,
+        String processInstanceId, String taskId) {
+
+        if (Objects.equals(permission.getRoleType(), ItemPermissionEnum.DEPARTMENT)) {
+            handleDepartmentPermission(map, permission, tenantId);
+        } else if (Objects.equals(permission.getRoleType(), ItemPermissionEnum.ROLE_DYNAMIC)) {
+            handleDynamicRolePermission(map, permission, processInstanceId, taskId);
+        } else {
+            // 其他类型默认设置岗位为true
+            map.put(ItemConsts.EXISTPOSITION_KEY, true);
+        }
+    }
+
+    /**
+     * 处理部门权限类型
+     */
+    private void handleDepartmentPermission(Map<String, Object> map, ItemPermission permission, String tenantId) {
+        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
+        if (null != orgUnit) {
+            map.put(ItemConsts.EXISTDEPARTMENT_KEY, true);
+        }
+    }
+
+    /**
+     * 处理动态角色权限类型
+     */
+    private void handleDynamicRolePermission(Map<String, Object> map, ItemPermission permission,
+        String processInstanceId, String taskId) {
+        DynamicRole dynamicRole = dynamicRoleService.getById(permission.getRoleId());
+        if (dynamicRole.getClassPath().contains("4SubProcess")) {
+            // 针对岗位,加入岗位集合
+            List<Position> positionList = dynamicRoleMemberService.listByDynamicRoleIdAndTaskId(dynamicRole, taskId);
+            if (!positionList.isEmpty()) {
+                map.put(ItemConsts.EXISTPOSITION_KEY, true);
+            }
+        } else {
+            if (null == dynamicRole.getKinds() || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
+                // 动态角色种类为【无】或null时，针对岗位或部门
+                handleDynamicRoleWithNoKind(map, dynamicRole, processInstanceId);
+            } else {
+                // 动态角色种类为【角色】或【部门配置分类】时，针对岗位
+                map.put(ItemConsts.EXISTPOSITION_KEY, true);
+            }
+        }
+    }
+
+    /**
+     * 处理无种类的动态角色
+     */
+    private void handleDynamicRoleWithNoKind(Map<String, Object> map, DynamicRole dynamicRole,
+        String processInstanceId) {
+        List<OrgUnit> orgUnitList =
+            dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
+        for (OrgUnit orgUnit : orgUnitList) {
+            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                map.put(ItemConsts.EXISTPOSITION_KEY, true);
+                break;
+            } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+                || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
+                map.put(ItemConsts.EXISTDEPARTMENT_KEY, true);
+                break;
+            }
+        }
     }
 
     @Override
@@ -266,30 +331,35 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     @Transactional
     public ItemPermission save(String itemId, String processDefinitionId, String taskDefKey, String roleId,
         ItemPermissionEnum roleType) {
-        ItemPermission oldip = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
+        ItemPermission existingPermission = this.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndRoleId(itemId,
             processDefinitionId, taskDefKey, roleId);
-        if (null == oldip) {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemPermission newip = new ItemPermission();
-            newip.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newip.setItemId(itemId);
-            newip.setProcessDefinitionId(processDefinitionId);
-            newip.setRoleId(roleId);
-            newip.setRoleType(roleType);
-            newip.setTenantId(tenantId);
-            newip.setCreatDate(Y9DateTimeUtils.formatCurrentDateTime());
-            newip.setTaskDefKey(taskDefKey);
-            Integer tabIndex = itemPermissionRepository.getMaxTabIndex(itemId, processDefinitionId, taskDefKey);
-            if (null != tabIndex) {
-                ++tabIndex;
-            } else {
-                tabIndex = 1;
-            }
-            newip.setTabIndex(tabIndex);
-
-            itemPermissionRepository.save(newip);
-            return newip;
+        if (null == existingPermission) {
+            ItemPermission newPermission =
+                createItemPermission(itemId, processDefinitionId, taskDefKey, roleId, roleType);
+            itemPermissionRepository.save(newPermission);
+            return newPermission;
         }
-        return oldip;
+        return existingPermission;
+    }
+
+    /**
+     * 创建事项权限对象
+     */
+    private ItemPermission createItemPermission(String itemId, String processDefinitionId, String taskDefKey,
+        String roleId, ItemPermissionEnum roleType) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ItemPermission newPermission = new ItemPermission();
+        newPermission.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newPermission.setItemId(itemId);
+        newPermission.setProcessDefinitionId(processDefinitionId);
+        newPermission.setRoleId(roleId);
+        newPermission.setRoleType(roleType);
+        newPermission.setTenantId(tenantId);
+        newPermission.setCreatDate(Y9DateTimeUtils.formatCurrentDateTime());
+        newPermission.setTaskDefKey(taskDefKey);
+        // 设置标签索引
+        Integer maxTabIndex = itemPermissionRepository.getMaxTabIndex(itemId, processDefinitionId, taskDefKey);
+        newPermission.setTabIndex(maxTabIndex == null ? 1 : maxTabIndex + 1);
+        return newPermission;
     }
 }

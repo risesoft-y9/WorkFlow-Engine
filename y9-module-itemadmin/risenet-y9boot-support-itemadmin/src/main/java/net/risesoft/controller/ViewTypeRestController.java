@@ -1,6 +1,8 @@
 package net.risesoft.controller;
 
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -62,26 +64,31 @@ public class ViewTypeRestController {
         Page<ViewType> pageList = viewTypeService.pageAll(page, rows);
         List<ViewType> list = pageList.getContent();
         for (ViewType viewType : list) {
-            StringBuilder itemIds = new StringBuilder();
-            StringBuilder itemNames = new StringBuilder();
-            List<ItemViewConf> ivcList = itemViewConfService.listByViewType(viewType.getMark());
-            for (ItemViewConf ivc : ivcList) {
-                String itemId = ivc.getItemId();
-                if (!itemIds.toString().contains(itemId)) {
-                    Item item = itemService.findById(itemId);
-                    if (null != item) {
-                        itemIds.append(itemId).append(";");
-                        if (StringUtils.isEmpty(itemNames)) {
-                            itemNames.append(item.getName());
-                        } else {
-                            itemNames.append("、" + item.getName());
-                        }
-                    }
-                }
-            }
-            viewType.setItemNames(itemNames.toString());
+            processViewTypeItemNames(viewType);
         }
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list, "获取列表成功");
+    }
+
+    /**
+     * 处理ViewType的事项名称列表
+     */
+    private void processViewTypeItemNames(ViewType viewType) {
+        Set<String> processedItemIds = new HashSet<>();
+        StringBuilder itemNames = new StringBuilder();
+        List<ItemViewConf> ivcList = itemViewConfService.listByViewType(viewType.getMark());
+        for (ItemViewConf ivc : ivcList) {
+            String itemId = ivc.getItemId();
+            if (processedItemIds.add(itemId)) {
+                Item item = itemService.findById(itemId);
+                if (item != null) {
+                    if (itemNames.length() > 0) {
+                        itemNames.append("、");
+                    }
+                    itemNames.append(item.getName());
+                }
+            }
+        }
+        viewType.setItemNames(itemNames.toString());
     }
 
     @GetMapping(value = "/listAll")

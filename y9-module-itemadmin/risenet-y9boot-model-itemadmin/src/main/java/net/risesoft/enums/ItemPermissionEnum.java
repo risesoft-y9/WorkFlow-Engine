@@ -35,4 +35,13 @@ public enum ItemPermissionEnum implements ValuedEnum<Integer> {
 
     private final Integer value;
     private final String name;
+
+    public static ItemPermissionEnum valueOf(Integer value) {
+        for (ItemPermissionEnum enumValue : ItemPermissionEnum.values()) {
+            if (enumValue.getValue().equals(value)) {
+                return enumValue;
+            }
+        }
+        throw new IllegalArgumentException("No matching ItemPermissionEnum for value: " + value);
+    }
 }

@@ -172,48 +172,41 @@ public class ItemButtonBindRestController {
         List<ItemButtonBind> buttonItemBindList =
             itemButtonBindService.listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(itemId, buttonType,
                 processDefinitionId, taskDefKey);
+
         if (ItemButtonTypeEnum.COMMON == buttonType) {
             List<CommonButton> cbList = commonButtonService.listAll();
-            List<CommonButton> cbListTemp = new ArrayList<>();
-            if (buttonItemBindList.isEmpty()) {
-                cbListTemp = cbList;
-            } else {
-                for (CommonButton cb : cbList) {
-                    boolean isBind = false;
-                    for (ItemButtonBind bib : buttonItemBindList) {
-                        if (bib.getButtonId().equals(cb.getId())) {
-                            isBind = true;
-                            break;
-                        }
-                    }
-                    if (!isBind) {
-                        cbListTemp.add(cb);
-                    }
-                }
-            }
+            List<CommonButton> cbListTemp = filterUnboundButtons(cbList, buttonItemBindList);
             map.put("rows", cbListTemp);
         } else {
             List<SendButton> sbList = sendButtonService.listAll();
-            List<SendButton> sbListTemp = new ArrayList<>();
-            if (buttonItemBindList.isEmpty()) {
-                sbListTemp = sbList;
-            } else {
-                for (SendButton sb : sbList) {
-                    boolean isBind = false;
-                    for (ItemButtonBind bib : buttonItemBindList) {
-                        if (bib.getButtonId().equals(sb.getId())) {
-                            isBind = true;
-                            break;
-                        }
-                    }
-                    if (!isBind) {
-                        sbListTemp.add(sb);
-                    }
-                }
-            }
+            List<SendButton> sbListTemp = filterUnboundButtons(sbList, buttonItemBindList);
             map.put("rows", sbListTemp);
         }
         return Y9Result.success(map, "获取成功");
+    }
+
+    private <T> List<T> filterUnboundButtons(List<T> allButtons, List<ItemButtonBind> boundButtons) {
+        if (boundButtons.isEmpty()) {
+            return new ArrayList<>(allButtons);
+        }
+        List<T> unboundButtons = new ArrayList<>();
+        for (T button : allButtons) {
+            String buttonId = getButtonId(button);
+            boolean isBound = boundButtons.stream().anyMatch(bib -> bib.getButtonId().equals(buttonId));
+            if (!isBound) {
+                unboundButtons.add(button);
+            }
+        }
+        return unboundButtons;
+    }
+
+    private String getButtonId(Object button) {
+        if (button instanceof CommonButton) {
+            return ((CommonButton)button).getId();
+        } else if (button instanceof SendButton) {
+            return ((SendButton)button).getId();
+        }
+        return null;
     }
 
     /**

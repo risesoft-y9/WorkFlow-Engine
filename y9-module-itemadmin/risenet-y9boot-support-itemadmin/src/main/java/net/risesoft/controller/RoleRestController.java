@@ -12,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.platform.resource.AppApi;
@@ -20,10 +19,7 @@ import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.consts.InitDataConsts;
 import net.risesoft.controller.vo.NodeTreeVO;
 import net.risesoft.enums.platform.RoleTypeEnum;
-import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
-import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.model.platform.Role;
-import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.platform.resource.App;
 import net.risesoft.model.platform.resource.System;
@@ -45,8 +41,6 @@ public class RoleRestController {
 
     private final PositionRoleApi positionRoleApi;
 
-    private final OrgUnitApi orgUnitApi;
-
     private final SystemApi systemApi;
 
     private final AppApi appApi;
@@ -55,59 +49,85 @@ public class RoleRestController {
      * 获取系统角色
      *
      * @param id 节点id
-     * @return
+     * @return Y9Result<List<NodeTreeVO>>
      */
     @GetMapping(value = "/findRole")
-    public Y9Result<List<NodeTreeVO>> findAll(@RequestParam(required = false) String id) {
-        List<NodeTreeVO> listMap = new ArrayList<>();
-        if (StringUtils.isBlank(id)) {
-            System system = systemApi.getByName(Y9Context.getSystemName()).getData();
-            NodeTreeVO publicRoleMap = new NodeTreeVO();
-            publicRoleMap.setId(InitDataConsts.TOP_PUBLIC_ROLE_ID);
-            publicRoleMap.setName("公共角色");
-            publicRoleMap.setParentId(null);
-            publicRoleMap.setIsParent(true);
-            publicRoleMap.setOrgType("App");
-            listMap.add(publicRoleMap);
-            List<App> appList = appApi.listBySystemId(system.getId()).getData();
-            for (App app : appList) {
-                NodeTreeVO map = new NodeTreeVO();
-                map.setId(app.getId());
-                map.setName(app.getName());
-                map.setParentId(app.getId());
-                map.setIsParent(true);
-                map.setOrgType("App");
+    public Y9Result<List<NodeTreeVO>> findRole(@RequestParam(required = false) String id) {
+        try {
+            List<NodeTreeVO> listMap = new ArrayList<>();
+            if (StringUtils.isBlank(id)) {
+                buildRootNodes(listMap);
+            } else {
+                buildChildNodes(listMap, id);
+            }
+            return Y9Result.success(listMap, "获取成功");
+        } catch (Exception e) {
+            return Y9Result.failure("获取角色列表失败");
+        }
+    }
+
+    /**
+     * 构建根节点
+     */
+    private void buildRootNodes(List<NodeTreeVO> listMap) {
+        System system = systemApi.getByName(Y9Context.getSystemName()).getData();
+        // 添加公共角色节点
+        NodeTreeVO publicRoleMap = new NodeTreeVO();
+        publicRoleMap.setId(InitDataConsts.TOP_PUBLIC_ROLE_ID);
+        publicRoleMap.setName("公共角色");
+        publicRoleMap.setParentId(null);
+        publicRoleMap.setIsParent(true);
+        publicRoleMap.setOrgType("App");
+        listMap.add(publicRoleMap);
+        // 添加应用节点
+        List<App> appList = appApi.listBySystemId(system.getId()).getData();
+        for (App app : appList) {
+            NodeTreeVO map = createNodeTreeVO(app.getId(), app.getName(), app.getId(), true, "App");
+            listMap.add(map);
+        }
+    }
+
+    /**
+     * 构建子节点
+     */
+    private void buildChildNodes(List<NodeTreeVO> listMap, String parentId) {
+        List<Role> listRole = roleApi.listRoleByParentId(parentId).getData();
+        if (listRole != null) {
+            for (Role role : listRole) {
+                NodeTreeVO map = createNodeTreeVO(role.getId(), role.getName(), parentId, false, null);
+                map.setGuidPath(role.getGuidPath());
+
+                if (RoleTypeEnum.ROLE.equals(role.getType())) {
+                    map.setIsParent(false);
+                    map.setOrgType("role");
+                } else {
+                    List<Role> childRoles = roleApi.listRoleByParentId(role.getId()).getData();
+                    boolean hasChildren = childRoles != null && !childRoles.isEmpty();
+
+                    if (hasChildren) {
+                        map.setChkDisabled(true);
+                    }
+                    map.setIsParent(hasChildren);
+                    map.setOrgType("folder");
+                }
                 listMap.add(map);
             }
-        } else {
-            List<Role> listRole = roleApi.listRoleByParentId(id).getData();
-            if (listRole != null) {
-                for (Role role : listRole) {
-                    NodeTreeVO map = new NodeTreeVO();
-                    map.setId(role.getId());
-                    map.setName(role.getName());
-                    map.setParentId(id);
-                    map.setGuidPath(role.getGuidPath());
-                    if (RoleTypeEnum.ROLE.equals(role.getType())) {
-                        map.setIsParent(false);
-                        map.setOrgType("role");
-                    } else {
-                        List<Role> list = roleApi.listRoleByParentId(role.getId()).getData();
-                        boolean isP = false;
-                        if (list != null) {
-                            isP = !list.isEmpty();
-                        }
-                        if (isP) {
-                            map.setChkDisabled(true);
-                        }
-                        map.setIsParent(isP);
-                        map.setOrgType("folder");
-                    }
-                    listMap.add(map);
-                }
-            }
         }
-        return Y9Result.success(listMap, "获取成功");
+    }
+
+    /**
+     * 创建NodeTreeVO对象的通用方法
+     */
+    private NodeTreeVO createNodeTreeVO(String id, String name, String parentId, boolean isParent, String orgType) {
+        NodeTreeVO node = new NodeTreeVO();
+        node.setId(id);
+        node.setName(name);
+        node.setParentId(parentId);
+        node.setIsParent(isParent);
+        if (orgType != null) {
+            node.setOrgType(orgType);
+        }
+        return node;
     }
 
     @GetMapping(value = "/findRoleMember")
@@ -124,57 +144,8 @@ public class RoleRestController {
             map.setOrgType(position.getOrgType().getValue());
             map.setIsParent(false);
             map.setDn(position.getDn());
-            // if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
-            // || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
-            // map.setIsParent(true);
-            // }
             listMap.add(map);
         }
         return Y9Result.success(listMap, "获取成功");
     }
-
-    @GetMapping(value = "/findRoleMember1")
-    public Y9Result<List<NodeTreeVO>> findRoleMember1(@RequestParam(required = false) String roleId,
-        @RequestParam(required = false) String id, @RequestParam(required = false) OrgTreeTypeEnum treeType) {
-        List<NodeTreeVO> listMap = new ArrayList<>();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        if (StringUtils.isNotBlank(roleId) && StringUtils.isBlank(id)) {
-            // List<OrgUnit> list = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.PERSON).getData();
-            List<Position> list = positionRoleApi.listPositionsByRoleId(tenantId, roleId).getData();
-            for (Position position : list) {
-                NodeTreeVO map = new NodeTreeVO();
-                map.setId(position.getId());
-                map.setName(position.getName());
-                map.setParentId(roleId);
-                map.setGuidPath(position.getGuidPath());
-                map.setOrgType(position.getOrgType().getValue());
-                map.setIsParent(false);
-                map.setDn(position.getDn());
-                // if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
-                // || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
-                // map.setIsParent(true);
-                // }
-                listMap.add(map);
-            }
-        } else {
-            List<OrgUnit> list = orgUnitApi.getSubTree(tenantId, id, treeType).getData();
-            for (OrgUnit orgUnit : list) {
-                NodeTreeVO map = new NodeTreeVO();
-                map.setId(orgUnit.getId());
-                map.setName(orgUnit.getName());
-                map.setParentId(id);
-                map.setGuidPath(orgUnit.getGuidPath());
-                map.setOrgType(orgUnit.getOrgType().getValue());
-                map.setIsParent(false);
-                map.setDn(orgUnit.getDn());
-                if (orgUnit.getOrgType().getValue().equals(OrgTypeEnum.DEPARTMENT.getValue())
-                    || orgUnit.getOrgType().getValue().equals(OrgTypeEnum.GROUP.getValue())) {
-                    map.setIsParent(true);
-                }
-                listMap.add(map);
-            }
-        }
-        return Y9Result.success(listMap, "获取成功");
-    }
-
 }

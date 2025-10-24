@@ -1,7 +1,6 @@
 package net.risesoft.service.chaosong;
 
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
@@ -148,17 +147,6 @@ public interface ChaoSongInfoService {
      */
     Y9Page<ChaoSongModel> pageBySenderIdAndProcessInstanceId(String senderId, String processInstanceId, String userName,
         int rows, int page);
-
-    /**
-     * 获取抄送所有件
-     *
-     * @param userId
-     * @param documentTitle
-     * @param rows
-     * @param page
-     * @return
-     */
-    Y9Page<Map<String, Object>> pageByUserIdAndDocumentTitle(String userId, String documentTitle, int rows, int page);
 
     /**
      *

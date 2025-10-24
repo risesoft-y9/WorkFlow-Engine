@@ -1,6 +1,5 @@
 package net.risesoft.api;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
@@ -31,6 +30,8 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.core.ActRuDetailService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.service.util.ItemPageService;
+import net.risesoft.util.CommonUtils;
+import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -116,12 +117,7 @@ public class ItemAllApiImpl implements ItemAllApi {
      */
     private Y9Page<ActRuDetailModel> convertToY9Page(Page<ActRuDetail> ardPage, int page) {
         List<ActRuDetail> ardList = ardPage.getContent();
-        List<ActRuDetailModel> modelList = new ArrayList<>();
-        for (ActRuDetail actRuDetail : ardList) {
-            ActRuDetailModel actRuDetailModel = new ActRuDetailModel();
-            Y9BeanUtil.copyProperties(actRuDetail, actRuDetailModel);
-            modelList.add(actRuDetailModel);
-        }
+        List<ActRuDetailModel> modelList = ItemAdminModelConvertUtil.convertActRuDetailsToModels(ardList);
         return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
     }
 
@@ -141,7 +137,7 @@ public class ItemAllApiImpl implements ItemAllApi {
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         int page = queryParamModel.getPage(), rows = queryParamModel.getRows();
         Page<ActRuDetail> ardPage;
-        boolean isEmpty = checkObjAllFieldsIsNull(queryParamModel);
+        boolean isEmpty = CommonUtils.checkObjAllFieldsIsNull(queryParamModel);
         if (isEmpty) {
             ardPage = actRuDetailService.pageByAssigneeAndStatus(userId, ActRuDetailStatusEnum.TODO, rows, page, sort);
         } else {
@@ -149,7 +145,7 @@ public class ItemAllApiImpl implements ItemAllApi {
             StringBuilder whereSql = new StringBuilder();
             List<Object> params = new ArrayList<>();
             params.add(userId);
-            buildQueryConditions(queryParamModel, whereSql, params);
+            CommonUtils.buildQueryConditions(queryParamModel, whereSql, params);
             String sql = COMMON_SQL + processParamSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + whereSql
                 + " AND T.ASSIGNEE = ? ORDER BY T.CREATETIME DESC";
             String countSql = "SELECT COUNT(T.ID) FROM FF_ACT_RU_DETAIL T " + processParamSql
@@ -168,55 +164,6 @@ public class ItemAllApiImpl implements ItemAllApi {
             modelList.add(actRuDetailModel);
         }
         return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
-    }
-
-    /**
-     * 构建查询条件
-     */
-    private void buildQueryConditions(QueryParamModel queryParamModel, StringBuilder whereSql, List<Object> params) {
-        Class<?> queryParamModelClazz = queryParamModel.getClass();
-        Field[] fields = queryParamModelClazz.getDeclaredFields();
-        for (Field f : fields) {
-            f.setAccessible(true);
-            if ("serialVersionUID".equals(f.getName()) || "page".equals(f.getName()) || "rows".equals(f.getName())) {
-                continue;
-            }
-            try {
-                Object fieldValue = f.get(queryParamModel);
-                if (null != fieldValue) {
-                    if ("systemName".equals(f.getName())) {
-                        if (StringUtils.isNotBlank(queryParamModel.getSystemName())) {
-                            whereSql.append("AND T.SYSTEMNAME = ? ");
-                            params.add(fieldValue);
-                        }
-                    } else {
-                        whereSql.append("AND INSTR(F.").append(f.getName().toUpperCase()).append(",?) > 0 ");
-                        params.add(fieldValue);
-                    }
-                }
-            } catch (Exception e) {
-                LOGGER.error("构建查询条件异常", e);
-            }
-        }
-    }
-
-    public boolean checkObjAllFieldsIsNull(Object object) {
-        if (null == object) {
-            return true;
-        }
-        try {
-            for (Field f : object.getClass().getDeclaredFields()) {
-                f.setAccessible(true);
-                if (!"serialVersionUID".equals(f.getName()) && !"page".equals(f.getName())
-                    && !"rows".equals(f.getName()) && f.get(object) != null
-                    && StringUtils.isNotBlank(f.get(object).toString())) {
-                    return false;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
     }
 
     /**

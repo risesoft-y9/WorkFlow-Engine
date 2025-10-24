@@ -143,7 +143,7 @@ public class DoingServiceImpl implements DoingService {
                         piModel.getEndTime() != null ? Y9DateTimeUtils.formatDateTimeMinute(endTime) : "";
                     mapTemp.put(TASKCREATETIME_KEY, taskCreateTime);
                 }
-                mapTemp.put(TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList));
+                mapTemp.put(TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList, null));
             }
             // 设置公共数据
             utilService.setPublicData(mapTemp, processInstanceId, taskList, ItemBoxTypeEnum.DOING);

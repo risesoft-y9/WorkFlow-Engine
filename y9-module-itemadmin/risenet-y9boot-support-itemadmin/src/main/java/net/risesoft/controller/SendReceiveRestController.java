@@ -58,7 +58,7 @@ public class SendReceiveRestController {
      * 验证是否可以收文
      *
      * @param deptId 部门id
-     * @return
+     * @return Y9Result<String>
      */
     @PostMapping(value = "/checkReceiveSend")
     public Y9Result<String> checkReceiveSend(@RequestParam String deptId) {
@@ -225,36 +225,51 @@ public class SendReceiveRestController {
      */
     @GetMapping(value = "/getOrgTree")
     public Y9Result<List<OrgUnit>> getOrgTree(@RequestParam String id, @RequestParam OrgTreeTypeEnum treeType) {
-        List<OrgUnit> newOrgUnitList = new ArrayList<>();
-        List<OrgUnit> orgUnitList = orgUnitApi.getSubTree(Y9LoginUserHolder.getTenantId(), id, treeType).getData();
-        for (OrgUnit orgUnit : orgUnitList) {
-            if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                orgUnit.setDn(ItemConsts.FALSE_STR_KEY);
-                ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
-                List<Department> deptList =
-                    departmentApi.listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
-                orgUnit.setGuidPath(ItemConsts.FALSE_STR_KEY);
-                for (Department dept : deptList) {
-                    orgUnit.setGuidPath("true");
-                    ReceiveDepartment receiveDept = receiveDeptAndPersonService.findByDeptId(dept.getId());
-                    if (receiveDept != null) {
-                        orgUnit.setDn("true");
-                        break;
-                    }
-                }
-                orgUnit.setCustomId(ItemConsts.FALSE_STR_KEY);
-                orgUnit.setProperties(ItemConsts.FALSE_STR_KEY);
-                if (receiveDepartment != null) {
-                    orgUnit.setCustomId("true");
-                    Integer count = receiveDeptAndPersonService.countByDeptId(orgUnit.getId());
-                    if (count > 0) {
-                        orgUnit.setProperties("true");
-                    }
-                }
-                newOrgUnitList.add(orgUnit);
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            List<OrgUnit> orgUnitList = orgUnitApi.getSubTree(tenantId, id, treeType).getData();
+            List<OrgUnit> processedOrgUnits = new ArrayList<>();
+            orgUnitList.stream()
+                .filter(orgUnit -> OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType()))
+                .forEach(orgUnit -> {
+                    OrgUnit processedOrgUnit = processDepartmentOrgUnit(tenantId, orgUnit);
+                    processedOrgUnits.add(processedOrgUnit);
+                });
+            return Y9Result.success(processedOrgUnits, "获取成功");
+        } catch (Exception e) {
+            return Y9Result.failure("获取组织机构树失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 处理部门类型的OrgUnit对象
+     */
+    private OrgUnit processDepartmentOrgUnit(String tenantId, OrgUnit orgUnit) {
+        // 设置初始状态
+        orgUnit.setDn(ItemConsts.FALSE_STR_KEY);
+        orgUnit.setGuidPath(ItemConsts.FALSE_STR_KEY);
+        orgUnit.setCustomId(ItemConsts.FALSE_STR_KEY);
+        orgUnit.setProperties(ItemConsts.FALSE_STR_KEY);
+        // 检查当前部门是否为收发部门
+        ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
+        if (receiveDepartment != null) {
+            orgUnit.setCustomId("true");
+            Integer count = receiveDeptAndPersonService.countByDeptId(orgUnit.getId());
+            if (count > 0) {
+                orgUnit.setProperties("true");
             }
         }
-        return Y9Result.success(newOrgUnitList, "获取成功");
+        // 检查子部门是否有收发部门
+        List<Department> deptList = departmentApi.listRecursivelyByParentId(tenantId, orgUnit.getId()).getData();
+        for (Department dept : deptList) {
+            ReceiveDepartment receiveDept = receiveDeptAndPersonService.findByDeptId(dept.getId());
+            if (receiveDept != null) {
+                orgUnit.setDn("true");
+                orgUnit.setGuidPath("true");
+                break;
+            }
+        }
+        return orgUnit;
     }
 
     public OrgUnit getParent(String tenantId, String parentId) {
@@ -282,40 +297,25 @@ public class SendReceiveRestController {
      */
     @GetMapping(value = "/orgTreeSearch")
     public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam OrgTreeTypeEnum treeType, @RequestParam String name) {
-        List<OrgUnit> newOrgUnitList = new ArrayList<>();
-        List<OrgUnit> orgUnitList = orgUnitApi.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
-        for (OrgUnit orgUnit : orgUnitList) {
-            if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                orgUnit.setDn(ItemConsts.FALSE_STR_KEY);
-                ReceiveDepartment receiveDepartment = receiveDeptAndPersonService.findByDeptId(orgUnit.getId());
-                List<Department> deptList =
-                    departmentApi.listRecursivelyByParentId(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
-                orgUnit.setGuidPath(ItemConsts.FALSE_STR_KEY);
-                for (Department dept : deptList) {
-                    orgUnit.setGuidPath("true");
-                    ReceiveDepartment receiveDept = receiveDeptAndPersonService.findByDeptId(dept.getId());
-                    if (receiveDept != null) {
-                        orgUnit.setDn("true");
-                        break;
-                    }
-                }
-                orgUnit.setCustomId(ItemConsts.FALSE_STR_KEY);
-                orgUnit.setProperties(ItemConsts.FALSE_STR_KEY);
-                if (receiveDepartment != null) {
-                    orgUnit.setCustomId("true");
-                    Integer count = receiveDeptAndPersonService.countByDeptId(orgUnit.getId());
-                    if (count > 0) {
-                        orgUnit.setProperties("true");
-                    }
-                }
-                newOrgUnitList.add(orgUnit);
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            List<OrgUnit> orgUnitList = orgUnitApi.treeSearch(tenantId, name, treeType).getData();
+            List<OrgUnit> processedOrgUnits = new ArrayList<>();
+            orgUnitList.stream()
+                .filter(orgUnit -> OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType()))
+                .forEach(orgUnit -> {
+                    OrgUnit processedOrgUnit = processDepartmentOrgUnit(tenantId, orgUnit);
+                    processedOrgUnits.add(processedOrgUnit);
+                });
+            // 添加组织列表
+            List<Organization> organizations = organizationApi.list(tenantId).getData();
+            if (!organizations.isEmpty()) {
+                processedOrgUnits.addAll(organizations);
             }
+            return Y9Result.success(processedOrgUnits, "获取成功");
+        } catch (Exception e) {
+            return Y9Result.failure("查询组织架构人员失败: " + e.getMessage());
         }
-        List<Organization> list = organizationApi.list(Y9LoginUserHolder.getTenantId()).getData();
-        if (!list.isEmpty()) {
-            newOrgUnitList.addAll(list);
-        }
-        return Y9Result.success(newOrgUnitList, "获取成功");
     }
 
     /**

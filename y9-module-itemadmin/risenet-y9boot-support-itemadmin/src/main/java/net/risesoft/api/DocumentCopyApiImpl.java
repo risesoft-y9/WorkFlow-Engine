@@ -119,29 +119,59 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         Field[] fields = queryParamModelClazz.getDeclaredFields();
         for (Field f : fields) {
             f.setAccessible(true);
-            if ("serialVersionUID".equals(f.getName()) || "page".equals(f.getName()) || "rows".equals(f.getName())) {
+            if (shouldSkipField(f.getName())) {
                 continue;
             }
             try {
                 Object fieldValue = f.get(queryParamModel);
-                if (null != fieldValue) {
-                    if ("systemName".equals(f.getName())) {
-                        if (StringUtils.isNotBlank(queryParamModel.getSystemName())) {
-                            whereSql.append(" AND P.SYSTEMNAME = ? ");
-                            params.add(fieldValue);
-                        }
-                    } else if ("bureauIds".equals(f.getName())) {
-                        whereSql.append(" AND P.HOSTDEPTID = ? ");
-                        params.add(fieldValue);
-                    } else {
-                        whereSql.append(" AND INSTR(P.").append(f.getName().toUpperCase()).append(",?) > 0 ");
-                        params.add(fieldValue);
-                    }
+                if (fieldValue != null) {
+                    appendCondition(whereSql, params, f.getName(), fieldValue);
                 }
             } catch (Exception e) {
                 LOGGER.error("构建查询条件异常", e);
             }
         }
+    }
+
+    /**
+     * 判断是否应该跳过该字段
+     */
+    private boolean shouldSkipField(String fieldName) {
+        return "serialVersionUID".equals(fieldName) || "page".equals(fieldName) || "rows".equals(fieldName);
+    }
+
+    /**
+     * 根据字段名添加相应的查询条件
+     */
+    private void appendCondition(StringBuilder whereSql, List<Object> params, String fieldName, Object fieldValue) {
+        if ("systemName".equals(fieldName)) {
+            whereSql.append(" AND P.SYSTEMNAME = ? ");
+            params.add(fieldValue);
+        } else if ("bureauIds".equals(fieldName)) {
+            whereSql.append(" AND P.HOSTDEPTID = ? ");
+            params.add(fieldValue);
+        } else {
+            // 使用白名单验证字段名，防止SQL注入
+            String safeFieldName = validateAndSanitizeFieldName(fieldName);
+            if (safeFieldName != null) {
+                whereSql.append(" AND INSTR(P.").append(safeFieldName).append(",?) > 0 ");
+                params.add(fieldValue);
+            }
+        }
+    }
+
+    /**
+     * 验证并清理字段名，防止SQL注入
+     */
+    private String validateAndSanitizeFieldName(String fieldName) {
+        // 白名单字段校验
+        List<String> allowedFields = Arrays.asList("TITLE", "HOSTDEPTNAME", "CUSTOMNUMBER");
+        String upperFieldName = fieldName.toUpperCase();
+        if (allowedFields.contains(upperFieldName)) {
+            return upperFieldName;
+        }
+        LOGGER.warn("非法字段名: {}", fieldName);
+        return null;
     }
 
     @SuppressWarnings("java:S2077")
@@ -183,11 +213,11 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
     }
 
     private String buildAllSql(String whereSql) {
-        String processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON D.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
         String bySql = " ORDER BY P.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         return "SELECT A.* FROM (SELECT D.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,"
             + "ROW_NUMBER() OVER (PARTITION BY D.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM "
-            + "FROM FF_DOCUMENT_COPY D " + processParamSql + " WHERE D.STATUS < ? AND D.USERID = ? " + whereSql + bySql;
+            + "FROM FF_DOCUMENT_COPY D LEFT JOIN FF_PROCESS_PARAM P ON D.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER WHERE D.STATUS < ? AND D.USERID = ? "
+            + whereSql + bySql;
     }
 
     @Override
