@@ -151,49 +151,59 @@ public class EntrustServiceImpl implements EntrustService {
     public Entrust getById(String id) {
         Entrust entrust = entrustRepository.findById(id).orElse(null);
         if (null != entrust) {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            OrgUnit pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
-            entrust.setAssigneeName(pTemp.getName());
-            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
-            entrust.setOwnerName(pTemp.getName());
-
-            String itemId = entrust.getItemId();
-            if (ItemConsts.ITEMID4ALL.equals(itemId)) {
-                entrust.setItemName(ItemConsts.ITEMNAME4ALL);
-            } else {
-                Item itemTemp = itemService.findById(itemId);
-                if (null == itemTemp || StringUtils.isEmpty(itemTemp.getId())) {
-                    entrust.setItemName("此事项已删除");
-                } else {
-                    entrust.setItemName(itemTemp.getName());
-                }
-            }
-            /**
-             * 判断是否使用
-             */
-            entrust.setUsed(EntrustUseEnum.TODO.getValue());
-            String startTime = entrust.getStartTime();
-            String endTime = entrust.getEndTime();
-            Date startTime4Date;
-            Date endTime4Date;
-            Date currentDate;
-            try {
-                startTime4Date = Y9DateTimeUtils.parseDate(startTime);
-                endTime4Date = Y9DateTimeUtils.parseDate(endTime);
-                currentDate = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatCurrentDate());
-                boolean b =
-                    startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
-                        || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
-                if (b) {
-                    entrust.setUsed(EntrustUseEnum.DOING.getValue());
-                } else if (currentDate.after(endTime4Date)) {
-                    entrust.setUsed(EntrustUseEnum.DONE.getValue());
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
+            populateEntrustDetails(entrust);
+            determineEntrustStatus(entrust);
         }
         return entrust;
+    }
+
+    private void populateEntrustDetails(Entrust entrust) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+
+        // 设置委托人和所有者名称
+        OrgUnit pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
+        entrust.setAssigneeName(pTemp.getName());
+
+        pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
+        entrust.setOwnerName(pTemp.getName());
+
+        // 设置事项名称
+        String itemId = entrust.getItemId();
+        if (ItemConsts.ITEMID4ALL.equals(itemId)) {
+            entrust.setItemName(ItemConsts.ITEMNAME4ALL);
+        } else {
+            Item itemTemp = itemService.findById(itemId);
+            if (null == itemTemp || StringUtils.isEmpty(itemTemp.getId())) {
+                entrust.setItemName("此事项已删除");
+            } else {
+                entrust.setItemName(itemTemp.getName());
+            }
+        }
+    }
+
+    private void determineEntrustStatus(Entrust entrust) {
+        String startTime = entrust.getStartTime();
+        String endTime = entrust.getEndTime();
+
+        try {
+            Date startTime4Date = Y9DateTimeUtils.parseDate(startTime);
+            Date endTime4Date = Y9DateTimeUtils.parseDate(endTime);
+            Date currentDate = Y9DateTimeUtils.parseDate(Y9DateTimeUtils.formatCurrentDate());
+
+            boolean isCurrentDateInRange =
+                startTime4Date.getTime() == currentDate.getTime() || endTime4Date.getTime() == currentDate.getTime()
+                    || (currentDate.after(startTime4Date) && currentDate.before(endTime4Date));
+
+            if (isCurrentDateInRange) {
+                entrust.setUsed(EntrustUseEnum.DOING.getValue());
+            } else if (currentDate.after(endTime4Date)) {
+                entrust.setUsed(EntrustUseEnum.DONE.getValue());
+            } else {
+                entrust.setUsed(EntrustUseEnum.TODO.getValue());
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     @Override
