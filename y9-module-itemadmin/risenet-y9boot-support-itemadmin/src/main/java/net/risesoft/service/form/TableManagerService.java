@@ -76,47 +76,8 @@ public class TableManagerService {
             // 修改表
             DataSource dataSource = jdbcTemplate4Tenant.getDataSource();
             String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
-            if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                DdlMysql ddLmysql = new DdlMysql();
-                if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
-                    ddLmysql.renameTable(dataSource, td.getOldTableName(), tableName);
-                    // 修改老表值
-                    td.setOldTableName(td.getTableName());
-                    this.saveOrUpdate(td);
-                    LOGGER.info("修改表正常：原表名称{}--->修改后表名称{}", td.getOldTableName(), tableName);
-                }
-                ddLmysql.addTableColumn(dataSource, tableName, dbColumnList);
-            } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                DdlOracle ddLoracle = new DdlOracle();
-                if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
-                    ddLoracle.renameTable(dataSource, td.getOldTableName(), tableName);
-                    // 修改老表值
-                    td.setOldTableName(td.getTableName());
-                    this.saveOrUpdate(td);
-                    LOGGER.info("修改表名称正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
-                }
-                ddLoracle.addTableColumn(dataSource, tableName, dbColumnList);
-            } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                DdlOracle ddLoracle = new DdlOracle();
-                if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
-                    ddLoracle.renameTable(dataSource, td.getOldTableName(), tableName);
-                    // 修改老表值
-                    td.setOldTableName(td.getTableName());
-                    this.saveOrUpdate(td);
-                    LOGGER.info("修改表正常：原表名{}--->修改后的表名{}", td.getOldTableName(), tableName);
-                }
-                ddLoracle.addTableColumn(dataSource, tableName, dbColumnList);
-            } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                DdlKingbase ddLkingbase = new DdlKingbase();
-                if (StringUtils.isNotBlank(td.getOldTableName()) && !td.getOldTableName().equalsIgnoreCase(tableName)) {
-                    ddLkingbase.renameTable(dataSource, td.getOldTableName(), tableName);
-                    // 修改老表值
-                    td.setOldTableName(td.getTableName());
-                    this.saveOrUpdate(td);
-                    LOGGER.info("修改表正常");
-                }
-                ddLkingbase.addTableColumn(dataSource, tableName, dbColumnList);
-            }
+            // 处理不同数据库类型的表结构修改
+            handleDatabaseSpecificTableModification(dataSource, dialect, td, tableName, dbColumnList);
             // 修改状态
             y9TableFieldRepository.updateState(tableId);
             LOGGER.info("修改字段正常");
@@ -125,6 +86,70 @@ public class TableManagerService {
             LOGGER.warn("操作失败", ex);
             return Y9Result.failure("操作失败");
         }
+    }
+
+    private void handleDatabaseSpecificTableModification(DataSource dataSource, String dialect, Y9Table td,
+        String tableName, List<DbColumn> dbColumnList) throws Exception {
+        String oldTableName = td.getOldTableName();
+        boolean needRename = StringUtils.isNotBlank(oldTableName) && !oldTableName.equalsIgnoreCase(tableName);
+
+        if (DialectEnum.MYSQL.getValue().equals(dialect)) {
+            handleMysqlTableModification(dataSource, td, tableName, dbColumnList, needRename);
+        } else if (DialectEnum.ORACLE.getValue().equals(dialect)) {
+            handleOracleTableModification(dataSource, td, tableName, dbColumnList, needRename);
+        } else if (DialectEnum.DM.getValue().equals(dialect)) {
+            handleDmTableModification(dataSource, td, tableName, dbColumnList, needRename);
+        } else if (DialectEnum.KINGBASE.getValue().equals(dialect)) {
+            handleKingbaseTableModification(dataSource, td, tableName, dbColumnList, needRename);
+        }
+    }
+
+    private void handleMysqlTableModification(DataSource dataSource, Y9Table td, String tableName,
+        List<DbColumn> dbColumnList, boolean needRename) throws Exception {
+        DdlMysql ddlMysql = new DdlMysql();
+        if (needRename) {
+            ddlMysql.renameTable(dataSource, td.getOldTableName(), tableName);
+            td.setOldTableName(td.getTableName());
+            this.saveOrUpdate(td);
+            LOGGER.info("修改表正常：原表名称{}--->修改后表名称{}", td.getOldTableName(), tableName);
+        }
+        ddlMysql.addTableColumn(dataSource, tableName, dbColumnList);
+    }
+
+    private void handleOracleTableModification(DataSource dataSource, Y9Table td, String tableName,
+        List<DbColumn> dbColumnList, boolean needRename) throws Exception {
+        DdlOracle ddlOracle = new DdlOracle();
+        if (needRename) {
+            ddlOracle.renameTable(dataSource, td.getOldTableName(), tableName);
+            td.setOldTableName(td.getTableName());
+            this.saveOrUpdate(td);
+            LOGGER.info("修改表名称正常：原表名{}--->修改后表名{}", td.getOldTableName(), tableName);
+        }
+        ddlOracle.addTableColumn(dataSource, tableName, dbColumnList);
+    }
+
+    private void handleDmTableModification(DataSource dataSource, Y9Table td, String tableName,
+        List<DbColumn> dbColumnList, boolean needRename) throws Exception {
+        DdlOracle ddlOracle = new DdlOracle();
+        if (needRename) {
+            ddlOracle.renameTable(dataSource, td.getOldTableName(), tableName);
+            td.setOldTableName(td.getTableName());
+            this.saveOrUpdate(td);
+            LOGGER.info("修改表正常：原表名{}--->修改后的表名{}", td.getOldTableName(), tableName);
+        }
+        ddlOracle.addTableColumn(dataSource, tableName, dbColumnList);
+    }
+
+    private void handleKingbaseTableModification(DataSource dataSource, Y9Table td, String tableName,
+        List<DbColumn> dbColumnList, boolean needRename) throws Exception {
+        DdlKingbase ddlKingbase = new DdlKingbase();
+        if (needRename) {
+            ddlKingbase.renameTable(dataSource, td.getOldTableName(), tableName);
+            td.setOldTableName(td.getTableName());
+            this.saveOrUpdate(td);
+            LOGGER.info("修改表正常");
+        }
+        ddlKingbase.addTableColumn(dataSource, tableName, dbColumnList);
     }
 
     /**

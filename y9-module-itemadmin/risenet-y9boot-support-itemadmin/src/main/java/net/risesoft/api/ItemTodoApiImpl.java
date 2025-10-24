@@ -50,6 +50,7 @@ import net.risesoft.y9.json.Y9JsonUtil;
 public class ItemTodoApiImpl implements ItemTodoApi {
 
     private static final String COMMON_SQL = "SELECT T.* FROM FF_ACT_RU_DETAIL T ";
+    private static final String NUMBER_SQL = "numberSql";
     private final ItemPageService itemPageService;
     private final ActRuDetailService actRuDetailService;
     private final Y9TableService y9TableService;
@@ -337,7 +338,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     }
 
     private String getSafeStringFromMap(Map<String, Object> map) {
-        Object value = map.get("numberSql");
+        Object value = map.get(NUMBER_SQL);
         return value != null ? value.toString() : "";
     }
 
@@ -375,7 +376,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
         String COMMON_SQL = searchMap.get("COMMON_SQL") != null ? searchMap.get("COMMON_SQL").toString() : "";
-        String numberSql = searchMap.get("numberSql") != null ? searchMap.get("numberSql").toString() : "";
+        String numberSql = searchMap.get(NUMBER_SQL) != null ? searchMap.get(NUMBER_SQL).toString() : "";
         if (StringUtils.isNotBlank(searchMapStr)) {
             List<String> sqlList = y9TableService.getSql(searchMap);
             innerSql = sqlList.get(0);
