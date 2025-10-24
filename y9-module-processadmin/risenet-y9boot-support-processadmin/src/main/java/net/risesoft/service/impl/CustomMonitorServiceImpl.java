@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.CustomMonitorService;
@@ -92,13 +93,13 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
             .notDeleted()
             .unfinished()
             .processDefinitionKey(processDefinitionKey)
-            .variableValueLike("searchTerm", "%" + searchTerm + "%")
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
             .count();
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
             .notDeleted()
             .unfinished()
             .processDefinitionKey(processDefinitionKey)
-            .variableValueLike("searchTerm", "%" + searchTerm + "%")
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
             .orderByProcessInstanceStartTime()
             .desc()
             .listPage((page - 1) * rows, rows);
@@ -114,13 +115,13 @@ public class CustomMonitorServiceImpl implements CustomMonitorService {
             .notDeleted()
             .unfinished()
             .processInstanceBusinessKey(systemName)
-            .variableValueLike("searchTerm", "%" + searchTerm + "%")
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
             .count();
         List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
             .notDeleted()
             .unfinished()
             .processInstanceBusinessKey(systemName)
-            .variableValueLike("searchTerm", "%" + searchTerm + "%")
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
             .orderByProcessInstanceStartTime()
             .desc()
             .listPage((page - 1) * rows, rows);

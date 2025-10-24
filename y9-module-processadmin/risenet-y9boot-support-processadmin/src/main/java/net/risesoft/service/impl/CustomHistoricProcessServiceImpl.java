@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.DeleteProcessService;
@@ -31,11 +32,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessService {
 
     private final RuntimeService runtimeService;
-
     private final HistoryService historyService;
-
     private final OfficeDoneInfoApi officeDoneInfoApi;
-
     private final DeleteProcessService deleteProcessService;
 
     @Override
@@ -50,7 +48,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
                 historyService.createNativeHistoricProcessInstanceQuery()
                     .sql(updateSql)
                     .parameter("DELETE_REASON_", "已删除")
-                    .parameter("processInstanceId", processInstanceId)
+                    .parameter(SysVariables.PROCESSINSTANCEID, processInstanceId)
                     .singleResult();
                 runtimeService.suspendProcessInstanceById(processInstanceId);
             } else {
@@ -60,7 +58,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
                 historyService.createNativeHistoricProcessInstanceQuery()
                     .sql(updateSql)
                     .parameter("DELETE_REASON_", "已删除")
-                    .parameter("processInstanceId", processInstanceId)
+                    .parameter(SysVariables.PROCESSINSTANCEID, processInstanceId)
                     .singleResult();
             }
             return true;
@@ -151,7 +149,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
             runtimeService.createNativeProcessInstanceQuery()
                 .sql(executionSql)
                 .parameter("TENANT_ID_", priority)
-                .parameter("processInstanceId", processInstanceId)
+                .parameter(SysVariables.PROCESSINSTANCEID, processInstanceId)
                 .singleResult();
         }
         String updateSql =
@@ -159,7 +157,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
         runtimeService.createNativeProcessInstanceQuery()
             .sql(updateSql)
             .parameter("TENANT_ID_", priority)
-            .parameter("processInstanceId", processInstanceId)
+            .parameter(SysVariables.PROCESSINSTANCEID, processInstanceId)
             .singleResult();
     }
 

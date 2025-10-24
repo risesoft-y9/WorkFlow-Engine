@@ -103,26 +103,29 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list0 = runtimeService.createNativeExecutionQuery()
                 .sql(sql0)
-                .parameter("PROC_INST_ID_", processInstanceId)
+                .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                 .list();
             if (!list0.isEmpty()) {
                 // 备份数据已有，则先删除再重新插入备份
                 String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
                 runtimeService.createNativeExecutionQuery()
                     .sql(sql2)
-                    .parameter("PROC_INST_ID_", processInstanceId)
+                    .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                     .list();
             }
             String sql = "INSERT INTO FF_ACT_RU_EXECUTION_" + year
                 + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
-            runtimeService.createNativeExecutionQuery().sql(sql).parameter("PROC_INST_ID_", processInstanceId).list();
+            runtimeService.createNativeExecutionQuery()
+                .sql(sql)
+                .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
+                .list();
             /*
              * 2-办结流程
              */
             String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list1 = runtimeService.createNativeExecutionQuery()
                 .sql(sql3)
-                .parameter("PROC_INST_ID_", processInstanceId)
+                .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                 .list();
             if (!list1.isEmpty()) {
                 // 成功备份数据才办结
@@ -152,7 +155,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             } catch (Exception e1) {
                 LOGGER.error("保存错误日志失败", e1);
             }
-            LOGGER.error("流程办结失败", e);
+            LOGGER.error("流程办结失败!异常：", e);
             throw new Exception("CustomTaskServiceImpl complete error");
         }
     }
@@ -206,7 +209,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             } catch (Exception e1) {
                 LOGGER.error("保存错误日志失败", e1);
             }
-            LOGGER.error("流程办结失败", e);
+            LOGGER.error("流程办结失败，出现异常如下：", e);
             throw new Exception("CustomTaskServiceImpl complete error");
         }
     }

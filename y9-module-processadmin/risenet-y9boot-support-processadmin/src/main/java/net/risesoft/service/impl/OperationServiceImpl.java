@@ -93,7 +93,7 @@ public class OperationServiceImpl implements OperationService {
         String userName = Y9LoginUserHolder.getOrgUnit().getName();
         Task currentTask = this.customTaskService.findById(taskId);
         String processInstanceId = currentTask.getProcessInstanceId();
-        String reason0 = "该任务已由" + userName + "重定向" + (StringUtils.isNotBlank(reason) ? ":" + reason : "");
+        String reason0 = "该任务已由办理人员" + userName + "重定向" + (StringUtils.isNotBlank(reason) ? ":" + reason : "");
         this.managementService.executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, reason0));
 
         List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
@@ -153,7 +153,7 @@ public class OperationServiceImpl implements OperationService {
         String processSerialNumber =
             (String)this.customVariableService.getVariable(taskId, SysVariables.PROCESS_SERIAL_NUMBER);
         String reasonTemp =
-            "该任务已由" + position.getName() + "多步退回" + (StringUtils.isNotBlank(reason) ? ":" + reason : "");
+            "该任务已由岗位" + position.getName() + "多步退回" + (StringUtils.isNotBlank(reason) ? ":" + reason : "");
         this.managementService.executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, reasonTemp));
 
         List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
@@ -237,7 +237,7 @@ public class OperationServiceImpl implements OperationService {
         List<String> users = new ArrayList<>();
         users.add(processInstance.getStartUserId());
         this.managementService
-            .executeCommand(new JumpCommand(taskId, startActivityId, users, "该任务已由" + userName + "返回至起草节点"));
+            .executeCommand(new JumpCommand(taskId, startActivityId, users, "该任务已由人员" + userName + "返回至起草节点"));
     }
 
     @Override
@@ -259,21 +259,21 @@ public class OperationServiceImpl implements OperationService {
             String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list0 = this.runtimeService.createNativeExecutionQuery()
                 .sql(sql0)
-                .parameter("PROC_INST_ID_", processInstanceId)
+                .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                 .list();
             // 备份数据已有，则先删除再重新插入备份
             if (!list0.isEmpty()) {
                 String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
                 this.runtimeService.createNativeExecutionQuery()
                     .sql(sql2)
-                    .parameter("PROC_INST_ID_", processInstanceId)
+                    .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                     .list();
             }
             String sql = "INSERT INTO FF_ACT_RU_EXECUTION_" + year
                 + " (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ from ACT_RU_EXECUTION T WHERE T.PROC_INST_ID_ = #{PROC_INST_ID_}";
             this.runtimeService.createNativeExecutionQuery()
                 .sql(sql)
-                .parameter("PROC_INST_ID_", processInstanceId)
+                .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                 .list();
             /*
              * 2-办结流程
@@ -281,7 +281,7 @@ public class OperationServiceImpl implements OperationService {
             String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
             List<Execution> list1 = this.runtimeService.createNativeExecutionQuery()
                 .sql(sql3)
-                .parameter("PROC_INST_ID_", processInstanceId)
+                .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                 .list();
             // 成功备份数据才特殊办结
             if (!list1.isEmpty()) {
