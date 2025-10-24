@@ -33,34 +33,47 @@ public class DeletePrintPdfFileUtil {
      */
     @Scheduled(cron = "0 0 */5 * * ?") // 每5个小时执行一次
     public void deletePdf() {
-        Date date = new Date();
         try {
             LOGGER.info("******************定时任务删除pdf文件开始：{}******************",
                 Y9DateTimeUtils.formatCurrentDateTime());
-            calendar.clear();
-            calendar.setTime(date);
-            calendar.add(Calendar.HOUR, -5);// 当前时间减去5个小时，当前时间的前五个小时
-            long timeInMillis = calendar.getTimeInMillis();
+            long cutoffTime = calculateCutoffTime();
             String pdfPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "formToPDF";
             LOGGER.info("********************pdfPath：{}********************", pdfPath);
-            File realFile = new File(pdfPath);
-            if (realFile.exists() && realFile.isDirectory()) {
-                File[] subfiles = realFile.listFiles();
-                if (subfiles != null) {
-                    for (File file : subfiles) {
-                        if (file.getName().contains(".pdf")) {
-                            long lastModified = file.lastModified();// pdf最后更新时间
-                            if (lastModified < timeInMillis) {// 删除当前时间前5个小时的pdf文件
-                                if (!file.delete()) {
-                                    LOGGER.warn("Failed to delete pdf file: {}", file.getAbsolutePath());
-                                }
-                            }
-                        }
+            File pdfDirectory = new File(pdfPath);
+            if (pdfDirectory.exists() && pdfDirectory.isDirectory()) {
+                deleteExpiredPdfFiles(pdfDirectory, cutoffTime);
+            }
+        } catch (Exception e) {
+            LOGGER.error("定时任务删除pdf文件异常：{}", e.getMessage(), e);
+        }
+    }
+
+    /**
+     * 计算文件过期时间（当前时间减去5小时）
+     */
+    private long calculateCutoffTime() {
+        Calendar calendar = Calendar.getInstance();
+        calendar.add(Calendar.HOUR, -5);
+        return calendar.getTimeInMillis();
+    }
+
+    /**
+     * 删除过期的PDF文件
+     */
+    private void deleteExpiredPdfFiles(File directory, long cutoffTime) {
+        File[] pdfFiles = directory.listFiles((dir, name) -> name.endsWith(".pdf"));
+        if (pdfFiles != null) {
+            int deletedCount = 0;
+            for (File file : pdfFiles) {
+                if (file.lastModified() < cutoffTime) {
+                    if (file.delete()) {
+                        deletedCount++;
+                    } else {
+                        LOGGER.warn("Failed to delete pdf file: {}", file.getAbsolutePath());
                     }
                 }
             }
-        } catch (Exception e) {
-            LOGGER.error("定时任务删除pdf文件异常：{}", e.getMessage());
+            LOGGER.info("定时任务删除pdf文件结束，共删除 {} 个过期文件", deletedCount);
         }
     }
 

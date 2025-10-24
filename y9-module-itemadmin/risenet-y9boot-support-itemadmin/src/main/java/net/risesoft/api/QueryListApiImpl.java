@@ -1,5 +1,6 @@
 package net.risesoft.api;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -60,129 +61,29 @@ public class QueryListApiImpl implements QueryListApi {
         @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            String sql0 = "";
-            StringBuilder sql1 = new StringBuilder();
+            StringBuilder joinSql = new StringBuilder();
+            StringBuilder whereSql = new StringBuilder();
+            List<Object> params = new ArrayList<>();
             // 表单搜索
             if (StringUtils.isNotBlank(tableName) && StringUtils.isNotBlank(searchMapStr)) {
-                boolean query = false;
-                sql0 = " LEFT JOIN " + tableName.toUpperCase() + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
-                List<Map<String, Object>> list = Y9JsonUtil.readListOfMap(searchMapStr, String.class, Object.class);
-                assert list != null;
-                for (Map<String, Object> map : list) {
-                    // value有值
-                    if (map.get(ItemConsts.VALUE_KEY) != null && !map.get(ItemConsts.VALUE_KEY).toString().isEmpty()) {
-                        query = true;
-                        String queryType = map.get("queryType").toString();
-                        String value = map.get(ItemConsts.VALUE_KEY).toString();
-                        String columnName = map.get("columnName").toString();
-                        // select，radio类型搜索用=
-                        switch (queryType) {
-                            case "select":
-                            case "radio":
-                                sql1.append(" AND F.")
-                                    .append(columnName.toUpperCase())
-                                    .append(" = '")
-                                    .append(value)
-                                    .append("' ");
-                                break;
-                            case "checkbox": {
-                                // 多选框搜索
-                                String[] values = value.split(",");
-                                // 单个值
-                                if (values.length == 1) {
-                                    sql1.append(" AND INSTR(F.")
-                                        .append(columnName.toUpperCase())
-                                        .append(",'")
-                                        .append(values[0])
-                                        .append("') > 0 ");
-                                } else {
-                                    StringBuilder sql2 = new StringBuilder();
-                                    // 多个值
-                                    for (String val : values) {
-                                        if (sql2.toString().isEmpty()) {
-                                            sql2.append(" AND ( INSTR(F.")
-                                                .append(columnName.toUpperCase())
-                                                .append(",'")
-                                                .append(val)
-                                                .append("') > 0 ");
-                                        } else {
-                                            sql2.append(" OR INSTR(F.")
-                                                .append(columnName.toUpperCase())
-                                                .append(",'")
-                                                .append(val)
-                                                .append("') > 0 ");
-                                        }
-                                    }
-                                    sql2.append(" ) ");
-                                    sql1.append(sql2);
-                                }
-                                break;
-                            }
-                            case "date": {
-                                // 日期搜索
-                                String[] values = value.split(",");
-                                sql1.append(" AND F.")
-                                    .append(columnName.toUpperCase())
-                                    .append(" >= '")
-                                    .append(values[0])
-                                    .append("' ");
-                                sql1.append(" AND F.")
-                                    .append(columnName.toUpperCase())
-                                    .append(" < '")
-                                    .append(values[1])
-                                    .append(" 23:59:59' ");
-                                break;
-                            }
-                            default:
-                                sql1.append(" AND INSTR(F.")
-                                    .append(columnName.toUpperCase())
-                                    .append(",'")
-                                    .append(value)
-                                    .append("') > 0 ");
-                                break;
-                        }
-                    }
-                }
-                if (!query) {
-                    sql0 = "";
-                    sql1 = new StringBuilder();
-                }
+                buildFormSearchConditions(joinSql, whereSql, params, tableName, searchMapStr);
             }
-            String stateSql = "";
             // 状态搜索
             if (StringUtils.isNotBlank(state)) {
-                switch (state) {
-                    case "todo":
-                        stateSql = " and T.STATUS = 0 AND T.ENDED = FALSE ";
-                        break;
-                    case "doing":
-                        stateSql = " and T.STATUS = 1 AND T.ENDED = FALSE ";
-                        break;
-                    case "done":
-                        stateSql = " and T.ENDED = TRUE ";
-                        break;
-                    default:
-                        LOGGER.warn("state对应的itemBox不存在！");
-                        break;
-                }
+                buildStateConditions(whereSql, state);
             }
-            String dateSql = "";
-            if (StringUtils.isNotBlank(createDate)) {// 时间搜索
-                String startDate = createDate.split(",")[0];
-                String endDate = createDate.split(",")[1];
-                dateSql = " and T.STARTTIME > '" + startDate + "' and T.STARTTIME < '" + endDate + " 23:59:59' ";
+            // 时间搜索
+            if (StringUtils.isNotBlank(createDate)) {
+                buildDateConditions(whereSql, params, createDate);
             }
-
-            String orderBy = " T.STARTTIME DESC";
-            String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.DELETED = FALSE " + stateSql + dateSql
-                + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + sql1 + " ORDER BY " + orderBy;
-            System.out.println(sql);
-
-            String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + sql0 + " WHERE T.SYSTEMNAME= ? " + stateSql
-                + dateSql + " AND T.ASSIGNEE= ? AND T.DELETED = FALSE " + sql1;
-            Object[] args = new Object[2];
-            args[0] = systemName;
-            args[1] = userId;
+            // 添加系统名称和用户ID参数
+            params.add(systemName);
+            params.add(userId);
+            Object[] args = params.toArray();
+            String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + joinSql + " WHERE T.DELETED = FALSE " + whereSql
+                + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ORDER BY T.STARTTIME DESC";
+            String countSql = "SELECT COUNT(ID) FROM FF_ACT_RU_DETAIL T " + joinSql + " WHERE T.DELETED = FALSE "
+                + whereSql + " AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?";
             ItemPage<ActRuDetailModel> pageList = itemPageService.page(sql, args,
                 new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
             return Y9Page.success(page, pageList.getTotalpages(), pageList.getTotal(), pageList.getRows());
@@ -192,4 +93,117 @@ public class QueryListApiImpl implements QueryListApi {
         return null;
     }
 
+    /**
+     * 构建表单搜索条件
+     */
+    private void buildFormSearchConditions(StringBuilder joinSql, StringBuilder whereSql, List<Object> params,
+        String tableName, String searchMapStr) {
+        List<Map<String, Object>> list = Y9JsonUtil.readListOfMap(searchMapStr, String.class, Object.class);
+        if (list == null || list.isEmpty()) {
+            return;
+        }
+        boolean hasQuery = false;
+        joinSql.append(" LEFT JOIN ").append(tableName.toUpperCase()).append(" F ON T.PROCESSSERIALNUMBER = F.GUID ");
+        for (Map<String, Object> map : list) {
+            if (map.get(ItemConsts.VALUE_KEY) != null && !map.get(ItemConsts.VALUE_KEY).toString().isEmpty()) {
+                hasQuery = true;
+                String queryType = map.get("queryType").toString();
+                String value = map.get(ItemConsts.VALUE_KEY).toString();
+                String columnName = map.get("columnName").toString();
+                buildConditionByType(whereSql, params, queryType, value, columnName);
+            }
+        }
+        if (!hasQuery) {
+            joinSql.setLength(0);
+        }
+    }
+
+    /**
+     * 根据查询类型构建条件
+     */
+    private void buildConditionByType(StringBuilder whereSql, List<Object> params, String queryType, String value,
+        String columnName) {
+        switch (queryType) {
+            case "select":
+            case "radio":
+                whereSql.append(" AND F.").append(columnName.toUpperCase()).append(" = ? ");
+                params.add(value);
+                break;
+            case "checkbox":
+                buildCheckboxConditions(whereSql, params, value, columnName);
+                break;
+            case "date":
+                buildDateRangeConditions(whereSql, params, value, columnName);
+                break;
+            default:
+                whereSql.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(", ?) > 0 ");
+                params.add(value);
+                break;
+        }
+    }
+
+    /**
+     * 构建复选框条件
+     */
+    private void buildCheckboxConditions(StringBuilder whereSql, List<Object> params, String value, String columnName) {
+        String[] values = value.split(",");
+        if (values.length == 1) {
+            whereSql.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(", ?) > 0 ");
+            params.add(values[0]);
+        } else {
+            whereSql.append(" AND (");
+            for (int i = 0; i < values.length; i++) {
+                if (i > 0) {
+                    whereSql.append(" OR ");
+                }
+                whereSql.append(" INSTR(F.").append(columnName.toUpperCase()).append(", ?) > 0 ");
+                params.add(values[i]);
+            }
+            whereSql.append(") ");
+        }
+    }
+
+    /**
+     * 构建日期范围条件
+     */
+    private void buildDateRangeConditions(StringBuilder whereSql, List<Object> params, String value,
+        String columnName) {
+        String[] values = value.split(",");
+        whereSql.append(" AND F.").append(columnName.toUpperCase()).append(" >= ? ");
+        whereSql.append(" AND F.").append(columnName.toUpperCase()).append(" <= ? ");
+        params.add(values[0]);
+        params.add(values[1] + " 23:59:59");
+    }
+
+    /**
+     * 构建状态条件
+     */
+    private void buildStateConditions(StringBuilder whereSql, String state) {
+        switch (state) {
+            case "todo":
+                whereSql.append(" AND T.STATUS = 0 AND T.ENDED = FALSE ");
+                break;
+            case "doing":
+                whereSql.append(" AND T.STATUS = 1 AND T.ENDED = FALSE ");
+                break;
+            case "done":
+                whereSql.append(" AND T.ENDED = TRUE ");
+                break;
+            default:
+                LOGGER.warn("state对应的itemBox不存在！");
+                break;
+        }
+    }
+
+    /**
+     * 构建日期条件
+     */
+    private void buildDateConditions(StringBuilder whereSql, List<Object> params, String createDate) {
+        String[] dates = createDate.split(",");
+        String startDate = dates[0];
+        String endDate = dates[1];
+        whereSql.append(" AND T.STARTTIME >= ? AND T.STARTTIME <= ? ");
+        params.add(startDate);
+        params.add(endDate + " 23:59:59");
+    }
 }

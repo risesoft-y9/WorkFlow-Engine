@@ -338,7 +338,7 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      */
     @Override
     public Y9Page<ChaoSong4DataBaseModel> myChaoSongList(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        String searchName, String itemId, String userName, String state, String year, @RequestParam int page,
+        String searchName, String itemId, String userName, Integer state, String year, @RequestParam int page,
         @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
@@ -389,7 +389,7 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      */
     @Override
     public Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(@RequestParam String tenantId,
-        @RequestParam String orgUnitId, String searchName, String itemId, String userName, String state, String year,
+        @RequestParam String orgUnitId, String searchName, String itemId, String userName, Integer state, String year,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setOrgUnitId(orgUnitId);
@@ -413,7 +413,7 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
      */
     @Override
     public Y9Page<ChaoSong4DataBaseModel> searchAllList(@RequestParam String tenantId, String searchName, String itemId,
-        String senderName, String userName, String state, String year, @RequestParam Integer page,
+        String senderName, String userName, Integer state, String year, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return chaoSongService.searchAllList(searchName, itemId, senderName, userName, state, year, page, rows);

@@ -12,7 +12,9 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.Getter;
 import lombok.RequiredArgsConstructor;
+import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.Y9WordApi;
@@ -189,33 +191,38 @@ public class Y9WordApiImpl implements Y9WordApi {
         Y9WordHistoryModel history = new Y9WordHistoryModel();
         if (null != historyWordList && !historyWordList.isEmpty()) {
             Y9WordHistory historyWord = historyWordList.get(0);
-            if (StringUtils.isNotEmpty(historyWord.getIstaohong())) {
-                if (ItemWordTypeEnum.PDF.getValue().equals(historyWord.getIstaohong())
-                    || ItemWordTypeEnum.PDF1.getValue().equals(historyWord.getIstaohong())
-                    || ItemWordTypeEnum.PDF2.getValue().equals(historyWord.getIstaohong())) {
-                    history.setOpenWordOrPdf("openPDF");
-                } else if (ItemWordTypeEnum.WORD.getValue().equals(historyWord.getIstaohong())
-                    || ItemWordTypeEnum.WORD_RED_HEAD.getValue().equals(historyWord.getIstaohong())) {
-                    history.setOpenWordOrPdf(ItemConsts.OPENWORD_KEY);
-                }
-            } else {
-                history.setOpenWordOrPdf(ItemConsts.OPENWORD_KEY);
-            }
-
-            history.setTitle(historyWord.getTitle());
-            history.setFileSize(historyWord.getFileSize());
-            history.setId(historyWord.getId());
-            history.setProcessSerialNumber(historyWord.getProcessSerialNumber());
-            history.setSaveDate(historyWord.getSaveDate());
-            history.setFileStoreId(historyWord.getFileStoreId());
-            history.setFileType(historyWord.getFileType());
-            history.setIsTaoHong(StringUtils.isNotBlank(historyWord.getIstaohong()) ? historyWord.getIstaohong() : "");
-
-            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, historyWord.getUserId()).getData();
-            history.setUserName(orgUnit != null && StringUtils.isNotBlank(orgUnit.getId()) ? orgUnit.getName() : "");
-            history.setUserId(historyWord.getUserId());
+            populateHistoryModel(history, historyWord, tenantId);
         }
         return Y9Result.success(history);
+    }
+
+    /**
+     * 填充历史文档模型数据
+     */
+    private void populateHistoryModel(Y9WordHistoryModel history, Y9WordHistory historyWord, String tenantId) {
+        history.setOpenWordOrPdf(determineOpenWordOrPdf(historyWord.getIstaohong()));
+        history.setTitle(historyWord.getTitle());
+        history.setFileSize(historyWord.getFileSize());
+        history.setId(historyWord.getId());
+        history.setProcessSerialNumber(historyWord.getProcessSerialNumber());
+        history.setSaveDate(historyWord.getSaveDate());
+        history.setFileStoreId(historyWord.getFileStoreId());
+        history.setFileType(historyWord.getFileType());
+        history.setIsTaoHong(StringUtils.isNotBlank(historyWord.getIstaohong()) ? historyWord.getIstaohong() : "");
+        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, historyWord.getUserId()).getData();
+        history.setUserName(orgUnit != null && StringUtils.isNotBlank(orgUnit.getId()) ? orgUnit.getName() : "");
+        history.setUserId(historyWord.getUserId());
+    }
+
+    /**
+     * 根据套红类型确定打开方式
+     */
+    private String determineOpenWordOrPdf(String istaohong) {
+        if (ItemWordTypeEnum.PDF.getValue().equals(istaohong) || ItemWordTypeEnum.PDF1.getValue().equals(istaohong)
+            || ItemWordTypeEnum.PDF2.getValue().equals(istaohong)) {
+            return "openPDF";
+        }
+        return ItemConsts.OPENWORD_KEY;
     }
 
     /**
@@ -303,63 +310,78 @@ public class Y9WordApiImpl implements Y9WordApi {
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是正文文件地址
      * @since 9.6.6
      */
+
     @Override
     public Y9Result<String> openDocument(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String itemId, String bindValue) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
-        List<Y9Word> list = new ArrayList<>();
 
-        if (StringUtils.isNotBlank(processSerialNumber)) {
-            if (StringUtils.isNotBlank(bindValue) && !"null".equals(bindValue)) {
-                list = y9WordService.listByProcessSerialNumberAndDocCategory(processSerialNumber, bindValue);
-            } else {
-                list = y9WordService.listByProcessSerialNumber(processSerialNumber);
-            }
-        }
-        Y9Word y9Word;
-        if (!list.isEmpty()) {
-            y9Word = list.get(0);
+        // 尝试获取已存在的正文文件
+        List<Y9Word> wordList = getExistingWordList(processSerialNumber, bindValue);
+        if (!wordList.isEmpty()) {
+            Y9Word y9Word = wordList.get(0);
             if (StringUtils.isNotBlank(y9Word.getFileStoreId())) {
                 return Y9Result.success(y9Word.getFileStoreId());
             } else {
                 return Y9Result.failure("fileStoreId为空，保存正文的时候出错!!");
             }
-        } else {// 打开事项配置的正文模板
+        } else {
+            // 打开事项配置的正文模板
+            return openTemplateDocument(tenantId, itemId, processSerialNumber, bindValue);
+        }
+    }
+
+    /**
+     * 获取已存在的正文文件列表
+     */
+    private List<Y9Word> getExistingWordList(String processSerialNumber, String bindValue) {
+        if (StringUtils.isBlank(processSerialNumber)) {
+            return new ArrayList<>();
+        }
+
+        if (StringUtils.isNotBlank(bindValue) && !"null".equals(bindValue)) {
+            return y9WordService.listByProcessSerialNumberAndDocCategory(processSerialNumber, bindValue);
+        } else {
+            return y9WordService.listByProcessSerialNumber(processSerialNumber);
+        }
+    }
+
+    /**
+     * 打开模板文档
+     */
+    private Y9Result<String> openTemplateDocument(String tenantId, String itemId, String processSerialNumber,
+        String bindValue) {
+        try {
             Item item = itemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
                 repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
             String processDefinitionId = processDefinition.getId();
 
-            if (StringUtils.isNotBlank(bindValue)) {
-                ItemWordTemplateBind wordTemplateBind = wordTemplateBindRepository
-                    .findByItemIdAndProcessDefinitionIdAndBindValue(itemId, processDefinitionId, bindValue);
-                WordTemplate wordTemplate =
-                    wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "")
-                        .orElse(null);
-                if (wordTemplate != null && wordTemplate.getId() != null) {
-                    return Y9Result.success(wordTemplate.getFilePath());
-                } else {
-                    LOGGER.error("数据库没有processSerialNumber={}和bindValue={}绑定的正文，请联系管理员", processSerialNumber,
-                        bindValue);
-                    return Y9Result.failure(
-                        "数据库没有processSerialNumber=" + processSerialNumber + "和bindValue=" + bindValue + "绑定的正文，请联系管理员");
-                }
+            WordTemplate wordTemplate = findWordTemplate(itemId, processDefinitionId, bindValue);
+            if (wordTemplate != null && wordTemplate.getId() != null) {
+                return Y9Result.success(wordTemplate.getFilePath());
             } else {
-                ItemWordTemplateBind wordTemplateBind =
-                    wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-                WordTemplate wordTemplate =
-                    wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "")
-                        .orElse(null);
-                if (wordTemplate != null && wordTemplate.getId() != null) {
-                    return Y9Result.success(wordTemplate.getFilePath());
-                } else {
-                    LOGGER.error("数据库没有processSerialNumber={}的正文，请联系管理员", processSerialNumber);
-                    return Y9Result.failure("数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员");
-                }
+                String errorMsg = buildTemplateNotFoundErrorMsg(processSerialNumber, bindValue);
+                LOGGER.error(errorMsg);
+                return Y9Result.failure(errorMsg);
             }
+        } catch (Exception e) {
+            LOGGER.error("获取模板文档失败", e);
+            return Y9Result.failure("获取模板文档失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 构建模板未找到的错误信息
+     */
+    private String buildTemplateNotFoundErrorMsg(String processSerialNumber, String bindValue) {
+        if (StringUtils.isNotBlank(bindValue)) {
+            return "数据库没有processSerialNumber=" + processSerialNumber + "和bindValue=" + bindValue + "绑定的正文，请联系管理员";
+        } else {
+            return "数据库没有processSerialNumber=" + processSerialNumber + "的正文，请联系管理员";
         }
     }
 
@@ -573,112 +595,153 @@ public class Y9WordApiImpl implements Y9WordApi {
     public Y9Result<Y9WordInfo> showWord(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String itemId, String itembox, String taskId,
         String bindValue) {
-        Y9WordInfo wordInfo = new Y9WordInfo();
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
-        String fileDocumentId = "";
-        String wordReadOnly = "";
-        String openWordOrPdf = "";
-        String isTaoHong = "0";
-        String docCategory = "";
-        String fileType = ".doc";
-        if ("".equals(itembox) || itembox.equalsIgnoreCase(ItemBoxTypeEnum.ADD.getValue())
-            || itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())
-            || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DRAFT.getValue())) {
-            wordReadOnly = "NO";
-        } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())
-            || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())) {
-            wordReadOnly = "YES";
+        try {
+            Y9LoginUserHolder.setTenantId(tenantId);
+            Person person = personApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setPerson(person);
+
+            Y9WordInfo wordInfo = new Y9WordInfo();
+            populateWordInfoBasics(wordInfo, person, processSerialNumber, itemId, itembox, taskId);
+
+            List<Y9Word> wordList = getExistingWordList(processSerialNumber, bindValue);
+            if (!wordList.isEmpty()) {
+                populateWordInfoFromExistingWord(wordInfo, wordList.get(0));
+            } else {
+                populateWordInfoFromTemplate(wordInfo, tenantId, itemId, taskId, bindValue);
+            }
+
+            return Y9Result.success(wordInfo);
+        } catch (Exception e) {
+            LOGGER.error("获取正文文件信息失败", e);
+            return Y9Result.failure("获取正文文件信息失败: " + e.getMessage());
         }
-        String saveDate = "";
-        List<Y9Word> list = new ArrayList<>();
-        if (StringUtils.isNotBlank(processSerialNumber)) {
-            if (StringUtils.isNotBlank(bindValue)) {
-                list = y9WordService.listByProcessSerialNumberAndDocCategory(processSerialNumber, bindValue);
-            } else {
-                list = y9WordService.listByProcessSerialNumber(processSerialNumber);
-            }
-        }
-        if (list != null && !list.isEmpty()) {
-            Y9Word d = list.get(0);
-            fileDocumentId = d.getId();
-            saveDate = d.getSaveDate();
-            if (d.getIstaohong().equals(ItemWordTypeEnum.PDF2.getValue())) {
-                openWordOrPdf = "openWordToPDF";
-                isTaoHong = "4";
-            } else if (d.getIstaohong().equals(ItemWordTypeEnum.PDF1.getValue())) {
-                openWordOrPdf = "openWordToPDF";
-                isTaoHong = "3";
-            } else if (d.getIstaohong().equals(ItemWordTypeEnum.PDF.getValue())) {
-                openWordOrPdf = "openPDF";
-                isTaoHong = "2";
-            } else if (d.getIstaohong().equals(ItemWordTypeEnum.WORD_RED_HEAD.getValue())) {
-                openWordOrPdf = "openTaoHongWord";
-                isTaoHong = "1";
-            } else {
-                openWordOrPdf = ItemConsts.OPENWORD_KEY;
-                isTaoHong = "0";
-            }
-            wordInfo.setFileType(d.getFileType());
-            wordInfo.setFileStoreId(d.getFileStoreId());
-            wordInfo.setUid(d.getFileStoreId());
-        } else {
-            String processDefinitionId;
-            if (StringUtils.isNoneBlank(taskId)) {
-                TaskModel task = taskApi.findById(tenantId, taskId).getData();
-                processDefinitionId = task.getProcessDefinitionId();
-            } else {
-                Item item = itemService.findById(itemId);
-                String processDefinitionKey = item.getWorkflowGuid();
-                ProcessDefinitionModel processDefinitionModel =
-                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-                processDefinitionId = processDefinitionModel.getId();
-            }
-            if (StringUtils.isNotBlank(bindValue)) {
-                ItemWordTemplateBind wordTemplateBind = wordTemplateBindRepository
-                    .findByItemIdAndProcessDefinitionIdAndBindValue(itemId, processDefinitionId, bindValue);
-                WordTemplate wordTemplate =
-                    wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "")
-                        .orElse(null);
-                if (wordTemplate != null && wordTemplate.getId() != null) {
-                    fileDocumentId = wordTemplate.getId();
-                    openWordOrPdf = "openWordTemplate";
-                    String fileName = wordTemplate.getFileName();
-                    fileType = fileName.substring(fileName.lastIndexOf("."));
-                } else {
-                    openWordOrPdf = ItemConsts.OPENWORD_KEY;
-                    docCategory = bindValue;
-                }
-            } else {
-                ItemWordTemplateBind wordTemplateBind =
-                    wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
-                WordTemplate wordTemplate =
-                    wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "")
-                        .orElse(null);
-                if (wordTemplate != null && wordTemplate.getId() != null) {
-                    fileDocumentId = wordTemplate.getId();
-                    openWordOrPdf = "openWordTemplate";
-                    String fileName = wordTemplate.getFileName();
-                    fileType = fileName.substring(fileName.lastIndexOf("."));
-                }
-            }
-        }
-        String activitiUser = person.getId();
-        wordInfo.setFileType(fileType);
-        wordInfo.setDocCategory(docCategory);
-        wordInfo.setActivitiUser(activitiUser);
-        wordInfo.setFileDocumentId(fileDocumentId);
+    }
+
+    /**
+     * 填充基本信息
+     */
+    private void populateWordInfoBasics(Y9WordInfo wordInfo, Person person, String processSerialNumber, String itemId,
+        String itembox, String taskId) {
         wordInfo.setProcessSerialNumber(processSerialNumber);
         wordInfo.setUserName(person.getName());
-        wordInfo.setSaveDate(saveDate);
-        wordInfo.setOpenWordOrPdf(openWordOrPdf);
-        wordInfo.setWordReadOnly(wordReadOnly);
+        wordInfo.setActivitiUser(person.getId());
         wordInfo.setItemId(itemId);
         wordInfo.setItembox(itembox);
         wordInfo.setTaskId(taskId);
-        wordInfo.setIsTaoHong(isTaoHong);
-        return Y9Result.success(wordInfo);
+        wordInfo.setWordReadOnly(determineWordReadOnly(itembox));
+    }
+
+    /**
+     * 确定文档是否只读
+     */
+    private String determineWordReadOnly(String itembox) {
+        if ("".equals(itembox) || ItemBoxTypeEnum.ADD.getValue().equalsIgnoreCase(itembox)
+            || ItemBoxTypeEnum.TODO.getValue().equalsIgnoreCase(itembox)
+            || ItemBoxTypeEnum.DRAFT.getValue().equalsIgnoreCase(itembox)) {
+            return "NO";
+        } else if (ItemBoxTypeEnum.DONE.getValue().equalsIgnoreCase(itembox)
+            || ItemBoxTypeEnum.DOING.getValue().equalsIgnoreCase(itembox)) {
+            return "YES";
+        }
+        return "NO";
+    }
+
+    /**
+     * 从现有文档填充信息
+     */
+    private void populateWordInfoFromExistingWord(Y9WordInfo wordInfo, Y9Word word) {
+        wordInfo.setFileDocumentId(word.getId());
+        wordInfo.setSaveDate(word.getSaveDate());
+        wordInfo.setFileType(word.getFileType());
+        wordInfo.setFileStoreId(word.getFileStoreId());
+        wordInfo.setUid(word.getFileStoreId());
+
+        WordTypeInfo typeInfo = determineWordTypeInfo(word.getIstaohong());
+        wordInfo.setOpenWordOrPdf(typeInfo.getOpenType());
+        wordInfo.setIsTaoHong(typeInfo.getTaoHongValue());
+    }
+
+    /**
+     * 确定文档类型信息
+     */
+    private WordTypeInfo determineWordTypeInfo(String istaohong) {
+        WordTypeInfo typeInfo = new WordTypeInfo();
+
+        if (ItemWordTypeEnum.PDF2.getValue().equals(istaohong)) {
+            typeInfo.setOpenType("openWordToPDF");
+            typeInfo.setTaoHongValue("4");
+        } else if (ItemWordTypeEnum.PDF1.getValue().equals(istaohong)) {
+            typeInfo.setOpenType("openWordToPDF");
+            typeInfo.setTaoHongValue("3");
+        } else if (ItemWordTypeEnum.PDF.getValue().equals(istaohong)) {
+            typeInfo.setOpenType("openPDF");
+            typeInfo.setTaoHongValue("2");
+        } else if (ItemWordTypeEnum.WORD_RED_HEAD.getValue().equals(istaohong)) {
+            typeInfo.setOpenType("openTaoHongWord");
+            typeInfo.setTaoHongValue("1");
+        } else {
+            typeInfo.setOpenType(ItemConsts.OPENWORD_KEY);
+            typeInfo.setTaoHongValue("0");
+        }
+
+        return typeInfo;
+    }
+
+    /**
+     * 从模板填充信息
+     */
+    private void populateWordInfoFromTemplate(Y9WordInfo wordInfo, String tenantId, String itemId, String taskId,
+        String bindValue) {
+        try {
+            String processDefinitionId = getProcessDefinitionId(tenantId, itemId, taskId);
+            WordTemplate wordTemplate = findWordTemplate(itemId, processDefinitionId, bindValue);
+
+            if (wordTemplate != null && wordTemplate.getId() != null) {
+                wordInfo.setFileDocumentId(wordTemplate.getId());
+                wordInfo.setOpenWordOrPdf("openWordTemplate");
+                String fileName = wordTemplate.getFileName();
+                String fileType = fileName.substring(fileName.lastIndexOf("."));
+                wordInfo.setFileType(fileType);
+            } else {
+                wordInfo.setOpenWordOrPdf(ItemConsts.OPENWORD_KEY);
+                wordInfo.setDocCategory(bindValue);
+            }
+        } catch (Exception e) {
+            LOGGER.error("从模板获取文档信息失败", e);
+        }
+    }
+
+    /**
+     * 获取流程定义ID
+     */
+    private String getProcessDefinitionId(String tenantId, String itemId, String taskId) {
+        if (StringUtils.isNotBlank(taskId)) {
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            return task.getProcessDefinitionId();
+        } else {
+            Item item = itemService.findById(itemId);
+            String processDefinitionKey = item.getWorkflowGuid();
+            ProcessDefinitionModel processDefinitionModel =
+                repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+            return processDefinitionModel.getId();
+        }
+    }
+
+    /**
+     * 查找文档模板
+     */
+    private WordTemplate findWordTemplate(String itemId, String processDefinitionId, String bindValue) {
+        ItemWordTemplateBind wordTemplateBind;
+        if (StringUtils.isNotBlank(bindValue)) {
+            wordTemplateBind = wordTemplateBindRepository.findByItemIdAndProcessDefinitionIdAndBindValue(itemId,
+                processDefinitionId, bindValue);
+        } else {
+            wordTemplateBind =
+                wordTemplateBindRepository.findByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
+        }
+
+        return wordTemplateRepository.findById(wordTemplateBind != null ? wordTemplateBind.getTemplateId() : "")
+            .orElse(null);
     }
 
     /**
@@ -741,50 +804,106 @@ public class Y9WordApiImpl implements Y9WordApi {
         Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setPerson(person);
         try {
-            if (StringUtils.isNotBlank(processSerialNumber)) {
-                List<Y9Word> list = y9WordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
-                if (list.isEmpty()) {
-                    y9WordService.saveWord(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber,
-                        isTaoHong, docCategory);
-                    y9WordHistoryService.save(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber,
-                        isTaoHong, taskId, docCategory);
-                } else {
-                    if (StringUtils.isNotEmpty(list.get(0).getTitle())) {
-                        documentTitle = list.get(0).getTitle();
-                    } else {
-                        documentTitle = "正文";
-                    }
-                    y9WordService.updateById(fileStoreId, fileType, documentTitle + fileType, fileSizeString, isTaoHong,
-                        userId, list.get(0).getId());
-
-                    List<Y9WordHistory> thwlist;
-                    if (StringUtils.isNotBlank(taskId)) {
-                        thwlist = y9WordHistoryRepository
-                            .getByProcessSerialNumberAndIsTaoHongAndTaskId(processSerialNumber, isTaoHong, taskId);
-                    } else {
-                        /*
-                         * 流程刚启动的时候taskId为空
-                         */
-                        thwlist = y9WordHistoryRepository.findByProcessSerialNumber(processSerialNumber);
-                    }
-                    if (thwlist.isEmpty()) {
-                        /*
-                         * 在当前任务还没有保存过正文
-                         */
-                        y9WordHistoryService.save(fileStoreId, fileSizeString, documentTitle, fileType,
-                            processSerialNumber, isTaoHong, taskId, docCategory);
-                    } else {
-                        y9WordHistoryService.updateById(fileStoreId, fileType, documentTitle + fileType, fileSizeString,
-                            isTaoHong, docCategory, userId, thwlist.get(0).getId());
-                    }
-                }
-                return Y9Result.success(true);
-            } else {
+            if (StringUtils.isBlank(processSerialNumber)) {
                 return Y9Result.success(false);
+            }
+            List<Y9Word> existingWords =
+                y9WordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
+            if (existingWords.isEmpty()) {
+                return handleNewWord(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber,
+                    isTaoHong, docCategory, taskId);
+            } else {
+                return handleExistingWord(existingWords.get(0), fileStoreId, fileSizeString, fileType,
+                    processSerialNumber, isTaoHong, docCategory, taskId, userId);
             }
         } catch (Exception e) {
             LOGGER.error("草稿箱保存正文失败", e);
             return Y9Result.failure("草稿箱保存正文失败");
+        }
+    }
+
+    /**
+     * 处理新正文的保存
+     */
+    private Y9Result<Boolean> handleNewWord(String fileStoreId, String fileSizeString, String documentTitle,
+        String fileType, String processSerialNumber, String isTaoHong, String docCategory, String taskId) {
+        try {
+            y9WordService.saveWord(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber, isTaoHong,
+                docCategory);
+            y9WordHistoryService.save(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber,
+                isTaoHong, taskId, docCategory);
+            return Y9Result.success(true);
+        } catch (Exception e) {
+            LOGGER.error("保存新正文失败", e);
+            return Y9Result.failure("保存新正文失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 处理已存在正文的更新
+     */
+    private Y9Result<Boolean> handleExistingWord(Y9Word existingWord, String fileStoreId, String fileSizeString,
+        String fileType, String processSerialNumber, String isTaoHong, String docCategory, String taskId,
+        String userId) {
+        // 更新文档标题
+        String updatedTitle = determineDocumentTitle(existingWord);
+        try {
+            // 更新正文
+            y9WordService.updateById(fileStoreId, fileType, updatedTitle + fileType, fileSizeString, isTaoHong, userId,
+                existingWord.getId());
+            // 处理历史记录
+            return handleWordHistory(fileStoreId, fileSizeString, updatedTitle, fileType, processSerialNumber,
+                isTaoHong, docCategory, taskId, userId);
+        } catch (Exception e) {
+            LOGGER.error("更新正文失败", e);
+            return Y9Result.failure("更新正文失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 确定文档标题
+     */
+    private String determineDocumentTitle(Y9Word existingWord) {
+        if (StringUtils.isNotEmpty(existingWord.getTitle())) {
+            return existingWord.getTitle();
+        }
+        return "正文";
+    }
+
+    /**
+     * 处理正文历史记录
+     */
+    private Y9Result<Boolean> handleWordHistory(String fileStoreId, String fileSizeString, String documentTitle,
+        String fileType, String processSerialNumber, String isTaoHong, String docCategory, String taskId,
+        String userId) {
+        List<Y9WordHistory> historyList = getHistoryList(processSerialNumber, isTaoHong, taskId);
+        try {
+            if (historyList.isEmpty()) {
+                // 在当前任务还没有保存过正文
+                y9WordHistoryService.save(fileStoreId, fileSizeString, documentTitle, fileType, processSerialNumber,
+                    isTaoHong, taskId, docCategory);
+            } else {
+                // 更新历史记录
+                y9WordHistoryService.updateById(fileStoreId, fileType, documentTitle + fileType, fileSizeString,
+                    isTaoHong, docCategory, userId, historyList.get(0).getId());
+            }
+            return Y9Result.success(true);
+        } catch (Exception e) {
+            LOGGER.error("处理正文历史记录失败", e);
+            return Y9Result.failure("处理正文历史记录失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 获取历史记录列表
+     */
+    private List<Y9WordHistory> getHistoryList(String processSerialNumber, String isTaoHong, String taskId) {
+        if (StringUtils.isNotBlank(taskId)) {
+            return y9WordHistoryRepository.getByProcessSerialNumberAndIsTaoHongAndTaskId(processSerialNumber, isTaoHong,
+                taskId);
+        } else {
+            // 流程刚启动的时候taskId为空
+            return y9WordHistoryRepository.findByProcessSerialNumber(processSerialNumber);
         }
     }
 
@@ -802,5 +921,16 @@ public class Y9WordApiImpl implements Y9WordApi {
         assert y9Word != null;
         Y9WordModel model = getY9Word(y9Word);
         return Y9Result.success(model);
+    }
+
+    /**
+     * 文档类型信息封装类
+     */
+    @Setter
+    @Getter
+    private static class WordTypeInfo {
+        private String openType;
+        private String taoHongValue;
+
     }
 }

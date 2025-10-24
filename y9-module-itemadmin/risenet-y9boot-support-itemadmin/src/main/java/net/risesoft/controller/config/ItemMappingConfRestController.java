@@ -2,8 +2,10 @@ package net.risesoft.controller.config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -88,53 +90,44 @@ public class ItemMappingConfRestController {
         @RequestParam String itemId, @RequestParam(required = false) String mappingItemId) {
         Map<String, Object> resMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
+        // 获取当前事项的表列表
+        List<Y9Table> tableList = getTableListByItemId(tenantId, itemId);
+        resMap.put("tableList", tableList);
+        // 获取映射事项的表列表
+        if (StringUtils.isNotBlank(mappingItemId)) {
+            List<Y9Table> mappingTableList = getTableListByItemId(tenantId, mappingItemId);
+            resMap.put("mappingTableList", mappingTableList);
+        }
+        // 获取映射配置信息
+        if (StringUtils.isNotBlank(id)) {
+            ItemMappingConf itemMappingConf = itemMappingConfRepository.findById(id).orElse(null);
+            resMap.put("itemMappingConf", itemMappingConf);
+        }
+        return Y9Result.success(resMap, "获取成功");
+    }
+
+    private List<Y9Table> getTableListByItemId(String tenantId, String itemId) {
         Item item = itemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
-        List<String> tableNameList = new ArrayList<>();
+        Set<String> tableNameSet = new HashSet<>();
         List<Y9Table> tableList = new ArrayList<>();
         for (Y9FormItemBind bind : formList) {
             String formId = bind.getFormId();
             List<Y9FormField> formFieldList = y9FormFieldService.listByFormId(formId);
             for (Y9FormField formField : formFieldList) {
-                if (!tableNameList.contains(formField.getTableName())) {
+                String tableName = formField.getTableName();
+                if (!tableNameSet.contains(tableName)) {
                     Y9Table y9Table = y9TableService.findById(formField.getTableId());
-                    tableNameList.add(formField.getTableName());
+                    tableNameSet.add(tableName);
                     tableList.add(y9Table);
                 }
             }
         }
-        if (StringUtils.isNotBlank(mappingItemId)) {
-            Item item1 = itemService.findById(mappingItemId);
-            String processDefineKey1 = item1.getWorkflowGuid();
-            ProcessDefinitionModel processDefinition1 =
-                repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey1).getData();
-            List<Y9FormItemBind> formList1 = y9FormItemBindService
-                .listByItemIdAndProcDefIdAndTaskDefKeyIsNull(mappingItemId, processDefinition1.getId());
-            List<String> tableNameList1 = new ArrayList<>();
-            List<Y9Table> tableList1 = new ArrayList<>();
-            for (Y9FormItemBind bind : formList1) {
-                String formId = bind.getFormId();
-                List<Y9FormField> formFieldList = y9FormFieldService.listByFormId(formId);
-                for (Y9FormField formField : formFieldList) {
-                    if (!tableNameList1.contains(formField.getTableName())) {
-                        Y9Table y9Table = y9TableService.findById(formField.getTableId());
-                        tableNameList1.add(formField.getTableName());
-                        tableList1.add(y9Table);
-                    }
-                }
-            }
-            resMap.put("mappingTableList", tableList1);
-        }
-        if (StringUtils.isNotBlank(id)) {
-            ItemMappingConf itemMappingConf = itemMappingConfRepository.findById(id).orElse(null);
-            resMap.put("itemMappingConf", itemMappingConf);
-        }
-        resMap.put("tableList", tableList);
-        return Y9Result.success(resMap, "获取成功");
+        return tableList;
     }
 
     /**

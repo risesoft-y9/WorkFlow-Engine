@@ -118,30 +118,10 @@ public class WorkDayServiceImpl implements WorkDayService {
 
     @Override
     public TaskRelatedModel getLightColor(Date startDate, Date endDate) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        int lightColor = 0;
         try {
             if (null != startDate && null != endDate) {
-                int days;
-                CalendarConfigModel calendarConfigModel =
-                    calendarConfigApi.findByYear(tenantId, Y9DateTimeUtils.getYear(startDate)).getData();
-                String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
-                if (StringUtils.isNotBlank(everyYearHoliday)) {
-                    days = daysBetween(startDate, endDate, everyYearHoliday);
-                } else {
-                    days = daysBetween(startDate, endDate);
-                }
-                if (days <= 10 && days > 7) {
-                    lightColor = 1;
-                } else if (days <= 7 && days > 5) {
-                    lightColor = 2;
-                } else if (days <= 5 && days > 3) {
-                    lightColor = 3;
-                } else if (days <= 3 && days > 0) {
-                    lightColor = 4;
-                } else if (days <= 0) {
-                    lightColor = 5;
-                }
+                int days = calculateWorkDays(startDate, endDate);
+                int lightColor = determineLightColorLevel(days);
                 if (lightColor > 0) {
                     return new TaskRelatedModel(TaskRelatedEnum.LIGHTCOLOR.getValue(), String.valueOf(lightColor));
                 }
@@ -150,5 +130,38 @@ public class WorkDayServiceImpl implements WorkDayService {
             LOGGER.error("获取红绿灯状态异常", e);
         }
         return null;
+    }
+
+    /**
+     * 计算两个日期间的工作日天数
+     */
+    private int calculateWorkDays(Date startDate, Date endDate) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        CalendarConfigModel calendarConfigModel =
+            calendarConfigApi.findByYear(tenantId, Y9DateTimeUtils.getYear(startDate)).getData();
+        String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
+        if (StringUtils.isNotBlank(everyYearHoliday)) {
+            return daysBetween(startDate, endDate, everyYearHoliday);
+        } else {
+            return daysBetween(startDate, endDate);
+        }
+    }
+
+    /**
+     * 根据天数确定红绿灯等级
+     */
+    private int determineLightColorLevel(int days) {
+        if (days <= 0) {
+            return 5;
+        } else if (days <= 3) {
+            return 4;
+        } else if (days <= 5) {
+            return 3;
+        } else if (days <= 7) {
+            return 2;
+        } else if (days <= 10) {
+            return 1;
+        }
+        return 0;
     }
 }

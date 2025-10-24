@@ -1,7 +1,6 @@
 package net.risesoft.service.chaosong;
 
 import java.util.List;
-import java.util.Map;
 
 import net.risesoft.entity.ChaoSong;
 import net.risesoft.model.itemadmin.ChaoSong4DataBaseModel;
@@ -158,17 +157,6 @@ public interface ChaoSongService {
         String userName, int rows, int page);
 
     /**
-     * 获取抄送所有件
-     *
-     * @param userId
-     * @param documentTitle
-     * @param rows
-     * @param page
-     * @return
-     */
-    Y9Page<Map<String, Object>> pageByUserIdAndDocumentTitle(String userId, String documentTitle, int rows, int page);
-
-    /**
      *
      * Description: 获取抄送已阅件
      *
@@ -192,7 +180,7 @@ public interface ChaoSongService {
      * @param page
      * @return
      */
-    Y9Page<ChaoSong4DataBaseModel> pageMyChaoSongList(String searchName, String itemId, String userName, String state,
+    Y9Page<ChaoSong4DataBaseModel> pageMyChaoSongList(String searchName, String itemId, String userName, Integer state,
         String year, int rows, int page);
 
     /**
@@ -261,7 +249,7 @@ public interface ChaoSongService {
      * @param rows
      * @return
      */
-    Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(String searchName, String itemId, String userName, String state,
+    Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(String searchName, String itemId, String userName, Integer state,
         String year, Integer page, Integer rows);
 
     /**
@@ -278,7 +266,7 @@ public interface ChaoSongService {
      * @return
      */
     Y9Page<ChaoSong4DataBaseModel> searchAllList(String searchName, String itemId, String senderName, String userName,
-        String state, String year, Integer page, Integer rows);
+        Integer state, String year, Integer page, Integer rows);
 
     /**
      * 更新抄送件标题

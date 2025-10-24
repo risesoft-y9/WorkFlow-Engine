@@ -18,6 +18,7 @@ import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
+import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -86,13 +87,16 @@ public class UtilServiceImpl implements UtilService {
     }
 
     @Override
-    public String getAssigneeNames(List<TaskModel> taskList) {
+    public String getAssigneeNames(List<TaskModel> taskList, SignDeptDetailModel signDeptDetail) {
         if (taskList.isEmpty()) {
             return "";
         }
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<String> assigneeNameList = new ArrayList<>();
         for (TaskModel task : taskList) {
+            if (!task.getExecutionId().equals(signDeptDetail.getExecutionId())) {
+                continue;
+            }
             String name = getTaskAssigneeName(task, tenantId);
             if (name != null && !name.isEmpty()) {
                 assigneeNameList.add(name);
@@ -196,5 +200,24 @@ public class UtilServiceImpl implements UtilService {
             }
         }
         return assigneeNames.toString();
+    }
+
+    @Override
+    public List<String> getItemBoxAndTaskId(List<TaskModel> taskList) {
+        String userId = Y9LoginUserHolder.getPersonId();
+        String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        List<String> list = new ArrayList<>();
+        for (TaskModel task : taskList) {
+            String assignee = task.getAssignee();
+            if (StringUtils.isNotBlank(assignee)) {
+                if (assignee.contains(userId)) {
+                    itembox = ItemBoxTypeEnum.TODO.getValue();
+                    taskId = task.getId();
+                }
+            }
+        }
+        list.add(itembox);
+        list.add(taskId);
+        return list;
     }
 }

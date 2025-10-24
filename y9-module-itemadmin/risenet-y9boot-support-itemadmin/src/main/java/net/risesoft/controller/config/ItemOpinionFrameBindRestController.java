@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -97,7 +98,7 @@ public class ItemOpinionFrameBindRestController {
     /**
      * 删除一键设置及动作
      *
-     * @param id
+     * @param id 一键设置id
      * @return
      */
     @PostMapping(value = "/delOneClickSet")
@@ -131,42 +132,47 @@ public class ItemOpinionFrameBindRestController {
     public Y9Result<List<Map<String, Object>>> getBindListByMark(@RequestParam String mark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService.listByMark(mark);
-        List<Map<String, Object>> bindList = new ArrayList<>();
-        Map<String, Object> map;
-        Item item;
-        List<ItemOpinionFrameRole> roleList;
-        for (ItemOpinionFrameBind bind : oftrbList) {
-            map = new HashMap<>(16);
-            map.put("id", bind.getId());
-
-            item = itemService.findById(bind.getItemId());
-            map.put("itemName", null == item ? "事项不存在" : item.getName());
-            map.put("processDefinitionId", bind.getProcessDefinitionId());
-            roleList = itemOpinionFrameRoleService.listByItemOpinionFrameIdContainRoleName(bind.getId());
-            String roleNames = "";
-            for (ItemOpinionFrameRole role : roleList) {
-                if (StringUtils.isEmpty(roleNames)) {
-                    roleNames = role.getRoleName();
-                } else {
-                    roleNames += "、" + role.getRoleName();
-                }
-            }
-            map.put("roleNames", StringUtils.isEmpty(roleNames) ? "未绑定角色（所有人都可以签写）" : roleNames);
-            String taskDefName = "整个流程";
-            if (StringUtils.isNotEmpty(bind.getTaskDefKey())) {
-                List<TargetModel> list =
-                    processDefinitionApi.getNodes(tenantId, bind.getProcessDefinitionId()).getData();
-                for (TargetModel targetModel : list) {
-                    if (targetModel.getTaskDefKey().equals(bind.getTaskDefKey())) {
-                        taskDefName = targetModel.getTaskDefName();
-                    }
-                }
-            }
-            map.put("taskDefKey",
-                taskDefName + (StringUtils.isEmpty(bind.getTaskDefKey()) ? "" : "(" + bind.getTaskDefKey() + ")"));
-            bindList.add(map);
-        }
+        List<Map<String, Object>> bindList =
+            oftrbList.stream().map(bind -> buildBindMap(tenantId, bind)).collect(Collectors.toList());
         return Y9Result.success(bindList, "获取成功");
+    }
+
+    private Map<String, Object> buildBindMap(String tenantId, ItemOpinionFrameBind bind) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("id", bind.getId());
+        Item item = itemService.findById(bind.getItemId());
+        map.put("itemName", null == item ? "事项不存在" : item.getName());
+        map.put("processDefinitionId", bind.getProcessDefinitionId());
+        // 构建角色名称
+        String roleNames = buildRoleNames(bind.getId());
+        map.put("roleNames", StringUtils.isEmpty(roleNames) ? "未绑定角色（所有人都可以签写）" : roleNames);
+        // 构建任务节点信息
+        String taskDefName = getTaskDefName(tenantId, bind);
+        map.put("taskDefKey",
+            taskDefName + (StringUtils.isEmpty(bind.getTaskDefKey()) ? "" : "(" + bind.getTaskDefKey() + ")"));
+        return map;
+    }
+
+    private String buildRoleNames(String bindId) {
+        return itemOpinionFrameRoleService.listByItemOpinionFrameIdContainRoleName(bindId)
+            .stream()
+            .map(ItemOpinionFrameRole::getRoleName)
+            .filter(StringUtils::isNotEmpty)
+            .collect(Collectors.joining("、"));
+    }
+
+    private String getTaskDefName(String tenantId, ItemOpinionFrameBind bind) {
+        if (StringUtils.isEmpty(bind.getTaskDefKey())) {
+            return "整个流程";
+        }
+
+        return processDefinitionApi.getNodes(tenantId, bind.getProcessDefinitionId())
+            .getData()
+            .stream()
+            .filter(targetModel -> targetModel.getTaskDefKey().equals(bind.getTaskDefKey()))
+            .findFirst()
+            .map(TargetModel::getTaskDefName)
+            .orElse("整个流程");
     }
 
     /**
@@ -191,7 +197,7 @@ public class ItemOpinionFrameBindRestController {
                 if (StringUtils.isEmpty(opinionFrameNames)) {
                     opinionFrameNames.append(bind.getOpinionFrameName());
                 } else {
-                    opinionFrameNames.append("、" + bind.getOpinionFrameName());
+                    opinionFrameNames.append("、").append(bind.getOpinionFrameName());
                 }
             }
             targetModel.setOpinionFrameNames(opinionFrameNames.toString());
@@ -202,12 +208,11 @@ public class ItemOpinionFrameBindRestController {
     /**
      * 获取意见框绑定的一键设置列表
      *
-     * @param bindId
+     * @param bindId 绑定id
      * @return
      */
     @GetMapping(value = "/getOneClickSetBindList")
-    public Y9Result<List<OpinionFrameOneClickSet>>
-        getOneClickSetBindList(@RequestParam(required = true) String bindId) {
+    public Y9Result<List<OpinionFrameOneClickSet>> getOneClickSetBindList(String bindId) {
         List<OpinionFrameOneClickSet> bindList = new ArrayList<>();
         try {
             bindList = opinionFrameOneClickSetService.findByBindId(bindId);
@@ -253,11 +258,11 @@ public class ItemOpinionFrameBindRestController {
     /**
      * 保存一键设置数据
      *
-     * @param opinionFrameOneClickSet
+     * @param opinionFrameOneClickSet 一键设置数据
      * @return
      */
     @PostMapping(value = "/saveOneClickSet")
-    public Y9Result<Map<String, Object>> saveOneClickSet1(@Validated OpinionFrameOneClickSet opinionFrameOneClickSet) {
+    public Y9Result<Map<String, Object>> saveOneClickSet(@Validated OpinionFrameOneClickSet opinionFrameOneClickSet) {
         Map<String, Object> map = new HashMap<>();
         try {
             map = opinionFrameOneClickSetService.save(opinionFrameOneClickSet);

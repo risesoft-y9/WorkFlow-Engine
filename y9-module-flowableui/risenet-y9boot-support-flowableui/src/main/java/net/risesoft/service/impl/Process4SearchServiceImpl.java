@@ -49,13 +49,6 @@ public class Process4SearchServiceImpl implements Process4SearchService {
     @Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
-    /**
-     * 重定位，串行送下一人，修改办件信息
-     *
-     * @param tenantId 租户id
-     * @param taskId 任务id
-     * @param processInstanceId 流程实例id
-     */
     @Async
     @Override
     public void saveToDataCenter(final String tenantId, final String taskId, final String processInstanceId) {
@@ -66,72 +59,14 @@ public class Process4SearchServiceImpl implements Process4SearchService {
             OfficeDoneInfoModel officeDoneInfo =
                 officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfo != null) {
-                officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
-                officeDoneInfo.setUrgency(
-                    StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
-                officeDoneInfo.setUserComplete("");
-                officeDoneInfo.setBureauId(processParam.getBureauIds());
-                officeDoneInfo.setEndTime(null);
-                // 处理参与人
-                String sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = ?";
-                List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql, processInstanceId);
-                String allUserId = "";
-                String deptIds = "";
-                for (Map<String, Object> m : list3) {
-                    String USER_ID_ =
-                        m.get(FlowableUiConsts.USER_ID_KEY) != null ? (String)m.get(FlowableUiConsts.USER_ID_KEY) : "";
-                    if (USER_ID_.contains(":")) {
-                        USER_ID_ = USER_ID_.split(":")[0];
-                    }
-                    if (!USER_ID_.isEmpty() && !allUserId.contains(USER_ID_)) {
-                        allUserId = Y9Util.genCustomStr(allUserId, USER_ID_);
-                    }
-                    if (!USER_ID_.isEmpty()) {
-                        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, USER_ID_).getData();
-                        if (orgUnit != null && orgUnit.getId() != null) {
-                            if (!deptIds.contains(orgUnit.getParentId())) {
-                                deptIds = Y9Util.genCustomStr(deptIds, orgUnit.getParentId());
-                            }
-                        }
-                    }
-                }
-                officeDoneInfo.setDeptId(deptIds);
-                officeDoneInfo.setAllUserId(allUserId);
-                officeDoneInfo.setTarget(processParam.getTarget());
-                officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);// 保存到数据中心
+                updateOfficeDoneInfo(officeDoneInfo, processParam, tenantId, processInstanceId);
+                officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
             }
         } catch (Exception e) {
-            final Writer result = new StringWriter();
-            final PrintWriter print = new PrintWriter(result);
-            e.printStackTrace(print);
-            String msg = result.toString();
-            String time = Y9DateTimeUtils.formatCurrentDateTime();
-            ErrorLogModel errorLogModel = new ErrorLogModel();
-            errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLogModel.setCreateTime(time);
-            errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_OFFICE_DONE + "4Search2");
-            errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
-            errorLogModel.setExtendField("重定位，串行送下一人保存流程信息失败");
-            errorLogModel.setProcessInstanceId(processInstanceId);
-            errorLogModel.setTaskId(taskId);
-            errorLogModel.setText(msg);
-            errorLogModel.setUpdateTime(time);
-            try {
-                errorLogApi.saveErrorLog(tenantId, errorLogModel);
-            } catch (Exception e1) {
-                LOGGER.warn("#################保存错误日志失败#################", e1);
-            }
-            LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
+            handleError(tenantId, taskId, processInstanceId, e, "重定位，串行送下一人保存流程信息失败");
         }
     }
 
-    /**
-     * 并行加签，修改办件信息
-     *
-     * @param tenantId 租户id
-     * @param taskId 任务id
-     * @param processParam 流程参数
-     */
     @Async
     @Override
     public void saveToDataCenter1(final String tenantId, final String taskId, final ProcessParamModel processParam) {
@@ -141,62 +76,71 @@ public class Process4SearchServiceImpl implements Process4SearchService {
             OfficeDoneInfoModel officeDoneInfo =
                 officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfo != null) {
-                officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
-                officeDoneInfo.setUrgency(
-                    StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
-                officeDoneInfo.setUserComplete("");
-                officeDoneInfo.setBureauId(processParam.getBureauIds());
-                officeDoneInfo.setEndTime(null);
-                // 处理参与人
-                String sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = ?";
-                List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql, processInstanceId);
-                String allUserId = "";
-                String deptIds = "";
-                for (Map<String, Object> m : list3) {
-                    String USER_ID_ =
-                        m.get(FlowableUiConsts.USER_ID_KEY) != null ? (String)m.get(FlowableUiConsts.USER_ID_KEY) : "";
-                    if (USER_ID_.contains(":")) {
-                        USER_ID_ = USER_ID_.split(":")[0];
-                    }
-                    if (!USER_ID_.isEmpty() && !allUserId.contains(USER_ID_)) {
-                        allUserId = Y9Util.genCustomStr(allUserId, USER_ID_);
-                    }
-                    if (!USER_ID_.isEmpty()) {
-                        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, USER_ID_).getData();
-                        if (orgUnit != null && orgUnit.getId() != null) {
-                            if (!deptIds.contains(orgUnit.getParentId())) {
-                                deptIds = Y9Util.genCustomStr(deptIds, orgUnit.getParentId());
-                            }
-                        }
-                    }
-                }
-                officeDoneInfo.setDeptId(deptIds);
-                officeDoneInfo.setAllUserId(allUserId);
-                officeDoneInfo.setTarget(processParam.getTarget());
-                officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);// 保存到数据中心
+                updateOfficeDoneInfo(officeDoneInfo, processParam, tenantId, processInstanceId);
+                officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
             }
         } catch (Exception e) {
-            final Writer result = new StringWriter();
-            final PrintWriter print = new PrintWriter(result);
-            e.printStackTrace(print);
-            String msg = result.toString();
-            String time = Y9DateTimeUtils.formatCurrentDateTime();
-            ErrorLogModel errorLogModel = new ErrorLogModel();
-            errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLogModel.setCreateTime(time);
-            errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_OFFICE_DONE + "4Search2");
-            errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
-            errorLogModel.setExtendField("并行加签保存流程信息失败");
-            errorLogModel.setProcessInstanceId(processInstanceId);
-            errorLogModel.setTaskId(taskId);
-            errorLogModel.setText(msg);
-            errorLogModel.setUpdateTime(time);
-            try {
-                errorLogApi.saveErrorLog(tenantId, errorLogModel);
-            } catch (Exception e1) {
-                LOGGER.warn("#################保存错误日志失败#################", e1);
-            }
-            LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
+            handleError(tenantId, taskId, processInstanceId, e, "并行加签保存流程信息失败");
         }
     }
+
+    private void updateOfficeDoneInfo(OfficeDoneInfoModel officeDoneInfo, ProcessParamModel processParam,
+        String tenantId, String processInstanceId) {
+        officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
+        officeDoneInfo
+            .setUrgency(StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
+        officeDoneInfo.setUserComplete("");
+        officeDoneInfo.setBureauId(processParam.getBureauIds());
+        officeDoneInfo.setEndTime(null);
+        // 处理参与人
+        processParticipantInfo(officeDoneInfo, tenantId, processInstanceId);
+        officeDoneInfo.setTarget(processParam.getTarget());
+    }
+
+    private void processParticipantInfo(OfficeDoneInfoModel officeDoneInfo, String tenantId, String processInstanceId) {
+        String sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = ?";
+        List<Map<String, Object>> list3 = jdbcTemplate.queryForList(sql, processInstanceId);
+        String allUserId = "";
+        String deptIds = "";
+        for (Map<String, Object> m : list3) {
+            String userId =
+                m.get(FlowableUiConsts.USER_ID_KEY) != null ? (String)m.get(FlowableUiConsts.USER_ID_KEY) : "";
+            if (!userId.isEmpty()) {
+                if (!allUserId.contains(userId)) {
+                    allUserId = Y9Util.genCustomStr(allUserId, userId);
+                }
+                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                if (orgUnit != null && !deptIds.contains(orgUnit.getParentId())) {
+                    deptIds = Y9Util.genCustomStr(deptIds, orgUnit.getParentId());
+                }
+            }
+        }
+        officeDoneInfo.setDeptId(deptIds);
+        officeDoneInfo.setAllUserId(allUserId);
+    }
+
+    private void handleError(String tenantId, String taskId, String processInstanceId, Exception e, String errorField) {
+        final Writer result = new StringWriter();
+        final PrintWriter print = new PrintWriter(result);
+        e.printStackTrace(print);
+        String msg = result.toString();
+        String time = Y9DateTimeUtils.formatCurrentDateTime();
+        ErrorLogModel errorLogModel = new ErrorLogModel();
+        errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        errorLogModel.setCreateTime(time);
+        errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_OFFICE_DONE + "4Search2");
+        errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
+        errorLogModel.setExtendField(errorField);
+        errorLogModel.setProcessInstanceId(processInstanceId);
+        errorLogModel.setTaskId(taskId);
+        errorLogModel.setText(msg);
+        errorLogModel.setUpdateTime(time);
+        try {
+            errorLogApi.saveErrorLog(tenantId, errorLogModel);
+        } catch (Exception e1) {
+            LOGGER.warn("#################保存错误日志失败#################", e1);
+        }
+        LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
+    }
+
 }

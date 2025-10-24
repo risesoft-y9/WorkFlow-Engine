@@ -269,7 +269,7 @@ public interface ChaoSong4DataBaseApi {
         @RequestParam(value = "searchName", required = false) String searchName,
         @RequestParam(value = "itemId", required = false) String itemId,
         @RequestParam(value = "userName", required = false) String userName,
-        @RequestParam(value = "state", required = false) String state,
+        @RequestParam(value = "state", required = false) Integer state,
         @RequestParam(value = "year", required = false) String year, @RequestParam("page") int page,
         @RequestParam("rows") int rows);
 
@@ -317,7 +317,7 @@ public interface ChaoSong4DataBaseApi {
         @RequestParam(value = "searchName", required = false) String searchName,
         @RequestParam(value = "itemId", required = false) String itemId,
         @RequestParam(value = "userName", required = false) String userName,
-        @RequestParam(value = "state", required = false) String state,
+        @RequestParam(value = "state", required = false) Integer state,
         @RequestParam(value = "year", required = false) String year, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 
@@ -342,7 +342,7 @@ public interface ChaoSong4DataBaseApi {
         @RequestParam(value = "itemId", required = false) String itemId,
         @RequestParam(value = "senderName", required = false) String senderName,
         @RequestParam(value = "userName", required = false) String userName,
-        @RequestParam(value = "state", required = false) String state,
+        @RequestParam(value = "state", required = false) Integer state,
         @RequestParam(value = "year", required = false) String year, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 

@@ -1,6 +1,5 @@
 package net.risesoft.api;
 
-import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +32,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.core.ActRuDetailService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.service.util.ItemPageService;
+import net.risesoft.util.CommonUtils;
 import net.risesoft.util.ItemAdminModelConvertUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -166,75 +166,29 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         int page = queryParamModel.getPage(), rows = queryParamModel.getRows();
         Page<ActRuDetail> ardPage;
-        boolean isEmpty = this.checkObjAllFieldsIsNull(queryParamModel);
+        boolean isEmpty = CommonUtils.checkObjAllFieldsIsNull(queryParamModel);
         if (isEmpty) {
             ardPage =
                 this.actRuDetailService.pageByAssigneeAndStatus(userId, ActRuDetailStatusEnum.TODO, rows, page, sort);
+            List<ActRuDetailModel> modelList =
+                ItemAdminModelConvertUtil.convertActRuDetailsToModels(ardPage.getContent());
+            return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
         } else {
-            String systemNameSql = "",
-                processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON T.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
-            StringBuilder sql1 = new StringBuilder();
-            Class<?> queryParamModelClazz = ((Object)queryParamModel).getClass();
-            Field[] fields = queryParamModelClazz.getDeclaredFields();
-            for (Field field : fields) {
-                field.setAccessible(true);
-                if ("serialVersionUID".equals(field.getName()) || "page".equals(field.getName())
-                    || "rows".equals(field.getName())) {
-                    continue;
-                }
-                Object fieldValue;
-                try {
-                    fieldValue = field.get(queryParamModel);
-                    if (null != fieldValue) {
-                        if ("systemName".equals(field.getName())) {
-                            systemNameSql = StringUtils.isBlank(queryParamModel.getSystemName()) ? ""
-                                : "AND T.SYSTEMNAME = '" + fieldValue + "' ";
-                        } else if ("bureauIds".equals(field.getName())) {
-                            sql1.append(" AND P.HOSTDEPTID = '").append(fieldValue).append("' ");
-                        } else {
-                            sql1.append("AND INSTR(P.")
-                                .append(field.getName().toUpperCase())
-                                .append(",'")
-                                .append(fieldValue)
-                                .append("') >0 ");
-                        }
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-            String orderBy = "T.CREATETIME DESC";
-            String sql = COMMON_SQL + processParamSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + sql1
-                + systemNameSql + " AND T.ASSIGNEE = ? ORDER BY " + orderBy;
+            // 使用参数化查询构建条件
+            String processParamSql = "LEFT JOIN FF_PROCESS_PARAM P ON T.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
+            StringBuilder whereSql = new StringBuilder();
+            List<Object> params = new ArrayList<>();
+            params.add(userId);
+            CommonUtils.buildQueryConditions(queryParamModel, whereSql, params);
+            String sql = COMMON_SQL + processParamSql + " WHERE T.STATUS = 0 AND T.DELETED = FALSE " + whereSql
+                + " AND T.ASSIGNEE = ? ORDER BY T.CREATETIME DESC";
             String countSql = "SELECT COUNT(T.ID) FROM FF_ACT_RU_DETAIL T " + processParamSql
-                + " WHERE T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + sql1 + systemNameSql;
-            Object[] args = new Object[1];
-            args[0] = userId;
+                + " WHERE T.ASSIGNEE= ? AND T.STATUS=0 AND T.DELETED = FALSE " + whereSql;
+            Object[] args = params.toArray(new Object[0]);
             ItemPage<ActRuDetailModel> ardModelPage = this.itemPageService.page(sql, args,
                 new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
             return Y9Page.success(page, ardModelPage.getTotalpages(), ardModelPage.getTotal(), ardModelPage.getRows());
         }
-        List<ActRuDetailModel> modelList = ItemAdminModelConvertUtil.convertActRuDetailsToModels(ardPage.getContent());
-        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
-    }
-
-    public boolean checkObjAllFieldsIsNull(Object object) {
-        if (null == object) {
-            return true;
-        }
-        try {
-            for (Field field : object.getClass().getDeclaredFields()) {
-                field.setAccessible(true);
-                if (!"serialVersionUID".equals(field.getName()) && !"page".equals(field.getName())
-                    && !"rows".equals(field.getName()) && field.get(object) != null
-                    && StringUtils.isNotBlank(field.get(object).toString())) {
-                    return false;
-                }
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-        return true;
     }
 
     /**
@@ -258,10 +212,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         if (searchMap == null) {
             searchMap = new HashMap<>();
         }
-
         List<String> sqlList = y9TableService.getSql(searchMap);
         String innerSql = sqlList.get(0), whereSql = sqlList.get(1);
-
         StringBuilder assigneeNameSql = new StringBuilder();
         StringBuilder signSql = new StringBuilder();
         List<Object> params = new ArrayList<>();
@@ -300,7 +252,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
                 List<String> sqlList = y9TableService.getSql(searchMap);
                 innerSql = sqlList.get(0);
                 whereSql = sqlList.get(1);
-                buildCommonSearchConditions(searchMap, assigneeNameSql, signSql);
+                buildCommonSearchConditions(searchMap, assigneeNameSql, signSql, params);
             }
         }
         StringBuilder taskDefKeySql = new StringBuilder();
@@ -314,23 +266,24 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     }
 
     private void buildCommonSearchConditions(Map<String, Object> searchMap, StringBuilder assigneeNameSql,
-        StringBuilder signSql) {
+        StringBuilder signSql, List<Object> params) {
+        // 处理办理人姓名搜索条件
         if (null != searchMap.get(ItemConsts.ASSIGNEENAME_KEY)) {
-            assigneeNameSql.append("AND INSTR( T.ASSIGNEENAME")
-                .append(",'")
-                .append(searchMap.get(ItemConsts.ASSIGNEENAME_KEY).toString())
-                .append("')> 0");
+            assigneeNameSql.append(" AND INSTR(T.ASSIGNEENAME, ?) > 0 ");
+            params.add(searchMap.get(ItemConsts.ASSIGNEENAME_KEY).toString());
         }
+        // 处理会签状态搜索条件
         boolean sign = null != searchMap.get("sign");
         boolean noSign = null != searchMap.get(ItemConsts.NOSIGN_KEY);
         if (sign || noSign) {
             if (sign && noSign) {
-                signSql.append(" AND ").append("T.SIGNSTATUS>=0");
+                // 同时包含已会签和未会签
+                signSql.append(" AND T.SIGNSTATUS >= 0");
             } else {
-                signSql.append(" AND ")
-                    .append("T.SIGNSTATUS=")
-                    .append(
-                        sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
+                // 只包含已会签或未会签
+                signSql.append(" AND T.SIGNSTATUS = ?");
+                params
+                    .add(sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
             }
         }
     }
@@ -350,59 +303,42 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         String innerSql = "", whereSql = "";
         StringBuilder assigneeNameSql = new StringBuilder();
         StringBuilder signSql = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(systemName);
+        params.add(userId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         if (searchMap == null) {
             searchMap = new HashMap<>();
         }
-        String COMMON_SQL_PARAM = getSafeStringFromMap(searchMap, "COMMON_SQL");
-        String numberSql = getSafeStringFromMap(searchMap, "numberSql");
+        String numberSql = getSafeStringFromMap(searchMap);
         if (StringUtils.isNotBlank(searchMapStr)) {
             List<String> sqlList = y9TableService.getSql(searchMap);
             innerSql = sqlList.get(0);
             whereSql = sqlList.get(1);
-            buildSearchConditions(searchMap, assigneeNameSql, signSql);
+            buildSearchConditions(searchMap, assigneeNameSql, signSql, params);
         }
         if (StringUtils.isBlank(innerSql)) {
             innerSql = "INNER JOIN Y9_FORM_FW FW ON T.PROCESSSERIALNUMBER = FW.GUID";
         }
-        String sql = COMMON_SQL_PARAM + innerSql
-            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
-            + assigneeNameSql + signSql + COMMON_SQL_PARAM + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql
-            + ")  ORDER BY T.CREATETIME DESC";
+        // 使用参数化查询防止SQL注入
+        String sql =
+            COMMON_SQL + innerSql + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?"
+                + whereSql + assigneeNameSql + signSql + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql
+                + ") ORDER BY T.CREATETIME DESC";
+
         String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
             + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
-            + assigneeNameSql + signSql + COMMON_SQL_PARAM + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql + ")";
-        Object[] args = {systemName, userId};
+            + assigneeNameSql + signSql + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql + ")";
+
+        Object[] args = params.toArray();
         ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
     }
 
-    private String getSafeStringFromMap(Map<String, Object> map, String key) {
-        Object value = map.get(key);
+    private String getSafeStringFromMap(Map<String, Object> map) {
+        Object value = map.get("numberSql");
         return value != null ? value.toString() : "";
-    }
-
-    private void buildSearchConditions(Map<String, Object> searchMap, StringBuilder assigneeNameSql,
-        StringBuilder signSql) {
-        if (null != searchMap.get(ItemConsts.ASSIGNEENAME_KEY)) {
-            assigneeNameSql.append("AND INSTR (T.ASSIGNEENAME")
-                .append(",'")
-                .append(searchMap.get(ItemConsts.ASSIGNEENAME_KEY).toString())
-                .append("' ) > 0 ");
-        }
-        boolean sign = null != searchMap.get("sign");
-        boolean noSign = null != searchMap.get(ItemConsts.NOSIGN_KEY);
-        if (sign || noSign) {
-            if (sign && noSign) {
-                signSql.append(" AND ").append("T.SIGNSTATUS>=0");
-            } else {
-                signSql.append(" AND ")
-                    .append("T.SIGNSTATUS=")
-                    .append(
-                        sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
-            }
-        }
     }
 
     private void buildSearchConditions(Map<String, Object> searchMap, StringBuilder assigneeNameSql,
@@ -444,21 +380,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             List<String> sqlList = y9TableService.getSql(searchMap);
             innerSql = sqlList.get(0);
             whereSql = sqlList.get(1);
-            if (null != searchMap.get(ItemConsts.ASSIGNEENAME_KEY)) {
-                assigneeNameSql.append("AND INSTR ( T.ASSIGNEENAME, ? )> 0 ");
-                params.add(searchMap.get(ItemConsts.ASSIGNEENAME_KEY).toString());
-            }
-            boolean sign = null != searchMap.get("sign");
-            boolean noSign = null != searchMap.get(ItemConsts.NOSIGN_KEY);
-            if (sign || noSign) {
-                if (sign && noSign) {
-                    signSql.append(" AND T.SIGNSTATUS>=0");
-                } else {
-                    signSql.append(" AND T.SIGNSTATUS=?");
-                    params.add(
-                        sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
-                }
-            }
+            buildSearchConditions(searchMap, assigneeNameSql, signSql, params);
         }
         if (StringUtils.isBlank(innerSql)) {
             innerSql = "INNER JOIN Y9_FORM_FW FW ON T.PROCESSSERIALNUMBER = FW.GUID";
@@ -496,25 +418,11 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         List<String> sqlList = y9TableService.getSql(searchMap);
         String innerSql = sqlList.get(0), whereSql = sqlList.get(1);
         StringBuilder assigneeNameSql = new StringBuilder();
+        StringBuilder signSql = new StringBuilder();
         List<Object> params = new ArrayList<>();
         params.add(systemName);
         params.add(userId);
-        if (null != searchMap.get(ItemConsts.ASSIGNEENAME_KEY)) {
-            assigneeNameSql.append(" AND INSTR(T.ASSIGNEENAME, ?) > 0 ");
-            params.add(searchMap.get(ItemConsts.ASSIGNEENAME_KEY).toString());
-        }
-        boolean sign = null != searchMap.get("sign");
-        boolean noSign = null != searchMap.get(ItemConsts.NOSIGN_KEY);
-        StringBuilder signSql = new StringBuilder();
-        if (sign || noSign) {
-            if (sign && noSign) {
-                signSql.append(" AND T.SIGNSTATUS>=0");
-            } else {
-                signSql.append(" AND T.SIGNSTATUS=?");
-                params
-                    .add(sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
-            }
-        }
+        buildSearchConditions(searchMap, assigneeNameSql, signSql, params);
         StringBuilder taskDefKeySql = new StringBuilder();
         if (StringUtils.isNotBlank(taskDefKey)) {
             taskDefKeySql.append(" AND T.taskDefKey=?");

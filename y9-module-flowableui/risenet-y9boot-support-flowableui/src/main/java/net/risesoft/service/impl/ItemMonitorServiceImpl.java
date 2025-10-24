@@ -146,7 +146,7 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
                     mapTemp.put("taskAssignee", "");
                 } else {
                     mapTemp.put("taskName", firstTask.getName());
-                    mapTemp.put("taskAssignee", utilService.getAssigneeNames(taskList));
+                    mapTemp.put("taskAssignee", utilService.getAssigneeNames(taskList, null));
                 }
             }
         } catch (Exception e) {

@@ -2,8 +2,10 @@ package net.risesoft.controller.config;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
@@ -128,54 +130,43 @@ public class ItemViewConfRestController {
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
         List<Y9FormItemBind> formList =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
-        List<Y9Table> tableList = new ArrayList<>();
-        List<Map<String, Object>> tableField = new ArrayList<>();
-        for (Y9FormItemBind bind : formList) {
-            String formId = bind.getFormId();
-            List<Y9FormField> formFieldList = y9FormFieldService.listByFormId(formId);
-            for (Y9FormField formField : formFieldList) {
-                Y9Table y9Table = y9TableService.findById(formField.getTableId());
-                if (!tableList.contains(y9Table)) {
-                    tableList.add(y9Table);
-                }
-                List<Y9FormField> fieldlist = new ArrayList<>();
-                Map<String, Object> tableFieldMap = tableField.stream().filter(t -> {
-                    return t.get(ItemConsts.TABLENAME_KEY).equals(y9Table.getTableName());
-                }).findFirst().orElse(null);
-                if (tableFieldMap == null) {// 判断是否已经存在
-                    tableFieldMap = new HashMap<>();
-                    tableFieldMap.put(ItemConsts.TABLENAME_KEY, y9Table.getTableName());
-                    if (y9Table.getTableName().equals(formField.getTableName())) {// 判断是否是同一张表
-                        fieldlist.add(formField);
-                    }
-                    tableFieldMap.put(ItemConsts.FIELDLIST_KEY, fieldlist);
-                    tableField.add(tableFieldMap);
-                } else {
-                    fieldlist = (List<Y9FormField>)tableFieldMap.get(ItemConsts.FIELDLIST_KEY);
-                    if (y9Table.getTableName().equals(formField.getTableName())) {// 判断是否是同一张表
-                        Y9FormField oldformField = fieldlist.stream().filter(t -> {
-                            return t.getFieldName().equals(formField.getFieldName());
-                        }).findFirst().orElse(null);
-                        if (oldformField == null) {// 判断是否已存在
-                            fieldlist.add(formField);
-                        }
-                    }
-                    tableFieldMap.put(ItemConsts.FIELDLIST_KEY, fieldlist);
-                    for (Map<String, Object> map : tableField) {
-                        if (map.get(ItemConsts.TABLENAME_KEY).equals(y9Table.getTableName())) {
-                            map.put(ItemConsts.FIELDLIST_KEY, fieldlist);
-                        }
-                    }
-                }
-            }
-        }
+        // 提取所有字段
+        List<Y9FormField> allFields = formList.stream()
+            .flatMap(bind -> y9FormFieldService.listByFormId(bind.getFormId()).stream())
+            .collect(Collectors.toList());
+        // 提取唯一表信息
+        Map<String,
+            Y9Table> tableMap = allFields.stream()
+                .map(field -> y9TableService.findById(field.getTableId()))
+                .collect(Collectors.toMap(Y9Table::getTableName, table -> table, (existing, replacement) -> existing,
+                    LinkedHashMap::new));
+        // 按表名分组字段并去重
+        Map<String,
+            List<Y9FormField>> tableFieldMap = allFields.stream()
+                .collect(Collectors.groupingBy(field -> y9TableService.findById(field.getTableId()).getTableName(),
+                    Collectors.collectingAndThen(Collectors.toList(), this::removeDuplicateFields)));
         if (StringUtils.isNotBlank(id)) {
             ItemViewConf itemViewConf = itemViewConfService.findById(id);
             resMap.put("itemViewConf", itemViewConf);
         }
-        resMap.put("tableList", tableList);
-        resMap.put("tablefield", tableField);
+        resMap.put("tableList", new ArrayList<>(tableMap.values()));
+        resMap.put("tablefield", buildTableFieldResult(tableFieldMap));
         return Y9Result.success(resMap, "获取成功");
+    }
+
+    private List<Y9FormField> removeDuplicateFields(List<Y9FormField> fields) {
+        return new ArrayList<>(fields.stream()
+            .collect(Collectors.toMap(Y9FormField::getFieldName, field -> field, (existing, replacement) -> existing))
+            .values());
+    }
+
+    private List<Map<String, Object>> buildTableFieldResult(Map<String, List<Y9FormField>> tableFieldMap) {
+        return tableFieldMap.entrySet().stream().map(entry -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put(ItemConsts.TABLENAME_KEY, entry.getKey());
+            map.put(ItemConsts.FIELDLIST_KEY, entry.getValue());
+            return map;
+        }).collect(Collectors.toList());
     }
 
     /**
