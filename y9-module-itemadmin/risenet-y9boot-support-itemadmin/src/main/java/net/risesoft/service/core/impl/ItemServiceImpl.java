@@ -95,7 +95,7 @@ public class ItemServiceImpl implements ItemService {
     public Y9Result<String> copyAllBind(String itemId, String processDefinitionId) {
         try {
             // 复制表单绑定信息
-            y9FormItemBindService.copyEform(itemId, processDefinitionId);
+            y9FormItemBindService.copyForm(itemId, processDefinitionId);
             // 复制权限信息
             itemPermissionService.copyPerm(itemId, processDefinitionId);
             // 复制意见框绑定信息

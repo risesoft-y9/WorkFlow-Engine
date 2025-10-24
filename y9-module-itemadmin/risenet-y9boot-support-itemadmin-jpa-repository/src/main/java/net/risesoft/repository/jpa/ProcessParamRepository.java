@@ -32,7 +32,7 @@ public interface ProcessParamRepository
     ProcessParam findByProcessSerialNumber(String processSerialNumber);
 
     @Modifying
-    @Transactional(readOnly = false)
+    @Transactional
     @Query("update ProcessParam t set t.customItem=?2 where t.processSerialNumber=?1")
     void updateCustomItem(String processSerialNumber, boolean b);
 }

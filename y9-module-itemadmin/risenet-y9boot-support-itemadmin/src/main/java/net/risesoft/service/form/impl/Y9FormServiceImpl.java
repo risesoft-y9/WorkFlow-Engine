@@ -144,14 +144,14 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Transactional
     @SuppressWarnings("java:S2077")
     public boolean deleteByGuid(String y9TableId, String guid) {
+        Y9Table y9Table = y9TableService.findById(y9TableId);
+        String tableName = y9Table.getTableName();
         try {
-            Y9Table y9Table = y9TableService.findById(y9TableId);
-            String tableName = y9Table.getTableName();
             String sql = "DELETE FROM " + tableName + " WHERE GUID=?";
             jdbcTemplate4Tenant.update(sql, guid);
             return true;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除业务表[{}]数据失败,guid:{}", tableName, guid, e);
         }
         return false;
     }
@@ -177,8 +177,8 @@ public class Y9FormServiceImpl implements Y9FormService {
             } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 dataSql = "select * from " + tableName + " t where t.guid=?";
             }
-            List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(dataSql, guid);
-            if (datamap.isEmpty()) {
+            List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(dataSql, guid);
+            if (dataMap.isEmpty()) {
                 map.put(ItemConsts.EDITTYPE_KEY, "0");
             } else {
                 map.put(ItemConsts.EDITTYPE_KEY, "1");
@@ -208,14 +208,14 @@ public class Y9FormServiceImpl implements Y9FormService {
                     } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                         sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where guid =?");
                     }
-                    List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
-                    if (!datamap.isEmpty()) {
+                    List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
+                    if (!dataMap.isEmpty()) {
                         List<Y9FormField> elementList =
                             y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
                         for (Y9FormField element : elementList) {
                             String fieldName = element.getFieldName();
                             resMap.put(fieldName,
-                                datamap.get(0).get(fieldName) != null ? datamap.get(0).get(fieldName).toString() : "");
+                                dataMap.get(0).get(fieldName) != null ? dataMap.get(0).get(fieldName).toString() : "");
                         }
                     }
                 }
@@ -246,15 +246,15 @@ public class Y9FormServiceImpl implements Y9FormService {
                     } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                         sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where guid =?");
                     }
-                    List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
-                    if (!datamap.isEmpty()) {
+                    List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
+                    if (!dataMap.isEmpty()) {
                         List<Y9TableField> tableFieldList =
                             y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(y9Table.getId());
                         for (Y9TableField tableField : tableFieldList) {
                             if (null != tableField.getIsVar() && 1 == tableField.getIsVar()) {
                                 String fieldName = tableField.getFieldName();
-                                map.put(fieldName, datamap.get(0).get(fieldName) != null
-                                    ? datamap.get(0).get(fieldName).toString() : "");
+                                map.put(fieldName, dataMap.get(0).get(fieldName) != null
+                                    ? dataMap.get(0).get(fieldName).toString() : "");
                             }
                         }
                     }
@@ -280,7 +280,7 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @Override
     public List<Map<String, Object>> listChildFormData(String formId, String parentProcessSerialNumber) {
-        List<Map<String, Object>> datamap = new ArrayList<>();
+        List<Map<String, Object>> dataMap = new ArrayList<>();
         String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
         List<String> tableNameList = y9FormRepository.findBindTableName(formId);
         for (String tableName : tableNameList) {
@@ -303,17 +303,17 @@ public class Y9FormServiceImpl implements Y9FormService {
                     sqlStr = new StringBuilder(
                         "SELECT * FROM " + tableName + " where parentProcessSerialNumber =?" + userIdSql);
                 }
-                datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), parentProcessSerialNumber);
-                return datamap;
+                dataMap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), parentProcessSerialNumber);
+                return dataMap;
             }
         }
-        return datamap;
+        return dataMap;
     }
 
     @Override
     public List<Map<String, Object>> listChildTableData(String formId, String tableId, String processSerialNumber)
         throws Exception {
-        List<Map<String, Object>> datamap = new ArrayList<>();
+        List<Map<String, Object>> dataMap;
         try {
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             Y9Table y9Table = y9TableService.findById(tableId);
@@ -325,8 +325,8 @@ public class Y9FormServiceImpl implements Y9FormService {
             } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where parentProcessSerialNumber =?");
             }
-            datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), processSerialNumber);
-            return datamap;
+            dataMap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), processSerialNumber);
+            return dataMap;
         } catch (Exception e) {
             e.printStackTrace();
             throw new Exception("Y9FormServiceImpl getChildTableData error");
@@ -349,8 +349,8 @@ public class Y9FormServiceImpl implements Y9FormService {
                     } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                         sqlStr = new StringBuilder("SELECT * FROM " + tableName);
                     }
-                    List<Map<String, Object>> datamap = jdbcTemplate4Tenant.queryForList(sqlStr.toString());
-                    for (Map<String, Object> data : datamap) {
+                    List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(sqlStr.toString());
+                    for (Map<String, Object> data : dataMap) {
                         List<Y9FormField> elementList =
                             y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
                         Map<String, Object> map = new HashMap<>(16);
@@ -447,9 +447,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                     StringBuilder sqlStr = new StringBuilder();
                     if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("insert into \"" + tableName + "\" (");
+                        sqlStr.append("insert into \"").append(tableName).append("\" (");
                     } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("insert into " + tableName + " (");
+                        sqlStr.append("insert into ").append(tableName).append(" (");
                     }
                     StringBuilder sqlStr1 = new StringBuilder(") values (");
                     boolean isHaveField = false;
@@ -484,7 +484,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (DialectEnum.ORACLE.getValue().equals(dialect)
                                     || DialectEnum.DM.getValue().equals(dialect)
                                     || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append(TO_DATE_KEY + keyValue.get(fieldName) + DATE_FORMAT_KEY);
+                                    sqlStr1.append(TO_DATE_KEY).append(keyValue.get(fieldName)).append(DATE_FORMAT_KEY);
                                 } else {
                                     sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                         ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -495,7 +495,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (DialectEnum.ORACLE.getValue().equals(dialect)
                                     || DialectEnum.DM.getValue().equals(dialect)
                                     || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append(TO_DATE_KEY + keyValue.get(fieldName) + DATE_FORMAT24_KEY);
+                                    sqlStr1.append(TO_DATE_KEY)
+                                        .append(keyValue.get(fieldName))
+                                        .append(DATE_FORMAT24_KEY);
 
                                 } else {
                                     sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
@@ -505,7 +507,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (fieldName.equals("guid") || fieldName.equals("GUID") || fieldName.equals(Z_GUID_KEY)
                                     || fieldName.equals("z_guid")) {
                                     if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
+                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
                                     } else {
                                         sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -513,7 +515,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 } else if (fieldName.equals(ItemConsts.PROCESSINSTANCEID_KEY)
                                     || fieldName.equals("PROCESSINSTANCEID")) {
                                     if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
+                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
                                     } else {
                                         sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -541,9 +543,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                     StringBuilder sqlStr = new StringBuilder();
                     if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("update \"" + tableName + "\" set ");
+                        sqlStr.append("update \"").append(tableName).append("\" set ");
                     } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("update " + tableName + " set ");
+                        sqlStr.append("update ").append(tableName).append(" set ");
                     }
                     StringBuilder sqlStr1 = new StringBuilder();
                     boolean isHaveField = false;
@@ -559,13 +561,13 @@ public class Y9FormServiceImpl implements Y9FormService {
                             }
                             if (y9TableField != null) {
                                 if (fieldName.equals("guid") || fieldName.equals("GUID")) {
-                                    sqlStr1.append(" where guid ='" + keyValue.get(fieldName) + "'");
+                                    sqlStr1.append(" where guid ='").append(keyValue.get(fieldName)).append("'");
                                     continue;
                                 }
                                 if (isHaveField) {
                                     sqlStr.append(",");
                                 }
-                                sqlStr.append(fieldName + "=");
+                                sqlStr.append(fieldName).append("=");
                                 if (y9TableField.getFieldType().toLowerCase().contains("int")) {
                                     // sqlStr.append(keyValue.get(fieldName));
                                     sqlStr.append((keyValue.get(fieldName) != null
@@ -580,7 +582,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     if (DialectEnum.ORACLE.getValue().equals(dialect)
                                         || DialectEnum.DM.getValue().equals(dialect)
                                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY + keyValue.get(fieldName) + DATE_FORMAT_KEY);
+                                        sqlStr.append(TO_DATE_KEY)
+                                            .append(keyValue.get(fieldName))
+                                            .append(DATE_FORMAT_KEY);
                                     } else {
                                         sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -591,7 +595,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     if (DialectEnum.ORACLE.getValue().equals(dialect)
                                         || DialectEnum.DM.getValue().equals(dialect)
                                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY + keyValue.get(fieldName) + DATE_FORMAT24_KEY);
+                                        sqlStr.append(TO_DATE_KEY)
+                                            .append(keyValue.get(fieldName))
+                                            .append(DATE_FORMAT24_KEY);
                                     } else {
                                         sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -654,9 +660,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                     StringBuilder sqlStr = new StringBuilder();
                     if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("insert into \"" + tableName + "\" (");
+                        sqlStr.append("insert into \"").append(tableName).append("\" (");
                     } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("insert into " + tableName + " (");
+                        sqlStr.append("insert into ").append(tableName).append(" (");
                     }
                     StringBuilder sqlStr1 = new StringBuilder(") values (");
                     boolean isHaveField = false;
@@ -691,7 +697,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (DialectEnum.ORACLE.getValue().equals(dialect)
                                     || DialectEnum.DM.getValue().equals(dialect)
                                     || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append(TO_DATE_KEY + keyValue.get(fieldName) + DATE_FORMAT_KEY);
+                                    sqlStr1.append(TO_DATE_KEY).append(keyValue.get(fieldName)).append(DATE_FORMAT_KEY);
                                 } else {
                                     sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                         ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -702,7 +708,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (DialectEnum.ORACLE.getValue().equals(dialect)
                                     || DialectEnum.DM.getValue().equals(dialect)
                                     || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append(TO_DATE_KEY + keyValue.get(fieldName) + DATE_FORMAT24_KEY);
+                                    sqlStr1.append(TO_DATE_KEY)
+                                        .append(keyValue.get(fieldName))
+                                        .append(DATE_FORMAT24_KEY);
 
                                 } else {
                                     sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
@@ -712,7 +720,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 if (fieldName.equals("guid") || fieldName.equals("GUID") || fieldName.equals(Z_GUID_KEY)
                                     || fieldName.equals("z_guid")) {
                                     if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
+                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
                                     } else {
                                         sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -720,7 +728,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                                 } else if (fieldName.equals(ItemConsts.PROCESSINSTANCEID_KEY)
                                     || fieldName.equals("PROCESSINSTANCEID")) {
                                     if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'" + Y9IdGenerator.genId(IdType.SNOWFLAKE) + "'");
+                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
                                     } else {
                                         sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -749,9 +757,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                     StringBuilder sqlStr = new StringBuilder();
                     if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("update \"" + tableName + "\" set ");
+                        sqlStr.append("update \"").append(tableName).append("\" set ");
                     } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("update " + tableName + " set ");
+                        sqlStr.append("update ").append(tableName).append(" set ");
                     }
                     StringBuilder sqlStr1 = new StringBuilder();
                     boolean isHaveField = false;
@@ -767,7 +775,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                             }
                             if (y9TableField != null) {
                                 if (fieldName.equals("guid") || fieldName.equals("GUID")) {
-                                    sqlStr1.append(" where guid ='" + keyValue.get(fieldName) + "'");
+                                    sqlStr1.append(" where guid ='").append(keyValue.get(fieldName)).append("'");
                                     continue;
                                 }
                                 if (isHaveField) {
@@ -788,7 +796,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     if (DialectEnum.ORACLE.getValue().equals(dialect)
                                         || DialectEnum.DM.getValue().equals(dialect)
                                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY + keyValue.get(fieldName) + DATE_FORMAT_KEY);
+                                        sqlStr.append(TO_DATE_KEY)
+                                            .append(keyValue.get(fieldName))
+                                            .append(DATE_FORMAT_KEY);
                                     } else {
                                         sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -799,7 +809,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     if (DialectEnum.ORACLE.getValue().equals(dialect)
                                         || DialectEnum.DM.getValue().equals(dialect)
                                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY + keyValue.get(fieldName) + DATE_FORMAT24_KEY);
+                                        sqlStr.append(TO_DATE_KEY)
+                                            .append(keyValue.get(fieldName))
+                                            .append(DATE_FORMAT24_KEY);
                                     } else {
                                         sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -834,10 +846,10 @@ public class Y9FormServiceImpl implements Y9FormService {
     @SuppressWarnings({"unchecked"})
     @Override
     @Transactional
-    public Y9Result<Object> saveFormData(String formdata) {
+    public Y9Result<Object> saveFormData(String formData) {
         try {
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
-            List<Map<String, Object>> listMap = Y9JsonUtil.readValue(formdata, List.class);
+            List<Map<String, Object>> listMap = Y9JsonUtil.readValue(formData, List.class);
             Map<String, Object> keyValue = this.listMapToKeyValue(listMap);
             String formId = (String)keyValue.get("form_Id");
             if (!keyValue.containsKey("guid") && !keyValue.containsKey("GUID")) {
@@ -998,13 +1010,13 @@ public class Y9FormServiceImpl implements Y9FormService {
                             }
                             if (y9TableField != null) {
                                 if (fieldName.equals("guid") || fieldName.equals("GUID")) {
-                                    sqlStr1.append(" where guid ='" + keyValue.get(fieldName) + "'");
+                                    sqlStr1.append(" where guid ='").append(keyValue.get(fieldName)).append("'");
                                     continue;
                                 }
                                 if (isHaveField) {
                                     sqlStr.append(",");
                                 }
-                                sqlStr.append(fieldName + "=");
+                                sqlStr.append(fieldName).append("=");
                                 if (y9TableField.getFieldType().toLowerCase().contains("int")) {
                                     // sqlStr.append(keyValue.get(fieldName));
                                     sqlStr.append((keyValue.get(fieldName) != null
@@ -1028,7 +1040,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     if (DialectEnum.ORACLE.getValue().equals(dialect)
                                         || DialectEnum.DM.getValue().equals(dialect)
                                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY + keyValue.get(fieldName) + DATE_FORMAT_KEY);
+                                        sqlStr.append(TO_DATE_KEY)
+                                            .append(keyValue.get(fieldName))
+                                            .append(DATE_FORMAT_KEY);
                                     } else {
                                         sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");
@@ -1039,7 +1053,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                                     if (DialectEnum.ORACLE.getValue().equals(dialect)
                                         || DialectEnum.DM.getValue().equals(dialect)
                                         || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY + keyValue.get(fieldName) + DATE_FORMAT24_KEY);
+                                        sqlStr.append(TO_DATE_KEY)
+                                            .append(keyValue.get(fieldName))
+                                            .append(DATE_FORMAT24_KEY);
                                     } else {
                                         sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
                                             ? "'" + keyValue.get(fieldName) + "'" : "''");

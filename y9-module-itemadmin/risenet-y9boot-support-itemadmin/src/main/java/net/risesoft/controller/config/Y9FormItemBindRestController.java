@@ -88,7 +88,7 @@ public class Y9FormItemBindRestController {
      */
     @PostMapping(value = "/copyForm")
     public Y9Result<String> copyForm(@RequestParam String itemId, @RequestParam String processDefinitionId) {
-        y9FormItemBindService.copyEform(itemId, processDefinitionId);
+        y9FormItemBindService.copyForm(itemId, processDefinitionId);
         return Y9Result.successMsg("复制成功");
     }
 

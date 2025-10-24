@@ -67,8 +67,6 @@ public class DynamicRoleMemberServiceImpl implements DynamicRoleMemberService {
         beanFactory = BeanFactory.addBean(beanFactory, classFullPath);
         AbstractDynamicRoleMember dynamicRoleMemberService =
             (AbstractDynamicRoleMember)beanFactory.getBean(classFullPath);
-        List<Position> orgUnitList = dynamicRoleMemberService.getPositionList(processInstanceId, dynamicRole);
-        return orgUnitList;
+        return dynamicRoleMemberService.getPositionList(processInstanceId, dynamicRole);
     }
-
 }
