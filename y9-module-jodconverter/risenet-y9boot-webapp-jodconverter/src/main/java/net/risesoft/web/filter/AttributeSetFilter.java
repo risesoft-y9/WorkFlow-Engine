@@ -18,7 +18,8 @@ public class AttributeSetFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-
+        // 空实现 - 该过滤器不需要在初始化时执行特定逻辑
+        // 所有属性设置都在 doFilter 方法中动态处理
     }
 
     @Override
@@ -112,6 +113,6 @@ public class AttributeSetFilter implements Filter {
 
     @Override
     public void destroy() {
-
+        // 空实现 - 该过滤器不需要在销毁时执行特定清理逻辑
     }
 }

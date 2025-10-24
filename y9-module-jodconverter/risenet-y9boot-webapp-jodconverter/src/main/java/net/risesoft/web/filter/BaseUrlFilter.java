@@ -31,7 +31,8 @@ public class BaseUrlFilter implements Filter {
 
     @Override
     public void init(FilterConfig filterConfig) {
-
+        // 空实现 - 该过滤器不需要在初始化时执行特定逻辑
+        // 所有baseUrl的设置都在doFilter方法中动态处理
     }
 
     @Override
@@ -61,6 +62,9 @@ public class BaseUrlFilter implements Filter {
 
         // SonarQube: This assignment is intentional as BASE_URL is a static field
         // that needs to be updated globally across all filter instances
+        // 注意：此处对静态字段 BASE_URL 的赋值是有意设计的
+        // 用于确保在所有过滤器实例间共享最新的 baseUrl 值
+        // 这样可以在 getBaseUrl() 方法中获取到最新的 baseUrl
         BASE_URL = baseUrl;
         request.setAttribute("baseUrl", baseUrl);
         filterChain.doFilter(request, response);
@@ -68,6 +72,6 @@ public class BaseUrlFilter implements Filter {
 
     @Override
     public void destroy() {
-
+        // 空实现 - 该过滤器不需要在销毁时执行特定清理逻辑
     }
 }
