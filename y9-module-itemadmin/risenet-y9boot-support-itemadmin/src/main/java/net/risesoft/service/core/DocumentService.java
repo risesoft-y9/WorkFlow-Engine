@@ -316,15 +316,6 @@ public interface DocumentService {
         String routeToTaskName, String processInstanceId, String multiInstance);
 
     /**
-     * 重定位
-     *
-     * @param taskId 任务id
-     * @param userChoice
-     * @return
-     */
-    Y9Result<String> reposition(String taskId, String userChoice);
-
-    /**
      * Description: 启动流程并发送
      *
      * @param itemId 事项id

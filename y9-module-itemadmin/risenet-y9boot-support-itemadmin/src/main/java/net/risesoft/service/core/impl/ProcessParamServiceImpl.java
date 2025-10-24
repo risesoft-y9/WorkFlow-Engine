@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.entity.ProcessParam;
@@ -25,6 +26,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -77,85 +79,105 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     @Transactional
     public ProcessParam saveOrUpdate(ProcessParam processParam) {
         String processSerialNumber = processParam.getProcessSerialNumber();
-        ProcessParam oldProcessParam = processParamRepository.findByProcessSerialNumber(processSerialNumber);
-        if (null != oldProcessParam) {
-            if (StringUtils.isNotBlank(processParam.getCustomLevel())) {
-                oldProcessParam.setCustomLevel(processParam.getCustomLevel());
-            }
-            if (StringUtils.isNotBlank(processParam.getCustomNumber())) {
-                oldProcessParam.setCustomNumber(processParam.getCustomNumber());
-            }
-            if (StringUtils.isNotBlank(processParam.getTitle())) {
-                oldProcessParam.setTitle(processParam.getTitle());
-            }
-            oldProcessParam.setSearchTerm(processParam.getSearchTerm());
-            oldProcessParam.setSystemCnName(processParam.getSystemCnName());
-            if (StringUtils.isNotBlank(processParam.getBureauIds())) {
-                oldProcessParam.setBureauIds(processParam.getBureauIds());
-            }
-            if (StringUtils.isNotBlank(processParam.getDeptIds())) {
-                oldProcessParam.setDeptIds(processParam.getDeptIds());
-            }
-            oldProcessParam.setCompleter(processParam.getCompleter());
-            if (StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
-                oldProcessParam.setProcessInstanceId(processParam.getProcessInstanceId());
-            }
-            oldProcessParam.setStartor(processParam.getStartor());
-            oldProcessParam.setStartorName(processParam.getStartorName());
-            oldProcessParam.setSponsorGuid(processParam.getSponsorGuid());
-            oldProcessParam.setHostDeptId(processParam.getHostDeptId());
-            oldProcessParam.setHostDeptName(processParam.getHostDeptName());
-            oldProcessParam.setSended(processParam.getSended());
-            oldProcessParam.setTarget(processParam.getTarget());
-            oldProcessParam.setDueDate(processParam.getDueDate());
-            oldProcessParam.setDescription(processParam.getDescription());
-            processParamRepository.save(oldProcessParam);
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            String processInstanceId = processParam.getProcessInstanceId();
-            try {
-                if (StringUtils.isNotBlank(processInstanceId)) {
-                    boolean update = oldProcessParam.getSearchTerm() != null && processParam.getSearchTerm() != null
-                        && !oldProcessParam.getSearchTerm().equals(processParam.getSearchTerm());
-                    // 搜索字段不一样才修改
-                    if (update) {
-                        Map<String, Object> val = new HashMap<>();
-                        val.put("val", processParam.getSearchTerm());
-                        variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId, "searchTerm", val);
-                    }
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
-            }
-            return oldProcessParam;
+        ProcessParam existingProcessParam = processParamRepository.findByProcessSerialNumber(processSerialNumber);
+        if (null != existingProcessParam) {
+            return updateExistingProcessParam(existingProcessParam, processParam);
+        } else {
+            return createNewProcessParam(processParam);
         }
+    }
+
+    /**
+     * 更新已存在的流程参数
+     */
+    private ProcessParam updateExistingProcessParam(ProcessParam oldProcessParam, ProcessParam processParam) {
+        // 更新基础字段
+        updateProcessParamFields(oldProcessParam, processParam);
+        // 保存更新后的实体
+        processParamRepository.save(oldProcessParam);
+        // 处理搜索字段更新
+        handleSearchTermUpdate(oldProcessParam, processParam);
+        return oldProcessParam;
+    }
+
+    /**
+     * 创建新的流程参数
+     */
+    private ProcessParam createNewProcessParam(ProcessParam processParam) {
         ProcessParam newProcessParam = new ProcessParam();
         newProcessParam.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newProcessParam.setBureauIds(processParam.getBureauIds());
-        newProcessParam.setCustomLevel(processParam.getCustomLevel());
-        newProcessParam.setCustomNumber(processParam.getCustomNumber());
-        newProcessParam.setDeptIds(processParam.getDeptIds());
-        newProcessParam.setItemId(processParam.getItemId());
-        newProcessParam.setItemName(processParam.getItemName());
-        newProcessParam.setProcessInstanceId(processParam.getProcessInstanceId());
-        newProcessParam.setProcessSerialNumber(processParam.getProcessSerialNumber());
-        newProcessParam.setSystemName(processParam.getSystemName());
-        newProcessParam.setSystemCnName(processParam.getSystemCnName());
-        newProcessParam.setTitle(StringUtils.isBlank(processParam.getTitle()) ? "暂无标题" : processParam.getTitle());
-        newProcessParam.setSearchTerm(processParam.getSearchTerm());
-        newProcessParam.setCompleter(processParam.getCompleter());
-        newProcessParam.setStartor(processParam.getStartor());
-        newProcessParam.setStartorName(processParam.getStartorName());
-        newProcessParam.setSponsorGuid(processParam.getSponsorGuid());
-        newProcessParam.setSended(processParam.getSended());
+        // 设置所有字段
+        updateProcessParamFields(newProcessParam, processParam);
+        // 设置创建时间
         newProcessParam.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newProcessParam.setCustomItem(processParam.getCustomItem());
-        newProcessParam.setTarget(processParam.getTarget());
-        newProcessParam.setDueDate(processParam.getDueDate());
-        newProcessParam.setDescription(processParam.getDescription());
-        newProcessParam.setHostDeptId(processParam.getHostDeptId());
-        newProcessParam.setHostDeptName(processParam.getHostDeptName());
+        // 设置默认标题
+        newProcessParam.setTitle(StringUtils.isBlank(processParam.getTitle()) ? "暂无标题" : processParam.getTitle());
         processParamRepository.save(newProcessParam);
         return newProcessParam;
+    }
+
+    /**
+     * 更新ProcessParam字段的通用方法
+     */
+    private void updateProcessParamFields(ProcessParam target, ProcessParam source) {
+        if (StringUtils.isNotBlank(source.getCustomLevel())) {
+            target.setCustomLevel(source.getCustomLevel());
+        }
+        if (StringUtils.isNotBlank(source.getCustomNumber())) {
+            target.setCustomNumber(source.getCustomNumber());
+        }
+        if (StringUtils.isNotBlank(source.getTitle())) {
+            target.setTitle(source.getTitle());
+        }
+        target.setSearchTerm(source.getSearchTerm());
+        target.setSystemCnName(source.getSystemCnName());
+        if (StringUtils.isNotBlank(source.getBureauIds())) {
+            target.setBureauIds(source.getBureauIds());
+        }
+        if (StringUtils.isNotBlank(source.getDeptIds())) {
+            target.setDeptIds(source.getDeptIds());
+        }
+        target.setCompleter(source.getCompleter());
+        if (StringUtils.isNotBlank(source.getProcessInstanceId())) {
+            target.setProcessInstanceId(source.getProcessInstanceId());
+        }
+        target.setStartor(source.getStartor());
+        target.setStartorName(source.getStartorName());
+        target.setSponsorGuid(source.getSponsorGuid());
+        target.setHostDeptId(source.getHostDeptId());
+        target.setHostDeptName(source.getHostDeptName());
+        target.setSended(source.getSended());
+        target.setTarget(source.getTarget());
+        target.setDueDate(source.getDueDate());
+        target.setDescription(source.getDescription());
+        target.setCustomItem(source.getCustomItem());
+        target.setSystemName(source.getSystemName());
+        target.setItemId(source.getItemId());
+        target.setItemName(source.getItemName());
+        target.setProcessSerialNumber(source.getProcessSerialNumber());
+    }
+
+    /**
+     * 处理搜索字段更新
+     */
+    private void handleSearchTermUpdate(ProcessParam oldProcessParam, ProcessParam processParam) {
+        String processInstanceId = processParam.getProcessInstanceId();
+        if (StringUtils.isBlank(processInstanceId)) {
+            return;
+        }
+        try {
+            boolean shouldUpdate = oldProcessParam.getSearchTerm() != null && processParam.getSearchTerm() != null
+                && !oldProcessParam.getSearchTerm().equals(processParam.getSearchTerm());
+            // 搜索字段不一样才修改
+            if (shouldUpdate) {
+                Map<String, Object> val = new HashMap<>();
+                val.put("val", processParam.getSearchTerm());
+                variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId,
+                    "searchTerm", val);
+            }
+        } catch (Exception e) {
+            LOGGER.error("更新搜索字段失败: processInstanceId={}", processInstanceId, e);
+        }
     }
 
     @Override
@@ -189,8 +211,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         try {
             processParamRepository.updateCustomItem(processSerialNumber, b);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("更新自定义项失败: processSerialNumber={}", processSerialNumber, e);
         }
-
     }
 }

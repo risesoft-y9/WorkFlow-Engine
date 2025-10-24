@@ -233,25 +233,51 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     /**
      * 处理多个起始节点角色的情况
      */
+    /**
+     * 处理多个起始节点角色的情况
+     */
     private String getStartTaskDefKeyForMultipleRoles(List<ItemStartNodeRole> startNodeRoles, String tenantId,
         String userId) {
+        // 优先查找 tabIndex 为 1 的节点
+        ItemStartNodeRole firstTabNode = null;
+        ItemStartNodeRole userAuthorizedNode = null;
         for (ItemStartNodeRole itemStartNodeRole : startNodeRoles) {
-            if (1 != itemStartNodeRole.getTabIndex()) {
+            // 查找 tabIndex 为 1 的节点
+            if (itemStartNodeRole.getTabIndex() == 1) {
+                firstTabNode = itemStartNodeRole;
+            } else if (userAuthorizedNode == null) {
+                // 查找当前用户有权限的节点（跳过 tabIndex 为 1 的节点）
                 String roleIds = itemStartNodeRole.getRoleIds();
-                if (StringUtils.isNotEmpty(roleIds)) {
-                    String[] roleIdArr = roleIds.split(";");
-                    for (String roleId : roleIdArr) {
-                        boolean has = positionRoleApi.hasRole(tenantId, roleId, userId).getData();
-                        if (has) {
-                            return itemStartNodeRole.getTaskDefKey();
-                        }
-                    }
+                if (StringUtils.isNotEmpty(roleIds) && hasUserRole(tenantId, userId, roleIds)) {
+                    userAuthorizedNode = itemStartNodeRole;
                 }
-            } else {
-                return itemStartNodeRole.getTaskDefKey();
             }
         }
-        return startNodeRoles.get(0).getTaskDefKey();
+        // 返回找到的节点，优先级：tabIndex为1的节点 > 用户有权限的节点 > 默认第一个节点
+        if (firstTabNode != null) {
+            return firstTabNode.getTaskDefKey();
+        } else if (userAuthorizedNode != null) {
+            return userAuthorizedNode.getTaskDefKey();
+        } else {
+            return startNodeRoles.get(0).getTaskDefKey();
+        }
+    }
+
+    /**
+     * 检查用户是否具有角色权限
+     */
+    private boolean hasUserRole(String tenantId, String userId, String roleIds) {
+        String[] roleIdArr = roleIds.split(";");
+        for (String roleId : roleIdArr) {
+            try {
+                if (positionRoleApi.hasRole(tenantId, roleId, userId).getData()) {
+                    return true;
+                }
+            } catch (Exception e) {
+                LOGGER.warn("检查用户角色权限时发生异常: roleId={}, userId={}", roleId, userId, e);
+            }
+        }
+        return false;
     }
 
     /**

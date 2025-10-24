@@ -187,15 +187,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Override
     @Transactional
     public boolean deleteByExecutionId(String executionId) {
-        ExecutionModel executionModel =
-            runtimeApi.getExecutionById(Y9LoginUserHolder.getTenantId(), executionId).getData();
-        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
-        list = list.stream()
-            .filter(actRuDetail -> historictaskApi.getById(Y9LoginUserHolder.getTenantId(), actRuDetail.getTaskId())
-                .getData()
-                .getExecutionId()
-                .equals(executionId))
-            .collect(Collectors.toList());
+        List<ActRuDetail> list = getActRuDetailsByExecutionId(executionId);
         list.forEach(actRuDetail -> actRuDetail.setDeleted(true));
         actRuDetailRepository.saveAll(list);
         list.forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoDeletedEvent<>(actRuDetail)));
@@ -447,20 +439,29 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Override
     @Transactional
     public void recoveryByExecutionId(String executionId) {
-        ExecutionModel executionModel =
-            runtimeApi.getExecutionById(Y9LoginUserHolder.getTenantId(), executionId).getData();
-        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
-        list = list.stream()
-            .filter(actRuDetail -> historictaskApi.getById(Y9LoginUserHolder.getTenantId(), actRuDetail.getTaskId())
-                .getData()
-                .getExecutionId()
-                .equals(executionId))
-            .collect(Collectors.toList());
+        List<ActRuDetail> list = getActRuDetailsByExecutionId(executionId);
         list.forEach(actRuDetail -> actRuDetail.setDeleted(false));
         actRuDetailRepository.saveAll(list);
         list.stream()
             .filter(actRuDetail -> actRuDetail.getStatus().equals(ActRuDetailStatusEnum.TODO))
             .forEach(actRuDetail -> Y9Context.publishEvent(new Y9TodoCreatedEvent<>(actRuDetail)));
+    }
+
+    /**
+     * 根据执行ID获取对应的活动任务详情列表
+     *
+     * @param executionId 执行ID
+     * @return 匹配的ActRuDetail列表
+     */
+    private List<ActRuDetail> getActRuDetailsByExecutionId(String executionId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ExecutionModel executionModel = runtimeApi.getExecutionById(tenantId, executionId).getData();
+        List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
+        return list.stream().filter(actRuDetail -> {
+            String taskExecutionId =
+                historictaskApi.getById(tenantId, actRuDetail.getTaskId()).getData().getExecutionId();
+            return taskExecutionId.equals(executionId);
+        }).collect(Collectors.toList());
     }
 
     /**
@@ -668,95 +669,110 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricTaskInstanceModel> htiList =
             historictaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processInstanceId, "").getData();
-        ActRuDetail actRuDetail;
-        String assignee;
-        String owner;
-        TaskModel taskTemp;
         for (HistoricTaskInstanceModel hti : htiList) {
-            actRuDetail = new ActRuDetail();
-            assignee = hti.getAssignee();
+            String assignee = hti.getAssignee();
+            String owner = hti.getOwner();
+            TaskModel taskTemp = taskApi.findById(tenantId, hti.getId()).getData();
             if (StringUtils.isNotBlank(assignee)) {
-                /*
-                 * 1owner不为空，是恢复待办且恢复的人员不是办理人员的情况，要取出owner,并保存
-                 * owner的Status为1，并判断当前taskId是不是正在运行，正在运行的话assignee的Status为0否则为1(因为恢复待办的时候，没有把历史任务的结束时间设为null)
-                 */
-                owner = hti.getOwner();
-                if (StringUtils.isNotBlank(owner)) {
-                    /* 先保存owner */
-                    actRuDetail.setAssignee(owner);
-                    actRuDetail.setLastTime(hti.getEndTime());
-                    actRuDetail.setProcessDefinitionKey(hti.getProcessDefinitionId().split(":")[0]);
-                    actRuDetail.setSystemName(systemName);
-                    actRuDetail.setProcessInstanceId(hti.getProcessInstanceId());
-                    actRuDetail.setStatus(ActRuDetailStatusEnum.DOING);
-                    actRuDetail.setTaskId(hti.getId());
-                    actRuDetail.setStarted(true);
-                    actRuDetail.setEnded(false);
-                    self.saveOrUpdate(actRuDetail);
-
-                    /* 再保存assignee */
-                    taskTemp = taskApi.findById(tenantId, hti.getId()).getData();
-                    if (null != taskTemp) {
-                        actRuDetail.setStatus(ActRuDetailStatusEnum.TODO);
-                        actRuDetail.setLastTime(null);
-                    } else {
-                        actRuDetail.setStatus(ActRuDetailStatusEnum.DOING);
-                        actRuDetail.setLastTime(hti.getEndTime());
-                    }
-                    actRuDetail.setAssignee(assignee);
-                    actRuDetail.setProcessDefinitionKey(hti.getProcessDefinitionId().split(":")[0]);
-                    actRuDetail.setProcessInstanceId(hti.getProcessInstanceId());
-                    actRuDetail.setTaskId(hti.getId());
-                    self.saveOrUpdate(actRuDetail);
-                } else {
-                    /*
-                     * 2assignee不为null也有可能是恢复待办的人员是当前任务的办理人，这个时候要查出当前任务是否正在运行，正在运行
-                     * Status为0，lastTime为null;当前任务不存在，Status为1，，lastTime为endTime
-                     */
-                    taskTemp = taskApi.findById(tenantId, hti.getId()).getData();
-                    if (null != taskTemp) {
-                        actRuDetail.setStatus(ActRuDetailStatusEnum.TODO);
-                        actRuDetail.setLastTime(null);
-                    } else {
-                        actRuDetail.setStatus(ActRuDetailStatusEnum.DOING);
-                        actRuDetail.setLastTime(hti.getEndTime());
-                    }
-                    actRuDetail.setAssignee(assignee);
-                    actRuDetail.setProcessDefinitionKey(hti.getProcessDefinitionId().split(":")[0]);
-                    actRuDetail.setProcessInstanceId(hti.getProcessInstanceId());
-                    actRuDetail.setTaskId(hti.getId());
-                    self.saveOrUpdate(actRuDetail);
-                }
+                handleNotBlankAssignee(hti, systemName, assignee, owner, taskTemp);
             } else {
-                /* 2办理人为空，说明是区长办件，可以从历史的参与人查找对应任务的办理人 */
-                taskTemp = taskApi.findById(tenantId, hti.getId()).getData();
-                if (null != taskTemp) {
-                    actRuDetail.setStatus(ActRuDetailStatusEnum.TODO);
-                    actRuDetail.setLastTime(null);
-                } else {
-                    actRuDetail.setStatus(ActRuDetailStatusEnum.DOING);
-                    actRuDetail.setLastTime(hti.getEndTime());
-                }
-                List<IdentityLinkModel> identityLinkList = new ArrayList<>();
-                try {
-                    identityLinkList = identityApi.getIdentityLinksForTask(tenantId, hti.getId()).getData();
-                } catch (Exception e) {
-                    LOGGER.error("Get identity links for task error", e);
-                }
-                for (IdentityLinkModel il : identityLinkList) {
-                    if (StringUtils.isNotBlank(il.getUserId()) && "assignee".equals(il.getType())) {
-                        assignee = il.getUserId();
-                        break;
-                    }
-                }
-                actRuDetail.setAssignee(assignee);
-                actRuDetail.setProcessDefinitionKey(hti.getProcessDefinitionId().split(":")[0]);
-                actRuDetail.setProcessInstanceId(hti.getProcessInstanceId());
-                actRuDetail.setTaskId(hti.getId());
-                self.saveOrUpdate(actRuDetail);
+                handleBlankAssignee(hti, systemName, tenantId, taskTemp);
             }
         }
         return true;
+    }
+
+    /**
+     * 处理办理人不为空的情况
+     */
+    private void handleNotBlankAssignee(HistoricTaskInstanceModel hti, String systemName, String assignee, String owner,
+        TaskModel taskTemp) {
+        if (StringUtils.isNotBlank(owner)) {
+            // 处理有所有者的情况（恢复待办且恢复人员不是办理人员）
+            saveOwnerDetails(hti, systemName, owner);
+            saveAssigneeDetails(hti, assignee, taskTemp);
+        } else {
+            // 处理普通情况（恢复待办人员是当前任务办理人）
+            saveAssigneeDetails(hti, assignee, taskTemp);
+        }
+    }
+
+    /**
+     * 处理办理人为空的情况（区长办件）
+     */
+    private void handleBlankAssignee(HistoricTaskInstanceModel hti, String systemName, String tenantId,
+        TaskModel taskTemp) {
+        ActRuDetail actRuDetail = createBaseActRuDetail(hti, systemName, taskTemp);
+        String assignee = findAssigneeFromIdentityLinks(tenantId, hti.getId());
+        actRuDetail.setAssignee(assignee);
+        self.saveOrUpdate(actRuDetail);
+    }
+
+    /**
+     * 保存所有者详情
+     */
+    private void saveOwnerDetails(HistoricTaskInstanceModel hti, String systemName, String owner) {
+        ActRuDetail actRuDetail = new ActRuDetail();
+        actRuDetail.setAssignee(owner);
+        actRuDetail.setLastTime(hti.getEndTime());
+        actRuDetail.setProcessDefinitionKey(hti.getProcessDefinitionId().split(":")[0]);
+        actRuDetail.setSystemName(systemName);
+        actRuDetail.setProcessInstanceId(hti.getProcessInstanceId());
+        actRuDetail.setStatus(ActRuDetailStatusEnum.DOING);
+        actRuDetail.setTaskId(hti.getId());
+        actRuDetail.setStarted(true);
+        actRuDetail.setEnded(false);
+        self.saveOrUpdate(actRuDetail);
+    }
+
+    /**
+     * 保存办理人详情
+     */
+    private void saveAssigneeDetails(HistoricTaskInstanceModel hti, String assignee, TaskModel taskTemp) {
+        ActRuDetail actRuDetail = createBaseActRuDetail(hti, null, taskTemp);
+        actRuDetail.setAssignee(assignee);
+        self.saveOrUpdate(actRuDetail);
+    }
+
+    /**
+     * 创建基础的 ActRuDetail 对象
+     */
+    private ActRuDetail createBaseActRuDetail(HistoricTaskInstanceModel hti, String systemName, TaskModel taskTemp) {
+        ActRuDetail actRuDetail = new ActRuDetail();
+        actRuDetail.setProcessDefinitionKey(hti.getProcessDefinitionId().split(":")[0]);
+        actRuDetail.setSystemName(systemName);
+        actRuDetail.setProcessInstanceId(hti.getProcessInstanceId());
+        actRuDetail.setTaskId(hti.getId());
+        // 设置状态和时间
+        if (null != taskTemp) {
+            actRuDetail.setStatus(ActRuDetailStatusEnum.TODO);
+            actRuDetail.setLastTime(null);
+        } else {
+            actRuDetail.setStatus(ActRuDetailStatusEnum.DOING);
+            actRuDetail.setLastTime(hti.getEndTime());
+        }
+
+        return actRuDetail;
+    }
+
+    /**
+     * 从身份链接中查找办理人
+     */
+    private String findAssigneeFromIdentityLinks(String tenantId, String taskId) {
+        List<IdentityLinkModel> identityLinkList = new ArrayList<>();
+        try {
+            identityLinkList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+        } catch (Exception e) {
+            LOGGER.error("Get identity links for task error", e);
+        }
+        String assignee = "";
+        for (IdentityLinkModel il : identityLinkList) {
+            if (StringUtils.isNotBlank(il.getUserId()) && "assignee".equals(il.getType())) {
+                assignee = il.getUserId();
+                break;
+            }
+        }
+        return assignee;
     }
 
     @Override

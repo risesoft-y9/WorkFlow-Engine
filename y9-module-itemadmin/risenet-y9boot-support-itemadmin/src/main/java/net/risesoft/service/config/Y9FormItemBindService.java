@@ -28,7 +28,7 @@ public interface Y9FormItemBindService {
      * @param itemId
      * @param processDefinitionId
      */
-    void copyEform(String itemId, String processDefinitionId);
+    void copyForm(String itemId, String processDefinitionId);
 
     /**
      * Description: 删除绑定
@@ -65,10 +65,10 @@ public interface Y9FormItemBindService {
     /**
      * 表单正文、附件是否显示的代码
      *
-     * @param eformItemBinds
+     * @param formTaskBinds
      * @return
      */
-    String getShowOther(List<Y9FormItemBind> eformItemBinds);
+    String getShowOther(List<Y9FormItemBind> formTaskBinds);
 
     /**
      * 查找指定事项id和流程定义Id绑定的表单
@@ -133,10 +133,10 @@ public interface Y9FormItemBindService {
     /**
      * Description:
      *
-     * @param eformItem
+     * @param formItemBind
      * @return
      */
-    Y9Result<String> save(Y9FormItemBind eformItem);
+    Y9Result<String> save(Y9FormItemBind formItemBind);
 
     void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey, String tenantId);
 
@@ -146,10 +146,10 @@ public interface Y9FormItemBindService {
     /**
      * Description:
      *
-     * @param eformItem
+     * @param y9FormItemMobileBind
      * @return
      */
-    Y9Result<String> save(Y9FormItemMobileBind eformItem);
+    Y9Result<String> save(Y9FormItemMobileBind y9FormItemMobileBind);
 
     /**
      * Description: 批量更新排序

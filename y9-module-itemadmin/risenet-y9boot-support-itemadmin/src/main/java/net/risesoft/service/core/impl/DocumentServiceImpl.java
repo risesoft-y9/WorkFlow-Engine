@@ -9,7 +9,6 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
 
@@ -359,95 +358,145 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public OpenDataModel edit(String itembox, String taskId, String processInstanceId, String itemId, boolean mobile) {
         OpenDataModel model = new OpenDataModel();
-        String processSerialNumber = "", processDefinitionId = "", taskDefinitionKey = "", processDefinitionKey = "",
-            activitiUser = "";
-        String startor;
         String tenantId = Y9LoginUserHolder.getTenantId();
+        // 处理监控办理状态
         if (ItemBoxTypeEnum.MONITOR_DOING.getValue().equals(itembox)) {
             itembox = ItemBoxTypeEnum.DOING.getValue();
         }
         model.setMeeting(false);
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-        startor = processParam.getStartor();
-        if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
-            TaskModel task = taskApi.findById(tenantId, taskId).getData();
-            processInstanceId = task.getProcessInstanceId();
-            processSerialNumber = processParam.getProcessSerialNumber();
-            processDefinitionId = task.getProcessDefinitionId();
-            taskDefinitionKey = task.getTaskDefinitionKey();
-            processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
-            activitiUser = task.getAssignee();
-            if (StringUtils.isBlank(itemId)) {
-                itemId = processParam.getItemId();
-            }
-            /*
-             * 设为已读
-             */
-            if (StringUtils.isBlank(task.getFormKey())) {
-                task.setFormKey("0");
-                taskApi.saveTask(tenantId, task);
-
-                Y9Context
-                    .publishEvent(new Y9TodoUpdateEvent<>(new TodoTaskEventModel(TodoTaskEventActionEnum.SET_NEW_TODO,
-                        tenantId, processInstanceId, taskId, "0")));
-            }
-            // 获取第一节点任务key,可能多个
-            String startTaskDefKey = "";
-            String startNode =
-                processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
-            List<TargetModel> nodeList =
-                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
-            for (TargetModel map : nodeList) {
-                startTaskDefKey = Y9Util.genCustomStr(startTaskDefKey, map.getTaskDefKey());
-            }
-            model.setStartTaskDefKey(startTaskDefKey);
-            OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-            model.setMeeting(officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
-        } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
-            || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
-            HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
-            OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-            if (hpi == null) {
-                if (officeDoneInfo == null) {
-                    String year = processParam.getCreateTime().substring(0, 4);
-                    hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
-                    processDefinitionId = hpi.getProcessDefinitionId();
-                    processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
-                } else {
-                    processDefinitionId = officeDoneInfo.getProcessDefinitionId();
-                    processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
-                }
-            } else {
-                processDefinitionId = hpi.getProcessDefinitionId();
-                processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
-            }
-            assert officeDoneInfo != null;
-            model.setMeeting(officeDoneInfo.getMeeting() != null && officeDoneInfo.getMeeting().equals("1"));
-            processSerialNumber = processParam.getProcessSerialNumber();
-            if (StringUtils.isNotEmpty(taskId)) {
-                if (taskId.contains(SysVariables.COMMA)) {
-                    taskId = taskId.split(SysVariables.COMMA)[0];
-                }
-                TaskModel taskTemp = taskApi.findById(tenantId, taskId).getData();
-                taskDefinitionKey = taskTemp.getTaskDefinitionKey();
-            }
-        }
+        String startor = processParam.getStartor();
+        // 根据不同的任务箱类型处理数据
+        ProcessInstanceData processInstanceData =
+            handleProcessInstanceData(itembox, taskId, processInstanceId, itemId, processParam, tenantId, model);
+        // 设置基础模型数据
         model.setTitle(processParam.getTitle());
         model.setStartor(startor);
         model.setItembox(itembox);
         model.setCurrentUser(Y9LoginUserHolder.getOrgUnit().getName());
-        model.setProcessSerialNumber(processSerialNumber);
-        model.setProcessDefinitionKey(processDefinitionKey);
-        model.setProcessDefinitionId(processDefinitionId);
+        model.setProcessSerialNumber(processInstanceData.processSerialNumber);
+        model.setProcessDefinitionKey(processInstanceData.processDefinitionKey);
+        model.setProcessDefinitionId(processInstanceData.processDefinitionId);
         model.setProcessInstanceId(processInstanceId);
-        model.setTaskDefKey(taskDefinitionKey);
-        model.setTaskId(taskId);
-        model.setActivitiUser(activitiUser);
-        model.setItemId(itemId);
-
-        model = genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefinitionKey, mobile, model);
+        model.setTaskDefKey(processInstanceData.taskDefinitionKey);
+        model.setTaskId(processInstanceData.taskId);
+        model.setActivitiUser(processInstanceData.activitiUser);
+        model.setItemId(processInstanceData.itemId);
+        // 生成文档模型和菜单控制
+        model = genDocumentModel(processInstanceData.itemId, processInstanceData.processDefinitionKey,
+            processInstanceData.processDefinitionId, processInstanceData.taskDefinitionKey, mobile, model);
         model = menuControl(model);
         return model;
+    }
+
+    /**
+     * 处理流程实例数据
+     */
+    private ProcessInstanceData handleProcessInstanceData(String itembox, String taskId, String processInstanceId,
+        String itemId, ProcessParam processParam, String tenantId, OpenDataModel model) {
+
+        ProcessInstanceData data = new ProcessInstanceData();
+        data.processSerialNumber = "";
+        data.processDefinitionId = "";
+        data.taskDefinitionKey = "";
+        data.processDefinitionKey = "";
+        data.activitiUser = "";
+        data.taskId = taskId;
+        data.itemId = itemId;
+
+        if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
+            handleTodoBox(data, taskId, processParam, tenantId, model);
+        } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
+            || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
+            handleDoingDoneBox(data, processInstanceId, taskId, processParam, tenantId, model);
+        }
+
+        return data;
+    }
+
+    /**
+     * 处理待办箱数据
+     */
+    private void handleTodoBox(ProcessInstanceData data, String taskId, ProcessParam processParam, String tenantId,
+        OpenDataModel model) {
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        data.processInstanceId = task.getProcessInstanceId();
+        data.processSerialNumber = processParam.getProcessSerialNumber();
+        data.processDefinitionId = task.getProcessDefinitionId();
+        data.taskDefinitionKey = task.getTaskDefinitionKey();
+        data.processDefinitionKey = data.processDefinitionId.split(SysVariables.COLON)[0];
+        data.activitiUser = task.getAssignee();
+        data.taskId = taskId;
+
+        if (StringUtils.isBlank(data.itemId)) {
+            data.itemId = processParam.getItemId();
+        }
+
+        // 设为已读
+        if (StringUtils.isBlank(task.getFormKey())) {
+            task.setFormKey("0");
+            taskApi.saveTask(tenantId, task);
+            Y9Context.publishEvent(new Y9TodoUpdateEvent<>(new TodoTaskEventModel(TodoTaskEventActionEnum.SET_NEW_TODO,
+                tenantId, data.processInstanceId, taskId, "0")));
+        }
+
+        // 获取第一节点任务key
+        setStartTaskDefKey(model, tenantId, data.processDefinitionId);
+
+        OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(data.processInstanceId);
+        model.setMeeting(officeDoneInfo != null && "1".equals(officeDoneInfo.getMeeting()));
+    }
+
+    /**
+     * 处理在办箱和办结箱数据
+     */
+    private void handleDoingDoneBox(ProcessInstanceData data, String processInstanceId, String taskId,
+        ProcessParam processParam, String tenantId, OpenDataModel model) {
+
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
+        OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+
+        if (hpi == null) {
+            if (officeDoneInfo == null) {
+                String year = processParam.getCreateTime().substring(0, 4);
+                hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
+                data.processDefinitionId = hpi.getProcessDefinitionId();
+                data.processDefinitionKey = data.processDefinitionId.split(SysVariables.COLON)[0];
+            } else {
+                data.processDefinitionId = officeDoneInfo.getProcessDefinitionId();
+                data.processDefinitionKey = officeDoneInfo.getProcessDefinitionKey();
+            }
+        } else {
+            data.processDefinitionId = hpi.getProcessDefinitionId();
+            data.processDefinitionKey = data.processDefinitionId.split(SysVariables.COLON)[0];
+        }
+
+        model.setMeeting(officeDoneInfo != null && "1".equals(officeDoneInfo.getMeeting()));
+        data.processSerialNumber = processParam.getProcessSerialNumber();
+
+        if (StringUtils.isNotEmpty(taskId)) {
+            if (taskId.contains(SysVariables.COMMA)) {
+                data.taskId = taskId.split(SysVariables.COMMA)[0];
+            }
+            TaskModel taskTemp = taskApi.findById(tenantId, data.taskId).getData();
+            data.taskDefinitionKey = taskTemp.getTaskDefinitionKey();
+        }
+    }
+
+    /**
+     * 设置起始任务定义key
+     */
+    private void setStartTaskDefKey(OpenDataModel model, String tenantId, String processDefinitionId) {
+        String startTaskDefKey = "";
+        String startNode =
+            processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
+        List<TargetModel> nodeList =
+            processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
+
+        for (TargetModel map : nodeList) {
+            startTaskDefKey = Y9Util.genCustomStr(startTaskDefKey, map.getTaskDefKey());
+        }
+        model.setStartTaskDefKey(startTaskDefKey);
     }
 
     @Override
@@ -753,16 +802,6 @@ public class DocumentServiceImpl implements DocumentService {
         model.setSpeakInfoNum(speakInfoNum);
     }
 
-    /*
-     * Description:
-     *
-     * @param taskId
-     * @param sponsorHandle
-     * @param userChoice
-     * @param routeToTaskId
-     * @param sponsorGuid
-     * @return
-     */
     @Override
     public Y9Result<String> forwarding(String taskId, String sponsorHandle, String userChoice, String routeToTaskId,
         String sponsorGuid) {
@@ -774,12 +813,10 @@ public class DocumentServiceImpl implements DocumentService {
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             List<String> userList = new ArrayList<>(parseUserChoice(userChoice));
             int num = userList.size();
-            boolean tooMuch = num > 100;
-            if (tooMuch) {
-                return Y9Result.failure("发送人数过多!");
-            }
-            if (userList.isEmpty()) {
-                return Y9Result.failure("未匹配到发送人!");
+            // 验证用户列表
+            Y9Result<String> validationResult = validateUserList(userList, num);
+            if (!validationResult.isSuccess()) {
+                return validationResult;
             }
             OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
@@ -787,51 +824,19 @@ public class DocumentServiceImpl implements DocumentService {
                 processDefinitionApi.getNode(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
             Map<String, Object> variables =
                 CommonOpt.setVariables(orgUnitId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
-            /*
-             * 并行发送超过20人时，启用异步后台处理。
-             */
-            tooMuch = num > 20;
-            if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance()) && tooMuch) {
-                TaskVariable taskVariable =
-                    taskVariableRepository.findByTaskIdAndKeyName(taskId, ItemConsts.ISFORWARDING_KEY);
-                if (taskVariable == null) {
-                    taskVariable = new TaskVariable();
-                    taskVariable.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    taskVariable.setProcessInstanceId(processInstanceId);
-                    taskVariable.setTaskId(taskId);
-                    taskVariable.setKeyName(ItemConsts.ISFORWARDING_KEY);
-                    taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                }
-                taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                taskVariable.setText(TRUE_STR_KEY + num);
-                taskVariableRepository.save(taskVariable);
-                asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
-                    sponsorGuid, taskId, flowElementModel, variables, userList);
+            // 处理并行发送逻辑
+            if (shouldHandleParallelAsync(flowElementModel.getMultiInstance(), num)) {
+                handleParallelForwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle, sponsorGuid,
+                    taskId, flowElementModel, variables, userList, num);
             } else {
-                // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
+                // 处理主办办理逻辑
                 if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
-                    List<TaskModel> taskNextList1 =
+                    List<TaskModel> taskNextList =
                         taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                    /*
-                     * 如果协办人数超过10人，启用异步后台处理。
-                     */
-                    tooMuch = taskNextList1.size() > 10;
-                    if (tooMuch) {
-                        TaskVariable taskVariable =
-                            taskVariableRepository.findByTaskIdAndKeyName(taskId, ItemConsts.ISFORWARDING_KEY);
-                        if (taskVariable == null) {
-                            taskVariable = new TaskVariable();
-                            taskVariable.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                            taskVariable.setProcessInstanceId(processInstanceId);
-                            taskVariable.setTaskId(taskId);
-                            taskVariable.setKeyName(ItemConsts.ISFORWARDING_KEY);
-                            taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                        }
-                        taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                        taskVariable.setText(TRUE_STR_KEY + num);
-                        taskVariableRepository.save(taskVariable);
-                        asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
-                            sponsorGuid, taskId, flowElementModel, variables, userList);
+                    if (taskNextList.size() > 10) {
+                        // 协办人数超过10人，启用异步处理
+                        handleSponsorAsyncForwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle,
+                            sponsorGuid, taskId, flowElementModel, variables, userList, num);
                     } else {
                         asyncHandleService.forwarding4Gfg(processInstanceId, processParam, sponsorHandle, sponsorGuid,
                             taskId, flowElementModel, variables, userList);
@@ -843,31 +848,99 @@ public class DocumentServiceImpl implements DocumentService {
             }
             return Y9Result.success(processInstanceId, "发送成功!");
         } catch (Exception e) {
-            LOGGER.error("公文发送失败！");
-            e.printStackTrace();
-            try {
-                final Writer result = new StringWriter();
-                final PrintWriter print = new PrintWriter(result);
-                e.printStackTrace(print);
-                String msg = result.toString();
-                String time = Y9DateTimeUtils.formatCurrentDateTime();
-                // 保存任务发送错误日志
-                ErrorLog errorLog = new ErrorLog();
-                errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                errorLog.setCreateTime(time);
-                errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_FORWRDING);
-                errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
-                errorLog.setExtendField("发送少数人失败");
-                errorLog.setProcessInstanceId(processInstanceId);
-                errorLog.setTaskId(taskId);
-                errorLog.setText(msg);
-                errorLog.setUpdateTime(time);
-                errorLogService.saveErrorLog(errorLog);
-            } catch (Exception e2) {
-                LOGGER.error("保存任务发送错误日志失败！", e2);
-            }
+            LOGGER.error("发送失败！", e);
+            handleForwardingError(processInstanceId, taskId, e);
+            return Y9Result.failure("发送失败!");
         }
-        return Y9Result.failure("发送失败!");
+    }
+
+    /**
+     * 验证用户列表
+     */
+    private Y9Result<String> validateUserList(List<String> userList, int num) {
+        if (num > 100) {
+            return Y9Result.failure("发送人数过多!");
+        }
+        if (userList.isEmpty()) {
+            return Y9Result.failure("未匹配到发送人!");
+        }
+        return Y9Result.success();
+    }
+
+    /**
+     * 判断是否需要异步处理并行发送
+     */
+    private boolean shouldHandleParallelAsync(String multiInstance, int userCount) {
+        return SysVariables.PARALLEL.equals(multiInstance) && userCount > 20;
+    }
+
+    /**
+     * 处理并行转发逻辑
+     */
+    private void handleParallelForwarding(String tenantId, OrgUnit orgUnit, String processInstanceId,
+        ProcessParam processParam, String sponsorHandle, String sponsorGuid, String taskId,
+        FlowElementModel flowElementModel, Map<String, Object> variables, List<String> userList, int num) {
+        TaskVariable taskVariable = createOrUpdateTaskVariable(taskId, processInstanceId, num);
+        taskVariableRepository.save(taskVariable);
+        asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle, sponsorGuid,
+            taskId, flowElementModel, variables, userList);
+    }
+
+    /**
+     * 处理主办异步转发逻辑
+     */
+    private void handleSponsorAsyncForwarding(String tenantId, OrgUnit orgUnit, String processInstanceId,
+        ProcessParam processParam, String sponsorHandle, String sponsorGuid, String taskId,
+        FlowElementModel flowElementModel, Map<String, Object> variables, List<String> userList, int num) {
+        TaskVariable taskVariable = createOrUpdateTaskVariable(taskId, processInstanceId, num);
+        taskVariableRepository.save(taskVariable);
+        asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, sponsorHandle, sponsorGuid,
+            taskId, flowElementModel, variables, userList);
+    }
+
+    /**
+     * 创建或更新任务变量
+     */
+    private TaskVariable createOrUpdateTaskVariable(String taskId, String processInstanceId, int userCount) {
+        TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, ItemConsts.ISFORWARDING_KEY);
+        if (taskVariable == null) {
+            taskVariable = new TaskVariable();
+            taskVariable.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            taskVariable.setProcessInstanceId(processInstanceId);
+            taskVariable.setTaskId(taskId);
+            taskVariable.setKeyName(ItemConsts.ISFORWARDING_KEY);
+            taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        }
+        taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        taskVariable.setText(TRUE_STR_KEY + userCount);
+        return taskVariable;
+    }
+
+    /**
+     * 处理转发错误
+     */
+    private void handleForwardingError(String processInstanceId, String taskId, Exception e) {
+        try {
+            final Writer result = new StringWriter();
+            final PrintWriter print = new PrintWriter(result);
+            e.printStackTrace(print);
+            String msg = result.toString();
+            String time = Y9DateTimeUtils.formatCurrentDateTime();
+            // 保存任务发送错误日志
+            ErrorLog errorLog = new ErrorLog();
+            errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            errorLog.setCreateTime(time);
+            errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_FORWRDING);
+            errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
+            errorLog.setExtendField("发送少数人失败");
+            errorLog.setProcessInstanceId(processInstanceId);
+            errorLog.setTaskId(taskId);
+            errorLog.setText(msg);
+            errorLog.setUpdateTime(time);
+            errorLogService.saveErrorLog(errorLog);
+        } catch (Exception e2) {
+            LOGGER.error("保存任务发送错误日志失败！", e2);
+        }
     }
 
     @Override
@@ -963,63 +1036,130 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public DocumentDetailModel genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
         String taskDefinitionKey, boolean isAdmin, DocumentDetailModel model) {
+        // 处理表单列表
+        handleFormList(itemId, processDefinitionId, taskDefinitionKey, model);
+        // 处理签注意见状态
+        handleSignStatus(model, isAdmin);
+        return model;
+    }
+
+    /**
+     * 处理表单列表
+     */
+    private void handleFormList(String itemId, String processDefinitionId, String taskDefinitionKey,
+        DocumentDetailModel model) {
         String showOtherFlag = "";
-        List<ItemFormModel> list = new ArrayList<>();
+        List<ItemFormModel> formList = new ArrayList<>();
         if (model.isMobile()) {
-            List<Y9FormItemMobileBind> y9FormTaskBinds = y9FormItemBindService
+            // 处理移动端表单
+            List<Y9FormItemMobileBind> mobileFormBinds = y9FormItemBindService
                 .listByItemIdAndProcDefIdAndTaskDefKey4Mobile(itemId, processDefinitionId, taskDefinitionKey);
-            y9FormTaskBinds.forEach(fib -> {
-                ItemFormModel itemFormModel = new ItemFormModel();
-                String formName = fib.getFormName().contains("(")
-                    ? fib.getFormName().substring(0, fib.getFormName().indexOf("(")) : fib.getFormName();
-                itemFormModel.setFormId(fib.getFormId());
-                itemFormModel.setFormName(formName);
-                Optional<Y9Form> y9Form = y9FormRepository.findById(fib.getFormId());
-                y9Form.ifPresent(form -> itemFormModel.setFormJson(form.getFormJson()));
-                list.add(itemFormModel);
-            });
+            formList.addAll(convertMobileFormBinds(mobileFormBinds));
         } else {
-            List<Y9FormItemBind> y9FormTaskBinds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
+            // 处理PC端表单
+            List<Y9FormItemBind> formBinds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
                 processDefinitionId, taskDefinitionKey);
-            y9FormTaskBinds.forEach(fib -> {
-                ItemFormModel itemFormModel = new ItemFormModel();
-                String formName = fib.getFormName().contains("(")
-                    ? fib.getFormName().substring(0, fib.getFormName().indexOf("(")) : fib.getFormName();
-                itemFormModel.setFormId(fib.getFormId());
-                itemFormModel.setFormName(formName);
-                list.add(itemFormModel);
-            });
-            showOtherFlag = y9FormItemBindService.getShowOther(y9FormTaskBinds);
+            formList.addAll(convertFormBinds(formBinds));
+            showOtherFlag = y9FormItemBindService.getShowOther(formBinds);
         }
-        model.setFormList(list);
+        model.setFormList(formList);
         model.setShowOtherFlag(showOtherFlag);
+    }
+
+    /**
+     * 转换移动端表单绑定为ItemFormModel列表
+     */
+    private List<ItemFormModel> convertMobileFormBinds(List<Y9FormItemMobileBind> mobileFormBinds) {
+        List<ItemFormModel> formList = new ArrayList<>();
+        for (Y9FormItemMobileBind fib : mobileFormBinds) {
+            ItemFormModel itemFormModel = new ItemFormModel();
+            String formName = extractFormName(fib.getFormName());
+            itemFormModel.setFormId(fib.getFormId());
+            itemFormModel.setFormName(formName);
+            // 设置表单JSON数据
+            Optional<Y9Form> y9Form = y9FormRepository.findById(fib.getFormId());
+            y9Form.ifPresent(form -> itemFormModel.setFormJson(form.getFormJson()));
+            formList.add(itemFormModel);
+        }
+        return formList;
+    }
+
+    /**
+     * 转换PC端表单绑定为ItemFormModel列表
+     */
+    private List<ItemFormModel> convertFormBinds(List<Y9FormItemBind> formBinds) {
+        List<ItemFormModel> formList = new ArrayList<>();
+        for (Y9FormItemBind fib : formBinds) {
+            ItemFormModel itemFormModel = new ItemFormModel();
+            String formName = extractFormName(fib.getFormName());
+            itemFormModel.setFormId(fib.getFormId());
+            itemFormModel.setFormName(formName);
+            formList.add(itemFormModel);
+        }
+        return formList;
+    }
+
+    /**
+     * 提取表单名称（去除括号后的内容）
+     */
+    private String extractFormName(String formName) {
+        return formName.contains("(") ? formName.substring(0, formName.indexOf("(")) : formName;
+    }
+
+    /**
+     * 处理签注意见状态
+     */
+    private void handleSignStatus(DocumentDetailModel model, boolean isAdmin) {
         List<SignDeptDetail> signList = signDeptDetailService.findByProcessSerialNumber(model.getProcessSerialNumber());
-        // 签注意见纸页签
-        Integer signStatus = SignStatusEnum.NOTSTART.getValue();
-        // 待办时，主办打开不显示【签注意见纸】，会签部门打开显示签注意见纸
+        Integer signStatus;
+        // 根据不同情况设置签注意见状态
         if (model.getItembox().equals(ItemBoxTypeEnum.TODO.getValue())) {
-            ActRuDetail todo =
-                actRuDetailService.findByTaskIdAndAssignee(model.getTaskId(), Y9LoginUserHolder.getOrgUnitId());
-            signStatus = todo.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.NONE.getValue();
+            signStatus = getTodoSignStatus(model);
         } else {
-            // 非待办时
-            // documentId不为空且为流程序列号时，打开的是主办，不显示签注意见纸
-            if (StringUtils.isNotBlank(model.getDocumentId())
-                && model.getDocumentId().equals(model.getProcessSerialNumber())) {
-                // 打开的是主办
-                signStatus = SignStatusEnum.NONE.getValue();
-            } else {
-                if (!signList.isEmpty()) {
-                    ActRuDetail doing = actRuDetailService.findByProcessSerialNumberAndAssigneeAndStatusEquals1(
-                        model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
-                    signStatus =
-                        isAdmin ? SignStatusEnum.ADMIN.getValue() : null == doing ? SignStatusEnum.SUB.getValue()
-                            : doing.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.MAIN.getValue();
-                }
-            }
+            signStatus = getNonTodoSignStatus(model, signList, isAdmin);
         }
         model.setSignStatus(signStatus);
-        // 会签意见汇总页签
+        // 设置会签意见汇总列表
+        setSignDeptDetailList(model, signList);
+    }
+
+    /**
+     * 获取待办状态下的签注意见状态
+     */
+    private Integer getTodoSignStatus(DocumentDetailModel model) {
+        ActRuDetail todo =
+            actRuDetailService.findByTaskIdAndAssignee(model.getTaskId(), Y9LoginUserHolder.getOrgUnitId());
+        return todo != null && todo.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.NONE.getValue();
+    }
+
+    /**
+     * 获取非待办状态下的签注意见状态
+     */
+    private Integer getNonTodoSignStatus(DocumentDetailModel model, List<SignDeptDetail> signList, boolean isAdmin) {
+        // documentId不为空且为流程序列号时，打开的是主办，不显示签注意见纸
+        if (StringUtils.isNotBlank(model.getDocumentId())
+            && model.getDocumentId().equals(model.getProcessSerialNumber())) {
+            return SignStatusEnum.NONE.getValue();
+        }
+        // 其他情况根据会签列表和用户角色确定状态
+        if (!signList.isEmpty()) {
+            ActRuDetail doing = actRuDetailService.findByProcessSerialNumberAndAssigneeAndStatusEquals1(
+                model.getProcessSerialNumber(), Y9LoginUserHolder.getOrgUnitId());
+            if (isAdmin) {
+                return SignStatusEnum.ADMIN.getValue();
+            } else if (doing == null) {
+                return SignStatusEnum.SUB.getValue();
+            } else {
+                return doing.isSub() ? SignStatusEnum.SUB.getValue() : SignStatusEnum.MAIN.getValue();
+            }
+        }
+        return SignStatusEnum.NOTSTART.getValue();
+    }
+
+    /**
+     * 设置会签意见汇总列表
+     */
+    private void setSignDeptDetailList(DocumentDetailModel model, List<SignDeptDetail> signList) {
         List<SignDeptDetailModel> modelList = new ArrayList<>();
         signList.stream().filter(s -> s.getStatus().equals(SignDeptDetailStatusEnum.DONE)).forEach(sdd -> {
             SignDeptDetailModel ssdModel = new SignDeptDetailModel();
@@ -1027,7 +1167,6 @@ public class DocumentServiceImpl implements DocumentService {
             modelList.add(ssdModel);
         });
         model.setSignDeptDetailList(modelList);
-        return model;
     }
 
     private void getAllPosition(List<Position> list, String deptId) {
@@ -1104,46 +1243,85 @@ public class DocumentServiceImpl implements DocumentService {
     public List<OrgUnit> getUserChoice(String itemId, String processDefinitionId, String taskDefinitionKey,
         String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> list = itemPermissionService.listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId,
-            processDefinitionId, taskDefinitionKey);
+        List<ItemPermission> permissions = itemPermissionService
+            .listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefinitionKey);
         List<OrgUnit> orgUnitList = new ArrayList<>();
-        for (ItemPermission o : list) {
-            if (Objects.equals(o.getRoleType(), ItemPermissionEnum.DEPARTMENT)
-                || Objects.equals(o.getRoleType(), ItemPermissionEnum.POSITION)
-                || Objects.equals(o.getRoleType(), ItemPermissionEnum.USER)) {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData();
-                if (null != orgUnit) {
-                    orgUnitList.add(orgUnit);
-                }
-            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE)) {
-                List<Position> positionList = positionRoleApi.listPositionsByRoleId(tenantId, o.getRoleId()).getData();
-                orgUnitList.addAll(positionList);
-            } else if (Objects.equals(o.getRoleType(), ItemPermissionEnum.ROLE_DYNAMIC)) {
-                // 部门集合
-                List<OrgUnit> deptList = new ArrayList<>();
-                // 岗位集合
-                List<Position> positionList = new ArrayList<>();
-                DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
-                if (null == dynamicRole.getKinds() || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
-                    // 动态角色种类为【无】或null时，针对岗位或部门
-                    List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
-                        .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
-                    for (OrgUnit orgUnit : orgUnitList1) {
-                        if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                            positionList.add((Position)orgUnit);
-                        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                            deptList.add(orgUnit);
-                        }
-                    }
-                } else {// 动态角色种类为【角色】或【部门配置分类】时，针对岗位
-                    positionList = dynamicRoleMemberService.listPositionByDynamicRoleIdAndProcessInstanceId(dynamicRole,
-                        processInstanceId);
-                }
-                orgUnitList.addAll(positionList);
-                orgUnitList.addAll(deptList);
+        for (ItemPermission permission : permissions) {
+            switch (permission.getRoleType()) {
+                case DEPARTMENT:
+                case POSITION:
+                case USER:
+                    handleOrgUnitPermission(orgUnitList, tenantId, permission);
+                    break;
+                case ROLE:
+                    handleRolePermission(orgUnitList, tenantId, permission);
+                    break;
+                case ROLE_DYNAMIC:
+                    handleDynamicRolePermission(orgUnitList, permission, processInstanceId);
+                    break;
+                default:
+                    // 处理未知权限类型，可选择记录日志或忽略
+                    break;
             }
         }
         return orgUnitList;
+    }
+
+    /**
+     * 处理组织单元权限（部门、岗位、用户）
+     */
+    private void handleOrgUnitPermission(List<OrgUnit> orgUnitList, String tenantId, ItemPermission permission) {
+        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
+        if (orgUnit != null) {
+            orgUnitList.add(orgUnit);
+        }
+    }
+
+    /**
+     * 处理角色权限
+     */
+    private void handleRolePermission(List<OrgUnit> orgUnitList, String tenantId, ItemPermission permission) {
+        List<Position> positionList = positionRoleApi.listPositionsByRoleId(tenantId, permission.getRoleId()).getData();
+        orgUnitList.addAll(positionList);
+    }
+
+    /**
+     * 处理动态角色权限
+     */
+    private void handleDynamicRolePermission(List<OrgUnit> orgUnitList, ItemPermission permission,
+        String processInstanceId) {
+        DynamicRole dynamicRole = dynamicRoleService.getById(permission.getRoleId());
+        if (dynamicRole == null) {
+            return;
+        }
+        List<OrgUnit> positionList = new ArrayList<>();
+        List<OrgUnit> deptList = new ArrayList<>();
+        if (dynamicRole.getKinds() == null || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
+            // 动态角色种类为【无】或null时，针对岗位或部门
+            List<OrgUnit> orgUnits =
+                dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
+            separateOrgUnitsByType(orgUnits, positionList, deptList);
+        } else {
+            // 动态角色种类为【角色】或【部门配置分类】时，针对岗位
+            List<Position> positions = dynamicRoleMemberService
+                .listPositionByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
+            positionList.addAll(positions);
+        }
+        orgUnitList.addAll(positionList);
+        orgUnitList.addAll(deptList);
+    }
+
+    /**
+     * 根据组织单元类型分离岗位和部门
+     */
+    private void separateOrgUnitsByType(List<OrgUnit> orgUnits, List<OrgUnit> positionList, List<OrgUnit> deptList) {
+        for (OrgUnit orgUnit : orgUnits) {
+            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                positionList.add(orgUnit);
+            } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
+                deptList.add(orgUnit);
+            }
+        }
     }
 
     @Override
@@ -1235,211 +1413,251 @@ public class DocumentServiceImpl implements DocumentService {
         String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
             taskDefKey = model.getTaskDefKey(), taskId = model.getTaskId(), itemBox = model.getItembox();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        Map<String, Object> map = buttonService.showButton(itemId, taskId, itemBox);
-        String[] buttonIds = (String[])map.get("buttonIds");
-        String[] buttonNames = (String[])map.get("buttonNames");
-        String sponsorHandle = (String)map.get("sponsorHandle");
-        int[] buttonOrders = (int[])map.get("buttonOrders");
-        boolean[] isButtonShow = (boolean[])map.get("isButtonShow");
-        String menuName = "";
-        String menuKey = "";
-        String sendName = "";
-        String sendKey = "";
-        String repositionName = "";
-        String repositionKey = "";
-        List<Map<String, Object>> sendMap = new ArrayList<>();
-        List<Map<String, Object>> menuMap = new ArrayList<>();
-        List<Map<String, Object>> repositionMap = new ArrayList<>();
-        List<ItemButtonBind> bibList;
+        Map<String, Object> buttonMap = buttonService.showButton(itemId, taskId, itemBox);
+        String[] buttonIds = (String[])buttonMap.get("buttonIds");
+        String[] buttonNames = (String[])buttonMap.get("buttonNames");
+        String sponsorHandle = (String)buttonMap.get("sponsorHandle");
+        int[] buttonOrders = (int[])buttonMap.get("buttonOrders");
+        boolean[] isButtonShow = (boolean[])buttonMap.get("isButtonShow");
+        ButtonControlData controlData = new ButtonControlData();
         // 生成按钮数组
+        processButtons(controlData, buttonOrders, isButtonShow, itemId, processDefinitionId, taskDefKey, buttonNames,
+            buttonIds, tenantId, orgUnitId);
+        // 设置模型数据
+        setModelData(model, controlData, buttonMap, sponsorHandle);
+        return model;
+    }
+
+    /**
+     * 处理按钮生成逻辑
+     */
+    private void processButtons(ButtonControlData controlData, int[] buttonOrders, boolean[] isButtonShow,
+        String itemId, String processDefinitionId, String taskDefKey, String[] buttonNames, String[] buttonIds,
+        String tenantId, String orgUnitId) {
         for (int i = buttonOrders.length - 1; i >= 0; i--) {
-            int k = buttonOrders[i] - 1;
-            /*
-             * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
-             */
-            if (k == 0 && isButtonShow[0]) {
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON,
-                    processDefinitionId, taskDefKey);
-                for (ItemButtonBind bind : bibList) {
-                    String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                    if (!"发送".equals(buttonName)) {
-                        List<String> roleIds = bind.getRoleIds();
-                        if (roleIds.isEmpty()) {
-                            Map<String, Object> mapTemp = new HashMap<>(16);
-                            mapTemp.put(ItemConsts.MENUNAME_KEY, buttonName);
-                            mapTemp.put(ItemConsts.MENU_KEY, buttonCustomId);
-                            menuName = Y9Util.genCustomStr(menuName, buttonName);
-                            menuKey = Y9Util.genCustomStr(menuKey, buttonCustomId);
-                            menuMap.add(mapTemp);
-                        } else {
-                            for (String roleId : roleIds) {
-                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasRole) {
-                                    Map<String, Object> mapTemp = new HashMap<>(16);
-                                    mapTemp.put(ItemConsts.MENUNAME_KEY, buttonName);
-                                    mapTemp.put(ItemConsts.MENU_KEY, buttonCustomId);
-                                    menuName = Y9Util.genCustomStr(menuName, buttonName);
-                                    menuKey = Y9Util.genCustomStr(menuKey, buttonCustomId);
-                                    menuMap.add(mapTemp);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+            int buttonIndex = buttonOrders[i] - 1;
+            // 处理保存按钮（索引为0）
+            if (buttonIndex == 0 && isButtonShow[0]) {
+                handleSaveButton(controlData, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
             }
-
-            /*
-             * 假如发送按钮显示的话，去获取发送下面的路由
-             */
-            if (k == 1 && isButtonShow[1] && StringUtils.isNotBlank(taskDefKey)) {
-                /*
-                 * 假如有自定义“发送”按钮的话,就不显示默认的发送按钮
-                 */
-                boolean haveSendButton = false;
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON,
-                    processDefinitionId, taskDefKey);
-                bibFor:
-                for (ItemButtonBind bib : bibList) {
-                    if ("发送".equals(bib.getButtonName())) {
-                        List<String> roleIds = bib.getRoleIds();
-                        if (roleIds.isEmpty()) {
-                            Map<String, Object> mapTemp = new HashMap<>(16);
-                            mapTemp.put(ItemConsts.MENUNAME_KEY, bib.getButtonName());
-                            mapTemp.put(ItemConsts.MENU_KEY, bib.getButtonCustomId());
-                            menuName = Y9Util.genCustomStr(menuName, bib.getButtonName());
-                            menuKey = Y9Util.genCustomStr(menuKey, bib.getButtonCustomId());
-                            menuMap.add(mapTemp);
-
-                            haveSendButton = true;
-                            break;
-                        } else {
-                            for (String roleId : roleIds) {
-                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasRole) {
-                                    Map<String, Object> mapTemp = new HashMap<>(16);
-                                    mapTemp.put(ItemConsts.MENUNAME_KEY, bib.getButtonName());
-                                    mapTemp.put(ItemConsts.MENU_KEY, bib.getButtonCustomId());
-                                    menuName = Y9Util.genCustomStr(menuName, bib.getButtonName());
-                                    menuKey = Y9Util.genCustomStr(menuKey, bib.getButtonCustomId());
-                                    menuMap.add(mapTemp);
-
-                                    haveSendButton = true;
-                                    break bibFor;
-                                }
-                            }
-                        }
-                    }
-                }
-                if (!haveSendButton) {
-                    /*
-                     * 没有配置自定义“发送”按钮的话，添加上默认的“发送”按钮
-                     */
-                    Map<String, Object> map1 = new HashMap<>(16);
-                    map1.put(ItemConsts.MENUNAME_KEY, buttonNames[k]);
-                    map1.put(ItemConsts.MENU_KEY, buttonIds[k]);
-                    menuName = Y9Util.genCustomStr(menuName, buttonNames[k]);
-                    menuKey = Y9Util.genCustomStr(menuKey, buttonIds[k]);
-                    menuMap.add(map1);
-                    /*
-                     * 添加发送下面的路由
-                     */
-                    List<TargetModel> routeToTasks =
-                        processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
-                    for (TargetModel m : routeToTasks) {
-                        Map<String, Object> map2 = new HashMap<>(16);
-                        // 退回、路由网关不显示在发送下面
-                        if (!"退回".equals(m.getTaskDefName())
-                            && !ItemConsts.EXCLUSIVE_GATEWAY_KEY.equals(m.getTaskDefName())) {
-                            sendName = Y9Util.genCustomStr(sendName, m.getTaskDefName());
-                            sendKey = Y9Util.genCustomStr(sendKey, m.getTaskDefKey());
-                            map2.put(ItemConsts.SENDNAME_KEY, m.getTaskDefName());
-                            map2.put(ItemConsts.SENDKEY_KEY, m.getTaskDefKey());
-                            sendMap.add(map2);
-                        }
-                    }
-                    /*
-                     * 添加自定义按钮到发送
-                     */
-                    bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND,
-                        processDefinitionId, taskDefKey);
-                    for (ItemButtonBind bind : bibList) {
-                        List<String> roleIds = bind.getRoleIds();
-                        String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                        if (roleIds.isEmpty()) {
-                            Map<String, Object> mapTemp = new HashMap<>(16);
-                            sendName = Y9Util.genCustomStr(sendName, buttonName);
-                            sendKey = Y9Util.genCustomStr(sendKey, buttonCustomId);
-                            mapTemp.put(ItemConsts.SENDNAME_KEY, buttonName);
-                            mapTemp.put(ItemConsts.SENDKEY_KEY, buttonCustomId);
-                            sendMap.add(mapTemp);
-                        } else {
-                            for (String roleId : roleIds) {
-                                boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
-                                if (hasRole) {
-                                    Map<String, Object> mapTemp = new HashMap<>(16);
-                                    sendName = Y9Util.genCustomStr(sendName, buttonName);
-                                    sendKey = Y9Util.genCustomStr(sendKey, buttonCustomId);
-                                    mapTemp.put(ItemConsts.SENDNAME_KEY, buttonName);
-                                    mapTemp.put(ItemConsts.SENDKEY_KEY, buttonCustomId);
-                                    sendMap.add(mapTemp);
-                                    break;
-                                }
-                            }
-                        }
-                    }
-                }
+            // 处理发送按钮（索引为1）
+            else if (buttonIndex == 1 && isButtonShow[1] && StringUtils.isNotBlank(taskDefKey)) {
+                handleSendButton(controlData, itemId, processDefinitionId, taskDefKey, buttonNames, buttonIds,
+                    buttonIndex, tenantId, orgUnitId);
             }
-            /*
-             * 假如重定向按钮显示的话，去获取路由
-             */
-            String taskDefNameJson;
-            if (k == 15 && isButtonShow[15]) {
-                List<TargetModel> taskNodes = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
-                for (TargetModel node : taskNodes) {
-                    Map<String, Object> map3 = new HashMap<>(16);
-                    // 流程不显示在重定向按钮下面
-                    if (!"流程".equals(node.getTaskDefName())) {
-                        repositionName = Y9Util.genCustomStr(repositionName, node.getTaskDefName());
-                        repositionKey = Y9Util.genCustomStr(repositionKey, node.getTaskDefKey());
-                        map3.put("repositionName", node.getTaskDefName());
-                        map3.put("repositionKey", node.getTaskDefKey());
-                        repositionMap.add(map3);
-                    }
-                }
-                model.setRepositionMap(repositionMap);
-                ObjectMapper mapper = new ObjectMapper();
-                try {
-                    taskDefNameJson = mapper.writeValueAsString(repositionMap);
-                } catch (JsonProcessingException e) {
-                    LOGGER.error("解析重定向按钮失败！", e);
-                    taskDefNameJson = "[]";
-                }
-                model.setTaskDefNameJson(taskDefNameJson);
+            // 处理重定向按钮（索引为15）
+            else if (buttonIndex == 15 && isButtonShow[15]) {
+                handleRepositionButton(controlData, processDefinitionId, tenantId);
             }
-
-            if (k != 1 && isButtonShow[k]) {
-                Map<String, Object> map1 = new HashMap<>(16);
-                map1.put(ItemConsts.MENUNAME_KEY, buttonNames[k]);
-                map1.put(ItemConsts.MENU_KEY, buttonIds[k]);
-                menuName = Y9Util.genCustomStr(menuName, buttonNames[k]);
-                menuKey = Y9Util.genCustomStr(menuKey, buttonIds[k]);
-                menuMap.add(map1);
+            // 处理其他按钮
+            else if (buttonIndex != 1 && isButtonShow[buttonIndex]) {
+                handleOtherButton(controlData, buttonNames, buttonIds, buttonIndex);
             }
         }
-        model.setSendMap(sendMap);
-        model.setMenuMap(menuMap);
-        model.setSendName(sendName);
-        model.setSendKey(sendKey);
-        model.setMenuName(menuName);
-        model.setMenuKey(menuKey);
+    }
 
+    /**
+     * 处理其他按钮
+     */
+    private void handleOtherButton(ButtonControlData controlData, String[] buttonNames, String[] buttonIds,
+        int buttonIndex) {
+        Map<String, Object> buttonInfo = new HashMap<>(16);
+        buttonInfo.put(ItemConsts.MENUNAME_KEY, buttonNames[buttonIndex]);
+        buttonInfo.put(ItemConsts.MENU_KEY, buttonIds[buttonIndex]);
+        controlData.menuName = Y9Util.genCustomStr(controlData.menuName, buttonNames[buttonIndex]);
+        controlData.menuKey = Y9Util.genCustomStr(controlData.menuKey, buttonIds[buttonIndex]);
+        controlData.menuMap.add(buttonInfo);
+    }
+
+    /**
+     * 设置模型数据
+     */
+    private void setModelData(OpenDataModel model, ButtonControlData controlData, Map<String, Object> buttonMap,
+        String sponsorHandle) {
+        model.setSendMap(controlData.sendMap);
+        model.setMenuMap(controlData.menuMap);
+        model.setSendName(controlData.sendName);
+        model.setSendKey(controlData.sendKey);
+        model.setMenuName(controlData.menuName);
+        model.setMenuKey(controlData.menuKey);
+        model.setRepositionMap(controlData.repositionMap);
+        model.setTaskDefNameJson(controlData.taskDefNameJson);
         model.setSponsorHandle(sponsorHandle);
-        model.setLastPerson4RefuseClaim(
-            map.get("isLastPerson4RefuseClaim") != null ? (Boolean)map.get("isLastPerson4RefuseClaim") : false);
-        model.setMultiInstance(map.get("multiInstance") != null ? (String)map.get("multiInstance") : "");
-        model.setNextNode(map.get("nextNode") != null ? (Boolean)map.get("nextNode") : false);
-        return model;
+        model.setLastPerson4RefuseClaim(buttonMap.get("isLastPerson4RefuseClaim") != null
+            ? (Boolean)buttonMap.get("isLastPerson4RefuseClaim") : false);
+        model.setMultiInstance(buttonMap.get("multiInstance") != null ? (String)buttonMap.get("multiInstance") : "");
+        model.setNextNode(buttonMap.get("nextNode") != null ? (Boolean)buttonMap.get("nextNode") : false);
+    }
+
+    /**
+     * 处理保存按钮逻辑
+     */
+    private void handleSaveButton(ButtonControlData controlData, String itemId, String processDefinitionId,
+        String taskDefKey, String tenantId, String orgUnitId) {
+        List<ItemButtonBind> bibList =
+            buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId, taskDefKey);
+        for (ItemButtonBind bind : bibList) {
+            String buttonName = bind.getButtonName();
+            String buttonCustomId = bind.getButtonCustomId();
+            // 跳过发送按钮
+            if ("发送".equals(buttonName)) {
+                continue;
+            }
+            // 检查用户权限并添加按钮
+            if (hasButtonPermission(bind.getRoleIds(), tenantId, orgUnitId)) {
+                addButtonToControlData(controlData, buttonName, buttonCustomId);
+            }
+        }
+    }
+
+    /**
+     * 处理发送按钮逻辑
+     */
+    private void handleSendButton(ButtonControlData controlData, String itemId, String processDefinitionId,
+        String taskDefKey, String[] buttonNames, String[] buttonIds, int buttonIndex, String tenantId,
+        String orgUnitId) {
+        // 检查是否有自定义"发送"按钮
+        boolean haveSendButton =
+            checkCustomSendButton(controlData, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
+        if (!haveSendButton) {
+            // 添加默认发送按钮
+            Map<String, Object> defaultSendButton = new HashMap<>(16);
+            defaultSendButton.put(ItemConsts.MENUNAME_KEY, buttonNames[buttonIndex]);
+            defaultSendButton.put(ItemConsts.MENU_KEY, buttonIds[buttonIndex]);
+            controlData.menuName = Y9Util.genCustomStr(controlData.menuName, buttonNames[buttonIndex]);
+            controlData.menuKey = Y9Util.genCustomStr(controlData.menuKey, buttonIds[buttonIndex]);
+            controlData.menuMap.add(defaultSendButton);
+            // 添加发送下面的路由
+            addSendRoutes(controlData, processDefinitionId, taskDefKey, tenantId);
+            // 添加自定义按钮到发送
+            addCustomSendButtons(controlData, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
+        }
+    }
+
+    /**
+     * 检查是否存在自定义发送按钮
+     */
+    private boolean checkCustomSendButton(ButtonControlData controlData, String itemId, String processDefinitionId,
+        String taskDefKey, String tenantId, String orgUnitId) {
+        List<ItemButtonBind> bibList =
+            buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId, taskDefKey);
+        for (ItemButtonBind bib : bibList) {
+            if ("发送".equals(bib.getButtonName())) {
+                return handleSendButtonPermission(controlData, bib, tenantId, orgUnitId);
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 处理发送按钮权限检查
+     */
+    private boolean handleSendButtonPermission(ButtonControlData controlData, ItemButtonBind bib, String tenantId,
+        String orgUnitId) {
+        List<String> roleIds = bib.getRoleIds();
+        // 如果没有角色限制，直接添加按钮
+        if (roleIds.isEmpty()) {
+            addButtonToControlData(controlData, bib.getButtonName(), bib.getButtonCustomId());
+            return true;
+        }
+        // 检查用户是否有权限访问该按钮
+        if (hasButtonPermission(roleIds, tenantId, orgUnitId)) {
+            addButtonToControlData(controlData, bib.getButtonName(), bib.getButtonCustomId());
+            return true;
+        }
+        return false;
+    }
+
+    /**
+     * 将按钮添加到控制数据中
+     */
+    private void addButtonToControlData(ButtonControlData controlData, String buttonName, String buttonCustomId) {
+        Map<String, Object> buttonInfo = new HashMap<>(16);
+        buttonInfo.put(ItemConsts.MENUNAME_KEY, buttonName);
+        buttonInfo.put(ItemConsts.MENU_KEY, buttonCustomId);
+        controlData.menuName = Y9Util.genCustomStr(controlData.menuName, buttonName);
+        controlData.menuKey = Y9Util.genCustomStr(controlData.menuKey, buttonCustomId);
+        controlData.menuMap.add(buttonInfo);
+    }
+
+    /**
+     * 添加发送路由
+     */
+    private void addSendRoutes(ButtonControlData controlData, String processDefinitionId, String taskDefKey,
+        String tenantId) {
+        List<TargetModel> routeToTasks =
+            processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
+        for (TargetModel target : routeToTasks) {
+            // 退回、路由网关不显示在发送下面
+            if (!"退回".equals(target.getTaskDefName())
+                && !ItemConsts.EXCLUSIVE_GATEWAY_KEY.equals(target.getTaskDefName())) {
+                controlData.sendName = Y9Util.genCustomStr(controlData.sendName, target.getTaskDefName());
+                controlData.sendKey = Y9Util.genCustomStr(controlData.sendKey, target.getTaskDefKey());
+                Map<String, Object> routeInfo = new HashMap<>(16);
+                routeInfo.put(ItemConsts.SENDNAME_KEY, target.getTaskDefName());
+                routeInfo.put(ItemConsts.SENDKEY_KEY, target.getTaskDefKey());
+                controlData.sendMap.add(routeInfo);
+            }
+        }
+    }
+
+    /**
+     * 添加自定义发送按钮
+     */
+    private void addCustomSendButtons(ButtonControlData controlData, String itemId, String processDefinitionId,
+        String taskDefKey, String tenantId, String orgUnitId) {
+        List<ItemButtonBind> bibList =
+            buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND, processDefinitionId, taskDefKey);
+        for (ItemButtonBind bind : bibList) {
+            List<String> roleIds = bind.getRoleIds();
+            String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
+            if (roleIds.isEmpty()) {
+                Map<String, Object> buttonInfo = new HashMap<>(16);
+                controlData.sendName = Y9Util.genCustomStr(controlData.sendName, buttonName);
+                controlData.sendKey = Y9Util.genCustomStr(controlData.sendKey, buttonCustomId);
+                buttonInfo.put(ItemConsts.SENDNAME_KEY, buttonName);
+                buttonInfo.put(ItemConsts.SENDKEY_KEY, buttonCustomId);
+                controlData.sendMap.add(buttonInfo);
+            } else {
+                for (String roleId : roleIds) {
+                    boolean hasRole = positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
+                    if (hasRole) {
+                        Map<String, Object> buttonInfo = new HashMap<>(16);
+                        controlData.sendName = Y9Util.genCustomStr(controlData.sendName, buttonName);
+                        controlData.sendKey = Y9Util.genCustomStr(controlData.sendKey, buttonCustomId);
+                        buttonInfo.put(ItemConsts.SENDNAME_KEY, buttonName);
+                        buttonInfo.put(ItemConsts.SENDKEY_KEY, buttonCustomId);
+                        controlData.sendMap.add(buttonInfo);
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 处理重定向按钮逻辑
+     */
+    private void handleRepositionButton(ButtonControlData controlData, String processDefinitionId, String tenantId) {
+        List<TargetModel> taskNodes = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+        for (TargetModel node : taskNodes) {
+            // 流程不显示在重定向按钮下面
+            if (!"流程".equals(node.getTaskDefName())) {
+                controlData.repositionName = Y9Util.genCustomStr(controlData.repositionName, node.getTaskDefName());
+                controlData.repositionKey = Y9Util.genCustomStr(controlData.repositionKey, node.getTaskDefKey());
+                Map<String, Object> repositionInfo = new HashMap<>(16);
+                repositionInfo.put("repositionName", node.getTaskDefName());
+                repositionInfo.put("repositionKey", node.getTaskDefKey());
+                controlData.repositionMap.add(repositionInfo);
+            }
+        }
+        ObjectMapper mapper = new ObjectMapper();
+        try {
+            controlData.taskDefNameJson = mapper.writeValueAsString(controlData.repositionMap);
+        } catch (JsonProcessingException e) {
+            LOGGER.error("解析重定向按钮失败！", e);
+            controlData.taskDefNameJson = "[]";
+        }
     }
 
     @Override
@@ -1448,53 +1666,97 @@ public class DocumentServiceImpl implements DocumentService {
         String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
             taskDefKey = model.getTaskDefKey();
         List<ItemButtonModel> buttonList = buttonService.showButton4Add(itemId);
-        List<ItemButtonBind> bibList;
-        /*
-         * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
-         */
+        // 处理保存按钮相关的自定义普通按钮
         if (buttonList.contains(ItemButton.baoCun)) {
-            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId,
-                taskDefKey);
-            for (ItemButtonBind bind : bibList) {
-                String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                List<String> roleIds = bind.getRoleIds();
-                if (roleIds.isEmpty() || roleIds.stream()
-                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
-                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON));
-                }
-            }
+            handleCommonButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
-        /*
-         * 假如发送按钮显示的话，去获取发送下面的路由
-         */
+        // 处理发送按钮相关的路由和自定义按钮
         if (buttonList.contains(ItemButton.faSong)) {
-            /*
-             * 添加发送下面的路由
-             */
-            List<TargetModel> routeToTasks =
-                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
-            for (TargetModel m : routeToTasks) {
-                // 退回、路由网关不显示在发送下面
-                if (!"退回".equals(m.getTaskDefName()) && !ItemConsts.EXCLUSIVE_GATEWAY_KEY.equals(m.getTaskDefName())) {
-                    buttonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND));
-                }
-            }
-            /*
-             * 添加自定义按钮到发送
-             */
-            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND, processDefinitionId,
-                taskDefKey);
-            for (ItemButtonBind bind : bibList) {
-                List<String> roleIds = bind.getRoleIds();
-                String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                if (roleIds.isEmpty() || roleIds.stream()
-                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
-                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND));
-                }
-            }
+            handleSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
         model.setButtonList(buttonList);
         return model;
+    }
+
+    /**
+     * 处理保存按钮相关的自定义普通按钮
+     */
+    private void handleCommonButtons(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
+        String taskDefKey, String tenantId, String orgUnitId) {
+        List<ItemButtonBind> commonButtons =
+            buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId, taskDefKey);
+        for (ItemButtonBind bind : commonButtons) {
+            String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
+            List<String> roleIds = bind.getRoleIds();
+            // 检查用户是否有权限访问该按钮
+            if (hasButtonPermission(roleIds, tenantId, orgUnitId)) {
+                buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON));
+            }
+        }
+    }
+
+    /**
+     * 处理发送按钮相关的路由和自定义按钮
+     */
+    private void handleSendButtons(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
+        String taskDefKey, String tenantId, String orgUnitId) {
+        // 添加发送下面的路由
+        addSendRoutes(buttonList, processDefinitionId, taskDefKey, tenantId);
+        // 添加自定义按钮到发送
+        addCustomSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
+    }
+
+    /**
+     * 添加发送路由按钮
+     */
+    private void addSendRoutes(List<ItemButtonModel> buttonList, String processDefinitionId, String taskDefKey,
+        String tenantId) {
+        List<TargetModel> routeToTasks =
+            processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
+        for (TargetModel target : routeToTasks) {
+            // 退回、路由网关不显示在发送下面
+            if (!"退回".equals(target.getTaskDefName())
+                && !ItemConsts.EXCLUSIVE_GATEWAY_KEY.equals(target.getTaskDefName())) {
+                buttonList
+                    .add(new ItemButtonModel(target.getTaskDefKey(), target.getTaskDefName(), ItemButtonTypeEnum.SEND));
+            }
+        }
+    }
+
+    /**
+     * 添加自定义发送按钮
+     */
+    private void addCustomSendButtons(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
+        String taskDefKey, String tenantId, String orgUnitId) {
+        List<ItemButtonBind> sendButtons =
+            buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND, processDefinitionId, taskDefKey);
+        for (ItemButtonBind bind : sendButtons) {
+            List<String> roleIds = bind.getRoleIds();
+            String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
+            // 检查用户是否有权限访问该按钮
+            if (hasButtonPermission(roleIds, tenantId, orgUnitId)) {
+                buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND));
+            }
+        }
+    }
+
+    /**
+     * 检查用户是否有按钮访问权限
+     */
+    private boolean hasButtonPermission(List<String> roleIds, String tenantId, String orgUnitId) {
+        // 如果角色ID列表为空，表示无权限限制
+        if (roleIds.isEmpty()) {
+            return true;
+        }
+        // 检查用户是否具有任一角色权限
+        return roleIds.stream().anyMatch(roleId -> {
+            try {
+                return positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData();
+            } catch (Exception e) {
+                LOGGER.error("检查角色权限失败: roleId={}, orgUnitId={}", roleId, orgUnitId, e);
+                return false;
+            }
+        });
     }
 
     @Override
@@ -1503,53 +1765,150 @@ public class DocumentServiceImpl implements DocumentService {
         String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
             taskDefKey = model.getTaskDefKey();
         List<ItemButtonModel> buttonList = buttonService.showButton4Draft(itemId);
-        List<ItemButtonBind> bibList;
-        /*
-         * 如果显示保存按钮，那么说明是待办，把自定义普通按钮加在保存按钮的前面
-         */
+        // 处理保存按钮相关的自定义普通按钮
         if (buttonList.contains(ItemButton.baoCun)) {
-            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId,
-                taskDefKey);
-            for (ItemButtonBind bind : bibList) {
-                String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                List<String> roleIds = bind.getRoleIds();
-                if (roleIds.isEmpty() || roleIds.stream()
-                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
-                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON));
-                }
-            }
+            handleCommonButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
-        /*
-         * 假如发送按钮显示的话，去获取发送下面的路由
-         */
+        // 处理发送按钮相关的路由和自定义按钮
         if (buttonList.contains(ItemButton.faSong)) {
-            /*
-             * 添加发送下面的路由
-             */
-            List<TargetModel> routeToTasks =
-                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
-            for (TargetModel m : routeToTasks) {
-                // 退回、路由网关不显示在发送下面
-                if (!"退回".equals(m.getTaskDefName()) && !ItemConsts.EXCLUSIVE_GATEWAY_KEY.equals(m.getTaskDefName())) {
-                    buttonList.add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND));
-                }
-            }
-            /*
-             * 添加自定义按钮到发送
-             */
-            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND, processDefinitionId,
-                taskDefKey);
-            for (ItemButtonBind bind : bibList) {
-                List<String> roleIds = bind.getRoleIds();
-                String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
-                if (roleIds.isEmpty() || roleIds.stream()
-                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
-                    buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND));
-                }
-            }
+            handleSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
         model.setButtonList(buttonList);
         return model;
+    }
+
+    @Override
+    public DocumentDetailModel menuControl4Todo(DocumentDetailModel model) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
+            taskDefKey = model.getTaskDefKey(), taskId = model.getTaskId();
+        List<ItemButtonModel> buttonList = buttonService.showButton4Todo(model);
+        // 处理保存按钮相关的自定义普通按钮
+        if (buttonList.contains(ItemButton.baoCun)) {
+            handleCommonButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
+        }
+        // 处理发送按钮相关的路由和自定义按钮
+        if (buttonList.contains(ItemButton.faSong) && StringUtils.isNotBlank(taskDefKey)) {
+            handleSendButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
+        }
+        // 处理退回按钮
+        if (buttonList.contains(ItemButton.tuiHui)) {
+            handleRollbackButtons(buttonList, taskId, processDefinitionId, taskDefKey, tenantId);
+        }
+        model.setButtonList(buttonList);
+        return model;
+    }
+
+    /**
+     * 处理保存按钮相关的自定义普通按钮（待办场景）
+     */
+    private void handleCommonButtonsForTodo(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
+        String taskDefKey, String tenantId, String orgUnitId) {
+        List<ItemButtonBind> commonButtons =
+            buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId, taskDefKey);
+        commonButtons.stream().filter(bind -> !"发送".equals(bind.getButtonName())).forEach(bind -> {
+            List<String> roleIds = bind.getRoleIds();
+            if (roleIds.isEmpty() || roleIds.stream()
+                .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
+                buttonList.add(
+                    new ItemButtonModel(bind.getButtonCustomId(), bind.getButtonName(), ItemButtonTypeEnum.COMMON));
+            }
+        });
+    }
+
+    /**
+     * 处理发送按钮相关的路由和自定义按钮（待办场景）
+     */
+    private void handleSendButtonsForTodo(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
+        String taskDefKey, String tenantId, String orgUnitId) {
+        // 检查是否有自定义"发送"按钮
+        AtomicBoolean haveSendButton = new AtomicBoolean(false);
+        List<ItemButtonBind> commonButtons =
+            buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId, taskDefKey);
+        commonButtons.stream().filter(bib -> "发送".equals(bib.getButtonName())).forEach(bib -> {
+            List<String> roleIds = bib.getRoleIds();
+            if (roleIds.isEmpty() || roleIds.stream()
+                .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
+                buttonList
+                    .add(new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(), ItemButtonTypeEnum.COMMON));
+                haveSendButton.set(true);
+            }
+        });
+        // 如果没有自定义发送按钮，则添加默认发送按钮和路由
+        if (!haveSendButton.get()) {
+            addSendRoutes(buttonList, processDefinitionId, taskDefKey, tenantId);
+            addCustomSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
+        }
+    }
+
+    /**
+     * 处理退回按钮
+     */
+    private void handleRollbackButtons(List<ItemButtonModel> buttonList, String taskId, String processDefinitionId,
+        String taskDefKey, String tenantId) {
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        Boolean isSub = processDefinitionApi.isSubProcessChildNode(tenantId, processDefinitionId, taskDefKey).getData();
+        List<HistoricTaskInstanceModel> results =
+            historictaskApi.getByProcessInstanceId(tenantId, task.getProcessInstanceId(), "").getData();
+        if (isSub) {
+            handleSubProcessRollback(buttonList, task, results, tenantId);
+        } else {
+            handleMainProcessRollback(buttonList, task, results, tenantId);
+        }
+    }
+
+    /**
+     * 处理子流程退回按钮
+     */
+    private void handleSubProcessRollback(List<ItemButtonModel> buttonList, TaskModel task,
+        List<HistoricTaskInstanceModel> results, String tenantId) {
+        String executionId = task.getExecutionId();
+        results.stream().filter(r -> r.getExecutionId().equals(executionId) && null != r.getEndTime()).forEach(r -> {
+            String taskName = r.getName() + "({0})";
+            OrgUnit position = null;
+            if (StringUtils.isNotBlank(r.getAssignee())) {
+                position = orgUnitApi.getOrgUnit(tenantId, r.getAssignee()).getData();
+            }
+            taskName = MessageFormat.format(taskName, null == position ? "无" : position.getName());
+            ItemButtonModel itemButtonModel = new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
+                ItemButtonTypeEnum.ROLLBACK, List.of(r.getAssignee()), "", null);
+            if (!buttonList.contains(itemButtonModel)) {
+                buttonList.add(itemButtonModel);
+            }
+        });
+    }
+
+    /**
+     * 处理主流程退回按钮
+     */
+    private void handleMainProcessRollback(List<ItemButtonModel> buttonList, TaskModel task,
+        List<HistoricTaskInstanceModel> results, String tenantId) {
+        List<TargetModel> subNodeList =
+            processDefinitionApi.getSubProcessChildNode(tenantId, task.getProcessDefinitionId()).getData();
+        results.stream()
+            .filter(hisTask -> null != hisTask.getEndTime() && StringUtils.isNotBlank(hisTask.getAssignee()))
+            .forEach(hisTask -> {
+                AtomicBoolean isSubNode = new AtomicBoolean(false);
+                subNodeList.forEach(s -> {
+                    if (s.getTaskDefKey().equals(hisTask.getTaskDefinitionKey())) {
+                        isSubNode.set(true);
+                    }
+                });
+                if (!isSubNode.get()) {
+                    String taskName = hisTask.getName() + "({0})";
+                    List<Person> personList = new ArrayList<>();
+                    if (StringUtils.isNotBlank(hisTask.getAssignee())) {
+                        personList = positionApi.listPersonsByPositionId(tenantId, hisTask.getAssignee()).getData();
+                    }
+                    taskName = MessageFormat.format(taskName,
+                        personList.isEmpty() ? "无" : personList.stream().findFirst().get().getName());
+                    ItemButtonModel itemButtonModel = new ItemButtonModel(hisTask.getTaskDefinitionKey(), taskName,
+                        ItemButtonTypeEnum.ROLLBACK, List.of(hisTask.getAssignee()), "", null);
+                    if (!buttonList.contains(itemButtonModel)) {
+                        buttonList.add(itemButtonModel);
+                    }
+                }
+            });
     }
 
     @Override
@@ -1595,169 +1954,83 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel menuControl4Todo(DocumentDetailModel model) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
-        String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
-            taskDefKey = model.getTaskDefKey(), taskId = model.getTaskId();
-        List<ItemButtonModel> buttonList = buttonService.showButton4Todo(model);
-        List<ItemButtonBind> bibList;
-        if (buttonList.contains(ItemButton.baoCun)) {
-            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId,
-                taskDefKey);
-            bibList.stream().filter(bind -> !"发送".equals(bind.getButtonName())).forEach(bind -> {
-                List<String> roleIds = bind.getRoleIds();
-                if (roleIds.isEmpty() || roleIds.stream()
-                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
-                    buttonList.add(
-                        new ItemButtonModel(bind.getButtonCustomId(), bind.getButtonName(), ItemButtonTypeEnum.COMMON));
-                }
-            });
-        }
-
-        if (buttonList.contains(ItemButton.faSong) && StringUtils.isNotBlank(taskDefKey)) {
-            /*
-             * 假如有自定义“发送”按钮的话,就不显示默认的发送按钮
-             */
-            AtomicBoolean haveSendButton = new AtomicBoolean(false);
-            bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId,
-                taskDefKey);
-            bibList.stream().filter(bib -> "发送".equals(bib.getButtonName())).forEach(bib -> {
-                List<String> roleIds = bib.getRoleIds();
-                if (roleIds.isEmpty() || roleIds.stream()
-                    .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
-                    buttonList.add(
-                        new ItemButtonModel(bib.getButtonCustomId(), bib.getButtonName(), ItemButtonTypeEnum.COMMON));
-                    haveSendButton.set(true);
-                }
-            });
-            if (!haveSendButton.get()) {
-                /*
-                 * 添加发送下面的路由
-                 */
-                List<TargetModel> routeToTasks =
-                    processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
-                routeToTasks.stream()
-                    .filter(m -> !"退回".equals(m.getTaskDefName())
-                        && !ItemConsts.EXCLUSIVE_GATEWAY_KEY.equals(m.getTaskDefName()))
-                    .forEach(m -> buttonList
-                        .add(new ItemButtonModel(m.getTaskDefKey(), m.getTaskDefName(), ItemButtonTypeEnum.SEND)));
-                /*
-                 * 添加自定义按钮到发送
-                 */
-                bibList = buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND, processDefinitionId,
-                    taskDefKey);
-                bibList.forEach(bind -> {
-                    List<String> roleIds = bind.getRoleIds();
-                    if (roleIds.isEmpty() || roleIds.stream()
-                        .anyMatch(roleId -> positionRoleApi.hasRole(tenantId, roleId, orgUnitId).getData())) {
-                        buttonList.add(new ItemButtonModel(bind.getButtonCustomId(), bind.getButtonName(),
-                            ItemButtonTypeEnum.SEND));
-                    }
-                });
-            }
-        }
-        if (buttonList.contains(ItemButton.tuiHui)) {
-            TaskModel task = taskApi.findById(tenantId, taskId).getData();
-            Boolean isSub =
-                processDefinitionApi.isSubProcessChildNode(tenantId, processDefinitionId, taskDefKey).getData();
-            List<HistoricTaskInstanceModel> results =
-                historictaskApi.getByProcessInstanceId(tenantId, task.getProcessInstanceId(), "").getData();
-            if (isSub) {
-                String executionId = task.getExecutionId();
-                results.stream()
-                    .filter(r -> r.getExecutionId().equals(executionId) && null != r.getEndTime())
-                    .forEach(r -> {
-                        String taskName = r.getName() + "({0})";
-                        OrgUnit position = null;
-                        if (StringUtils.isNotBlank(r.getAssignee())) {
-                            position = orgUnitApi.getOrgUnit(tenantId, r.getAssignee()).getData();
-                        }
-                        taskName = MessageFormat.format(taskName, null == position ? "无" : position.getName());
-                        ItemButtonModel itemButtonModel = new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
-                            ItemButtonTypeEnum.ROLLBACK, List.of(r.getAssignee()), "", null);
-                        if (!buttonList.contains(itemButtonModel)) {
-                            buttonList.add(itemButtonModel);
-                        }
-                    });
-            } else {
-                List<TargetModel> subNodeList =
-                    processDefinitionApi.getSubProcessChildNode(tenantId, processDefinitionId).getData();
-                results.stream()
-                    .filter(hisTask -> null != hisTask.getEndTime() && StringUtils.isNotBlank(hisTask.getAssignee()))
-                    .forEach(hisTask -> {
-                        AtomicBoolean isSubNode = new AtomicBoolean(false);
-                        subNodeList.forEach(s -> {
-                            if (s.getTaskDefKey().equals(hisTask.getTaskDefinitionKey())) {
-                                isSubNode.set(true);
-                            }
-                        });
-                        if (!isSubNode.get()) {
-                            String taskName = hisTask.getName() + "({0})";
-                            List<Person> personList = new ArrayList<>();
-                            if (StringUtils.isNotBlank(hisTask.getAssignee())) {
-                                personList =
-                                    positionApi.listPersonsByPositionId(tenantId, hisTask.getAssignee()).getData();
-                            }
-                            taskName = MessageFormat.format(taskName,
-                                personList.isEmpty() ? "无" : personList.stream().findFirst().get().getName());
-                            ItemButtonModel itemButtonModel = new ItemButtonModel(hisTask.getTaskDefinitionKey(),
-                                taskName, ItemButtonTypeEnum.ROLLBACK, List.of(hisTask.getAssignee()), "", null);
-                            if (!buttonList.contains(itemButtonModel)) {
-                                buttonList.add(itemButtonModel);
-                            }
-                        }
-                    });
-
-            }
-        }
-        model.setButtonList(buttonList);
-        return model;
-    }
-
-    @Override
     public List<String> parseUserChoice(String userChoice) {
         String users = "";
         String tenantId = Y9LoginUserHolder.getTenantId();
-        if (StringUtils.isNotBlank(userChoice)) {
-            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
-            for (String s : userChoices) {
-                String[] s2 = s.split(SysVariables.COLON);
-                int principalType = ItemPermissionEnum.POSITION.getValue();
-                String userIdTemp = s;
-                if (s2.length == 2) {
-                    principalType = Integer.parseInt(s2[0]);
-                    userIdTemp = s2[1];
-                }
-                if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userIdTemp).getData();
-                    if (null == orgUnit) {
-                        continue;
-                    }
-                    users = addUserId(users, userIdTemp);
-                } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
-                    List<Position> employeeList = new ArrayList<>();
-                    getAllPosition(employeeList, userIdTemp);
-                    for (Position pTemp : employeeList) {
-                        users = addUserId(users, pTemp.getId());
-                    }
-                } else if (principalType == ItemPermissionEnum.GROUP_CUSTOM.getValue()) {
-                    List<CustomGroupMember> list = customGroupApi
-                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(),
-                            userIdTemp, OrgTypeEnum.POSITION)
-                        .getData();
-                    for (CustomGroupMember pTemp : list) {
-                        OrgUnit orgUnit =
-                            orgUnitApi.getOrgUnitPersonOrPosition(tenantId, pTemp.getMemberId()).getData();
-                        if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
-                            users = addUserId(users, orgUnit.getId());
-                        }
-                    }
-                }
+        if (StringUtils.isBlank(userChoice)) {
+            return new ArrayList<>();
+        }
+        String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
+        for (String choice : userChoices) {
+            String[] parts = choice.split(SysVariables.COLON);
+            int principalType = ItemPermissionEnum.POSITION.getValue();
+            String userId = choice;
+            if (parts.length == 2) {
+                principalType = Integer.parseInt(parts[0]);
+                userId = parts[1];
             }
+            users = processUserChoiceByType(users, tenantId, principalType, userId);
         }
         List<String> result = Y9Util.stringToList(users, SysVariables.SEMICOLON);
         ListUtil.removeDuplicateWithOrder(result);
         return result;
+    }
+
+    /**
+     * 根据用户类型处理用户选择
+     */
+    private String processUserChoiceByType(String users, String tenantId, int principalType, String userId) {
+        switch (ItemPermissionEnum.valueOf(principalType)) {
+            case POSITION:
+                return processPositionUser(users, tenantId, userId);
+            case DEPARTMENT:
+                return processDepartmentUser(users, userId);
+            case GROUP_CUSTOM:
+                return processCustomGroupUser(users, tenantId, userId);
+            default:
+                return users;
+        }
+    }
+
+    /**
+     * 处理岗位类型用户
+     */
+    private String processPositionUser(String users, String tenantId, String userId) {
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        if (orgUnit != null) {
+            users = addUserId(users, userId);
+        }
+        return users;
+    }
+
+    /**
+     * 处理部门类型用户
+     */
+    private String processDepartmentUser(String users, String deptId) {
+        List<Position> positionList = new ArrayList<>();
+        getAllPosition(positionList, deptId);
+        for (Position position : positionList) {
+            users = addUserId(users, position.getId());
+        }
+        return users;
+    }
+
+    /**
+     * 处理自定义组类型用户
+     */
+    private String processCustomGroupUser(String users, String tenantId, String groupId) {
+        List<CustomGroupMember> members =
+            customGroupApi
+                .listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(), groupId,
+                    OrgTypeEnum.POSITION)
+                .getData();
+        for (CustomGroupMember member : members) {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, member.getMemberId()).getData();
+            if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
+                users = addUserId(users, orgUnit.getId());
+            }
+        }
+        return users;
     }
 
     public Y9Result<TargetModel> parserRouteToTaskId(String itemId, String processSerialNumber,
@@ -1767,57 +2040,113 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             List<TargetModel> targetNodes =
                 processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
-            if (targetNodes.isEmpty()) {
+            // 检查目标节点是否存在
+            if (targetNodes == null || targetNodes.isEmpty()) {
                 return Y9Result.failure("目标路由不存在");
             }
-            if (1 == targetNodes.size()) {
+            // 如果只有一个目标节点，直接返回
+            if (targetNodes.size() == 1) {
                 result.setData(targetNodes.get(0));
                 result.setSuccess(true);
+                result.setMsg("解析目标路由成功");
                 return result;
             }
+            // 获取表单绑定信息
             List<Y9FormItemBind> binds =
                 y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
+            if (binds == null || binds.isEmpty()) {
+                return Y9Result.failure("未找到表单绑定信息");
+            }
+            // 获取表单变量数据
             Map<String, Object> variables =
                 y9FormService.getFormData4Var(binds.get(0).getFormId(), processSerialNumber);
-            List<TargetModel> targetNodesTemp = new ArrayList<>();
-            for (TargetModel targetNode : targetNodes) {
-                for (String columnName : variables.keySet()) {
-                    String str = StringUtils.replace(variables.get(columnName).toString(), ".", "");
-                    // 是数值
-                    if (StringUtils.isNumeric(str)) {
-                        if (variables.get(columnName).toString().contains(".")) {
-                            LOGGER.info("*************************Double:{}", variables.get(columnName).toString());
-                            variables.put(columnName, Double.valueOf(variables.get(columnName).toString()));
-                        } else {
-                            LOGGER.info("*************************Integer:{}", variables.get(columnName).toString());
-                            variables.put(columnName, Integer.parseInt(variables.get(columnName).toString()));
-                        }
-                    }
-                }
-                LOGGER.info("*************************Y9JsonUtil:{}", Y9JsonUtil.writeValueAsString(variables));
-                boolean b =
-                    conditionParserApi.parser(tenantId, targetNode.getConditionExpression(), variables).getData();
-                if (b) {
-                    targetNodesTemp.add(targetNode);
-                }
+            if (variables == null) {
+                return Y9Result.failure("获取表单数据失败");
             }
-            if (targetNodesTemp.isEmpty()) {
-                result.setMsg("未找到符合要求的目标路由");
-                return result;
-            }
-            if (targetNodesTemp.size() > 1) {
-                result.setMsg("符合要求的目标路由过多");
-                return result;
-            }
-            if (StringUtils.isNotBlank(taskId)) {
-                variableApi.setVariables(tenantId, taskId, variables);
-            }
-            result.setData(targetNodesTemp.get(0));
-            result.setMsg("解析目标路由成功");
-            result.setSuccess(true);
+            // 处理数值类型的变量
+            processNumericVariables(variables);
+            LOGGER.info("表单变量数据: {}", Y9JsonUtil.writeValueAsString(variables));
+            // 根据条件表达式筛选符合条件的目标节点
+            List<TargetModel> matchedTargetNodes = filterTargetNodesByCondition(tenantId, targetNodes, variables);
+            // 处理匹配结果
+            return handleMatchedTargetNodes(result, matchedTargetNodes, tenantId, taskId, variables);
+
         } catch (Exception e) {
             LOGGER.error("解析目标路由失败！", e);
+            return Y9Result.failure("解析目标路由时发生异常: " + e.getMessage());
         }
+    }
+
+    /**
+     * 处理数值类型的变量
+     */
+    private void processNumericVariables(Map<String, Object> variables) {
+        for (String columnName : variables.keySet()) {
+            Object value = variables.get(columnName);
+            if (value != null) {
+                String str = StringUtils.replace(value.toString(), ".", "");
+                // 判断是否为数值
+                if (StringUtils.isNumeric(str)) {
+                    try {
+                        if (value.toString().contains(".")) {
+                            LOGGER.info("处理Double类型变量: {}", value);
+                            variables.put(columnName, Double.valueOf(value.toString()));
+                        } else {
+                            LOGGER.info("处理Integer类型变量: {}", value);
+                            variables.put(columnName, Integer.parseInt(value.toString()));
+                        }
+                    } catch (NumberFormatException e) {
+                        LOGGER.warn("数值转换失败: columnName={}, value={}", columnName, value);
+                    }
+                }
+            }
+        }
+    }
+
+    /**
+     * 根据条件表达式筛选符合条件的目标节点
+     */
+    private List<TargetModel> filterTargetNodesByCondition(String tenantId, List<TargetModel> targetNodes,
+        Map<String, Object> variables) {
+        List<TargetModel> matchedTargetNodes = new ArrayList<>();
+        for (TargetModel targetNode : targetNodes) {
+            try {
+                boolean matches =
+                    conditionParserApi.parser(tenantId, targetNode.getConditionExpression(), variables).getData();
+                if (matches) {
+                    matchedTargetNodes.add(targetNode);
+                }
+            } catch (Exception e) {
+                LOGGER.error("条件表达式解析失败: conditionExpression={}", targetNode.getConditionExpression(), e);
+            }
+        }
+        return matchedTargetNodes;
+    }
+
+    /**
+     * 处理匹配到的目标节点
+     */
+    private Y9Result<TargetModel> handleMatchedTargetNodes(Y9Result<TargetModel> result,
+        List<TargetModel> matchedTargetNodes, String tenantId, String taskId, Map<String, Object> variables) {
+        if (matchedTargetNodes.isEmpty()) {
+            result.setMsg("未找到符合要求的目标路由");
+            return result;
+        }
+        if (matchedTargetNodes.size() > 1) {
+            result.setMsg("符合要求的目标路由过多");
+            return result;
+        }
+        // 设置流程变量
+        if (StringUtils.isNotBlank(taskId)) {
+            try {
+                variableApi.setVariables(tenantId, taskId, variables);
+            } catch (Exception e) {
+                LOGGER.error("设置流程变量失败: taskId={}", taskId, e);
+            }
+        }
+        result.setData(matchedTargetNodes.get(0));
+        result.setMsg("解析目标路由成功");
+        result.setSuccess(true);
         return result;
     }
 
@@ -1845,108 +2174,68 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Y9Result<String> reposition(String taskId, String userChoice) {
+    public Y9Result<String> saveAndForwarding(String itemId, String processSerialNumber, String processDefinitionKey,
+        String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables) {
         try {
-            // 在一个事务中保存。taskId为空则创建新流程。
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            TaskModel task = taskApi.findById(tenantId, taskId).getData();
-            String processInstanceId = task.getProcessInstanceId();
-            List<String> userAndDeptIdList = new ArrayList<>();
-            userChoice = userChoice.substring(2);
-            userAndDeptIdList.add(userChoice);
-            // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
-            String multiInstance =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getData();
-            Map<String, Object> variables = new HashMap<>(16);
-            variables.put(SysVariables.USER, userChoice);
-            if (SysVariables.PARALLEL.equals(multiInstance)) {
-                List<TaskModel> taskNextList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                // 查找未打开过的件，将未打开过的件重定位
-                for (TaskModel taskNext : taskNextList) {
-                    if (StringUtils.isBlank(taskNext.getFormKey()) || taskNext.getFormKey().equals("1")) {
-                        taskId = taskNext.getId();
-                        break;
-                    }
-                }
-                for (TaskModel taskNext : taskNextList) {
-                    if (!(taskId.equals(taskNext.getId()))) {
-                        // 如果任务办理人未打开过文件，重定位时，给该任务加个任务变量，让历程无该办件人记录
-                        if (StringUtils.isBlank(taskNext.getFormKey()) || taskNext.getFormKey().equals("1")) {
-                            Map<String, Object> val = new HashMap<>();
-                            val.put("val", SysVariables.REPOSITION);
-                            variableApi.setVariableLocal(tenantId, taskNext.getId(), SysVariables.REPOSITION, val);
-                            taskApi.complete(tenantId, taskNext.getId());
-                            continue;
-                        }
-                        // 如果打开过文件，重定位时，办结办件人的任务，让历程有该办件人记录
-                        taskApi.complete(tenantId, taskNext.getId());
-                    }
-                }
-                TaskModel task1 = taskApi.findById(tenantId, taskId).getData();
-
-                task1.setAssignee(userChoice);
-                taskApi.saveTask(tenantId, task1);
-                // 重定位后设置新的主办人
-                Map<String, Object> val = new HashMap<>();
-                val.put("val", userChoice.split(SysVariables.COLON)[0]);
-                variableApi.setVariableLocal(tenantId, task1.getId(), SysVariables.PARALLEL_SPONSOR, val);
-            } else if (SysVariables.SEQUENTIAL.equals(multiInstance)) {
-                // 串行
-                task.setAssignee(userChoice);
-                taskApi.saveTask(tenantId, task);
-            } else {// 其他
-                task.setAssignee(userChoice);
-                taskApi.saveTask(tenantId, task);
+            // 参数验证
+            if (StringUtils.isBlank(itemId) || StringUtils.isBlank(processSerialNumber)
+                || StringUtils.isBlank(processDefinitionKey) || StringUtils.isBlank(userChoice)) {
+                return Y9Result.failure("必要参数不能为空");
             }
-            return Y9Result.successMsg("重定位成功");
+            // 解析用户选择
+            List<String> userList = new ArrayList<>(parseUserChoice(userChoice));
+            int num = userList.size();
+            // 验证用户数量
+            if (num > 100) {
+                return Y9Result.failure("发送人数过多");
+            }
+            if (userList.isEmpty()) {
+                return Y9Result.failure("未匹配到发送人");
+            }
+            // 启动流程
+            StartProcessResultModel model = startProcess(itemId, processSerialNumber, processDefinitionKey);
+            if (model == null || StringUtils.isBlank(model.getTaskId())) {
+                return Y9Result.failure("流程启动失败");
+            }
+            String taskId = model.getTaskId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            // 设置流程变量
+            if (variables != null && !variables.isEmpty()) {
+                variableApi.setVariables(tenantId, taskId, variables);
+                handleParallelSubprocess(variables, tenantId, model, routeToTaskId, userList);
+            }
+            // 执行发送操作
+            return start4Forwarding(taskId, routeToTaskId, sponsorGuid, userList);
         } catch (Exception e) {
-            LOGGER.error("重定位失败！", e);
-            return Y9Result.failure("重定位失败！");
+            LOGGER.error("保存并发送流程失败: itemId={}, processSerialNumber={}", itemId, processSerialNumber, e);
+            return Y9Result.failure("操作失败: " + e.getMessage());
         }
     }
 
-    /*
-     * Description:
-     *
-     * @param itemId
-     * @param processSerialNumber
-     * @param processDefinitionKey
-     * @param userChoice
-     * @param sponsorGuid
-     * @param routeToTaskId
-     * @param variables
-     * @return
+    /**
+     * 处理并行子流程逻辑
      */
-    @Override
-    public Y9Result<String> saveAndForwarding(String itemId, String processSerialNumber, String processDefinitionKey,
-        String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables) {
-        List<String> userList = new ArrayList<>(parseUserChoice(userChoice));
-        int num = userList.size();
-        boolean tooMuch = num > 100;
-        if (tooMuch) {
-            return Y9Result.failure("发送人数过多");
-        }
-        StartProcessResultModel model = startProcess(itemId, processSerialNumber, processDefinitionKey);
-        String taskId = model.getTaskId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        if (!variables.isEmpty()) {
-            variableApi.setVariables(tenantId, taskId, variables);
-            if (variables.get(ItemConsts.SUBPROCESSNUM_KEY) != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
+    private void handleParallelSubprocess(Map<String, Object> variables, String tenantId, StartProcessResultModel model,
+        String routeToTaskId, List<String> userList) {
+        Object subprocessNumObj = variables.get(ItemConsts.SUBPROCESSNUM_KEY);
+        if (subprocessNumObj != null && !userList.isEmpty()) {
+            try {
                 String type =
                     processDefinitionApi.getNodeType(tenantId, model.getProcessDefinitionId(), routeToTaskId).getData();
-                if (SysVariables.PARALLEL.equals(type)) {// 并行节点才执行
-                    String userId = userList.get(0);
-                    int subProcessNum = Integer.parseInt(variables.get(ItemConsts.SUBPROCESSNUM_KEY).toString());
+                if (SysVariables.PARALLEL.equals(type)) {
+                    int subProcessNum = Integer.parseInt(subprocessNumObj.toString());
                     if (subProcessNum > 1 && userList.size() == 1) {
-                        for (int i = 1; i < subProcessNum; i++) {
+                        String userId = userList.get(0);
+                        // 补充并行任务用户，同时避免超过人数限制
+                        for (int i = 1; i < subProcessNum && userList.size() < 100; i++) {
                             userList.add(userId);
                         }
                     }
                 }
+            } catch (Exception e) {
+                LOGGER.warn("处理并行子流程失败", e);
             }
         }
-        return start4Forwarding(taskId, routeToTaskId, sponsorGuid, userList);
     }
 
     @Override
@@ -2009,90 +2298,115 @@ public class DocumentServiceImpl implements DocumentService {
         return Y9Result.failure("提交失败！");
     }
 
-    @Override
     public SignTaskConfigModel signTaskConfig(String itemId, String processDefinitionId, String taskDefinitionKey,
         String processSerialNumber) {
         SignTaskConfigModel model = new SignTaskConfigModel();
+        model.setSignTask(false);
+        model.setUserChoice("");
+        model.setOnePerson(false);
         try {
-            // signTask为true,则直接发送
-            model.setSignTask(false);
-            model.setUserChoice("");
-            model.setOnePerson(false);
-            boolean searchPerson = true;
             String tenantId = Y9LoginUserHolder.getTenantId();
             String multiInstance =
                 processDefinitionApi.getNodeType(tenantId, processDefinitionId, taskDefinitionKey).getData();
-            if (SysVariables.COMMON.equals(multiInstance)) {
-                ItemTaskConf itemTaskConf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
-                    processDefinitionId, taskDefinitionKey);
-                ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-                // 判断是否是抢占式签收任务
-                if (itemTaskConf != null && itemTaskConf.getSignTask()) {
-                    model.setSignTask(true);
-                    if (processParam != null && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
-                        List<HistoricTaskInstanceModel> hisTaskList =
-                            historictaskApi
-                                .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId,
-                                    processParam.getProcessInstanceId(), "")
-                                .getData();
-                        for (HistoricTaskInstanceModel hisTask : hisTaskList) {
-                            // 获取相同任务
-                            if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)
-                                && StringUtils.isNotBlank(hisTask.getAssignee())) {
-                                searchPerson = false;
-                                model.setUserChoice("6:" + hisTask.getAssignee());
-                                break;
-                            }
-                        }
-                    }
-                    if (searchPerson) {
-                        List<OrgUnit> orgUnitList = getUserChoice(itemId, processDefinitionId, taskDefinitionKey,
-                            processParam != null ? processParam.getProcessInstanceId() : "");
-                        if (orgUnitList.isEmpty()) {
-                            model.setSignTask(false);
-                        } else {
-                            String userChoice = "";
-                            for (OrgUnit orgUnit : orgUnitList) {
-                                int type = 0;
-                                if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                                    type = 2;
-                                } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                                    type = 6;
-                                }
-                                if (StringUtils.isEmpty(userChoice)) {
-                                    userChoice = type + ":" + orgUnit.getId();
-                                } else {
-                                    userChoice += ";" + type + ":" + orgUnit.getId();
-                                }
-                            }
-                            model.setUserChoice(userChoice);
-                        }
-                    }
-                } else {// signTask为false且onePerson为true则直接发送
-                    List<OrgUnit> orgUnitList = getUserChoice(itemId, processDefinitionId, taskDefinitionKey,
-                        processParam != null ? processParam.getProcessInstanceId() : "");
-                    // 只有一个人，则直接返回人员发送
-                    if (orgUnitList.size() == 1 && orgUnitList.get(0).getOrgType().equals(OrgTypeEnum.POSITION)) {
-                        model.setOnePerson(true);
-                        model.setUserChoice("6:" + orgUnitList.get(0).getId());
-                    }
-                }
+            // 如果不是COMMON类型，直接返回默认配置
+            if (!SysVariables.COMMON.equals(multiInstance)) {
+                return model;
+            }
+            ItemTaskConf itemTaskConf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+                processDefinitionId, taskDefinitionKey);
+            ProcessParam processParam = null;
+            if (StringUtils.isNotBlank(processSerialNumber)) {
+                processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+            }
+            // 处理签收任务逻辑
+            if (itemTaskConf != null && itemTaskConf.getSignTask()) {
+                return handleSignTask(model, processParam, itemId, processDefinitionId, taskDefinitionKey, tenantId);
+            } else {
+                // 处理非签收任务逻辑
+                return handleNonSignTask(model, itemId, processDefinitionId, taskDefinitionKey, processParam);
             }
         } catch (Exception e) {
-            LOGGER.error("获取失败！", e);
+            LOGGER.error("获取签收任务配置失败！", e);
+            return model;
+        }
+    }
+
+    /**
+     * 处理签收任务逻辑
+     */
+    private SignTaskConfigModel handleSignTask(SignTaskConfigModel model, ProcessParam processParam, String itemId,
+        String processDefinitionId, String taskDefinitionKey, String tenantId) {
+        model.setSignTask(true);
+        boolean searchPerson = true;
+        // 查找已分配的人员
+        if (processParam != null && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
+            try {
+                List<HistoricTaskInstanceModel> hisTaskList = historictaskApi
+                    .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processParam.getProcessInstanceId(), "")
+                    .getData();
+
+                for (HistoricTaskInstanceModel hisTask : hisTaskList) {
+                    if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)
+                        && StringUtils.isNotBlank(hisTask.getAssignee())) {
+                        searchPerson = false;
+                        model.setUserChoice("6:" + hisTask.getAssignee());
+                        break;
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.warn("查询历史任务失败", e);
+            }
+        }
+        // 如果未找到已分配人员，则从权限配置中获取
+        if (searchPerson) {
+            List<OrgUnit> orgUnitList = getUserChoice(itemId, processDefinitionId, taskDefinitionKey,
+                processParam != null ? processParam.getProcessInstanceId() : "");
+            if (orgUnitList.isEmpty()) {
+                model.setSignTask(false);
+            } else {
+                model.setUserChoice(buildUserChoice(orgUnitList));
+            }
+        }
+
+        return model;
+    }
+
+    /**
+     * 处理非签收任务逻辑
+     */
+    private SignTaskConfigModel handleNonSignTask(SignTaskConfigModel model, String itemId, String processDefinitionId,
+        String taskDefinitionKey, ProcessParam processParam) {
+        List<OrgUnit> orgUnitList = getUserChoice(itemId, processDefinitionId, taskDefinitionKey,
+            processParam != null ? processParam.getProcessInstanceId() : "");
+        // 只有一个人且为岗位时，设置直接发送
+        if (orgUnitList.size() == 1 && orgUnitList.get(0).getOrgType().equals(OrgTypeEnum.POSITION)) {
+            model.setOnePerson(true);
+            model.setUserChoice("6:" + orgUnitList.get(0).getId());
         }
         return model;
     }
 
-    /*
-     * 启动流程发送
-     *
-     * @param taskId
-     * @param routeToTaskId
-     * @param sponsorGuid
-     * @param userList
-     * @return
+    /**
+     * 构建用户选择字符串
      */
+    private String buildUserChoice(List<OrgUnit> orgUnitList) {
+        StringBuilder userChoice = new StringBuilder();
+        for (OrgUnit orgUnit : orgUnitList) {
+            int type = 0;
+            if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
+                type = 2;
+            } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+                type = 6;
+            }
+
+            if (userChoice.length() > 0) {
+                userChoice.append(";");
+            }
+            userChoice.append(type).append(":").append(orgUnit.getId());
+        }
+        return userChoice.toString();
+    }
+
     @Override
     public Y9Result<String> start4Forwarding(String taskId, String routeToTaskId, String sponsorGuid,
         List<String> userList) {
@@ -2134,8 +2448,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
             return Y9Result.success(processInstanceId, "发送成功!");
         } catch (Exception e) {
-            LOGGER.error("公文发送失败！");
-            e.printStackTrace();
+            LOGGER.error("公文发送失败！", e);
             try {
                 final Writer result = new StringWriter();
                 final PrintWriter print = new PrintWriter(result);
@@ -2185,12 +2498,10 @@ public class DocumentServiceImpl implements DocumentService {
                     String str = StringUtils.replace(variables.get(columnName).toString(), ".", "");
                     if (StringUtils.isNumeric(str)) {// 是数值
                         if (variables.get(columnName).toString().contains(".")) {
-                            LOGGER.info(
-                                "*************************startProcess_Double:" + variables.get(columnName).toString());
+                            LOGGER.info("**********startProcess_Double:{}", variables.get(columnName).toString());
                             variables.put(columnName, Double.valueOf(variables.get(columnName).toString()));
                         } else {
-                            LOGGER.info("*************************startProcess_Integer:"
-                                + variables.get(columnName).toString());
+                            LOGGER.info("**********startProcess_Integer:{}", variables.get(columnName).toString());
                             variables.put(columnName, Integer.parseInt(variables.get(columnName).toString()));
                         }
                     }
@@ -2206,13 +2517,10 @@ public class DocumentServiceImpl implements DocumentService {
             processParam.setSended("true");
             // 保存流程信息到ES
             process4SearchService.saveToDataCenter(tenantId, processParam, Y9LoginUserHolder.getOrgUnit());
-
             processParamService.saveOrUpdate(processParam);
-
             // 异步处理数据
             asyncHandleService.startProcessHandle(tenantId, processSerialNumber, task.getId(),
                 task.getProcessInstanceId(), processParam.getSearchTerm());
-
             model = new StartProcessResultModel();
             model.setProcessDefinitionId(task.getProcessDefinitionId());
             model.setProcessInstanceId(task.getProcessInstanceId());
@@ -2340,12 +2648,10 @@ public class DocumentServiceImpl implements DocumentService {
                     String str = StringUtils.replace(variables.get(columnName).toString(), ".", "");
                     if (StringUtils.isNumeric(str)) {// 是数值
                         if (variables.get(columnName).toString().contains(".")) {
-                            LOGGER.info(
-                                "*************************startProcess_Double:" + variables.get(columnName).toString());
+                            LOGGER.info("*********startProcess_Double:{}", variables.get(columnName).toString());
                             variables.put(columnName, Double.valueOf(variables.get(columnName).toString()));
                         } else {
-                            LOGGER.info("*************************startProcess_Integer:"
-                                + variables.get(columnName).toString());
+                            LOGGER.info("*********startProcess_Integer:{}", variables.get(columnName).toString());
                             variables.put(columnName, Integer.parseInt(variables.get(columnName).toString()));
                         }
                     }
@@ -2407,14 +2713,13 @@ public class DocumentServiceImpl implements DocumentService {
             String subProcessStr =
                 variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, ItemConsts.SUBPROCESSNUM_KEY)
                     .getData();
-            if (subProcessStr != null) {// xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
-                if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {// 并行节点才执行
-                    String userChoice = userList.get(0);
-                    int subProcessNum = Integer.parseInt(subProcessStr);
-                    if (subProcessNum > 1 && userList.size() == 1) {
-                        for (int i = 1; i < subProcessNum; i++) {
-                            userList.add(userChoice);
-                        }
+            if (subProcessStr != null && SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {// 并行节点才执行
+                // xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
+                String userChoice = userList.get(0);
+                int subProcessNum = Integer.parseInt(subProcessStr);
+                if (subProcessNum > 1 && userList.size() == 1) {
+                    for (int i = 1; i < subProcessNum; i++) {
+                        userList.add(userChoice);
                     }
                 }
             }
@@ -2426,6 +2731,36 @@ public class DocumentServiceImpl implements DocumentService {
             LOGGER.error("启动流程并提交失败！", e);
         }
         return Y9Result.failure("提交失败！！");
+    }
+
+    /**
+     * 按钮控制数据封装类
+     */
+    private static class ButtonControlData {
+        String menuName = "";
+        String menuKey = "";
+        String sendName = "";
+        String sendKey = "";
+        String repositionName = "";
+        String repositionKey = "";
+        String taskDefNameJson = "";
+        List<Map<String, Object>> sendMap = new ArrayList<>();
+        List<Map<String, Object>> menuMap = new ArrayList<>();
+        List<Map<String, Object>> repositionMap = new ArrayList<>();
+    }
+
+    /**
+     * 流程实例数据封装类
+     */
+    private static class ProcessInstanceData {
+        String processSerialNumber;
+        String processDefinitionId;
+        String taskDefinitionKey;
+        String processDefinitionKey;
+        String activitiUser;
+        String taskId;
+        String itemId;
+        String processInstanceId;
     }
 
 }
