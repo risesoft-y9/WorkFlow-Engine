@@ -746,7 +746,7 @@ public class WorkListServiceImpl implements WorkListService {
             returnList.addAll(getTaskRelated4FuYuan(processSerialNumber, taskRelatedList));
             return returnList;
         } catch (Exception e) {
-            LOGGER.error("processSerialNumber={}", processSerialNumber, e);
+            LOGGER.error("流程序列号processSerialNumber={}", processSerialNumber, e);
         }
         return List.of();
     }
@@ -811,7 +811,7 @@ public class WorkListServiceImpl implements WorkListService {
             taskRelatedList.addAll(getTaskRelated4FuYuan(ardModel.getProcessSerialNumber(), List.of()));
             return taskRelatedList;
         } catch (Exception e) {
-            LOGGER.error("processSerialNumber={}", ardModel.getProcessSerialNumber(), e);
+            LOGGER.error("流程序列号（processSerialNumber）：{}", ardModel.getProcessSerialNumber(), e);
         }
         return List.of();
     }
@@ -846,7 +846,7 @@ public class WorkListServiceImpl implements WorkListService {
             taskRelatedList.addAll(getTaskRelated4FuYuan(ardModel.getProcessSerialNumber(), processRelatedList));
             return taskRelatedList;
         } catch (Exception e) {
-            LOGGER.error("processSerialNumber={}", ardModel.getProcessSerialNumber(), e);
+            LOGGER.error("序列号processSerialNumber={}", ardModel.getProcessSerialNumber(), e);
         }
         return List.of();
     }
@@ -876,7 +876,7 @@ public class WorkListServiceImpl implements WorkListService {
             }
             return taskRelatedList;
         } catch (Exception e) {
-            LOGGER.error("processSerialNumber={}", urgeInfoList.get(0).getProcessSerialNumber(), e);
+            LOGGER.error("processSerialNumber：{}", urgeInfoList.get(0).getProcessSerialNumber(), e);
         }
         return List.of();
     }
