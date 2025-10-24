@@ -60,7 +60,7 @@ public class TrustHostFilter implements Filter {
 
     @Override
     public void destroy() {
-
+        // 空实现 - 该过滤器不需要在销毁时执行特定清理逻辑
     }
 
 }

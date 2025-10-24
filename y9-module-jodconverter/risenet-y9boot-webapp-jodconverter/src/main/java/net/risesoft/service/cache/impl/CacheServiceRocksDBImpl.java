@@ -61,22 +61,27 @@ public class CacheServiceRocksDBImpl implements CacheService {
 
     @Override
     public void initPDFCachePool(Integer capacity) {
-
+        // TODO: 待实现 - 初始化PDF缓存池
+        // 当前使用RocksDB作为缓存存储，初始化逻辑在静态代码块中完成
+        // 如果需要基于capacity参数进行特定初始化，应在此处实现
     }
 
     @Override
     public void initIMGCachePool(Integer capacity) {
-
+        // TODO: 待实现 - 初始化图片缓存池
+        // 当前使用RocksDB作为缓存存储，初始化逻辑在静态代码块中完成
     }
 
     @Override
     public void initPdfImagesCachePool(Integer capacity) {
-
+        // TODO: 待实现 - 初始化PDF图片缓存池
+        // 当前使用RocksDB作为缓存存储，初始化逻辑在静态代码块中完成
     }
 
     @Override
     public void initMediaConvertCachePool(Integer capacity) {
-
+        // TODO: 待实现 - 初始化媒体转换缓存池
+        // 当前使用RocksDB作为缓存存储，初始化逻辑在静态代码块中完成
     }
 
     @Override

@@ -22,6 +22,7 @@ import net.risesoft.entity.Item;
 import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 import net.risesoft.entity.opinion.ItemOpinionFrameRole;
 import net.risesoft.entity.opinion.OpinionFrameOneClickSet;
+import net.risesoft.model.itemadmin.OpinionFrameOneClickSetModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
@@ -30,6 +31,7 @@ import net.risesoft.service.core.ItemService;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * @author qinman
@@ -253,13 +255,16 @@ public class ItemOpinionFrameBindRestController {
     /**
      * 保存一键设置数据
      *
-     * @param opinionFrameOneClickSet
+     * @param opinionFrameOneClickSetModel
      * @return
      */
     @PostMapping(value = "/saveOneClickSet")
-    public Y9Result<Map<String, Object>> saveOneClickSet1(@Validated OpinionFrameOneClickSet opinionFrameOneClickSet) {
+    public Y9Result<Map<String, Object>>
+        saveOneClickSet1(@Validated OpinionFrameOneClickSetModel opinionFrameOneClickSetModel) {
         Map<String, Object> map = new HashMap<>();
         try {
+            OpinionFrameOneClickSet opinionFrameOneClickSet = new OpinionFrameOneClickSet();
+            Y9BeanUtil.copyProperties(opinionFrameOneClickSetModel, opinionFrameOneClickSet);
             map = opinionFrameOneClickSetService.save(opinionFrameOneClickSet);
         } catch (Exception e) {
             LOGGER.error("一键设置失败", e);
