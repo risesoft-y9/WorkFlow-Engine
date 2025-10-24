@@ -40,6 +40,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemInterfaceTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -95,8 +96,8 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                 for (InterfaceParamsModel model : paramsList) {
                     if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE)) {
                         Map<String, Object> tableMap = new HashMap<>();
-                        tableMap.put("tableName", model.getTableName());
-                        tableMap.put("tableType", model.getTableType());
+                        tableMap.put(SysVariables.TABLENAME_KEY, model.getTableName());
+                        tableMap.put(SysVariables.TABLETYPE_KEY, model.getTableType());
                         if (!tableList.contains(tableMap)) {
                             tableList.add(tableMap);
                         }
@@ -106,8 +107,9 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                 String dialect = DbMetaDataUtil.getDatabaseDialectName(database);
                 String guid = "";// 拼接子表主键id
                 for (Map<String, Object> map1 : tableList) {
-                    String tableName = (String)map1.get("tableName");
-                    String tableType = map1.get("tableType") != null ? (String)map1.get("tableType") : "1";
+                    String tableName = (String)map1.get(SysVariables.TABLENAME_KEY);
+                    String tableType = map1.get(SysVariables.TABLETYPE_KEY) != null
+                        ? (String)map1.get(SysVariables.TABLETYPE_KEY) : "1";
                     if (tableType.equals("2")) {// 子表
                         guid = processSerialNumber + "_loopCounter_" + loopCounter;
                         StringBuilder sqlStr = getSqlStr(dialect, tableName);
@@ -120,9 +122,9 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                     }
                     StringBuilder sqlStr = new StringBuilder();
                     switch (dialect) {
-                        case "oracle":
+                        case SysVariables.ORACLE_KEY:
                         case "dm":
-                        case "kingbase":
+                        case SysVariables.KINGBASE_KEY:
                             sqlStr.append("update \"").append(tableName).append("\" set ");
                             break;
                         default:
@@ -204,9 +206,11 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                             || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY)) {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
-                                String tableName = map.get("tableName").toString();
-                                String tableType = map.get("tableType") != null ? map.get("tableType").toString() : "1";
-                                List<Map<String, Object>> paramsList = (List<Map<String, Object>>)map.get("paramsList");
+                                String tableName = map.get(SysVariables.TABLENAME_KEY).toString();
+                                String tableType = map.get(SysVariables.TABLETYPE_KEY) != null
+                                    ? map.get(SysVariables.TABLETYPE_KEY).toString() : "1";
+                                List<Map<String, Object>> paramsList =
+                                    (List<Map<String, Object>>)map.get(SysVariables.PARAMSLIST_KEY);
                                 if (model.getTableName().equals(tableName)) {
                                     for (Map<String, Object> paramMap : paramsList) {
                                         if (paramMap.containsKey(model.getColumnName())) {
@@ -240,8 +244,9 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                         if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS)) {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
-                                String tableName = map.get("tableName").toString();
-                                List<Map<String, Object>> paramsList = (List<Map<String, Object>>)map.get("paramsList");
+                                String tableName = map.get(SysVariables.TABLENAME_KEY).toString();
+                                List<Map<String, Object>> paramsList =
+                                    (List<Map<String, Object>>)map.get(SysVariables.PARAMSLIST_KEY);
                                 if (model.getTableName().equals(tableName)) {
                                     for (Map<String, Object> paramMap : paramsList) {
                                         if (paramMap.containsKey(model.getColumnName())) {
@@ -322,25 +327,26 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
             for (InterfaceParamsModel model : list) {
                 if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
                     Map<String, Object> map = new HashMap<>();
-                    map.put("tableName", model.getTableName());
-                    map.put("tableType", model.getTableType());
-                    map.put("paramsList", new ArrayList<>());
+                    map.put(SysVariables.TABLENAME_KEY, model.getTableName());
+                    map.put(SysVariables.TABLETYPE_KEY, model.getTableType());
+                    map.put(SysVariables.PARAMSLIST_KEY, new ArrayList<>());
                     if (!tableList.contains(map)) {
                         tableList.add(map);
                     }
                 }
             }
             for (Map<String, Object> table : tableList) {
-                String tableName = (String)table.get("tableName");
+                String tableName = (String)table.get(SysVariables.TABLENAME_KEY);
                 DataSource dataSource = Objects.requireNonNull(jdbcTemplate.getDataSource());
                 String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
                 StringBuilder sqlStr = getSqlStr(dialect, tableName);
                 String guid = processSerialNumber;
-                if (table.get("tableType") != null && table.get("tableType").equals("2") && loopCounter != null) {// 子表
+                if (table.get(SysVariables.TABLETYPE_KEY) != null && table.get(SysVariables.TABLETYPE_KEY).equals("2")
+                    && loopCounter != null) {// 子表
                     guid = processSerialNumber + "_loopCounter_" + loopCounter;// 拼接子表主键id
                 }
                 List<Map<String, Object>> res_list = jdbcTemplate.queryForList(sqlStr.toString(), guid);
-                table.put("paramsList", res_list);
+                table.put(SysVariables.PARAMSLIST_KEY, res_list);
             }
             LOGGER.info("*********************请求参数返回结果:listMap={}", Y9JsonUtil.writeValueAsString(tableList));
             return tableList;
@@ -361,9 +367,9 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     private StringBuilder getSqlStr(String dialect, String tableName) {
         StringBuilder sqlStr;
         switch (dialect) {
-            case "oracle":
+            case SysVariables.ORACLE_KEY:
             case "dm":
-            case "kingbase":
+            case SysVariables.KINGBASE_KEY:
                 sqlStr = new StringBuilder(String.format("SELECT * FROM \"%s\" where guid =?", tableName));
                 break;
             case "mysql":
@@ -381,9 +387,9 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         String dialect = DbMetaDataUtil.getDatabaseDialectName(database);
         StringBuilder sqlStr = new StringBuilder();
         switch (dialect) {
-            case "oracle":
+            case SysVariables.ORACLE_KEY:
             case "dm":
-            case "kingbase":
+            case SysVariables.KINGBASE_KEY:
                 sqlStr.append("insert into \"").append(tableName).append("\" (");
                 break;
             default:
@@ -466,9 +472,11 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                             || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY)) {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
-                                String tableName = map.get("tableName").toString();
-                                String tableType = map.get("tableType") != null ? map.get("tableType").toString() : "";
-                                List<Map<String, Object>> paramsList = (List<Map<String, Object>>)map.get("paramsList");
+                                String tableName = map.get(SysVariables.TABLENAME_KEY).toString();
+                                String tableType = map.get(SysVariables.TABLETYPE_KEY) != null
+                                    ? map.get(SysVariables.TABLETYPE_KEY).toString() : "";
+                                List<Map<String, Object>> paramsList =
+                                    (List<Map<String, Object>>)map.get(SysVariables.PARAMSLIST_KEY);
                                 if (model.getTableName().equals(tableName)) {
                                     for (Map<String, Object> paramMap : paramsList) {
                                         if (paramMap.containsKey(model.getColumnName())) {
@@ -502,8 +510,9 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                         if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS)) {
                             String parameterValue = "";
                             for (Map<String, Object> map : list) {
-                                String tableName = map.get("tableName").toString();
-                                List<Map<String, Object>> paramsList = (List<Map<String, Object>>)map.get("paramsList");
+                                String tableName = map.get(SysVariables.TABLENAME_KEY).toString();
+                                List<Map<String, Object>> paramsList =
+                                    (List<Map<String, Object>>)map.get(SysVariables.PARAMSLIST_KEY);
                                 if (model.getTableName().equals(tableName)) {
                                     for (Map<String, Object> paramMap : paramsList) {
                                         if (paramMap.containsKey(model.getColumnName())) {

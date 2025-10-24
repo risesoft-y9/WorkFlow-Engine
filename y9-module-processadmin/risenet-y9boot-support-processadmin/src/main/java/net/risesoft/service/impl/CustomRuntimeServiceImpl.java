@@ -217,7 +217,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
         historyService.createNativeHistoricProcessInstanceQuery()
             .sql(updateSql)
             .parameter("END_TIME_", null)
-            .parameter("processInstanceId", processInstanceId)
+            .parameter(SysVariables.PROCESSINSTANCEID, processInstanceId)
             .singleResult();
     }
 
@@ -246,7 +246,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
                     + year + " T WHERE T.PROC_INST_ID_ = :processInstanceId";
             NamedParameterJdbcTemplate namedJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
             Map<String, Object> paramMap = new HashMap<>();
-            paramMap.put("processInstanceId", processInstanceId);
+            paramMap.put(SysVariables.PROCESSINSTANCEID, processInstanceId);
             namedJdbcTemplate.update(sql, paramMap);
             LOGGER.info("**************复制数据到ACT_RU_EXECUTION成功****************");
         }
@@ -360,13 +360,13 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             String sql00 = "SELECT * FROM ACT_RU_EXECUTION WHERE PROC_INST_ID_ = #{PROC_INST_ID_} AND IS_MI_ROOT_=1";
             Execution miRootExecution = runtimeService.createNativeExecutionQuery()
                 .sql(sql00)
-                .parameter("PROC_INST_ID_", processInstanceId)
+                .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                 .singleResult();
             String sql01 =
                 "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_=#{PROC_INST_ID_} OR EXECUTION_ID_=#{MIROOTEXECUTION_ID_} OR TASK_ID_=#{TASK_ID_}";
             historyService.createNativeHistoricVariableInstanceQuery()
                 .sql(sql01)
-                .parameter("PROC_INST_ID_", processInstanceId)
+                .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                 .parameter("MIROOTEXECUTION_ID_", miRootExecution.getId())
                 .parameter("TASK_ID_", hti.getId())
                 .list();
@@ -375,7 +375,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_=#{PROC_INST_ID_} OR TASK_ID_=#{TASK_ID_}";
             historyService.createNativeHistoricVariableInstanceQuery()
                 .sql(sql01)
-                .parameter("PROC_INST_ID_", processInstanceId)
+                .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                 .parameter("TASK_ID_", hti.getId())
                 .list();
         }
@@ -565,7 +565,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
         historyService.createNativeHistoricProcessInstanceQuery()
             .sql(updateSql)
             .parameter("END_TIME_", new Date())
-            .parameter("processInstanceId", processInstanceId)
+            .parameter(SysVariables.PROCESSINSTANCEID, processInstanceId)
             .singleResult();
     }
 

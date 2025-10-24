@@ -9,6 +9,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.CustomRecycleService;
@@ -28,35 +29,48 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
 
     @Override
     public long getRecycleCountByProcessDefinitionKey(String processDefinitionKey) {
-        return historyService.createHistoricProcessInstanceQuery().processDefinitionKey(processDefinitionKey).deleted()
+        return historyService.createHistoricProcessInstanceQuery()
+            .processDefinitionKey(processDefinitionKey)
+            .deleted()
             .count();
     }
 
     @Override
     public long getRecycleCountBySystemName(String systemName) {
-        return historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(systemName).deleted()
+        return historyService.createHistoricProcessInstanceQuery()
+            .processInstanceBusinessKey(systemName)
+            .deleted()
             .count();
     }
 
     @Override
     public long getRecycleCountByUserIdAndProcessDefinitionKey(String userId, String processDefinitionKey) {
-        return historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
-            .processDefinitionKey(processDefinitionKey).deleted().count();
+        return historyService.createHistoricProcessInstanceQuery()
+            .involvedUser(userId)
+            .processDefinitionKey(processDefinitionKey)
+            .deleted()
+            .count();
     }
 
     @Override
     public long getRecycleCountByUserIdAndSystemName(String userId, String systemName) {
-        return historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
-            .processInstanceBusinessKey(systemName).deleted().count();
+        return historyService.createHistoricProcessInstanceQuery()
+            .involvedUser(userId)
+            .processInstanceBusinessKey(systemName)
+            .deleted()
+            .count();
     }
 
     @Override
     public Y9Page<HistoricProcessInstanceModel> pageRecycleListByProcessDefinitionKey(String processDefinitionKey,
         Integer page, Integer rows) {
         long totalCount = this.getRecycleCountByProcessDefinitionKey(processDefinitionKey);
-        List<HistoricProcessInstance> list =
-            historyService.createHistoricProcessInstanceQuery().processDefinitionKey(processDefinitionKey).deleted()
-                .orderByProcessInstanceEndTime().desc().listPage((page - 1) * rows, rows);
+        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
+            .processDefinitionKey(processDefinitionKey)
+            .deleted()
+            .orderByProcessInstanceEndTime()
+            .desc()
+            .listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
         return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
@@ -66,9 +80,12 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     public Y9Page<HistoricProcessInstanceModel> pageRecycleListBySystemName(String systemName, Integer page,
         Integer rows) {
         long totalCount = this.getRecycleCountBySystemName(systemName);
-        List<HistoricProcessInstance> list =
-            historyService.createHistoricProcessInstanceQuery().processInstanceBusinessKey(systemName).deleted()
-                .orderByProcessInstanceStartTime().desc().listPage((page - 1) * rows, rows);
+        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
+            .processInstanceBusinessKey(systemName)
+            .deleted()
+            .orderByProcessInstanceStartTime()
+            .desc()
+            .listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
         return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
@@ -78,8 +95,12 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     public Y9Page<HistoricProcessInstanceModel> pageRecycleListByUserIdAndProcessDefinitionKey(String userId,
         String processDefinitionKey, Integer page, Integer rows) {
         long totalCount = this.getRecycleCountByProcessDefinitionKey(processDefinitionKey);
-        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
-            .processDefinitionKey(processDefinitionKey).deleted().orderByProcessInstanceStartTime().desc()
+        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
+            .involvedUser(userId)
+            .processDefinitionKey(processDefinitionKey)
+            .deleted()
+            .orderByProcessInstanceStartTime()
+            .desc()
             .listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
@@ -90,8 +111,12 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     public Y9Page<HistoricProcessInstanceModel> pageRecycleListByUserIdAndSystemName(String userId, String systemName,
         Integer page, Integer rows) {
         long totalCount = this.getRecycleCountBySystemName(systemName);
-        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().involvedUser(userId)
-            .processInstanceBusinessKey(systemName).deleted().orderByProcessInstanceStartTime().desc()
+        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
+            .involvedUser(userId)
+            .processInstanceBusinessKey(systemName)
+            .deleted()
+            .orderByProcessInstanceStartTime()
+            .desc()
             .listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
@@ -101,11 +126,18 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Y9Page<HistoricProcessInstanceModel> searchRecycleListByProcessDefinitionKey(String processDefinitionKey,
         String searchTerm, Integer page, Integer rows) {
-        long totalCount = historyService.createHistoricProcessInstanceQuery().deleted()
-            .processDefinitionKey(processDefinitionKey).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
-        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().deleted()
-            .processDefinitionKey(processDefinitionKey).variableValueLike("searchTerm", "%" + searchTerm + "%")
-            .orderByProcessInstanceEndTime().desc().listPage((page - 1) * rows, rows);
+        long totalCount = historyService.createHistoricProcessInstanceQuery()
+            .deleted()
+            .processDefinitionKey(processDefinitionKey)
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
+            .count();
+        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
+            .deleted()
+            .processDefinitionKey(processDefinitionKey)
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
+            .orderByProcessInstanceEndTime()
+            .desc()
+            .listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
         return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
@@ -114,11 +146,18 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Y9Page<HistoricProcessInstanceModel> searchRecycleListBySystemName(String systemName, String searchTerm,
         Integer page, Integer rows) {
-        long totalCount = historyService.createHistoricProcessInstanceQuery().deleted()
-            .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
-        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery().deleted()
-            .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%")
-            .orderByProcessInstanceEndTime().desc().listPage((page - 1) * rows, rows);
+        long totalCount = historyService.createHistoricProcessInstanceQuery()
+            .deleted()
+            .processInstanceBusinessKey(systemName)
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
+            .count();
+        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
+            .deleted()
+            .processInstanceBusinessKey(systemName)
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
+            .orderByProcessInstanceEndTime()
+            .desc()
+            .listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
         return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
@@ -127,12 +166,20 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Y9Page<HistoricProcessInstanceModel> searchRecycleListByUserIdAndProcessDefinitionKey(String userId,
         String processDefinitionKey, String searchTerm, Integer page, Integer rows) {
-        long totalCount = historyService.createHistoricProcessInstanceQuery().deleted().involvedUser(userId)
-            .processDefinitionKey(processDefinitionKey).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
-        List<HistoricProcessInstance> list =
-            historyService.createHistoricProcessInstanceQuery().deleted().involvedUser(userId)
-                .processDefinitionKey(processDefinitionKey).variableValueLike("searchTerm", "%" + searchTerm + "%")
-                .orderByProcessInstanceEndTime().desc().listPage((page - 1) * rows, rows);
+        long totalCount = historyService.createHistoricProcessInstanceQuery()
+            .deleted()
+            .involvedUser(userId)
+            .processDefinitionKey(processDefinitionKey)
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
+            .count();
+        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
+            .deleted()
+            .involvedUser(userId)
+            .processDefinitionKey(processDefinitionKey)
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
+            .orderByProcessInstanceEndTime()
+            .desc()
+            .listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
         return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);
@@ -141,12 +188,20 @@ public class CustomRecycleServiceImpl implements CustomRecycleService {
     @Override
     public Y9Page<HistoricProcessInstanceModel> searchRecycleListByUserIdAndSystemName(String userId, String systemName,
         String searchTerm, Integer page, Integer rows) {
-        long totalCount = historyService.createHistoricProcessInstanceQuery().deleted().involvedUser(userId)
-            .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%").count();
-        List<HistoricProcessInstance> list =
-            historyService.createHistoricProcessInstanceQuery().deleted().involvedUser(userId)
-                .processInstanceBusinessKey(systemName).variableValueLike("searchTerm", "%" + searchTerm + "%")
-                .orderByProcessInstanceEndTime().desc().listPage((page - 1) * rows, rows);
+        long totalCount = historyService.createHistoricProcessInstanceQuery()
+            .deleted()
+            .involvedUser(userId)
+            .processInstanceBusinessKey(systemName)
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
+            .count();
+        List<HistoricProcessInstance> list = historyService.createHistoricProcessInstanceQuery()
+            .deleted()
+            .involvedUser(userId)
+            .processInstanceBusinessKey(systemName)
+            .variableValueLike(SysVariables.SEARCH_TERM, "%" + searchTerm + "%")
+            .orderByProcessInstanceEndTime()
+            .desc()
+            .listPage((page - 1) * rows, rows);
         List<HistoricProcessInstanceModel> modelList =
             FlowableModelConvertUtil.historicProcessInstanceList2ModelList(list);
         return Y9Page.success(page, (int)(totalCount + rows - 1) / rows, totalCount, modelList);

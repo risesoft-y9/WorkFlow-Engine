@@ -56,23 +56,14 @@ import net.risesoft.y9.util.Y9Util;
 public class ProcessInstanceVueController {
 
     protected final HistoryService historyService;
-
     private final RuntimeService runtimeService;
-
     private final OrgUnitApi orgUnitApi;
-
     private final Y9WordApi y9WordApi;
-
     private final AttachmentApi attachmentApi;
-
     private final ProcessParamApi processParamApi;
-
     private final CustomHistoricProcessService customHistoricProcessService;
-
     private final OfficeDoneInfoApi officeDoneInfoApi;
-
     private final CustomIdentityService customIdentityService;
-
     private final CustomTaskService customTaskService;
 
     /**
@@ -244,11 +235,11 @@ public class ProcessInstanceVueController {
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("itembox", listTemp.get(3));
                     }
-                    mapTemp.put("suspended", "--");
+                    mapTemp.put(SysVariables.SUSPENDED_KEY, "--");
                     ProcessInstance processInstance =
                         runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
                     if (processInstance != null) {
-                        mapTemp.put("suspended", processInstance.isSuspended());
+                        mapTemp.put(SysVariables.SUSPENDED_KEY, processInstance.isSuspended());
                     }
                 } catch (Exception e) {
                     LOGGER.error("获取流程实例列表失败processInstanceId:{}, e:{}", processInstanceId, e);
@@ -311,7 +302,7 @@ public class ProcessInstanceVueController {
                         .list()
                         .get(0)
                         .getActivityName());
-                map.put("suspended", processInstance.isSuspended());
+                map.put(SysVariables.SUSPENDED_KEY, processInstance.isSuspended());
                 map.put("startUserName", "无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
                     orgUnit =

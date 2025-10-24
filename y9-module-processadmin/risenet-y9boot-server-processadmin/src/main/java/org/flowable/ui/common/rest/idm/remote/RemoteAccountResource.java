@@ -45,8 +45,8 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping({"/app", "/"})
 public class RemoteAccountResource implements InitializingBean {
 
+    private static final String ADMIN_KEY = "admin";
     protected final Collection<CurrentUserProvider> currentUserProviders;
-
     @Autowired(required = false)
     private RemoteIdmService remoteIdmService;
 
@@ -70,10 +70,10 @@ public class RemoteAccountResource implements InitializingBean {
     @GetMapping(value = "/rest/account", produces = "application/json")
     public UserRepresentation getAccount(Authentication authentication) {
         UserRepresentation userRepresentation = new UserRepresentation();
-        userRepresentation.setFirstName("admin");
-        userRepresentation.setLastName("admin");
-        userRepresentation.setFullName("admin");
-        userRepresentation.setId("admin");
+        userRepresentation.setFirstName(ADMIN_KEY);
+        userRepresentation.setLastName(ADMIN_KEY);
+        userRepresentation.setFullName(ADMIN_KEY);
+        userRepresentation.setId(ADMIN_KEY);
         List<String> pris = new ArrayList<>();
         pris.add(DefaultPrivileges.ACCESS_MODELER);
         pris.add(DefaultPrivileges.ACCESS_IDM);

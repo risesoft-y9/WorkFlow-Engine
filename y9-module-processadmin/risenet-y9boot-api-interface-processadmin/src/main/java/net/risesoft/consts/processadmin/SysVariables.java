@@ -150,4 +150,14 @@ public class SysVariables {
     public static final String LEVEL = "level";// 级别
     public static final String IS_REMINDER = "isReminder";// 是否存在催办
     public static final String TASK_RELATED_LIST = "taskRelatedList";// 是否存在催办
+    public static final String SUSPENDED_KEY = "suspended";
+    public static final String PROCESSINSTANCEID = "processInstanceId";
+    public static final String SEARCH_TERM = "searchTerm";
+    public static final String PROC_INST_ID_KEY = "PROC_INST_ID_";
+    public static final String TARGET_KEY = "target";
+    public static final String TABLENAME_KEY = "tableName";
+    public static final String TABLETYPE_KEY = "tableType";
+    public static final String ORACLE_KEY = "oracle";
+    public static final String KINGBASE_KEY = "kingbase";
+    public static final String PARAMSLIST_KEY = "paramsList";
 }

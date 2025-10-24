@@ -217,14 +217,14 @@ public class VariableVueController {
             if (StringUtils.isBlank(userTemp)) {
                 runtimeService.setVariable(processInstanceId, key, userList);
             } else {
-                return Y9Result.failure(key + "中[" + userTemp + "]对应的人员不存在。");
+                return Y9Result.failure(key + "中[" + userTemp + "]对应的办理人员不存在。");
             }
         } else if (SysVariables.USER.equals(key) || SysVariables.TASK_SENDER_ID.equals(key)) {
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
             if (null != orgUnit && null != orgUnit.getId()) {
                 runtimeService.setVariable(processInstanceId, key, value);
             } else {
-                return Y9Result.failure(key + "[" + value + "]对应的人员不存在。");
+                return Y9Result.failure(key + "[" + value + "]对应的人员数据不存在。");
             }
         } else {
             runtimeService.setVariable(processInstanceId, key, value);
@@ -270,7 +270,7 @@ public class VariableVueController {
             if (StringUtils.isBlank(userTemp)) {
                 customVariableService.setVariableLocal(taskId, key, userList);
             } else {
-                return Y9Result.failure(key + "中[" + userTemp + "]对应的人员不存在。");
+                return Y9Result.failure(key + "中[" + userTemp + "]对应的办理人员数据不存在。");
             }
         } else if (SysVariables.USER.equals(key) || SysVariables.TASK_SENDER_ID.equals(key)) {
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
