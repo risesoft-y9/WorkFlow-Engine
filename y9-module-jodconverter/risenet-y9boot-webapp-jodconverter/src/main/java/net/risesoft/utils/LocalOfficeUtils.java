@@ -69,7 +69,10 @@ public class LocalOfficeUtils {
     }
 
     private static File findOfficeHome(final String executablePath, final String... homePaths) {
-        return Stream.of(homePaths).filter(homePath -> Files.isRegularFile(Paths.get(homePath, executablePath)))
-            .findFirst().map(File::new).orElse(null);
+        return Stream.of(homePaths)
+            .filter(homePath -> Files.isRegularFile(Paths.get(homePath, executablePath)))
+            .findFirst()
+            .map(File::new)
+            .orElse(null);
     }
 }

@@ -28,7 +28,8 @@ public class FlowableLogProperties {
     @Getter
     @AllArgsConstructor
     public enum ReportMethod {
-        API, KAFKA
+        API,
+        KAFKA
     }
 
 }

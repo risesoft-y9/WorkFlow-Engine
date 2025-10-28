@@ -43,15 +43,25 @@ public class RedissonConfig {
     @Bean
     Config config() throws Exception {
         Config config = new Config();
-        config.useSingleServer().setAddress(address).setConnectionMinimumIdleSize(connectionMinimumIdleSize)
-            .setConnectionPoolSize(connectionPoolSize).setDatabase(database).setDnsMonitoring(dnsMonitoring)
+        config.useSingleServer()
+            .setAddress(address)
+            .setConnectionMinimumIdleSize(connectionMinimumIdleSize)
+            .setConnectionPoolSize(connectionPoolSize)
+            .setDatabase(database)
+            .setDnsMonitoring(dnsMonitoring)
             .setDnsMonitoringInterval(dnsMonitoringInterval)
             .setSubscriptionConnectionMinimumIdleSize(subscriptionConnectionMinimumIdleSize)
             .setSubscriptionConnectionPoolSize(subscriptionConnectionPoolSize)
-            .setSubscriptionsPerConnection(subscriptionsPerConnection).setClientName(clientName)
-            .setFailedAttempts(failedAttempts).setRetryAttempts(retryAttempts).setRetryInterval(retryInterval)
-            .setReconnectionTimeout(reconnectionTimeout).setTimeout(timeout).setConnectTimeout(connectTimeout)
-            .setIdleConnectionTimeout(idleConnectionTimeout).setPingTimeout(pingTimeout)
+            .setSubscriptionsPerConnection(subscriptionsPerConnection)
+            .setClientName(clientName)
+            .setFailedAttempts(failedAttempts)
+            .setRetryAttempts(retryAttempts)
+            .setRetryInterval(retryInterval)
+            .setReconnectionTimeout(reconnectionTimeout)
+            .setTimeout(timeout)
+            .setConnectTimeout(connectTimeout)
+            .setIdleConnectionTimeout(idleConnectionTimeout)
+            .setPingTimeout(pingTimeout)
             .setPassword(StringUtils.trimToNull(password));
         Codec codec = (Codec)ClassUtils.forName(getCodec(), ClassUtils.getDefaultClassLoader()).newInstance();
         config.setCodec(codec);

@@ -243,7 +243,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public Integer getOutPutNodeCount(String taskId) {
-        return (int)getSequenceFlow(taskId).stream().filter(e -> !(e.getTargetFlowElement() instanceof EndEvent))
+        return (int)getSequenceFlow(taskId).stream()
+            .filter(e -> !(e.getTargetFlowElement() instanceof EndEvent))
             .count();
     }
 
@@ -295,7 +296,10 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     @Override
     public String getStartNodeKeyByProcessDefinitionKey(String processDefinitionKey) {
         String processDefinitionId = repositoryService.createProcessDefinitionQuery()
-            .processDefinitionKey(processDefinitionKey).latestVersion().singleResult().getId();
+            .processDefinitionKey(processDefinitionKey)
+            .latestVersion()
+            .singleResult()
+            .getId();
         return this.getStartNodeKeyByProcessDefinitionId(processDefinitionId);
     }
 
@@ -303,9 +307,12 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     public Y9Result<List<TargetModel>> getSubProcessChildNode(String processDefinitionId) {
         List<FlowElement> feList = this.getFlowElements(processDefinitionId);
         List<TargetModel> targetNodeList = new ArrayList<>();
-        feList.stream().filter(flowElement -> flowElement instanceof SubProcess)
-            .forEach(flowElement -> ((SubProcess)flowElement).getFlowElements().stream()
-                .filter(fe -> fe instanceof UserTask).forEach(fe -> {
+        feList.stream()
+            .filter(flowElement -> flowElement instanceof SubProcess)
+            .forEach(flowElement -> ((SubProcess)flowElement).getFlowElements()
+                .stream()
+                .filter(fe -> fe instanceof UserTask)
+                .forEach(fe -> {
                     TargetModel targetModel = new TargetModel();
                     targetModel.setTaskDefKey(fe.getId());
                     targetModel.setTaskDefName(fe.getName());
@@ -317,11 +324,11 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     @Override
     public TargetModel getSubProcessParentNode(String processDefinitionId, String taskDefKey) {
         List<FlowElement> feList = this.getFlowElements(processDefinitionId);
-        Optional<FlowElement> first =
-            feList.stream()
-                .filter(flowElement -> flowElement instanceof SubProcess && ((SubProcess)flowElement).getFlowElements()
-                    .stream().anyMatch(subFe -> taskDefKey.equals(subFe.getId()) && subFe instanceof UserTask))
-                .findFirst();
+        Optional<FlowElement> first = feList.stream()
+            .filter(flowElement -> flowElement instanceof SubProcess && ((SubProcess)flowElement).getFlowElements()
+                .stream()
+                .anyMatch(subFe -> taskDefKey.equals(subFe.getId()) && subFe instanceof UserTask))
+            .findFirst();
         return first.map(flowElement -> createTargetModel(flowElement, false)).orElse(null);
     }
 
@@ -335,7 +342,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public Boolean isCallActivity(String processDefinitionId, String taskDefKey) {
-        return this.getFlowElements(processDefinitionId).stream()
+        return this.getFlowElements(processDefinitionId)
+            .stream()
             .anyMatch(flowElement -> taskDefKey.equals(flowElement.getId()) && flowElement instanceof CallActivity);
     }
 
@@ -346,15 +354,18 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
 
     @Override
     public Boolean isSubProcess(String processDefinitionId, String taskDefKey) {
-        return this.getFlowElements(processDefinitionId).stream()
+        return this.getFlowElements(processDefinitionId)
+            .stream()
             .anyMatch(flowElement -> taskDefKey.equals(flowElement.getId()) && flowElement instanceof SubProcess);
     }
 
     @Override
     public Boolean isSubProcessChildNode(String processDefinitionId, String taskDefKey) {
-        return this.getFlowElements(processDefinitionId).stream()
+        return this.getFlowElements(processDefinitionId)
+            .stream()
             .anyMatch(flowElement -> flowElement instanceof SubProcess && (((SubProcess)flowElement).getFlowElements()
-                .stream().anyMatch(subFe -> taskDefKey.equals(subFe.getId()) && subFe instanceof UserTask)));
+                .stream()
+                .anyMatch(subFe -> taskDefKey.equals(subFe.getId()) && subFe instanceof UserTask)));
     }
 
     @Override
@@ -386,11 +397,14 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     public Y9Result<List<TargetModel>> listNodesByProcessDefinitionId(String processDefinitionId) {
         List<TargetModel> list = new ArrayList<>();
         List<FlowElement> feList = this.getFlowElements(processDefinitionId);
-        feList.stream().filter(flowElement -> flowElement instanceof UserTask)
+        feList.stream()
+            .filter(flowElement -> flowElement instanceof UserTask)
             .forEach(flowElement -> list.add(createTargetModel(flowElement, false)));
         feList.stream().filter(flowElement -> flowElement instanceof SubProcess).forEach(subProcess -> {
             list.add(createTargetModel(subProcess, false));
-            ((SubProcess)subProcess).getFlowElements().stream().filter(flowElement -> flowElement instanceof UserTask)
+            ((SubProcess)subProcess).getFlowElements()
+                .stream()
+                .filter(flowElement -> flowElement instanceof UserTask)
                 .forEach(flowElement -> list.add(createTargetModel(flowElement, true)));
         });
         TargetModel targetModel = new TargetModel();
@@ -404,7 +418,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     public Y9Result<List<TargetModel>> listNodesByProcessDefinitionIdOnlyMain(String processDefinitionId) {
         List<TargetModel> list = new ArrayList<>();
         List<FlowElement> feList = this.getFlowElements(processDefinitionId);
-        feList.stream().filter(flowElement -> flowElement instanceof UserTask)
+        feList.stream()
+            .filter(flowElement -> flowElement instanceof UserTask)
             .forEach(flowElement -> list.add(createTargetModel(flowElement, false)));
         return Y9Result.success(list);
     }
@@ -429,7 +444,8 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
                     }
                 } else if (flowElement instanceof ExclusiveGateway) {
                     ExclusiveGateway exclusiveGateway = (ExclusiveGateway)flowElement;
-                    exclusiveGateway.getOutgoingFlows().stream()
+                    exclusiveGateway.getOutgoingFlows()
+                        .stream()
                         .filter(outgoingFlow -> outgoingFlow.getTargetFlowElement() instanceof ParallelGateway)
                         .forEach(outgoingFlow -> {
                             GatewayModel gatewayModel = new GatewayModel();
@@ -458,11 +474,14 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     public Y9Result<List<FlowElementModel>> listUserTask(String processDefinitionId) {
         List<FlowElementModel> list = new ArrayList<>();
         List<FlowElement> feList = this.getFlowElements(processDefinitionId);
-        feList.stream().filter(flowElement -> flowElement instanceof UserTask)
+        feList.stream()
+            .filter(flowElement -> flowElement instanceof UserTask)
             .forEach(flowElement -> list.add(createFlowElementModel(flowElement, false)));
         feList.stream().filter(flowElement -> flowElement instanceof SubProcess).forEach(subProcess -> {
             list.add(createFlowElementModel(subProcess, false));
-            ((SubProcess)subProcess).getFlowElements().stream().filter(flowElement -> flowElement instanceof UserTask)
+            ((SubProcess)subProcess).getFlowElements()
+                .stream()
+                .filter(flowElement -> flowElement instanceof UserTask)
                 .forEach(flowElement -> list.add(createFlowElementModel(flowElement, true)));
         });
         FlowElementModel feModel = new FlowElementModel();

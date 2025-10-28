@@ -52,8 +52,8 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                     throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_COMPLETED");
                 }
                 // 2、标记流转详情为办结状态
-                Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(tenantId,
-                    executionEntity.getProcessInstanceId());
+                Y9Context.getBean(ActRuDetailApi.class)
+                    .endByProcessInstanceId(tenantId, executionEntity.getProcessInstanceId());
                 // 3、保存流程数据到ES，截转年度数据
                 Process4CompleteUtilService process4CompleteUtilService =
                     Y9Context.getBean(Process4CompleteUtilService.class);
@@ -74,8 +74,9 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 // 2、子流程启动,初始化callActivity的流程参数信息
                 ItemApi itemApi = Y9Context.getBean(ItemApi.class);
                 String tenantIdTemp = (String)executionEntityStart.getVariable(SysVariables.TENANT_ID);
-                ItemModel itemModel = itemApi
-                    .findByProcessDefinitionKey(tenantIdTemp, executionEntityStart.getProcessDefinitionKey()).getData();
+                ItemModel itemModel =
+                    itemApi.findByProcessDefinitionKey(tenantIdTemp, executionEntityStart.getProcessDefinitionKey())
+                        .getData();
                 if (StringUtils.isNotEmpty(itemModel.getType()) && "sub".equals(itemModel.getType())) {
                     String processSerialNumber =
                         (String)executionEntityStart.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);

@@ -10,13 +10,27 @@ import net.risesoft.config.ConfigConstants;
  */
 public enum FileType {
 
-    PICTURE("pictureFilePreviewImpl"), COMPRESS("compressFilePreviewImpl"), OFFICE("officeFilePreviewImpl"),
-    SIMTEXT("simTextFilePreviewImpl"), PDF("pdfFilePreviewImpl"), CODE("codeFilePreviewImpl"),
-    OTHER("otherFilePreviewImpl"), MEDIA("mediaFilePreviewImpl"), MEDIACONVERT("mediaFilePreviewImpl"),
-    MARKDOWN("markdownFilePreviewImpl"), XML("xmlFilePreviewImpl"), CAD("cadFilePreviewImpl"),
-    TIFF("tiffFilePreviewImpl"), OFD("ofdFilePreviewImpl"), EML("emlFilePreviewImpl"),
-    ONLINE3D("online3DFilePreviewImpl"), XMIND("xmindFilePreviewImpl"), SVG("svgFilePreviewImpl"),
-    EPUB("epubFilePreviewImpl"), BPMN("bpmnFilePreviewImpl"), DCM("dcmFilePreviewImpl"),
+    PICTURE("pictureFilePreviewImpl"),
+    COMPRESS("compressFilePreviewImpl"),
+    OFFICE("officeFilePreviewImpl"),
+    SIMTEXT("simTextFilePreviewImpl"),
+    PDF("pdfFilePreviewImpl"),
+    CODE("codeFilePreviewImpl"),
+    OTHER("otherFilePreviewImpl"),
+    MEDIA("mediaFilePreviewImpl"),
+    MEDIACONVERT("mediaFilePreviewImpl"),
+    MARKDOWN("markdownFilePreviewImpl"),
+    XML("xmlFilePreviewImpl"),
+    CAD("cadFilePreviewImpl"),
+    TIFF("tiffFilePreviewImpl"),
+    OFD("ofdFilePreviewImpl"),
+    EML("emlFilePreviewImpl"),
+    ONLINE3D("online3DFilePreviewImpl"),
+    XMIND("xmindFilePreviewImpl"),
+    SVG("svgFilePreviewImpl"),
+    EPUB("epubFilePreviewImpl"),
+    BPMN("bpmnFilePreviewImpl"),
+    DCM("dcmFilePreviewImpl"),
     DRAWIO("drawioFilePreviewImpl");
 
     public static final String[] MEDIA_CONVERT_TYPES = ConfigConstants.getConvertMedias();
