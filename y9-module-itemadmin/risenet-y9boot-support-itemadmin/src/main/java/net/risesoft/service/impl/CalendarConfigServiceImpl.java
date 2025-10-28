@@ -44,79 +44,87 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
             String[] str = startDate.split("-");
             CalendarConfig calendarConfig = calendarConfigRepository.findByYear(str[0]);
             if (calendarConfig != null) {
-                String weekend2WorkingDay = calendarConfig.getWeekend2WorkingDay();
-                String workingDay2Holiday = calendarConfig.getWorkingDay2Holiday();
-                String everyYearHoliday = calendarConfig.getEveryYearHoliday();
-
-                List<String> workingDay2HolidayList = StringUtils.isNotBlank(workingDay2Holiday)
-                    ? new ArrayList<>(Arrays.asList(workingDay2Holiday.split(","))) : new ArrayList<>();
-                List<String> weekend2WorkingDayList = StringUtils.isNotBlank(weekend2WorkingDay)
-                    ? new ArrayList<>(Arrays.asList(weekend2WorkingDay.split(","))) : new ArrayList<>();
-                List<String> everyYearHolidayList = StringUtils.isNotBlank(everyYearHoliday)
-                    ? new ArrayList<>(Arrays.asList(everyYearHoliday.split(","))) : new ArrayList<>();
-                /*
-                 * 删除休假
-                 */
-                if (workingDay2HolidayList.contains(startDate)) {
-                    if (workingDay2HolidayList.contains(startDate)) {
-                        /*
-                         * 若有，删除日期
-                         */
-                        workingDay2HolidayList = this.remove(workingDay2HolidayList, startDate);
-                    }
-                    /*
-                     * 如不是周末，删除休假，需从全年节假日期中删除
-                     */
-                    if (!isWeekend(startDate)) {
-                        if (everyYearHolidayList.contains(startDate)) {
-                            /*
-                             * 若有，删除日期
-                             */
-                            everyYearHolidayList = this.remove(everyYearHolidayList, startDate);
-                        }
-                    }
-                }
-                /*
-                 * 删除补班
-                 */
-                if (weekend2WorkingDayList.contains(startDate)) {
-                    /*
-                     * 若有，删除补班日期
-                     */
-                    weekend2WorkingDayList = this.remove(weekend2WorkingDayList, startDate);
-                    /*
-                     * 如是周末，删除补班，需添加至全年节假日期中
-                     */
-                    if (isWeekend(startDate)) {
-                        if (!everyYearHolidayList.contains(startDate)) {
-                            everyYearHolidayList.add(startDate);
-                        }
-                    } else {
-                        /*
-                         * 如不是周末，删除补班，需从全年节假日期中删除
-                         */
-                        if (everyYearHolidayList.contains(startDate)) {
-                            /*
-                             * 若有，删除日期
-                             */
-                            everyYearHolidayList = this.remove(everyYearHolidayList, startDate);
-                        }
-                    }
-                }
-                String workingDay2HolidayTemp = StringUtils.join(workingDay2HolidayList, ",");
-                calendarConfig.setWorkingDay2Holiday(workingDay2HolidayTemp);
-
-                String weekend2WorkingDayTemp = StringUtils.join(weekend2WorkingDayList, ",");
-                calendarConfig.setWeekend2WorkingDay(weekend2WorkingDayTemp);
-
-                calendarConfig.setEveryYearHoliday(StringUtils.join(everyYearHolidayList, ","));
-                calendarConfigRepository.save(calendarConfig);
+                // 初始化配置列表
+                CalendarConfigLists configLists = initializeConfigLists(calendarConfig);
+                // 处理休假删除逻辑
+                handleWorkingDayRemoval(configLists, startDate);
+                // 处理补班删除逻辑
+                handleWorkingDayAdditionRemoval(configLists, startDate);
+                // 更新并保存配置
+                updateCalendarConfig(calendarConfig, configLists);
             }
             return Y9Result.success("删除成功");
         } catch (Exception e) {
             LOGGER.error("删除失败", e);
             return Y9Result.failure("删除失败");
         }
+    }
+
+    /**
+     * 初始化配置列表
+     */
+    private CalendarConfigLists initializeConfigLists(CalendarConfig calendarConfig) {
+        CalendarConfigLists lists = new CalendarConfigLists();
+        lists.workingDay2HolidayList = StringUtils.isNotBlank(calendarConfig.getWorkingDay2Holiday())
+            ? new ArrayList<>(Arrays.asList(calendarConfig.getWorkingDay2Holiday().split(","))) : new ArrayList<>();
+        lists.weekend2WorkingDayList = StringUtils.isNotBlank(calendarConfig.getWeekend2WorkingDay())
+            ? new ArrayList<>(Arrays.asList(calendarConfig.getWeekend2WorkingDay().split(","))) : new ArrayList<>();
+        lists.everyYearHolidayList = StringUtils.isNotBlank(calendarConfig.getEveryYearHoliday())
+            ? new ArrayList<>(Arrays.asList(calendarConfig.getEveryYearHoliday().split(","))) : new ArrayList<>();
+        return lists;
+    }
+
+    /**
+     * 处理休假删除逻辑
+     */
+    private void handleWorkingDayRemoval(CalendarConfigLists configLists, String startDate) throws Exception {
+        if (configLists.workingDay2HolidayList.contains(startDate)) {
+            // 删除休假日期
+            configLists.workingDay2HolidayList = this.remove(configLists.workingDay2HolidayList, startDate);
+            // 如果不是周末，需要从全年节假日期中删除
+            if (!isWeekend(startDate)) {
+                if (configLists.everyYearHolidayList.contains(startDate)) {
+                    configLists.everyYearHolidayList = this.remove(configLists.everyYearHolidayList, startDate);
+                }
+            }
+        }
+    }
+
+    /**
+     * 处理补班删除逻辑
+     */
+    private void handleWorkingDayAdditionRemoval(CalendarConfigLists configLists, String startDate) {
+        if (configLists.weekend2WorkingDayList.contains(startDate)) {
+            // 删除补班日期
+            configLists.weekend2WorkingDayList = this.remove(configLists.weekend2WorkingDayList, startDate);
+
+            try {
+                // 根据是否为周末决定全年节假日的处理方式
+                if (isWeekend(startDate)) {
+                    // 是周末，删除补班需添加至全年节假日期中
+                    if (!configLists.everyYearHolidayList.contains(startDate)) {
+                        configLists.everyYearHolidayList.add(startDate);
+                    }
+                } else {
+                    // 不是周末，删除补班需从全年节假日期中删除
+                    if (configLists.everyYearHolidayList.contains(startDate)) {
+                        configLists.everyYearHolidayList = this.remove(configLists.everyYearHolidayList, startDate);
+                    }
+                }
+            } catch (Exception e) {
+                LOGGER.error("判断日期类型失败", e);
+            }
+        }
+    }
+
+    /**
+     * 更新并保存日历配置
+     */
+    private void updateCalendarConfig(CalendarConfig calendarConfig, CalendarConfigLists configLists) {
+        calendarConfig.setWorkingDay2Holiday(StringUtils.join(configLists.workingDay2HolidayList, ","));
+        calendarConfig.setWeekend2WorkingDay(StringUtils.join(configLists.weekend2WorkingDayList, ","));
+        calendarConfig.setEveryYearHoliday(StringUtils.join(configLists.everyYearHolidayList, ","));
+        calendarConfigRepository.save(calendarConfig);
     }
 
     @Override
@@ -208,78 +216,9 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
             String year = startDate.split("-")[0];
             CalendarConfig calendarConfig = calendarConfigRepository.findByYear(year);
             if (calendarConfig == null) {
-                List<String> yearHoliday;
-                yearHoliday = this.getYearHoliday(year);
-                calendarConfig = new CalendarConfig();
-                calendarConfig.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                calendarConfig.setYear(String.valueOf(year));
-                if (type == 1) {
-                    calendarConfig.setWorkingDay2Holiday(startDate);
-                    if (!yearHoliday.contains(startDate)) {
-                        yearHoliday.add(startDate);
-                    }
-                } else {
-                    calendarConfig.setWeekend2WorkingDay(startDate);
-                    if (yearHoliday.contains(startDate)) {
-                        yearHoliday = this.remove(yearHoliday, startDate);
-                    }
-                }
-                // 获取前一年的配置
-                CalendarConfig calendarConfig0 =
-                    calendarConfigRepository.findByYear(String.valueOf((Integer.parseInt(year) - 1)));
-                String yearHolidayStr = StringUtils.join(yearHoliday, ",");
-                /*
-                 * 每年休假日期累加,方便跨年计算
-                 */
-                if (calendarConfig0 != null) {
-                    yearHolidayStr = calendarConfig0.getEveryYearHoliday() + yearHolidayStr;
-                }
-                calendarConfig.setEveryYearHoliday(yearHolidayStr);
-                calendarConfigRepository.save(calendarConfig);
+                handleNewCalendarConfig(startDate, year, type);
             } else {
-                String weekend2WorkingDay = calendarConfig.getWeekend2WorkingDay();
-                String workingDay2Holiday = calendarConfig.getWorkingDay2Holiday();
-                String everyYearHoliday = calendarConfig.getEveryYearHoliday();
-
-                List<String> workingDay2HolidayList = StringUtils.isNotBlank(workingDay2Holiday)
-                    ? new ArrayList<>(Arrays.asList(workingDay2Holiday.split(","))) : new ArrayList<>();
-                List<String> weekend2WorkingDayList = StringUtils.isNotBlank(weekend2WorkingDay)
-                    ? new ArrayList<>(Arrays.asList(weekend2WorkingDay.split(","))) : new ArrayList<>();
-                List<String> everyYearHolidayList = StringUtils.isNotBlank(everyYearHoliday)
-                    ? new ArrayList<>(Arrays.asList(everyYearHoliday.split(","))) : new ArrayList<>();
-                /*
-                 * 休假
-                 */
-                if (type == 1) {
-                    if (!workingDay2HolidayList.contains(startDate)) {
-                        workingDay2HolidayList.add(startDate);
-                    }
-                    if (!everyYearHolidayList.contains(startDate)) {
-                        everyYearHolidayList.add(startDate);
-                    }
-                    if (weekend2WorkingDayList.contains(startDate)) {
-                        weekend2WorkingDayList = this.remove(weekend2WorkingDayList, startDate);
-                    }
-                } else {
-                    if (!weekend2WorkingDayList.contains(startDate)) {
-                        weekend2WorkingDayList.add(startDate);
-                    }
-                    if (workingDay2HolidayList.contains(startDate)) {
-                        workingDay2HolidayList = this.remove(workingDay2HolidayList, startDate);
-                    }
-                    if (everyYearHolidayList.contains(startDate)) {
-                        everyYearHolidayList = this.remove(everyYearHolidayList, startDate);
-                    }
-                }
-
-                String workingDay2HolidayTemp = StringUtils.join(workingDay2HolidayList, ",");
-                calendarConfig.setWorkingDay2Holiday(workingDay2HolidayTemp);
-
-                String weekend2WorkingDayTemp = StringUtils.join(weekend2WorkingDayList, ",");
-                calendarConfig.setWeekend2WorkingDay(weekend2WorkingDayTemp);
-
-                calendarConfig.setEveryYearHoliday(StringUtils.join(everyYearHolidayList, ","));
-                calendarConfigRepository.save(calendarConfig);
+                handleExistingCalendarConfig(calendarConfig, startDate, type);
             }
             return Y9Result.success("保存成功");
         } catch (Exception e) {
@@ -288,31 +227,126 @@ public class CalendarConfigServiceImpl implements CalendarConfigService {
         }
     }
 
+    /**
+     * 处理新的日历配置
+     */
+    private void handleNewCalendarConfig(String startDate, String year, Integer type) {
+        List<String> yearHoliday = this.getYearHoliday(year);
+        CalendarConfig calendarConfig = new CalendarConfig();
+        calendarConfig.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        calendarConfig.setYear(year);
+        if (type == 1) {
+            // 休假类型
+            calendarConfig.setWorkingDay2Holiday(startDate);
+            if (!yearHoliday.contains(startDate)) {
+                yearHoliday.add(startDate);
+            }
+        } else {
+            // 补班类型
+            calendarConfig.setWeekend2WorkingDay(startDate);
+            if (yearHoliday.contains(startDate)) {
+                yearHoliday = this.remove(yearHoliday, startDate);
+            }
+        }
+        // 处理全年节假日配置
+        String yearHolidayStr = processYearHolidayConfiguration(year, yearHoliday);
+        calendarConfig.setEveryYearHoliday(yearHolidayStr);
+        calendarConfigRepository.save(calendarConfig);
+    }
+
+    /**
+     * 处理已存在的日历配置
+     */
+    private void handleExistingCalendarConfig(CalendarConfig calendarConfig, String startDate, Integer type) {
+        // 初始化配置列表
+        CalendarConfigLists configLists = initializeConfigLists(calendarConfig);
+        // 根据类型处理配置
+        if (type == 1) {
+            processHolidayType(configLists, startDate);
+        } else {
+            processWorkingDayType(configLists, startDate);
+        }
+        // 更新并保存配置
+        updateCalendarConfig(calendarConfig, configLists);
+    }
+
+    /**
+     * 处理休假类型配置
+     */
+    private void processHolidayType(CalendarConfigLists configLists, String startDate) {
+        if (!configLists.workingDay2HolidayList.contains(startDate)) {
+            configLists.workingDay2HolidayList.add(startDate);
+        }
+        if (!configLists.everyYearHolidayList.contains(startDate)) {
+            configLists.everyYearHolidayList.add(startDate);
+        }
+        if (configLists.weekend2WorkingDayList.contains(startDate)) {
+            configLists.weekend2WorkingDayList = this.remove(configLists.weekend2WorkingDayList, startDate);
+        }
+    }
+
+    /**
+     * 处理补班类型配置
+     */
+    private void processWorkingDayType(CalendarConfigLists configLists, String startDate) {
+        if (!configLists.weekend2WorkingDayList.contains(startDate)) {
+            configLists.weekend2WorkingDayList.add(startDate);
+        }
+        if (configLists.workingDay2HolidayList.contains(startDate)) {
+            configLists.workingDay2HolidayList = this.remove(configLists.workingDay2HolidayList, startDate);
+        }
+        if (configLists.everyYearHolidayList.contains(startDate)) {
+            configLists.everyYearHolidayList = this.remove(configLists.everyYearHolidayList, startDate);
+        }
+    }
+
+    /**
+     * 处理全年节假日配置
+     */
+    private String processYearHolidayConfiguration(String year, List<String> yearHoliday) {
+        // 获取前一年的配置
+        CalendarConfig previousYearConfig =
+            calendarConfigRepository.findByYear(String.valueOf((Integer.parseInt(year) - 1)));
+        String yearHolidayStr = StringUtils.join(yearHoliday, ",");
+        // 每年休假日期累加,方便跨年计算
+        if (previousYearConfig != null) {
+            yearHolidayStr = previousYearConfig.getEveryYearHoliday() + yearHolidayStr;
+        }
+        return yearHolidayStr;
+    }
+
     @Override
     public void saveOrUpdate(CalendarConfig calendarConfig) {
         String id = calendarConfig.getId();
         if (StringUtils.isNotEmpty(id)) {
-            CalendarConfig oldcc = calendarConfigRepository.findById(id).orElse(null);
-            if (null != oldcc) {
-                oldcc.setId(id);
-                oldcc.setEveryYearHoliday(calendarConfig.getEveryYearHoliday());
-                oldcc.setWeekend2WorkingDay(calendarConfig.getWeekend2WorkingDay());
-                oldcc.setWorkingDay2Holiday(calendarConfig.getWorkingDay2Holiday());
-                oldcc.setYear(calendarConfig.getYear());
-
-                calendarConfigRepository.save(oldcc);
+            CalendarConfig existCalendarConfig = calendarConfigRepository.findById(id).orElse(null);
+            if (null != existCalendarConfig) {
+                existCalendarConfig.setId(id);
+                existCalendarConfig.setEveryYearHoliday(calendarConfig.getEveryYearHoliday());
+                existCalendarConfig.setWeekend2WorkingDay(calendarConfig.getWeekend2WorkingDay());
+                existCalendarConfig.setWorkingDay2Holiday(calendarConfig.getWorkingDay2Holiday());
+                existCalendarConfig.setYear(calendarConfig.getYear());
+                calendarConfigRepository.save(existCalendarConfig);
             } else {
                 calendarConfigRepository.save(calendarConfig);
             }
             return;
         }
+        CalendarConfig newCalendarConfig = new CalendarConfig();
+        newCalendarConfig.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newCalendarConfig.setEveryYearHoliday(calendarConfig.getEveryYearHoliday());
+        newCalendarConfig.setWeekend2WorkingDay(calendarConfig.getWeekend2WorkingDay());
+        newCalendarConfig.setWorkingDay2Holiday(calendarConfig.getWorkingDay2Holiday());
+        newCalendarConfig.setYear(calendarConfig.getYear());
+        calendarConfigRepository.save(newCalendarConfig);
+    }
 
-        CalendarConfig newcc = new CalendarConfig();
-        newcc.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newcc.setEveryYearHoliday(calendarConfig.getEveryYearHoliday());
-        newcc.setWeekend2WorkingDay(calendarConfig.getWeekend2WorkingDay());
-        newcc.setWorkingDay2Holiday(calendarConfig.getWorkingDay2Holiday());
-        newcc.setYear(calendarConfig.getYear());
-        calendarConfigRepository.save(newcc);
+    /**
+     * 配置列表容器类
+     */
+    private static class CalendarConfigLists {
+        List<String> workingDay2HolidayList;
+        List<String> weekend2WorkingDayList;
+        List<String> everyYearHolidayList;
     }
 }

@@ -12,8 +12,6 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.AssociatedFile;
@@ -21,13 +19,12 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
-import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.repository.jpa.AssociatedFileRepository;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.service.OfficeDoneInfoService;
+import net.risesoft.service.UtilService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -48,9 +45,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
 
     private final TaskApi taskApi;
 
-    private final OrgUnitApi orgUnitApi;
-
-    private final IdentityApi identityApi;
+    private final UtilService utilService;
 
     @Override
     public int countAssociatedFile(String processSerialNumber) {
@@ -98,83 +93,6 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
         }
     }
 
-    private List<String> getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getOrgUnitId();
-        String taskIds = "";
-        String assigneeIds = "";
-        String assigneeNames = "";
-        String itembox = ItemBoxTypeEnum.DOING.getValue();
-        String taskId = "";
-        List<String> list = new ArrayList<>();
-        int i = 0;
-        if (!taskList.isEmpty()) {
-            for (TaskModel task : taskList) {
-                if (StringUtils.isEmpty(taskIds)) {
-                    taskIds = task.getId();
-                    String assignee = task.getAssignee();
-                    if (StringUtils.isNotBlank(assignee)) {
-                        assigneeIds = assignee;
-
-                        OrgUnit orgUnitTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                        if (orgUnitTemp != null) {
-                            assigneeNames = orgUnitTemp.getName();
-                        }
-                        i += 1;
-                        if (assignee.contains(userId)) {
-                            itembox = ItemBoxTypeEnum.TODO.getValue();
-                            taskId = task.getId();
-                        }
-                    } else {// 处理单实例未签收的当前办理人显示
-                        List<IdentityLinkModel> iList =
-                            identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
-                        if (!iList.isEmpty()) {
-                            int j = 0;
-                            for (IdentityLinkModel identityLink : iList) {
-                                String assigneeId = identityLink.getUserId();
-                                OrgUnit ownerUser =
-                                    orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assigneeId).getData();
-                                if (j < 5) {
-                                    assigneeNames = Y9Util.genCustomStr(assigneeNames, ownerUser.getName(), "、");
-                                    assigneeIds = Y9Util.genCustomStr(assigneeIds, assigneeId, SysVariables.COMMA);
-                                } else {
-                                    assigneeNames = assigneeNames + "等，共" + iList.size() + "人";
-                                    break;
-                                }
-                                j++;
-                            }
-                        }
-                    }
-                } else {
-                    String assignee = task.getAssignee();
-                    if (StringUtils.isNotBlank(assignee)) {
-                        if (i < 5) {
-                            assigneeIds = Y9Util.genCustomStr(assigneeIds, assignee, SysVariables.COMMA);
-                            OrgUnit orgUnitTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                            if (orgUnitTemp != null) {
-                                assigneeNames = Y9Util.genCustomStr(assigneeNames, orgUnitTemp.getName(), "、");
-                            }
-                            i += 1;
-                        }
-                        if (assignee.contains(userId)) {
-                            itembox = ItemBoxTypeEnum.TODO.getValue();
-                            taskId = task.getId();
-                        }
-                    }
-                }
-            }
-            if (taskList.size() > 5) {
-                assigneeNames += "等，共" + taskList.size() + "人";
-            }
-        }
-        list.add(taskIds);
-        list.add(assigneeIds);
-        list.add(assigneeNames);
-        list.add(itembox);
-        list.add(taskId);
-        return list;
-    }
-
     private String getAssociatedId(String delIds, AssociatedFile associatedFile) {
         String associatedId = associatedFile.getAssociatedId();
         String newAssociatedId = "";
@@ -197,64 +115,97 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
 
     @Override
     public List<AssociatedFileModel> listAssociatedFileAll(String processSerialNumber) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<AssociatedFileModel> list = new ArrayList<>();
         AssociatedFile associatedFile = associatedFileRepository.findByProcessSerialNumber(processSerialNumber);
-        if (associatedFile != null) {
-            String associatedId = associatedFile.getAssociatedId();
-            if (StringUtils.isNotBlank(associatedId)) {
-                String[] associatedIds = associatedId.split(SysVariables.COMMA);
-                for (String id : associatedIds) {
-                    AssociatedFileModel model = new AssociatedFileModel();
-                    try {
-                        OfficeDoneInfo hpim = officeDoneInfoService.findByProcessInstanceId(id);
-                        String processInstanceId = hpim.getProcessInstanceId();
-                        String processDefinitionId = hpim.getProcessDefinitionId();
-                        String startTime = hpim.getStartTime().substring(0, 16);
-                        String processSerialNumber1 = hpim.getProcessSerialNumber();
-                        String documentTitle = StringUtils.isBlank(hpim.getTitle()) ? "无标题" : hpim.getTitle();
-                        String level = hpim.getUrgency();
-                        String number = hpim.getDocNumber();
-                        String completer = hpim.getUserComplete();
-                        model.setItemName(hpim.getItemName());
-                        model.setProcessSerialNumber(processSerialNumber1);
-                        model.setDocumentTitle(documentTitle);
-                        model.setProcessInstanceId(processInstanceId);
-                        model.setProcessDefinitionId(processDefinitionId);
-                        model.setProcessDefinitionKey(hpim.getProcessDefinitionKey());
-                        model.setStartTime(startTime);
-                        model.setEndTime(
-                            StringUtils.isBlank(hpim.getEndTime()) ? "--" : hpim.getEndTime().substring(0, 16));
-                        model.setTaskDefinitionKey("");
-                        model.setTaskAssignee(completer);
-                        model.setCreatUserName(hpim.getCreatUserName());
-                        model.setItemId(hpim.getItemId());
-                        model.setLevel(level == null ? "" : level);
-                        model.setNumber(number == null ? "" : number);
-                        model.setItembox(ItemBoxTypeEnum.DONE.getValue());
-                        model.setStartTimes(hpim.getStartTime());
-                        if (StringUtils.isBlank(hpim.getEndTime())) {
-                            List<TaskModel> taskList =
-                                taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                            List<String> listTemp = getAssigneeIdsAndAssigneeNames(taskList);
-                            String taskIds = listTemp.get(0), assigneeIds = listTemp.get(1),
-                                assigneeNames = listTemp.get(2);
-
-                            model.setTaskDefinitionKey(taskList.get(0).getTaskDefinitionKey());
-                            model.setTaskId(
-                                listTemp.get(3).equals(ItemBoxTypeEnum.DOING.getValue()) ? taskIds : listTemp.get(4));
-                            model.setTaskAssignee(assigneeNames);
-                            model.setItembox(listTemp.get(3));
-                        }
-                    } catch (Exception e) {
-                        LOGGER.error("Error in getAssociatedFileAllList", e);
-                    }
-                    list.add(model);
-                }
-            }
-            list = list.stream().sorted().collect(Collectors.toList());
+        if (associatedFile == null) {
+            return list;
         }
-        return list;
+        String associatedId = associatedFile.getAssociatedId();
+        if (StringUtils.isBlank(associatedId)) {
+            return list;
+        }
+        String[] associatedIds = associatedId.split(SysVariables.COMMA);
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        for (String id : associatedIds) {
+            AssociatedFileModel model = buildAssociatedFileModel(id, tenantId);
+            if (model != null) {
+                list.add(model);
+            }
+        }
+        return list.stream().sorted().collect(Collectors.toList());
+    }
+
+    /**
+     * 构建关联文件模型
+     */
+    private AssociatedFileModel buildAssociatedFileModel(String processInstanceId, String tenantId) {
+        AssociatedFileModel model = new AssociatedFileModel();
+        try {
+            OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+            if (officeDoneInfo == null) {
+                return null;
+            }
+            populateBasicInfo(model, officeDoneInfo);
+            if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
+                populateTaskInfo(model, officeDoneInfo, tenantId);
+            }
+            return model;
+        } catch (Exception e) {
+            LOGGER.error("构建关联文件模型失败, processInstanceId: {}", processInstanceId, e);
+            return null;
+        }
+    }
+
+    /**
+     * 填充基本信息
+     */
+    private void populateBasicInfo(AssociatedFileModel model, OfficeDoneInfo officeDoneInfo) {
+        String processInstanceId = officeDoneInfo.getProcessInstanceId();
+        String startTime = officeDoneInfo.getStartTime().substring(0, 16);
+        String documentTitle = StringUtils.isBlank(officeDoneInfo.getTitle()) ? "无标题" : officeDoneInfo.getTitle();
+        String level = officeDoneInfo.getUrgency();
+        String number = officeDoneInfo.getDocNumber();
+        String completer = officeDoneInfo.getUserComplete();
+
+        model.setItemName(officeDoneInfo.getItemName());
+        model.setProcessSerialNumber(officeDoneInfo.getProcessSerialNumber());
+        model.setDocumentTitle(documentTitle);
+        model.setProcessInstanceId(processInstanceId);
+        model.setProcessDefinitionId(officeDoneInfo.getProcessDefinitionId());
+        model.setProcessDefinitionKey(officeDoneInfo.getProcessDefinitionKey());
+        model.setStartTime(startTime);
+        model.setEndTime(
+            StringUtils.isBlank(officeDoneInfo.getEndTime()) ? "--" : officeDoneInfo.getEndTime().substring(0, 16));
+        model.setTaskDefinitionKey("");
+        model.setTaskAssignee(completer);
+        model.setCreatUserName(officeDoneInfo.getCreatUserName());
+        model.setItemId(officeDoneInfo.getItemId());
+        model.setLevel(level == null ? "" : level);
+        model.setNumber(number == null ? "" : number);
+        model.setItembox(ItemBoxTypeEnum.DONE.getValue());
+        model.setStartTimes(officeDoneInfo.getStartTime());
+    }
+
+    /**
+     * 填充任务信息
+     */
+    private void populateTaskInfo(AssociatedFileModel model, OfficeDoneInfo officeDoneInfo, String tenantId) {
+        try {
+            String processInstanceId = officeDoneInfo.getProcessInstanceId();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+
+            if (taskList != null && !taskList.isEmpty()) {
+                String assigneeNames = utilService.getAssigneeNames(taskList, null);
+                List<String> listTemp = utilService.getItemBoxAndTaskId(taskList);
+
+                model.setTaskDefinitionKey(taskList.get(0).getTaskDefinitionKey());
+                model.setTaskId(listTemp.get(0).equals(ItemBoxTypeEnum.TODO.getValue()) ? listTemp.get(1) : "");
+                model.setTaskAssignee(assigneeNames);
+                model.setItembox(listTemp.get(0));
+            }
+        } catch (Exception e) {
+            LOGGER.warn("填充任务信息失败, processInstanceId: {}", officeDoneInfo.getProcessInstanceId(), e);
+        }
     }
 
     @Transactional

@@ -96,82 +96,172 @@ public class ReminderServiceImpl implements ReminderService {
     @Override
     public Y9Page<ReminderModel> pageByProcessInstanceId(String processInstanceId, int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        Page<Reminder> pageList = reminderRepository.findByProcInstId(processInstanceId, pageable);
-        List<Reminder> reminderList = pageList.getContent();
-        int num = (page - 1) * rows;
-        List<ReminderModel> listMap = new ArrayList<>();
-        HistoricTaskInstanceModel historicTaskTemp;
-        OrgUnit pTemp;
-        for (Reminder reminder : reminderList) {
-            ReminderModel model = new ReminderModel();
-            model.setId(reminder.getId());
-            model.setMsgContent(reminder.getMsgContent());
-            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
-            model.setReadTime(null == reminder.getReadTime() ? "" : DATE_TIME_FORMAT.format(reminder.getReadTime()));
-            model.setSenderName(reminder.getSenderName());
-            model.setUserName("无");
-            model.setTaskName("无");
+        PageRequest pageable = createPageRequest(page, rows);
+        Page<Reminder> reminderPage = reminderRepository.findByProcInstId(processInstanceId, pageable);
 
-            historicTaskTemp = historictaskApi.getById(tenantId, reminder.getTaskId()).getData();
-            if (null != historicTaskTemp) {
-                model.setTaskName(historicTaskTemp.getName());
-                if (StringUtils.isNotBlank(historicTaskTemp.getAssignee())) {
-                    pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, historicTaskTemp.getAssignee()).getData();
-                    if (null != pTemp) {
-                        model.setUserName(pTemp.getName() + (Boolean.TRUE.equals(pTemp.getDisabled()) ? "(已禁用)" : ""));
-                    }
-                }
-            }
-            model.setSerialNumber(num + 1);
-            num += 1;
-            listMap.add(model);
+        List<ReminderModel> reminderModels = convertToReminderModels(reminderPage.getContent(), tenantId);
+
+        return Y9Page.success(page, reminderPage.getTotalPages(), reminderPage.getTotalElements(), reminderModels);
+    }
+
+    /**
+     * 创建分页请求对象
+     */
+    private PageRequest createPageRequest(int page, int rows) {
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
+        return PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
+    }
+
+    /**
+     * 将Reminder列表转换为ReminderModel列表
+     */
+    private List<ReminderModel> convertToReminderModels(List<Reminder> reminders, String tenantId) {
+        List<ReminderModel> models = new ArrayList<>();
+
+        for (int i = 0; i < reminders.size(); i++) {
+            Reminder reminder = reminders.get(i);
+            ReminderModel model = new ReminderModel();
+
+            // 基本信息设置
+            populateBasicInfo(model, reminder, i);
+
+            // 任务相关信息设置
+            populateTaskInfo(model, reminder, tenantId);
+
+            models.add(model);
         }
-        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
+
+        return models;
+    }
+
+    /**
+     * 填充提醒基本信息
+     */
+    private void populateBasicInfo(ReminderModel model, Reminder reminder, int index) {
+        model.setId(reminder.getId());
+        model.setMsgContent(reminder.getMsgContent());
+        model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
+        model.setReadTime(formatReadTime(reminder.getReadTime()));
+        model.setSenderName(reminder.getSenderName());
+        model.setUserName("无");
+        model.setTaskName("无");
+        model.setSerialNumber(index + 1);
+    }
+
+    /**
+     * 格式化阅读时间
+     */
+    private String formatReadTime(Date readTime) {
+        return readTime == null ? "" : DATE_TIME_FORMAT.format(readTime);
+    }
+
+    /**
+     * 填充任务相关信息
+     */
+    private void populateTaskInfo(ReminderModel model, Reminder reminder, String tenantId) {
+        try {
+            HistoricTaskInstanceModel historicTask = historictaskApi.getById(tenantId, reminder.getTaskId()).getData();
+            if (historicTask != null) {
+                model.setTaskName(historicTask.getName());
+                setAssigneeInfo(model, historicTask.getAssignee(), tenantId);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取历史任务信息失败，taskId: {}", reminder.getTaskId(), e);
+        }
+    }
+
+    /**
+     * 设置任务处理人信息
+     */
+    private void setAssigneeInfo(ReminderModel model, String assignee, String tenantId) {
+        if (StringUtils.isNotBlank(assignee)) {
+            try {
+                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                if (orgUnit != null) {
+                    String userName = orgUnit.getName();
+                    if (Boolean.TRUE.equals(orgUnit.getDisabled())) {
+                        userName += "(已禁用)";
+                    }
+                    model.setUserName(userName);
+                }
+            } catch (Exception e) {
+                LOGGER.warn("获取处理人信息失败，assignee: {}", assignee, e);
+            }
+        }
     }
 
     @Override
     public Y9Page<ReminderModel> pageBySenderIdAndProcessInstanceIdAndActive(String senderId, String processInstanceId,
         int page, int rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
-        PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
-        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        PageRequest pageable = createPageRequest(page, rows);
+
+        // 获取任务ID列表
+        List<String> taskIds = getTaskIds(tenantId, processInstanceId);
+
+        // 分页查询提醒信息
+        Page<Reminder> reminderPage = reminderRepository.findBySenderIdAndTaskIdIn(senderId, taskIds, pageable);
+
+        // 转换为ReminderModel列表
+        List<ReminderModel> reminderModels =
+            convertToActiveReminderModels(reminderPage.getContent(), tenantId, page, rows);
+
+        return Y9Page.success(page, reminderPage.getTotalPages(), reminderPage.getTotalElements(), reminderModels);
+    }
+
+    /**
+     * 获取流程实例的任务ID列表
+     */
+    private List<String> getTaskIds(String tenantId, String processInstanceId) {
         List<String> taskIds = new ArrayList<>();
-        for (TaskModel task : taskList) {
-            taskIds.add(task.getId());
-        }
-        Page<Reminder> pageList = reminderRepository.findBySenderIdAndTaskIdIn(senderId, taskIds, pageable);
-        List<Reminder> reminderList = pageList.getContent();
-        int num = (page - 1) * rows;
-        List<ReminderModel> listMap = new ArrayList<>();
-        TaskModel taskTemp;
-        OrgUnit pTemp;
-        for (Reminder reminder : reminderList) {
-            ReminderModel model = new ReminderModel();
-            model.setId(reminder.getId());
-            model.setMsgContent(reminder.getMsgContent());
-            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
-            model.setReadTime(null == reminder.getReadTime() ? "" : DATE_TIME_FORMAT.format(reminder.getReadTime()));
-            model.setSenderName(reminder.getSenderName());
-            model.setUserName("无");
-            model.setTaskName("无");
-            taskTemp = taskApi.findById(tenantId, reminder.getTaskId()).getData();
-            if (null != taskTemp) {
-                model.setTaskName(taskTemp.getName());
-                if (StringUtils.isNotBlank(taskTemp.getAssignee())) {
-                    pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskTemp.getAssignee()).getData();
-                    if (null != pTemp) {
-                        model.setUserName(pTemp.getName() + (Boolean.TRUE.equals(pTemp.getDisabled()) ? "(已禁用)" : ""));
-                    }
-                }
+        try {
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            for (TaskModel task : taskList) {
+                taskIds.add(task.getId());
             }
-            model.setSerialNumber(num + 1);
-            num += 1;
-            listMap.add(model);
+        } catch (Exception e) {
+            LOGGER.warn("获取任务列表失败，processInstanceId: {}", processInstanceId, e);
         }
-        return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), listMap);
+        return taskIds;
+    }
+
+    /**
+     * 将Reminder列表转换为活跃状态的ReminderModel列表
+     */
+    private List<ReminderModel> convertToActiveReminderModels(List<Reminder> reminders, String tenantId, int page,
+        int rows) {
+        List<ReminderModel> models = new ArrayList<>();
+        int startIndex = (page - 1) * rows;
+
+        for (int i = 0; i < reminders.size(); i++) {
+            Reminder reminder = reminders.get(i);
+            ReminderModel model = new ReminderModel();
+
+            // 基本信息设置
+            populateBasicInfo(model, reminder, startIndex + i);
+
+            // 活跃任务相关信息设置
+            populateActiveTaskInfo(model, reminder, tenantId);
+
+            models.add(model);
+        }
+
+        return models;
+    }
+
+    /**
+     * 填充活跃任务相关信息
+     */
+    private void populateActiveTaskInfo(ReminderModel model, Reminder reminder, String tenantId) {
+        try {
+            TaskModel task = taskApi.findById(tenantId, reminder.getTaskId()).getData();
+            if (task != null) {
+                model.setTaskName(task.getName());
+                setAssigneeInfo(model, task.getAssignee(), tenantId);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取任务信息失败，taskId: {}", reminder.getTaskId(), e);
+        }
     }
 
     @Override

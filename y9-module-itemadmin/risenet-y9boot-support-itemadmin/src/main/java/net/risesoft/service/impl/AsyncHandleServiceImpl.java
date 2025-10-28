@@ -108,20 +108,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
 
     private final ProcessDefinitionApi processDefinitionApi;
 
-    /**
-     * 异步发送
-     *
-     * @param tenantId
-     * @param orgUnit
-     * @param processInstanceId
-     * @param processParam
-     * @param sponsorHandle
-     * @param sponsorGuid
-     * @param taskId
-     * @param variables
-     * @param userAndDeptIdList
-     * @return
-     */
     @Async
     @Override
     public void forwarding(final String tenantId, final OrgUnit orgUnit, final String processInstanceId,
@@ -141,11 +127,9 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 String msg = result.toString();
                 int num = userAndDeptIdList.size();
                 String time = Y9DateTimeUtils.formatCurrentDateTime();
-
                 // 发送失败,可能会出现统一待办已经保存成功,但任务没有在数据库产生,需要删除统一待办数据,只保存当前发送人的待办任务。
                 Y9Context.publishEvent(new Y9TodoUpdateEvent<>(new TodoTaskEventModel(
                     TodoTaskEventActionEnum.DELETE_PROCESSINSTANCEID, tenantId, processInstanceId, taskId, "0")));
-
                 // 保存任务发送错误日志
                 ErrorLog errorLog = new ErrorLog();
                 errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -164,7 +148,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 taskVariable.setText("false:" + num);
                 taskVariableRepository.save(taskVariable);
             } catch (Exception e2) {
-                e2.printStackTrace();
+                LOGGER.error("保存错误日志失败", e2);
             }
         }
     }
@@ -191,21 +175,15 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 }
             }
         }
-        /**
-         * 主办设置类型，2为部门节点，3为人员节点
-         */
-        String type = "";
-        /**
-         * 主办部门或人员的id
-         */
-        String sponsor = "";
+        // 主办设置类型，2为部门节点，3为人员节点
+        String type;
+        // 主办部门或人员的id
+        String sponsor;
         if (StringUtils.isNotBlank(sponsorGuid)) {
             type = sponsorGuid.substring(0, 1);
             sponsor = sponsorGuid.substring(2);
             if (type.equals(String.valueOf(ItemPrincipalTypeEnum.DEPT.getValue()))) {
-                /**
-                 * 设置主办部门下的第一个人员为主办人
-                 */
+                // 设置主办部门下的第一个人员为主办人
                 sponsorGuid = this.getSponsorPosition("", sponsor);
             } else {
                 sponsorGuid = sponsor;
@@ -226,7 +204,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
     @Override
     public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle,
         String sponsorGuid, String taskId, FlowElementModel flowElementModel, Map<String, Object> variables,
-        List<String> userList) throws Exception {
+        List<String> userList) {
         OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
@@ -245,30 +223,22 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 }
             }
         }
-        /**
-         * 主办设置类型，2为部门节点，3为人员节点
-         */
-        String type = "";
-        /**
-         * 主办部门或人员的id
-         */
-        String sponsor = "";
+        // 主办设置类型，2为部门节点，3为人员节点
+        String type;
+        // 主办部门或人员的id
+        String sponsor;
         if (StringUtils.isNotBlank(sponsorGuid)) {
             type = sponsorGuid.substring(0, 1);
             sponsor = sponsorGuid.substring(2);
             if (type.equals(String.valueOf(ItemPrincipalTypeEnum.DEPT.getValue()))) {
-                /**
-                 * 设置主办部门下的第一个人员为主办人
-                 */
+                // 设置主办部门下的第一个人员为主办人
                 sponsorGuid = this.getSponsorPosition("", sponsor);
             } else {
                 sponsorGuid = sponsor;
             }
         }
         Map<String, Object> vmap = new HashMap<>(16);
-        /**
-         * 解决协作状态串行办理历程的所有人员显示
-         */
+        // 解决协作状态串行办理历程的所有人员显示
         vmap.put(SysVariables.USERS, userList);
         variableApi.setVariables(tenantId, taskId, vmap);
         processParam.setSended("true");
@@ -279,20 +249,10 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
         String executionId = task.getExecutionId();
-        this.forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel, sponsorGuid,
+        forwardingHandle(tenantId, orgUnitId, task, executionId, processInstanceId, flowElementModel, sponsorGuid,
             processParam, userList);
     }
 
-    /**
-     * 发送后异步处理
-     *
-     * @param tenantId
-     * @param task
-     * @param processInstanceId
-     * @param flowElementModel
-     * @param sponsorGuid
-     * @param processParam
-     */
     @Async
     @Override
     public void forwardingHandle(final String tenantId, final String orgUnitId, final TaskModel task,
@@ -303,6 +263,20 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
             Y9LoginUserHolder.setOrgUnit(orgUnit);
             // 更新自定义历程结束时间
+            updateProcessTrackEndTime(task);
+            // 处理任务变量和子流程信息
+            handleTaskAndSubProcess(tenantId, orgUnit, task, executionId, processInstanceId, flowElementModel,
+                sponsorGuid, processParam);
+        } catch (Exception e) {
+            LOGGER.warn("*****forwardingHandle发送发生异常*****", e);
+        }
+    }
+
+    /**
+     * 更新流程跟踪结束时间
+     */
+    private void updateProcessTrackEndTime(TaskModel task) {
+        try {
             List<ProcessTrack> ptModelList = processTrackRepository.findByTaskId(task.getId());
             for (ProcessTrack ptModel : ptModelList) {
                 if (StringUtils.isBlank(ptModel.getEndTime())) {
@@ -310,58 +284,106 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                     processTrackRepository.save(ptModel);
                 }
             }
-            /**
-             * 假如是发送至SubProcess子流程，则记录子流程信息
-             */
-            boolean isSubProcess =
-                null != flowElementModel && (flowElementModel.getType().equals(SysVariables.SUBPROCESS));
-            List<TaskModel> nextTaskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            List<SignDeptDetail> detailList = new ArrayList<>();
-            for (TaskModel taskNext : nextTaskList) {
-                Map<String, Object> vars = new HashMap<>(16);
-                vars.put(SysVariables.TASK_SENDER, orgUnit.getName());
-                vars.put(SysVariables.TASK_SENDER_ID, orgUnitId);
-                /**
-                 * 并行状态且区分主协办情况下，如果受让人是主办人，则将主办人guid设为任务变量
-                 */
-                if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {
-                    if (taskNext.getAssignee().equals(sponsorGuid)) {
-                        vars.put(SysVariables.PARALLEL_SPONSOR, sponsorGuid);
-                    }
-                }
-                Boolean isSubProcessChildNode = processDefinitionApi
-                    .isSubProcessChildNode(tenantId, taskNext.getProcessDefinitionId(), taskNext.getTaskDefinitionKey())
-                    .getData();
-                if (isSubProcessChildNode && !isSubProcess) {
-                    // 不是发送子流程，且taskNext是子流程节点，只更新对应的子流程任务变量
-                    if (executionId.equals(taskNext.getExecutionId())) {
-                        variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
-                    }
-                } else {
-                    // 发送子流程，或其他子流程外的节点，更新所有任务变量
-                    variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
-                }
-                if (isSubProcess) {
-                    OrgUnit bureau = orgUnitApi.getBureau(tenantId, taskNext.getAssignee()).getData();
-                    SignDeptDetail signDeptDetail = new SignDeptDetail();
-                    signDeptDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
-                    signDeptDetail.setProcessInstanceId(processParam.getProcessInstanceId());
-                    signDeptDetail.setExecutionId(taskNext.getExecutionId());
-                    signDeptDetail.setTaskId(task.getId());
-                    signDeptDetail.setTaskName(task.getName());
-                    signDeptDetail.setSenderId(orgUnit.getId());
-                    signDeptDetail.setSenderName(orgUnit.getName());
-                    signDeptDetail.setDeptId(bureau.getId());
-                    signDeptDetail.setDeptName(bureau.getName());
-                    signDeptDetail.setTabIndex(bureau.getTabIndex());
+        } catch (Exception e) {
+            LOGGER.warn("更新流程跟踪结束时间失败, taskId: {}", task.getId(), e);
+        }
+    }
+
+    /**
+     * 处理任务变量和子流程信息
+     */
+    private void handleTaskAndSubProcess(String tenantId, OrgUnit orgUnit, TaskModel task, String executionId,
+        String processInstanceId, FlowElementModel flowElementModel, String sponsorGuid, ProcessParam processParam) {
+        boolean isSubProcess = isSubProcessElement(flowElementModel);
+        List<TaskModel> nextTaskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<SignDeptDetail> detailList = new ArrayList<>();
+        for (TaskModel taskNext : nextTaskList) {
+            // 设置任务变量
+            setTaskVariables(tenantId, orgUnit, taskNext, flowElementModel, sponsorGuid, executionId);
+            // 处理子流程信息
+            if (isSubProcess) {
+                SignDeptDetail signDeptDetail = buildSignDeptDetail(tenantId, orgUnit, task, taskNext, processParam);
+                if (signDeptDetail != null) {
                     detailList.add(signDeptDetail);
                 }
             }
-            if (isSubProcess) {
-                detailList.forEach(signDeptDetailService::saveOrUpdate);
+        }
+        // 保存子流程详情
+        if (isSubProcess && !detailList.isEmpty()) {
+            detailList.forEach(signDeptDetailService::saveOrUpdate);
+        }
+    }
+
+    /**
+     * 判断是否为子流程元素
+     */
+    private boolean isSubProcessElement(FlowElementModel flowElementModel) {
+        return null != flowElementModel && SysVariables.SUBPROCESS.equals(flowElementModel.getType());
+    }
+
+    /**
+     * 设置任务变量
+     */
+    private void setTaskVariables(String tenantId, OrgUnit orgUnit, TaskModel taskNext,
+        FlowElementModel flowElementModel, String sponsorGuid, String executionId) {
+        Map<String, Object> vars = createTaskVariables(orgUnit, flowElementModel, taskNext, sponsorGuid);
+        Boolean isSubProcessChildNode = processDefinitionApi
+            .isSubProcessChildNode(tenantId, taskNext.getProcessDefinitionId(), taskNext.getTaskDefinitionKey())
+            .getData();
+        boolean isSubProcess = isSubProcessElement(flowElementModel);
+        if (isSubProcessChildNode && !isSubProcess) {
+            // 不是发送子流程，且taskNext是子流程节点，只更新对应的子流程任务变量
+            if (executionId.equals(taskNext.getExecutionId())) {
+                variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
             }
+        } else {
+            // 发送子流程，或其他子流程外的节点，更新所有任务变量
+            variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
+        }
+    }
+
+    /**
+     * 创建任务变量
+     */
+    private Map<String, Object> createTaskVariables(OrgUnit orgUnit, FlowElementModel flowElementModel,
+        TaskModel taskNext, String sponsorGuid) {
+        Map<String, Object> vars = new HashMap<>(16);
+        vars.put(SysVariables.TASK_SENDER, orgUnit.getName());
+        vars.put(SysVariables.TASK_SENDER_ID, orgUnit.getId());
+        // 并行状态且区分主协办情况下，如果受让人是主办人，则将主办人guid设为任务变量
+        if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {
+            if (taskNext.getAssignee().equals(sponsorGuid)) {
+                vars.put(SysVariables.PARALLEL_SPONSOR, sponsorGuid);
+            }
+        }
+        return vars;
+    }
+
+    /**
+     * 构建签署部门详情
+     */
+    private SignDeptDetail buildSignDeptDetail(String tenantId, OrgUnit orgUnit, TaskModel task, TaskModel taskNext,
+        ProcessParam processParam) {
+        try {
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, taskNext.getAssignee()).getData();
+            if (bureau == null) {
+                return null;
+            }
+            SignDeptDetail signDeptDetail = new SignDeptDetail();
+            signDeptDetail.setProcessSerialNumber(processParam.getProcessSerialNumber());
+            signDeptDetail.setProcessInstanceId(processParam.getProcessInstanceId());
+            signDeptDetail.setExecutionId(taskNext.getExecutionId());
+            signDeptDetail.setTaskId(task.getId());
+            signDeptDetail.setTaskName(task.getName());
+            signDeptDetail.setSenderId(orgUnit.getId());
+            signDeptDetail.setSenderName(orgUnit.getName());
+            signDeptDetail.setDeptId(bureau.getId());
+            signDeptDetail.setDeptName(bureau.getName());
+            signDeptDetail.setTabIndex(bureau.getTabIndex());
+            return signDeptDetail;
         } catch (Exception e) {
-            LOGGER.warn("*****forwardingHandle发送发生异常*****", e);
+            LOGGER.warn("构建签署部门详情失败, taskId: {}", task.getId(), e);
+            return null;
         }
     }
 
@@ -373,7 +395,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         } else {
             for (Department dept : deptList) {
                 this.getSponsorPosition(id, dept.getId());
-                if (!id.equals("")) {
+                if (!id.isEmpty()) {
                     break;
                 }
             }
@@ -381,12 +403,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         return id;
     }
 
-    /**
-     * 保存意见历史记录
-     *
-     * @param oldOpinion
-     * @param opinionType
-     */
     @Async
     @Override
     public void saveOpinionHistory(final String tenantId, final Opinion oldOpinion, final String opinionType) {
@@ -414,11 +430,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         }
     }
 
-    /**
-     * 发送意见填写消息提醒
-     *
-     * @param processSerialNumber
-     */
     @Async
     @Override
     public void sendMsgRemind(final String tenantId, final String userId, final String processSerialNumber,
@@ -444,47 +455,37 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 OfficeDoneInfo officeDoneInfo =
                     officeDoneInfoService.findByProcessInstanceId(processParam.getProcessInstanceId());
                 for (String id : ids) {
-                    *//**
-                        * 参与该件的人才提醒
-                        *//*
-                          if (officeDoneInfo != null && officeDoneInfo.getAllUserId().contains(id)) {
-                           if (!newPersonIds.contains(id)) {
-                               newPersonIds = Y9Util.genCustomStr(newPersonIds, id);
-                           }
-                          }
-                          }
-                          if (StringUtils.isNotBlank(newPersonIds)) {
-                          ItemMsgRemindModel info = new ItemMsgRemindModel();
-                          info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                          info.setItemId(processParam.getItemId());
-                          info.setMsgType(ItemMsgRemindModel.MSG_TYPE_OPINION);
-                          info.setProcessInstanceId(processParam.getProcessInstanceId());
-                          info.setStartTime(sdf.format(date));
-                          info.setSystemName(processParam.getSystemName());
-                          info.setTitle(title);
-                          info.setTenantId(tenantId);
-                          info.setUrl(url);
-                          info.setUserName(orgUnit.getName());
-                          info.setTime(date.getTime());
-                          info.setReadUserId("");
-                          info.setAllUserId(newPersonIds);
-                          info.setContent(content);
-                          itemMsgRemindApi.saveMsgRemindInfo(tenantId, info);
-                          }
-                          }
-                          } catch (Exception e) {
-                          LOGGER.warn("*****sendMsgRemind发生异常*****", e);
-                          }*/
+                    //参与该件的人才提醒
+                              if (officeDoneInfo != null && officeDoneInfo.getAllUserId().contains(id)) {
+                               if (!newPersonIds.contains(id)) {
+                                   newPersonIds = Y9Util.genCustomStr(newPersonIds, id);
+                               }
+                              }
+                              }
+                              if (StringUtils.isNotBlank(newPersonIds)) {
+                              ItemMsgRemindModel info = new ItemMsgRemindModel();
+                              info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                              info.setItemId(processParam.getItemId());
+                              info.setMsgType(ItemMsgRemindModel.MSG_TYPE_OPINION);
+                              info.setProcessInstanceId(processParam.getProcessInstanceId());
+                              info.setStartTime(sdf.format(date));
+                              info.setSystemName(processParam.getSystemName());
+                              info.setTitle(title);
+                              info.setTenantId(tenantId);
+                              info.setUrl(url);
+                              info.setUserName(orgUnit.getName());
+                              info.setTime(date.getTime());
+                              info.setReadUserId("");
+                              info.setAllUserId(newPersonIds);
+                              info.setContent(content);
+                              itemMsgRemindApi.saveMsgRemindInfo(tenantId, info);
+                              }
+                              }
+                              } catch (Exception e) {
+                              LOGGER.warn("*****sendMsgRemind发生异常*****", e);
+                              }*/
     }
 
-    /**
-     * 启动流程后数据处理
-     *
-     * @param processSerialNumber
-     * @param taskId
-     * @param processInstanceId
-     * @param searchTerm
-     */
     @Async
     @Override
     public void startProcessHandle(final String tenantId, final String processSerialNumber, final String taskId,
@@ -496,7 +497,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 val.put("val", searchTerm);
                 variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId, "searchTerm", val);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.warn("*****startProcessHandle发生异常*****", e);
             }
             opinionRepository.update(processInstanceId, taskId, processSerialNumber);
             y9WordHistoryService.update(taskId, processSerialNumber);

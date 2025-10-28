@@ -71,7 +71,7 @@ public interface RoleService {
     List<ItemRoleOrgUnitModel> listPermUser(String itemId, String processDefinitionId, String taskDefKey,
         Integer principalType, String id, String processInstanceId);
 
-    List<OrgUnit> listPermUser4SUbmitTo(String itemId, String processDefinitionId, String taskDefKey,
+    List<OrgUnit> listPermUser4SubmitTo(String itemId, String processDefinitionId, String taskDefKey,
         String processInstanceId);
 
     /**

@@ -2155,7 +2155,7 @@ public class DocumentServiceImpl implements DocumentService {
         String routeToTaskName, String processInstanceId, String multiInstance) {
         Y9Result<List<String>> result = Y9Result.failure("解析人员失败");
         List<OrgUnit> orgUnitList =
-            roleService.listPermUser4SUbmitTo(itemId, processDefinitionId, routeToTaskId, processInstanceId);
+            roleService.listPermUser4SubmitTo(itemId, processDefinitionId, routeToTaskId, processInstanceId);
         if (orgUnitList.isEmpty()) {
             result.setMsg("目标路由【" + routeToTaskName + "】未授权人员");
             return result;
@@ -2314,10 +2314,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
             ItemTaskConf itemTaskConf = taskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
                 processDefinitionId, taskDefinitionKey);
-            ProcessParam processParam = null;
-            if (StringUtils.isNotBlank(processSerialNumber)) {
-                processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-            }
+            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             // 处理签收任务逻辑
             if (itemTaskConf != null && itemTaskConf.getSignTask()) {
                 return handleSignTask(model, processParam, itemId, processDefinitionId, taskDefinitionKey, tenantId);
@@ -2340,21 +2337,16 @@ public class DocumentServiceImpl implements DocumentService {
         boolean searchPerson = true;
         // 查找已分配的人员
         if (processParam != null && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
-            try {
-                List<HistoricTaskInstanceModel> hisTaskList = historictaskApi
-                    .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processParam.getProcessInstanceId(), "")
-                    .getData();
-
-                for (HistoricTaskInstanceModel hisTask : hisTaskList) {
-                    if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)
-                        && StringUtils.isNotBlank(hisTask.getAssignee())) {
-                        searchPerson = false;
-                        model.setUserChoice("6:" + hisTask.getAssignee());
-                        break;
-                    }
+            List<HistoricTaskInstanceModel> hisTaskList = historictaskApi
+                .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processParam.getProcessInstanceId(), "")
+                .getData();
+            for (HistoricTaskInstanceModel hisTask : hisTaskList) {
+                if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)
+                    && StringUtils.isNotBlank(hisTask.getAssignee())) {
+                    searchPerson = false;
+                    model.setUserChoice("6:" + hisTask.getAssignee());
+                    break;
                 }
-            } catch (Exception e) {
-                LOGGER.warn("查询历史任务失败", e);
             }
         }
         // 如果未找到已分配人员，则从权限配置中获取
@@ -2367,7 +2359,6 @@ public class DocumentServiceImpl implements DocumentService {
                 model.setUserChoice(buildUserChoice(orgUnitList));
             }
         }
-
         return model;
     }
 

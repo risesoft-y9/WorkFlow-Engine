@@ -120,30 +120,63 @@ public class Process4SearchServiceImpl implements Process4SearchService {
      * 设置流程参数相关信息
      */
     private void setProcessParamInfo(OfficeDoneInfo officeDoneInfo, ProcessParam processParam) {
-        if (StringUtils.isNotBlank(processParam.getId())) {
-            officeDoneInfo.setDocNumber(
-                StringUtils.isNotBlank(processParam.getCustomNumber()) ? processParam.getCustomNumber() : "");
-            officeDoneInfo.setItemId(StringUtils.isNotBlank(processParam.getItemId()) ? processParam.getItemId() : "");
-            officeDoneInfo
-                .setItemName(StringUtils.isNotBlank(processParam.getItemName()) ? processParam.getItemName() : "");
-            officeDoneInfo.setProcessSerialNumber(StringUtils.isNotBlank(processParam.getProcessSerialNumber())
-                ? processParam.getProcessSerialNumber() : "");
-            officeDoneInfo.setSystemCnName(
-                StringUtils.isNotBlank(processParam.getSystemCnName()) ? processParam.getSystemCnName() : "");
-            officeDoneInfo.setSystemName(
-                StringUtils.isNotBlank(processParam.getSystemName()) ? processParam.getSystemName() : "");
-            officeDoneInfo.setTitle(StringUtils.isNotBlank(processParam.getTitle()) ? processParam.getTitle() : "");
-            officeDoneInfo
-                .setUrgency(StringUtils.isNotBlank(processParam.getCustomLevel()) ? processParam.getCustomLevel() : "");
-            officeDoneInfo
-                .setCreatUserId(StringUtils.isNotBlank(processParam.getStartor()) ? processParam.getStartor() : "");
-            officeDoneInfo.setCreatUserName(
-                StringUtils.isNotBlank(processParam.getStartorName()) ? processParam.getStartorName() : "");
+        if (StringUtils.isBlank(processParam.getId())) {
+            // 如果ID为空，设置默认值并返回
+            setDefaultValues(officeDoneInfo, processParam);
+            return;
         }
+
+        // 设置各个字段值
+        setFieldValues(officeDoneInfo, processParam);
+    }
+
+    /**
+     * 设置默认值
+     */
+    private void setDefaultValues(OfficeDoneInfo officeDoneInfo, ProcessParam processParam) {
+        officeDoneInfo.setDocNumber("");
+        officeDoneInfo.setItemId("");
+        officeDoneInfo.setItemName("");
+        officeDoneInfo.setProcessSerialNumber("");
+        officeDoneInfo.setSystemCnName("");
+        officeDoneInfo.setSystemName("");
+        officeDoneInfo.setTitle("");
+        officeDoneInfo.setUrgency("");
+        officeDoneInfo.setCreatUserId("");
+        officeDoneInfo.setCreatUserName("");
+
         officeDoneInfo.setUserComplete("");
         officeDoneInfo.setAllUserId(processParam.getStartor());
         officeDoneInfo.setEndTime(null);
         officeDoneInfo.setEntrustUserId("");
+    }
+
+    /**
+     * 设置字段值
+     */
+    private void setFieldValues(OfficeDoneInfo officeDoneInfo, ProcessParam processParam) {
+        officeDoneInfo.setDocNumber(getValueOrDefault(processParam.getCustomNumber()));
+        officeDoneInfo.setItemId(getValueOrDefault(processParam.getItemId()));
+        officeDoneInfo.setItemName(getValueOrDefault(processParam.getItemName()));
+        officeDoneInfo.setProcessSerialNumber(getValueOrDefault(processParam.getProcessSerialNumber()));
+        officeDoneInfo.setSystemCnName(getValueOrDefault(processParam.getSystemCnName()));
+        officeDoneInfo.setSystemName(getValueOrDefault(processParam.getSystemName()));
+        officeDoneInfo.setTitle(getValueOrDefault(processParam.getTitle()));
+        officeDoneInfo.setUrgency(getValueOrDefault(processParam.getCustomLevel()));
+        officeDoneInfo.setCreatUserId(getValueOrDefault(processParam.getStartor()));
+        officeDoneInfo.setCreatUserName(getValueOrDefault(processParam.getStartorName()));
+
+        officeDoneInfo.setUserComplete("");
+        officeDoneInfo.setAllUserId(processParam.getStartor());
+        officeDoneInfo.setEndTime(null);
+        officeDoneInfo.setEntrustUserId("");
+    }
+
+    /**
+     * 获取值或默认值
+     */
+    private String getValueOrDefault(String value) {
+        return StringUtils.isNotBlank(value) ? value : "";
     }
 
     /**
@@ -252,28 +285,55 @@ public class Process4SearchServiceImpl implements Process4SearchService {
     private void handleParticipantInfo(OfficeDoneInfo officeDoneInfo, String tenantId, String processInstanceId) {
         String sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = ?";
         List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, processInstanceId);
-        String allUserId = "";
-        String deptIds = "";
+
+        ParticipantInfo participantInfo = new ParticipantInfo();
 
         for (Map<String, Object> m : list) {
-            String userId = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
-            if (userId.contains(":")) {
-                userId = userId.split(":")[0];
-            }
-            if (StringUtils.isNotEmpty(userId) && !allUserId.contains(userId)) {
-                allUserId = Y9Util.genCustomStr(allUserId, userId);
-            }
+            String userId = extractUserId(m);
             if (StringUtils.isNotEmpty(userId)) {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-                if (orgUnit != null && orgUnit.getId() != null) {
-                    if (!deptIds.contains(orgUnit.getParentId())) {
-                        deptIds = Y9Util.genCustomStr(deptIds, orgUnit.getParentId());
-                    }
-                }
+                processUserInfo(participantInfo, userId, tenantId);
             }
         }
-        officeDoneInfo.setDeptId(deptIds);
-        officeDoneInfo.setAllUserId(allUserId);
+
+        officeDoneInfo.setDeptId(participantInfo.deptIds);
+        officeDoneInfo.setAllUserId(participantInfo.allUserId);
+    }
+
+    /**
+     * 从结果集中提取用户ID
+     */
+    private String extractUserId(Map<String, Object> resultMap) {
+        String userId = resultMap.get("USER_ID_") != null ? (String)resultMap.get("USER_ID_") : "";
+        if (userId.contains(":")) {
+            userId = userId.split(":")[0];
+        }
+        return userId;
+    }
+
+    /**
+     * 处理用户信息
+     */
+    private void processUserInfo(ParticipantInfo participantInfo, String userId, String tenantId) {
+        // 处理用户ID
+        if (!participantInfo.allUserId.contains(userId)) {
+            participantInfo.allUserId = Y9Util.genCustomStr(participantInfo.allUserId, userId);
+        }
+
+        // 处理部门信息
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        if (orgUnit != null && orgUnit.getId() != null) {
+            if (!participantInfo.deptIds.contains(orgUnit.getParentId())) {
+                participantInfo.deptIds = Y9Util.genCustomStr(participantInfo.deptIds, orgUnit.getParentId());
+            }
+        }
+    }
+
+    /**
+     * 参与人信息容器类
+     */
+    private static class ParticipantInfo {
+        String allUserId = "";
+        String deptIds = "";
     }
 
     // 内部类用于封装流程实例信息

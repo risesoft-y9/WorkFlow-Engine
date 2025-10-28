@@ -297,24 +297,23 @@ public class FormDataServiceImpl implements FormDataService {
         for (Map<String, Object> map : listMap) {
             String keyValue = findValueIgnoreCase(map, key);
             if (keyValue != null) {
-                if (mergedMap.containsKey(keyValue)) {
-                    // 如果已存在该key值，合并两个map，优先保留非null值
-                    Map<String, Object> existingMap = mergedMap.get(keyValue);
-                    for (Map.Entry<String, Object> entry : map.entrySet()) {
-                        String entryKey = entry.getKey();
-                        Object entryValue = entry.getValue();
-                        // 如果新值不为null，或者原值为null，则更新
-                        if (entryValue != null || existingMap.get(entryKey) == null) {
-                            existingMap.put(entryKey, entryValue);
-                        }
-                    }
-                } else {
-                    // 如果不存在该key值，添加新的map
-                    mergedMap.put(keyValue, new HashMap<>(map));
-                }
+                mergedMap.merge(keyValue, new HashMap<>(map),
+                    (existingMap, newMap) -> mergeTwoMaps(existingMap, newMap));
             }
         }
         return mergedMap;
+    }
+
+    private Map<String, Object> mergeTwoMaps(Map<String, Object> existingMap, Map<String, Object> newMap) {
+        for (Map.Entry<String, Object> entry : newMap.entrySet()) {
+            String entryKey = entry.getKey();
+            Object entryValue = entry.getValue();
+            // 如果新值不为null，或者原值为null，则更新
+            if (entryValue != null || existingMap.get(entryKey) == null) {
+                existingMap.put(entryKey, entryValue);
+            }
+        }
+        return existingMap;
     }
 
     private String findValueIgnoreCase(Map<String, Object> map, String key) {
@@ -706,46 +705,79 @@ public class FormDataServiceImpl implements FormDataService {
     public Y9Result<String> updateFormData(String guid, String formData) {
         try {
             Map<String, Object> dataMap = Y9JsonUtil.readHashMap(formData);
-            assert dataMap != null;
-            List<Y9Table> tableList = new ArrayList<>();
-            for (String key : dataMap.keySet()) {
-                if (key.contains(".")) {
-                    String[] aliasColumnNameType = key.split("\\.");
-                    String alias = aliasColumnNameType[0];
-                    Y9Table y9Table = y9TableService.findByTableAlias(alias);
-                    if (null == y9Table) {
-                        return Y9Result.failure("表简称对应的字段不存在：{}", alias);
-                    }
-                    if (!tableList.contains(y9Table)) {
-                        tableList.add(y9Table);
-                    }
-                } else {
-                    return Y9Result.failure("字段未包含表简称：{}", key);
+            if (dataMap == null) {
+                return Y9Result.failure("表单数据格式错误");
+            }
+            // 验证并获取表信息
+            List<Y9Table> tableList = validateAndExtractTables(dataMap);
+            if (tableList == null) {
+                return Y9Result.failure("字段验证失败");
+            }
+            // 更新各表数据
+            for (Y9Table table : tableList) {
+                Y9Result<String> updateResult = updateTableData(table, guid, dataMap);
+                if (!updateResult.isSuccess()) {
+                    return updateResult;
                 }
             }
-            tableList.forEach(table -> {
-                StringBuilder updateSql = new StringBuilder();
-                StringBuilder sql = new StringBuilder();
-                updateSql.append("UPDATE ")
-                    .append(table.getTableName())
-                    .append(" ")
-                    .append(table.getTableAlias())
-                    .append("  SET ");
-                for (String key : dataMap.keySet()) {
-                    if (key.contains(table.getTableAlias() + ".")) {
-                        if (sql.length() != 0) {
-                            sql.append(",");
-                        }
-                        sql.append(key).append("='").append(dataMap.get(key)).append("'");
-                    }
-                }
-                updateSql.append(sql).append(" WHERE guid='").append(guid).append("'");
-                jdbcTemplate.execute(updateSql.toString());
-            });
             return Y9Result.success("操作成功");
         } catch (Exception e) {
-            LOGGER.error("****************************[updateFormData]更新表单数据异常，表单数据：{}", formData);
+            LOGGER.error("[updateFormData]更新表单数据异常，表单数据：{}", formData, e);
+            return Y9Result.failure("更新数据异常：" + e.getMessage());
         }
-        return Y9Result.failure("发生异常");
+    }
+
+    /**
+     * 验证字段并提取涉及的表
+     */
+    private List<Y9Table> validateAndExtractTables(Map<String, Object> dataMap) {
+        List<Y9Table> tableList = new ArrayList<>();
+        for (String key : dataMap.keySet()) {
+            if (!key.contains(".")) {
+                LOGGER.warn("字段未包含表简称：{}", key);
+                return null;
+            }
+            String[] aliasColumnNameType = key.split("\\.");
+            String alias = aliasColumnNameType[0];
+            Y9Table y9Table = y9TableService.findByTableAlias(alias);
+            if (null == y9Table) {
+                LOGGER.warn("表简称对应的表不存在：{}", alias);
+                return null;
+            }
+            if (!tableList.contains(y9Table)) {
+                tableList.add(y9Table);
+            }
+        }
+        return tableList;
+    }
+
+    /**
+     * 更新单个表的数据
+     */
+    private Y9Result<String> updateTableData(Y9Table table, String guid, Map<String, Object> dataMap) {
+        try {
+            StringBuilder updateSql = new StringBuilder();
+            List<Object> parameters = new ArrayList<>();
+            updateSql.append("UPDATE ").append(table.getTableName()).append(" SET ");
+            StringBuilder setClause = new StringBuilder();
+            for (Map.Entry<String, Object> entry : dataMap.entrySet()) {
+                String key = entry.getKey();
+                if (key.startsWith(table.getTableAlias() + ".")) {
+                    if (setClause.length() > 0) {
+                        setClause.append(", ");
+                    }
+                    String columnName = key.substring(key.indexOf(".") + 1);
+                    setClause.append(columnName).append(" = ?");
+                    parameters.add(entry.getValue());
+                }
+            }
+            updateSql.append(setClause).append(" WHERE guid = ?");
+            parameters.add(guid);
+            jdbcTemplate.update(updateSql.toString(), parameters.toArray());
+            return Y9Result.success("更新成功");
+        } catch (Exception e) {
+            LOGGER.error("更新表{}数据失败", table.getTableName(), e);
+            return Y9Result.failure("更新表" + table.getTableName() + "数据失败：" + e.getMessage());
+        }
     }
 }

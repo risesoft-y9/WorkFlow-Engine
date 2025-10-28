@@ -45,6 +45,8 @@ public enum ItemBoxTypeEnum {
     /** 阅件 */
     YUE_JIAN("yuejian", "阅件"),
 
+    PAUSE("pause", "暂停件"),
+
     TODO_CHAOSONG("todoChaosong", "监控阅件"),
 
     DONE_CHAOSONG("doneChaosong", "监控阅件"),

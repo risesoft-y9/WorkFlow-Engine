@@ -44,7 +44,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     private final Y9TableFieldRepository y9TableFieldRepository;
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> deleteFormFieldBind(String id) {
         try {
             y9FormFieldRepository.deleteById(id);
@@ -56,7 +56,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<String> deleteByFormId(String formId) {
         try {
             y9FormFieldRepository.deleteByFormId(formId);
@@ -172,58 +172,93 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     @Transactional
     public Y9Result<String> saveFormFieldBind(String formId, String tableId, String tableName, Boolean isAppend,
         String fieldJson) {
-        List<Y9FormField> addFieldList = new ArrayList<>();
-        String updatedJson = "";
         try {
             List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fieldJson, String.class, Object.class);
+            if (listMap == null) {
+                return Y9Result.failure("字段JSON数据格式错误");
+            }
             Y9Form y9Form = y9FormRepository.findById(formId).orElse(null);
-            if (null != y9Form && StringUtils.isNotBlank(y9Form.getFormJson())) {
-                for (Map<String, Object> map : listMap) {
-                    String fieldName = (String)map.get("fieldName");
-                    List<Y9FormField> fieldList = y9FormFieldRepository.findByFormIdAndFieldName(formId, fieldName);
-                    if (fieldList.size() == 0) {
-                        Y9FormField formField = new Y9FormField();
-                        formField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                        formField.setFieldCnName((String)map.get("fieldCnName"));
-                        formField.setFieldName(fieldName);
-                        formField.setFieldType((String)map.get("fieldType"));
-                        formField.setFormId(formId);
-                        formField.setTableId((String)map.get("tableId"));
-                        formField.setTableName((String)map.get("tableName"));
-                        formField.setQuerySign((String)map.get("querySign"));
-                        formField.setQueryType((String)map.get("queryType"));
-                        formField.setOptionValue((String)map.get("optionValue"));
-                        y9FormFieldRepository.save(formField);
-                        addFieldList.add(formField);
-                    }
-                }
-                if (isAppend) { // 追加字段，解析表单设计formJson,在list后面插入追加字段的组件信息
-                    if (null != addFieldList && !addFieldList.isEmpty()) {
-                        String formJson = y9Form.getFormJson();
-                        Map<String, Object> jsonMap = Y9JsonUtil.readValue(formJson, Map.class);
-                        List<Map<String, Object>> formList = (List<Map<String, Object>>)jsonMap.get("list");
-
-                        for (Y9FormField field : addFieldList) {
-                            String fieldName = field.getFieldName();
-                            Map<String, Object> newField = appendJson(fieldName, field.getFieldCnName(), tableName);
-                            formList.add(newField); // 添加到最后
-                        }
-                        // 更新 formJson
-                        jsonMap.put("list", formList);
-                        updatedJson = Y9JsonUtil.writeValueAsString(jsonMap);
-                        y9Form.setFormJson(updatedJson);
-                        LOGGER.info("################################################更新表单设计数据成功:" + updatedJson);
-                        y9FormRepository.save(y9Form);
-                    }
-                }
-            } else {
+            if (y9Form == null || StringUtils.isBlank(y9Form.getFormJson())) {
                 return Y9Result.failure("表单不存在或者表单设计数据为空");
             }
+            List<Y9FormField> addFieldList = saveNewFormFields(formId, listMap);
+
+            if (Boolean.TRUE.equals(isAppend) && !addFieldList.isEmpty()) {
+                updateFormDesignJson(y9Form, addFieldList, tableName);
+            }
+            return Y9Result.success("保存表单字段以及自动插入表单组件");
         } catch (Exception e) {
             LOGGER.error("保存表单字段以及自动插入表单组件失败", e);
-            return Y9Result.failure("保存表单字段以及自动插入表单组件失败");
+            return Y9Result.failure("保存表单字段以及自动插入表单组件失败: " + e.getMessage());
         }
-        return Y9Result.success("保存表单字段以及自动插入表单组件");
+    }
+
+    /**
+     * 保存新的表单字段
+     */
+    private List<Y9FormField> saveNewFormFields(String formId, List<Map<String, Object>> listMap) {
+        List<Y9FormField> addFieldList = new ArrayList<>();
+
+        for (Map<String, Object> map : listMap) {
+            String fieldName = (String)map.get("fieldName");
+            List<Y9FormField> fieldList = y9FormFieldRepository.findByFormIdAndFieldName(formId, fieldName);
+
+            if (fieldList.isEmpty()) {
+                Y9FormField formField = createFormField(formId, map);
+                y9FormFieldRepository.save(formField);
+                addFieldList.add(formField);
+            }
+        }
+
+        return addFieldList;
+    }
+
+    /**
+     * 创建表单字段实体
+     */
+    private Y9FormField createFormField(String formId, Map<String, Object> fieldData) {
+        Y9FormField formField = new Y9FormField();
+        formField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        formField.setFieldCnName((String)fieldData.get("fieldCnName"));
+        formField.setFieldName((String)fieldData.get("fieldName"));
+        formField.setFieldType((String)fieldData.get("fieldType"));
+        formField.setFormId(formId);
+        formField.setTableId((String)fieldData.get("tableId"));
+        formField.setTableName((String)fieldData.get("tableName"));
+        formField.setQuerySign((String)fieldData.get("querySign"));
+        formField.setQueryType((String)fieldData.get("queryType"));
+        formField.setOptionValue((String)fieldData.get("optionValue"));
+        return formField;
+    }
+
+    /**
+     * 更新表单设计JSON
+     */
+    @SuppressWarnings("unchecked")
+    private void updateFormDesignJson(Y9Form y9Form, List<Y9FormField> addFieldList, String tableName) {
+        try {
+            String formJson = y9Form.getFormJson();
+            Map<String, Object> jsonMap = Y9JsonUtil.readValue(formJson, Map.class);
+            assert jsonMap != null;
+            List<Map<String, Object>> formList = (List<Map<String, Object>>)jsonMap.get("list");
+            if (formList != null) {
+                for (Y9FormField field : addFieldList) {
+                    String fieldName = field.getFieldName();
+                    Map<String, Object> newField = appendJson(fieldName, field.getFieldCnName(), tableName);
+                    formList.add(newField);
+                }
+
+                jsonMap.put("list", formList);
+                String updatedJson = Y9JsonUtil.writeValueAsString(jsonMap);
+                y9Form.setFormJson(updatedJson);
+                y9FormRepository.save(y9Form);
+
+                LOGGER.info("更新表单设计数据成功:{}", updatedJson);
+            }
+        } catch (Exception e) {
+            LOGGER.error("更新表单设计JSON失败", e);
+            throw new RuntimeException("更新表单设计JSON失败", e);
+        }
     }
 
     private Map<String, Object> appendJson(String fieldName, String fieldCName, String tableName) {
@@ -286,7 +321,7 @@ public class Y9FormFieldServiceImpl implements Y9FormFieldService {
     /**
      * 生成随机的key 获取字母和数字组合的随机字符串
      *
-     * @return
+     * @return 随机字符串
      */
     private String generateRandomKey() {
         int length = 10;

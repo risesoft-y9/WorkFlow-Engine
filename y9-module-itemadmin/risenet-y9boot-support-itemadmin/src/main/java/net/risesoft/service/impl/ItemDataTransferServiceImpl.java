@@ -13,28 +13,29 @@ import org.springframework.stereotype.Service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 
-import net.risesoft.api.platform.org.OrgUnitApi;
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ItemDataTransferService;
+import net.risesoft.service.UtilService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9Util;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 public class ItemDataTransferServiceImpl implements ItemDataTransferService {
 
@@ -46,23 +47,23 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
 
     private final RepositoryApi repositoryApi;
 
-    private final OrgUnitApi orgUnitApi;
-
     private final ProcessParamService processParamService;
+
+    private final UtilService utilService;
 
     public ItemDataTransferServiceImpl(
         @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
         RuntimeApi runtimeApi,
         TaskApi taskApi,
         RepositoryApi repositoryApi,
-        OrgUnitApi orgUnitApi,
-        ProcessParamService processParamService) {
+        ProcessParamService processParamService,
+        UtilService utilService) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.runtimeApi = runtimeApi;
         this.taskApi = taskApi;
         this.repositoryApi = repositoryApi;
-        this.orgUnitApi = orgUnitApi;
         this.processParamService = processParamService;
+        this.utilService = utilService;
     }
 
     @Override
@@ -126,32 +127,6 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
         jdbcTemplate4Tenant.update(sql, latestProcessDefinitionId, processDefinitionId);
     }
 
-    private String getAssigneeIdsAndAssigneeNames(List<TaskModel> taskList) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String assigneeNames = "";
-        int i = 0;
-        if (!taskList.isEmpty()) {
-            for (TaskModel task : taskList) {
-                String assignee = task.getAssignee();
-                if (i < 5) {
-                    if (StringUtils.isNotBlank(assignee)) {
-                        OrgUnit personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-                        if (personTemp != null) {
-                            // 并行时，领导选取时存在顺序，因此这里也存在顺序
-                            assigneeNames = Y9Util.genCustomStr(assigneeNames, personTemp.getName(), "、");
-                            i += 1;
-                        }
-                    }
-                }
-            }
-            boolean b = taskList.size() > 5;
-            if (b) {
-                assigneeNames += "等，共" + taskList.size() + "人";
-            }
-        }
-        return assigneeNames;
-    }
-
     @Override
     public Y9Page<Map<String, Object>> pageByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId,
         Integer page, Integer rows) {
@@ -176,10 +151,10 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
                     StringUtils.isBlank(processParam.getCustomNumber()) ? "" : processParam.getCustomNumber());
                 mapTemp.put("startorName", processParam.getStartorName());
                 List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                String assigneeNames = getAssigneeIdsAndAssigneeNames(taskList);
+                String assigneeNames = utilService.getAssigneeNames(taskList, null);
                 mapTemp.put("assigneeNames", assigneeNames);
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.error("获取具体业务数据错误，processInstanceId={}", processInstance.getId(), e);
             }
             items.add(mapTemp);
         }
