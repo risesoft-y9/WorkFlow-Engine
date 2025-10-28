@@ -29,8 +29,6 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.user.UserInfo;
-import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.DraftEntityRepository;
 import net.risesoft.service.DraftEntityService;
 import net.risesoft.service.attachment.AttachmentService;
@@ -236,101 +234,82 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         }
     }
 
-    @Transactional
     @Override
+    @Transactional
     public void saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number,
         String level, String title, String type) {
-        if (StringUtils.isNotBlank(processSerialNumber)) {
-            DraftEntity draft = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
-            String urgency = level == null || level.isEmpty() ? "一般" : level;
-            if (draft != null && draft.getId() != null) {
-                draft.setDraftTime(new Date());
-                draft.setUrgency(urgency);
-                draft.setDocNumber(number);
-                draft.setTitle(title);
-                if (StringUtils.isNotBlank(type)) {
-                    draft.setType(type);
-                }
-                draft.setSerialNumber(1);
-            } else {
-                // 保存草稿
-                draft = new DraftEntity();
-                draft.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                draft.setProcessSerialNumber(processSerialNumber);
-                draft.setItemId(itemId);
-                draft.setProcessDefinitionKey(processDefinitionKey);
-                draft.setCreaterId(Y9LoginUserHolder.getOrgUnitId());
-                OrgUnit orgUnit = orgUnitApi
-                    .getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnitId())
-                    .getData();
-                draft.setCreater(orgUnit.getName());
-                draft.setDelFlag(false);
-                draft.setDraftTime(new Date());
-                draft.setUrgency(urgency);
-                draft.setDocNumber(number);
-                draft.setTitle(title);
-                if (StringUtils.isNotBlank(type)) {
-                    draft.setType(type);
-                }
-                Item item = itemService.findById(itemId);
-                if (null != item) {
-                    if (StringUtils.isBlank(type)) {
-                        draft.setType(item.getSystemName());
-                    }
-                    draft.setSystemName(item.getSysLevel());
-                }
-            }
-            draftEntityRepository.save(draft);
+        if (StringUtils.isBlank(processSerialNumber)) {
+            return;
         }
+
+        DraftEntity draft = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
+        String urgency = StringUtils.defaultIfBlank(level, "一般");
+
+        if (draft != null && draft.getId() != null) {
+            updateExistingDraft(draft, number, urgency, title, type);
+        } else {
+            draft = createNewDraft(itemId, processSerialNumber, processDefinitionKey, number, urgency, title, type);
+        }
+
+        draftEntityRepository.save(draft);
     }
 
-    @Transactional
-    @Override
-    public Y9Result<Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey,
-        String number, String level, String title, String jijian, String type) {
-        try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            if (StringUtils.isNotBlank(processSerialNumber)) {
-                DraftEntity draft = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
-                if (draft != null && draft.getId() != null) {
-                    draft.setDraftTime(new Date());
-                    draft.setUrgency(jijian == null || jijian.isEmpty() ? null : "51");
-                    draft.setDocNumber(number);
-                    draft.setTitle(title);
-                    if (StringUtils.isNotBlank(type)) {
-                        draft.setType(type);
-                    }
-                    draft.setSerialNumber(1);
-                } else {// 保存草稿
-                    draft = new DraftEntity();
-                    draft.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    draft.setProcessSerialNumber(processSerialNumber);
-                    draft.setItemId(itemId);
-                    draft.setProcessDefinitionKey(processDefinitionKey);
-                    draft.setCreaterId(person.getPersonId());
-                    draft.setCreater(person.getName());
-                    draft.setDelFlag(false);
-                    draft.setDraftTime(new Date());
-                    draft.setUrgency(jijian == null || jijian.isEmpty() ? null : "51");
-                    draft.setDocNumber(number);
-                    draft.setTitle(title);
-                    if (StringUtils.isNotBlank(type)) {
-                        draft.setType(type);
-                    }
-                    Item item = itemService.findById(itemId);
-                    if (null != item) {
-                        if (StringUtils.isBlank(type)) {
-                            draft.setType(item.getSystemName());
-                        }
-                        draft.setSystemName(item.getSysLevel());
-                    }
-                }
-                draftEntityRepository.save(draft);
+    /**
+     * 更新已存在的草稿
+     */
+    private void updateExistingDraft(DraftEntity draft, String number, String urgency, String title, String type) {
+        draft.setDraftTime(new Date());
+        draft.setUrgency(urgency);
+        draft.setDocNumber(number);
+        draft.setTitle(title);
+        if (StringUtils.isNotBlank(type)) {
+            draft.setType(type);
+        }
+        draft.setSerialNumber(1);
+    }
+
+    /**
+     * 创建新的草稿
+     */
+    private DraftEntity createNewDraft(String itemId, String processSerialNumber, String processDefinitionKey,
+        String number, String urgency, String title, String type) {
+        DraftEntity draft = new DraftEntity();
+        draft.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        draft.setProcessSerialNumber(processSerialNumber);
+        draft.setItemId(itemId);
+        draft.setProcessDefinitionKey(processDefinitionKey);
+        draft.setCreaterId(Y9LoginUserHolder.getOrgUnitId());
+
+        OrgUnit orgUnit =
+            orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnitId())
+                .getData();
+        draft.setCreater(orgUnit.getName());
+        draft.setDelFlag(false);
+        draft.setDraftTime(new Date());
+        draft.setUrgency(urgency);
+        draft.setDocNumber(number);
+        draft.setTitle(title);
+
+        // 设置类型信息
+        setTypeAndSystemInfo(draft, type, itemId);
+
+        return draft;
+    }
+
+    /**
+     * 设置类型和系统信息
+     */
+    private void setTypeAndSystemInfo(DraftEntity draft, String type, String itemId) {
+        if (StringUtils.isNotBlank(type)) {
+            draft.setType(type);
+        }
+
+        Item item = itemService.findById(itemId);
+        if (item != null) {
+            if (StringUtils.isBlank(type)) {
+                draft.setType(item.getSystemName());
             }
-            return Y9Result.successMsg("保存成功");
-        } catch (Exception e) {
-            LOGGER.error("保存草稿失败", e);
-            return Y9Result.failure("保存草稿失败");
+            draft.setSystemName(item.getSysLevel());
         }
     }
 }

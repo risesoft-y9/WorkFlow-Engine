@@ -3,8 +3,10 @@ package net.risesoft.service.impl;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -263,106 +265,92 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
           1、查找源租户是否存在日历配置
          */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        CalendarConfig sourcecc = calendarConfigService.findByYear(String.valueOf(Calendar.YEAR));
-        if (null == sourcecc) {
+        CalendarConfig calendarConfig = calendarConfigService.findByYear(String.valueOf(Calendar.YEAR));
+        if (null == calendarConfig) {
             return;
         }
         /*
           2、复制源租户的日历配置到目标租户
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        CalendarConfig targetcc = calendarConfigService.findByYear(String.valueOf(Calendar.YEAR));
-        if (null != targetcc) {
+        CalendarConfig targetCalendarConfig = calendarConfigService.findByYear(String.valueOf(Calendar.YEAR));
+        if (null != targetCalendarConfig) {
             return;
         }
-        calendarConfigService.saveOrUpdate(sourcecc);
+        calendarConfigService.saveOrUpdate(calendarConfig);
     }
 
     @Override
     @Transactional
     public void copyCommonButton(String sourceTenantId, String targetTenantId, String itemId) {
-        /*
-          1、查找源租户是否存在普通按钮
-         */
-        Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<CommonButton> sourcecbList = commonButtonService.listAll();
-        if (sourcecbList.isEmpty()) {
+        // 1. 查找并复制源租户的普通按钮
+        List<CommonButton> sourceButtons = getSourceCommonButtons(sourceTenantId);
+        if (sourceButtons.isEmpty()) {
             return;
         }
-        /*
-          2、复制源租户的普通按钮到目标租户
-         */
-        Y9LoginUserHolder.setTenantId(targetTenantId);
-        for (CommonButton cb : sourcecbList) {
-            commonButtonService.saveOrUpdate(cb);
-        }
-        /*
-          3、复制该事项源租户的普通按钮和事项的绑定关系以及权限到目标租户
-         */
-        /*
-          3.1、先查找绑定关系
-         */
-        Y9LoginUserHolder.setTenantId(targetTenantId);
-        Item item = itemService.findById(itemId);
-        String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd =
-            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
-        String targetpdId = targetpd.getId();
 
-        List<ItemButtonBind> targetBindList = itemButtonBindService
-            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.COMMON, targetpdId);
-        if (!targetBindList.isEmpty()) {
-            return;
-        }
+        // 2. 复制普通按钮到目标租户
+        copyCommonButtonsToTargetTenant(targetTenantId, sourceButtons);
+
+        // 3. 复制按钮绑定关系和权限
+        copyButtonBindingsAndPermissions(sourceTenantId, targetTenantId, itemId, ItemButtonTypeEnum.COMMON);
+    }
+
+    /**
+     * 获取源租户的普通按钮列表
+     */
+    private List<CommonButton> getSourceCommonButtons(String sourceTenantId) {
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd =
-            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
-        String sourcepdId = sourcepd.getId();
-        List<ItemButtonBind> sourceBindList = itemButtonBindService
-            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.COMMON, sourcepdId);
-        if (sourceBindList.isEmpty()) {
-            return;
+        return commonButtonService.listAll();
+    }
+
+    /**
+     * 复制普通按钮到目标租户
+     */
+    private void copyCommonButtonsToTargetTenant(String targetTenantId, List<CommonButton> sourceButtons) {
+        Y9LoginUserHolder.setTenantId(targetTenantId);
+        for (CommonButton button : sourceButtons) {
+            commonButtonService.saveOrUpdate(button);
         }
-        /*
-          3.2、获取目标租户的事项管理系统的角色
-         */
+    }
+
+    /**
+     * 获取目标租户角色信息
+     */
+    private RoleInfo getTargetTenantRoleInfo(String targetTenantId) {
         System system = systemApi.getByName(Y9Context.getSystemName()).getData();
         Role tenantRole = roleApi.getRole(targetTenantId).getData();
         Role tenantSystemRole = roleApi.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
-        String parentId = tenantSystemRole.getId();
 
-        /*
-          3.3、先保存绑定关系再更新绑定的角色
-          把绑定的角色复制到目标租户中去，父节点为3.2中获取的角色，目标租户创建新角色时，为了避免重复创建的问题，用源角色id作为新角色的customId，每次要创建的时候，查找一下是否存在
-          因为所有角色在同一张表，确保id的唯一性，所以复制的角色要更改角色Id,并把新老角色id的对应关系传递给权限复制，用来替换调老的角色id
-         */
-        List<ItemButtonRole> roleList = null;
-        Role oldRole = null, newRoleTemp = null;
-        String newRoleId = null, roleId = null;
-        Organization organization =
-            orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
-        for (ItemButtonBind bind : sourceBindList) {
-            /* 保存绑定关系 */
-            bind.setProcessDefinitionId(targetpdId);
-            itemButtonBindService.save(bind);
+        RoleInfo roleInfo = new RoleInfo();
+        roleInfo.parentId = tenantSystemRole.getId();
+        roleInfo.organization = orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
 
-            /* 更新绑定角色 */
-            roleList = itemButtonRoleService.listByItemButtonId(bind.getId());
-            for (ItemButtonRole role : roleList) {
-                roleId = role.getId();
-                oldRole = roleApi.getRole(roleId).getData();
-                if (null != oldRole && null != oldRole.getId()) {
-                    newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, parentId).getData();
-                    if (null == newRoleTemp || null == newRoleTemp.getId()) {
-                        newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                        /* 把申请人所在的租户机构添加到角色 */
-                        roleApi.addPerson(organization.getId(), newRoleId, targetTenantId);
-                    } else {
-                        newRoleId = newRoleTemp.getId();
-                    }
+        return roleInfo;
+    }
 
-                    itemButtonRoleService.saveOrUpdate(bind.getId(), newRoleId);
+    /**
+     * 复制绑定角色
+     */
+    private void copyBindingRoles(ItemButtonBind binding, RoleInfo roleInfo, String targetTenantId) {
+        List<ItemButtonRole> roleList = itemButtonRoleService.listByItemButtonId(binding.getId());
+
+        for (ItemButtonRole role : roleList) {
+            String roleId = role.getId();
+            Role oldRole = roleApi.getRole(roleId).getData();
+            if (oldRole != null && oldRole.getId() != null) {
+                Role newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, roleInfo.parentId).getData();
+                String newRoleId;
+
+                if (newRoleTemp == null || newRoleTemp.getId() == null) {
+                    newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+                    // 把申请人所在的租户机构添加到角色
+                    roleApi.addPerson(roleInfo.organization.getId(), newRoleId, targetTenantId);
+                } else {
+                    newRoleId = newRoleTemp.getId();
                 }
+
+                itemButtonRoleService.saveOrUpdate(binding.getId(), newRoleId);
             }
         }
     }
@@ -388,168 +376,249 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     @Override
     @Transactional
     public void copyForm(String sourceTenantId, String targetTenantId, String itemId) {
-        /*
-         * 1、源租户的字典类型和字典值，
-         */
-        Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<Y9FormOptionClass> targetOptionClassList = y9FormOptionClassService.listAllOptionClass();
-        List<Y9FormOptionValue> targetOptionValueList = y9FormOptionClassService.listAllOptionValue();
-        Y9LoginUserHolder.setTenantId(targetTenantId);
-        for (Y9FormOptionClass y9FormOptionClass : targetOptionClassList) {
-            y9FormOptionClassService.saveOptionClass(y9FormOptionClass);
-        }
-        for (Y9FormOptionValue y9FormOptionValue : targetOptionValueList) {
-            y9FormOptionClassService.saveOptionValue(y9FormOptionValue);
-        }
-
-        /*
-         * 2、源租户的表单元素的验证规则
-         */
-        // Y9LoginUserHolder.setTenantId(sourceTenantId);
-        // List<Y9ValidType> sourceY9ValidTypeList = y9ValidTypeService.findAll();
-        // List<Y9ValidType> targetY9ValidTypeList = new ArrayList<>();
-        // for (Y9ValidType validType : sourceY9ValidTypeList) {
-        // validType.setTenantId(targetTenantId);
-        // targetY9ValidTypeList.add(validType);
-        // }
-        // Y9LoginUserHolder.setTenantId(targetTenantId);
-        // for (Y9ValidType validType : targetY9ValidTypeList) {
-        // y9ValidTypeService.saveOrUpdate(validType);
-        // }
-        /*
-         * 3、 先查目标租户该事项是否有绑定表单，没有再复制授权
-         */
-        Y9LoginUserHolder.setTenantId(targetTenantId);
-        Item item = itemService.findById(itemId);
-        String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd =
-            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
-        String targetpdId = targetpd.getId();
-        List<Y9FormItemBind> targetFormItemBindList =
-            y9FormItemBindService.listByItemIdAndProcDefId(itemId, targetpdId);
-        if (!targetFormItemBindList.isEmpty()) {
+        // 1. 复制源租户的字典类型和字典值到目标租户
+        copyFormOptionData(sourceTenantId, targetTenantId);
+        // 2. 检查目标租户是否已存在表单绑定，如果存在则直接返回
+        if (isTargetFormBindingExists(targetTenantId, itemId)) {
             return;
         }
-        /*
-         * 4、查找源租户该事项最新流程定义的绑定的表单，查找表单对应的所有元素并在第三部保存至目标租户
-         */
-        Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd =
-            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
-        String sourcepdId = sourcepd.getId();
-        List<Y9FormItemBind> sourceFormItemBindList =
-            y9FormItemBindService.listByItemIdAndProcDefId(itemId, sourcepdId);
-        List<Y9Form> targetFormList = new ArrayList<>();
-        List<Y9FormField> targetY9FormElementList = new ArrayList<>();
-        List<Y9Table> targetY9TableList = new ArrayList<>();
-        StringBuilder targetY9TableIdsb = new StringBuilder();
-        List<Y9TableField> targetY9TableFieldList = new ArrayList<>();
-        StringBuilder targetY9TableFieldIdsb = new StringBuilder();
-        Y9Form sourceY9Form = null;
-        String sourceFormId = null;
-        for (Y9FormItemBind bind : sourceFormItemBindList) {
-            /*
-             * 4.1、绑定关系
-             */
-            bind.setProcessDefinitionId(targetpdId);
-            bind.setTenantId(targetTenantId);
-            targetFormItemBindList.add(bind);
+        // 3. 从源租户获取表单相关数据
+        FormCopyData formCopyData = getSourceFormData(sourceTenantId, targetTenantId, itemId);
+        // 4. 保存表单数据到目标租户
+        saveFormDataToTargetTenant(targetTenantId, formCopyData);
+    }
 
-            /*
-             * 4.2、表单
-             */
-            sourceFormId = bind.getFormId();
-            sourceY9Form = y9FormService.findById(sourceFormId);
-            sourceY9Form.setTenantId(targetTenantId);
-            targetFormList.add(sourceY9Form);
-            /*
-             * 4.3、表单元素
-             */
-            targetY9FormElementList = y9FormFieldService.listByFormId(sourceFormId);
-            /*
-             * 4.4、表单元素权限先不复制，因为牵扯到读写的角色，后面需要再复制
-             */
-            /*
-             * 4.5、表和表字段
-             */
-            for (Y9FormField y9FormElement : targetY9FormElementList) {
-                Y9Table y9TableTemp = y9TableService.findById(y9FormElement.getTableId());
-                if (!targetY9TableIdsb.toString().contains(y9TableTemp.getId())) {
-                    /* 表 */
-                    y9TableTemp.setOldTableName(null);
-                    targetY9TableList.add(y9TableTemp);
-                    targetY9TableIdsb.append(y9TableTemp.getId());
-                    /* 表字段 */
-                    List<Y9TableField> y9TableFieldListTemp =
-                        y9TableFieldService.listByTableIdOrderByDisplay(y9FormElement.getTableId());
-                    for (Y9TableField y9TableField : y9TableFieldListTemp) {
-                        if (!targetY9TableFieldIdsb.toString().contains(y9TableField.getId())) {
-                            y9TableField.setOldFieldName(null);
-                            targetY9TableFieldList.add(y9TableField);
-                            targetY9TableFieldIdsb.append(y9TableField.getId());
-                        }
+    /**
+     * 复制表单选项数据（字典类型和字典值）
+     */
+    private void copyFormOptionData(String sourceTenantId, String targetTenantId) {
+        Y9LoginUserHolder.setTenantId(sourceTenantId);
+        List<Y9FormOptionClass> optionClassList = y9FormOptionClassService.listAllOptionClass();
+        List<Y9FormOptionValue> optionValueList = y9FormOptionClassService.listAllOptionValue();
+        Y9LoginUserHolder.setTenantId(targetTenantId);
+        for (Y9FormOptionClass optionClass : optionClassList) {
+            y9FormOptionClassService.saveOptionClass(optionClass);
+        }
+        for (Y9FormOptionValue optionValue : optionValueList) {
+            y9FormOptionClassService.saveOptionValue(optionValue);
+        }
+    }
+
+    /**
+     * 检查目标租户是否已存在表单绑定
+     */
+    private boolean isTargetFormBindingExists(String targetTenantId, String itemId) {
+        Y9LoginUserHolder.setTenantId(targetTenantId);
+        Item item = itemService.findById(itemId);
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel targetProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, processDefinitionKey).getData();
+        List<Y9FormItemBind> targetFormItemBindList =
+            y9FormItemBindService.listByItemIdAndProcDefId(itemId, targetProcessDefinition.getId());
+        return !targetFormItemBindList.isEmpty();
+    }
+
+    /**
+     * 从源租户获取表单数据
+     */
+    private FormCopyData getSourceFormData(String sourceTenantId, String targetTenantId, String itemId) {
+        Y9LoginUserHolder.setTenantId(sourceTenantId);
+        Item item = itemService.findById(itemId);
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel sourceProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, processDefinitionKey).getData();
+
+        ProcessDefinitionModel targetProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, processDefinitionKey).getData();
+
+        List<Y9FormItemBind> sourceFormItemBindList =
+            y9FormItemBindService.listByItemIdAndProcDefId(itemId, sourceProcessDefinition.getId());
+
+        FormCopyData formCopyData = new FormCopyData();
+        formCopyData.targetProcessDefinitionId = targetProcessDefinition.getId();
+
+        // 处理每个绑定的表单
+        for (Y9FormItemBind bind : sourceFormItemBindList) {
+            processFormBinding(formCopyData, bind, targetProcessDefinition.getId(), targetTenantId);
+        }
+
+        return formCopyData;
+    }
+
+    /**
+     * 处理表单绑定数据
+     */
+    private void processFormBinding(FormCopyData formCopyData, Y9FormItemBind bind, String targetProcessDefinitionId,
+        String targetTenantId) {
+        // 设置绑定关系
+        bind.setProcessDefinitionId(targetProcessDefinitionId);
+        bind.setTenantId(targetTenantId);
+        formCopyData.formItemBinds.add(bind);
+
+        // 处理表单
+        String formId = bind.getFormId();
+        Y9Form form = y9FormService.findById(formId);
+        form.setTenantId(targetTenantId);
+        formCopyData.forms.add(form);
+
+        // 处理表单元素
+        List<Y9FormField> formFields = y9FormFieldService.listByFormId(formId);
+        formCopyData.formFields.addAll(formFields);
+
+        // 处理表和表字段
+        processTablesAndFields(formCopyData, formFields);
+    }
+
+    /**
+     * 处理表和表字段数据
+     */
+    private void processTablesAndFields(FormCopyData formCopyData, List<Y9FormField> formFields) {
+        for (Y9FormField formField : formFields) {
+            Y9Table table = y9TableService.findById(formField.getTableId());
+
+            if (!formCopyData.processedTableIds.contains(table.getId())) {
+                // 表
+                table.setOldTableName(null);
+                formCopyData.tables.add(table);
+                formCopyData.processedTableIds.add(table.getId());
+
+                // 表字段
+                List<Y9TableField> tableFields =
+                    y9TableFieldService.listByTableIdOrderByDisplay(formField.getTableId());
+
+                for (Y9TableField tableField : tableFields) {
+                    if (!formCopyData.processedTableFieldIds.contains(tableField.getId())) {
+                        tableField.setOldFieldName(null);
+                        formCopyData.tableFields.add(tableField);
+                        formCopyData.processedTableFieldIds.add(tableField.getId());
                     }
                 }
             }
         }
+    }
 
-        /*
-         * 5、保存源租户该事项最新流程定义的权限到目标租户
-         */
+    /**
+     * 保存表单数据到目标租户
+     */
+    private void saveFormDataToTargetTenant(String targetTenantId, FormCopyData formCopyData) {
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        for (Y9FormItemBind bind : targetFormItemBindList) {
-            Y9FormItemBind y9FormItemBindTemp = y9FormItemBindService.getById(bind.getId());
-            if (null == y9FormItemBindTemp) {
+
+        // 保存绑定关系
+        saveFormItemBinds(formCopyData.formItemBinds);
+
+        // 保存表单
+        saveForms(formCopyData.forms);
+
+        // 保存表单元素
+        saveFormFields(formCopyData.formFields);
+
+        // 保存表和表字段，并创建数据库表
+        saveTablesAndBuildDatabase(formCopyData);
+    }
+
+    /**
+     * 保存表单绑定关系
+     */
+    private void saveFormItemBinds(List<Y9FormItemBind> formItemBinds) {
+        for (Y9FormItemBind bind : formItemBinds) {
+            Y9FormItemBind existingBind = y9FormItemBindService.getById(bind.getId());
+            if (existingBind == null) {
                 y9FormItemBindService.save(bind);
             }
         }
+    }
 
-        for (Y9Form y9Form : targetFormList) {
-            y9FormService.saveOrUpdate(y9Form);
+    /**
+     * 保存表单
+     */
+    private void saveForms(List<Y9Form> forms) {
+        for (Y9Form form : forms) {
+            y9FormService.saveOrUpdate(form);
         }
+    }
 
-        for (Y9FormField y9FormElement : targetY9FormElementList) {
-            y9FormFieldService.saveOrUpdate(y9FormElement);
+    /**
+     * 保存表单元素
+     */
+    private void saveFormFields(List<Y9FormField> formFields) {
+        for (Y9FormField formField : formFields) {
+            y9FormFieldService.saveOrUpdate(formField);
         }
+    }
 
-        for (Y9Table y9Table : targetY9TableList) {
-            Y9Table y9TableTemp = y9TableService.findById(y9Table.getId());
-            if (null == y9TableTemp) {
-                /* 保存表元素数据 */
-                try {
-                    y9TableService.saveOrUpdate(y9Table);
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                /* 保存表字段元素数据并创建列信息 */
-                List<DbColumn> dbcs = new ArrayList<>();
-                for (Y9TableField y9TableField : targetY9TableFieldList) {
-                    if (y9TableField.getTableId().equals(y9Table.getId())) {
-                        Y9TableField y9TableFieldTemp = y9TableFieldService.findById(y9TableField.getId());
-                        if (null == y9TableFieldTemp) {
-                            y9TableFieldService.saveOrUpdate(y9TableField);
-                        }
-                    }
-                    DbColumn dbColumn = new DbColumn();
-                    dbColumn.setColumnName(y9TableField.getFieldName());
-                    dbColumn.setIsPrimaryKey(y9TableField.getIsSystemField());
-                    dbColumn.setPrimaryKey(y9TableField.getIsSystemField() == 1);
-                    dbColumn.setNullable(y9TableField.getIsMayNull() == 1);
-                    dbColumn.setTypeName(y9TableField.getFieldType());
-                    dbColumn.setDataLength(y9TableField.getFieldLength());
-                    dbColumn.setComment(y9TableField.getFieldCnName());
-                    dbColumn.setColumnNameOld(y9TableField.getOldFieldName());
-                    dbColumn.setDataPrecision(0);
-                    dbColumn.setDataScale(0);
-                    dbColumn.setDataType(0);
-                    dbColumn.setIsNull(y9TableField.getIsMayNull());
-                    dbColumn.setTableName(y9TableField.getTableName());
-                    dbcs.add(dbColumn);
-                }
-                /* 创建数据库表 */
-                tableManagerService.buildTable(y9Table, dbcs);
+    /**
+     * 保存表和表字段，并创建数据库表
+     */
+    private void saveTablesAndBuildDatabase(FormCopyData formCopyData) {
+        for (Y9Table table : formCopyData.tables) {
+            if (y9TableService.findById(table.getId()) != null) {
+                continue; // 表已存在，跳过
             }
+
+            // 保存表
+            if (!saveTable(table)) {
+                continue; // 保存表失败，跳过该表的后续处理
+            }
+
+            // 保存表字段并创建列信息
+            List<DbColumn> dbColumns = new ArrayList<>();
+            for (Y9TableField tableField : formCopyData.tableFields) {
+                if (tableField.getTableId().equals(table.getId())) {
+                    saveTableFieldIfNotExists(tableField);
+
+                    // 构建数据库列信息
+                    DbColumn dbColumn = buildDbColumn(tableField);
+                    dbColumns.add(dbColumn);
+                }
+            }
+
+            // 创建数据库表
+            tableManagerService.buildTable(table, dbColumns);
         }
+    }
+
+    /**
+     * 保存表，返回是否保存成功
+     */
+    private boolean saveTable(Y9Table table) {
+        try {
+            y9TableService.saveOrUpdate(table);
+            return true;
+        } catch (Exception e) {
+            LOGGER.error("保存表失败: {}", table.getId(), e);
+            return false;
+        }
+    }
+
+    /**
+     * 保存表字段（如果不存在）
+     */
+    private void saveTableFieldIfNotExists(Y9TableField tableField) {
+        Y9TableField existingTableField = y9TableFieldService.findById(tableField.getId());
+        if (existingTableField == null) {
+            y9TableFieldService.saveOrUpdate(tableField);
+        }
+    }
+
+    /**
+     * 构建数据库列信息
+     */
+    private DbColumn buildDbColumn(Y9TableField tableField) {
+        DbColumn dbColumn = new DbColumn();
+        dbColumn.setColumnName(tableField.getFieldName());
+        dbColumn.setIsPrimaryKey(tableField.getIsSystemField());
+        dbColumn.setPrimaryKey(tableField.getIsSystemField() == 1);
+        dbColumn.setNullable(tableField.getIsMayNull() == 1);
+        dbColumn.setTypeName(tableField.getFieldType());
+        dbColumn.setDataLength(tableField.getFieldLength());
+        dbColumn.setComment(tableField.getFieldCnName());
+        dbColumn.setColumnNameOld(tableField.getOldFieldName());
+        dbColumn.setDataPrecision(0);
+        dbColumn.setDataScale(0);
+        dbColumn.setDataType(0);
+        dbColumn.setIsNull(tableField.getIsMayNull());
+        dbColumn.setTableName(tableField.getTableName());
+        return dbColumn;
     }
 
     @Override
@@ -605,179 +674,305 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     @Override
     @Transactional
     public void copyOpinionFrame(String sourceTenantId, String targetTenantId, String itemId) {
-        /*
-         * 1、先复制意见框
-         */
-        Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<OpinionFrame> ofList = opinionFrameService.listAll();
+        // 1. 复制源租户的意见框到目标租户
+        copyOpinionFrames(sourceTenantId, targetTenantId);
 
-        Y9LoginUserHolder.setTenantId(targetTenantId);
-        for (OpinionFrame of : ofList) {
-            of.setTenantId(targetTenantId);
-            opinionFrameService.saveOrUpdate(of);
-        }
-
-        /*
-         * 2、先判断目标租户的事项是否绑定了意见框，绑定了则不再复制
-         */
-        Y9LoginUserHolder.setTenantId(targetTenantId);
-        Item item = itemService.findById(itemId);
-        String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd =
-            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
-        String targetpdId = targetpd.getId();
-        List<ItemOpinionFrameBind> targetBindList =
-            itemOpinionFrameBindService.listByItemIdAndProcessDefinitionId(itemId, targetpdId);
-        if (!targetBindList.isEmpty()) {
+        // 2. 检查目标租户是否已存在绑定关系，如果存在则直接返回
+        if (isTargetOpinionFrameBindingExists(targetTenantId, itemId)) {
             return;
         }
-        /*
-         * 3、查找源租户该事项最新流程定义绑定的意见框及角色
-         */
-        Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd =
-            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
-        String sourcepdId = sourcepd.getId();
-        List<ItemOpinionFrameBind> sourceBindList =
-            itemOpinionFrameBindService.listByItemIdAndProcessDefinitionId(itemId, sourcepdId);
-        List<ItemOpinionFrameRole> targetRoleList = new ArrayList<>();
-        for (ItemOpinionFrameBind bind : sourceBindList) {
-            bind.setProcessDefinitionId(targetpdId);
-            bind.setTenantId(targetTenantId);
-            targetBindList.add(bind);
 
-            List<ItemOpinionFrameRole> sourceRoleListTemp =
-                itemOpinionFrameRoleService.listByItemOpinionFrameId(bind.getId());
-            targetRoleList.addAll(sourceRoleListTemp);
-        }
-        /*
-         * 4、保存源租户该事项最新流程定义的绑定的意见框
-         */
+        // 3. 从源租户获取意见框绑定数据
+        OpinionFrameCopyData copyData = getSourceOpinionFrameData(sourceTenantId, targetTenantId, itemId);
+
+        // 4. 保存意见框绑定数据到目标租户
+        saveOpinionFrameDataToTargetTenant(targetTenantId, copyData);
+    }
+
+    /**
+     * 复制源租户的意见框到目标租户
+     *
+     * @param sourceTenantId 源租户ID
+     * @param targetTenantId 目标租户ID
+     */
+    private void copyOpinionFrames(String sourceTenantId, String targetTenantId) {
+        Y9LoginUserHolder.setTenantId(sourceTenantId);
+        List<OpinionFrame> sourceOpinionFrames = opinionFrameService.listAll();
+
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        for (ItemOpinionFrameBind bind : targetBindList) {
-            ItemOpinionFrameBind bindTemp = itemOpinionFrameBindService.getById(bind.getId());
-            if (null == bindTemp) {
-                itemOpinionFrameBindService.save(bind);
+        for (OpinionFrame opinionFrame : sourceOpinionFrames) {
+            opinionFrame.setTenantId(targetTenantId);
+            opinionFrameService.saveOrUpdate(opinionFrame);
+        }
+    }
+
+    /**
+     * 检查目标租户是否已存在意见框绑定关系
+     *
+     * @param targetTenantId 目标租户ID
+     * @param itemId 事项ID
+     * @return true表示已存在绑定关系，false表示不存在
+     */
+    private boolean isTargetOpinionFrameBindingExists(String targetTenantId, String itemId) {
+        Y9LoginUserHolder.setTenantId(targetTenantId);
+        Item item = itemService.findById(itemId);
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel targetProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, processDefinitionKey).getData();
+
+        List<ItemOpinionFrameBind> targetBindings =
+            itemOpinionFrameBindService.listByItemIdAndProcessDefinitionId(itemId, targetProcessDefinition.getId());
+
+        return !targetBindings.isEmpty();
+    }
+
+    /**
+     * 获取源租户的意见框绑定数据
+     *
+     * @param sourceTenantId 源租户ID
+     * @param targetTenantId 目标租户ID
+     * @param itemId 事项ID
+     * @return 意见框复制数据
+     */
+    private OpinionFrameCopyData getSourceOpinionFrameData(String sourceTenantId, String targetTenantId,
+        String itemId) {
+        Y9LoginUserHolder.setTenantId(sourceTenantId);
+        Item item = itemService.findById(itemId);
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel sourceProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, processDefinitionKey).getData();
+
+        ProcessDefinitionModel targetProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, processDefinitionKey).getData();
+
+        List<ItemOpinionFrameBind> sourceBindings =
+            itemOpinionFrameBindService.listByItemIdAndProcessDefinitionId(itemId, sourceProcessDefinition.getId());
+
+        OpinionFrameCopyData copyData = new OpinionFrameCopyData();
+        copyData.targetProcessDefinitionId = targetProcessDefinition.getId();
+
+        // 处理每个绑定关系
+        for (ItemOpinionFrameBind binding : sourceBindings) {
+            binding.setProcessDefinitionId(copyData.targetProcessDefinitionId);
+            binding.setTenantId(targetTenantId);
+            copyData.bindings.add(binding);
+
+            // 获取绑定的角色信息
+            List<ItemOpinionFrameRole> sourceRoles =
+                itemOpinionFrameRoleService.listByItemOpinionFrameId(binding.getId());
+            copyData.roles.addAll(sourceRoles);
+        }
+
+        return copyData;
+    }
+
+    /**
+     * 保存意见框数据到目标租户
+     *
+     * @param targetTenantId 目标租户ID
+     * @param copyData 复制数据
+     */
+    private void saveOpinionFrameDataToTargetTenant(String targetTenantId, OpinionFrameCopyData copyData) {
+        Y9LoginUserHolder.setTenantId(targetTenantId);
+
+        // 保存绑定关系
+        for (ItemOpinionFrameBind binding : copyData.bindings) {
+            ItemOpinionFrameBind existingBind = itemOpinionFrameBindService.getById(binding.getId());
+            if (existingBind == null) {
+                itemOpinionFrameBindService.save(binding);
             }
         }
 
-        /*
-         * 5、保存源租户该事项最新流程定义的绑定的角色并把角色在租户角色中创建
-         */
-        System system = systemApi.getByName(Y9Context.getSystemName()).getData();
-        Role tenantRole = roleApi.getRole(targetTenantId).getData();
-        Role tenantSystemRole = roleApi.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
-        String parentId = tenantSystemRole.getId();
-        Role oldRole = null, newRoleTemp = null;
-        String newRoleId = null, roleId = null;
-        Organization organization =
-            orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
-        for (ItemOpinionFrameRole iRole : targetRoleList) {
-            roleId = iRole.getRoleId();
-            oldRole = roleApi.getRole(roleId).getData();
-            if (null != oldRole && null != oldRole.getId()) {
-                newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, parentId).getData();
-                if (null == newRoleTemp || null == newRoleTemp.getId()) {
+        // 保存角色信息并创建租户角色
+        createOpinionFrameRoles(copyData.roles, targetTenantId);
+    }
+
+    /**
+     * 创建意见框角色并保存到目标租户
+     *
+     * @param roles 角色列表
+     * @param targetTenantId 目标租户ID
+     */
+    private void createOpinionFrameRoles(List<ItemOpinionFrameRole> roles, String targetTenantId) {
+        RoleInfo roleInfo = getTargetTenantRoleInfo(targetTenantId);
+
+        for (ItemOpinionFrameRole role : roles) {
+            String roleId = role.getRoleId();
+            Role oldRole = roleApi.getRole(roleId).getData();
+
+            if (oldRole != null && oldRole.getId() != null) {
+                Role newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, roleInfo.parentId).getData();
+                String newRoleId;
+
+                if (newRoleTemp == null || newRoleTemp.getId() == null) {
                     newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                    /* 把申请人所在的租户机构添加到角色 */
-                    roleApi.addPerson(organization.getId(), newRoleId, targetTenantId);
+                    // 把申请人所在的租户机构添加到角色
+                    roleApi.addPerson(roleInfo.organization.getId(), newRoleId, targetTenantId);
                 } else {
                     newRoleId = newRoleTemp.getId();
                 }
-            }
 
-            itemOpinionFrameRoleService.saveOrUpdate(iRole.getItemOpinionFrameId(), newRoleId);
+                itemOpinionFrameRoleService.saveOrUpdate(role.getItemOpinionFrameId(), newRoleId);
+            }
         }
     }
 
     @Override
     @Transactional
     public void copyOrganWord(String sourceTenantId, String targetTenantId, String itemId) {
-        /*
-         * 1、查找源租户是否存在编号
-         */
-        Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<OrganWord> sourceowList = organWordService.listAll();
-        if (sourceowList.isEmpty()) {
+        // 1. 检查并复制源租户的编号和编号配置
+        if (!checkAndCopyOrganWords(sourceTenantId, targetTenantId)) {
             return;
         }
-        List<OrganWordProperty> sourceowpList = organWordPropertyService.listAll();
-        /*
-         * 2、复制源租户的编号和编号配置到目标租户
-         */
-        Y9LoginUserHolder.setTenantId(targetTenantId);
-        for (OrganWord ow : sourceowList) {
-            organWordService.save(ow);
+        // 2. 复制绑定和授权到目标租户
+        copyOrganWordBindingsAndPermissions(sourceTenantId, targetTenantId, itemId);
+    }
+
+    /**
+     * 检查并复制源租户的编号和编号配置到目标租户
+     *
+     * @param sourceTenantId 源租户ID
+     * @param targetTenantId 目标租户ID
+     * @return true表示存在数据并已复制，false表示无数据
+     */
+    private boolean checkAndCopyOrganWords(String sourceTenantId, String targetTenantId) {
+        Y9LoginUserHolder.setTenantId(sourceTenantId);
+        List<OrganWord> sourceOrganWords = organWordService.listAll();
+
+        // 如果源租户没有编号数据，直接返回
+        if (sourceOrganWords.isEmpty()) {
+            return false;
         }
-        for (OrganWordProperty owp : sourceowpList) {
-            organWordPropertyService.save(owp);
+        List<OrganWordProperty> sourceOrganWordProperties = organWordPropertyService.listAll();
+        // 复制到目标租户
+        Y9LoginUserHolder.setTenantId(targetTenantId);
+        for (OrganWord organWord : sourceOrganWords) {
+            organWordService.save(organWord);
+        }
+        for (OrganWordProperty organWordProperty : sourceOrganWordProperties) {
+            organWordPropertyService.save(organWordProperty);
         }
 
-        /*
-         * 3、复制绑定和授权到目标租户
-         */
+        return true;
+    }
+
+    /**
+     * 复制编号绑定和权限到目标租户
+     *
+     * @param sourceTenantId 源租户ID
+     * @param targetTenantId 目标租户ID
+     * @param itemId 事项ID
+     */
+    private void copyOrganWordBindingsAndPermissions(String sourceTenantId, String targetTenantId, String itemId) {
+        // 检查目标租户是否已存在绑定关系
+        if (isTargetOrganWordBindingExists(targetTenantId, itemId)) {
+            return;
+        }
+
+        // 获取源租户的绑定关系
+        List<ItemOrganWordBind> sourceBindings = getSourceOrganWordBindings(sourceTenantId, itemId);
+        if (sourceBindings.isEmpty()) {
+            return;
+        }
+
+        // 获取目标租户系统角色信息
+        RoleInfo roleInfo = getTargetTenantRoleInfo(targetTenantId);
+
+        // 复制绑定关系和角色权限
+        copyOrganWordBindingsAndRoles(targetTenantId, itemId, sourceBindings, roleInfo);
+    }
+
+    /**
+     * 检查目标租户是否已存在编号绑定关系
+     *
+     * @param targetTenantId 目标租户ID
+     * @param itemId 事项ID
+     * @return true表示已存在绑定关系，false表示不存在
+     */
+    private boolean isTargetOrganWordBindingExists(String targetTenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(targetTenantId);
         Item item = itemService.findById(itemId);
-        String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd =
-            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
-        String targetpdId = targetpd.getId();
-        List<ItemOrganWordBind> targetBindList =
-            itemOrganWordBindService.listByItemIdAndProcessDefinitionId(itemId, targetpdId);
-        if (!targetBindList.isEmpty()) {
-            return;
-        }
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel targetProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, processDefinitionKey).getData();
+
+        List<ItemOrganWordBind> targetBindings =
+            itemOrganWordBindService.listByItemIdAndProcessDefinitionId(itemId, targetProcessDefinition.getId());
+
+        return !targetBindings.isEmpty();
+    }
+
+    /**
+     * 获取源租户的编号绑定关系
+     *
+     * @param sourceTenantId 源租户ID
+     * @param itemId 事项ID
+     * @return 源租户的编号绑定关系列表
+     */
+    private List<ItemOrganWordBind> getSourceOrganWordBindings(String sourceTenantId, String itemId) {
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd =
-            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
-        String sourcepdId = sourcepd.getId();
-        List<ItemOrganWordBind> sourceBindList =
-            itemOrganWordBindService.listByItemIdAndProcessDefinitionId(itemId, sourcepdId);
-        if (sourceBindList.isEmpty()) {
-            return;
+        Item item = itemService.findById(itemId);
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel sourceProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, processDefinitionKey).getData();
+
+        return itemOrganWordBindService.listByItemIdAndProcessDefinitionId(itemId, sourceProcessDefinition.getId());
+    }
+
+    /**
+     * 复制编号绑定关系和角色权限
+     *
+     * @param targetTenantId 目标租户ID
+     * @param itemId 事项ID
+     * @param sourceBindings 源绑定关系列表
+     * @param roleInfo 角色信息
+     */
+    private void copyOrganWordBindingsAndRoles(String targetTenantId, String itemId,
+        List<ItemOrganWordBind> sourceBindings, RoleInfo roleInfo) {
+        Y9LoginUserHolder.setTenantId(targetTenantId);
+        Item item = itemService.findById(itemId);
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel targetProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, processDefinitionKey).getData();
+        String targetProcessDefinitionId = targetProcessDefinition.getId();
+
+        for (ItemOrganWordBind binding : sourceBindings) {
+            // 保存绑定关系
+            binding.setProcessDefinitionId(targetProcessDefinitionId);
+            itemOrganWordBindService.save(binding);
+
+            // 复制绑定角色
+            copyOrganWordBindingRoles(binding, roleInfo, targetTenantId);
         }
-        /*
-         * 3.2、获取目标租户的事项管理系统的角色
-         */
-        System system = systemApi.getByName(Y9Context.getSystemName()).getData();
-        Role tenantRole = roleApi.getRole(targetTenantId).getData();
-        Role tenantSystemRole = roleApi.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
-        String parentId = tenantSystemRole.getId();
+    }
 
-        /*
-         * 3.3、先保存绑定关系再更新绑定的角色
-         * 把绑定的角色复制到目标租户中去，父节点为3.2中获取的角色，目标租户创建新角色时，为了避免重复创建的问题，用源角色id作为新角色的customId，每次要创建的时候，查找一下是否存在
-         * 因为所有角色在同一张表，确保id的唯一性，所以复制的角色要更改角色Id,并把新老角色id的对应关系传递给权限复制，用来替换调老的角色id
-         */
-        Role oldRole = null, newRoleTemp = null;
-        String newRoleId = null;
-        List<String> roleIdList = null;
-        Organization organization =
-            orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
-        for (ItemOrganWordBind bind : sourceBindList) {
-            /* 保存绑定关系 */
-            bind.setProcessDefinitionId(targetpdId);
-            itemOrganWordBindService.save(bind);
+    /**
+     * 复制编号绑定的角色权限
+     *
+     * @param binding 绑定关系
+     * @param roleInfo 角色信息
+     * @param targetTenantId 目标租户ID
+     */
+    private void copyOrganWordBindingRoles(ItemOrganWordBind binding, RoleInfo roleInfo, String targetTenantId) {
+        List<String> roleIdList = binding.getRoleIds();
 
-            /* 更新绑定角色 */
-            roleIdList = bind.getRoleIds();
-            for (String roleId : roleIdList) {
-                oldRole = roleApi.getRole(roleId).getData();
-                if (null != oldRole && null != oldRole.getId()) {
-                    newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, parentId).getData();
-                    if (null == newRoleTemp || null == newRoleTemp.getId()) {
-                        newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                        /* 把申请人所在的租户机构添加到角色 */
-                        roleApi.addPerson(organization.getId(), newRoleId, targetTenantId);
-                    } else {
-                        newRoleId = newRoleTemp.getId();
-                    }
+        for (String roleId : roleIdList) {
+            Role oldRole = roleApi.getRole(roleId).getData();
+            if (oldRole != null && oldRole.getId() != null) {
+                Role newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, roleInfo.parentId).getData();
+                String newRoleId;
 
-                    itemOrganWordRoleService.saveOrUpdate(bind.getId(), newRoleId);
+                if (newRoleTemp == null || newRoleTemp.getId() == null) {
+                    newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+                    // 把申请人所在的租户机构添加到角色
+                    roleApi.addPerson(roleInfo.organization.getId(), newRoleId, targetTenantId);
+                } else {
+                    newRoleId = newRoleTemp.getId();
                 }
+
+                itemOrganWordRoleService.saveOrUpdate(binding.getId(), newRoleId);
             }
         }
-
     }
 
     @Override
@@ -789,15 +984,14 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(targetTenantId);
         Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd =
+        ProcessDefinitionModel targetProcessDefinitionModel =
             repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
-        String targetpdId = targetpd.getId();
+        String targetProcessDefinitionId = targetProcessDefinitionModel.getId();
         List<ItemPermission> targetipList =
-            itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, targetpdId);
+            itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, targetProcessDefinitionId);
         if (!targetipList.isEmpty()) {
             return;
         }
-
         /*
          * 2、查找源租户该事项最新流程定义的权限
          */
@@ -812,13 +1006,13 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
             roleType = itemPermission.getRoleType();
             if (roleType == ItemPermissionEnum.ROLE_DYNAMIC) {
                 itemPermission.setTenantId(targetTenantId);
-                itemPermission.setProcessDefinitionId(targetpdId);
+                itemPermission.setProcessDefinitionId(targetProcessDefinitionId);
                 targetipList.add(itemPermission);
             }
             if (roleType == ItemPermissionEnum.ROLE) {
                 itemPermission.setRoleId(roleIdMap.get(itemPermission.getRoleId()));
                 itemPermission.setTenantId(targetTenantId);
-                itemPermission.setProcessDefinitionId(targetpdId);
+                itemPermission.setProcessDefinitionId(targetProcessDefinitionId);
                 targetipList.add(itemPermission);
             }
         }
@@ -870,88 +1064,132 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     @Override
     @Transactional
     public void copySendButton(String sourceTenantId, String targetTenantId, String itemId) {
-        /*
-         * 1、查找源租户是否存在发送按钮
-         */
-        Y9LoginUserHolder.setTenantId(sourceTenantId);
-        List<SendButton> sourcecbList = sendButtonService.listAll();
-        if (sourcecbList.isEmpty()) {
+        // 1. 查找并复制源租户的发送按钮
+        List<SendButton> sourceButtons = getSourceSendButtons(sourceTenantId);
+        if (sourceButtons.isEmpty()) {
             return;
         }
-        /*
-         * 2、复制源租户的发送按钮到目标租户
-         */
+        // 2. 复制发送按钮到目标租户
+        copySendButtonsToTargetTenant(targetTenantId, sourceButtons);
+
+        // 3. 复制按钮绑定关系和权限（复用copyCommonButton中的方法）
+        copyButtonBindingsAndPermissions(sourceTenantId, targetTenantId, itemId, ItemButtonTypeEnum.SEND);
+    }
+
+    /**
+     * 获取源租户的发送按钮列表
+     *
+     * @param sourceTenantId 源租户ID
+     * @return 发送按钮列表
+     */
+    private List<SendButton> getSourceSendButtons(String sourceTenantId) {
+        Y9LoginUserHolder.setTenantId(sourceTenantId);
+        return sendButtonService.listAll();
+    }
+
+    /**
+     * 复制发送按钮到目标租户
+     *
+     * @param targetTenantId 目标租户ID
+     * @param sourceButtons 源发送按钮列表
+     */
+    private void copySendButtonsToTargetTenant(String targetTenantId, List<SendButton> sourceButtons) {
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        for (SendButton sb : sourcecbList) {
-            sendButtonService.saveOrUpdate(sb);
+        for (SendButton button : sourceButtons) {
+            sendButtonService.saveOrUpdate(button);
         }
-        /*
-         * 3、复制该事项源租户的发送按钮和事项的绑定关系以及权限到目标租户
-         */
-        /*
-         * 3.1、先查找绑定关系
-         */
+    }
+
+    /**
+     * 复制按钮绑定关系和权限（重载方法，支持指定按钮类型）
+     *
+     * @param sourceTenantId 源租户ID
+     * @param targetTenantId 目标租户ID
+     * @param itemId 事项ID
+     * @param buttonType 按钮类型
+     */
+    private void copyButtonBindingsAndPermissions(String sourceTenantId, String targetTenantId, String itemId,
+        ItemButtonTypeEnum buttonType) {
+        // 检查目标租户是否已存在绑定关系
+        if (isTargetBindingExists(targetTenantId, itemId, buttonType)) {
+            return;
+        }
+        // 获取源租户的绑定关系
+        List<ItemButtonBind> sourceBindings = getSourceButtonBindings(sourceTenantId, itemId, buttonType);
+        if (sourceBindings.isEmpty()) {
+            return;
+        }
+        // 获取目标租户系统角色信息
+        RoleInfo roleInfo = getTargetTenantRoleInfo(targetTenantId);
+        // 复制绑定关系和角色权限
+        copyBindingsAndRoles(targetTenantId, itemId, sourceBindings, roleInfo);
+    }
+
+    /**
+     * 检查目标租户是否已存在指定类型的绑定关系
+     *
+     * @param targetTenantId 目标租户ID
+     * @param itemId 事项ID
+     * @param buttonType 按钮类型
+     * @return true表示已存在绑定关系，false表示不存在
+     */
+    private boolean isTargetBindingExists(String targetTenantId, String itemId, ItemButtonTypeEnum buttonType) {
         Y9LoginUserHolder.setTenantId(targetTenantId);
         Item item = itemService.findById(itemId);
-        String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel targetpd =
-            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
-        String targetpdId = targetpd.getId();
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel targetProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, processDefinitionKey).getData();
 
-        List<ItemButtonBind> targetBindList = itemButtonBindService
-            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.SEND, targetpdId);
-        if (!targetBindList.isEmpty()) {
-            return;
-        }
+        List<ItemButtonBind> targetBindings = itemButtonBindService
+            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, buttonType, targetProcessDefinition.getId());
+
+        return !targetBindings.isEmpty();
+    }
+
+    /**
+     * 获取源租户指定类型的按钮绑定关系
+     *
+     * @param sourceTenantId 源租户ID
+     * @param itemId 事项ID
+     * @param buttonType 按钮类型
+     * @return 按钮绑定关系列表
+     */
+    private List<ItemButtonBind> getSourceButtonBindings(String sourceTenantId, String itemId,
+        ItemButtonTypeEnum buttonType) {
         Y9LoginUserHolder.setTenantId(sourceTenantId);
-        ProcessDefinitionModel sourcepd =
-            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
-        String sourcepdId = sourcepd.getId();
-        List<ItemButtonBind> sourceBindList = itemButtonBindService
-            .listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, ItemButtonTypeEnum.SEND, sourcepdId);
-        if (sourceBindList.isEmpty()) {
-            return;
-        }
-        /*
-         * 3.2、获取目标租户的事项管理系统的角色
-         */
-        System system = systemApi.getByName(Y9Context.getSystemName()).getData();
-        Role tenantRole = roleApi.getRole(targetTenantId).getData();
-        Role tenantSystemRole = roleApi.findByCustomIdAndParentId(system.getId(), tenantRole.getId()).getData();
-        String parentId = tenantSystemRole.getId();
+        Item item = itemService.findById(itemId);
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel sourceProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, processDefinitionKey).getData();
 
-        /*
-         * 3.3、先保存绑定关系再更新绑定的角色
-         * 把绑定的角色复制到目标租户中去，父节点为3.2中获取的角色，目标租户创建新角色时，为了避免重复创建的问题，用源角色id作为新角色的customId，每次要创建的时候，查找一下是否存在
-         * 因为所有角色在同一张表，确保id的唯一性，所以复制的角色要更改角色Id,并把新老角色id的对应关系传递给权限复制，用来替换调老的角色id
-         */
-        List<ItemButtonRole> roleList = null;
-        Role oldRole = null, newRoleTemp = null;
-        String newRoleId = null, roleId = null;
-        Organization organization =
-            orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
-        for (ItemButtonBind bind : sourceBindList) {
-            bind.setProcessDefinitionId(targetpdId);
-            itemButtonBindService.save(bind);
+        return itemButtonBindService.listByItemIdAndButtonTypeAndProcessDefinitionId(itemId, buttonType,
+            sourceProcessDefinition.getId());
+    }
 
-            /* 更新绑定角色 */
-            roleList = itemButtonRoleService.listByItemButtonId(bind.getId());
-            for (ItemButtonRole role : roleList) {
-                roleId = role.getId();
-                oldRole = roleApi.getRole(roleId).getData();
-                if (null != oldRole && null != oldRole.getId()) {
-                    newRoleTemp = roleApi.findByCustomIdAndParentId(roleId, parentId).getData();
-                    if (null == newRoleTemp || null == newRoleTemp.getId()) {
-                        newRoleId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                        /* 把申请人所在的租户机构添加到角色 */
-                        roleApi.addPerson(organization.getId(), newRoleId, targetTenantId);
-                    } else {
-                        newRoleId = newRoleTemp.getId();
-                    }
+    /**
+     * 复制绑定关系和角色权限（重载方法，支持指定按钮类型）
+     *
+     * @param targetTenantId 目标租户ID
+     * @param itemId 事项ID
+     * @param sourceBindings 源绑定关系列表
+     * @param roleInfo 角色信息
+     */
+    private void copyBindingsAndRoles(String targetTenantId, String itemId, List<ItemButtonBind> sourceBindings,
+        RoleInfo roleInfo) {
+        Y9LoginUserHolder.setTenantId(targetTenantId);
+        Item item = itemService.findById(itemId);
+        String processDefinitionKey = item.getWorkflowGuid();
+        ProcessDefinitionModel targetProcessDefinition =
+            repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, processDefinitionKey).getData();
+        String targetProcessDefinitionId = targetProcessDefinition.getId();
 
-                    itemButtonRoleService.saveOrUpdate(bind.getId(), newRoleId);
-                }
-            }
+        for (ItemButtonBind binding : sourceBindings) {
+            // 保存绑定关系
+            binding.setProcessDefinitionId(targetProcessDefinitionId);
+            itemButtonBindService.save(binding);
+
+            // 复制绑定角色
+            copyBindingRoles(binding, roleInfo, targetTenantId);
         }
     }
 
@@ -979,28 +1217,29 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel sourcepd =
+        ProcessDefinitionModel sourceProcessDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
-        String sourcepdId = sourcepd.getId();
-        List<ItemTabBind> tabBindList = itemTabBindService.listByItemIdAndProcessDefinitionId(itemId, sourcepdId);
+        String sourceProcessDefinitionId = sourceProcessDefinition.getId();
+        List<ItemTabBind> tabBindList =
+            itemTabBindService.listByItemIdAndProcessDefinitionId(itemId, sourceProcessDefinitionId);
         if (tabBindList.isEmpty()) {
             return;
         }
-
         Y9LoginUserHolder.setTenantId(targetTenantId);
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String personId = person.getPersonId(), personName = person.getName();
-        ProcessDefinitionModel targetpd =
+        ProcessDefinitionModel targetProcessDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
-        String targetpdId = targetpd.getId();
-        List<ItemTabBind> targetTabBindList = itemTabBindService.listByItemIdAndProcessDefinitionId(itemId, targetpdId);
+        String targetProcessDefinitionId = targetProcessDefinition.getId();
+        List<ItemTabBind> targetTabBindList =
+            itemTabBindService.listByItemIdAndProcessDefinitionId(itemId, targetProcessDefinitionId);
         if (!targetTabBindList.isEmpty()) {
             return;
         }
         for (ItemTabBind bind : tabBindList) {
             ItemTabBind oldBind = itemTabBindService.getById(bind.getId());
             if (null == oldBind) {
-                bind.setProcessDefinitionId(targetpdId);
+                bind.setProcessDefinitionId(targetProcessDefinitionId);
                 bind.setTenantId(targetTenantId);
                 bind.setUserId(personId);
                 bind.setUserName(personName);
@@ -1073,8 +1312,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          * 因为所有角色在同一张表，确保id的唯一性，所以复制的角色要更改角色Id,并把新老角色id的对应关系传递给权限复制，用来替换调老的角色id
          */
         Map<String, String> roleIdMap = new HashMap<>(16);
-        Role oldRole = null, newRoleTemp = null;
-        String newRoleId = null;
+        Role oldRole, newRoleTemp;
+        String newRoleId;
         Organization organization =
             orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (String roleId : roleIdList) {
@@ -1119,24 +1358,25 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel sourcepd =
+        ProcessDefinitionModel sourceProcessDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(sourceTenantId, proDefKey).getData();
-        String sourcepdId = sourcepd.getId();
-        ItemWordTemplateBind bind = itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, sourcepdId);
+        String sourceProcessDefinitionId = sourceProcessDefinition.getId();
+        ItemWordTemplateBind bind =
+            itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, sourceProcessDefinitionId);
         if (null == bind) {
             return;
         }
         Y9LoginUserHolder.setTenantId(targetTenantId);
-        ProcessDefinitionModel targetpd =
+        ProcessDefinitionModel targetProcessDefinition =
             repositoryApi.getLatestProcessDefinitionByKey(targetTenantId, proDefKey).getData();
-        String targetpdId = targetpd.getId();
+        String targetProcessDefinitionId = targetProcessDefinition.getId();
         ItemWordTemplateBind targetBind =
-            itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, targetpdId);
+            itemWordTemplateBindService.findByItemIdAndProcessDefinitionId(itemId, targetProcessDefinitionId);
         if (null != targetBind) {
             return;
         }
         /* 3、1事项和模板的绑定关系 */
-        itemWordTemplateBindService.save(itemId, targetpdId, bind.getTemplateId());
+        itemWordTemplateBindService.save(itemId, targetProcessDefinitionId, bind.getTemplateId());
         /* 3、2模板和模板中的书签绑定关系 */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         List<BookMarkBind> bookMarkBindList = bookMarkBindService.listByWordTemplateId(bind.getTemplateId());
@@ -1152,7 +1392,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
     }
 
     @Override
-    public void dataCopy(String sourceTenantId, String targetTenantId, String itemId) throws Exception {
+    public void dataCopy(String sourceTenantId, String targetTenantId, String itemId) {
         /* 复制流程模型并部署 */
         Y9LoginUserHolder.setTenantId(sourceTenantId);
         Item item = itemService.findById(itemId);
@@ -1199,5 +1439,36 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         for (Item item : itemList) {
             self.dataCopy(sourceTenantId, targetTenantId, item.getId());
         }
+    }
+
+    /**
+     * 意见框复制数据容器类
+     */
+    private static class OpinionFrameCopyData {
+        List<ItemOpinionFrameBind> bindings = new ArrayList<>();
+        List<ItemOpinionFrameRole> roles = new ArrayList<>();
+        String targetProcessDefinitionId;
+    }
+
+    /**
+     * 表单复制数据容器类
+     */
+    private static class FormCopyData {
+        List<Y9FormItemBind> formItemBinds = new ArrayList<>();
+        List<Y9Form> forms = new ArrayList<>();
+        List<Y9FormField> formFields = new ArrayList<>();
+        List<Y9Table> tables = new ArrayList<>();
+        List<Y9TableField> tableFields = new ArrayList<>();
+        Set<String> processedTableIds = new HashSet<>();
+        Set<String> processedTableFieldIds = new HashSet<>();
+        String targetProcessDefinitionId;
+    }
+
+    /**
+     * 角色信息容器类
+     */
+    private static class RoleInfo {
+        String parentId;
+        Organization organization;
     }
 }

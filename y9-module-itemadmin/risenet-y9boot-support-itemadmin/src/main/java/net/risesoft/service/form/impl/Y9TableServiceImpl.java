@@ -41,7 +41,7 @@ import net.risesoft.service.core.ItemService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.sqlddl.Y9FormDbMetaDataUtil;
+import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
 /**
@@ -68,6 +68,8 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     private final ItemWorkDayService itemWorkDayService;
 
+    private final Y9TableService self;
+
     public Y9TableServiceImpl(
         @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
         Y9TableRepository y9TableRepository,
@@ -75,7 +77,8 @@ public class Y9TableServiceImpl implements Y9TableService {
         Y9FormFieldRepository y9FormFieldRepository,
         TableManagerService tableManagerService,
         ItemService itemService,
-        ItemWorkDayService itemWorkDayService) {
+        ItemWorkDayService itemWorkDayService,
+        @Lazy Y9TableService self) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
         this.y9TableRepository = y9TableRepository;
         this.y9TableFieldRepository = y9TableFieldRepository;
@@ -87,7 +90,7 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<Object> addDataBaseTable(String tableName, String systemName, String systemCnName) {
         try {
             Y9Table y9Table = new Y9Table();
@@ -99,7 +102,7 @@ public class Y9TableServiceImpl implements Y9TableService {
             y9Table.setSystemCnName(systemCnName);
             y9Table.setTableName(tableName);
             y9TableRepository.save(y9Table);
-            List<DbColumn> list = Y9FormDbMetaDataUtil
+            List<DbColumn> list = DbMetaDataUtil
                 .listAllColumns(Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource()), tableName, "%");
             int order = 1;
             for (DbColumn dbColumn : list) {
@@ -127,42 +130,54 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<Object> buildTable(Y9Table table, List<Map<String, Object>> listMap) {
         try {
-            boolean tableExist = true;
-            if (StringUtils.isEmpty(table.getId())) {
-                tableExist = false;
-            } else {
-                Y9Table oldTable = this.findById(table.getId());
-                if (null == oldTable) {
-                    tableExist = false;
-                }
+            // 检查表是否已存在
+            boolean tableExist = checkTableExists(table);
+            // 保存或更新表信息
+            Y9Table tableTemp = self.saveOrUpdate(table);
+            if (tableTemp == null || StringUtils.isBlank(tableTemp.getId())) {
+                return Y9Result.failure("创建数据表失败：无法保存表信息");
             }
-            Y9Table tableTemp = this.saveOrUpdate(table);
-            if (tableTemp != null && tableTemp.getId() != null) {
-                String tableId = tableTemp.getId();
-                if (!listMap.isEmpty()) {
-                    List<String> ids = new ArrayList<>();
-                    List<DbColumn> dbcs;
-                    if (tableExist) {
-                        List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
-                        dbcs = saveField(tableId, tableTemp.getTableName(), listMap, ids);
-                        for (Y9TableField y9TableField : list) {
-                            if (!ids.contains(y9TableField.getId())) {
-                                y9TableFieldRepository.delete(y9TableField);
-                            }
-                        }
-                    } else {
-                        dbcs = saveField(tableId, tableTemp.getTableName(), listMap, ids);
-                    }
-                    return tableManagerService.buildTable(tableTemp, dbcs);
+            // 处理字段信息
+            if (!listMap.isEmpty()) {
+                List<String> ids = new ArrayList<>();
+                List<DbColumn> dbColumns = self.saveField(tableTemp.getId(), tableTemp.getTableName(), listMap, ids);
+                // 如果表已存在，删除已移除的字段
+                if (tableExist) {
+                    cleanupRemovedFields(tableTemp.getId(), ids);
                 }
+                // 构建物理表
+                return tableManagerService.buildTable(tableTemp, dbColumns);
             }
             return Y9Result.successMsg("创建数据表成功");
         } catch (Exception e) {
             LOGGER.error("创建数据表失败", e);
-            return Y9Result.failure("创建数据表失败");
+            return Y9Result.failure("创建数据表失败：" + e.getMessage());
+        }
+    }
+
+    /**
+     * 检查表是否已存在
+     */
+    private boolean checkTableExists(Y9Table table) {
+        if (StringUtils.isEmpty(table.getId())) {
+            return false;
+        }
+        Y9Table oldTable = this.findById(table.getId());
+        return oldTable != null;
+    }
+
+    /**
+     * 清理已移除的字段
+     */
+    private void cleanupRemovedFields(String tableId, List<String> ids) {
+        List<Y9TableField> existingFields = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
+        for (Y9TableField y9TableField : existingFields) {
+            if (!ids.contains(y9TableField.getId())) {
+                y9TableFieldRepository.delete(y9TableField);
+            }
         }
     }
 
@@ -200,109 +215,161 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     @Override
     public List<String> getSql(Map<String, Object> searchMap) {
-        StringBuilder innerSql = new StringBuilder();
-        StringBuilder whereSql = new StringBuilder();
-        StringBuilder assigneeNameInnerSql = new StringBuilder();
-        StringBuilder assigneeNameWhereSql = new StringBuilder();
-        List<String> tableAliasList = new ArrayList<>();
+        SqlBuilderContext context = new SqlBuilderContext();
         for (String key : searchMap.keySet()) {
-            // 表单字段
             if (key.contains(".")) {
-                String[] aliasColumnNameType = key.split("\\.");
-                String alias = aliasColumnNameType[0];
-                if (!tableAliasList.contains(alias)) {
-                    tableAliasList.add(alias);
-                    Y9Table y9Table = this.findByTableAlias(alias);
-                    if (null == y9Table) {
-                        return List.of();
-                    }
-                    innerSql.append("INNER JOIN ")
-                        .append(y9Table.getTableName().toUpperCase())
-                        .append(" ")
-                        .append(alias.toUpperCase())
-                        .append(" ON T.PROCESSSERIALNUMBER = ")
-                        .append(alias.toUpperCase())
-                        .append(".GUID ");
-                }
-                switch (aliasColumnNameType.length) {
-                    case 2:
-                        if ("dbsx".equalsIgnoreCase(aliasColumnNameType[1])) {
-                            int days = Integer.parseInt(searchMap.get(key).toString());
-                            List<String> start_end = itemWorkDayService.getDb(days);
-                            whereSql.append(" AND ")
-                                .append(key.toUpperCase())
-                                .append(" >='")
-                                .append(start_end.get(0))
-                                .append("' AND ")
-                                .append(key.toUpperCase())
-                                .append(" <='")
-                                .append(start_end.get(1))
-                                .append("'");
-                        } else {
-                            if (null != searchMap.get(key) && StringUtils.isNotBlank(searchMap.get(key).toString())) {
-                                whereSql.append(" AND ")
-                                    .append(key.toUpperCase())
-                                    .append(" LIKE '%")
-                                    .append(searchMap.get(key).toString())
-                                    .append("%'");
-                            } else {
-                                whereSql.append(" AND (")
-                                    .append(key.toUpperCase())
-                                    .append("= '' OR ")
-                                    .append(key.toUpperCase())
-                                    .append(" IS NULL)");
-                            }
-                        }
-                        break;
-                    case 3:
-                        String aliasColumnName = aliasColumnNameType[0] + "." + aliasColumnNameType[1];
-                        String type = aliasColumnNameType[2];
-                        if ("equal".equals(type)) {
-                            whereSql.append(" AND ")
-                                .append(aliasColumnName.toUpperCase())
-                                .append("='")
-                                .append(searchMap.get(key).toString())
-                                .append("' ");
-                        } else if ("date".equals(type)) {
-                            ArrayList<String> list = (ArrayList<String>)searchMap.get(key);
-                            whereSql.append(" AND ")
-                                .append(aliasColumnName.toUpperCase())
-                                .append(" >='")
-                                .append(list.get(0))
-                                .append("' AND ")
-                                .append(aliasColumnName.toUpperCase())
-                                .append(" <='")
-                                .append(list.get(1))
-                                .append("'");
-                        }
-                        break;
-                    default:
-                        LOGGER.warn("参数不符合a.b或者a.b.c的格式。");
-                        break;
-                }
+                handleTableFieldCondition(key, searchMap, context);
             } else {
-                // 已办件查询条件#已办类型
-                if ("ended".equals(key)) {
-                    whereSql.append(" AND ")
-                        .append("T.")
-                        .append(key.toUpperCase())
-                        .append("=")
-                        .append((boolean)searchMap.get(key));
-                } else if ("assigneeName".equals(key)) {
-                    // 查询条件#当前办理人
-                    assigneeNameInnerSql
-                        .append(" JOIN FF_ACT_RU_DETAIL TT ON T.PROCESSSERIALNUMBER = TT.PROCESSSERIALNUMBER");
-                    assigneeNameWhereSql.append(" AND INSTR(TT.")
-                        .append(key.toUpperCase())
-                        .append(",'")
-                        .append(searchMap.get(key).toString())
-                        .append("') > 0 ")
-                        .append(" AND TT.STATUS = 0 ");
-                }
+                handleProcessCondition(key, searchMap, context);
             }
         }
-        return List.of(innerSql.toString(), whereSql.toString(), assigneeNameInnerSql.toString(),
-            assigneeNameWhereSql.toString());
+        return List.of(context.innerSql.toString(), context.whereSql.toString(),
+            context.assigneeNameInnerSql.toString(), context.assigneeNameWhereSql.toString());
+    }
+
+    /**
+     * 处理表字段查询条件
+     */
+    private void handleTableFieldCondition(String key, Map<String, Object> searchMap, SqlBuilderContext context) {
+        String[] aliasColumnNameType = key.split("\\.");
+        String alias = aliasColumnNameType[0];
+        // 添加表连接
+        addTableJoin(alias, context);
+        // 根据参数格式处理不同查询条件
+        switch (aliasColumnNameType.length) {
+            case 2:
+                handleTwoPartCondition(key, aliasColumnNameType, searchMap, context);
+                break;
+            case 3:
+                handleThreePartCondition(key, aliasColumnNameType, searchMap, context);
+                break;
+            default:
+                LOGGER.warn("参数不符合a.b或者a.b.c的格式。");
+                break;
+        }
+    }
+
+    /**
+     * 添加表连接语句
+     */
+    private void addTableJoin(String alias, SqlBuilderContext context) {
+        if (!context.tableAliasList.contains(alias)) {
+            context.tableAliasList.add(alias);
+            Y9Table y9Table = this.findByTableAlias(alias);
+            if (y9Table == null) {
+                throw new IllegalArgumentException("找不到表别名对应的表: " + alias);
+            }
+            context.innerSql.append("INNER JOIN ")
+                .append(y9Table.getTableName().toUpperCase())
+                .append(" ")
+                .append(alias.toUpperCase())
+                .append(" ON T.PROCESSSERIALNUMBER = ")
+                .append(alias.toUpperCase())
+                .append(".GUID ");
+        }
+    }
+
+    /**
+     * 处理两部分参数格式的条件 (a.b)
+     */
+    private void handleTwoPartCondition(String key, String[] aliasColumnNameType, Map<String, Object> searchMap,
+        SqlBuilderContext context) {
+        if ("dbsx".equalsIgnoreCase(aliasColumnNameType[1])) {
+            handleDeadlineCondition(key, searchMap, context);
+        } else {
+            handleLikeCondition(key, searchMap, context);
+        }
+    }
+
+    /**
+     * 处理截止日期条件
+     */
+    private void handleDeadlineCondition(String key, Map<String, Object> searchMap, SqlBuilderContext context) {
+        int days = Integer.parseInt(searchMap.get(key).toString());
+        List<String> startEnd = itemWorkDayService.getDb(days);
+        context.whereSql.append(" AND ")
+            .append(key.toUpperCase())
+            .append(" >='")
+            .append(startEnd.get(0))
+            .append("' AND ")
+            .append(key.toUpperCase())
+            .append(" <='")
+            .append(startEnd.get(1))
+            .append("'");
+    }
+
+    /**
+     * 处理模糊查询条件
+     */
+    private void handleLikeCondition(String key, Map<String, Object> searchMap, SqlBuilderContext context) {
+        Object value = searchMap.get(key);
+        if (value != null && StringUtils.isNotBlank(value.toString())) {
+            context.whereSql.append(" AND ").append(key.toUpperCase()).append(" LIKE '%").append(value).append("%'");
+        } else {
+            context.whereSql.append(" AND (")
+                .append(key.toUpperCase())
+                .append("= '' OR ")
+                .append(key.toUpperCase())
+                .append(" IS NULL)");
+        }
+    }
+
+    /**
+     * 处理三部分参数格式的条件 (a.b.c)
+     */
+    private void handleThreePartCondition(String key, String[] aliasColumnNameType, Map<String, Object> searchMap,
+        SqlBuilderContext context) {
+        String aliasColumnName = aliasColumnNameType[0] + "." + aliasColumnNameType[1];
+        String type = aliasColumnNameType[2];
+        if ("equal".equals(type)) {
+            context.whereSql.append(" AND ")
+                .append(aliasColumnName.toUpperCase())
+                .append("='")
+                .append(searchMap.get(key).toString())
+                .append("' ");
+        } else if ("date".equals(type)) {
+            handleDateRangeCondition(aliasColumnName, searchMap, context);
+        }
+    }
+
+    /**
+     * 处理日期范围条件
+     */
+    private void handleDateRangeCondition(String aliasColumnName, Map<String, Object> searchMap,
+        SqlBuilderContext context) {
+        @SuppressWarnings("unchecked")
+        ArrayList<String> list = (ArrayList<String>)searchMap.get(aliasColumnName);
+        context.whereSql.append(" AND ")
+            .append(aliasColumnName.toUpperCase())
+            .append(" >='")
+            .append(list.get(0))
+            .append("' AND ")
+            .append(aliasColumnName.toUpperCase())
+            .append(" <='")
+            .append(list.get(1))
+            .append("'");
+    }
+
+    /**
+     * 处理流程相关查询条件
+     */
+    private void handleProcessCondition(String key, Map<String, Object> searchMap, SqlBuilderContext context) {
+        if ("ended".equals(key)) {
+            context.whereSql.append(" AND ")
+                .append("T.")
+                .append(key.toUpperCase())
+                .append("=")
+                .append((boolean)searchMap.get(key));
+        } else if ("assigneeName".equals(key)) {
+            context.assigneeNameInnerSql
+                .append(" JOIN FF_ACT_RU_DETAIL TT ON T.PROCESSSERIALNUMBER = TT.PROCESSSERIALNUMBER");
+            context.assigneeNameWhereSql.append(" AND INSTR(TT.")
+                .append(key.toUpperCase())
+                .append(",'")
+                .append(searchMap.get(key).toString())
+                .append("') > 0 ")
+                .append(" AND TT.STATUS = 0 ");
+        }
     }
 
     @Override
@@ -323,13 +390,13 @@ public class Y9TableServiceImpl implements Y9TableService {
                     }
                 }
             } else {
-                list = Y9FormDbMetaDataUtil.listAllTables(dataSource, "y9_form_%");
-                String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
+                list = DbMetaDataUtil.listAllTables(dataSource, "y9_form_%");
+                String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
                 if (DialectEnum.ORACLE.getValue().equals(dialect)) {
-                    List<Map<String, String>> list1 = Y9FormDbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
+                    List<Map<String, String>> list1 = DbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
                     list.addAll(list1);
                 } else if (DialectEnum.DM.getValue().equals(dialect)) {
-                    List<Map<String, String>> list1 = Y9FormDbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
+                    List<Map<String, String>> list1 = DbMetaDataUtil.listAllTables(dataSource, "Y9_FORM_%");
                     list.addAll(list1);
                 }
             }
@@ -343,8 +410,8 @@ public class Y9TableServiceImpl implements Y9TableService {
     /**
      * 解析字段类型，
      *
-     * @param type
-     * @return
+     * @param type 字段类型
+     * @return 字段类型
      */
     private String getFieldType(String type) {
         type = type.substring(0, type.lastIndexOf("("));
@@ -422,16 +489,17 @@ public class Y9TableServiceImpl implements Y9TableService {
     /**
      * 保存字段信息
      *
-     * @param tableId
-     * @param tableName
-     * @param listMap
-     * @param ids
-     * @return
+     * @param tableId 表ID
+     * @param tableName 表名
+     * @param listMap 字段信息
+     * @param ids 字段ID
+     * @return {@code List<DbColumn>}
      */
+    @Override
     @Transactional
     public List<DbColumn> saveField(String tableId, String tableName, List<Map<String, Object>> listMap,
         List<String> ids) {
-        List<DbColumn> dbcs = new ArrayList<>();
+        List<DbColumn> dbColumns = new ArrayList<>();
         int order = 1;
         Y9TableField fieldTemp;
         for (Map<String, Object> m : listMap) {
@@ -480,10 +548,10 @@ public class Y9TableServiceImpl implements Y9TableService {
             dbColumn.setDataType(0);
             dbColumn.setIsNull(fieldTemp.getIsMayNull());
             dbColumn.setTableName(tableName);
-            dbcs.add(dbColumn);
+            dbColumns.add(dbColumn);
             y9TableFieldRepository.save(fieldTemp);
         }
-        return dbcs;
+        return dbColumns;
     }
 
     @Override
@@ -494,7 +562,7 @@ public class Y9TableServiceImpl implements Y9TableService {
                 table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             }
             DataSource dataSource = Objects.requireNonNull(jdbcTemplate4Tenant.getDataSource());
-            String dialect = Y9FormDbMetaDataUtil.getDatabaseDialectName(dataSource);
+            String dialect = DbMetaDataUtil.getDatabaseDialectName(dataSource);
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }
@@ -507,19 +575,18 @@ public class Y9TableServiceImpl implements Y9TableService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public Y9Result<Object> updateTable(Y9Table table, List<Map<String, Object>> listMap, String type) {
         try {
-            Y9Table saveTable = this.saveOrUpdate(table);
+            Y9Table saveTable = self.saveOrUpdate(table);
             if (saveTable != null && saveTable.getId() != null) {
                 String tableId = saveTable.getId();
                 String tableName = saveTable.getTableName();
                 if (!listMap.isEmpty()) {
                     List<String> ids = new ArrayList<>();
                     List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
-                    List<DbColumn> dbcs;
-                    dbcs = saveField(tableId, tableName, listMap, ids);
-                    /**
+                    List<DbColumn> dbColumnList = self.saveField(tableId, tableName, listMap, ids);
+                    /*
                      * 删除页面上已删除的字段
                      */
                     for (Y9TableField y9TableField : list) {
@@ -527,12 +594,12 @@ public class Y9TableServiceImpl implements Y9TableService {
                             y9TableFieldRepository.delete(y9TableField);
                         }
                     }
-                    /**
+                    /*
                      * 修改表结构
                      */
                     boolean isSave = "save".equals(type);
                     if (!isSave) {
-                        return tableManagerService.addFieldToTable(saveTable, dbcs);
+                        return tableManagerService.addFieldToTable(saveTable, dbColumnList);
                     }
                 }
             }
@@ -541,5 +608,16 @@ public class Y9TableServiceImpl implements Y9TableService {
             LOGGER.error("操作失败", e);
             return Y9Result.failure("操作失败");
         }
+    }
+
+    /**
+     * SQL构建上下文
+     */
+    private static class SqlBuilderContext {
+        final StringBuilder innerSql = new StringBuilder();
+        final StringBuilder whereSql = new StringBuilder();
+        final StringBuilder assigneeNameInnerSql = new StringBuilder();
+        final StringBuilder assigneeNameWhereSql = new StringBuilder();
+        final List<String> tableAliasList = new ArrayList<>();
     }
 }

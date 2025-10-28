@@ -18,6 +18,8 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.consts.ItemConsts;
@@ -53,10 +55,6 @@ import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9FormServiceImpl implements Y9FormService {
 
-    private static final String DATE_FORMAT_KEY = "','yyyy-MM-dd')";
-    private static final String DATE_FORMAT24_KEY = "','yyyy-MM-dd HH24:mi:ss')";
-    private static final String TO_DATE_KEY = "TO_DATE('";
-    private static final String Z_GUID_KEY = "Z_GUID";
     private final JdbcTemplate jdbcTemplate4Tenant;
     private final Y9FormRepository y9FormRepository;
     private final Y9TableService y9TableService;
@@ -170,13 +168,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                 return map;
             }
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
-            String dataSql = "";
-            if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                dataSql = "select * from \"" + tableName + "\" t where t.guid=?";
-            } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                dataSql = "select * from " + tableName + " t where t.guid=?";
-            }
+            String dataSql = buildSelectSql(dialect, tableName) + " where guid=?";
             List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(dataSql, guid);
             if (dataMap.isEmpty()) {
                 map.put(ItemConsts.EDITTYPE_KEY, "0");
@@ -186,84 +178,114 @@ public class Y9FormServiceImpl implements Y9FormService {
             map.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("获取表单数据失败,tableName:{},guid:{}", tableName, guid, e);
         }
         return map;
     }
 
     @Override
     public Map<String, Object> getFormData(String formId, String guid) {
-        Map<String, Object> map = new HashMap<>(16);
-        Map<String, Object> resMap = new HashMap<>(16);
+        Map<String, Object> result = new HashMap<>(16);
+        Map<String, Object> formData = new HashMap<>(16);
         try {
+            if (StringUtils.isBlank(formId) || StringUtils.isBlank(guid)) {
+                result.put("formData", formData);
+                result.put(UtilConsts.SUCCESS, true);
+                return result;
+            }
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
-                    StringBuilder sqlStr = new StringBuilder();
-                    if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
-                    } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where guid =?");
-                    }
-                    List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
-                    if (!dataMap.isEmpty()) {
-                        List<Y9FormField> elementList =
-                            y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
-                        for (Y9FormField element : elementList) {
-                            String fieldName = element.getFieldName();
-                            resMap.put(fieldName,
-                                dataMap.get(0).get(fieldName) != null ? dataMap.get(0).get(fieldName).toString() : "");
-                        }
-                    }
+                // 只处理主表数据
+                if (y9Table != null && y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
+                    fetchMainTableData(dialect, tableName, formId, guid, formData);
                 }
             }
-            map.put("formData", resMap);
-            map.put(UtilConsts.SUCCESS, true);
+            result.put("formData", formData);
+            result.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
-            map.put("formData", resMap);
-            map.put(UtilConsts.SUCCESS, false);
-            e.printStackTrace();
+            LOGGER.error("获取表单数据失败, formId: {}, guid: {}", formId, guid, e);
+            result.put("formData", formData);
+            result.put(UtilConsts.SUCCESS, false);
         }
-        return map;
+
+        return result;
+    }
+
+    /**
+     * 获取主表数据
+     */
+    private void fetchMainTableData(String dialect, String tableName, String formId, String guid,
+        Map<String, Object> formData) {
+        try {
+            String selectSql = buildSelectSql(dialect, tableName) + " WHERE guid = ?";
+            List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(selectSql, guid);
+            if (!dataMap.isEmpty()) {
+                List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
+                populateFormData(dataMap.get(0), elementList, formData);
+            }
+        } catch (Exception e) {
+            LOGGER.error("查询主表数据失败, tableName: {}, guid: {}", tableName, guid, e);
+        }
+    }
+
+    /**
+     * 填充表单数据
+     */
+    private void populateFormData(Map<String, Object> rowData, List<Y9FormField> elementList,
+        Map<String, Object> formData) {
+        for (Y9FormField element : elementList) {
+            String fieldName = element.getFieldName();
+            Object value = rowData.get(fieldName);
+            formData.put(fieldName, value != null ? value.toString() : "");
+        }
     }
 
     @Override
     public Map<String, Object> getFormData4Var(String formId, String guid) {
-        Map<String, Object> map = new HashMap<>(16);
+        Map<String, Object> result = new HashMap<>(16);
         try {
+            if (StringUtils.isBlank(formId) || StringUtils.isBlank(guid)) {
+                return result;
+            }
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
-                    StringBuilder sqlStr = new StringBuilder();
-                    if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where guid =?");
-                    } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where guid =?");
-                    }
-                    List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), guid);
-                    if (!dataMap.isEmpty()) {
-                        List<Y9TableField> tableFieldList =
-                            y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(y9Table.getId());
-                        for (Y9TableField tableField : tableFieldList) {
-                            if (null != tableField.getIsVar() && 1 == tableField.getIsVar()) {
-                                String fieldName = tableField.getFieldName();
-                                map.put(fieldName, dataMap.get(0).get(fieldName) != null
-                                    ? dataMap.get(0).get(fieldName).toString() : "");
-                            }
-                        }
+                // 只处理主表数据
+                if (y9Table != null && y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
+                    fetchVariableData(dialect, tableName, guid, y9Table.getId(), result);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("获取表单变量数据失败, formId: {}, guid: {}", formId, guid, e);
+        }
+        return result;
+    }
+
+    /**
+     * 获取变量数据
+     */
+    private void fetchVariableData(String dialect, String tableName, String guid, String tableId,
+        Map<String, Object> result) {
+        try {
+            String selectSql = buildSelectSql(dialect, tableName) + " WHERE guid = ?";
+            List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(selectSql, guid);
+            if (!dataMap.isEmpty()) {
+                List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
+                for (Y9TableField tableField : tableFieldList) {
+                    // 只处理标记为变量的字段
+                    if (tableField.getIsVar() != null && tableField.getIsVar() == 1) {
+                        String fieldName = tableField.getFieldName();
+                        Object value = dataMap.get(0).get(fieldName);
+                        result.put(fieldName, value != null ? value.toString() : "");
                     }
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("查询变量数据失败, tableName: {}, guid: {}", tableName, guid, e);
         }
-        return map;
     }
 
     @Override
@@ -335,37 +357,57 @@ public class Y9FormServiceImpl implements Y9FormService {
 
     @Override
     public List<Map<String, Object>> listFormData(String formId) {
-        List<Map<String, Object>> resList = new ArrayList<>();
+        List<Map<String, Object>> result = new ArrayList<>();
         try {
+            if (StringUtils.isBlank(formId)) {
+                return result;
+            }
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<String> tableNameList = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNameList) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
-                    StringBuilder sqlStr = new StringBuilder();
-                    if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\"");
-                    } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr = new StringBuilder("SELECT * FROM " + tableName);
-                    }
-                    List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(sqlStr.toString());
-                    for (Map<String, Object> data : dataMap) {
-                        List<Y9FormField> elementList =
-                            y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
-                        Map<String, Object> map = new HashMap<>(16);
-                        for (Y9FormField element : elementList) {
-                            String fieldName = element.getFieldName();
-                            map.put(fieldName, data.get(fieldName) != null ? data.get(fieldName).toString() : "");
-                        }
-                        resList.add(map);
-                    }
+                // 只处理主表数据
+                if (y9Table != null && y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
+                    fetchAllMainTableData(dialect, tableName, formId, result);
                 }
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取表单数据列表失败, formId: {}", formId, e);
         }
-        return resList;
+
+        return result;
+    }
+
+    /**
+     * 获取主表所有数据
+     */
+    private void fetchAllMainTableData(String dialect, String tableName, String formId,
+        List<Map<String, Object>> result) {
+        try {
+            String selectSql = buildSelectSql(dialect, tableName);
+            List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(selectSql);
+            List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
+            for (Map<String, Object> data : dataMap) {
+                Map<String, Object> formData = new HashMap<>(16);
+                populateFormData(data, elementList, formData);
+                result.add(formData);
+            }
+        } catch (Exception e) {
+            LOGGER.error("查询主表所有数据失败, tableName: {}", tableName, e);
+        }
+    }
+
+    /**
+     * 构建查询所有数据的SQL
+     */
+    private String buildSelectSql(String dialect, String tableName) {
+        if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
+            || DialectEnum.KINGBASE.getValue().equals(dialect)) {
+            return "SELECT * FROM \"" + tableName + "\"";
+        } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
+            return "SELECT * FROM " + tableName;
+        }
+        return "SELECT * FROM " + tableName;
     }
 
     /**
@@ -426,207 +468,241 @@ public class Y9FormServiceImpl implements Y9FormService {
         String jsonData) {
         try {
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
-            List<Map<String, Object>> list = Y9JsonUtil.readValue(jsonData, List.class);
+            List<Map<String, Object>> dataList = Y9JsonUtil.readValue(jsonData, List.class);
             Y9Table y9Table = y9TableService.findById(tableId);
             String tableName = y9Table.getTableName();
             List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableName(tableName);
-            List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
-            for (Map<String, Object> keyValue : list) {
-                String guid = keyValue.get("guid") != null ? (String)keyValue.get("guid") : "";
-                if (StringUtils.isBlank(guid)) {
-                    guid = keyValue.get("GUID") != null ? (String)keyValue.get("GUID") : "";
-                }
-                String actionType;
-                Map<String, Object> m = this.getData(guid, tableName);
-                if (m.get(ItemConsts.EDITTYPE_KEY).equals("0")) {
-                    actionType = "0";
+            assert dataList != null;
+            for (Map<String, Object> keyValue : dataList) {
+                String guid = getGuidFromData(keyValue);
+                String actionType = determineActionType(guid, tableName);
+                if ("0".equals(actionType)) {
+                    performInsertOperation(dialect, tableName, keyValue, formId, tableFieldList, false);
                 } else {
-                    actionType = "1";
-                }
-                if (actionType.equals("0")) {
-                    StringBuilder sqlStr = new StringBuilder();
-                    if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("insert into \"").append(tableName).append("\" (");
-                    } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("insert into ").append(tableName).append(" (");
-                    }
-                    StringBuilder sqlStr1 = new StringBuilder(") values (");
-                    boolean isHaveField = false;
-                    for (Y9FormField element : elementList) {
-                        String fieldName = element.getFieldName();
-                        Y9TableField y9TableField = null;
-                        for (Y9TableField tableField : tableFieldList) {
-                            if (tableField.getFieldName().equalsIgnoreCase(fieldName)) {
-                                y9TableField = tableField;
-                                break;
-                            }
-                        }
-                        if (y9TableField != null) {
-                            if (isHaveField) {
-                                sqlStr.append(",");
-                            }
-                            sqlStr.append(fieldName);
-                            if (isHaveField) {
-                                sqlStr1.append(",");
-                            }
-                            if (y9TableField.getFieldType().toLowerCase().contains("int")) {
-                                // sqlStr1.append(keyValue.get(fieldName));
-                                sqlStr1.append((keyValue.get(fieldName) != null
-                                    && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                        ? keyValue.get(fieldName) : null);
-                            } else if (y9TableField.getFieldType().toUpperCase().contains(ItemConsts.DOUBLE_UP_KEY)
-                                || y9TableField.getFieldType().toUpperCase().contains(ItemConsts.FLOAT_UP_KEY)) {
-                                sqlStr1.append((keyValue.get(fieldName) != null
-                                    && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                        ? keyValue.get(fieldName) : null);
-                            } else if (y9TableField.getFieldType().toLowerCase().contains("date")) {
-                                if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                    || DialectEnum.DM.getValue().equals(dialect)
-                                    || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append(TO_DATE_KEY).append(keyValue.get(fieldName)).append(DATE_FORMAT_KEY);
-                                } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                }
-                            } else if (y9TableField.getFieldType()
-                                .toUpperCase()
-                                .contains(ItemConsts.TIMESTAMP_UP_KEY)) {
-                                if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                    || DialectEnum.DM.getValue().equals(dialect)
-                                    || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append(TO_DATE_KEY)
-                                        .append(keyValue.get(fieldName))
-                                        .append(DATE_FORMAT24_KEY);
-
-                                } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                }
-                            } else {
-                                if (fieldName.equals("guid") || fieldName.equals("GUID") || fieldName.equals(Z_GUID_KEY)
-                                    || fieldName.equals("z_guid")) {
-                                    if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
-                                    } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else if (fieldName.equals(ItemConsts.PROCESSINSTANCEID_KEY)
-                                    || fieldName.equals("PROCESSINSTANCEID")) {
-                                    if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
-                                    } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else {
-                                    if (keyValue.get(fieldName) instanceof ArrayList) {
-                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
-                                            : "''");
-                                    } else {
-                                        sqlStr1.append((keyValue.get(fieldName) != null
-                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
-                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                }
-                            }
-                            isHaveField = true;
-                        }
-                    }
-                    sqlStr1.append(")");
-                    sqlStr.append(sqlStr1);
-                    String sql = sqlStr.toString();
-                    jdbcTemplate4Tenant.execute(sql);
-                } else {// 编辑
-                    StringBuilder sqlStr = new StringBuilder();
-                    if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("update \"").append(tableName).append("\" set ");
-                    } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("update ").append(tableName).append(" set ");
-                    }
-                    StringBuilder sqlStr1 = new StringBuilder();
-                    boolean isHaveField = false;
-                    for (Y9FormField element : elementList) {
-                        if (element.getTableName().equals(tableName)) {
-                            String fieldName = element.getFieldName();
-                            Y9TableField y9TableField = null;
-                            for (Y9TableField tableField : tableFieldList) {
-                                if (tableField.getFieldName().equalsIgnoreCase(fieldName)) {
-                                    y9TableField = tableField;
-                                    break;
-                                }
-                            }
-                            if (y9TableField != null) {
-                                if (fieldName.equals("guid") || fieldName.equals("GUID")) {
-                                    sqlStr1.append(" where guid ='").append(keyValue.get(fieldName)).append("'");
-                                    continue;
-                                }
-                                if (isHaveField) {
-                                    sqlStr.append(",");
-                                }
-                                sqlStr.append(fieldName).append("=");
-                                if (y9TableField.getFieldType().toLowerCase().contains("int")) {
-                                    // sqlStr.append(keyValue.get(fieldName));
-                                    sqlStr.append((keyValue.get(fieldName) != null
-                                        && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                            ? keyValue.get(fieldName) : null);
-                                } else if (y9TableField.getFieldType().toUpperCase().contains(ItemConsts.DOUBLE_UP_KEY)
-                                    || y9TableField.getFieldType().toUpperCase().contains(ItemConsts.FLOAT_UP_KEY)) {
-                                    sqlStr.append((keyValue.get(fieldName) != null
-                                        && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                            ? keyValue.get(fieldName) : null);
-                                } else if (y9TableField.getFieldType().toLowerCase().contains("date")) {
-                                    if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                        || DialectEnum.DM.getValue().equals(dialect)
-                                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY)
-                                            .append(keyValue.get(fieldName))
-                                            .append(DATE_FORMAT_KEY);
-                                    } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else if (y9TableField.getFieldType()
-                                    .toUpperCase()
-                                    .contains(ItemConsts.TIMESTAMP_UP_KEY)) {
-                                    if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                        || DialectEnum.DM.getValue().equals(dialect)
-                                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY)
-                                            .append(keyValue.get(fieldName))
-                                            .append(DATE_FORMAT24_KEY);
-                                    } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else {
-                                    if (keyValue.get(fieldName) instanceof ArrayList) {
-                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
-                                            : "''");
-                                    } else {
-                                        sqlStr.append((keyValue.get(fieldName) != null
-                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
-                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                }
-                                isHaveField = true;
-                            }
-                        }
-                    }
-                    sqlStr.append(sqlStr1);
-                    String sql = sqlStr.toString();
-                    jdbcTemplate4Tenant.execute(sql);
+                    performUpdateOperation(dialect, tableName, keyValue, formId, tableFieldList);
                 }
             }
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存子表数据失败, formId: {}, tableId: {}", formId, tableId, e);
             return Y9Result.failure("保存失败");
         }
+    }
+
+    /**
+     * 从数据中获取GUID
+     */
+    private String getGuidFromData(Map<String, Object> keyValue) {
+        String guid = keyValue.get("guid") != null ? (String)keyValue.get("guid") : "";
+        if (StringUtils.isBlank(guid)) {
+            guid = keyValue.get("GUID") != null ? (String)keyValue.get("GUID") : "";
+        }
+        return guid;
+    }
+
+    /**
+     * 确定操作类型（插入或更新）
+     */
+    private String determineActionType(String guid, String tableName) {
+        Map<String, Object> dataMap = this.getData(guid, tableName);
+        return dataMap.get(ItemConsts.EDITTYPE_KEY).equals("0") ? "0" : "1";
+    }
+
+    /**
+     * 执行更新操作
+     */
+    private void performUpdateOperation(String dialect, String tableName, Map<String, Object> keyValue, String formId,
+        List<Y9TableField> tableFieldList) {
+        try {
+            List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
+            StringBuilder sqlBuilder = new StringBuilder();
+            List<Object> parameters = new ArrayList<>();
+            // 构建UPDATE语句
+            buildUpdateSql(dialect, tableName, sqlBuilder);
+            // 构建SET子句
+            StringBuilder setClause = new StringBuilder();
+            boolean isFirst = true;
+            for (Y9FormField element : elementList) {
+                if (!element.getTableName().equals(tableName)) {
+                    continue;
+                }
+                String fieldName = element.getFieldName();
+                // GUID字段作为WHERE条件，不在SET子句中
+                if (isGuidField(fieldName)) {
+                    continue;
+                }
+                Y9TableField y9TableField = findTableField(tableFieldList, fieldName);
+                if (y9TableField != null) {
+                    if (!isFirst) {
+                        setClause.append(",");
+                    }
+                    setClause.append(fieldName).append(" = ?");
+                    Object value = formatFieldValue(keyValue, fieldName, y9TableField);
+                    parameters.add(value);
+
+                    isFirst = false;
+                }
+            }
+            // 添加WHERE条件
+            String guidValue = getGuidFromData(keyValue);
+            parameters.add(guidValue);
+            sqlBuilder.append(setClause).append(" WHERE guid = ?");
+            jdbcTemplate4Tenant.update(sqlBuilder.toString(), parameters.toArray());
+        } catch (Exception e) {
+            LOGGER.error("执行更新操作失败, tableName: {}", tableName, e);
+            throw new RuntimeException("更新操作失败", e);
+        }
+    }
+
+    /**
+     * 构建INSERT SQL语句头
+     */
+    private void buildInsertSql(String dialect, String tableName, StringBuilder sqlBuilder) {
+        if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
+            || DialectEnum.KINGBASE.getValue().equals(dialect)) {
+            sqlBuilder.append("INSERT INTO \"").append(tableName).append("\" (");
+        } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
+            sqlBuilder.append("INSERT INTO ").append(tableName).append(" (");
+        }
+    }
+
+    /**
+     * 构建UPDATE SQL语句头
+     */
+    private void buildUpdateSql(String dialect, String tableName, StringBuilder sqlBuilder) {
+        if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
+            || DialectEnum.KINGBASE.getValue().equals(dialect)) {
+            sqlBuilder.append("UPDATE \"").append(tableName).append("\" SET ");
+        } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
+            sqlBuilder.append("UPDATE ").append(tableName).append(" SET ");
+        }
+    }
+
+    /**
+     * 查找表字段
+     */
+    private Y9TableField findTableField(List<Y9TableField> tableFieldList, String fieldName) {
+        for (Y9TableField tableField : tableFieldList) {
+            if (tableField.getFieldName().equalsIgnoreCase(fieldName)) {
+                return tableField;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 判断是否为GUID字段
+     */
+    /**
+     * 判断是否为GUID字段
+     */
+    private boolean isGuidField(String fieldName) {
+        return "guid".equalsIgnoreCase(fieldName) || "Z_GUID".equalsIgnoreCase(fieldName);
+    }
+
+    /**
+     * 格式化字段值
+     */
+    /**
+     * 格式化字段值
+     */
+    private Object formatFieldValue(Map<String, Object> keyValue, String fieldName, Y9TableField y9TableField) {
+        Object value = keyValue.get(fieldName);
+        // 特殊字段处理
+        if (isGuidField(fieldName)) {
+            return handleSpecialField(value);
+        }
+        // 数组类型处理
+        if (value instanceof ArrayList) {
+            return handleArrayField(value);
+        }
+        // 空值处理
+        if (value == null) {
+            return null;
+        }
+        // 数据类型处理
+        return handleTypedField(value, y9TableField);
+    }
+
+    /**
+     * 处理特殊字段（GUID）
+     */
+    private Object handleSpecialField(Object value) {
+        if (value == null || StringUtils.isBlank(value.toString())) {
+            return Y9IdGenerator.genId(IdType.SNOWFLAKE);
+        }
+        return value;
+    }
+
+    /**
+     * 处理数组类型字段
+     */
+    private Object handleArrayField(Object value) {
+        try {
+            return Y9JsonUtil.writeValueAsString(value);
+        } catch (Exception e) {
+            LOGGER.warn("序列化数组字段失败", e);
+            return "";
+        }
+    }
+
+    /**
+     * 根据字段类型处理值
+     */
+    private Object handleTypedField(Object value, Y9TableField y9TableField) {
+        String fieldType = y9TableField.getFieldType().toLowerCase();
+        String valueStr = value.toString();
+        if (fieldType.contains("int")) {
+            return handleIntegerField(value, valueStr);
+        } else if (fieldType.contains("bit")) {
+            return handleBitField(valueStr);
+        } else if (y9TableField.getFieldType().toUpperCase().contains(ItemConsts.DOUBLE_UP_KEY)
+            || y9TableField.getFieldType().toUpperCase().contains(ItemConsts.FLOAT_UP_KEY)) {
+            return handleFloatField(value, valueStr);
+        } else if (fieldType.contains("date")
+            || y9TableField.getFieldType().toUpperCase().contains(ItemConsts.TIMESTAMP_UP_KEY)) {
+            return handleDateField(value);
+        } else {
+            return handleStringField(valueStr);
+        }
+    }
+
+    /**
+     * 处理整数类型字段
+     */
+    private Object handleIntegerField(Object value, String valueStr) {
+        return StringUtils.isNotBlank(valueStr) ? value : null;
+    }
+
+    /**
+     * 处理位类型字段
+     */
+    private Object handleBitField(String valueStr) {
+        if (StringUtils.isNotBlank(valueStr)) {
+            return Boolean.parseBoolean(valueStr);
+        }
+        return null;
+    }
+
+    /**
+     * 处理浮点数类型字段
+     */
+    private Object handleFloatField(Object value, String valueStr) {
+        return StringUtils.isNotBlank(valueStr) ? value : null;
+    }
+
+    /**
+     * 处理日期类型字段
+     */
+    private Object handleDateField(Object value) {
+        return value;
+    }
+
+    /**
+     * 处理字符串类型字段
+     */
+    private Object handleStringField(String valueStr) {
+        return StringUtils.isNotBlank(valueStr) ? valueStr : "";
     }
 
     @Override
@@ -634,212 +710,95 @@ public class Y9FormServiceImpl implements Y9FormService {
     public Y9Result<Object> saveChildTableData(String formId, String jsonData) {
         try {
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
-            List<Map<String, Object>> listMap = Y9JsonUtil.readValue(jsonData, List.class);
+            List<Map<String, Object>> listMap = Y9JsonUtil.readValue(jsonData, new TypeReference<>() {});
             assert listMap != null;
             Map<String, Object> keyValue = this.listMapToKeyValue(listMap);
-            String guid = keyValue.get("guid") != null ? (String)keyValue.get("guid") : "";
-            if (StringUtils.isBlank(guid)) {
-                guid = keyValue.get("GUID") != null ? (String)keyValue.get("GUID") : "";
-            }
-            List<String> list = y9FormRepository.findBindTableName(formId);
-            for (String tableName : list) {
+            String guid = getGuidFromData(keyValue);
+            List<String> tableNames = y9FormRepository.findBindTableName(formId);
+            for (String tableName : tableNames) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
+                // 只处理子表数据
                 if (y9Table.getTableType() == ItemTableTypeEnum.MAIN) {
                     continue;
                 }
-                String actionType;
-                Map<String, Object> m = this.getData(guid, tableName);
-                if (m.get(ItemConsts.EDITTYPE_KEY).equals("0")) {
-                    actionType = "0";
-                } else {
-                    actionType = "1";
-                }
+                String actionType = determineActionType(guid, tableName);
                 List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableName(tableName);
-                if (actionType.equals("0")) {
-                    List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
-                    StringBuilder sqlStr = new StringBuilder();
-                    if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("insert into \"").append(tableName).append("\" (");
-                    } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("insert into ").append(tableName).append(" (");
-                    }
-                    StringBuilder sqlStr1 = new StringBuilder(") values (");
-                    boolean isHaveField = false;
-                    for (Y9FormField element : elementList) {
-                        String fieldName = element.getFieldName();
-                        Y9TableField y9TableField = null;
-                        for (Y9TableField tableField : tableFieldList) {
-                            if (tableField.getFieldName().equalsIgnoreCase(fieldName)) {
-                                y9TableField = tableField;
-                                break;
-                            }
-                        }
-                        if (y9TableField != null) {
-                            if (isHaveField) {
-                                sqlStr.append(",");
-                            }
-                            sqlStr.append(fieldName);
-                            if (isHaveField) {
-                                sqlStr1.append(",");
-                            }
-                            if (y9TableField.getFieldType().toLowerCase().contains("int")) {
-                                // sqlStr1.append(keyValue.get(fieldName));
-                                sqlStr1.append((keyValue.get(fieldName) != null
-                                    && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                        ? keyValue.get(fieldName) : null);
-                            } else if (y9TableField.getFieldType().toUpperCase().contains(ItemConsts.DOUBLE_UP_KEY)
-                                || y9TableField.getFieldType().toUpperCase().contains(ItemConsts.FLOAT_UP_KEY)) {
-                                sqlStr1.append((keyValue.get(fieldName) != null
-                                    && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                        ? keyValue.get(fieldName) : null);
-                            } else if (y9TableField.getFieldType().toLowerCase().contains("date")) {
-                                if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                    || DialectEnum.DM.getValue().equals(dialect)
-                                    || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append(TO_DATE_KEY).append(keyValue.get(fieldName)).append(DATE_FORMAT_KEY);
-                                } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                }
-                            } else if (y9TableField.getFieldType()
-                                .toUpperCase()
-                                .contains(ItemConsts.TIMESTAMP_UP_KEY)) {
-                                if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                    || DialectEnum.DM.getValue().equals(dialect)
-                                    || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append(TO_DATE_KEY)
-                                        .append(keyValue.get(fieldName))
-                                        .append(DATE_FORMAT24_KEY);
-
-                                } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                }
-                            } else {
-                                if (fieldName.equals("guid") || fieldName.equals("GUID") || fieldName.equals(Z_GUID_KEY)
-                                    || fieldName.equals("z_guid")) {
-                                    if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
-                                    } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else if (fieldName.equals(ItemConsts.PROCESSINSTANCEID_KEY)
-                                    || fieldName.equals("PROCESSINSTANCEID")) {
-                                    if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
-                                    } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else {
-                                    if (keyValue.get(fieldName) instanceof ArrayList) {
-                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
-                                            : "''");
-                                    } else {
-                                        sqlStr1.append((keyValue.get(fieldName) != null
-                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
-                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                }
-                            }
-                            isHaveField = true;
-                        }
-                    }
-                    sqlStr1.append(")");
-                    sqlStr.append(sqlStr1);
-                    String sql = sqlStr.toString();
-                    jdbcTemplate4Tenant.execute(sql);
-                } else {// 编辑
-                    List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
-                    StringBuilder sqlStr = new StringBuilder();
-                    if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("update \"").append(tableName).append("\" set ");
-                    } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("update ").append(tableName).append(" set ");
-                    }
-                    StringBuilder sqlStr1 = new StringBuilder();
-                    boolean isHaveField = false;
-                    for (Y9FormField element : elementList) {
-                        if (element.getTableName().equals(tableName)) {
-                            String fieldName = element.getFieldName();
-                            Y9TableField y9TableField = null;
-                            for (Y9TableField tableField : tableFieldList) {
-                                if (tableField.getFieldName().equalsIgnoreCase(fieldName)) {
-                                    y9TableField = tableField;
-                                    break;
-                                }
-                            }
-                            if (y9TableField != null) {
-                                if (fieldName.equals("guid") || fieldName.equals("GUID")) {
-                                    sqlStr1.append(" where guid ='").append(keyValue.get(fieldName)).append("'");
-                                    continue;
-                                }
-                                if (isHaveField) {
-                                    sqlStr.append(",");
-                                }
-                                sqlStr.append(fieldName).append("=");
-                                if (y9TableField.getFieldType().toLowerCase().contains("int")) {
-                                    // sqlStr.append(keyValue.get(fieldName));
-                                    sqlStr.append((keyValue.get(fieldName) != null
-                                        && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                            ? keyValue.get(fieldName) : null);
-                                } else if (y9TableField.getFieldType().toUpperCase().contains(ItemConsts.DOUBLE_UP_KEY)
-                                    || y9TableField.getFieldType().toUpperCase().contains(ItemConsts.FLOAT_UP_KEY)) {
-                                    sqlStr.append((keyValue.get(fieldName) != null
-                                        && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                            ? keyValue.get(fieldName) : null);
-                                } else if (y9TableField.getFieldType().toLowerCase().contains("date")) {
-                                    if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                        || DialectEnum.DM.getValue().equals(dialect)
-                                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY)
-                                            .append(keyValue.get(fieldName))
-                                            .append(DATE_FORMAT_KEY);
-                                    } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else if (y9TableField.getFieldType()
-                                    .toUpperCase()
-                                    .contains(ItemConsts.TIMESTAMP_UP_KEY)) {
-                                    if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                        || DialectEnum.DM.getValue().equals(dialect)
-                                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY)
-                                            .append(keyValue.get(fieldName))
-                                            .append(DATE_FORMAT24_KEY);
-                                    } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else {
-                                    if (keyValue.get(fieldName) instanceof ArrayList) {
-                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
-                                            : "''");
-                                    } else {
-                                        sqlStr.append((keyValue.get(fieldName) != null
-                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
-                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                }
-                                isHaveField = true;
-                            }
-                        }
-                    }
-                    sqlStr.append(sqlStr1);
-                    String sql = sqlStr.toString();
-                    jdbcTemplate4Tenant.execute(sql);
+                if ("0".equals(actionType)) {
+                    performInsertOperation(dialect, tableName, keyValue, formId, tableFieldList, false);
+                } else {
+                    performUpdateOperation(dialect, tableName, keyValue, formId, tableFieldList);
                 }
             }
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存子表数据失败, formId: {}", formId, e);
             return Y9Result.failure("保存失败");
+        }
+    }
+
+    /**
+     * 执行插入操作
+     */
+    private void performInsertOperation(String dialect, String tableName, Map<String, Object> keyValue, String formId,
+        List<Y9TableField> tableFieldList, boolean isMainTable) {
+        try {
+            StringBuilder sqlBuilder = new StringBuilder();
+            List<Object> parameters = new ArrayList<>();
+            // 构建INSERT语句
+            buildInsertSql(dialect, tableName, sqlBuilder);
+            // 获取表单字段列表
+            List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
+
+            // 如果是主表，需要处理GUID字段
+            if (isMainTable) {
+                handleGuidFieldForInsert(elementList);
+            }
+
+            // 构建字段和值部分
+            StringBuilder fieldsBuilder = new StringBuilder();
+            StringBuilder valuesPlaceholder = new StringBuilder();
+            buildInsertFieldsAndValues(elementList, tableFieldList, keyValue, fieldsBuilder, valuesPlaceholder,
+                parameters);
+
+            sqlBuilder.append(fieldsBuilder).append(") values (").append(valuesPlaceholder).append(")");
+            jdbcTemplate4Tenant.update(sqlBuilder.toString(), parameters.toArray());
+        } catch (Exception e) {
+            LOGGER.error("执行插入操作失败, tableName: {}", tableName, e);
+            throw new RuntimeException("插入操作失败", e);
+        }
+    }
+
+    /**
+     * 构建INSERT语句的字段和值部分
+     */
+    private void buildInsertFieldsAndValues(List<Y9FormField> elementList, List<Y9TableField> tableFieldList,
+        Map<String, Object> keyValue, StringBuilder fieldsBuilder, StringBuilder valuesPlaceholder,
+        List<Object> parameters) {
+        List<String> fieldNames = new ArrayList<>();
+        List<Object> fieldValues = new ArrayList<>();
+        for (Y9FormField element : elementList) {
+            String fieldName = element.getFieldName();
+            Y9TableField y9TableField = findTableField(tableFieldList, fieldName);
+            if (y9TableField != null) {
+                fieldNames.add(fieldName);
+                Object value = formatFieldValue(keyValue, fieldName, y9TableField);
+                fieldValues.add(value);
+            }
+        }
+        // 构建字段名部分
+        for (int i = 0; i < fieldNames.size(); i++) {
+            if (i > 0) {
+                fieldsBuilder.append(",");
+            }
+            fieldsBuilder.append(fieldNames.get(i));
+        }
+        // 构建占位符部分
+        for (int i = 0; i < fieldValues.size(); i++) {
+            if (i > 0) {
+                valuesPlaceholder.append(",");
+            }
+            valuesPlaceholder.append("?");
+            parameters.add(fieldValues.get(i));
         }
     }
 
@@ -850,240 +809,45 @@ public class Y9FormServiceImpl implements Y9FormService {
         try {
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<Map<String, Object>> listMap = Y9JsonUtil.readValue(formData, List.class);
+            assert listMap != null;
             Map<String, Object> keyValue = this.listMapToKeyValue(listMap);
             String formId = (String)keyValue.get("form_Id");
             if (!keyValue.containsKey("guid") && !keyValue.containsKey("GUID")) {
                 LOGGER.error("保存失败:表单未绑定guid字段");
                 return Y9Result.failure("保存失败:表单未绑定guid字段");
             }
-            String guid = keyValue.get("guid") != null ? (String)keyValue.get("guid") : "";
-            if (StringUtils.isBlank(guid)) {
-                guid = keyValue.get("GUID") != null ? (String)keyValue.get("GUID") : "";
-            }
-            List<String> list = y9FormRepository.findBindTableName(formId);
-            for (String tableName : list) {
+            String guid = getGuidFromData(keyValue);
+            List<String> tableNames = y9FormRepository.findBindTableName(formId);
+            for (String tableName : tableNames) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
-                if (y9Table.getTableType().equals(ItemTableTypeEnum.SUB)) {
+                // 只处理主表数据
+                if (y9Table.getTableType() == ItemTableTypeEnum.SUB) {
                     continue;
                 }
-                String actionType;
-                Map<String, Object> m = this.getData(guid, tableName);
-                if ("0".equals(m.get(ItemConsts.EDITTYPE_KEY))) {
-                    actionType = "0";
-                } else {
-                    actionType = "1";
-                }
+                String actionType = determineActionType(guid, tableName);
                 List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableName(tableName);
                 if ("0".equals(actionType)) {
-                    List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
-                    StringBuilder sqlStr = new StringBuilder();
-                    if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("insert into \"").append(tableName).append("\" (");
-                    } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("insert into ").append(tableName).append(" (");
-                    }
-                    StringBuilder sqlStr1 = new StringBuilder(") values (");
-                    boolean isHaveField = false;
-                    /*
-                    一个表单绑定多个表的时候只会绑定一个guid，其他没有绑定guid的表，需要加上guid字段
-                     */
-                    boolean isHaveGuid =
-                        elementList.stream().anyMatch(element -> "GUID".equalsIgnoreCase(element.getFieldName()));
-                    if (!isHaveGuid) {
-                        Y9FormField guidField = new Y9FormField();
-                        guidField.setFieldName("GUID");
-                        elementList.add(guidField);
-                    }
-                    for (Y9FormField element : elementList) {
-                        String fieldName = element.getFieldName();
-                        Y9TableField y9TableField = null;
-                        for (Y9TableField tableField : tableFieldList) {
-                            if (tableField.getFieldName().equalsIgnoreCase(fieldName)) {
-                                y9TableField = tableField;
-                                break;
-                            }
-                        }
-                        if (y9TableField != null) {
-                            if (isHaveField) {
-                                sqlStr.append(",");
-                            }
-                            sqlStr.append(fieldName);
-                            if (isHaveField) {
-                                sqlStr1.append(",");
-                            }
-                            if (y9TableField.getFieldType().toLowerCase().contains("int")) {
-                                // sqlStr1.append(keyValue.get(fieldName));
-                                sqlStr1.append((keyValue.get(fieldName) != null
-                                    && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                        ? keyValue.get(fieldName) : null);
-                            } else if (y9TableField.getFieldType().toLowerCase().contains("bit")) {
-                                boolean isTrue = false;
-                                if ((keyValue.get(fieldName) != null
-                                    && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))) {
-                                    isTrue = Boolean.parseBoolean(String.valueOf(keyValue.get(fieldName)));
-                                }
-                                sqlStr1.append((keyValue.get(fieldName) != null
-                                    && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName)))) ? isTrue
-                                        : null);
-                            } else if (y9TableField.getFieldType().toUpperCase().contains(ItemConsts.DOUBLE_UP_KEY)
-                                || y9TableField.getFieldType().toUpperCase().contains(ItemConsts.FLOAT_UP_KEY)) {
-                                sqlStr1.append((keyValue.get(fieldName) != null
-                                    && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                        ? keyValue.get(fieldName) : null);
-                            } else if (y9TableField.getFieldType().toLowerCase().contains("date")) {
-                                if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                    || DialectEnum.DM.getValue().equals(dialect)
-                                    || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append(TO_DATE_KEY).append(keyValue.get(fieldName)).append(DATE_FORMAT_KEY);
-                                } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                }
-                            } else if (y9TableField.getFieldType()
-                                .toUpperCase()
-                                .contains(ItemConsts.TIMESTAMP_UP_KEY)) {
-                                if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                    || DialectEnum.DM.getValue().equals(dialect)
-                                    || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                    sqlStr1.append(TO_DATE_KEY)
-                                        .append(keyValue.get(fieldName))
-                                        .append(DATE_FORMAT24_KEY);
-                                } else {
-                                    sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                        ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                }
-                            } else {
-                                if (fieldName.equalsIgnoreCase("guid") || fieldName.equalsIgnoreCase(Z_GUID_KEY)) {
-                                    if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
-                                    } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else if (fieldName.equalsIgnoreCase(ItemConsts.PROCESSINSTANCEID_KEY)) {
-                                    if (StringUtils.isBlank((String)keyValue.get(fieldName))) {
-                                        sqlStr1.append("'").append(Y9IdGenerator.genId(IdType.SNOWFLAKE)).append("'");
-                                    } else {
-                                        sqlStr1.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else {
-                                    if (keyValue.get(fieldName) instanceof ArrayList) {
-                                        sqlStr1.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
-                                            : "''");
-                                    } else {
-                                        sqlStr1.append((keyValue.get(fieldName) != null
-                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
-                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                }
-                            }
-                            isHaveField = true;
-                        }
-                    }
-                    sqlStr1.append(")");
-                    sqlStr.append(sqlStr1);
-                    String sql = sqlStr.toString();
-                    jdbcTemplate4Tenant.execute(sql);
-                } else {// 编辑
-                    List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
-                    StringBuilder sqlStr = new StringBuilder();
-                    if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                        sqlStr.append("update \"").append(tableName).append("\" set ");
-                    } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                        sqlStr.append("update ").append(tableName).append(" set ");
-                    }
-                    StringBuilder sqlStr1 = new StringBuilder();
-                    boolean isHaveField = false;
-                    for (Y9FormField element : elementList) {
-                        if (element.getTableName().equals(tableName)) {
-                            String fieldName = element.getFieldName();
-                            Y9TableField y9TableField = null;
-                            for (Y9TableField tableField : tableFieldList) {
-                                if (tableField.getFieldName().equalsIgnoreCase(fieldName)) {
-                                    y9TableField = tableField;
-                                    break;
-                                }
-                            }
-                            if (y9TableField != null) {
-                                if (fieldName.equals("guid") || fieldName.equals("GUID")) {
-                                    sqlStr1.append(" where guid ='").append(keyValue.get(fieldName)).append("'");
-                                    continue;
-                                }
-                                if (isHaveField) {
-                                    sqlStr.append(",");
-                                }
-                                sqlStr.append(fieldName).append("=");
-                                if (y9TableField.getFieldType().toLowerCase().contains("int")) {
-                                    // sqlStr.append(keyValue.get(fieldName));
-                                    sqlStr.append((keyValue.get(fieldName) != null
-                                        && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                            ? keyValue.get(fieldName) : null);
-                                } else if (y9TableField.getFieldType().toLowerCase().contains("bit")) {
-                                    boolean isTrue = false;
-                                    if ((keyValue.get(fieldName) != null
-                                        && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))) {
-                                        isTrue = Boolean.parseBoolean(String.valueOf(keyValue.get(fieldName)));
-                                    }
-                                    sqlStr.append((keyValue.get(fieldName) != null
-                                        && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName)))) ? isTrue
-                                            : null);
-                                } else if (y9TableField.getFieldType().toUpperCase().contains(ItemConsts.DOUBLE_UP_KEY)
-                                    || y9TableField.getFieldType().toUpperCase().contains(ItemConsts.FLOAT_UP_KEY)) {
-                                    sqlStr.append((keyValue.get(fieldName) != null
-                                        && StringUtils.isNotBlank(String.valueOf(keyValue.get(fieldName))))
-                                            ? keyValue.get(fieldName) : null);
-                                } else if (y9TableField.getFieldType().toLowerCase().contains("date")) {
-                                    if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                        || DialectEnum.DM.getValue().equals(dialect)
-                                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY)
-                                            .append(keyValue.get(fieldName))
-                                            .append(DATE_FORMAT_KEY);
-                                    } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else if (y9TableField.getFieldType()
-                                    .toUpperCase()
-                                    .contains(ItemConsts.TIMESTAMP_UP_KEY)) {
-                                    if (DialectEnum.ORACLE.getValue().equals(dialect)
-                                        || DialectEnum.DM.getValue().equals(dialect)
-                                        || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                                        sqlStr.append(TO_DATE_KEY)
-                                            .append(keyValue.get(fieldName))
-                                            .append(DATE_FORMAT24_KEY);
-                                    } else {
-                                        sqlStr.append(StringUtils.isNotBlank((String)keyValue.get(fieldName))
-                                            ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                } else {
-                                    if (keyValue.get(fieldName) instanceof ArrayList) {
-                                        sqlStr.append(StringUtils.isNotBlank(keyValue.get(fieldName).toString())
-                                            ? "'" + Y9JsonUtil.writeValueAsString(keyValue.get(fieldName)) + "'"
-                                            : "''");
-                                    } else {
-                                        sqlStr.append((keyValue.get(fieldName) != null
-                                            && StringUtils.isNotBlank(keyValue.get(fieldName).toString()))
-                                                ? "'" + keyValue.get(fieldName) + "'" : "''");
-                                    }
-                                }
-                                isHaveField = true;
-                            }
-                        }
-                    }
-                    sqlStr.append(sqlStr1);
-                    String sql = sqlStr.toString();
-                    jdbcTemplate4Tenant.execute(sql);
+                    performInsertOperation(dialect, tableName, keyValue, formId, tableFieldList, true);
+                } else {
+                    performUpdateOperation(dialect, tableName, keyValue, formId, tableFieldList);
                 }
             }
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存表单数据失败", e);
             return Y9Result.failure("保存失败");
+        }
+    }
+
+    /**
+     * 处理插入操作中的GUID字段
+     */
+    private void handleGuidFieldForInsert(List<Y9FormField> elementList) {
+        boolean isHaveGuid = elementList.stream().anyMatch(element -> "GUID".equalsIgnoreCase(element.getFieldName()));
+        if (!isHaveGuid) {
+            Y9FormField guidField = new Y9FormField();
+            guidField.setFieldName("GUID");
+            elementList.add(guidField);
         }
     }
 
@@ -1093,6 +857,7 @@ public class Y9FormServiceImpl implements Y9FormService {
         try {
             List<Map<String, Object>> listMap = Y9JsonUtil.readListOfMap(fieldJson, String.class, Object.class);
             y9FormFieldRepository.deleteByFormId(formId);
+            assert listMap != null;
             for (Map<String, Object> map : listMap) {
                 Y9FormField formField = new Y9FormField();
                 formField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -1113,7 +878,6 @@ public class Y9FormServiceImpl implements Y9FormService {
             e.printStackTrace();
             return Y9Result.failure("保存字段失败");
         }
-
     }
 
     @Override
@@ -1138,46 +902,53 @@ public class Y9FormServiceImpl implements Y9FormService {
     @Transactional
     public Y9Result<Object> saveOrUpdate(Y9Form form) {
         try {
-            if (StringUtils.isBlank(form.getId())) {
-                Y9Form newForm = new Y9Form();
-                newForm.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                newForm.setFileName(form.getFileName());
-                newForm.setFormName(form.getFormName());
-                newForm.setFormType(form.getFormType());
-                newForm.setSystemCnName(form.getSystemCnName());
-                newForm.setSystemName(form.getSystemName());
-                newForm.setTemplateType(form.getTemplateType());
-                newForm.setUpdateTime(new Date());
-                newForm.setPersonId(Y9LoginUserHolder.getPersonId());
-                newForm.setOriginalContent(form.getOriginalContent());
-                newForm.setCssUrl(form.getCssUrl());
-                newForm.setJsUrl(form.getJsUrl());
-                newForm.setInitDataUrl(form.getInitDataUrl());
-                y9FormRepository.save(newForm);
+            Y9Form targetForm;
+            boolean isNew = StringUtils.isBlank(form.getId());
+            if (isNew) {
+                targetForm = createNewForm(form);
             } else {
-                Y9Form oldForm = y9FormRepository.findById(form.getId()).orElse(null);
-                if (null == oldForm) {
+                targetForm = y9FormRepository.findById(form.getId()).orElse(null);
+                if (targetForm == null) {
+                    // 如果找不到对应记录，则直接保存传入的表单对象
                     y9FormRepository.save(form);
-                } else {
-                    oldForm.setFileName(form.getFileName());
-                    oldForm.setFormName(form.getFormName());
-                    oldForm.setFormType(form.getFormType());
-                    oldForm.setSystemCnName(form.getSystemCnName());
-                    oldForm.setSystemName(form.getSystemName());
-                    oldForm.setTemplateType(form.getTemplateType());
-                    oldForm.setUpdateTime(new Date());
-                    oldForm.setPersonId(Y9LoginUserHolder.getPersonId());
-                    oldForm.setOriginalContent(form.getOriginalContent());
-                    oldForm.setCssUrl(form.getCssUrl());
-                    oldForm.setJsUrl(form.getJsUrl());
-                    oldForm.setInitDataUrl(form.getInitDataUrl());
-                    y9FormRepository.save(oldForm);
+                    return Y9Result.successMsg("保存成功");
                 }
             }
+            // 更新表单属性
+            updateFormProperties(targetForm, form);
+            y9FormRepository.save(targetForm);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存表单失败", e);
             return Y9Result.failure("保存失败");
         }
+    }
+
+    /**
+     * 创建新的表单对象
+     */
+    private Y9Form createNewForm(Y9Form form) {
+        Y9Form newForm = new Y9Form();
+        newForm.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        updateFormProperties(newForm, form);
+        return newForm;
+    }
+
+    /**
+     * 更新表单属性
+     */
+    private void updateFormProperties(Y9Form targetForm, Y9Form sourceForm) {
+        targetForm.setFileName(sourceForm.getFileName());
+        targetForm.setFormName(sourceForm.getFormName());
+        targetForm.setFormType(sourceForm.getFormType());
+        targetForm.setSystemCnName(sourceForm.getSystemCnName());
+        targetForm.setSystemName(sourceForm.getSystemName());
+        targetForm.setTemplateType(sourceForm.getTemplateType());
+        targetForm.setUpdateTime(new Date());
+        targetForm.setPersonId(Y9LoginUserHolder.getPersonId());
+        targetForm.setOriginalContent(sourceForm.getOriginalContent());
+        targetForm.setCssUrl(sourceForm.getCssUrl());
+        targetForm.setJsUrl(sourceForm.getJsUrl());
+        targetForm.setInitDataUrl(sourceForm.getInitDataUrl());
     }
 }

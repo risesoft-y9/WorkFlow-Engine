@@ -7,7 +7,6 @@ import org.springframework.data.domain.Page;
 
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.model.itemadmin.OpenDataModel;
-import net.risesoft.pojo.Y9Result;
 
 /**
  * @author qinman
@@ -103,21 +102,4 @@ public interface DraftEntityService {
      */
     void saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number, String level,
         String title, String type);
-
-    /**
-     *
-     * Description: 保存草稿
-     *
-     * @param itemId
-     * @param processSerialNumber
-     * @param processDefinitionKey
-     * @param number
-     * @param level
-     * @param jijian
-     * @param title
-     * @param type
-     * @return
-     */
-    Y9Result<Object> saveDraft(String itemId, String processSerialNumber, String processDefinitionKey, String number,
-        String level, String jijian, String title, String type);
 }
