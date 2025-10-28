@@ -97,6 +97,7 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9PageQuery;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.query.platform.CustomGroupMemberQuery;
 import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.repository.jpa.ItemTaskConfRepository;
@@ -2020,9 +2021,7 @@ public class DocumentServiceImpl implements DocumentService {
      */
     private String processCustomGroupUser(String users, String tenantId, String groupId) {
         List<CustomGroupMember> members =
-            customGroupApi
-                .listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(), groupId,
-                    OrgTypeEnum.POSITION)
+            customGroupApi.listCustomGroupMember(tenantId, new CustomGroupMemberQuery(groupId, OrgTypeEnum.POSITION))
                 .getData();
         for (CustomGroupMember member : members) {
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, member.getMemberId()).getData();
