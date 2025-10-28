@@ -59,6 +59,7 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.nosql.elastic.repository.ChaoSongInfoRepository;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.query.platform.CustomGroupMemberQuery;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.OfficeFollowService;
@@ -590,8 +591,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     break;
                 case GROUP_CUSTOM:
                     List<CustomGroupMember> members = customGroupApi
-                        .listCustomGroupMemberByGroupIdAndMemberType(tenantId, Y9LoginUserHolder.getPersonId(),
-                            orgUnitId, OrgTypeEnum.POSITION)
+                        .listCustomGroupMember(tenantId, new CustomGroupMemberQuery(orgUnitId, OrgTypeEnum.POSITION))
                         .getData();
                     for (CustomGroupMember member : members) {
                         OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, member.getMemberId()).getData();
