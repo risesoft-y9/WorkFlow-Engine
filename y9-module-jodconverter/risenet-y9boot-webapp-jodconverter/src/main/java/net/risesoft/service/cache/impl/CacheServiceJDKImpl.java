@@ -115,25 +115,29 @@ public class CacheServiceJDKImpl implements CacheService {
     @Override
     public void initPDFCachePool(Integer capacity) {
         pdfCache = new ConcurrentLinkedHashMap.Builder<String, String>().maximumWeightedCapacity(capacity)
-            .weigher(Weighers.singleton()).build();
+            .weigher(Weighers.singleton())
+            .build();
     }
 
     @Override
     public void initIMGCachePool(Integer capacity) {
         imgCache = new ConcurrentLinkedHashMap.Builder<String, List<String>>().maximumWeightedCapacity(capacity)
-            .weigher(Weighers.singleton()).build();
+            .weigher(Weighers.singleton())
+            .build();
     }
 
     @Override
     public void initPdfImagesCachePool(Integer capacity) {
         pdfImagesCache = new ConcurrentLinkedHashMap.Builder<String, Integer>().maximumWeightedCapacity(capacity)
-            .weigher(Weighers.singleton()).build();
+            .weigher(Weighers.singleton())
+            .build();
     }
 
     @Override
     public void initMediaConvertCachePool(Integer capacity) {
         mediaConvertCache = new ConcurrentLinkedHashMap.Builder<String, String>().maximumWeightedCapacity(capacity)
-            .weigher(Weighers.singleton()).build();
+            .weigher(Weighers.singleton())
+            .build();
     }
 
 }

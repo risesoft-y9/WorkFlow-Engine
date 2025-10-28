@@ -67,7 +67,8 @@ public class FlowableUrgeInfoServiceImpl implements FlowableUrgeInfoService {
          */
         if (isSub) {
             List<String> executorIds = new ArrayList<>();
-            signDeptDetailList.stream().filter(sdd -> sdd.getDeptId().equals(bureau.getId()))
+            signDeptDetailList.stream()
+                .filter(sdd -> sdd.getDeptId().equals(bureau.getId()))
                 .forEach(sdd -> executorIds.add(sdd.getExecutionId()));
             urgeList.removeIf(urge -> !executorIds.contains(urge.getExecutionId()));
         } else {
@@ -87,8 +88,11 @@ public class FlowableUrgeInfoServiceImpl implements FlowableUrgeInfoService {
                  */
                 String processInstanceId = processParamModel.getProcessInstanceId();
                 List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                boolean isSubNode = processDefinitionApi.isSubProcessChildNode(tenantId,
-                    taskList.get(0).getProcessDefinitionId(), taskList.get(0).getTaskDefinitionKey()).getData();
+                boolean isSubNode =
+                    processDefinitionApi
+                        .isSubProcessChildNode(tenantId, taskList.get(0).getProcessDefinitionId(),
+                            taskList.get(0).getTaskDefinitionKey())
+                        .getData();
                 if (!isSubNode) {
                     urgeList.removeIf(UrgeInfoModel::isSub);
                 }

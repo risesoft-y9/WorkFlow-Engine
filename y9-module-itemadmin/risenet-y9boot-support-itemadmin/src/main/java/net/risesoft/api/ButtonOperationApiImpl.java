@@ -172,8 +172,9 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             userAndDeptIdList.add(assignee);
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
             Y9LoginUserHolder.setOrgUnit(orgUnit);
-            FlowElementModel flowElementModel = processDefinitionApi
-                .getNode(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey()).getData();
+            FlowElementModel flowElementModel =
+                processDefinitionApi.getNode(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())
+                    .getData();
             Map<String, Object> variables = CommonOpt.setVariables(orgUnitId, orgUnit.getName(),
                 hti.getTaskDefinitionKey(), userAndDeptIdList, flowElementModel);
             Map<String, Object> val = new HashMap<>();
@@ -347,7 +348,8 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         ActRuDetail actRuDetail = actRuDetailService
             .findByProcessInstanceIdAndAssigneeAndStatusEquals1(task.getProcessInstanceId(), orgUnitId);
-        return Y9Result.success(specialOperationApi
-            .takeBack2TaskDefKey(tenantId, orgUnitId, taskId, actRuDetail.getTaskDefKey(), reason).isSuccess());
+        return Y9Result.success(
+            specialOperationApi.takeBack2TaskDefKey(tenantId, orgUnitId, taskId, actRuDetail.getTaskDefKey(), reason)
+                .isSuccess());
     }
 }

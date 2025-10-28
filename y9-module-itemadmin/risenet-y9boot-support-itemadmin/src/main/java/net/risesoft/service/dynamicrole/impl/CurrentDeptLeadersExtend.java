@@ -34,8 +34,11 @@ public class CurrentDeptLeadersExtend extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        List<OrgUnit> leaders = departmentApi.listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(),
-            DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
+        List<OrgUnit> leaders =
+            departmentApi
+                .listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(),
+                    DepartmentPropCategoryEnum.LEADER.getValue(), false)
+                .getData();
         boolean isLeader = leaders.stream().anyMatch(leader -> leader.getId().equals(orgUnitId));
         if (isLeader) {
             leaders.clear();
@@ -43,8 +46,11 @@ public class CurrentDeptLeadersExtend extends AbstractDynamicRoleMember {
             List<OrgUnit> deptList =
                 orgUnitApi.getSubTree(tenantId, bureau.getId(), OrgTreeTypeEnum.TREE_TYPE_DEPT).getData();
             deptList.forEach(dept -> {
-                List<OrgUnit> deptLeaders = departmentApi.listDepartmentPropOrgUnits(tenantId, dept.getId(),
-                    DepartmentPropCategoryEnum.LEADER.getValue(), false).getData();
+                List<OrgUnit> deptLeaders =
+                    departmentApi
+                        .listDepartmentPropOrgUnits(tenantId, dept.getId(),
+                            DepartmentPropCategoryEnum.LEADER.getValue(), false)
+                        .getData();
                 deptLeaders.removeIf(leader -> leader.getId().equals(orgUnitId));
                 leaders.addAll(deptLeaders);
             });
