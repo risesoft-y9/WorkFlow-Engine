@@ -13,9 +13,11 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.entity.attachment.AttachmentConf;
@@ -24,7 +26,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.AttachmentConfModel;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.attachment.AttachmentConfRepository;
@@ -57,6 +59,8 @@ public class AttachmentApiImpl implements AttachmentApi {
     private final OrgUnitApi orgUnitApi;
 
     private final PersonApi personApi;
+
+    private final UserApi userApi;
 
     /**
      * 根据流程编号删除附件
@@ -197,7 +201,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         @RequestParam String attachjson, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         Map<String, Object> attachmentJson = Y9JsonUtil.readValue(attachjson, Map.class);
         assert attachmentJson != null;
         List<Map<String, Object>> attachmentList = (List<Map<String, Object>>)attachmentJson.get("attachment");
@@ -242,7 +246,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         String msg;
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         try {
             Attachment attachment = attachmentService.getFileInfoByFileName(fileName, processSerialNumber);
             if (null != attachment) {
@@ -297,7 +301,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         String msg;
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         try {
             Attachment attachment = attachmentRepository.findById(fileId).orElse(null);
             if (null != attachment) {
@@ -338,9 +342,9 @@ public class AttachmentApiImpl implements AttachmentApi {
         @RequestParam String y9FileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         attachmentService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber, describes,
             fileSource, y9FileStoreId);
         return Y9Result.successMsg("上传成功");
@@ -360,7 +364,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         @RequestBody AttachmentModel attachmentModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         Attachment file = new Attachment();
         Y9BeanUtil.copyProperties(attachmentModel, file);
         attachmentService.uploadRestModel(file);
@@ -402,8 +406,8 @@ public class AttachmentApiImpl implements AttachmentApi {
     public Y9Result<Object> saveOrder(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String[] idAndTabIndexs) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         for (String str : idAndTabIndexs) {
             String[] arr = str.split(SysVariables.COLON);
             attachmentRepository.updateAttachmentOrder(Integer.parseInt(arr[1]), arr[0]);

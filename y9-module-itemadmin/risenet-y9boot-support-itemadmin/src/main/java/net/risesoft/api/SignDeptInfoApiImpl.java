@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.SignDeptInfo;
@@ -68,7 +69,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
         @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         signDeptInfoService.addSignDept(processSerialNumber, deptType, deptIds);
         return Y9Result.success();
     }
@@ -86,7 +87,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
         @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         signDeptInfoService.deleteById(id);
         return Y9Result.success();
     }
@@ -209,7 +210,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
         String tzsDeptId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         signDeptInfoService.saveSignDept(processSerialNumber, deptType, deptIds, tzsDeptId);
         return Y9Result.success();
     }
@@ -246,7 +247,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
         @RequestParam String processSerialNumber, @RequestParam String type, @RequestParam String tzsDeptId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         signDeptInfoService.updateSignDept(processSerialNumber, positionId, type, tzsDeptId);
         return Y9Result.success();
     }

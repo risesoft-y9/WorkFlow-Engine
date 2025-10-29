@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -74,7 +75,7 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-            Y9LoginUserHolder.setOrgUnit(orgUnit);
+            Y9FlowableHolder.setOrgUnit(orgUnit);
             // 更新自定义历程结束时间
             updateProcessTrackEndTime(task);
             // 处理任务变量和子流程信息

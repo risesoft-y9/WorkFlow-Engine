@@ -18,6 +18,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.ItemConsts;
@@ -362,7 +363,7 @@ public class FormDataServiceImpl implements FormDataService {
      */
     public FieldPermModel getFieldPerm(Y9FieldPerm y9FieldPerm) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getOrgUnitId();
         // 绑定了角色
         FieldPermModel model = new FieldPermModel();
         model.setFieldName(y9FieldPerm.getFieldName());

@@ -17,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -73,7 +74,7 @@ public class ReminderServiceImpl implements ReminderService {
     @Transactional
     public String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType,
         String taskId, String documentTitle) {
-        OrgUnit person = Y9LoginUserHolder.getOrgUnit();
+        OrgUnit person = Y9FlowableHolder.getOrgUnit();
         String[] procInstIds = procInstId.split(SysVariables.COMMA);
         String[] taskIds = taskId.split(SysVariables.COMMA);
         List<Reminder> list = new ArrayList<>();
@@ -304,7 +305,7 @@ public class ReminderServiceImpl implements ReminderService {
             return r;
         }
         String tenantId = Y9LoginUserHolder.getTenantId();
-        OrgUnit orgUnit = Y9LoginUserHolder.getOrgUnit();
+        OrgUnit orgUnit = Y9FlowableHolder.getOrgUnit();
         Reminder r = new Reminder();
         r.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         r.setCreateTime(new Date());

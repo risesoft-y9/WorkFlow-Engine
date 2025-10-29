@@ -14,6 +14,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.enums.ItemInterfaceTypeEnum;
@@ -24,7 +25,6 @@ import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.InterfaceMethodService;
 import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.y9.FlowableTenantInfoHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 
 /**
@@ -51,7 +51,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
         String processSerialNumber = "";
         String processInstanceId = executionEntity.getProcessInstanceId();
         String itemId = "";
-        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
         Y9Result<List<InterfaceModel>> y9Result = null;
         Boolean interfaceSwitch = y9ProcessAdminProperties.getInterfaceSwitch();
         if (!interfaceSwitch) {
@@ -98,7 +98,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
         String processSerialNumber = "";
         String itemId = "";
         Y9Result<List<InterfaceModel>> y9Result = null;
-        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
         Boolean interfaceSwitch = y9ProcessAdminProperties.getInterfaceSwitch();
         if (!interfaceSwitch) {
             return;

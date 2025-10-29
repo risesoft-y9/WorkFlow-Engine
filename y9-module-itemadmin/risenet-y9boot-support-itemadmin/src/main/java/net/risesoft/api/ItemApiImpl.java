@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.Item;
@@ -180,7 +181,7 @@ public class ItemApiImpl implements ItemApi {
     public Y9Result<String> getFirstItem(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         String itemId = documentService.getFirstItem();
         return Y9Result.success(itemId);
     }
@@ -214,7 +215,7 @@ public class ItemApiImpl implements ItemApi {
     public Y9Result<List<ItemListModel>> getItemList(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         List<ItemListModel> list = documentService.listItems();
         return Y9Result.success(list);
     }
@@ -268,7 +269,7 @@ public class ItemApiImpl implements ItemApi {
     public Y9Result<List<ItemListModel>> getMyItemList(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         List<ItemListModel> list = documentService.listMyItems();
         return Y9Result.success(list);
     }

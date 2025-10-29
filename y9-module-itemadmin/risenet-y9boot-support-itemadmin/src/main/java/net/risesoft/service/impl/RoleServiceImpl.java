@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -666,7 +667,7 @@ public class RoleServiceImpl implements RoleService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             if (StringUtils.isBlank(id) || UtilConsts.NULL.equals(id)) {
-                id = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getOrgUnit().getId()).getData().getId();
+                id = orgUnitApi.getBureau(tenantId, Y9FlowableHolder.getOrgUnit().getId()).getData().getId();
             }
             List<OrgUnit> orgUnitList =
                 orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();

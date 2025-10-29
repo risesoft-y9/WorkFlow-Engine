@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.form.FormDataApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.UtilConsts;
@@ -135,7 +136,7 @@ public class FormDataApiImpl implements FormDataApi {
         @RequestParam String formId, @RequestParam String taskDefKey, @RequestParam String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         List<FieldPermModel> list = formDataService.listAllFieldPerm(formId, taskDefKey, processDefinitionId);
         return Y9Result.success(list);
     }
@@ -174,7 +175,7 @@ public class FormDataApiImpl implements FormDataApi {
         @RequestParam String userId, @RequestParam String formId, @RequestParam String parentProcessSerialNumber)
         throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(userId);
+        Y9FlowableHolder.setOrgUnitId(userId);
         List<Map<String, Object>> list = formDataService.listChildFormData(formId, parentProcessSerialNumber);
         return Y9Result.success(list);
     }
@@ -243,7 +244,7 @@ public class FormDataApiImpl implements FormDataApi {
         @RequestParam String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         FieldPermModel model = formDataService.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
         return Y9Result.success(model);
     }

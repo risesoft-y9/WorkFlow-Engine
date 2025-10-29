@@ -17,6 +17,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
@@ -51,7 +52,7 @@ public class MonitorServiceImpl implements MonitorService {
         String year, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         try {
-            Position position = Y9LoginUserHolder.getPosition();
+            Position position = Y9FlowableHolder.getPosition();
             String tenantId = Y9LoginUserHolder.getTenantId();
             y9Page = officeDoneInfoApi.searchAllByDeptId(tenantId, position.getParentId(), searchName, itemId, userName,
                 state, year, page, rows);

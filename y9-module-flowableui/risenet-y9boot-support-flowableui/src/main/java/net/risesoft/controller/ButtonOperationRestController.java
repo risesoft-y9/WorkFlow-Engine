@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.CustomProcessInfoApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
@@ -105,7 +106,7 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/claim")
     public Y9Result<String> claim(@RequestParam @NotBlank String taskId) {
         try {
-            Position position = Y9LoginUserHolder.getPosition();
+            Position position = Y9FlowableHolder.getPosition();
             String positionId = position.getId();
             String tenantId = Y9LoginUserHolder.getTenantId();
             List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
@@ -301,7 +302,7 @@ public class ButtonOperationRestController {
     private Y9Result<String> handleSequentialTask(String processInstanceId, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
 
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
@@ -448,7 +449,7 @@ public class ButtonOperationRestController {
     @GetMapping(value = "/getTaskList", produces = "application/json")
     public Y9Result<Map<String, Object>> getTaskList(@RequestParam @NotBlank String taskId) {
         try {
-            Position position = Y9LoginUserHolder.getPosition();
+            Position position = Y9FlowableHolder.getPosition();
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> retMap = new HashMap<>(16);
@@ -795,7 +796,7 @@ public class ButtonOperationRestController {
     public Y9Result<String> refuseClaim(@RequestParam @NotBlank String taskId) {
         String activitiUser = "";
         try {
-            Position position = Y9LoginUserHolder.getPosition();
+            Position position = Y9FlowableHolder.getPosition();
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
             for (IdentityLinkModel il : list) {
@@ -831,7 +832,7 @@ public class ButtonOperationRestController {
     @FlowableLog(operationName = "最后一人拒签退回任务", operationType = FlowableOperationTypeEnum.UN_CLAIM)
     @PostMapping(value = "/refuseClaimRollback")
     public Y9Result<String> refuseClaimRollback(@RequestParam @NotBlank String taskId) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Y9Result<Object> y9Result = buttonOperationApi.refuseClaimRollback(tenantId, positionId, taskId);
@@ -864,7 +865,7 @@ public class ButtonOperationRestController {
         @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String sponsorGuid,
         @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
         @RequestParam(required = false) String smsContent) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
@@ -910,7 +911,7 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/rollBack2History")
     public Y9Result<String> rollBack2History(@RequestParam @NotBlank String taskId,
         @RequestParam @NotBlank String routeToTaskId, @RequestParam String[] orgUnitIds) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
@@ -937,7 +938,7 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/rollback")
     public Y9Result<String> rollback(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
@@ -984,7 +985,7 @@ public class ButtonOperationRestController {
     @FlowableLog(operationName = "退回发送人", operationType = FlowableOperationTypeEnum.ROLLBACK)
     @PostMapping(value = "/rollbackToSender")
     public Y9Result<String> rollbackToSender(@RequestParam @NotBlank String taskId) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             buttonOperationApi.rollbackToSender(tenantId, positionId, taskId);
@@ -1006,7 +1007,7 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/rollbackToStartor")
     public Y9Result<String> rollbackToStartor(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             buttonOperationApi.rollbackToStartor(tenantId, positionId, taskId, reason);
@@ -1271,7 +1272,7 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/specialComplete")
     public Y9Result<String> specialComplete(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
@@ -1319,7 +1320,7 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/takeback")
     public Y9Result<String> takeback(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             buttonOperationApi.takeback(tenantId, positionId, taskId, reason);
@@ -1341,7 +1342,7 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/takeBack2TaskDefKey")
     public Y9Result<String> takeBack2TaskDefKey(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String reason) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             buttonOperationApi.takeBack2TaskDefKey(tenantId, positionId, taskId, reason);

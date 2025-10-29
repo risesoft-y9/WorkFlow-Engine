@@ -20,6 +20,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.cache.PersonRoleApi;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
@@ -652,7 +653,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         }
 
         // 检查用户是否拥有任意一个角色
-        String userId = Y9LoginUserHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getOrgUnitId();
         return roleIds.stream()
             .map(roleId -> checkRolePermission(tenantId, roleId, userId))
             .anyMatch(Boolean.TRUE::equals);
@@ -692,7 +693,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     public List<OrganWordPropertyModel> listByCustomNumber(String itemId, String processDefinitionId,
         String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getOrgUnitId();
 
         List<ItemOrganWordBind> bindList = itemOrganWordBindService
             .listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);

@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
@@ -51,7 +52,7 @@ public class SignDeptSecretary extends AbstractDynamicRoleMember {
             // List<OrgUnit> orgUnitList = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
             List<Position> orgUnitList =
                 positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
+            OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9FlowableHolder.getOrgUnitId()).getData();
             // 排除本司局
             List<Position> orgUnitListFilter = orgUnitList.stream()
                 .filter(orgUnit -> !orgUnit.getGuidPath().contains(bureau.getId()))

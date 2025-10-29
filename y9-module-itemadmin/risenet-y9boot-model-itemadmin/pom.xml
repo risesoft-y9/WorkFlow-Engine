@@ -26,7 +26,7 @@
     <dependencies>
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-common-model</artifactId>
+            <artifactId>risenet-y9boot-common-platform</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -38,6 +38,11 @@
         <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
+        </dependency>
+
+        <dependency>
+            <groupId>com.alibaba</groupId>
+            <artifactId>transmittable-thread-local</artifactId>
         </dependency>
 
         <dependency>

@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.ItemConsts;
@@ -108,7 +109,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     @Override
     @Transactional
     public OpenDataModel openDraft(String processSerialNumber, String itemId, boolean mobile) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getOrgUnitId();
         OpenDataModel model = new OpenDataModel();
         Item item = itemService.findById(itemId);
         model.setItemId(itemId);
@@ -278,10 +279,10 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         draft.setProcessSerialNumber(processSerialNumber);
         draft.setItemId(itemId);
         draft.setProcessDefinitionKey(processDefinitionKey);
-        draft.setCreaterId(Y9LoginUserHolder.getOrgUnitId());
+        draft.setCreaterId(Y9FlowableHolder.getOrgUnitId());
 
         OrgUnit orgUnit =
-            orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnitId())
+            orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getOrgUnitId())
                 .getData();
         draft.setCreater(orgUnit.getName());
         draft.setDelFlag(false);

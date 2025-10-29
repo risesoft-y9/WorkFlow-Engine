@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.AssociatedFile;
@@ -218,8 +219,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             associatedFile.setCreateTime(new Date());
             associatedFile.setAssociatedId(processInstanceIds);
             associatedFile.setProcessSerialNumber(processSerialNumber);
-            associatedFile.setUserId(Y9LoginUserHolder.getOrgUnitId());
-            associatedFile.setUserName(Y9LoginUserHolder.getOrgUnit().getName());
+            associatedFile.setUserId(Y9FlowableHolder.getOrgUnitId());
+            associatedFile.setUserName(Y9FlowableHolder.getOrgUnit().getName());
             associatedFile.setTenantId(Y9LoginUserHolder.getTenantId());
         } else {
             String associatedId = associatedFile.getAssociatedId();
@@ -235,8 +236,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                 newAssociatedId = processInstanceIds;
             }
             newAssociatedId = Y9Util.genCustomStr(associatedId, newAssociatedId);
-            associatedFile.setUserId(Y9LoginUserHolder.getOrgUnitId());
-            associatedFile.setUserName(Y9LoginUserHolder.getOrgUnit().getName());
+            associatedFile.setUserId(Y9FlowableHolder.getOrgUnitId());
+            associatedFile.setUserName(Y9FlowableHolder.getOrgUnit().getName());
             associatedFile.setCreateTime(new Date());
             associatedFile.setAssociatedId(newAssociatedId);
         }

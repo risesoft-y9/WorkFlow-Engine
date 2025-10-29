@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Organization;
@@ -29,7 +30,7 @@ public class CurrentOrg extends AbstractDynamicRoleMember {
     @Override
     public Organization getOrg() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return orgUnitApi.getOrganization(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
+        return orgUnitApi.getOrganization(tenantId, Y9FlowableHolder.getOrgUnitId()).getData();
     }
 
     @Override

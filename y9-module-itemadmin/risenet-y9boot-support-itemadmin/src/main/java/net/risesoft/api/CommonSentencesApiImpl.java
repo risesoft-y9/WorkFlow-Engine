@@ -12,9 +12,10 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.commonsentences.CommonSentences;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.opinion.CommonSentencesService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -35,6 +36,8 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     private final CommonSentencesService commonSentencesService;
 
     private final PersonApi personApi;
+
+    private final UserApi userApi;
 
     /**
      * 删除常用语
@@ -62,9 +65,9 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     public Y9Result<List<CommonSentencesModel>> listSentencesService(@RequestParam String tenantId,
         @RequestParam String userId) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         List<CommonSentences> list = commonSentencesService.listSentencesService();
         List<CommonSentencesModel> res_list = new ArrayList<>();
         for (CommonSentences item : list) {
@@ -87,9 +90,9 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     public Y9Result<Object> removeCommonSentences(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam int tabIndex) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         commonSentencesService.removeCommonSentences(tabIndex);
         return Y9Result.success();
     }
@@ -123,9 +126,9 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     public Y9Result<Object> save(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String id,
         @RequestParam String content) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         commonSentencesService.save(id, content);
         return Y9Result.success();
     }
@@ -143,9 +146,9 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     @Override
     public Y9Result<Object> saveCommonSentences(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String content, @RequestParam int tabIndex) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         commonSentencesService.saveCommonSentences(userId, content, tabIndex);
         return Y9Result.success();
     }

@@ -10,11 +10,13 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.OrganWordApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.model.itemadmin.OrganWordModel;
 import net.risesoft.model.itemadmin.OrganWordPropertyModel;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.organword.OrganWordService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -34,6 +36,8 @@ public class OrganWordApiImpl implements OrganWordApi {
     private final OrganWordService organWordService;
 
     private final PersonApi personApi;
+
+    private final UserApi userApi;
 
     /**
      * 验证编号是否已经被使用
@@ -55,8 +59,8 @@ public class OrganWordApiImpl implements OrganWordApi {
         @RequestParam String characterValue, @RequestParam String custom, @RequestParam Integer year,
         @RequestParam Integer numberTemp, @RequestParam String itemId, @RequestParam Integer common,
         @RequestParam String processSerialNumber) {
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.checkNumberStr(characterValue, custom, year, numberTemp, itemId,
             common, processSerialNumber));
@@ -78,8 +82,8 @@ public class OrganWordApiImpl implements OrganWordApi {
     public Y9Result<OrganWordModel> exist(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String custom, @RequestParam String processSerialNumber, String processInstanceId,
         @RequestParam String itembox) {
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.exist(custom, processSerialNumber, processInstanceId, itembox));
     }
@@ -100,7 +104,7 @@ public class OrganWordApiImpl implements OrganWordApi {
     public Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String custom, @RequestParam String itemId,
         @RequestParam String processDefinitionId, String taskDefKey) {
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.listByCustom(itemId, processDefinitionId, taskDefKey, custom));
     }
@@ -120,7 +124,7 @@ public class OrganWordApiImpl implements OrganWordApi {
     public Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String itemId, @RequestParam String processDefinitionId,
         String taskDefKey) {
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.listByCustomNumber(itemId, processDefinitionId, taskDefKey));
     }
@@ -142,8 +146,8 @@ public class OrganWordApiImpl implements OrganWordApi {
     public Y9Result<Integer> getNumber(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String custom, @RequestParam String characterValue, @RequestParam Integer year,
         @RequestParam Integer common, @RequestParam String itemId) {
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.getNumber(custom, characterValue, year, common, itemId));
     }
@@ -166,8 +170,8 @@ public class OrganWordApiImpl implements OrganWordApi {
     public Y9Result<Integer> getNumberOnly(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String custom, @RequestParam String characterValue, @RequestParam Integer year,
         @RequestParam Integer common, @RequestParam String itemId) {
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.getNumberOnly(custom, characterValue, year, common, itemId));
     }
@@ -187,8 +191,8 @@ public class OrganWordApiImpl implements OrganWordApi {
     @Override
     public Y9Result<String> getTempNumber(String tenantId, String userId, String custom, String characterValue,
         String itemId) {
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.getTempNumber(custom, characterValue, itemId));
     }
@@ -210,8 +214,8 @@ public class OrganWordApiImpl implements OrganWordApi {
     public Y9Result<Map<String, Object>> saveNumberString(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String custom, @RequestParam String numberString, @RequestParam String itemId,
         @RequestParam String processSerialNumber) {
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.saveNumberString(custom, numberString, itemId, processSerialNumber));
     }

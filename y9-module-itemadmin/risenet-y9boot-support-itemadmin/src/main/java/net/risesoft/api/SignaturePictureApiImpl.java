@@ -15,9 +15,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.SignaturePictureApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.SignaturePicture;
 import net.risesoft.model.itemadmin.SignaturePictureModel;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SignaturePictureService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -39,6 +40,8 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
     private final SignaturePictureService signaturePictureService;
 
     private final PersonApi personApi;
+
+    private final UserApi userApi;
 
     /**
      * 删除签名图片信息
@@ -106,9 +109,9 @@ public class SignaturePictureApiImpl implements SignaturePictureApi {
     @Override
     public Y9Result<SignaturePictureModel> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String spJson) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
 
         ObjectMapper om = new ObjectMapper();
         try {

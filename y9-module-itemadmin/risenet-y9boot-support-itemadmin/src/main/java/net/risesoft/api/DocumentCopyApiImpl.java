@@ -21,6 +21,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.DocumentCopyApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.DocumentCopy;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.opinion.OpinionCopy;
@@ -30,7 +31,7 @@ import net.risesoft.model.itemadmin.DocumentCopyModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentCopyService;
@@ -60,7 +61,7 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
 
     private final ItemPageService itemPageService;
 
-    private final PersonApi personApi;
+    private final UserApi userApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -72,13 +73,14 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         OpinionCopyService opinionCopyService,
         ItemPageService itemPageService,
         PersonApi personApi,
+        UserApi userApi,
         OrgUnitApi orgUnitApi,
         @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
         this.documentCopyService = documentCopyService;
         this.processParamService = processParamService;
         this.opinionCopyService = opinionCopyService;
         this.itemPageService = itemPageService;
-        this.personApi = personApi;
+        this.userApi = userApi;
         this.orgUnitApi = orgUnitApi;
         this.jdbcTemplate = jdbcTemplate;
     }
@@ -239,8 +241,8 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
     public Y9Result<Object> save(String tenantId, String userId, String orgUnitId, String processSerialNumber,
         String users, String opinion) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
         OpinionCopy newOc = new OpinionCopy();
         newOc.setId(Y9IdGenerator.genId());

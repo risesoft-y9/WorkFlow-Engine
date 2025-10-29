@@ -15,6 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.entity.DraftEntity;
 import net.risesoft.entity.Item;
@@ -60,7 +61,7 @@ public class DraftApiImpl implements DraftApi {
     public Y9Result<Integer> countBySystemName(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         int num = draftEntityRepository.countByTypeAndCreaterIdAndDelFlagFalse(systemName, orgUnitId);
         return Y9Result.success(num);
     }
@@ -136,7 +137,7 @@ public class DraftApiImpl implements DraftApi {
     public Y9Result<Integer> getDraftCount(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         int count;
         if (StringUtils.isEmpty(itemId)) {
             count = draftEntityRepository.countByCreaterIdAndDelFlagFalse(orgUnitId);
@@ -163,7 +164,7 @@ public class DraftApiImpl implements DraftApi {
     public Y9Page<Map<String, Object>> getDraftList(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam int page, @RequestParam int rows, String title, @RequestParam String itemId, boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         if (StringUtils.isEmpty(title)) {
             title = "";
         }
@@ -218,7 +219,7 @@ public class DraftApiImpl implements DraftApi {
         @RequestParam int page, @RequestParam int rows, String title, @RequestParam String systemName,
         @RequestParam boolean delFlag) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         if (StringUtils.isEmpty(title)) {
             title = "";
         }
@@ -258,7 +259,7 @@ public class DraftApiImpl implements DraftApi {
     public Y9Result<OpenDataModel> openDraft(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId, @RequestParam String processSerialNumber, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         OpenDataModel model = null;
         if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(processSerialNumber)) {
             model = draftEntityService.openDraft(processSerialNumber, itemId, mobile);
@@ -315,7 +316,7 @@ public class DraftApiImpl implements DraftApi {
         @RequestParam String itemId, @RequestParam String processSerialNumber,
         @RequestParam String processDefinitionKey, String number, String level, @RequestParam String title) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, title, "");
         return Y9Result.successMsg("保存成功");
     }

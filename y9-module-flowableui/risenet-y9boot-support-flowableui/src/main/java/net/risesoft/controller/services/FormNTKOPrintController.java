@@ -22,8 +22,9 @@ import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.template.PrintApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -48,6 +49,7 @@ public class FormNTKOPrintController {
     private final PersonApi personApi;
     private final ProcessParamApi processParamApi;
     private final Y9WordApi y9WordApi;
+    private final UserApi userApi;
 
     /**
      * 下载正文文件
@@ -64,8 +66,8 @@ public class FormNTKOPrintController {
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
+            UserInfo userInfo = userApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setUserInfo(userInfo);
             ProcessParamModel processModel =
                 processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
             String title = StringUtils.isNotBlank(processModel.getTitle()) ? processModel.getTitle() : "正文";
@@ -89,8 +91,8 @@ public class FormNTKOPrintController {
         @RequestParam(required = false) String bindValue, @RequestParam String tenantId, @RequestParam String userId,
         HttpServletResponse response, HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         String y9FileStoreId =
             y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
 

@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -246,7 +247,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                         DepartmentPropCategoryEnum.LEADER)
                     .getData();
             boolean isLeader =
-                leaders.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9LoginUserHolder.getOrgUnitId()));
+                leaders.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9FlowableHolder.getOrgUnitId()));
             if (isLeader) {
                 model.setAddable(true);
             }
@@ -263,7 +264,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                         DepartmentPropCategoryEnum.MANAGER)
                     .getData();
             boolean isManager =
-                managers.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9LoginUserHolder.getOrgUnitId()));
+                managers.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9FlowableHolder.getOrgUnitId()));
             if (isManager) {
                 model.setAddable(true);
             }

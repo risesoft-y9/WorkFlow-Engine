@@ -17,6 +17,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
@@ -56,7 +57,7 @@ public class Process4SearchServiceImpl implements Process4SearchService {
     @Override
     public void saveToDataCenter(final String tenantId, final ProcessParam processParam, final OrgUnit orgUnit) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         String processInstanceId = processParam.getProcessInstanceId();
         try {
             // 获取流程实例基本信息
