@@ -27,64 +27,80 @@ public class TaskListener4AllEvents extends FlowableListener implements TaskList
     @Transactional
     public void notify(DelegateTask task) {
         String eventName = task.getEventName();
+        Map<String, Object> variables = task.getVariables();
         if (BaseTaskListener.EVENTNAME_ASSIGNMENT.equals(eventName)) {
-            Map<String, Object> variables = task.getVariables();
-            // 1、自定义变量科室id保存(异步)
-            Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
-            task4ListenerService.task4AssignmentListener(task, variables);
-            // 2、签收和撤销签收的时候保存待办详情
-            if (task.getCandidates().size() > 1) {
-                Task4ActRuDetailService task4ActRuDetailService = Y9Context.getBean(Task4ActRuDetailService.class);
-                if (StringUtils.isNotEmpty(task.getAssignee())) {
-                    // 签收
-                    task4ActRuDetailService.claim(task);
-                } else {
-                    // 撤销签收
-                    task4ActRuDetailService.unClaim(task);
-                }
-            }
+            handleAssignmentEvent(task, variables);
         } else if (BaseTaskListener.EVENTNAME_CREATE.equals(eventName)) {
-            Map<String, Object> variables = task.getVariables();
-            // 1、接口调用
-            InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
-            try {
-                interfaceUtilService.interfaceCallByTask(task, variables, "创建");
-            } catch (Exception e) {
-                throw new RuntimeException("调用接口失败 TaskListener4AllEvents_EVENTNAME_CREATE");
-            }
-            // 2、保存待办详情
-            Task4ActRuDetailService task4ActRuDetailService = Y9Context.getBean(Task4ActRuDetailService.class);
-            if (null != task.getAssignee()) {
-                task4ActRuDetailService.createTodo(task);
-            } else {
-                task4ActRuDetailService.createTodo4Claim(task);
-            }
+            handleCreateEvent(task, variables);
         } else if (BaseTaskListener.EVENTNAME_DELETE.equals(eventName)) {
-            Map<String, Object> variables = task.getVariables();
-            // 1、接口调用
-            InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
-            try {
-                interfaceUtilService.interfaceCallByTask(task, variables, "完成");
-            } catch (Exception e) {
-                throw new RuntimeException("调用接口失败 TaskListener4AllEvents_EVENTNAME_DELETE");
-            }
+            handleDeleteEvent(task, variables);
+        }
+    }
 
-            // 2、记录岗位/人员名称(异步)
-            Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
-            task4ListenerService.task4DeleteListener(task, variables);
-            String assigneeHti = task.getAssignee();
-            if (StringUtils.isNotBlank(assigneeHti)) {
-                task.removeVariable(assigneeHti);
-            }
-            /*
-             * 3、任务删除的时候，待办-->在办
-             */
+    /**
+     * 处理任务分配事件
+     */
+    private void handleAssignmentEvent(DelegateTask task, Map<String, Object> variables) {
+        // 1、自定义变量科室id保存(异步)
+        Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
+        task4ListenerService.task4AssignmentListener(task, variables);
+        // 2、签收和撤销签收的时候保存待办详情
+        if (task.getCandidates().size() > 1) {
             Task4ActRuDetailService task4ActRuDetailService = Y9Context.getBean(Task4ActRuDetailService.class);
-            if (null != task.getAssignee()) {
-                task4ActRuDetailService.todo2doing(task);
+            if (StringUtils.isNotEmpty(task.getAssignee())) {
+                // 签收
+                task4ActRuDetailService.claim(task);
             } else {
-                task4ActRuDetailService.todo2doing4Jump(task);
+                // 撤销签收
+                task4ActRuDetailService.unClaim(task);
             }
+        }
+    }
+
+    /**
+     * 处理任务创建事件
+     */
+    private void handleCreateEvent(DelegateTask task, Map<String, Object> variables) {
+        // 1、接口调用
+        InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
+        try {
+            interfaceUtilService.interfaceCallByTask(task, variables, "创建");
+        } catch (Exception e) {
+            throw new RuntimeException("调用接口失败 TaskListener4AllEvents_EVENTNAME_CREATE");
+        }
+        // 2、保存待办详情
+        Task4ActRuDetailService task4ActRuDetailService = Y9Context.getBean(Task4ActRuDetailService.class);
+        if (null != task.getAssignee()) {
+            task4ActRuDetailService.createTodo(task);
+        } else {
+            task4ActRuDetailService.createTodo4Claim(task);
+        }
+    }
+
+    /**
+     * 处理任务删除事件
+     */
+    private void handleDeleteEvent(DelegateTask task, Map<String, Object> variables) {
+        // 1、接口调用
+        InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
+        try {
+            interfaceUtilService.interfaceCallByTask(task, variables, "完成");
+        } catch (Exception e) {
+            throw new RuntimeException("调用接口失败 TaskListener4AllEvents_EVENTNAME_DELETE");
+        }
+        // 2、记录岗位/人员名称(异步)
+        Task4ListenerService task4ListenerService = Y9Context.getBean(Task4ListenerService.class);
+        task4ListenerService.task4DeleteListener(task, variables);
+        String assigneeHti = task.getAssignee();
+        if (StringUtils.isNotBlank(assigneeHti)) {
+            task.removeVariable(assigneeHti);
+        }
+        // 3、任务删除的时候，待办-->在办
+        Task4ActRuDetailService task4ActRuDetailService = Y9Context.getBean(Task4ActRuDetailService.class);
+        if (null != task.getAssignee()) {
+            task4ActRuDetailService.todo2doing(task);
+        } else {
+            task4ActRuDetailService.todo2doing4Jump(task);
         }
     }
 }

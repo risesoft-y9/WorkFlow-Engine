@@ -12,6 +12,8 @@ import org.springframework.util.StringUtils;
 
 import com.fasterxml.jackson.databind.type.TypeFactory;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -23,6 +25,7 @@ import net.risesoft.y9.sqlddl.pojo.DbColumn;
  * @author zhangchongjie
  * @date 2022/12/21
  */
+@Slf4j
 public class DdlKingbase {
     private static final String ALTER_TABLE_KEY = "ALTER TABLE \"";
     private static final String COMMENT_ON_KEY = "COMMENT ON COLUMN \"";
@@ -110,7 +113,7 @@ public class DdlKingbase {
             DbMetaDataUtil.executeDdl(dataSource,
                 renameSql.append(" RENAME COLUMN ").append(oldName).append(" TO ").append(newName).toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("重命名字段失败", e);
         }
     }
 
@@ -167,70 +170,6 @@ public class DdlKingbase {
         if (StringUtils.hasText(dbc.getComment())) {
             DbMetaDataUtil.executeDdl(dataSource, COMMENT_ON_KEY + tableName + "\"."
                 + dbc.getColumnName().trim().toUpperCase() + IS_KEY + dbc.getComment() + "'");
-        }
-    }
-
-    public void alterTableColumn(DataSource dataSource, String tableName, String jsonDbColumns) throws Exception {
-        if (!DbMetaDataUtil.checkTableExist(dataSource, tableName)) {
-            throw new Exception("数据库中不存在这个表：" + tableName);
-        }
-        DbColumn[] dbColumnArr = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
-            TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
-        for (DbColumn dbc : dbColumnArr) {
-            if (StringUtils.hasText(dbc.getColumnNameOld())) {
-                StringBuilder sb = new StringBuilder();
-                sb.append(ALTER_TABLE_KEY).append(tableName).append("\"");
-                // 字段名称有改变
-                if (!dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())) {
-                    try {
-                        DbMetaDataUtil.executeDdl(dataSource,
-                            sb.append(" RENAME COLUMN ")
-                                .append(dbc.getColumnNameOld())
-                                .append(" TO ")
-                                .append(dbc.getColumnName())
-                                .toString());
-                    } catch (Exception e) {
-                        e.printStackTrace();
-                    }
-                }
-                sb.append(" MODIFY ").append(dbc.getColumnName()).append(" ");
-                String sType = dbc.getTypeName().toUpperCase();
-                if ("CHAR".equals(sType) || "NCHAR".equals(sType) || "VARCHAR2".equals(sType)
-                    || "NVARCHAR2".equals(sType) || "RAW".equals(sType)) {
-                    sb.append(sType).append("(").append(dbc.getDataLength()).append(" char)");
-                } else if ("DECIMAL".equalsIgnoreCase(sType) || "NUMERIC".equalsIgnoreCase(sType)
-                    || "NUMBER".equalsIgnoreCase(sType)) {
-                    if (dbc.getDataScale() == null) {
-                        sb.append(sType).append("(").append(dbc.getDataLength()).append(")");
-                    } else {
-                        sb.append(sType)
-                            .append("(")
-                            .append(dbc.getDataLength())
-                            .append(",")
-                            .append(dbc.getDataScale())
-                            .append(")");
-                    }
-                } else {
-                    sb.append(sType);
-                }
-                List<DbColumn> list = DbMetaDataUtil.listAllColumns(dataSource, tableName, dbc.getColumnNameOld());
-                if (dbc.getNullable()) {
-                    if (!list.get(0).getNullable()) {
-                        sb.append(" NULL");
-                    }
-                } else {
-                    if (list.get(0).getNullable()) {
-                        sb.append(" NOT NULL");
-                    }
-                }
-                DbMetaDataUtil.executeDdl(dataSource, sb.toString());
-                if (StringUtils.hasText(dbc.getComment())) {
-                    if (!list.get(0).getComment().equals(dbc.getComment())) {
-                        DbMetaDataUtil.executeDdl(dataSource, COMMENT_ON_KEY + tableName + "\"."
-                            + dbc.getColumnName().trim().toUpperCase() + IS_KEY + dbc.getComment() + "'");
-                    }
-                }
-            }
         }
     }
 

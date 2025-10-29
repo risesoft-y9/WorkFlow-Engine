@@ -413,60 +413,104 @@ public abstract class AbstractEngineConfiguration {
 
     protected void initDataSource() {
         if (dataSource == null) {
-            if (dataSourceJndiName != null) {
-                try {
-                    dataSource = (DataSource)new InitialContext().lookup(dataSourceJndiName);
-                } catch (Exception e) {
-                    throw new FlowableException(
-                        "couldn't lookup datasource from " + dataSourceJndiName + ": " + e.getMessage(), e);
-                }
-
-            } else if (jdbcUrl != null) {
-                if ((jdbcDriver == null) || (jdbcUsername == null)) {
-                    throw new FlowableException(
-                        "DataSource or JDBC properties have to be specified in a process engine configuration");
-                }
-
-                logger.debug("initializing datasource to db: {}", jdbcUrl);
-
-                if (logger.isInfoEnabled()) {
-                    logger.info("Configuring Datasource with following properties (omitted password for security)");
-                    logger.info("datasource driver : {}", jdbcDriver);
-                    logger.info("datasource url : {}", jdbcUrl);
-                    logger.info("datasource user name : {}", jdbcUsername);
-                }
-
-                PooledDataSource pooledDataSource = new PooledDataSource(this.getClass().getClassLoader(), jdbcDriver,
-                    jdbcUrl, jdbcUsername, jdbcPassword);
-
-                if (jdbcMaxActiveConnections > 0) {
-                    pooledDataSource.setPoolMaximumActiveConnections(jdbcMaxActiveConnections);
-                }
-                if (jdbcMaxIdleConnections > 0) {
-                    pooledDataSource.setPoolMaximumIdleConnections(jdbcMaxIdleConnections);
-                }
-                if (jdbcMaxCheckoutTime > 0) {
-                    pooledDataSource.setPoolMaximumCheckoutTime(jdbcMaxCheckoutTime);
-                }
-                if (jdbcMaxWaitTime > 0) {
-                    pooledDataSource.setPoolTimeToWait(jdbcMaxWaitTime);
-                }
-                if (jdbcPingEnabled) {
-                    pooledDataSource.setPoolPingEnabled(true);
-                    if (jdbcPingQuery != null) {
-                        pooledDataSource.setPoolPingQuery(jdbcPingQuery);
-                    }
-                    pooledDataSource.setPoolPingConnectionsNotUsedFor(jdbcPingConnectionNotUsedFor);
-                }
-                if (jdbcDefaultTransactionIsolationLevel > 0) {
-                    pooledDataSource.setDefaultTransactionIsolationLevel(jdbcDefaultTransactionIsolationLevel);
-                }
-                dataSource = pooledDataSource;
-            }
+            dataSource = createDataSource();
         }
-
         if (databaseType == null) {
             initDatabaseType();
+        }
+    }
+
+    /**
+     * 创建数据源
+     */
+    private DataSource createDataSource() {
+        if (dataSourceJndiName != null) {
+            return createJndiDataSource();
+        } else if (jdbcUrl != null) {
+            return createPooledDataSource();
+        } else {
+            throw new FlowableException(
+                "DataSource or JDBC properties have to be specified in a process engine configuration");
+        }
+    }
+
+    /**
+     * 从JNDI创建数据源
+     */
+    private DataSource createJndiDataSource() {
+        try {
+            return (DataSource)new InitialContext().lookup(dataSourceJndiName);
+        } catch (Exception e) {
+            throw new FlowableException("couldn't lookup datasource from " + dataSourceJndiName + ": " + e.getMessage(),
+                e);
+        }
+    }
+
+    /**
+     * 创建连接池数据源
+     */
+    private DataSource createPooledDataSource() {
+        validateJdbcProperties();
+
+        logDataSourceConfiguration();
+
+        PooledDataSource pooledDataSource =
+            new PooledDataSource(this.getClass().getClassLoader(), jdbcDriver, jdbcUrl, jdbcUsername, jdbcPassword);
+
+        configurePooledDataSource(pooledDataSource);
+
+        return pooledDataSource;
+    }
+
+    /**
+     * 验证JDBC属性
+     */
+    private void validateJdbcProperties() {
+        if (jdbcDriver == null || jdbcUsername == null) {
+            throw new FlowableException(
+                "DataSource or JDBC properties have to be specified in a process engine configuration");
+        }
+    }
+
+    /**
+     * 记录数据源配置信息
+     */
+    private void logDataSourceConfiguration() {
+        logger.debug("initializing datasource to db: {}", jdbcUrl);
+
+        if (logger.isInfoEnabled()) {
+            logger.info("Configuring Datasource with following properties (omitted password for security)");
+            logger.info("datasource driver : {}", jdbcDriver);
+            logger.info("datasource url : {}", jdbcUrl);
+            logger.info("datasource user name : {}", jdbcUsername);
+        }
+    }
+
+    /**
+     * 配置连接池数据源参数
+     */
+    private void configurePooledDataSource(PooledDataSource pooledDataSource) {
+        if (jdbcMaxActiveConnections > 0) {
+            pooledDataSource.setPoolMaximumActiveConnections(jdbcMaxActiveConnections);
+        }
+        if (jdbcMaxIdleConnections > 0) {
+            pooledDataSource.setPoolMaximumIdleConnections(jdbcMaxIdleConnections);
+        }
+        if (jdbcMaxCheckoutTime > 0) {
+            pooledDataSource.setPoolMaximumCheckoutTime(jdbcMaxCheckoutTime);
+        }
+        if (jdbcMaxWaitTime > 0) {
+            pooledDataSource.setPoolTimeToWait(jdbcMaxWaitTime);
+        }
+        if (jdbcPingEnabled) {
+            pooledDataSource.setPoolPingEnabled(true);
+            if (jdbcPingQuery != null) {
+                pooledDataSource.setPoolPingQuery(jdbcPingQuery);
+            }
+            pooledDataSource.setPoolPingConnectionsNotUsedFor(jdbcPingConnectionNotUsedFor);
+        }
+        if (jdbcDefaultTransactionIsolationLevel > 0) {
+            pooledDataSource.setDefaultTransactionIsolationLevel(jdbcDefaultTransactionIsolationLevel);
         }
     }
 
@@ -590,6 +634,7 @@ public abstract class AbstractEngineConfiguration {
         }
     }
 
+    @SuppressWarnings("java:S1452")
     public Collection<? extends CommandInterceptor> getDefaultCommandInterceptors() {
         if (defaultCommandInterceptors == null) {
             List<CommandInterceptor> interceptors = new ArrayList<>();
@@ -1021,63 +1066,66 @@ public abstract class AbstractEngineConfiguration {
     public abstract InputStream getMyBatisXmlConfigurationStream();
 
     public void initConfigurators() {
-
         allConfigurators = new ArrayList<>();
+
+        // 添加引擎特定的配置器
         allConfigurators.addAll(getEngineSpecificEngineConfigurators());
 
-        // Configurators that are explicitly added to the config
+        // 添加显式配置的配置器
         if (configurators != null) {
             allConfigurators.addAll(configurators);
         }
 
-        // Auto discovery through ServiceLoader
+        // 通过ServiceLoader自动发现配置器
         if (enableConfiguratorServiceLoader) {
-            ClassLoader classLoader = getClassLoader();
-            if (classLoader == null) {
-                classLoader = ReflectUtil.getClassLoader();
-            }
+            discoverConfiguratorsViaServiceLoader();
+        }
 
-            ServiceLoader<EngineConfigurator> configuratorServiceLoader =
-                ServiceLoader.load(EngineConfigurator.class, classLoader);
-            int nrOfServiceLoadedConfigurators = 0;
-            for (EngineConfigurator configurator : configuratorServiceLoader) {
-                allConfigurators.add(configurator);
-                nrOfServiceLoadedConfigurators++;
-            }
+        // 如果存在配置器，则进行排序和日志记录
+        if (!allConfigurators.isEmpty()) {
+            sortConfiguratorsByPriority();
+            logConfiguratorInfo();
+        }
+    }
 
-            if (nrOfServiceLoadedConfigurators > 0) {
-                logger.info("Found {} auto-discoverable Process Engine Configurator{}", nrOfServiceLoadedConfigurators,
-                    nrOfServiceLoadedConfigurators > 1 ? "s" : "");
-            }
+    /**
+     * 通过ServiceLoader发现配置器
+     */
+    private void discoverConfiguratorsViaServiceLoader() {
+        ClassLoader classLoader = getClassLoader();
+        if (classLoader == null) {
+            classLoader = ReflectUtil.getClassLoader();
+        }
 
-            if (!allConfigurators.isEmpty()) {
+        ServiceLoader<EngineConfigurator> configuratorServiceLoader =
+            ServiceLoader.load(EngineConfigurator.class, classLoader);
 
-                // Order them according to the priorities (useful for dependent
-                // configurator)
-                allConfigurators.sort(new Comparator<EngineConfigurator>() {
+        int nrOfServiceLoadedConfigurators = 0;
+        for (EngineConfigurator configurator : configuratorServiceLoader) {
+            allConfigurators.add(configurator);
+            nrOfServiceLoadedConfigurators++;
+        }
 
-                    @Override
-                    public int compare(EngineConfigurator configurator1, EngineConfigurator configurator2) {
-                        int priority1 = configurator1.getPriority();
-                        int priority2 = configurator2.getPriority();
+        if (nrOfServiceLoadedConfigurators > 0) {
+            logger.info("Found {} auto-discoverable Process Engine Configurator{}", nrOfServiceLoadedConfigurators,
+                nrOfServiceLoadedConfigurators > 1 ? "s" : "");
+        }
+    }
 
-                        if (priority1 < priority2) {
-                            return -1;
-                        } else if (priority1 > priority2) {
-                            return 1;
-                        }
-                        return 0;
-                    }
-                });
+    /**
+     * 根据优先级对配置器进行排序
+     */
+    private void sortConfiguratorsByPriority() {
+        allConfigurators.sort(Comparator.comparingInt(EngineConfigurator::getPriority));
+    }
 
-                // Execute the configurators
-                logger.info("Found {} Engine Configurators in total:", allConfigurators.size());
-                for (EngineConfigurator configurator : allConfigurators) {
-                    logger.info("{} (priority:{})", configurator.getClass(), configurator.getPriority());
-                }
-
-            }
-
+    /**
+     * 记录配置器信息
+     */
+    private void logConfiguratorInfo() {
+        logger.info("Found {} Engine Configurators in total:", allConfigurators.size());
+        for (EngineConfigurator configurator : allConfigurators) {
+            logger.info("{} (priority:{})", configurator.getClass(), configurator.getPriority());
         }
     }
 

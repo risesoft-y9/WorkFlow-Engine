@@ -107,14 +107,6 @@ public interface CustomTaskService {
     Task findById(String taskId);
 
     /**
-     * 获取当前任务所在并行节点的多个任务的已完成的数量
-     *
-     * @param taskId
-     * @return
-     */
-    Integer getCompleteTaskCount4Parallel(String taskId);
-
-    /**
      * 根据流程实例Id查找任务
      *
      * @param processInstanceId

@@ -9,7 +9,6 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.FlowElementModel;
-import net.risesoft.model.processadmin.TaskModel;
 
 /**
  * @author qinman
@@ -67,23 +66,6 @@ public interface AsyncHandleService {
     void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle, String sponsorGuid,
         String taskId, FlowElementModel flowElementModel, Map<String, Object> variables, List<String> userList)
         throws Exception;
-
-    /**
-     * 发送后异步处理
-     * 
-     * @param tenantId 租户id
-     * @param orgUnitId 组织id
-     * @param task 任务
-     * @param executionId 执行id
-     * @param processInstanceId 流程实例id
-     * @param flowElementModel 流程元素
-     * @param sponsorGuid 发起人id
-     * @param processParam 流程参数
-     * @param userList 用户列表
-     */
-    void forwardingHandle(final String tenantId, final String orgUnitId, final TaskModel task, final String executionId,
-        final String processInstanceId, final FlowElementModel flowElementModel, final String sponsorGuid,
-        final ProcessParam processParam, List<String> userList);
 
     /**
      * 保存意见历史记录

@@ -62,48 +62,104 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
     @Override
     public HistoricTaskInstance getThePreviousTask(String taskId) {
         try {
-            String currentTaskDefKey, currentExecutionId, processDefineId, currentMultiInstance;
-            HistoricTaskInstance currentHti =
-                historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
-            String processInstanceId = currentHti.getProcessInstanceId();
-            List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .orderByHistoricTaskInstanceStartTime()
-                .desc()
-                .list();
-
-            currentTaskDefKey = currentHti.getTaskDefinitionKey();
-            currentExecutionId = currentHti.getExecutionId();
-            processDefineId = currentHti.getProcessDefinitionId();
-            currentMultiInstance =
-                customProcessDefinitionService.getNode(processDefineId, currentTaskDefKey).getMultiInstance();
-            long currentTime = currentHti.getCreateTime().getTime(), tempTime;
-            if (currentMultiInstance.equals(SysVariables.PARALLEL)) {
-                for (HistoricTaskInstance htiTemp : list) {
-                    tempTime = htiTemp.getCreateTime().getTime();
-                    if (!htiTemp.getTaskDefinitionKey().equals(currentHti.getTaskDefinitionKey())) {
-                        return htiTemp;
-                    } else {
-                        if ((-1000 > (currentTime - tempTime) || (currentTime - tempTime) > 1000)) {
-                            return htiTemp;
-                        }
-                    }
-                }
-            } else if (currentMultiInstance.equals(SysVariables.SEQUENTIAL)) {
-                for (HistoricTaskInstance htiTemp : list) {
-                    if (!currentExecutionId.equals(htiTemp.getExecutionId())) {
-                        return htiTemp;
-                    }
-                }
-            } else {
-                for (HistoricTaskInstance htiTemp : list) {
-                    if (null != htiTemp.getEndTime()) {
-                        return htiTemp;
-                    }
-                }
+            HistoricTaskInstance currentTask = getCurrentTask(taskId);
+            if (currentTask == null) {
+                return null;
             }
+            List<HistoricTaskInstance> taskList = getTaskListByProcessInstanceId(currentTask.getProcessInstanceId());
+            String multiInstanceType = getMultiInstanceType(currentTask);
+            return findPreviousTask(currentTask, taskList, multiInstanceType);
         } catch (Exception e) {
             LOGGER.error("获取前一个任务失败", e);
+            return null;
+        }
+    }
+
+    /**
+     * 获取当前任务实例
+     */
+    private HistoricTaskInstance getCurrentTask(String taskId) {
+        return historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
+    }
+
+    /**
+     * 根据流程实例ID获取任务列表
+     */
+    private List<HistoricTaskInstance> getTaskListByProcessInstanceId(String processInstanceId) {
+        return historyService.createHistoricTaskInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .orderByHistoricTaskInstanceStartTime()
+            .desc()
+            .list();
+    }
+
+    /**
+     * 获取任务的多实例类型
+     */
+    private String getMultiInstanceType(HistoricTaskInstance task) {
+        String processDefinitionId = task.getProcessDefinitionId();
+        String taskDefinitionKey = task.getTaskDefinitionKey();
+        return customProcessDefinitionService.getNode(processDefinitionId, taskDefinitionKey).getMultiInstance();
+    }
+
+    /**
+     * 根据多实例类型查找前一个任务
+     */
+    private HistoricTaskInstance findPreviousTask(HistoricTaskInstance currentTask, List<HistoricTaskInstance> taskList,
+        String multiInstanceType) {
+        if (SysVariables.PARALLEL.equals(multiInstanceType)) {
+            return findPreviousTaskForParallel(currentTask, taskList);
+        } else if (SysVariables.SEQUENTIAL.equals(multiInstanceType)) {
+            return findPreviousTaskForSequential(currentTask, taskList);
+        } else {
+            return findPreviousTaskForCommon(taskList);
+        }
+    }
+
+    /**
+     * 查找并行多实例的前一个任务
+     */
+    private HistoricTaskInstance findPreviousTaskForParallel(HistoricTaskInstance currentTask,
+        List<HistoricTaskInstance> taskList) {
+        String currentTaskDefKey = currentTask.getTaskDefinitionKey();
+        long currentTime = currentTask.getCreateTime().getTime();
+
+        for (HistoricTaskInstance task : taskList) {
+            if (!task.getTaskDefinitionKey().equals(currentTaskDefKey)) {
+                return task;
+            } else {
+                long tempTime = task.getCreateTime().getTime();
+                if ((-1000 > (currentTime - tempTime) || (currentTime - tempTime) > 1000)) {
+                    return task;
+                }
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 查找串行多实例的前一个任务
+     */
+    private HistoricTaskInstance findPreviousTaskForSequential(HistoricTaskInstance currentTask,
+        List<HistoricTaskInstance> taskList) {
+        String currentExecutionId = currentTask.getExecutionId();
+
+        for (HistoricTaskInstance task : taskList) {
+            if (!currentExecutionId.equals(task.getExecutionId())) {
+                return task;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 查找普通任务的前一个任务
+     */
+    private HistoricTaskInstance findPreviousTaskForCommon(List<HistoricTaskInstance> taskList) {
+        for (HistoricTaskInstance task : taskList) {
+            if (task.getEndTime() != null) {
+                return task;
+            }
         }
         return null;
     }
@@ -173,76 +229,75 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
     public List<HistoricTaskInstance> listThePreviousTasksByTaskId(String taskId) {
         List<HistoricTaskInstance> returnList = new ArrayList<>();
         try {
-            String currentTaskDefKey, currentExecutionId, processDefineId, currentMultiInstance;
-            String processInstanceId =
-                historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult().getProcessInstanceId();
-            List<HistoricTaskInstance> list = historyService.createHistoricTaskInstanceQuery()
-                .processInstanceId(processInstanceId)
-                .orderByHistoricTaskInstanceStartTime()
-                .desc()
-                .list();
+            HistoricTaskInstance currentTask = getCurrentTask(taskId);
+            if (currentTask == null) {
+                return returnList;
+            }
 
-            HistoricTaskInstance current =
-                historyService.createHistoricTaskInstanceQuery().taskId(taskId).singleResult();
-            currentTaskDefKey = current.getTaskDefinitionKey();
-            currentExecutionId = current.getExecutionId();
-            processDefineId = current.getProcessDefinitionId();
-            currentMultiInstance =
-                customProcessDefinitionService.getNode(processDefineId, currentTaskDefKey).getMultiInstance();
-            /*
-             * 查找当前任务的前一个节点的任务
-             */
-            HistoricTaskInstance historicTaskInstance = null;
-            long currentTime = current.getCreateTime().getTime(), tempTime;
-            if (currentMultiInstance.equals(SysVariables.PARALLEL)) {
-                for (HistoricTaskInstance htiTemp : list) {
-                    tempTime = htiTemp.getCreateTime().getTime();
-                    if (-1000 > (currentTime - tempTime) || (currentTime - tempTime) > 1000) {
-                        historicTaskInstance = htiTemp;
-                        break;
-                    }
-                }
-            } else if (currentMultiInstance.equals(SysVariables.SEQUENTIAL)) {
-                for (HistoricTaskInstance htiTemp : list) {
-                    if (!currentExecutionId.equals(htiTemp.getExecutionId())) {
-                        historicTaskInstance = htiTemp;
-                        break;
-                    }
-                }
-            } else {
-                for (HistoricTaskInstance htiTemp : list) {
-                    if (null != htiTemp.getEndTime()) {
-                        historicTaskInstance = htiTemp;
-                        break;
-                    }
-                }
+            String processInstanceId = currentTask.getProcessInstanceId();
+            List<HistoricTaskInstance> taskList = getTaskListByProcessInstanceId(processInstanceId);
+
+            // 查找当前任务的前一个节点的任务
+            HistoricTaskInstance previousTask = findPreviousTaskNode(currentTask, taskList);
+            if (previousTask == null) {
+                return returnList;
             }
-            /*
-             * 查找前一个任务节点的任务的兄弟任务
-             */
-            assert historicTaskInstance != null;
-            String taskDefKey = historicTaskInstance.getTaskDefinitionKey();
-            String executionId = historicTaskInstance.getExecutionId();
-            String multiInstance =
-                customProcessDefinitionService.getNode(processDefineId, taskDefKey).getMultiInstance();
-            long time = historicTaskInstance.getCreateTime().getTime();
-            if (multiInstance.equals(SysVariables.PARALLEL)) {
-                for (HistoricTaskInstance htiTemp : list) {
-                    long timeTemp = htiTemp.getCreateTime().getTime();
-                    if (-1000 <= (time - timeTemp) && (time - timeTemp) <= 1000) {
-                        returnList.add(htiTemp);
-                    }
-                }
-            } else if (multiInstance.equals(SysVariables.SEQUENTIAL)) {
-                returnList = historyService.createHistoricTaskInstanceQuery().executionId(executionId).list();
-            } else {
-                returnList.add(historicTaskInstance);
-            }
+
+            // 查找前一个任务节点的任务的兄弟任务
+            return findSiblingTasks(previousTask, taskList, currentTask.getProcessDefinitionId());
 
         } catch (Exception e) {
             LOGGER.error("获取前一个任务失败", e);
+            return returnList;
         }
-        return returnList;
+    }
+
+    /**
+     * 查找前一个任务节点
+     */
+    private HistoricTaskInstance findPreviousTaskNode(HistoricTaskInstance currentTask,
+        List<HistoricTaskInstance> taskList) {
+        String multiInstanceType = getMultiInstanceType(currentTask);
+        if (SysVariables.PARALLEL.equals(multiInstanceType)) {
+            return findPreviousTaskForParallel(currentTask, taskList);
+        } else if (SysVariables.SEQUENTIAL.equals(multiInstanceType)) {
+            return findPreviousTaskForSequential(currentTask, taskList);
+        } else {
+            return findPreviousTaskForCommon(taskList);
+        }
+    }
+
+    /**
+     * 查找兄弟任务
+     */
+    private List<HistoricTaskInstance> findSiblingTasks(HistoricTaskInstance previousTask,
+        List<HistoricTaskInstance> taskList, String processDefinitionId) {
+        String multiInstance = getMultiInstanceType(previousTask, processDefinitionId);
+        List<HistoricTaskInstance> siblingTasks = new ArrayList<>();
+        if (SysVariables.PARALLEL.equals(multiInstance)) {
+            long time = previousTask.getCreateTime().getTime();
+            for (HistoricTaskInstance task : taskList) {
+                long timeTemp = task.getCreateTime().getTime();
+                if (-1000 <= (time - timeTemp) && (time - timeTemp) <= 1000) {
+                    siblingTasks.add(task);
+                }
+            }
+        } else if (SysVariables.SEQUENTIAL.equals(multiInstance)) {
+            siblingTasks =
+                historyService.createHistoricTaskInstanceQuery().executionId(previousTask.getExecutionId()).list();
+        } else {
+            siblingTasks.add(previousTask);
+        }
+
+        return siblingTasks;
+    }
+
+    /**
+     * 获取任务的多实例类型（重载方法）
+     */
+    private String getMultiInstanceType(HistoricTaskInstance task, String processDefinitionId) {
+        String taskDefinitionKey = task.getTaskDefinitionKey();
+        return customProcessDefinitionService.getNode(processDefinitionId, taskDefinitionKey).getMultiInstance();
     }
 
     @Override

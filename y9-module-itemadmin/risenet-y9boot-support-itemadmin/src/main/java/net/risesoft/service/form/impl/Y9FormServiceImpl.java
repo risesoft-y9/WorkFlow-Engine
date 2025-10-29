@@ -55,6 +55,9 @@ import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9FormServiceImpl implements Y9FormService {
 
+    private static final String FORM_DATA = "formData";
+    private static final String WHERE_GUID = " WHERE guid = ?";
+
     private final JdbcTemplate jdbcTemplate4Tenant;
     private final Y9FormRepository y9FormRepository;
     private final Y9TableService y9TableService;
@@ -93,7 +96,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             }
             jdbcTemplate4Tenant.execute(sqlStr.toString());
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除失败：", e);
             return Y9Result.failure("删除失败");
         }
         return Y9Result.successMsg("删除成功");
@@ -189,7 +192,7 @@ public class Y9FormServiceImpl implements Y9FormService {
         Map<String, Object> formData = new HashMap<>(16);
         try {
             if (StringUtils.isBlank(formId) || StringUtils.isBlank(guid)) {
-                result.put("formData", formData);
+                result.put(FORM_DATA, formData);
                 result.put(UtilConsts.SUCCESS, true);
                 return result;
             }
@@ -202,11 +205,11 @@ public class Y9FormServiceImpl implements Y9FormService {
                     fetchMainTableData(dialect, tableName, formId, guid, formData);
                 }
             }
-            result.put("formData", formData);
+            result.put(FORM_DATA, formData);
             result.put(UtilConsts.SUCCESS, true);
         } catch (Exception e) {
             LOGGER.error("获取表单数据失败, formId: {}, guid: {}", formId, guid, e);
-            result.put("formData", formData);
+            result.put(FORM_DATA, formData);
             result.put(UtilConsts.SUCCESS, false);
         }
 
@@ -219,7 +222,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     private void fetchMainTableData(String dialect, String tableName, String formId, String guid,
         Map<String, Object> formData) {
         try {
-            String selectSql = buildSelectSql(dialect, tableName) + " WHERE guid = ?";
+            String selectSql = buildSelectSql(dialect, tableName) + WHERE_GUID;
             List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(selectSql, guid);
             if (!dataMap.isEmpty()) {
                 List<Y9FormField> elementList = y9FormFieldRepository.findByFormIdAndTableName(formId, tableName);
@@ -270,7 +273,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     private void fetchVariableData(String dialect, String tableName, String guid, String tableId,
         Map<String, Object> result) {
         try {
-            String selectSql = buildSelectSql(dialect, tableName) + " WHERE guid = ?";
+            String selectSql = buildSelectSql(dialect, tableName) + WHERE_GUID;
             List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(selectSql, guid);
             if (!dataMap.isEmpty()) {
                 List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
@@ -311,21 +314,14 @@ public class Y9FormServiceImpl implements Y9FormService {
             String userIdSql = "";
             for (Y9FormField formField : tableFieldList) {// 表单如果绑定了y9_userId，则加上y9_userId为查询条件
                 if (formField.getFieldName().equals("y9_userId") || formField.getFieldName().equals("Y9_USERID")) {
-                    userIdSql = " and y9_userId = '" + Y9LoginUserHolder.getOrgUnitId() + "'";
+                    userIdSql = " and y9_userId = ?";
                     break;
                 }
             }
             if (y9Table.getTableType() == ItemTableTypeEnum.SUB) {
-                StringBuilder sqlStr = new StringBuilder();
-                if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                    || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                    sqlStr = new StringBuilder(
-                        "SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?" + userIdSql);
-                } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                    sqlStr = new StringBuilder(
-                        "SELECT * FROM " + tableName + " where parentProcessSerialNumber =?" + userIdSql);
-                }
-                dataMap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), parentProcessSerialNumber);
+                String sqlStr = buildSelectSql(dialect, tableName) + " where parentProcessSerialNumber =?" + userIdSql;
+                dataMap = jdbcTemplate4Tenant.queryForList(sqlStr, parentProcessSerialNumber,
+                    Y9LoginUserHolder.getOrgUnitId());
                 return dataMap;
             }
         }
@@ -340,14 +336,8 @@ public class Y9FormServiceImpl implements Y9FormService {
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             Y9Table y9Table = y9TableService.findById(tableId);
             String tableName = y9Table.getTableName();
-            StringBuilder sqlStr = new StringBuilder();
-            if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
-                || DialectEnum.KINGBASE.getValue().equals(dialect)) {
-                sqlStr = new StringBuilder("SELECT * FROM \"" + tableName + "\" where parentProcessSerialNumber =?");
-            } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-                sqlStr = new StringBuilder("SELECT * FROM " + tableName + " where parentProcessSerialNumber =?");
-            }
-            dataMap = jdbcTemplate4Tenant.queryForList(sqlStr.toString(), processSerialNumber);
+            String sqlStr = buildSelectSql(dialect, tableName) + " where parentProcessSerialNumber =?";
+            dataMap = jdbcTemplate4Tenant.queryForList(sqlStr, processSerialNumber);
             return dataMap;
         } catch (Exception e) {
             e.printStackTrace();
@@ -404,9 +394,8 @@ public class Y9FormServiceImpl implements Y9FormService {
         if (DialectEnum.ORACLE.getValue().equals(dialect) || DialectEnum.DM.getValue().equals(dialect)
             || DialectEnum.KINGBASE.getValue().equals(dialect)) {
             return "SELECT * FROM \"" + tableName + "\"";
-        } else if (DialectEnum.MYSQL.getValue().equals(dialect)) {
-            return "SELECT * FROM " + tableName;
         }
+        // 对于其他数据库类型（包括MySQL），使用不带引号的表名
         return "SELECT * FROM " + tableName;
     }
 
@@ -546,7 +535,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             // 添加WHERE条件
             String guidValue = getGuidFromData(keyValue);
             parameters.add(guidValue);
-            sqlBuilder.append(setClause).append(" WHERE guid = ?");
+            sqlBuilder.append(setClause).append(WHERE_GUID);
             jdbcTemplate4Tenant.update(sqlBuilder.toString(), parameters.toArray());
         } catch (Exception e) {
             LOGGER.error("执行更新操作失败, tableName: {}", tableName, e);
@@ -590,9 +579,6 @@ public class Y9FormServiceImpl implements Y9FormService {
         return null;
     }
 
-    /**
-     * 判断是否为GUID字段
-     */
     /**
      * 判断是否为GUID字段
      */

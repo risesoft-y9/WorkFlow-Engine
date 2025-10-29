@@ -21,7 +21,6 @@ import org.flowable.idm.api.IdmIdentityService;
 import org.flowable.idm.api.Privilege;
 import org.flowable.idm.api.User;
 import org.flowable.ui.common.model.GroupRepresentation;
-import org.flowable.ui.common.model.RemoteGroup;
 import org.flowable.ui.common.model.RemoteUser;
 import org.flowable.ui.common.model.UserRepresentation;
 import org.flowable.ui.common.rest.idm.CurrentUserProvider;
@@ -104,47 +103,57 @@ public class RemoteAccountResource implements InitializingBean {
     }
 
     protected UserRepresentation getCurrentUserRepresentation(String currentUserId) {
-        UserRepresentation userRepresentation = null;
         if (remoteIdmService != null) {
-            RemoteUser remoteUser = remoteIdmService.getUser(currentUserId);
-            if (remoteUser != null) {
-                userRepresentation = new UserRepresentation(remoteUser);
-
-                if (remoteUser.getGroups() != null && remoteUser.getGroups().size() > 0) {
-                    List<GroupRepresentation> groups = new ArrayList<>();
-                    for (RemoteGroup remoteGroup : remoteUser.getGroups()) {
-                        groups.add(new GroupRepresentation(remoteGroup));
-                    }
-                    userRepresentation.setGroups(groups);
-                }
-
-                if (remoteUser.getPrivileges() != null && remoteUser.getPrivileges().size() > 0) {
-                    userRepresentation.setPrivileges(remoteUser.getPrivileges());
-                }
-
-            }
+            return createUserRepresentationFromRemoteService(currentUserId);
         } else {
-            User user = identityService.createUserQuery().userId(currentUserId).singleResult();
-            if (user != null) {
-                userRepresentation = new UserRepresentation(user);
+            return createUserRepresentationFromIdentityService(currentUserId);
+        }
+    }
 
-                List<Group> userGroups = identityService.createGroupQuery().groupMember(currentUserId).list();
-                if (!userGroups.isEmpty()) {
-                    List<GroupRepresentation> groups = new ArrayList<>(userGroups.size());
-                    for (Group userGroup : userGroups) {
-                        groups.add(new GroupRepresentation(userGroup));
-                    }
-                    userRepresentation.setGroups(groups);
-                }
-
-                List<Privilege> userPrivileges = identityService.createPrivilegeQuery().userId(currentUserId).list();
-                if (!userPrivileges.isEmpty()) {
-                    userRepresentation
-                        .setPrivileges(userPrivileges.stream().map(Privilege::getName).collect(Collectors.toList()));
-                }
-            }
+    /**
+     * 从远程IDM服务创建用户表示
+     */
+    private UserRepresentation createUserRepresentationFromRemoteService(String currentUserId) {
+        RemoteUser remoteUser = remoteIdmService.getUser(currentUserId);
+        if (remoteUser == null) {
+            return null;
+        }
+        UserRepresentation userRepresentation = new UserRepresentation(remoteUser);
+        // 设置用户组信息
+        if (remoteUser.getGroups() != null && !remoteUser.getGroups().isEmpty()) {
+            List<GroupRepresentation> groups =
+                remoteUser.getGroups().stream().map(GroupRepresentation::new).collect(Collectors.toList());
+            userRepresentation.setGroups(groups);
+        }
+        // 设置用户权限信息
+        if (remoteUser.getPrivileges() != null && !remoteUser.getPrivileges().isEmpty()) {
+            userRepresentation.setPrivileges(remoteUser.getPrivileges());
         }
         return userRepresentation;
     }
 
+    /**
+     * 从身份服务创建用户表示
+     */
+    private UserRepresentation createUserRepresentationFromIdentityService(String currentUserId) {
+        User user = identityService.createUserQuery().userId(currentUserId).singleResult();
+        if (user == null) {
+            return null;
+        }
+        UserRepresentation userRepresentation = new UserRepresentation(user);
+        // 设置用户组信息
+        List<Group> userGroups = identityService.createGroupQuery().groupMember(currentUserId).list();
+        if (!userGroups.isEmpty()) {
+            List<GroupRepresentation> groups =
+                userGroups.stream().map(GroupRepresentation::new).collect(Collectors.toList());
+            userRepresentation.setGroups(groups);
+        }
+        // 设置用户权限信息
+        List<Privilege> userPrivileges = identityService.createPrivilegeQuery().userId(currentUserId).list();
+        if (!userPrivileges.isEmpty()) {
+            List<String> privileges = userPrivileges.stream().map(Privilege::getName).collect(Collectors.toList());
+            userRepresentation.setPrivileges(privileges);
+        }
+        return userRepresentation;
+    }
 }

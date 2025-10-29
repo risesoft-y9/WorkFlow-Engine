@@ -179,44 +179,92 @@ public class RoleServiceImpl implements RoleService {
      */
     private PermissionData collectPermissionData(String tenantId, List<ItemPermission> permissions,
         boolean isPositionType, boolean isDepartmentType, String processInstanceId, String taskId) {
-
         PermissionData permissionData = new PermissionData();
-
         for (ItemPermission permission : permissions) {
-            switch (permission.getRoleType()) {
-                case DEPARTMENT:
-                    if (isDepartmentType) {
-                        OrgUnit dept = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
-                        if (dept != null) {
-                            permissionData.deptList.add(dept);
-                        }
-                    }
-                    break;
-                case ROLE:
-                    if (isPositionType) {
-                        List<Position> positions =
-                            positionRoleApi.listPositionsByRoleId(tenantId, permission.getRoleId()).getData();
-                        permissionData.positionList.addAll(positions);
-                    }
-                    break;
-                case POSITION:
-                    if (isPositionType) {
-                        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
-                        if (orgUnit instanceof Position) {
-                            permissionData.positionList.add((Position)orgUnit);
-                        }
-                    }
-                    break;
-                case ROLE_DYNAMIC:
-                    handleDynamicRolePermission(permission, permissionData, processInstanceId, taskId);
-                    break;
-                default:
-                    LOGGER.warn("collectPermissionData:未知的权限类型：{}", permission.getRoleType());
-                    break;
-            }
+            processPermissionItem(tenantId, permission, permissionData, isPositionType, isDepartmentType,
+                processInstanceId, taskId);
+        }
+        return permissionData;
+    }
+
+    /**
+     * 处理单个权限项
+     */
+    private void processPermissionItem(String tenantId, ItemPermission permission, PermissionData permissionData,
+        boolean isPositionType, boolean isDepartmentType, String processInstanceId, String taskId) {
+        switch (permission.getRoleType()) {
+            case DEPARTMENT:
+                processDepartmentPermission(tenantId, permission, permissionData, isDepartmentType);
+                break;
+            case ROLE:
+                processRolePermission(tenantId, permission, permissionData, isPositionType);
+                break;
+            case POSITION:
+                processPositionPermission(tenantId, permission, permissionData, isPositionType);
+                break;
+            case ROLE_DYNAMIC:
+                handleDynamicRolePermission(permission, permissionData, processInstanceId, taskId);
+                break;
+            default:
+                LOGGER.warn("collectPermissionData:未知的权限类型：{}", permission.getRoleType());
+                break;
+        }
+    }
+
+    /**
+     * 处理部门权限
+     */
+    private void processDepartmentPermission(String tenantId, ItemPermission permission, PermissionData permissionData,
+        boolean isDepartmentType) {
+        if (!isDepartmentType) {
+            return;
         }
 
-        return permissionData;
+        try {
+            OrgUnit dept = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
+            if (dept != null) {
+                permissionData.deptList.add(dept);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("处理部门权限失败，roleId: {}", permission.getRoleId(), e);
+        }
+    }
+
+    /**
+     * 处理角色权限
+     */
+    private void processRolePermission(String tenantId, ItemPermission permission, PermissionData permissionData,
+        boolean isPositionType) {
+        if (!isPositionType) {
+            return;
+        }
+
+        try {
+            List<Position> positions =
+                positionRoleApi.listPositionsByRoleId(tenantId, permission.getRoleId()).getData();
+            permissionData.positionList.addAll(positions);
+        } catch (Exception e) {
+            LOGGER.warn("处理角色权限失败，roleId: {}", permission.getRoleId(), e);
+        }
+    }
+
+    /**
+     * 处理岗位权限
+     */
+    private void processPositionPermission(String tenantId, ItemPermission permission, PermissionData permissionData,
+        boolean isPositionType) {
+        if (!isPositionType) {
+            return;
+        }
+
+        try {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
+            if (orgUnit instanceof Position) {
+                permissionData.positionList.add((Position)orgUnit);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("处理岗位权限失败，roleId: {}", permission.getRoleId(), e);
+        }
     }
 
     /**
@@ -455,7 +503,7 @@ public class RoleServiceImpl implements RoleService {
             if (StringUtils.isBlank(effectiveId)) {
                 items.addAll(handleEmptyIdCase(tenantId, userId, isDepartmentType));
             } else {
-                items.addAll(handleWithIdCase(tenantId, userId, effectiveId, isDepartmentType));
+                items.addAll(handleWithIdCase(tenantId, effectiveId, isDepartmentType));
             }
         } catch (Exception e) {
             LOGGER.error("获取抄送用户列表失败", e);
@@ -526,14 +574,13 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 处理ID不为空的情况
      */
-    private List<ItemRoleOrgUnitModel> handleWithIdCase(String tenantId, String userId, String id,
-        boolean isDepartmentType) {
+    private List<ItemRoleOrgUnitModel> handleWithIdCase(String tenantId, String id, boolean isDepartmentType) {
         List<ItemRoleOrgUnitModel> items = new ArrayList<>();
 
         if (isDepartmentType) {
             handleDepartmentTypeWithId(tenantId, id, items);
         } else {
-            handleCustomGroupTypeWithId(tenantId, userId, id, items);
+            handleCustomGroupTypeWithId(tenantId, id, items);
         }
 
         return items;
@@ -559,8 +606,7 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 处理ID不为空时的自定义组类型
      */
-    private void handleCustomGroupTypeWithId(String tenantId, String userId, String id,
-        List<ItemRoleOrgUnitModel> items) {
+    private void handleCustomGroupTypeWithId(String tenantId, String id, List<ItemRoleOrgUnitModel> items) {
         try {
             List<CustomGroupMember> customGroupMemberList =
                 customGroupApi.listCustomGroupMember(tenantId, new CustomGroupMemberQuery(id, OrgTypeEnum.POSITION))
@@ -731,7 +777,7 @@ public class RoleServiceImpl implements RoleService {
             for (CustomGroup customGroup : groupList) {
                 ItemRoleOrgUnitModel groupModel = createCustomGroupModel(customGroup);
 
-                boolean hasMatchingMember = addMatchingGroupMembers(items, tenantId, userId, customGroup, name);
+                boolean hasMatchingMember = addMatchingGroupMembers(items, tenantId, customGroup, name);
 
                 // 如果有匹配的成员且组模型不在列表中，则添加组模型
                 if (hasMatchingMember && !items.contains(groupModel)) {
@@ -748,16 +794,14 @@ public class RoleServiceImpl implements RoleService {
     /**
      * 添加匹配的组成员
      */
-    private boolean addMatchingGroupMembers(List<ItemRoleOrgUnitModel> items, String tenantId, String userId,
-        CustomGroup customGroup, String name) {
+    private boolean addMatchingGroupMembers(List<ItemRoleOrgUnitModel> items, String tenantId, CustomGroup customGroup,
+        String name) {
         boolean hasMatchingMember = false;
 
         try {
-            List<CustomGroupMember> customGroupMemberList =
-                customGroupApi
-                    .listCustomGroupMember(tenantId,
-                                new CustomGroupMemberQuery(customGroup.getId(), OrgTypeEnum.POSITION))
-                    .getData();
+            List<CustomGroupMember> customGroupMemberList = customGroupApi
+                .listCustomGroupMember(tenantId, new CustomGroupMemberQuery(customGroup.getId(), OrgTypeEnum.POSITION))
+                .getData();
 
             if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
                 for (CustomGroupMember customGroupMember : customGroupMemberList) {
@@ -855,40 +899,92 @@ public class RoleServiceImpl implements RoleService {
         PermissionData data = new PermissionData();
 
         for (ItemPermission permission : permissions) {
-            switch (permission.getRoleType()) {
-                case DEPARTMENT:
-                    if (isDepartmentType) {
-                        OrgUnit dept = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
-                        if (dept != null) {
-                            data.deptList.add(dept);
-                        }
-                    }
-                    break;
-                case ROLE:
-                    if (isPositionType) {
-                        List<Position> positions =
-                            positionRoleApi.listPositionsByRoleId(tenantId, permission.getRoleId()).getData();
-                        data.positionList.addAll(positions);
-                    }
-                    break;
-                case POSITION:
-                    if (isPositionType) {
-                        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
-                        if (orgUnit instanceof Position) {
-                            data.positionList.add((Position)orgUnit);
-                        }
-                    }
-                    break;
-                case ROLE_DYNAMIC:
-                    handleDynamicRolePermission(data, permission, processInstanceId);
-                    break;
-                default:
-                    LOGGER.warn("PermissionData:未知的权限类型：{}", permission.getRoleType());
-                    break;
-            }
+            processPermissionItemForPositionAndDepartment(permission, tenantId, isPositionType, isDepartmentType,
+                processInstanceId, data);
         }
 
         return data;
+    }
+
+    /**
+     * 处理单个权限项
+     */
+    private void processPermissionItemForPositionAndDepartment(ItemPermission permission, String tenantId,
+        boolean isPositionType, boolean isDepartmentType, String processInstanceId, PermissionData data) {
+
+        switch (permission.getRoleType()) {
+            case DEPARTMENT:
+                processDepartmentPermissionForData(tenantId, permission, isDepartmentType, data);
+                break;
+            case ROLE:
+                processRolePermissionForData(tenantId, permission, isPositionType, data);
+                break;
+            case POSITION:
+                processPositionPermissionForData(tenantId, permission, isPositionType, data);
+                break;
+            case ROLE_DYNAMIC:
+                handleDynamicRolePermission(data, permission, processInstanceId);
+                break;
+            default:
+                LOGGER.warn("PermissionData:未知的权限类型：{}", permission.getRoleType());
+                break;
+        }
+    }
+
+    /**
+     * 处理部门权限数据
+     */
+    private void processDepartmentPermissionForData(String tenantId, ItemPermission permission,
+        boolean isDepartmentType, PermissionData data) {
+        if (!isDepartmentType) {
+            return;
+        }
+
+        try {
+            OrgUnit dept = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
+            if (dept != null) {
+                data.deptList.add(dept);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("处理部门权限数据失败，roleId: {}", permission.getRoleId(), e);
+        }
+    }
+
+    /**
+     * 处理角色权限数据
+     */
+    private void processRolePermissionForData(String tenantId, ItemPermission permission, boolean isPositionType,
+        PermissionData data) {
+        if (!isPositionType) {
+            return;
+        }
+
+        try {
+            List<Position> positions =
+                positionRoleApi.listPositionsByRoleId(tenantId, permission.getRoleId()).getData();
+            data.positionList.addAll(positions);
+        } catch (Exception e) {
+            LOGGER.warn("处理角色权限数据失败，roleId: {}", permission.getRoleId(), e);
+        }
+    }
+
+    /**
+     * 处理岗位权限数据
+     */
+    private void processPositionPermissionForData(String tenantId, ItemPermission permission, boolean isPositionType,
+        PermissionData data) {
+        if (!isPositionType) {
+            return;
+        }
+
+        try {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
+            if (orgUnit instanceof Position) {
+                data.positionList.add((Position)orgUnit);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("处理岗位权限数据失败，roleId: {}", permission.getRoleId(), e);
+        }
     }
 
     /**
@@ -1061,11 +1157,10 @@ public class RoleServiceImpl implements RoleService {
     private List<ItemRoleOrgUnitModel> handleCustomGroupWithId(String tenantId, String id) {
         List<ItemRoleOrgUnitModel> allItemList = new ArrayList<>();
 
-        
-                    List<CustomGroupMember> customGroupMemberList = customGroupApi
-                        .listCustomGroupMember(tenantId, new CustomGroupMemberQuery(id, OrgTypeEnum.POSITION))
-                        .getData();
-                    if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
+        List<CustomGroupMember> customGroupMemberList =
+            customGroupApi.listCustomGroupMember(tenantId, new CustomGroupMemberQuery(id, OrgTypeEnum.POSITION))
+                .getData();
+        if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
             for (CustomGroupMember customGroupMember : customGroupMemberList) {
                 OrgUnit user =
                     orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
@@ -1186,168 +1281,319 @@ public class RoleServiceImpl implements RoleService {
     public List<ItemRoleOrgUnitModel> listPermUserByName(String name, String itemId, String processDefinitionId,
         String taskDefKey, Integer principalType, String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemPermission> list = itemPermissionService.listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId,
-            processDefinitionId, taskDefKey);
-        List<ItemRoleOrgUnitModel> allItemList = new ArrayList<>();
-        List<ItemRoleOrgUnitModel> itemList = new ArrayList<>();
-        boolean p = ItemPrincipalTypeEnum.POSITION.getValue().equals(principalType);
-        boolean d = ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType);
-        if (p || d) {
-            // 部门集合
-            List<OrgUnit> deptList = new ArrayList<>();
-            // 岗位集合
-            List<Position> positionList = new ArrayList<>();
-            for (ItemPermission o : list) {
-                // 授权角色,获取角色下所有岗位加入岗位集合
-                if (o.getRoleType() == ItemPermissionEnum.ROLE && p) {
-                    positionList.addAll(positionRoleApi.listPositionsByRoleId(tenantId, o.getRoleId()).getData());
-                }
-                // 授权岗位,加入岗位集合
-                if (o.getRoleType().equals(ItemPermissionEnum.POSITION) && p) {
-                    positionList.add((Position)orgUnitApi.getOrgUnit(tenantId, o.getRoleId()).getData());
-                }
-                // 授权部门,加入部门集合
-                if (o.getRoleType() == ItemPermissionEnum.DEPARTMENT && d) {
-                    Department dept = departmentApi.get(tenantId, o.getRoleId()).getData();
-                    if (dept != null) {
-                        deptList.add(dept);
-                    }
-                }
-                // 授权动态角色,根据动态角色种类区分
-                if (o.getRoleType() == ItemPermissionEnum.ROLE_DYNAMIC) {
-                    DynamicRole dynamicRole = dynamicRoleService.getById(o.getRoleId());
-                    List<Position> pList = new ArrayList<>();
-                    if (null == dynamicRole.getKinds() || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
-                        // 动态角色种类为【无】或null时，针对岗位或部门
-                        List<OrgUnit> orgUnitList1 = dynamicRoleMemberService
-                            .listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
-                        for (OrgUnit orgUnit : orgUnitList1) {
-                            if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                                pList.add((Position)orgUnit);
-                            } else if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                                || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
-                                deptList.add(orgUnit);
-                            }
-                        }
-                    } else {// 动态角色种类为【角色】或【部门配置分类】时，针对岗位
-                        pList = dynamicRoleMemberService.listPositionByDynamicRoleIdAndProcessInstanceId(dynamicRole,
-                            processInstanceId);
-                    }
-                    positionList.addAll(pList);
-                }
-            }
+        List<ItemPermission> permissions = itemPermissionService
+            .listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
 
-            // 遍历岗位集合
-            for (Position position : positionList) {
-                ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-                model.setId(position.getId());
-                model.setParentId(position.getParentId());
-                model.setName(position.getName());
-                model.setIsParent(false);
-                model.setOrgType(position.getOrgType().getValue());
-                model.setOrderedPath(position.getOrderedPath());
-                model.setPrincipalType(ItemPermissionEnum.POSITION);
-                model.setPerson("6:" + position.getId());
-                model.setGuidPath(position.getGuidPath());
-                if (!position.getName().contains(name)) {
-                    continue;
+        boolean isPositionType = ItemPrincipalTypeEnum.POSITION.getValue().equals(principalType);
+        boolean isDepartmentType = ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType);
+        boolean isCustomGroupType = ItemPrincipalTypeEnum.GROUP_CUSTOM.getValue().equals(principalType);
+
+        try {
+            if (isPositionType || isDepartmentType) {
+                return handlePositionAndDepartmentSearch(name, tenantId, permissions, isPositionType, isDepartmentType,
+                    processInstanceId);
+            } else if (isCustomGroupType) {
+                return handleCustomGroupSearch(name, tenantId);
+            }
+        } catch (Exception e) {
+            LOGGER.error("根据名称搜索权限用户失败", e);
+        }
+
+        return new ArrayList<>();
+    }
+
+    /**
+     * 处理岗位和部门类型的搜索
+     */
+    private List<ItemRoleOrgUnitModel> handlePositionAndDepartmentSearch(String name, String tenantId,
+        List<ItemPermission> permissions, boolean isPositionType, boolean isDepartmentType, String processInstanceId) {
+
+        PermissionData permissionData =
+            collectSearchPermissionData(tenantId, permissions, isPositionType, isDepartmentType, processInstanceId);
+
+        List<ItemRoleOrgUnitModel> result = new ArrayList<>();
+
+        // 处理岗位搜索
+        if (isPositionType) {
+            result.addAll(buildPositionSearchResult(name, permissionData.positionList));
+        }
+
+        // 处理部门搜索
+        if (isDepartmentType) {
+            result.addAll(buildDepartmentSearchResult(name, tenantId, permissionData.deptList));
+        }
+
+        return result;
+    }
+
+    /**
+     * 收集搜索所需的权限数据
+     */
+    private PermissionData collectSearchPermissionData(String tenantId, List<ItemPermission> permissions,
+        boolean isPositionType, boolean isDepartmentType, String processInstanceId) {
+
+        PermissionData permissionData = new PermissionData();
+
+        for (ItemPermission permission : permissions) {
+            switch (permission.getRoleType()) {
+                case ROLE:
+                    if (isPositionType) {
+                        collectRolePermissions(tenantId, permission, permissionData);
+                    }
+                    break;
+                case POSITION:
+                    if (isPositionType) {
+                        collectPositionPermissions(tenantId, permission, permissionData);
+                    }
+                    break;
+                case DEPARTMENT:
+                    if (isDepartmentType) {
+                        collectDepartmentPermissions(tenantId, permission, permissionData);
+                    }
+                    break;
+                case ROLE_DYNAMIC:
+                    collectDynamicRolePermissions(permission, permissionData, processInstanceId);
+                    break;
+                default:
+                    LOGGER.warn("未知的权限类型：{}", permission.getRoleType());
+                    break;
+            }
+        }
+
+        return permissionData;
+    }
+
+    /**
+     * 收集角色权限
+     */
+    private void collectRolePermissions(String tenantId, ItemPermission permission, PermissionData permissionData) {
+        try {
+            List<Position> positions =
+                positionRoleApi.listPositionsByRoleId(tenantId, permission.getRoleId()).getData();
+            permissionData.positionList.addAll(positions);
+        } catch (Exception e) {
+            LOGGER.warn("获取角色权限失败，roleId: {}", permission.getRoleId(), e);
+        }
+    }
+
+    /**
+     * 收集岗位权限
+     */
+    private void collectPositionPermissions(String tenantId, ItemPermission permission, PermissionData permissionData) {
+        try {
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, permission.getRoleId()).getData();
+            if (orgUnit instanceof Position) {
+                permissionData.positionList.add((Position)orgUnit);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取岗位权限失败，roleId: {}", permission.getRoleId(), e);
+        }
+    }
+
+    /**
+     * 收集部门权限
+     */
+    private void collectDepartmentPermissions(String tenantId, ItemPermission permission,
+        PermissionData permissionData) {
+        try {
+            Department dept = departmentApi.get(tenantId, permission.getRoleId()).getData();
+            if (dept != null) {
+                permissionData.deptList.add(dept);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取部门权限失败，roleId: {}", permission.getRoleId(), e);
+        }
+    }
+
+    /**
+     * 收集动态角色权限
+     */
+    private void collectDynamicRolePermissions(ItemPermission permission, PermissionData permissionData,
+        String processInstanceId) {
+        try {
+            DynamicRole dynamicRole = dynamicRoleService.getById(permission.getRoleId());
+            if (dynamicRole == null) {
+                return;
+            }
+            List<Position> positionList;
+            if (dynamicRole.getKinds() == null || dynamicRole.getKinds().equals(DynamicRoleKindsEnum.NONE)) {
+                // 动态角色种类为【无】或null时，针对岗位或部门
+                List<OrgUnit> orgUnitList =
+                    dynamicRoleMemberService.listByDynamicRoleIdAndProcessInstanceId(dynamicRole, processInstanceId);
+
+                for (OrgUnit orgUnit : orgUnitList) {
+                    switch (orgUnit.getOrgType()) {
+                        case POSITION:
+                            permissionData.positionList.add((Position)orgUnit);
+                            break;
+                        case DEPARTMENT:
+                        case ORGANIZATION:
+                            permissionData.deptList.add(orgUnit);
+                            break;
+                        default:
+                            LOGGER.warn("未知的组织类型：{}", orgUnit.getOrgType());
+                            break;
+                    }
                 }
-                if (itemList.contains(model)) {
-                    continue;// 去重
-                }
+            } else {
+                // 动态角色种类为【角色】或【部门配置分类】时，针对岗位
+                positionList = dynamicRoleMemberService.listPositionByDynamicRoleIdAndProcessInstanceId(dynamicRole,
+                    processInstanceId);
+                permissionData.positionList.addAll(positionList);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取动态角色权限失败，roleId: {}", permission.getRoleId(), e);
+        }
+    }
+
+    /**
+     * 构建岗位搜索结果
+     */
+    private List<ItemRoleOrgUnitModel> buildPositionSearchResult(String name, List<Position> positionList) {
+        List<ItemRoleOrgUnitModel> itemList = new ArrayList<>();
+
+        // 筛选匹配名称的岗位
+        List<Position> filteredPositions =
+            positionList.stream().filter(position -> position.getName().contains(name)).collect(Collectors.toList());
+
+        // 转换为模型对象
+        for (Position position : filteredPositions) {
+            ItemRoleOrgUnitModel model = createPositionModel(position);
+            if (!itemList.contains(model)) {
                 itemList.add(model);
             }
-            // 岗位排序
-            itemList = itemList.stream().sorted().collect(Collectors.toList());
-            // 获取父级节点,有当前parentId的节点，不再调用getParent
-            List<String> parentIdList = new ArrayList<>();
-            for (ItemRoleOrgUnitModel model : itemList) {
-                allItemList.add(model);
-                if (parentIdList.contains(model.getParentId())) {
-                    continue;
-                }
-                allItemList = getParent(allItemList, model);
+        }
+
+        // 排序
+        itemList = itemList.stream().sorted().collect(Collectors.toList());
+
+        // 获取父级节点
+        List<ItemRoleOrgUnitModel> allItemList = new ArrayList<>(itemList);
+        List<String> parentIdList = new ArrayList<>();
+
+        for (ItemRoleOrgUnitModel model : itemList) {
+            if (!parentIdList.contains(model.getParentId())) {
+                getParent(allItemList, model);
                 parentIdList.add(model.getParentId());
             }
+        }
 
-            for (OrgUnit org : deptList) {
-                List<OrgUnit> orgUnitList = new ArrayList<>(
-                    orgUnitApi.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION, org.getDn())
-                        .getData());
-                for (OrgUnit orgUnitTemp : orgUnitList) {
-                    ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-                    model.setId(orgUnitTemp.getId());
-                    model.setName(orgUnitTemp.getName());
-                    model.setOrgType(orgUnitTemp.getOrgType().getValue());
-                    model.setParentId(orgUnitTemp.getParentId());
-                    model.setGuidPath(orgUnitTemp.getGuidPath());
-                    if (orgUnitTemp.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-                        model.setIsParent(true);
-                        if (!allItemList.contains(model)) {
-                            allItemList.add(model);
-                        }
-                    } else if (orgUnitTemp.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                        model.setIsParent(false);
-                        model.setPerson("6:" + orgUnitTemp.getId());
-                        if (!allItemList.contains(model)) {
-                            allItemList.add(model);
-                        }
-                    }
-                }
-            }
-        } else if (ItemPrincipalTypeEnum.GROUP_CUSTOM.getValue().equals(principalType)) {
+        return allItemList;
+    }
+
+    /**
+     * 构建部门搜索结果
+     */
+    private List<ItemRoleOrgUnitModel> buildDepartmentSearchResult(String name, String tenantId,
+        List<OrgUnit> deptList) {
+        List<ItemRoleOrgUnitModel> result = new ArrayList<>();
+
+        for (OrgUnit org : deptList) {
             try {
-                List<CustomGroup> grouplist =
-                    customGroupApi.listCustomGroupByPersonId(tenantId, Y9LoginUserHolder.getPersonId()).getData();
-                for (CustomGroup customGroup : grouplist) {
-                    ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-                    model.setId(customGroup.getId());
-                    model.setName(customGroup.getGroupName());
-                    model.setOrgType(ItemConsts.CUSTOMGROUP_KEY);
-                    model.setParentId("");
-                    model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
-                    model.setIsParent(true);
-                    if (allItemList.contains(model)) {
-                        continue;// 去重
-                    }
-                    boolean b = false;
-                    List<CustomGroupMember> customGroupMemberList =
-                        customGroupApi
-                            .listCustomGroupMember(tenantId,
-                                new CustomGroupMemberQuery(customGroup.getId(), OrgTypeEnum.POSITION))
-                            .getData();
-                    if (null != customGroupMemberList && !customGroupMemberList.isEmpty()) {
-                        for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                            OrgUnit user =
-                                orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId())
-                                    .getData();
-                            if (user != null && user.getName().contains(name) && !user.getDisabled()) {
-                                ItemRoleOrgUnitModel model1 = new ItemRoleOrgUnitModel();
-                                model1.setId(customGroupMember.getMemberId());
-                                model1.setName(user.getName());
-                                model1.setOrgType(user.getOrgType().getValue());
-                                model1.setParentId(customGroup.getId());
-                                model1.setPerson("6:" + user.getId() + ":" + user.getParentId());
-                                model1.setPrincipalType(ItemPermissionEnum.POSITION);
-                                model1.setIsParent(false);
-                                model.setGuidPath(user.getGuidPath());
-                                if (allItemList.contains(model1)) {
-                                    continue;// 去重
-                                }
-                                allItemList.add(model1);
-                                b = true;
-                            }
-                        }
-                        if (b && !allItemList.contains(model)) {
-                            allItemList.add(model);
-                        }
+                List<OrgUnit> orgUnitList =
+                    orgUnitApi.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION, org.getDn())
+                        .getData();
+
+                for (OrgUnit orgUnitTemp : orgUnitList) {
+                    ItemRoleOrgUnitModel model = createSearchDepartmentModel(orgUnitTemp);
+                    if (model != null && !result.contains(model)) {
+                        result.add(model);
                     }
                 }
             } catch (Exception e) {
-                e.printStackTrace();
+                LOGGER.warn("搜索部门失败", e);
             }
         }
-        return allItemList;
+
+        return result;
+    }
+
+    /**
+     * 创建搜索用的部门模型
+     */
+    private ItemRoleOrgUnitModel createSearchDepartmentModel(OrgUnit orgUnit) {
+        // 过滤不需要的组织类型
+        if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON) || orgUnit.getOrgType().equals(OrgTypeEnum.GROUP)) {
+            return null;
+        }
+
+        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+        model.setId(orgUnit.getId());
+        model.setName(orgUnit.getName());
+        model.setOrgType(orgUnit.getOrgType().getValue());
+        model.setParentId(orgUnit.getParentId());
+        model.setGuidPath(orgUnit.getGuidPath());
+
+        if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+            || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
+            model.setIsParent(true);
+        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+            model.setPerson("6:" + orgUnit.getId());
+            model.setIsParent(false);
+        }
+
+        return model;
+    }
+
+    /**
+     * 处理自定义组搜索
+     */
+    private List<ItemRoleOrgUnitModel> handleCustomGroupSearch(String name, String tenantId) {
+        List<ItemRoleOrgUnitModel> result = new ArrayList<>();
+
+        try {
+            List<CustomGroup> groupList =
+                customGroupApi.listCustomGroupByPersonId(tenantId, Y9LoginUserHolder.getPersonId()).getData();
+
+            for (CustomGroup customGroup : groupList) {
+                boolean hasMatchingMember = processCustomGroupMembers(result, tenantId, customGroup, name);
+
+                // 如果有匹配的成员且组模型不在列表中，则添加组模型
+                ItemRoleOrgUnitModel groupModel = createCustomGroupModel(customGroup);
+                if (hasMatchingMember && !result.contains(groupModel)) {
+                    result.add(groupModel);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("自定义组搜索失败", e);
+        }
+
+        return result;
+    }
+
+    /**
+     * 处理自定义组成员
+     */
+    private boolean processCustomGroupMembers(List<ItemRoleOrgUnitModel> result, String tenantId,
+        CustomGroup customGroup, String name) {
+        boolean hasMatchingMember = false;
+
+        try {
+            List<CustomGroupMember> customGroupMemberList = customGroupApi
+                .listCustomGroupMember(tenantId, new CustomGroupMemberQuery(customGroup.getId(), OrgTypeEnum.POSITION))
+                .getData();
+
+            if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
+                for (CustomGroupMember customGroupMember : customGroupMemberList) {
+                    OrgUnit user =
+                        orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+
+                    if (user != null && user.getName().contains(name) && !user.getDisabled()) {
+                        ItemRoleOrgUnitModel memberModel =
+                            createCustomGroupMemberModel(user, customGroupMember, customGroup.getId());
+
+                        if (!result.contains(memberModel)) {
+                            result.add(memberModel);
+                            hasMatchingMember = true;
+                        }
+                    }
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("处理自定义组成员失败", e);
+        }
+
+        return hasMatchingMember;
     }
 
     @Override

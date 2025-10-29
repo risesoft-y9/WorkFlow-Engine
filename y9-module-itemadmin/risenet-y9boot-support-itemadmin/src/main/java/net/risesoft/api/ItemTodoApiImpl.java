@@ -51,6 +51,11 @@ public class ItemTodoApiImpl implements ItemTodoApi {
 
     private static final String COMMON_SQL = "SELECT T.* FROM FF_ACT_RU_DETAIL T ";
     private static final String NUMBER_SQL = "numberSql";
+    private static final String WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL =
+        " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? ";
+    private static final String ORDER_CREATETIME_SQL = " ORDER BY T.CREATETIME DESC";
+    private static final String SELECT_FF_ACT_RU_DETAIL_SQL = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T ";
+    private static final String AND_PROCESSSERIALNUMBER_NOT_IN_SQL = " AND T.PROCESSSERIALNUMBER NOT IN (";
     private final ItemPageService itemPageService;
     private final ActRuDetailService actRuDetailService;
     private final Y9TableService y9TableService;
@@ -222,12 +227,10 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         params.add(userId);
         // 构建搜索条件
         buildSearchConditions(searchMap, assigneeNameSql, signSql, params);
-        String sql =
-            COMMON_SQL + innerSql + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?"
-                + whereSql + assigneeNameSql + signSql + " ORDER BY T.CREATETIME DESC";
-        String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
-            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
-            + assigneeNameSql + signSql;
+        String sql = COMMON_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL + whereSql + assigneeNameSql
+            + signSql + ORDER_CREATETIME_SQL;
+        String countSql = SELECT_FF_ACT_RU_DETAIL_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL
+            + whereSql + assigneeNameSql + signSql;
 
         Object[] args = params.toArray();
         ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
@@ -258,9 +261,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         }
         StringBuilder taskDefKeySql = new StringBuilder();
         buildTaskDefKeyCondition(taskDefKey, taskDefKeySql, params);
-        String sql =
-            COMMON_SQL + innerSql + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?"
-                + whereSql + assigneeNameSql + signSql + taskDefKeySql + " ORDER BY T.CREATETIME DESC";
+        String sql = COMMON_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL + whereSql + assigneeNameSql
+            + signSql + taskDefKeySql + ORDER_CREATETIME_SQL;
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, params.toArray(), new BeanPropertyRowMapper<>(ActRuDetailModel.class));
         return Y9Result.success(content);
@@ -322,14 +324,10 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             innerSql = "INNER JOIN Y9_FORM_FW FW ON T.PROCESSSERIALNUMBER = FW.GUID";
         }
         // 使用参数化查询防止SQL注入
-        String sql =
-            COMMON_SQL + innerSql + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?"
-                + whereSql + assigneeNameSql + signSql + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql
-                + ") ORDER BY T.CREATETIME DESC";
-
-        String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
-            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
-            + assigneeNameSql + signSql + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql + ")";
+        String sql = COMMON_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL + whereSql + assigneeNameSql
+            + signSql + AND_PROCESSSERIALNUMBER_NOT_IN_SQL + numberSql + ") ORDER BY T.CREATETIME DESC";
+        String countSql = SELECT_FF_ACT_RU_DETAIL_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL
+            + whereSql + assigneeNameSql + signSql + AND_PROCESSSERIALNUMBER_NOT_IN_SQL + numberSql + ")";
 
         Object[] args = params.toArray();
         ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
@@ -386,10 +384,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         if (StringUtils.isBlank(innerSql)) {
             innerSql = "INNER JOIN Y9_FORM_FW FW ON T.PROCESSSERIALNUMBER = FW.GUID";
         }
-        String sql =
-            COMMON_SQL + innerSql + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?"
-                + whereSql + assigneeNameSql + signSql + COMMON_SQL + " AND T.PROCESSSERIALNUMBER NOT IN (" + numberSql
-                + ")  ORDER BY T.CREATETIME DESC";
+        String sql = COMMON_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL + whereSql + assigneeNameSql
+            + signSql + COMMON_SQL + AND_PROCESSSERIALNUMBER_NOT_IN_SQL + numberSql + ")  ORDER BY T.CREATETIME DESC";
 
         Object[] args = params.toArray();
         List<ActRuDetailModel> content = jdbcTemplate.queryForList(sql, ActRuDetailModel.class, args);
@@ -429,12 +425,10 @@ public class ItemTodoApiImpl implements ItemTodoApi {
             taskDefKeySql.append(" AND T.taskDefKey=?");
             params.add(taskDefKey);
         }
-        String sql =
-            COMMON_SQL + innerSql + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?"
-                + whereSql + assigneeNameSql + signSql + taskDefKeySql + " ORDER BY T.CREATETIME DESC";
-        String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql
-            + " WHERE T.DELETED = FALSE AND T.STATUS = 0 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ?" + whereSql
-            + assigneeNameSql + signSql + taskDefKeySql;
+        String sql = COMMON_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL + whereSql + assigneeNameSql
+            + signSql + taskDefKeySql + ORDER_CREATETIME_SQL;
+        String countSql = SELECT_FF_ACT_RU_DETAIL_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL
+            + whereSql + assigneeNameSql + signSql + taskDefKeySql;
         Object[] args = params.toArray();
         ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);

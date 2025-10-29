@@ -192,44 +192,90 @@ public class VariableVueController {
     public Y9Result<String> saveProcessVariable(@RequestParam String type, @RequestParam String processInstanceId,
         @RequestParam String key, @RequestParam(required = false) String value) {
         String tenantId = Y9LoginUserHolder.getTenantId();
+        // 检查变量是否已存在
+        Y9Result<String> checkResult = checkVariableExists(type, processInstanceId, key);
+        if (checkResult != null) {
+            return checkResult;
+        }
+
+        // 根据变量类型处理不同的保存逻辑
+        try {
+            if (SysVariables.USERS.equals(key)) {
+                return handleUsersVariable(processInstanceId, key, value, tenantId);
+            } else if (SysVariables.USER.equals(key) || SysVariables.TASK_SENDER_ID.equals(key)) {
+                return handleUserVariable(processInstanceId, key, value, tenantId);
+            } else {
+                runtimeService.setVariable(processInstanceId, key, value);
+                return Y9Result.successMsg("保存成功");
+            }
+        } catch (Exception e) {
+            return Y9Result.failure("保存流程变量失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 检查变量是否已存在
+     */
+    private Y9Result<String> checkVariableExists(String type, String processInstanceId, String key) {
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
             Object obj = runtimeService.getVariable(processInstanceId, key);
             if (null != obj) {
                 return Y9Result.failure(key + "对应的流程变量已存在。");
             }
         }
-        if (SysVariables.USERS.equals(key)) {
-            String userTemp = "";
-            List<String> userList = new ArrayList<>();
-            String[] users = value.split(",");
-            for (String user : users) {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
-                if (null != orgUnit && null != orgUnit.getId()) {
-                    userList.add(user);
+        return null;
+    }
+
+    /**
+     * 处理 USERS 类型变量
+     */
+    private Y9Result<String> handleUsersVariable(String processInstanceId, String key, String value, String tenantId) {
+        if (StringUtils.isBlank(value)) {
+            runtimeService.setVariable(processInstanceId, key, new ArrayList<String>());
+            return Y9Result.successMsg("保存成功");
+        }
+        String invalidUsers = "";
+        List<String> userList = new ArrayList<>();
+        String[] users = value.split(",");
+
+        for (String user : users) {
+            if (StringUtils.isBlank(user)) {
+                continue;
+            }
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
+            if (orgUnit != null && orgUnit.getId() != null) {
+                userList.add(user);
+            } else {
+                if (StringUtils.isBlank(invalidUsers)) {
+                    invalidUsers = user;
                 } else {
-                    if (StringUtils.isBlank(userTemp)) {
-                        userTemp = user;
-                    } else {
-                        userTemp += "," + user;
-                    }
+                    invalidUsers += "," + user;
                 }
             }
-            if (StringUtils.isBlank(userTemp)) {
-                runtimeService.setVariable(processInstanceId, key, userList);
-            } else {
-                return Y9Result.failure(key + "中[" + userTemp + "]对应的办理人员不存在。");
-            }
-        } else if (SysVariables.USER.equals(key) || SysVariables.TASK_SENDER_ID.equals(key)) {
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
-            if (null != orgUnit && null != orgUnit.getId()) {
-                runtimeService.setVariable(processInstanceId, key, value);
-            } else {
-                return Y9Result.failure(key + "[" + value + "]对应的人员数据不存在。");
-            }
-        } else {
-            runtimeService.setVariable(processInstanceId, key, value);
         }
+        if (StringUtils.isNotBlank(invalidUsers)) {
+            return Y9Result.failure(key + "中[" + invalidUsers + "]对应的办理人员不存在。");
+        }
+        runtimeService.setVariable(processInstanceId, key, userList);
         return Y9Result.successMsg("保存成功");
+    }
+
+    /**
+     * 处理 USER 或 TASK_SENDER_ID 类型变量
+     */
+    private Y9Result<String> handleUserVariable(String processInstanceId, String key, String value, String tenantId) {
+        if (StringUtils.isBlank(value)) {
+            runtimeService.setVariable(processInstanceId, key, value);
+            return Y9Result.successMsg("保存成功");
+        }
+
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
+        if (orgUnit != null && orgUnit.getId() != null) {
+            runtimeService.setVariable(processInstanceId, key, value);
+            return Y9Result.successMsg("保存成功");
+        } else {
+            return Y9Result.failure(key + "[" + value + "]对应的人员数据不存在。");
+        }
     }
 
     /**
@@ -245,44 +291,90 @@ public class VariableVueController {
     public Y9Result<String> saveTaskVariable(@RequestParam String type, @RequestParam String taskId,
         @RequestParam String key, @RequestParam(required = false) String value) {
         String tenantId = Y9LoginUserHolder.getTenantId();
+
+        // 检查变量是否已存在
+        Y9Result<String> checkResult = checkTaskVariableExists(type, taskId, key);
+        if (checkResult != null) {
+            return checkResult;
+        }
+
+        // 根据变量类型处理不同的保存逻辑
+        try {
+            if (SysVariables.USERS.equals(key)) {
+                return handleTaskUsersVariable(taskId, key, value, tenantId);
+            } else if (SysVariables.USER.equals(key) || SysVariables.TASK_SENDER_ID.equals(key)) {
+                return handleTaskUserVariable(taskId, key, value, tenantId);
+            } else {
+                customVariableService.setVariableLocal(taskId, key, value);
+                return Y9Result.successMsg("保存成功");
+            }
+        } catch (Exception e) {
+            return Y9Result.failure("保存任务变量失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 检查任务变量是否已存在
+     */
+    private Y9Result<String> checkTaskVariableExists(String type, String taskId, String key) {
         if (ItemBoxTypeEnum.ADD.getValue().equals(type)) {
             Object obj = customVariableService.getVariableLocal(taskId, key);
             if (null != obj) {
                 return Y9Result.failure(key + "对应的任务变量已存在。");
             }
         }
-        if (SysVariables.USERS.equals(key)) {
-            String userTemp = "";
-            List<String> userList = new ArrayList<>();
-            String[] users = value.split(",");
-            for (String user : users) {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
-                if (null != orgUnit && null != orgUnit.getId()) {
-                    userList.add(user);
+        return null;
+    }
+
+    /**
+     * 处理任务 USERS 类型变量
+     */
+    private Y9Result<String> handleTaskUsersVariable(String taskId, String key, String value, String tenantId) {
+        if (StringUtils.isBlank(value)) {
+            customVariableService.setVariableLocal(taskId, key, new ArrayList<String>());
+            return Y9Result.successMsg("保存成功");
+        }
+        String invalidUsers = "";
+        List<String> userList = new ArrayList<>();
+        String[] users = value.split(",");
+        for (String user : users) {
+            if (StringUtils.isBlank(user)) {
+                continue;
+            }
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
+            if (orgUnit != null && orgUnit.getId() != null) {
+                userList.add(user);
+            } else {
+                if (StringUtils.isBlank(invalidUsers)) {
+                    invalidUsers = user;
                 } else {
-                    if (StringUtils.isBlank(userTemp)) {
-                        userTemp = user;
-                    } else {
-                        userTemp += "," + user;
-                    }
+                    invalidUsers += "," + user;
                 }
             }
-            if (StringUtils.isBlank(userTemp)) {
-                customVariableService.setVariableLocal(taskId, key, userList);
-            } else {
-                return Y9Result.failure(key + "中[" + userTemp + "]对应的办理人员数据不存在。");
-            }
-        } else if (SysVariables.USER.equals(key) || SysVariables.TASK_SENDER_ID.equals(key)) {
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
-            if (null != orgUnit && null != orgUnit.getId()) {
-                customVariableService.setVariableLocal(taskId, key, value);
-            } else {
-                return Y9Result.failure(key + "[" + value + "]对应的人员不存在。");
-            }
-        } else {
-            customVariableService.setVariableLocal(taskId, key, value);
         }
+        if (StringUtils.isNotBlank(invalidUsers)) {
+            return Y9Result.failure(key + "中[" + invalidUsers + "]对应的办理人员数据不存在。");
+        }
+        customVariableService.setVariableLocal(taskId, key, userList);
         return Y9Result.successMsg("保存成功");
+    }
+
+    /**
+     * 处理任务 USER 或 TASK_SENDER_ID 类型变量
+     */
+    private Y9Result<String> handleTaskUserVariable(String taskId, String key, String value, String tenantId) {
+        if (StringUtils.isBlank(value)) {
+            customVariableService.setVariableLocal(taskId, key, value);
+            return Y9Result.successMsg("保存成功");
+        }
+
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
+        if (orgUnit != null && orgUnit.getId() != null) {
+            customVariableService.setVariableLocal(taskId, key, value);
+            return Y9Result.successMsg("保存成功");
+        } else {
+            return Y9Result.failure(key + "[" + value + "]对应的人员不存在。");
+        }
     }
 
     /**

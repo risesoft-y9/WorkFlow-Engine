@@ -11,8 +11,6 @@ import javax.sql.DataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.fasterxml.jackson.databind.type.TypeFactory;
-
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -127,80 +125,48 @@ public class DdlMysql {
         }
     }
 
-    public void alterTableColumn(DataSource dataSource, String tableName, String jsonDbColumns) throws Exception {
-        if (!DbMetaDataUtil.checkTableExist(dataSource, tableName)) {
-            throw new Exception("数据库中不存在这个表：" + tableName);
-        }
-        DbColumn[] dbColumnArr = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
-            TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
-        for (DbColumn dbc : dbColumnArr) {
-            String ddl = ALTER_TABLE_KEY + tableName;
-            // 字段名称没有改变
-            if (dbc.getColumnName().equalsIgnoreCase(dbc.getColumnNameOld())) {
-                ddl += " MODIFY COLUMN " + dbc.getColumnName() + " ";
-            } else {
-                ddl += " CHANGE COLUMN " + dbc.getColumnNameOld() + " " + dbc.getColumnName() + " ";
-            }
-            String sType = dbc.getTypeName().toUpperCase();
-            if ("CHAR".equals(sType) || VARCHAR_KEY.equals(sType)) {
-                ddl += sType + "(" + dbc.getDataLength() + ")";
-            } else if (DECIMAL_KEY.equals(sType) || NUMERIC_KEY.equals(sType)) {
-                if (dbc.getDataScale() == null) {
-                    ddl += sType + "(" + dbc.getDataLength() + ")";
-                } else {
-                    ddl += sType + "(" + dbc.getDataLength() + "," + dbc.getDataScale() + ")";
-                }
-            } else {
-                ddl += sType;
-            }
-
-            if (dbc.getNullable()) {
-                ddl += " DEFAULT NULL";
-            } else {
-                ddl += NOT_NULL_KEY;
-            }
-            if (!dbc.getComment().isEmpty()) {
-                ddl += COMMENT_KEY + dbc.getComment() + "'";
-            }
-            DbMetaDataUtil.executeDdl(dataSource, ddl);
-        }
-    }
-
     public void createTable(DataSource dataSource, String tableName, String jsonDbColumns) throws Exception {
         List<DbColumn> dbColumnList = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
             Y9JsonUtil.objectMapper.getTypeFactory().constructCollectionType(ArrayList.class, DbColumn.class));
+
+        String createTableSql = buildCreateTableSql(tableName, dbColumnList);
+        DbMetaDataUtil.executeDdl(dataSource, createTableSql);
+    }
+
+    /**
+     * 构建创建表的SQL语句
+     */
+    private String buildCreateTableSql(String tableName, List<DbColumn> dbColumnList) {
         StringBuilder sb = new StringBuilder();
-        //@formatter:off
         sb.append("CREATE TABLE ").append(tableName).append(" (\r\n").append("guid varchar(38) NOT NULL, \r\n");
-        //@formatter:off
+
         for (DbColumn dbc : dbColumnList) {
-            String columnName = dbc.getColumnName();
-            if ("guid".equalsIgnoreCase(columnName) || "processInstanceId".equalsIgnoreCase(columnName)) {
+            if (shouldSkipColumn(dbc.getColumnName())) {
                 continue;
             }
-            sb.append(columnName).append(" ");
-            String sType = dbc.getTypeName().toUpperCase();
-            if ("CHAR".equals(sType) || VARCHAR_KEY.equals(sType)) {
-                sb.append(sType).append("(").append(dbc.getDataLength()).append(")");
-            } else if (DECIMAL_KEY.equals(sType) || NUMERIC_KEY.equals(sType)) {
-                if (dbc.getDataScale() == null) {
-                    sb.append(sType).append("(").append(dbc.getDataLength()).append(")");
-                } else {
-                    sb.append(sType).append("(").append(dbc.getDataLength()).append(",").append(dbc.getDataScale()).append(")");
-                }
-            } else {
-                sb.append(sType);
-            }
-            if (!dbc.getNullable()) {
-                sb.append(NOT_NULL_KEY);
-            }
-            if (!dbc.getComment().isEmpty()) {
-                sb.append(COMMENT_KEY).append(dbc.getComment()).append("'");
-            }
+
+            appendColumnDefinition(sb, dbc);
             sb.append(",\r\n");
         }
+
         sb.append("PRIMARY KEY (guid) \r\n").append(")");
-        DbMetaDataUtil.executeDdl(dataSource, sb.toString());
+        return sb.toString();
+    }
+
+    /**
+     * 添加列定义
+     */
+    private void appendColumnDefinition(StringBuilder sb, DbColumn dbc) {
+        sb.append(dbc.getColumnName()).append(" ");
+        appendColumnType(sb, dbc);
+
+        if (!dbc.getNullable()) {
+            sb.append(NOT_NULL_KEY);
+        }
+
+        if (!dbc.getComment().isEmpty()) {
+            sb.append(COMMENT_KEY).append(dbc.getComment()).append("'");
+        }
     }
 
     public void dropTable(DataSource dataSource, String tableName) throws Exception {

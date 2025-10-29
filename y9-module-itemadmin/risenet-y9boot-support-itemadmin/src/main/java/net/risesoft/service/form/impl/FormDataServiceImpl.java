@@ -63,6 +63,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class FormDataServiceImpl implements FormDataService {
 
     private static final String FORM_ID_KEY = "form_Id";
+    private static final String SELECT_KEY = "SELECT * FROM ";
     private final JdbcTemplate jdbcTemplate;
     private final ItemService itemService;
     private final Y9FormItemBindService y9FormItemBindService;
@@ -162,8 +163,8 @@ public class FormDataServiceImpl implements FormDataService {
         Y9Table y9Table = y9TableService.findByTableName(tableName);
         if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN)) {
             try {
-                Map<String, Object> map = jdbcTemplate.queryForMap(
-                    "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?", sourceProcessSerialNumber);
+                Map<String, Object> map = jdbcTemplate
+                    .queryForMap(SELECT_KEY + tableName.toUpperCase() + " WHERE GUID=?", sourceProcessSerialNumber);
                 StringBuilder columnSql = new StringBuilder();
                 map.entrySet()
                     .stream()
@@ -235,7 +236,7 @@ public class FormDataServiceImpl implements FormDataService {
                 for (String tableName : tableNameList) {
                     Y9Table y9Table = y9TableService.findByTableName(tableName);
                     if (y9Table != null && y9Table.getTableType().equals(ItemTableTypeEnum.MAIN)) {
-                        String sql = "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID=?";
+                        String sql = SELECT_KEY + tableName.toUpperCase() + " WHERE GUID=?";
                         List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, processSerialNumber);
                         if (!list.isEmpty()) {
                             retMap.putAll(list.get(0));
@@ -270,8 +271,7 @@ public class FormDataServiceImpl implements FormDataService {
                     Y9Table y9Table = y9TableService.findByTableName(tableName);
                     if (y9Table.getTableType().equals(ItemTableTypeEnum.MAIN)) {
                         String placeholders = String.join(",", Collections.nCopies(processSerialNumbers.size(), "?"));
-                        String sql =
-                            "SELECT * FROM " + tableName.toUpperCase() + " WHERE GUID IN (" + placeholders + ")";
+                        String sql = SELECT_KEY + tableName.toUpperCase() + " WHERE GUID IN (" + placeholders + ")";
                         List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, processSerialNumbers.toArray());
                         mapList.addAll(list);
                     }
@@ -333,7 +333,7 @@ public class FormDataServiceImpl implements FormDataService {
             LOGGER.error("表简称[{}]对应的字段不存在", tableAlias);
             return Y9Result.failure("表简称[" + tableAlias + "]对应的字段不存在");
         }
-        String selectSql = "SELECT * FROM " + y9Table.getTableName() + " WHERE GUID = ?";
+        String selectSql = SELECT_KEY + y9Table.getTableName() + " WHERE GUID = ?";
         List<Map<String, Object>> list = jdbcTemplate.queryForList(selectSql, guid);
         return Y9Result.success(!list.isEmpty() ? list.get(0) : null);
     }
@@ -427,7 +427,7 @@ public class FormDataServiceImpl implements FormDataService {
             }
             // 检查主键是否已存在
             List<Map<String, Object>> list =
-                jdbcTemplate.queryForList("SELECT * FROM " + tableName + " WHERE GUID = ?", guid);
+                jdbcTemplate.queryForList(SELECT_KEY + tableName + " WHERE GUID = ?", guid);
             if (!list.isEmpty()) {
                 return Y9Result.failure("主键已存在：{}", guid);
             }

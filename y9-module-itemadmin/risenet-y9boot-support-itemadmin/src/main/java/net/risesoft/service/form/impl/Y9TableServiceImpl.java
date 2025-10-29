@@ -54,6 +54,8 @@ import net.risesoft.y9.sqlddl.pojo.DbColumn;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class Y9TableServiceImpl implements Y9TableService {
 
+    private static final String AND = " AND ";
+
     private final JdbcTemplate jdbcTemplate4Tenant;
 
     private final Y9TableRepository y9TableRepository;
@@ -287,11 +289,12 @@ public class Y9TableServiceImpl implements Y9TableService {
     private void handleDeadlineCondition(String key, Map<String, Object> searchMap, SqlBuilderContext context) {
         int days = Integer.parseInt(searchMap.get(key).toString());
         List<String> startEnd = itemWorkDayService.getDb(days);
-        context.whereSql.append(" AND ")
+        context.whereSql.append(AND)
             .append(key.toUpperCase())
             .append(" >='")
             .append(startEnd.get(0))
-            .append("' AND ")
+            .append("'")
+            .append(AND)
             .append(key.toUpperCase())
             .append(" <='")
             .append(startEnd.get(1))
@@ -304,9 +307,10 @@ public class Y9TableServiceImpl implements Y9TableService {
     private void handleLikeCondition(String key, Map<String, Object> searchMap, SqlBuilderContext context) {
         Object value = searchMap.get(key);
         if (value != null && StringUtils.isNotBlank(value.toString())) {
-            context.whereSql.append(" AND ").append(key.toUpperCase()).append(" LIKE '%").append(value).append("%'");
+            context.whereSql.append(AND).append(key.toUpperCase()).append(" LIKE '%").append(value).append("%'");
         } else {
-            context.whereSql.append(" AND (")
+            context.whereSql.append(AND)
+                .append("(")
                 .append(key.toUpperCase())
                 .append("= '' OR ")
                 .append(key.toUpperCase())
@@ -322,7 +326,7 @@ public class Y9TableServiceImpl implements Y9TableService {
         String aliasColumnName = aliasColumnNameType[0] + "." + aliasColumnNameType[1];
         String type = aliasColumnNameType[2];
         if ("equal".equals(type)) {
-            context.whereSql.append(" AND ")
+            context.whereSql.append(AND)
                 .append(aliasColumnName.toUpperCase())
                 .append("='")
                 .append(searchMap.get(key).toString())
@@ -339,11 +343,12 @@ public class Y9TableServiceImpl implements Y9TableService {
         SqlBuilderContext context) {
         @SuppressWarnings("unchecked")
         ArrayList<String> list = (ArrayList<String>)searchMap.get(aliasColumnName);
-        context.whereSql.append(" AND ")
+        context.whereSql.append(AND)
             .append(aliasColumnName.toUpperCase())
             .append(" >='")
             .append(list.get(0))
-            .append("' AND ")
+            .append("'")
+            .append(AND)
             .append(aliasColumnName.toUpperCase())
             .append(" <='")
             .append(list.get(1))
@@ -355,7 +360,7 @@ public class Y9TableServiceImpl implements Y9TableService {
      */
     private void handleProcessCondition(String key, Map<String, Object> searchMap, SqlBuilderContext context) {
         if ("ended".equals(key)) {
-            context.whereSql.append(" AND ")
+            context.whereSql.append(AND)
                 .append("T.")
                 .append(key.toUpperCase())
                 .append("=")
@@ -363,12 +368,14 @@ public class Y9TableServiceImpl implements Y9TableService {
         } else if ("assigneeName".equals(key)) {
             context.assigneeNameInnerSql
                 .append(" JOIN FF_ACT_RU_DETAIL TT ON T.PROCESSSERIALNUMBER = TT.PROCESSSERIALNUMBER");
-            context.assigneeNameWhereSql.append(" AND INSTR(TT.")
+            context.assigneeNameWhereSql.append(AND)
+                .append("INSTR(TT.")
                 .append(key.toUpperCase())
                 .append(",'")
                 .append(searchMap.get(key).toString())
                 .append("') > 0 ")
-                .append(" AND TT.STATUS = 0 ");
+                .append(AND)
+                .append("TT.STATUS = 0 ");
         }
     }
 
@@ -586,17 +593,13 @@ public class Y9TableServiceImpl implements Y9TableService {
                     List<String> ids = new ArrayList<>();
                     List<Y9TableField> list = y9TableFieldRepository.findByTableIdOrderByDisplayOrderAsc(tableId);
                     List<DbColumn> dbColumnList = self.saveField(tableId, tableName, listMap, ids);
-                    /*
-                     * 删除页面上已删除的字段
-                     */
+                    // 删除页面上已删除的字段
                     for (Y9TableField y9TableField : list) {
                         if (!ids.contains(y9TableField.getId())) {
                             y9TableFieldRepository.delete(y9TableField);
                         }
                     }
-                    /*
-                     * 修改表结构
-                     */
+                    // 修改表结构
                     boolean isSave = "save".equals(type);
                     if (!isSave) {
                         return tableManagerService.addFieldToTable(saveTable, dbColumnList);
