@@ -243,42 +243,61 @@ public class DdlOracle {
     }
 
     public void createTable(DataSource dataSource, String tableName, String jsonDbColumns) throws Exception {
-        StringBuilder sb = new StringBuilder();
-        DbColumn[] dbcs = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
+        DbColumn[] dbColumns = Y9JsonUtil.objectMapper.readValue(jsonDbColumns,
             TypeFactory.defaultInstance().constructArrayType(DbColumn.class));
-        //@formatter:off
+
+        // 创建表结构
+        String createTableSql = buildCreateTableSql(tableName, dbColumns);
+        DbMetaDataUtil.executeDdl(dataSource, createTableSql);
+
+        // 添加列注释
+        addColumnComments(dataSource, tableName, dbColumns);
+    }
+
+    /**
+     * 构建创建表的SQL语句
+     */
+    private String buildCreateTableSql(String tableName, DbColumn[] dbColumns) {
+        StringBuilder sb = new StringBuilder();
         sb.append("CREATE TABLE \"").append(tableName).append("\" (\r\n").append("GUID varchar2(38) NOT NULL, \r\n");
-        //@formatter:off
-        for (DbColumn dbc : dbcs) {
-            String columnName = dbc.getColumnName();
-            if ("GUID".equalsIgnoreCase(columnName) || "PROCESSINSTANCEID".equalsIgnoreCase(columnName)) {
+
+        // 添加各列定义
+        for (DbColumn dbc : dbColumns) {
+            if (shouldSkipColumn(dbc.getColumnName())) {
                 continue;
             }
-            sb.append(columnName).append(" ");
-            String sType = dbc.getTypeName().toUpperCase();
-            if ("CHAR".equals(sType) || "NCHAR".equals(sType) || "VARCHAR2".equals(sType) || "NVARCHAR2".equals(sType) || "RAW".equals(sType)) {
-                sb.append(sType).append("(").append(dbc.getDataLength()).append(")");
-            } else if ("DECIMAL".equalsIgnoreCase(sType) || "NUMERIC".equalsIgnoreCase(sType) || "NUMBER".equalsIgnoreCase(sType)) {
-                if (dbc.getDataScale() == null) {
-                    sb.append(sType).append("(").append(dbc.getDataLength()).append(")");
-                } else {
-                    sb.append(sType).append("(").append(dbc.getDataLength()).append(",").append(dbc.getDataScale()).append(")");
-                }
-            } else {
-                sb.append(sType);
-            }
 
-            if (!dbc.getNullable()) {
-                sb.append(NOT_NULL_KEY);
-            }
+            appendColumnDefinition(sb, dbc);
             sb.append(",\r\n");
         }
-        sb.append("PRIMARY KEY (GUID) \r\n").append(")");
-        DbMetaDataUtil.executeDdl(dataSource, sb.toString());
 
-        for (DbColumn dbc : dbcs) {
+        // 添加主键约束
+        sb.append("PRIMARY KEY (GUID) \r\n").append(")");
+
+        return sb.toString();
+    }
+
+    /**
+     * 添加列定义
+     */
+    private void appendColumnDefinition(StringBuilder sb, DbColumn dbc) {
+        sb.append(dbc.getColumnName()).append(" ");
+        appendColumnType(sb, dbc);
+
+        if (!dbc.getNullable()) {
+            sb.append(NOT_NULL_KEY);
+        }
+    }
+
+    /**
+     * 添加列注释
+     */
+    private void addColumnComments(DataSource dataSource, String tableName, DbColumn[] dbColumns) throws Exception {
+        for (DbColumn dbc : dbColumns) {
             if (StringUtils.hasText(dbc.getComment())) {
-                DbMetaDataUtil.executeDdl(dataSource, COMMENT_ON_KEY + tableName + "\"." + dbc.getColumnName().trim().toUpperCase() + IS_KEY + dbc.getComment() + "'");
+                String commentSql = COMMENT_ON_KEY + tableName + "\"." + dbc.getColumnName().trim().toUpperCase()
+                    + IS_KEY + dbc.getComment() + "'";
+                DbMetaDataUtil.executeDdl(dataSource, commentSql);
             }
         }
     }

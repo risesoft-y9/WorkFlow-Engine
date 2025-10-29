@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -26,13 +27,13 @@ import net.risesoft.repository.receive.ReceiveDepartmentRepository;
 import net.risesoft.repository.receive.ReceivePersonRepository;
 import net.risesoft.service.ReceiveDeptAndPersonService;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.util.Y9Util;
 
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -63,7 +64,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
             return Y9Result.successMsg("取消成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("取消失败:id:{}", id, e);
             return Y9Result.failure("取消失败");
         }
     }
@@ -75,7 +76,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
             receivePersonRepository.deleteById(id);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除失败:id:{}", id, e);
             return Y9Result.failure("删除失败");
         }
     }
@@ -88,9 +89,9 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     /**
      * 获取上一parentId
      *
-     * @param deptId
-     * @param list
-     * @return
+     * @param deptId 部门id
+     * @param list 父级部门信息
+     * @return 父级部门信息
      */
     public List<Object> getParentId(String deptId, List<Object> list) {
         ReceiveDepartment receiveDept = receiveDepartmentRepository.findByDeptId(deptId);
@@ -163,7 +164,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
             return Y9Result.successMsg("设置成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("设置失败:id:{}", id, e);
             return Y9Result.failure("设置失败");
         }
     }
@@ -191,7 +192,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
             }
             return Y9Result.successMsg("保存排序成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存排序失败");
             return Y9Result.failure("保存排序失败");
         }
     }
@@ -200,119 +201,192 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
     @Transactional
     public Y9Result<String> savePosition(String deptId, String ids) {
         try {
-            String[] id = ids.split(",");
-            StringBuilder msg = new StringBuilder();
-            String idsTemp = "";
+            if (StringUtils.isBlank(ids)) {
+                return Y9Result.successMsg("保存成功");
+            }
+
+            String[] userIds = ids.split(",");
             String tenantId = Y9LoginUserHolder.getTenantId();
             Department dept = departmentApi.get(tenantId, deptId).getData();
-            for (String userId : id) {
-                OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-                List<ReceivePerson> list = receivePersonRepository.findByPersonId(userId);
-                if (list != null && !list.isEmpty()) {
-                    boolean isAdd = true;
-                    for (ReceivePerson receivePerson : list) {
-                        OrgUnit orgUnit =
-                            orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), receivePerson.getDeptId()).getData();
-                        OrgUnit orgUnit1 = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), deptId).getData();
-                        // 委办局相同，且部门不相同则，不可添加该收文员
-                        if (orgUnit.getId().equals(orgUnit1.getId()) && !receivePerson.getDeptId().equals(deptId)) {
-                            isAdd = false;
-                            // 同一个委办局，不能设置一个人为两个单位的收文员
-                            OrgUnit person =
-                                orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), userId)
-                                    .getData();
-                            msg.append("[")
-                                .append(person.getName())
-                                .append("已是")
-                                .append(receivePerson.getDeptName())
-                                .append("部门的收发员]<br>");
-                        }
-                    }
-                    if (isAdd) {
-                        idsTemp = Y9Util.genCustomStr(idsTemp, userId);
-                        ReceivePerson receivePerson = receivePersonRepository.findByPersonIdAndDeptId(userId, deptId);
-                        if (receivePerson == null) {
-                            receivePerson = new ReceivePerson();
-                            receivePerson.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                            receivePerson.setReceive(true);
-                            receivePerson.setSend(true);
-                        }
-                        receivePerson.setCreateDate(new Date());
-                        receivePerson.setDeptId(deptId);
-                        receivePerson.setPersonId(userId);
-                        receivePerson.setDeptName(dept.getName());
-                        receivePerson.setPersonDeptId(user.getParentId());
-                        receivePersonRepository.save(receivePerson);
-                    }
-                } else {
-                    idsTemp = Y9Util.genCustomStr(idsTemp, userId);
-                    ReceivePerson receivePerson = receivePersonRepository.findByPersonIdAndDeptId(userId, deptId);
-                    if (receivePerson == null) {
-                        receivePerson = new ReceivePerson();
-                        receivePerson.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                        receivePerson.setReceive(true);
-                        receivePerson.setSend(true);
-                    }
-                    receivePerson.setCreateDate(new Date());
-                    receivePerson.setDeptId(deptId);
-                    receivePerson.setPersonId(userId);
-                    receivePerson.setDeptName(dept.getName());
-                    receivePerson.setPersonDeptId(user.getParentId());
-                    receivePersonRepository.save(receivePerson);
-                }
+
+            if (dept == null) {
+                return Y9Result.failure("部门信息不存在");
             }
-            ReceiveDepartment receiveDepartment = receiveDepartmentRepository.findByDeptId(deptId);
-            if (receiveDepartment != null && receiveDepartment.getId() != null) {
-                // 修改部门父节点
-                if (StringUtils.isNotBlank(idsTemp)) {
-                    setParentId(deptId, deptId);
-                } else {
-                    setParentId(deptId, receiveDepartment.getParentId());
-                }
-                receiveDepartment.setParentId("");
-                List<Object> list = new ArrayList<>();
-                list.add(false);
-                list = getParentId(dept.getParentId(), list);
-                if ((boolean)list.get(0)) {
-                    receiveDepartment.setParentId((String)list.get(1));
-                }
-            } else {
-                OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, deptId).getData();
-                receiveDepartment = new ReceiveDepartment();
-                receiveDepartment.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                receiveDepartment.setDeptName(dept.getName());
-                receiveDepartment.setBureauId(orgUnit.getId());
-                receiveDepartment.setDeptId(deptId);
-                receiveDepartment.setCreateDate(new Date());
-                // 修改部门父节点
-                if (StringUtils.isNotBlank(idsTemp)) {
-                    setParentId(deptId, deptId);
-                } else {
-                    setParentId(deptId, receiveDepartment.getParentId());
-                }
-                receiveDepartment.setParentId("");
-                List<Object> list = new ArrayList<>();
-                list.add(false);
-                list = getParentId(dept.getParentId(), list);
-                if ((boolean)list.get(0)) {
-                    receiveDepartment.setParentId((String)list.get(1));
-                }
-            }
-            receiveDepartmentRepository.save(receiveDepartment);
+
+            StringBuilder msg = new StringBuilder();
+            String validUserIds = processUserPositions(userIds, deptId, dept, tenantId, msg);
+
+            updateReceiveDepartment(deptId, dept, tenantId, validUserIds);
 
             return Y9Result
                 .successMsg((msg.length() > 0 && StringUtils.isNotBlank(msg.toString())) ? msg.toString() : "保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存收文员职位失败，deptId: {}", deptId, e);
             return Y9Result.failure("保存失败");
+        }
+    }
+
+    /**
+     * 处理用户职位信息
+     */
+    private String processUserPositions(String[] userIds, String deptId, Department dept, String tenantId,
+        StringBuilder msg) {
+        StringBuilder validUserIds = new StringBuilder();
+
+        for (String userId : userIds) {
+            try {
+                OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                if (user == null) {
+                    continue;
+                }
+
+                List<ReceivePerson> existingPersons = receivePersonRepository.findByPersonId(userId);
+                boolean canAdd = checkUserAddPermission(existingPersons, deptId, userId, tenantId, msg);
+
+                if (canAdd) {
+                    if (validUserIds.length() > 0) {
+                        validUserIds.append(",").append(userId);
+                    } else {
+                        validUserIds.append(userId);
+                    }
+                    saveOrUpdateReceivePerson(userId, deptId, dept, user);
+                }
+            } catch (Exception e) {
+                LOGGER.warn("处理用户职位信息失败，userId: {}", userId, e);
+            }
+        }
+
+        return validUserIds.toString();
+    }
+
+    /**
+     * 检查用户添加权限
+     */
+    private boolean checkUserAddPermission(List<ReceivePerson> existingPersons, String deptId, String userId,
+        String tenantId, StringBuilder msg) {
+        if (existingPersons == null || existingPersons.isEmpty()) {
+            return true;
+        }
+
+        boolean canAdd = true;
+        for (ReceivePerson receivePerson : existingPersons) {
+            try {
+                OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, receivePerson.getDeptId()).getData();
+                OrgUnit orgUnit1 = orgUnitApi.getBureau(tenantId, deptId).getData();
+
+                // 委办局相同，且部门不相同则，不可添加该收文员
+                if (orgUnit.getId().equals(orgUnit1.getId()) && !receivePerson.getDeptId().equals(deptId)) {
+                    canAdd = false;
+                    // 同一个委办局，不能设置一个人为两个单位的收文员
+                    OrgUnit person = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                    msg.append("[")
+                        .append(person != null ? person.getName() : userId)
+                        .append("已是")
+                        .append(receivePerson.getDeptName())
+                        .append("部门的收发员]<br>");
+                }
+            } catch (Exception e) {
+                LOGGER.warn("检查用户添加权限失败，userId: {}, deptId: {}", userId, receivePerson.getDeptId(), e);
+            }
+        }
+
+        return canAdd;
+    }
+
+    /**
+     * 保存或更新收文员信息
+     */
+    private void saveOrUpdateReceivePerson(String userId, String deptId, Department dept, OrgUnit user) {
+        ReceivePerson receivePerson = receivePersonRepository.findByPersonIdAndDeptId(userId, deptId);
+
+        if (receivePerson == null) {
+            receivePerson = new ReceivePerson();
+            receivePerson.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            receivePerson.setReceive(true);
+            receivePerson.setSend(true);
+        }
+
+        receivePerson.setCreateDate(new Date());
+        receivePerson.setDeptId(deptId);
+        receivePerson.setPersonId(userId);
+        receivePerson.setDeptName(dept.getName());
+        receivePerson.setPersonDeptId(user.getParentId());
+
+        receivePersonRepository.save(receivePerson);
+    }
+
+    /**
+     * 更新收文部门信息
+     */
+    private void updateReceiveDepartment(String deptId, Department dept, String tenantId, String validUserIds) {
+        ReceiveDepartment receiveDepartment = receiveDepartmentRepository.findByDeptId(deptId);
+        boolean isNew = (receiveDepartment == null || receiveDepartment.getId() == null);
+
+        if (isNew) {
+            receiveDepartment = createNewReceiveDepartment(deptId, dept, tenantId);
+        }
+
+        // 修改部门父节点
+        String parentId = StringUtils.isNotBlank(validUserIds) ? deptId : receiveDepartment.getParentId();
+        setParentId(deptId, parentId);
+
+        // 更新父节点信息
+        updateParentInfo(receiveDepartment, dept);
+
+        receiveDepartmentRepository.save(receiveDepartment);
+    }
+
+    /**
+     * 创建新的收文部门
+     */
+    private ReceiveDepartment createNewReceiveDepartment(String deptId, Department dept, String tenantId) {
+        try {
+            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, deptId).getData();
+            ReceiveDepartment receiveDepartment = new ReceiveDepartment();
+            receiveDepartment.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            receiveDepartment.setDeptName(dept.getName());
+            receiveDepartment.setBureauId(orgUnit != null ? orgUnit.getId() : "");
+            receiveDepartment.setDeptId(deptId);
+            receiveDepartment.setCreateDate(new Date());
+            receiveDepartment.setParentId("");
+            return receiveDepartment;
+        } catch (Exception e) {
+            LOGGER.warn("创建新的收文部门失败，deptId: {}", deptId, e);
+            ReceiveDepartment receiveDepartment = new ReceiveDepartment();
+            receiveDepartment.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            receiveDepartment.setDeptName(dept.getName());
+            receiveDepartment.setDeptId(deptId);
+            receiveDepartment.setCreateDate(new Date());
+            receiveDepartment.setParentId("");
+            return receiveDepartment;
+        }
+    }
+
+    /**
+     * 更新父节点信息
+     */
+    private void updateParentInfo(ReceiveDepartment receiveDepartment, Department dept) {
+        try {
+            receiveDepartment.setParentId("");
+            List<Object> parentInfo = new ArrayList<>();
+            parentInfo.add(false);
+            parentInfo = getParentId(dept.getParentId(), parentInfo);
+
+            if (!parentInfo.isEmpty() && parentInfo.get(0) instanceof Boolean && (Boolean)parentInfo.get(0)) {
+                if (parentInfo.size() > 1 && parentInfo.get(1) instanceof String) {
+                    receiveDepartment.setParentId((String)parentInfo.get(1));
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("更新父节点信息失败，deptId: {}", dept.getId(), e);
         }
     }
 
     /**
      * 往下设parentId
      *
-     * @param deptId
-     * @param parentId
+     * @param deptId 部门id
+     * @param parentId 父部门id
      */
     public void setParentId(String deptId, String parentId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -344,7 +418,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
             }
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存失败", e);
             return Y9Result.failure("保存失败");
         }
     }
@@ -365,7 +439,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
             }
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存失败", e);
             return Y9Result.failure("保存失败");
         }
     }

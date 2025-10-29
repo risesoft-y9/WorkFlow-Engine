@@ -58,49 +58,82 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
 
     @Override
     public ProcessEngine buildProcessEngine() {
-        createSystem(y9Properties.getSystemName());// 创建系统
-        createTenantSystem(y9Properties.getSystemName());// 租户租用系统
+        createSystem(y9Properties.getSystemName());
+        createTenantSystem(y9Properties.getSystemName());
         LOGGER.info("start registerTenant");
-        /*
-         * 设置默认的租户数据源
-         */
+        // 设置默认的租户数据源
         registerTenant(AbstractEngineConfiguration.NO_TENANT_ID, defaultDataSource);
-
         ProcessEngine processEngine = super.buildProcessEngine();
-        /*
-         * 系统存在的话查看租户租用系统的数据源
-         */
-        List<Map<String, Object>> systems = jdbcTemplate4Public
-            .queryForList("SELECT ID FROM Y9_COMMON_SYSTEM T WHERE T.NAME=?", y9Properties.getSystemName());
-        if (!systems.isEmpty()) {
-            Map<String, Object> map = systems.get(0);
-            String systemId = (String)map.get("ID");
-            List<Map<String, Object>> tenantSystems = jdbcTemplate4Public.queryForList(
-                "SELECT TENANT_ID, TENANT_DATA_SOURCE FROM Y9_COMMON_TENANT_SYSTEM T WHERE T.SYSTEM_ID = ?", systemId);
-            if (tenantSystems.isEmpty()) {
-                createDefaultTenantDataSource();
-            } else {
-                boolean isCreateDefaultTenantDataSource = false;
-                for (Map<String, Object> tenantSystem : tenantSystems) {
-                    String tenantId = (String)tenantSystem.get("TENANT_ID");
-                    String dataSourceId = (String)tenantSystem.get("TENANT_DATA_SOURCE");
-                    List<Map<String, Object>> list3 = jdbcTemplate4Public
-                        .queryForList("select * from Y9_COMMON_DATASOURCE t where t.id = ?", dataSourceId);
-                    if (!list3.isEmpty()) {
-                        registerTenant(tenantId, list3.get(0));
-                        if (tenantId.equals(InitDataConsts.TENANT_ID)) {
-                            isCreateDefaultTenantDataSource = true;
-                        }
-                    }
-                }
-                if (!isCreateDefaultTenantDataSource) {
-                    createDefaultTenantDataSource();
-                }
-            }
-        } else {
+        // 初始化租户数据源配置
+        initializeTenantDataSources();
+        return processEngine;
+    }
+
+    /**
+     * 初始化租户数据源配置
+     */
+    private void initializeTenantDataSources() {
+        String systemName = y9Properties.getSystemName();
+        String systemId = getSystemIdByName(systemName);
+
+        if (systemId == null) {
+            createDefaultTenantDataSource();
+            return;
+        }
+
+        List<Map<String, Object>> tenantSystems = getTenantSystemsBySystemId(systemId);
+        if (tenantSystems.isEmpty()) {
+            createDefaultTenantDataSource();
+            return;
+        }
+
+        boolean isDefaultTenantRegistered = registerTenantDataSources(tenantSystems);
+        if (!isDefaultTenantRegistered) {
             createDefaultTenantDataSource();
         }
-        return processEngine;
+    }
+
+    /**
+     * 根据系统名称获取系统ID
+     */
+    private String getSystemIdByName(String systemName) {
+        List<Map<String, Object>> systems =
+            jdbcTemplate4Public.queryForList("SELECT ID FROM Y9_COMMON_SYSTEM T WHERE T.NAME=?", systemName);
+        return systems.isEmpty() ? null : (String)systems.get(0).get("ID");
+    }
+
+    /**
+     * 根据系统ID获取租户系统列表
+     */
+    private List<Map<String, Object>> getTenantSystemsBySystemId(String systemId) {
+        return jdbcTemplate4Public.queryForList(
+            "SELECT TENANT_ID, TENANT_DATA_SOURCE FROM Y9_COMMON_TENANT_SYSTEM T WHERE T.SYSTEM_ID = ?", systemId);
+    }
+
+    /**
+     * 注册租户数据源
+     * 
+     * @return 是否注册了默认租户数据源
+     */
+    private boolean registerTenantDataSources(List<Map<String, Object>> tenantSystems) {
+        boolean isDefaultTenantRegistered = false;
+
+        for (Map<String, Object> tenantSystem : tenantSystems) {
+            String tenantId = (String)tenantSystem.get("TENANT_ID");
+            String dataSourceId = (String)tenantSystem.get("TENANT_DATA_SOURCE");
+
+            List<Map<String, Object>> dataSourceList =
+                jdbcTemplate4Public.queryForList("select * from Y9_COMMON_DATASOURCE t where t.id = ?", dataSourceId);
+
+            if (!dataSourceList.isEmpty()) {
+                registerTenant(tenantId, dataSourceList.get(0));
+                if (tenantId.equals(InitDataConsts.TENANT_ID)) {
+                    isDefaultTenantRegistered = true;
+                }
+            }
+        }
+
+        return isDefaultTenantRegistered;
     }
 
     /**

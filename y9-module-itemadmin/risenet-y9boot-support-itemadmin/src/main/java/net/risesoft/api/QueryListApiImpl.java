@@ -38,6 +38,8 @@ import net.risesoft.y9.json.Y9JsonUtil;
 @RequestMapping(value = "/services/rest/queryList", produces = MediaType.APPLICATION_JSON_VALUE)
 public class QueryListApiImpl implements QueryListApi {
 
+    private final static String JOIN_SQL_PREFIX = "AND F.";
+    private final static String PARAM_SQL = ", ?) > 0 ";
     private final ItemPageService itemPageService;
 
     /**
@@ -126,7 +128,7 @@ public class QueryListApiImpl implements QueryListApi {
         switch (queryType) {
             case "select":
             case "radio":
-                whereSql.append(" AND F.").append(columnName.toUpperCase()).append(" = ? ");
+                whereSql.append(JOIN_SQL_PREFIX).append(columnName.toUpperCase()).append(" = ? ");
                 params.add(value);
                 break;
             case "checkbox":
@@ -136,7 +138,7 @@ public class QueryListApiImpl implements QueryListApi {
                 buildDateRangeConditions(whereSql, params, value, columnName);
                 break;
             default:
-                whereSql.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(", ?) > 0 ");
+                whereSql.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(PARAM_SQL);
                 params.add(value);
                 break;
         }
@@ -148,7 +150,7 @@ public class QueryListApiImpl implements QueryListApi {
     private void buildCheckboxConditions(StringBuilder whereSql, List<Object> params, String value, String columnName) {
         String[] values = value.split(",");
         if (values.length == 1) {
-            whereSql.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(", ?) > 0 ");
+            whereSql.append(" AND INSTR(F.").append(columnName.toUpperCase()).append(PARAM_SQL);
             params.add(values[0]);
         } else {
             whereSql.append(" AND (");
@@ -156,7 +158,7 @@ public class QueryListApiImpl implements QueryListApi {
                 if (i > 0) {
                     whereSql.append(" OR ");
                 }
-                whereSql.append(" INSTR(F.").append(columnName.toUpperCase()).append(", ?) > 0 ");
+                whereSql.append(" INSTR(F.").append(columnName.toUpperCase()).append(PARAM_SQL);
                 params.add(values[i]);
             }
             whereSql.append(") ");
@@ -169,8 +171,8 @@ public class QueryListApiImpl implements QueryListApi {
     private void buildDateRangeConditions(StringBuilder whereSql, List<Object> params, String value,
         String columnName) {
         String[] values = value.split(",");
-        whereSql.append(" AND F.").append(columnName.toUpperCase()).append(" >= ? ");
-        whereSql.append(" AND F.").append(columnName.toUpperCase()).append(" <= ? ");
+        whereSql.append(JOIN_SQL_PREFIX).append(columnName.toUpperCase()).append(" >= ? ");
+        whereSql.append(JOIN_SQL_PREFIX).append(columnName.toUpperCase()).append(" <= ? ");
         params.add(values[0]);
         params.add(values[1] + " 23:59:59");
     }

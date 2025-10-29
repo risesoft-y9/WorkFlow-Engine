@@ -6,7 +6,6 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.BeansException;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -179,73 +178,153 @@ public class OpinionServiceImpl implements OpinionService {
     @Override
     public List<OpinionHistoryModel> listOpinionHistory(String processSerialNumber, String opinionFrameMark) {
         List<OpinionHistoryModel> resList = new ArrayList<>();
+
         try {
-            List<OpinionHistory> list = opinionHistoryRepository
-                .findByProcessSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
-            List<Opinion> list1 =
-                opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
-            for (OpinionHistory his : list) {
-                OpinionHistoryModel historyModel = new OpinionHistoryModel();
-                Y9BeanUtil.copyProperties(his, historyModel);
-                resList.add(historyModel);
-            }
-            for (Opinion opinion : list1) {
-                OpinionHistoryModel history = new OpinionHistoryModel();
-                history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                history.setContent(opinion.getContent());
-                history.setCreateDate(opinion.getCreateDate());
-                history.setSaveDate("");
-                history.setDeptId(opinion.getDeptId());
-                history.setDeptName(opinion.getDeptName());
-                history.setModifyDate(opinion.getModifyDate());
-                history.setOpinionFrameMark(opinion.getOpinionFrameMark());
-                history.setOpinionType("");
-                history.setProcessInstanceId(opinion.getProcessInstanceId());
-                history.setProcessSerialNumber(opinion.getProcessSerialNumber());
-                history.setTaskId(opinion.getTaskId());
-                history.setTenantId(opinion.getTenantId());
-                history.setUserId(opinion.getUserId());
-                history.setUserName(opinion.getUserName());
-                resList.add(history);
-            }
-            resList.sort((o1, o2) -> {
-                try {
-                    String startTime1 = o1.getCreateDate();
-                    String startTime2 = o2.getCreateDate();
-                    long time1 = Y9DateTimeUtils.parseDateTime(startTime1).getTime();
-                    long time2 = Y9DateTimeUtils.parseDateTime(startTime2).getTime();
-                    if (time1 > time2) {
-                        return 1;
-                    } else if (time1 == time2) {
-                        String modifyDate1 = o1.getModifyDate();
-                        String modifyDate2 = o2.getModifyDate();
-                        if (StringUtils.isBlank(modifyDate1)) {
-                            return -1;
-                        } else if (StringUtils.isBlank(modifyDate2)) {
-                            return 1;
-                        } else if (modifyDate1.equals(modifyDate2)) {
-                            return 0;
-                        } else {
-                            long time11 = Y9DateTimeUtils.parseDateTime(modifyDate1).getTime();
-                            long time22 = Y9DateTimeUtils.parseDateTime(modifyDate2).getTime();
-                            if (time11 > time22) {
-                                return 1;
-                            } else {
-                                return -1;
-                            }
-                        }
-                    } else {
-                        return -1;
-                    }
-                } catch (Exception e) {
-                    LOGGER.error("意见的CreateDate或者ModifyDate格式化错误！", e);
-                }
-                return -1;
-            });
-        } catch (BeansException e) {
-            e.printStackTrace();
+            // 获取历史意见和当前意见
+            List<OpinionHistoryModel> historyOpinions = getHistoryOpinions(processSerialNumber, opinionFrameMark);
+            List<OpinionHistoryModel> currentOpinions = getCurrentOpinions(processSerialNumber, opinionFrameMark);
+
+            // 合并并排序
+            resList.addAll(historyOpinions);
+            resList.addAll(currentOpinions);
+            resList.sort(this::compareOpinionHistoryByDate);
+
+        } catch (Exception e) {
+            LOGGER.error("获取意见历史记录失败，processSerialNumber: {}, opinionFrameMark: {}", processSerialNumber,
+                opinionFrameMark, e);
         }
+
         return resList;
+    }
+
+    /**
+     * 获取历史意见列表
+     */
+    private List<OpinionHistoryModel> getHistoryOpinions(String processSerialNumber, String opinionFrameMark) {
+        List<OpinionHistoryModel> historyModels = new ArrayList<>();
+
+        try {
+            List<OpinionHistory> historyList = opinionHistoryRepository
+                .findByProcessSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+
+            for (OpinionHistory history : historyList) {
+                OpinionHistoryModel historyModel = new OpinionHistoryModel();
+                Y9BeanUtil.copyProperties(history, historyModel);
+                historyModels.add(historyModel);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取历史意见失败，processSerialNumber: {}, opinionFrameMark: {}", processSerialNumber, opinionFrameMark,
+                e);
+        }
+
+        return historyModels;
+    }
+
+    /**
+     * 获取当前意见列表
+     */
+    private List<OpinionHistoryModel> getCurrentOpinions(String processSerialNumber, String opinionFrameMark) {
+        List<OpinionHistoryModel> currentModels = new ArrayList<>();
+
+        try {
+            List<Opinion> opinionList =
+                opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+
+            for (Opinion opinion : opinionList) {
+                OpinionHistoryModel historyModel = createOpinionHistoryModelFromOpinion(opinion);
+                currentModels.add(historyModel);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取当前意见失败，processSerialNumber: {}, opinionFrameMark: {}", processSerialNumber, opinionFrameMark,
+                e);
+        }
+
+        return currentModels;
+    }
+
+    /**
+     * 从Opinion对象创建OpinionHistoryModel对象
+     */
+    private OpinionHistoryModel createOpinionHistoryModelFromOpinion(Opinion opinion) {
+        OpinionHistoryModel history = new OpinionHistoryModel();
+        history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        history.setContent(opinion.getContent());
+        history.setCreateDate(opinion.getCreateDate());
+        history.setSaveDate("");
+        history.setDeptId(opinion.getDeptId());
+        history.setDeptName(opinion.getDeptName());
+        history.setModifyDate(opinion.getModifyDate());
+        history.setOpinionFrameMark(opinion.getOpinionFrameMark());
+        history.setOpinionType("");
+        history.setProcessInstanceId(opinion.getProcessInstanceId());
+        history.setProcessSerialNumber(opinion.getProcessSerialNumber());
+        history.setTaskId(opinion.getTaskId());
+        history.setTenantId(opinion.getTenantId());
+        history.setUserId(opinion.getUserId());
+        history.setUserName(opinion.getUserName());
+        return history;
+    }
+
+    /**
+     * 按日期比较意见历史模型
+     */
+    private int compareOpinionHistoryByDate(OpinionHistoryModel o1, OpinionHistoryModel o2) {
+        try {
+            // 首先按创建日期比较
+            String createTime1 = o1.getCreateDate();
+            String createTime2 = o2.getCreateDate();
+
+            if (StringUtils.isBlank(createTime1) && StringUtils.isBlank(createTime2)) {
+                return 0;
+            }
+            if (StringUtils.isBlank(createTime1)) {
+                return -1;
+            }
+            if (StringUtils.isBlank(createTime2)) {
+                return 1;
+            }
+
+            long time1 = Y9DateTimeUtils.parseDateTime(createTime1).getTime();
+            long time2 = Y9DateTimeUtils.parseDateTime(createTime2).getTime();
+
+            int createTimeComparison = Long.compare(time1, time2);
+            if (createTimeComparison != 0) {
+                return createTimeComparison;
+            }
+
+            // 创建时间相同时，按修改日期比较
+            return compareByModifyDate(o1, o2);
+        } catch (Exception e) {
+            LOGGER.error("比较意见历史日期时发生错误", e);
+            return -1;
+        }
+    }
+
+    /**
+     * 按修改日期比较
+     */
+    private int compareByModifyDate(OpinionHistoryModel o1, OpinionHistoryModel o2) {
+        String modifyDate1 = o1.getModifyDate();
+        String modifyDate2 = o2.getModifyDate();
+
+        if (StringUtils.isBlank(modifyDate1) && StringUtils.isBlank(modifyDate2)) {
+            return 0;
+        }
+        if (StringUtils.isBlank(modifyDate1)) {
+            return -1;
+        }
+        if (StringUtils.isBlank(modifyDate2)) {
+            return 1;
+        }
+
+        try {
+            long time1 = Y9DateTimeUtils.parseDateTime(modifyDate1).getTime();
+            long time2 = Y9DateTimeUtils.parseDateTime(modifyDate2).getTime();
+            return Long.compare(time1, time2);
+        } catch (Exception e) {
+            LOGGER.error("解析修改日期时发生错误", e);
+            return -1;
+        }
     }
 
     @Override
@@ -602,57 +681,80 @@ public class OpinionServiceImpl implements OpinionService {
         }
     }
 
+    /**
+     * 设置意见框的可添加性
+     */
     private void setAddable(OpinionListModel opinionListModel, ItemOpinionFrameBind itemOpinionFrameBind) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
-        /*
-         * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
-         */
-        if (opinionListModel.getAddable()) {
-            opinionListModel.setAddable(false);
-            if (null != itemOpinionFrameBind) {
-                // 是否必填意见，与addable一起判定，都为true时提示必填。
-                opinionListModel.setSignOpinion(itemOpinionFrameBind.isSignOpinion());
-                List<String> roleIds = itemOpinionFrameBind.getRoleIds();
-                if (roleIds.isEmpty()) {
-                    opinionListModel.setAddable(true);
-                } else {
-                    for (String roleId : roleIds) {
-                        Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
-                        if (Boolean.TRUE.equals(hasRole)) {
-                            opinionListModel.setAddable(true);
-                            break;
-                        }
-                    }
-                }
-            }
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String personId = person.getPersonId();
+
+        // 只有在当前可添加的情况下才进行权限检查
+        if (!Boolean.TRUE.equals(opinionListModel.getAddable())) {
+            return;
+        }
+
+        opinionListModel.setAddable(false);
+
+        if (itemOpinionFrameBind == null) {
+            return;
+        }
+
+        // 设置是否必填意见
+        opinionListModel.setSignOpinion(itemOpinionFrameBind.isSignOpinion());
+
+        // 检查用户是否有权限在该意见框签写意见
+        if (hasOpinionSigningPermission(tenantId, personId, itemOpinionFrameBind)) {
+            opinionListModel.setAddable(true);
         }
     }
 
+    /**
+     * 检查用户是否有在指定意见框签写意见的权限
+     */
+    private boolean hasOpinionSigningPermission(String tenantId, String personId,
+        ItemOpinionFrameBind itemOpinionFrameBind) {
+        List<String> roleIds = itemOpinionFrameBind.getRoleIds();
+        // 如果没有配置角色限制，则允许添加
+        if (roleIds == null || roleIds.isEmpty()) {
+            return true;
+        }
+        // 检查用户是否拥有任意一个配置的角色
+        return roleIds.stream().map(roleId -> checkUserRole(tenantId, personId, roleId)).anyMatch(Boolean.TRUE::equals);
+    }
+
+    /**
+     * 检查用户是否拥有指定角色
+     */
+    private Boolean checkUserRole(String tenantId, String personId, String roleId) {
+        try {
+            return personRoleApi.hasRole(tenantId, roleId, personId).getData();
+        } catch (Exception e) {
+            LOGGER.warn("检查用户角色权限失败，tenantId: {}, roleId: {}, personId: {}", tenantId, roleId, personId, e);
+            return false;
+        }
+    }
+
+    /**
+     * 设置意见框的可添加性（新版本）
+     */
     private void setAddableNew(OpinionFrameModel opinionFrameModel, ItemOpinionFrameBind itemOpinionFrameBind) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
-        /*
-         * 当前意见框,当前人员可以新增意见时，要判断当前人员是否有在该意见框签意见的权限
-         */
-        if (opinionFrameModel.getAddable()) {
-            opinionFrameModel.setAddable(false);
-            if (null != itemOpinionFrameBind) {
-                // 是否必填意见，与addable一起判定，都为true时提示必填。
-                opinionFrameModel.setSignOpinion(itemOpinionFrameBind.isSignOpinion());
-                List<String> roleIds = itemOpinionFrameBind.getRoleIds();
-                if (roleIds.isEmpty()) {
-                    opinionFrameModel.setAddable(true);
-                } else {
-                    for (String roleId : roleIds) {
-                        Boolean hasRole = personRoleApi.hasRole(tenantId, roleId, personId).getData();
-                        if (Boolean.TRUE.equals(hasRole)) {
-                            opinionFrameModel.setAddable(true);
-                            break;
-                        }
-                    }
-                }
-            }
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String personId = person.getPersonId();
+        // 只有在当前可添加的情况下才进行权限检查
+        if (!Boolean.TRUE.equals(opinionFrameModel.getAddable())) {
+            return;
+        }
+        opinionFrameModel.setAddable(false);
+        if (itemOpinionFrameBind == null) {
+            return;
+        }
+        // 设置是否必填意见
+        opinionFrameModel.setSignOpinion(itemOpinionFrameBind.isSignOpinion());
+        // 检查用户是否有权限在该意见框签写意见
+        if (hasOpinionSigningPermission(tenantId, personId, itemOpinionFrameBind)) {
+            opinionFrameModel.setAddable(true);
         }
     }
 

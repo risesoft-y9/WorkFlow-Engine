@@ -48,6 +48,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class ItemAllApiImpl implements ItemAllApi {
 
     private static final String COMMON_SQL = "SELECT T.* FROM FF_ACT_RU_DETAIL T ";
+    private static final String WHERE_DELETED_SYSTEMNAME_SQL = " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? ";
     private final ItemPageService itemPageService;
     private final ActRuDetailService actRuDetailService;
     private final Y9TableService y9TableService;
@@ -213,12 +214,12 @@ public class ItemAllApiImpl implements ItemAllApi {
             assigneeNameWhereSql = sqlList.get(3);
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? " + whereSql
-                + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+                + innerSql + assigneeNameInnerSql + WHERE_DELETED_SYSTEMNAME_SQL + whereSql + assigneeNameWhereSql
+                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         String countSql =
             "SELECT COUNT(*) FROM (SELECT A.* FROM (SELECT ROW_NUMBER () OVER ( PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC ) AS RS_NUM FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? " + whereSql
-                + assigneeNameWhereSql + " ) A WHERE A.RS_NUM = 1) ALIAS";
+                + innerSql + assigneeNameInnerSql + WHERE_DELETED_SYSTEMNAME_SQL + whereSql + assigneeNameWhereSql
+                + " ) A WHERE A.RS_NUM = 1) ALIAS";
         Object[] args = {systemName};
         ItemPage<ActRuDetailModel> itemPage = this.itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
@@ -238,8 +239,8 @@ public class ItemAllApiImpl implements ItemAllApi {
             assigneeNameWhereSql = sqlList.get(3);
         String sql =
             "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM   FROM FF_ACT_RU_DETAIL T "
-                + innerSql + assigneeNameInnerSql + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? " + whereSql
-                + assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+                + innerSql + assigneeNameInnerSql + WHERE_DELETED_SYSTEMNAME_SQL + whereSql + assigneeNameWhereSql
+                + " ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
         Object[] args = {systemName};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class), args);

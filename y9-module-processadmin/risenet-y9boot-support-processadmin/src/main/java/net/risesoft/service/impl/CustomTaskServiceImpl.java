@@ -3,7 +3,6 @@ package net.risesoft.service.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +16,6 @@ import org.flowable.engine.TaskService;
 import org.flowable.engine.history.HistoricProcessInstance;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.task.api.Task;
-import org.flowable.task.api.history.HistoricTaskInstance;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -269,46 +267,6 @@ public class CustomTaskServiceImpl implements CustomTaskService {
     @Override
     public Task findById(String taskId) {
         return taskService.createTaskQuery().taskId(taskId).singleResult();
-    }
-
-    @Override
-    public Integer getCompleteTaskCount4Parallel(String taskId) {
-        List<HistoricTaskInstance> list = new ArrayList<>();
-        try {
-            Task currentTask = taskService.createTaskQuery().taskId(taskId).singleResult();
-            String multinstance = customProcessDefinitionService
-                .getNode(currentTask.getProcessDefinitionId(), currentTask.getTaskDefinitionKey())
-                .getMultiInstance();
-            if (multinstance.equals(SysVariables.PARALLEL)) {
-                List<HistoricTaskInstance> hisTaskList = historyService.createHistoricTaskInstanceQuery()
-                    .processInstanceId(currentTask.getProcessInstanceId())
-                    .taskCreatedOn(currentTask.getCreateTime())
-                    .list();
-                for (HistoricTaskInstance entity : hisTaskList) {
-                    // 由于并行任务的创建时间可能会有延迟，所以这里创建时间相差不超过2秒的，即为当前任务的所有并行任务
-                    if (entity.getCreateTime().getTime() - currentTask.getCreateTime().getTime() > -2
-                        && entity.getCreateTime().getTime() - currentTask.getCreateTime().getTime() < 2) {
-                        list.add(entity);
-                    }
-                }
-            }
-
-            if (!list.isEmpty()) {
-                int count = 0;
-                for (HistoricTaskInstance task : list) {
-                    if (task.getEndTime() != null) {
-                        count++;
-                    }
-                }
-                if (count > 0) {
-                    return 1;
-                }
-                return 0;
-            }
-        } catch (Exception e) {
-            LOGGER.error("获取并行任务完成数量失败", e);
-        }
-        return -1;
     }
 
     @Override

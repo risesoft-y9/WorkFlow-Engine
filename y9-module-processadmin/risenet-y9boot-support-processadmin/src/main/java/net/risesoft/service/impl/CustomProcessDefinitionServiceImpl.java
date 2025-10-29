@@ -77,134 +77,230 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
     }
 
     private TargetModel createTargetModel(SequenceFlow sequenceFlow, String processDefinitionId) {
-        FlowElement fe = sequenceFlow.getTargetFlowElement();
+        FlowElement targetElement = sequenceFlow.getTargetFlowElement();
         TargetModel targetModel = new TargetModel();
-        targetModel.setTaskDefKey(fe.getId());
+
+        // 设置基本信息
+        targetModel.setTaskDefKey(targetElement.getId());
         targetModel.setProcessDefinitionId(processDefinitionId);
-        targetModel.setRealTaskDefName(fe.getName());
-        String name = sequenceFlow.getName();
-        if (StringUtils.isNotBlank(name) && !"skip".equals(name)) {
-            // 如果输出线上有名称且不为skip，则使用线上的名称作为路由名称
-            targetModel.setTaskDefName(name);
-        } else {
-            // 如果输出线上没有名称，则使用目标节点名称作为路由名称
-            targetModel.setTaskDefName(fe.getName());
+        targetModel.setRealTaskDefName(targetElement.getName());
+        targetModel.setTaskDefName(determineTaskDefName(sequenceFlow, targetElement));
+
+        // 设置类型和多实例信息
+        setElementTypeAndMultiInstance(targetModel, targetElement);
+
+        // 设置条件表达式（如果存在）
+        if (targetElement instanceof UserTask && StringUtils.isNotBlank(sequenceFlow.getConditionExpression())) {
+            targetModel.setConditionExpression(sequenceFlow.getConditionExpression());
         }
-        if (fe instanceof UserTask) {
-            targetModel.setType(SysVariables.USER_TASK);
-            UserTask userTask = (UserTask)fe;
-            if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
-            } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                targetModel.setMultiInstance(SysVariables.PARALLEL);
-            } else {
-                targetModel.setMultiInstance(SysVariables.COMMON);
-            }
-            if (StringUtils.isNoneBlank(sequenceFlow.getConditionExpression())) {
-                targetModel.setConditionExpression(sequenceFlow.getConditionExpression());
-            }
-        } else if (fe instanceof SubProcess) {
-            targetModel.setType(SysVariables.SUBPROCESS);
-            SubProcess subProcess = (SubProcess)fe;
-            if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                targetModel.setMultiInstance(SysVariables.PARALLEL);
-            } else if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
-            } else {
-                targetModel.setMultiInstance(SysVariables.COMMON);
-            }
-        } else if (fe instanceof EndEvent) {
-            targetModel.setType(SysVariables.END_EVENT);
-            if (StringUtils.isBlank(targetModel.getTaskDefName())) {
-                targetModel.setTaskDefName("办结");
-            }
+
+        // 处理结束事件的特殊名称
+        if (targetElement instanceof EndEvent && StringUtils.isBlank(targetModel.getTaskDefName())) {
+            targetModel.setTaskDefName("办结");
         }
+
         return targetModel;
     }
 
+    /**
+     * 确定任务定义名称
+     */
+    private String determineTaskDefName(SequenceFlow sequenceFlow, FlowElement targetElement) {
+        String name = sequenceFlow.getName();
+        if (StringUtils.isNotBlank(name) && !"skip".equals(name)) {
+            // 如果输出线上有名称且不为skip，则使用线上的名称作为路由名称
+            return name;
+        } else {
+            // 如果输出线上没有名称，则使用目标节点名称作为路由名称
+            return targetElement.getName();
+        }
+    }
+
+    /**
+     * 设置元素类型和多实例信息
+     */
+    private void setElementTypeAndMultiInstance(TargetModel targetModel, FlowElement targetElement) {
+        if (targetElement instanceof UserTask) {
+            targetModel.setType(SysVariables.USER_TASK);
+            setUserTaskMultiInstance(targetModel, (UserTask)targetElement);
+        } else if (targetElement instanceof SubProcess) {
+            targetModel.setType(SysVariables.SUBPROCESS);
+            setSubProcessMultiInstance(targetModel, (SubProcess)targetElement);
+        } else if (targetElement instanceof EndEvent) {
+            targetModel.setType(SysVariables.END_EVENT);
+        }
+    }
+
+    /**
+     * 设置用户任务的多实例类型
+     */
+    private void setUserTaskMultiInstance(TargetModel targetModel, UserTask userTask) {
+        Object behavior = userTask.getBehavior();
+        if (behavior instanceof SequentialMultiInstanceBehavior) {
+            targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
+        } else if (behavior instanceof ParallelMultiInstanceBehavior) {
+            targetModel.setMultiInstance(SysVariables.PARALLEL);
+        } else {
+            targetModel.setMultiInstance(SysVariables.COMMON);
+        }
+    }
+
+    /**
+     * 设置子流程的多实例类型
+     */
+    private void setSubProcessMultiInstance(TargetModel targetModel, SubProcess subProcess) {
+        Object behavior = subProcess.getBehavior();
+        if (behavior instanceof ParallelMultiInstanceBehavior) {
+            targetModel.setMultiInstance(SysVariables.PARALLEL);
+        } else if (behavior instanceof SequentialMultiInstanceBehavior) {
+            targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
+        } else {
+            targetModel.setMultiInstance(SysVariables.COMMON);
+        }
+    }
+
+    /**
+     * 创建目标模型
+     */
     private TargetModel createTargetModel(FlowElement flowElement, boolean isSub) {
         TargetModel targetModel = new TargetModel();
         targetModel.setTaskDefKey(flowElement.getId());
-        targetModel.setTaskDefName(flowElement.getName() + (isSub ? "[子]" : ""));
-        if (flowElement instanceof UserTask) {
-            targetModel.setType(SysVariables.USER_TASK);
-            UserTask userTask = ((UserTask)flowElement);
-            if (userTask.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
-            } else if (userTask.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                targetModel.setMultiInstance(SysVariables.PARALLEL);
-            } else {
-                targetModel.setMultiInstance(SysVariables.COMMON);
-            }
-        } else if (flowElement instanceof SubProcess) {
-            targetModel.setTaskDefName(flowElement.getName() + "【子】");
-            targetModel.setType(SysVariables.SUBPROCESS);
-            SubProcess subProcess = ((SubProcess)flowElement);
-            if (subProcess.getBehavior() instanceof SequentialMultiInstanceBehavior) {
-                targetModel.setMultiInstance(SysVariables.SEQUENTIAL);
-            } else if (subProcess.getBehavior() instanceof ParallelMultiInstanceBehavior) {
-                targetModel.setMultiInstance(SysVariables.PARALLEL);
-            } else {
-                targetModel.setMultiInstance(SysVariables.COMMON);
-            }
-        } else if (flowElement instanceof EndEvent) {
-            targetModel.setType(SysVariables.END_EVENT);
-        }
+        targetModel.setTaskDefName(buildTaskName(flowElement, isSub));
+        targetModel.setType(determineElementType(flowElement));
+        targetModel.setMultiInstance(determineMultiInstanceType(flowElement));
         return targetModel;
+    }
+
+    /**
+     * 构建任务名称
+     */
+    private String buildTaskName(FlowElement flowElement, boolean isSub) {
+        String baseName = flowElement.getName();
+        if (flowElement instanceof SubProcess) {
+            return baseName + "【子】";
+        }
+        return baseName + (isSub ? "[子]" : "");
+    }
+
+    /**
+     * 确定元素类型
+     */
+    private String determineElementType(FlowElement flowElement) {
+        if (flowElement instanceof UserTask) {
+            return SysVariables.USER_TASK;
+        } else if (flowElement instanceof SubProcess) {
+            return SysVariables.SUBPROCESS;
+        } else if (flowElement instanceof EndEvent) {
+            return SysVariables.END_EVENT;
+        }
+        return "";
+    }
+
+    /**
+     * 确定多实例类型
+     */
+    private String determineMultiInstanceType(FlowElement flowElement) {
+        Object behavior = null;
+        if (flowElement instanceof UserTask) {
+            behavior = ((UserTask)flowElement).getBehavior();
+        } else if (flowElement instanceof SubProcess) {
+            behavior = ((SubProcess)flowElement).getBehavior();
+        }
+        if (behavior instanceof SequentialMultiInstanceBehavior) {
+            return SysVariables.SEQUENTIAL;
+        } else if (behavior instanceof ParallelMultiInstanceBehavior) {
+            return SysVariables.PARALLEL;
+        } else {
+            return SysVariables.COMMON;
+        }
     }
 
     private Y9Result<List<TargetModel>> get(String processDefinitionId, String taskDefKey, Boolean isContainEndNode) {
         List<TargetModel> targetNodes = new ArrayList<>();
+        List<FlowElement> allFlowElements = getAllFlowElements(processDefinitionId);
+        Optional<FlowElement> targetElement = findFlowElementById(allFlowElements, taskDefKey);
+        if (targetElement.isEmpty()) {
+            return Y9Result.success(targetNodes);
+        }
+        List<SequenceFlow> outgoingFlows = getOutgoingFlows(targetElement.get());
+        processOutgoingFlows(outgoingFlows, processDefinitionId, isContainEndNode, targetNodes);
+        return Y9Result.success(targetNodes);
+    }
+
+    /**
+     * 获取所有流程元素（包括子流程中的元素）
+     */
+    private List<FlowElement> getAllFlowElements(String processDefinitionId) {
         List<FlowElement> feList = this.getFlowElements(processDefinitionId);
         List<FlowElement> listAll = new ArrayList<>(feList);
-        feList.stream().filter(flowElement -> flowElement instanceof SubProcess).forEach(subProcess -> {
-            listAll.addAll(((SubProcess)subProcess).getFlowElements());
-        });
-        // 传入的节点
-        Optional<FlowElement> first =
-            listAll.stream().filter(flowElement -> flowElement.getId().equals(taskDefKey)).findFirst();
-        if (first.isPresent()) {
-            // 传入节点的输出路线
-            List<SequenceFlow> outList = new ArrayList<>();
-            FlowElement flowElement = first.get();
-            if (flowElement instanceof StartEvent) {
-                StartEvent task = (StartEvent)flowElement;
-                outList = task.getOutgoingFlows();
-            } else if (flowElement instanceof UserTask) {
-                UserTask task = (UserTask)flowElement;
-                outList = task.getOutgoingFlows();
-            }
-            outList.forEach(sequenceFlow -> {
-                FlowElement fe = sequenceFlow.getTargetFlowElement();
-                if (fe instanceof UserTask) {
-                    // 如果为用户任务直接放入
-                    targetNodes.add(createTargetModel(sequenceFlow, processDefinitionId));
-                } else if (fe instanceof EndEvent) {
-                    // 如果为办结节点
-                    if (isContainEndNode) {
-                        targetNodes.add(createTargetModel(sequenceFlow, processDefinitionId));
-                    }
-                } else if (fe instanceof ExclusiveGateway) {
-                    // 如果为排他网关，则继续查找排他网关的输出路线
-                    Optional<FlowElement> exclusiveGatewayOptional =
-                        listAll.stream().filter(element -> element.getId().equals(fe.getId())).findFirst();
-                    if (exclusiveGatewayOptional.isPresent()) {
-                        ExclusiveGateway exclusiveGateway = (ExclusiveGateway)exclusiveGatewayOptional.get();
-                        List<SequenceFlow> outgoingFlows = exclusiveGateway.getOutgoingFlows();
-                        // 复制出来，避免流程图缓存问题
-                        List<SequenceFlow> newList = new ArrayList<>(outgoingFlows);
-                        newList.removeIf(outgoingFlow -> outgoingFlow.getTargetFlowElement() instanceof ParallelGateway
-                            || outgoingFlow.getTargetFlowElement() instanceof ExclusiveGateway);
-                        if (!isContainEndNode) {
-                            newList.removeIf(outgoingFlow -> outgoingFlow.getTargetFlowElement() instanceof EndEvent);
-                        }
-                        newList.forEach(
-                            outgoingFlow -> targetNodes.add(createTargetModel(outgoingFlow, processDefinitionId)));
-                    }
-                }
-            });
+
+        feList.stream()
+            .filter(flowElement -> flowElement instanceof SubProcess)
+            .forEach(subProcess -> listAll.addAll(((SubProcess)subProcess).getFlowElements()));
+
+        return listAll;
+    }
+
+    /**
+     * 根据ID查找流程元素
+     */
+    private Optional<FlowElement> findFlowElementById(List<FlowElement> flowElements, String taskDefKey) {
+        return flowElements.stream().filter(flowElement -> flowElement.getId().equals(taskDefKey)).findFirst();
+    }
+
+    /**
+     * 获取流程元素的输出流
+     */
+    private List<SequenceFlow> getOutgoingFlows(FlowElement flowElement) {
+        if (flowElement instanceof StartEvent) {
+            return ((StartEvent)flowElement).getOutgoingFlows();
+        } else if (flowElement instanceof UserTask) {
+            return ((UserTask)flowElement).getOutgoingFlows();
         }
-        return Y9Result.success(targetNodes);
+        return new ArrayList<>();
+    }
+
+    /**
+     * 处理输出流
+     */
+    private void processOutgoingFlows(List<SequenceFlow> outgoingFlows, String processDefinitionId,
+        Boolean isContainEndNode, List<TargetModel> targetNodes) {
+        outgoingFlows.forEach(sequenceFlow -> {
+            FlowElement targetElement = sequenceFlow.getTargetFlowElement();
+            if (targetElement instanceof UserTask) {
+                targetNodes.add(createTargetModel(sequenceFlow, processDefinitionId));
+            } else if (targetElement instanceof EndEvent && isContainEndNode) {
+                targetNodes.add(createTargetModel(sequenceFlow, processDefinitionId));
+            } else if (targetElement instanceof ExclusiveGateway) {
+                processExclusiveGateway((ExclusiveGateway)targetElement, processDefinitionId, isContainEndNode,
+                    targetNodes);
+            }
+        });
+    }
+
+    /**
+     * 处理排他网关
+     */
+    private void processExclusiveGateway(ExclusiveGateway exclusiveGateway, String processDefinitionId,
+        Boolean isContainEndNode, List<TargetModel> targetNodes) {
+        List<SequenceFlow> outgoingFlows = exclusiveGateway.getOutgoingFlows();
+        List<SequenceFlow> filteredFlows = filterOutgoingFlows(outgoingFlows, isContainEndNode);
+        filteredFlows.forEach(flow -> targetNodes.add(createTargetModel(flow, processDefinitionId)));
+    }
+
+    /**
+     * 过滤输出流
+     */
+    private List<SequenceFlow> filterOutgoingFlows(List<SequenceFlow> outgoingFlows, Boolean isContainEndNode) {
+        List<SequenceFlow> newList = new ArrayList<>(outgoingFlows);
+        // 移除指向并行网关和排他网关的流
+        newList.removeIf(outgoingFlow -> outgoingFlow.getTargetFlowElement() instanceof ParallelGateway
+            || outgoingFlow.getTargetFlowElement() instanceof ExclusiveGateway);
+        // 如果不包含结束节点，则移除指向结束节点的流
+        if (!isContainEndNode) {
+            newList.removeIf(outgoingFlow -> outgoingFlow.getTargetFlowElement() instanceof EndEvent);
+        }
+        return newList;
     }
 
     @Override
@@ -233,9 +329,9 @@ public class CustomProcessDefinitionServiceImpl implements CustomProcessDefiniti
         if (first.isEmpty()) {
             isSub = true;
             List<FlowElement> subFeList4All = new ArrayList<>();
-            feList.stream().filter(flowElement -> flowElement instanceof SubProcess).forEach(flowElement -> {
-                subFeList4All.addAll(((SubProcess)flowElement).getFlowElements());
-            });
+            feList.stream()
+                .filter(flowElement -> flowElement instanceof SubProcess)
+                .forEach(flowElement -> subFeList4All.addAll(((SubProcess)flowElement).getFlowElements()));
             first = subFeList4All.stream().filter(flowElement -> flowElementId.equals(flowElement.getId())).findFirst();
         }
         return first.isPresent() ? createFlowElementModel(first.get(), isSub) : null;

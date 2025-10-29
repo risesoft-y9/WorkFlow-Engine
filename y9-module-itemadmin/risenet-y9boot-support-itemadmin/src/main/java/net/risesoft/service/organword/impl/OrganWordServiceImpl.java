@@ -389,82 +389,130 @@ public class OrganWordServiceImpl implements OrganWordService {
 
     @Override
     public Integer getNumber(String custom, String characterValue, Integer year, Integer common, String itemId) {
-        Integer number = 0;
-        OrganWordDetail owd = null;
         try {
-            OrganWord organWord = this.findByCustom(custom);
-            if (null != organWord) {
-                if (1 == common) {
-                    itemId = ItemConsts.COMMON_KEY;
-                }
-                owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year,
-                    itemId);
-                if (null != owd) {
-                    number = owd.getNumber() + 1;
-                } else {
-                    OrganWordProperty property =
-                        organWordPropertyService.findByOrganWordIdAndName(organWord.getId(), characterValue);
-                    if (null != property) {
-                        number = property.getInitNumber();
-                    } else {
-                        /**
-                         * 标示不存在，则编号对应的机关代字也是不存在的，再保存编号对应的机关代字
-                         */
-                        property = new OrganWordProperty();
-                        property.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                        property.setInitNumber(1);
-                        property.setName(characterValue);
-                        property.setOrganWordId(organWord.getId());
-                        property.setTabIndex(1);
-                        organWordPropertyService.save(property);
-                        number = 1;
-                    }
-                }
-            } else {
-                /**
-                 * 标示不存在，说明是第一次编号，保存当前的编号
-                 */
-                UserInfo person = Y9LoginUserHolder.getUserInfo();
-
-                String organWordId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                organWord = new OrganWord();
-                organWord.setId(organWordId);
-                organWord.setCustom(custom);
-                organWord.setName(characterValue);
-                organWord.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                organWord.setUserName(person.getName());
-                self.save(organWord);
-                /*
-                 * 标示不存在，则编号对应的机关代字也是不存在的，再保存编号对应的机关代字
-                 */
-                OrganWordProperty property = new OrganWordProperty();
-                property.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                property.setInitNumber(1);
-                property.setName(characterValue);
-                property.setOrganWordId(organWordId);
-                property.setTabIndex(1);
-
-                organWordPropertyService.save(property);
-                number = 1;
+            if (1 == common) {
+                itemId = ItemConsts.COMMON_KEY;
             }
-            OrganWordUseHistory organWordUseHistory;
+
+            OrganWord organWord = this.findByCustom(custom);
+            Integer currentNumber = getCurrentNumber(organWord, custom, characterValue, year, itemId);
+
+            // 检查编号是否已被使用，如果已被使用则递增查找可用编号
+            String numberString;
             boolean isChange = false;
             do {
-                organWordUseHistory = organWordUseHistoryService.findByItemIdAndNumberString(itemId,
-                    characterValue + "〔" + year + "〕" + number);
-                if (null != organWordUseHistory) {
-                    number++;
+                numberString = characterValue + "〔" + year + "〕" + currentNumber;
+                OrganWordUseHistory organWordUseHistory =
+                    organWordUseHistoryService.findByItemIdAndNumberString(itemId, numberString);
+                if (organWordUseHistory != null) {
+                    currentNumber++;
                     isChange = true;
+                } else {
+                    break;
                 }
-            } while (null != organWordUseHistory);
-            if (isChange && null != owd) {
-                owd.setNumber(number - 1);
-                organWordDetailService.save(owd);
+            } while (true);
+
+            // 如果编号有变化且存在详情记录，则更新详情记录
+            if (isChange) {
+                updateOrganWordDetailIfChanged(organWord, custom, characterValue, year, itemId, currentNumber);
             }
+
+            return currentNumber;
         } catch (Exception e) {
             LOGGER.error("获取编号失败", e);
+            return 0;
         }
-        return number;
+    }
+
+    /**
+     * 获取当前编号值
+     */
+    private Integer getCurrentNumber(OrganWord organWord, String custom, String characterValue, Integer year,
+        String itemId) {
+        if (organWord != null) {
+            return getCurrentNumberForExistingOrganWord(organWord, custom, characterValue, year, itemId);
+        } else {
+            return createNewOrganWordAndReturnInitialNumber(custom, characterValue);
+        }
+    }
+
+    /**
+     * 为已存在的机关字获取当前编号
+     */
+    private Integer getCurrentNumberForExistingOrganWord(OrganWord organWord, String custom, String characterValue,
+        Integer year, String itemId) {
+        OrganWordDetail owd =
+            organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year, itemId);
+
+        if (owd != null) {
+            return owd.getNumber() + 1;
+        } else {
+            return getInitialNumberFromProperty(organWord, characterValue);
+        }
+    }
+
+    /**
+     * 从属性中获取初始编号
+     */
+    private Integer getInitialNumberFromProperty(OrganWord organWord, String characterValue) {
+        OrganWordProperty property =
+            organWordPropertyService.findByOrganWordIdAndName(organWord.getId(), characterValue);
+        if (property != null) {
+            return property.getInitNumber();
+        } else {
+            // 属性不存在，创建新的属性
+            createNewOrganWordProperty(organWord.getId(), characterValue);
+            return 1;
+        }
+    }
+
+    /**
+     * 创建新的机关字属性
+     */
+    private void createNewOrganWordProperty(String organWordId, String characterValue) {
+        OrganWordProperty property = new OrganWordProperty();
+        property.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        property.setInitNumber(1);
+        property.setName(characterValue);
+        property.setOrganWordId(organWordId);
+        property.setTabIndex(1);
+        organWordPropertyService.save(property);
+    }
+
+    /**
+     * 创建新的机关字并返回初始编号
+     */
+    private Integer createNewOrganWordAndReturnInitialNumber(String custom, String characterValue) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String organWordId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+
+        OrganWord organWord = new OrganWord();
+        organWord.setId(organWordId);
+        organWord.setCustom(custom);
+        organWord.setName(characterValue);
+        organWord.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        organWord.setUserName(person.getName());
+        self.save(organWord);
+
+        // 创建对应的机关字属性
+        createNewOrganWordProperty(organWordId, characterValue);
+
+        return 1;
+    }
+
+    /**
+     * 如果编号有变化且存在详情记录，则更新详情记录
+     */
+    private void updateOrganWordDetailIfChanged(OrganWord organWord, String custom, String characterValue, Integer year,
+        String itemId, Integer currentNumber) {
+        if (organWord != null) {
+            OrganWordDetail owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom,
+                characterValue, year, itemId);
+            if (owd != null) {
+                owd.setNumber(currentNumber - 1);
+                organWordDetailService.save(owd);
+            }
+        }
     }
 
     @Override
@@ -505,83 +553,36 @@ public class OrganWordServiceImpl implements OrganWordService {
     @Override
     @Transactional
     public Integer getNumberOnly(String custom, String characterValue, Integer year, Integer common, String itemId) {
-        Integer number = 0;
-        OrganWordDetail owd = null;
         try {
-            OrganWord organWord = this.findByCustom(custom);
-            if (null != organWord) {
-                if (1 == common) {
-                    itemId = ItemConsts.COMMON_KEY;
-                }
-                owd = organWordDetailService.findByCustomAndCharacterValueAndYearAndItemId(custom, characterValue, year,
-                    itemId);
-                if (null != owd) {
-                    number = owd.getNumber() + 1;
-                } else {
-                    OrganWordProperty property =
-                        organWordPropertyService.findByOrganWordIdAndName(organWord.getId(), characterValue);
-                    if (null != property) {
-                        number = property.getInitNumber();
-                    } else {
-                        /**
-                         * 标示不存在，则编号对应的机关代字也是不存在的，再保存编号对应的机关代字
-                         */
-                        property = new OrganWordProperty();
-                        property.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                        property.setInitNumber(1);
-                        property.setName(characterValue);
-                        property.setOrganWordId(organWord.getId());
-                        property.setTabIndex(1);
-                        organWordPropertyService.save(property);
-                        number = 1;
-                    }
-                }
-            } else {
-                /**
-                 * 标示不存在，说明是第一次编号，保存当前的编号
-                 */
-                UserInfo person = Y9LoginUserHolder.getUserInfo();
-
-                String organWordId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                organWord = new OrganWord();
-                organWord.setId(organWordId);
-                organWord.setCustom(custom);
-                organWord.setName(characterValue);
-                organWord.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                organWord.setUserName(person.getName());
-                self.save(organWord);
-                /*
-                 * 标示不存在，则编号对应的机关代字也是不存在的，再保存编号对应的机关代字
-                 */
-                OrganWordProperty property = new OrganWordProperty();
-                property.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                property.setInitNumber(1);
-                property.setName(characterValue);
-                property.setOrganWordId(organWordId);
-                property.setTabIndex(1);
-
-                organWordPropertyService.save(property);
-
-                number = 1;
+            if (1 == common) {
+                itemId = ItemConsts.COMMON_KEY;
             }
-            OrganWordUseHistory organWordUseHistory;
+            OrganWord organWord = this.findByCustom(custom);
+            Integer currentNumber = getCurrentNumber(organWord, custom, characterValue, year, itemId);
+            // 检查编号是否已被使用，如果已被使用则递增查找可用编号
+            String numberString;
             boolean isChange = false;
             do {
-                organWordUseHistory = organWordUseHistoryService.findByItemIdAndNumberString(itemId,
-                    characterValue + "〔" + year + "〕" + number);
-                if (null != organWordUseHistory) {
-                    number++;
+                numberString = characterValue + "〔" + year + "〕" + currentNumber;
+                OrganWordUseHistory organWordUseHistory =
+                    organWordUseHistoryService.findByItemIdAndNumberString(itemId, numberString);
+                if (organWordUseHistory != null) {
+                    currentNumber++;
                     isChange = true;
+                } else {
+                    break;
                 }
-            } while (null != organWordUseHistory);
-            if (isChange && null != owd) {
-                owd.setNumber(number - 1);
-                organWordDetailService.save(owd);
+            } while (true);
+            // 如果编号有变化且存在详情记录，则更新详情记录
+            if (isChange) {
+                updateOrganWordDetailIfChanged(organWord, custom, characterValue, year, itemId, currentNumber);
             }
+
+            return currentNumber;
         } catch (Exception e) {
             LOGGER.error("获取编号失败:{}", e.getMessage());
+            return 0;
         }
-        return number;
     }
 
     @Override
@@ -618,51 +619,73 @@ public class OrganWordServiceImpl implements OrganWordService {
         String custom) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         OrganWord organWord = this.findByCustom(custom);
-        if (organWord != null) {
-            boolean hasPermission = false;
-            ItemOrganWordBind bind =
-                itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
-                    processDefinitionId, taskDefKey, custom);
-            if (null != bind) {
-                List<String> roleIds = bind.getRoleIds();
-                if (roleIds.isEmpty()) {
-                    hasPermission = true;
-                } else {
-                    for (String roleId : roleIds) {
-                        hasPermission =
-                            positionRoleApi.hasRole(tenantId, roleId, Y9LoginUserHolder.getOrgUnitId()).getData();
-                        if (hasPermission) {
-                            break;
-                        }
-                    }
-                }
-            }
-            if (!hasPermission) {
-                return Collections.emptyList();
-            } else {
-                List<OrganWordPropertyModel> retList = new ArrayList<>();
-                if (custom.equals(ItemOrganWordEnum.PURE_NUMBER.getValue())) {
-                    OrganWordPropertyModel editMap = new OrganWordPropertyModel();
-                    editMap.setHasPermission(true);
-                    editMap.setName(ItemOrganWordEnum.PURE_NUMBER.getName());
-                    editMap.setCustom(custom);
-                    retList.add(editMap);
-                } else {
-                    List<OrganWordProperty> propertyList =
-                        organWordPropertyService.listByOrganWordId(organWord.getId());
-                    for (OrganWordProperty op : propertyList) {
-                        OrganWordPropertyModel editMap = new OrganWordPropertyModel();
-                        editMap.setHasPermission(true);
-                        editMap.setName(op.getName());
-                        editMap.setCustom(organWord.getCustom());
-                        editMap.setInitNumber(op.getInitNumber());
-                        retList.add(editMap);
-                    }
-                }
-                return retList;
-            }
+        // 如果机关字不存在，返回空列表
+        if (organWord == null) {
+            return Collections.emptyList();
         }
-        return Collections.emptyList();
+        // 检查用户是否有权限
+        if (!hasPermission(tenantId, itemId, processDefinitionId, taskDefKey, custom)) {
+            return Collections.emptyList();
+        }
+        // 根据机关字类型返回相应属性列表
+        return buildOrganWordPropertyList(organWord, custom);
+    }
+
+    /**
+     * 检查用户是否有权限访问指定的机关字
+     */
+    private boolean hasPermission(String tenantId, String itemId, String processDefinitionId, String taskDefKey,
+        String custom) {
+        ItemOrganWordBind bind =
+            itemOrganWordBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOrganWordCustom(itemId,
+                processDefinitionId, taskDefKey, custom);
+
+        // 如果没有绑定权限配置，默认有权限
+        if (bind == null) {
+            return true;
+        }
+
+        List<String> roleIds = bind.getRoleIds();
+        // 如果角色列表为空，默认有权限
+        if (roleIds.isEmpty()) {
+            return true;
+        }
+
+        // 检查用户是否拥有任意一个角色
+        String userId = Y9LoginUserHolder.getOrgUnitId();
+        return roleIds.stream()
+            .map(roleId -> checkRolePermission(tenantId, roleId, userId))
+            .anyMatch(Boolean.TRUE::equals);
+    }
+
+    /**
+     * 构建机关字属性列表
+     */
+    private List<OrganWordPropertyModel> buildOrganWordPropertyList(OrganWord organWord, String custom) {
+        List<OrganWordPropertyModel> retList = new ArrayList<>();
+
+        // 纯数字类型特殊处理
+        if (custom.equals(ItemOrganWordEnum.PURE_NUMBER.getValue())) {
+            OrganWordPropertyModel model = new OrganWordPropertyModel();
+            model.setHasPermission(true);
+            model.setName(ItemOrganWordEnum.PURE_NUMBER.getName());
+            model.setCustom(custom);
+            retList.add(model);
+            return retList;
+        }
+
+        // 普通类型处理
+        List<OrganWordProperty> propertyList = organWordPropertyService.listByOrganWordId(organWord.getId());
+        for (OrganWordProperty op : propertyList) {
+            OrganWordPropertyModel model = new OrganWordPropertyModel();
+            model.setHasPermission(true);
+            model.setName(op.getName());
+            model.setCustom(organWord.getCustom());
+            model.setInitNumber(op.getInitNumber());
+            retList.add(model);
+        }
+
+        return retList;
     }
 
     @Override
@@ -671,33 +694,69 @@ public class OrganWordServiceImpl implements OrganWordService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9LoginUserHolder.getOrgUnitId();
 
-        List<OrganWordPropertyModel> retList = new ArrayList<>();
         List<ItemOrganWordBind> bindList = itemOrganWordBindService
             .listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
-        if (!bindList.isEmpty()) {
-            for (ItemOrganWordBind bind : bindList) {
-                boolean hasPermission;
-                OrganWordPropertyModel editMap = new OrganWordPropertyModel();
-                List<String> roleIds = bind.getRoleIds();
-                if (roleIds.isEmpty()) {
-                    editMap.setHasPermission(true);
-                } else {
-                    for (String roleId : roleIds) {
-                        hasPermission = positionRoleApi.hasRole(tenantId, roleId, userId).getData();
-                        if (hasPermission) {
-                            break;
-                        }
-                    }
-                }
-                editMap.setCustom(bind.getOrganWordCustom());
-                retList.add(editMap);
-            }
-        } else {
-            OrganWordPropertyModel editMap = new OrganWordPropertyModel();
-            editMap.setHasPermission(false);
-            retList.add(editMap);
+
+        if (bindList.isEmpty()) {
+            return createEmptyPermissionList();
         }
+
+        return buildOrganWordPropertyListWithPermission(tenantId, userId, bindList);
+    }
+
+    /**
+     * 创建无权限的属性列表
+     */
+    private List<OrganWordPropertyModel> createEmptyPermissionList() {
+        List<OrganWordPropertyModel> retList = new ArrayList<>();
+        OrganWordPropertyModel model = new OrganWordPropertyModel();
+        model.setHasPermission(false);
+        retList.add(model);
         return retList;
+    }
+
+    /**
+     * 构建带权限检查的机关字属性列表
+     */
+    private List<OrganWordPropertyModel> buildOrganWordPropertyListWithPermission(String tenantId, String userId,
+        List<ItemOrganWordBind> bindList) {
+        List<OrganWordPropertyModel> retList = new ArrayList<>();
+
+        for (ItemOrganWordBind bind : bindList) {
+            OrganWordPropertyModel model = new OrganWordPropertyModel();
+            model.setCustom(bind.getOrganWordCustom());
+            model.setHasPermission(checkPermission(tenantId, userId, bind.getRoleIds()));
+            retList.add(model);
+        }
+
+        return retList;
+    }
+
+    /**
+     * 检查用户权限
+     */
+    private boolean checkPermission(String tenantId, String userId, List<String> roleIds) {
+        // 如果角色列表为空，默认有权限
+        if (roleIds.isEmpty()) {
+            return true;
+        }
+
+        // 检查用户是否拥有任意一个角色
+        return roleIds.stream()
+            .map(roleId -> checkRolePermission(tenantId, roleId, userId))
+            .anyMatch(Boolean.TRUE::equals);
+    }
+
+    /**
+     * 检查用户是否拥有指定角色（复用已有的方法）
+     */
+    private Boolean checkRolePermission(String tenantId, String roleId, String userId) {
+        try {
+            return positionRoleApi.hasRole(tenantId, roleId, userId).getData();
+        } catch (Exception e) {
+            LOGGER.warn("检查角色权限失败，tenantId: {}, roleId: {}, userId: {}", tenantId, roleId, userId, e);
+            return false;
+        }
     }
 
     @Override
@@ -752,94 +811,142 @@ public class OrganWordServiceImpl implements OrganWordService {
         String processSerialNumber) {
 
         Map<String, Object> retMap = new HashMap<>();
-        Calendar calendar = Calendar.getInstance();
-        int year = calendar.get(Calendar.YEAR);
+        int year = Calendar.getInstance().get(Calendar.YEAR);
         String tenantId = Y9LoginUserHolder.getTenantId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        try {
-            OrganWordUseHistory hisNumber =
-                organWordUseHistoryService.findByItemIdAndNumberStringAndCustom(itemId, numberString, custom);
-            if (null == hisNumber) {
-                OrganWord organWord = this.findByCustom(custom);
-                String numberType = organWord.getNumberType();
-                if (numberType.equals(ItemOrganWordEnum.PURE_NUMBER.getValue())) {
-                    OrganWordDetail oldDetail = organWordDetailService.findByCustomAndItemId(custom, itemId);
-                    if (null == oldDetail) {
-                        OrganWordDetail detail = new OrganWordDetail();
-                        detail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                        detail.setNumber(1);
-                        detail.setCustom(custom);
-                        detail.setTenantId(tenantId);
-                        detail.setItemId(itemId);
-                        detail.setCharacterValue(numberString);
-                        detail.setYear(year);
-                        detail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                        organWordDetailService.save(detail);
-                    } else {
-                        oldDetail.setNumber(oldDetail.getNumber() + 1);
-                        organWordDetailService.save(oldDetail);
-                    }
-                } else if (numberType.equals(ItemOrganWordEnum.BUREAU_AREA_NUMBER.getValue())) {
-                    String characterValue = numberString.substring(0, 2);
-                    String str = numberString.substring(2);
-                    Pattern pattern = Pattern.compile("(?<=\\d{2})(\\d+)"); // 定义正则表达式模式
-                    Matcher matcher = pattern.matcher(str); // 创建Matcher对象
-                    String replaceStr;
-                    if (matcher.find()) { // 查找第一个匹配项
-                        replaceStr = matcher.group(); // 获取匹配到的结果
-                    } else {
-                        replaceStr = str;
-                    }
-                    Integer number = Integer.valueOf(replaceStr);
-                    OrganWordDetail oldDetail =
-                        organWordDetailService.findByCustomAndCharacterValueAndItemId(custom, characterValue, itemId);
-                    if (null == oldDetail) {
-                        OrganWordDetail detail = new OrganWordDetail();
-                        detail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                        detail.setNumber(number);
-                        detail.setCustom(custom);
-                        detail.setTenantId(tenantId);
-                        detail.setCharacterValue(characterValue);
-                        detail.setItemId(itemId);
-                        detail.setYear(year);
-                        detail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                        organWordDetailService.save(detail);
-                    } else {
-                        oldDetail.setNumber(oldDetail.getNumber() + 1);
-                        organWordDetailService.save(oldDetail);
-                    }
-                }
 
-                OrganWordUseHistory history = new OrganWordUseHistory();
-                history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                history.setNumberString(numberString);
-                history.setCustom(custom);
-                history.setProcessSerialNumber(processSerialNumber);
-                history.setItemId(itemId);
-                history.setUserId(person.getPersonId());
-                history.setUserName(person.getName());
-                history.setTenantId(tenantId);
-                history.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                organWordUseHistoryService.save(history);
-                retMap.put(ItemConsts.SUCCESS_KEY, true);
-                retMap.put("msg", "保存编号成功");
+        try {
+            // 检查编号是否已存在
+            OrganWordUseHistory existingHistory =
+                organWordUseHistoryService.findByItemIdAndNumberStringAndCustom(itemId, numberString, custom);
+
+            if (existingHistory == null) {
+                // 编号不存在，创建新的编号记录
+                createNewNumberRecord(custom, numberString, itemId, processSerialNumber, tenantId, person, year,
+                    retMap);
             } else {
-                OrganWordUseHistory history =
-                    organWordUseHistoryService.findByItemIdAndNumberStrAndCustomAndProcessSerialNumber(itemId,
-                        numberString, custom, processSerialNumber);
-                if (null != history) {
-                    retMap.put(ItemConsts.SUCCESS_KEY, true);
-                    retMap.put("msg", "当前编号已经保存");
-                } else {
-                    retMap.put(ItemConsts.SUCCESS_KEY, false);
-                    retMap.put("msg", "当前编号已经被占用，请双击编号框重新生成新的编号！");
-                }
+                // 编号已存在，检查是否属于当前流程
+                checkExistingNumberRecord(itemId, numberString, custom, processSerialNumber, retMap);
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("保存编号失败", e);
             retMap.put(ItemConsts.SUCCESS_KEY, false);
             retMap.put("msg", "出现异常，保存编号失败");
         }
+
         return retMap;
+    }
+
+    /**
+     * 创建新的编号记录
+     */
+    private void createNewNumberRecord(String custom, String numberString, String itemId, String processSerialNumber,
+        String tenantId, UserInfo person, int year, Map<String, Object> retMap) {
+        OrganWord organWord = this.findByCustom(custom);
+        String numberType = organWord.getNumberType();
+
+        // 根据编号类型处理不同的逻辑
+        if (numberType.equals(ItemOrganWordEnum.PURE_NUMBER.getValue())) {
+            handlePureNumberType(custom, numberString, itemId, tenantId, year);
+        } else if (numberType.equals(ItemOrganWordEnum.BUREAU_AREA_NUMBER.getValue())) {
+            handleBureauAreaNumberType(custom, numberString, itemId, tenantId, year);
+        }
+
+        // 保存使用历史
+        saveOrganWordUseHistory(custom, numberString, itemId, processSerialNumber, tenantId, person);
+
+        retMap.put(ItemConsts.SUCCESS_KEY, true);
+        retMap.put("msg", "保存编号成功");
+    }
+
+    /**
+     * 处理纯数字类型编号
+     */
+    private void handlePureNumberType(String custom, String numberString, String itemId, String tenantId, int year) {
+        OrganWordDetail oldDetail = organWordDetailService.findByCustomAndItemId(custom, itemId);
+        if (oldDetail == null) {
+            OrganWordDetail detail = new OrganWordDetail();
+            detail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            detail.setNumber(1);
+            detail.setCustom(custom);
+            detail.setTenantId(tenantId);
+            detail.setItemId(itemId);
+            detail.setCharacterValue(numberString);
+            detail.setYear(year);
+            detail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+            organWordDetailService.save(detail);
+        } else {
+            oldDetail.setNumber(oldDetail.getNumber() + 1);
+            organWordDetailService.save(oldDetail);
+        }
+    }
+
+    /**
+     * 处理 bureau 区域编号类型
+     */
+    private void handleBureauAreaNumberType(String custom, String numberString, String itemId, String tenantId,
+        int year) {
+        String characterValue = numberString.substring(0, 2);
+        String str = numberString.substring(2);
+
+        Pattern pattern = Pattern.compile("(?<=\\d{2})(\\d+)");
+        Matcher matcher = pattern.matcher(str);
+        String replaceStr = matcher.find() ? matcher.group() : str;
+
+        Integer number = Integer.valueOf(replaceStr);
+
+        OrganWordDetail oldDetail =
+            organWordDetailService.findByCustomAndCharacterValueAndItemId(custom, characterValue, itemId);
+
+        if (oldDetail == null) {
+            OrganWordDetail detail = new OrganWordDetail();
+            detail.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            detail.setNumber(number);
+            detail.setCustom(custom);
+            detail.setTenantId(tenantId);
+            detail.setCharacterValue(characterValue);
+            detail.setItemId(itemId);
+            detail.setYear(year);
+            detail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+            organWordDetailService.save(detail);
+        } else {
+            oldDetail.setNumber(oldDetail.getNumber() + 1);
+            organWordDetailService.save(oldDetail);
+        }
+    }
+
+    /**
+     * 保存机关字使用历史
+     */
+    private void saveOrganWordUseHistory(String custom, String numberString, String itemId, String processSerialNumber,
+        String tenantId, UserInfo person) {
+        OrganWordUseHistory history = new OrganWordUseHistory();
+        history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        history.setNumberString(numberString);
+        history.setCustom(custom);
+        history.setProcessSerialNumber(processSerialNumber);
+        history.setItemId(itemId);
+        history.setUserId(person.getPersonId());
+        history.setUserName(person.getName());
+        history.setTenantId(tenantId);
+        history.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+        organWordUseHistoryService.save(history);
+    }
+
+    /**
+     * 检查已存在的编号记录
+     */
+    private void checkExistingNumberRecord(String itemId, String numberString, String custom,
+        String processSerialNumber, Map<String, Object> retMap) {
+        OrganWordUseHistory history = organWordUseHistoryService
+            .findByItemIdAndNumberStrAndCustomAndProcessSerialNumber(itemId, numberString, custom, processSerialNumber);
+
+        if (history != null) {
+            retMap.put(ItemConsts.SUCCESS_KEY, true);
+            retMap.put("msg", "当前编号已经保存");
+        } else {
+            retMap.put(ItemConsts.SUCCESS_KEY, false);
+            retMap.put("msg", "当前编号已经被占用，请双击编号框重新生成新的编号！");
+        }
     }
 }
