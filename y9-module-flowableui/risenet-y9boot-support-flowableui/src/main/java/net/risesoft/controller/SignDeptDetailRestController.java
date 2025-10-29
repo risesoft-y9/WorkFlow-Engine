@@ -18,6 +18,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
@@ -231,7 +232,7 @@ public class SignDeptDetailRestController {
         List<SignDeptModel> sdmList = signDeptInfoApi.getSignDeptList(tenantId, "0", processSerialNumber).getData();
         boolean match = sdmList.stream().anyMatch(sdm -> sdm.getDeptId().equals(ssd.getDeptId()));
         if (!match) {
-            signDeptInfoApi.addSignDept(tenantId, Y9LoginUserHolder.getPosition().getId(), ssd.getDeptId(), "0",
+            signDeptInfoApi.addSignDept(tenantId, Y9FlowableHolder.getPosition().getId(), ssd.getDeptId(), "0",
                 processSerialNumber);
         }
         return Y9Result.success();

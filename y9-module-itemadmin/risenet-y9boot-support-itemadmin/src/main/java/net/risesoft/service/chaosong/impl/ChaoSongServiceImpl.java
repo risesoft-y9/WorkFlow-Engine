@@ -22,6 +22,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.CustomGroupApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
@@ -250,7 +251,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         ProcessDefinitionInfo processDefInfo, String taskDefinitionKey) {
         OpenDataModel model = new OpenDataModel();
         ProcessParam processParam = processParamService.findByProcessInstanceId(taskInfo.getProcessInstanceId());
-        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, Y9LoginUserHolder.getOrgUnitId()).getData();
+        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, Y9FlowableHolder.getOrgUnitId()).getData();
         model.setTitle(processParam.getTitle());
         model.setStartor(processDefInfo.getStartor());
         model.setItembox(taskInfo.getItembox());
@@ -301,7 +302,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         }
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page - 1, rows, sort);
-        String senderId = Y9LoginUserHolder.getOrgUnitId();
+        String senderId = Y9FlowableHolder.getOrgUnitId();
         ChaoSongSpecification<ChaoSong> specification =
             new ChaoSongSpecification<>(processInstanceId, null, null, userName, null, null, null, null, null, null);
         // 手动添加 senderId 不等于当前用户的条件
@@ -421,7 +422,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Y9Page<ChaoSong4DataBaseModel> pageMyChaoSongList(String searchName, String itemId, String userName,
         Integer state, String year, int rows, int page) {
-        String userId = Y9LoginUserHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getOrgUnitId();
         if (page < 1) {
             page = 1;
         }
@@ -599,8 +600,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         String smsContent, String smsPersonId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String currentUserId = Y9LoginUserHolder.getOrgUnitId();
-            OrgUnit currentOrgUnit = Y9LoginUserHolder.getOrgUnit();
+            String currentUserId = Y9FlowableHolder.getOrgUnitId();
+            OrgUnit currentOrgUnit = Y9FlowableHolder.getOrgUnit();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             String title = processParam.getTitle();
             String itemId = processParam.getItemId();
@@ -742,7 +743,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     public Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(String searchName, String itemId, String userName,
         Integer state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getOrgUnitId();
         if (page == null || page < 1) {
             page = 1;
         }

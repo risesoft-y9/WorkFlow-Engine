@@ -22,6 +22,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9Form;
@@ -321,7 +322,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             if (y9Table.getTableType() == ItemTableTypeEnum.SUB) {
                 String sqlStr = buildSelectSql(dialect, tableName) + " where parentProcessSerialNumber =?" + userIdSql;
                 dataMap = jdbcTemplate4Tenant.queryForList(sqlStr, parentProcessSerialNumber,
-                    Y9LoginUserHolder.getOrgUnitId());
+                    Y9FlowableHolder.getOrgUnitId());
                 return dataMap;
             }
         }

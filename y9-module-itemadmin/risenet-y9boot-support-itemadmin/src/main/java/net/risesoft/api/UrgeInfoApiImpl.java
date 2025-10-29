@@ -13,8 +13,10 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.UrgeInfoApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.UrgeInfo;
 import net.risesoft.model.itemadmin.UrgeInfoModel;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.UrgeInfoService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -35,11 +37,14 @@ public class UrgeInfoApiImpl implements UrgeInfoApi {
 
     private final UrgeInfoService urgeInfoService;
 
+    private final UserApi userApi;
+
     @Override
     public Y9Result<Object> save(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(personApi.get(tenantId, userId).getData());
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         urgeInfoService.save(processSerialNumber, msgContent);
         return Y9Result.success();
     }

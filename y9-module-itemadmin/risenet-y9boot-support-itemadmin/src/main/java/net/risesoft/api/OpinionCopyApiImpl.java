@@ -14,15 +14,17 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.opinion.OpinionCopyApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.DocumentCopy;
 import net.risesoft.entity.opinion.OpinionCopy;
 import net.risesoft.enums.DocumentCopyStatusEnum;
 import net.risesoft.model.itemadmin.OpinionCopyModel;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.opinion.OpinionCopyService;
@@ -48,6 +50,8 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
     private final PersonApi personApi;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final UserApi userApi;
 
     @Override
     public Y9Result<List<OpinionCopyModel>> findByProcessSerialNumber(String tenantId, String userId, String orgUnitId,
@@ -81,11 +85,11 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
     @Override
     public Y9Result<OpinionCopyModel> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String orgUnitId, @RequestBody OpinionCopyModel opinionCopyModel) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         OpinionCopy opinionCopy = new OpinionCopy();
         Y9BeanUtil.copyProperties(opinionCopyModel, opinionCopy);
         Optional<OpinionCopy> optional = opinionCopyService.saveOrUpdate(opinionCopy);

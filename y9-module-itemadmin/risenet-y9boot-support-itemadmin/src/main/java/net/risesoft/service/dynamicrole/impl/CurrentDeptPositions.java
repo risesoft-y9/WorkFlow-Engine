@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.platform.org.Position;
 import net.risesoft.service.dynamicrole.AbstractDynamicRoleMember;
@@ -27,7 +28,7 @@ public class CurrentDeptPositions extends AbstractDynamicRoleMember {
     @Override
     public List<Position> getPositionList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getOrgUnitId();
+        String positionId = Y9FlowableHolder.getOrgUnitId();
         Position position = positionApi.get(tenantId, positionId).getData();
         List<Position> positionList = positionApi.listByParentId(tenantId, position.getParentId()).getData();
         positionList.remove(position);

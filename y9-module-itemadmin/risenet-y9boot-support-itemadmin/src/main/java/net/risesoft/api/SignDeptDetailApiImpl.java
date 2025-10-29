@@ -11,6 +11,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.SignDeptDetail;
@@ -175,7 +176,7 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
         @RequestBody SignDeptDetailModel signDeptDetailModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         SignDeptDetail signDeptDetail = new SignDeptDetail();
         Y9BeanUtil.copyProperties(signDeptDetailModel, signDeptDetail);
         signDeptDetailService.saveOrUpdate(signDeptDetail);

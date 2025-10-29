@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
@@ -36,12 +37,12 @@ public class ActivitiOptServiceImpl implements ActivitiOptService {
         List<String> startOrgUnitIdList, Map<String, Object> map) {
         TaskModel task = new TaskModel();
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
+            String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9FlowableHolder.getOrgUnitId();
             if (startOrgUnitIdList == null || startOrgUnitIdList.isEmpty()) {
                 startOrgUnitIdList = new ArrayList<>();
                 startOrgUnitIdList.add(userId);
             }
-            map = CommonOpt.setVariables(userId, Y9LoginUserHolder.getOrgUnit().getName(), "", startOrgUnitIdList,
+            map = CommonOpt.setVariables(userId, Y9FlowableHolder.getOrgUnit().getName(), "", startOrgUnitIdList,
                 processSerialNumber, null, map);
             ProcessInstanceModel piModel =
                 runtimeApi.startProcessInstanceByKey(tenantId, userId, processDefinitionKey, systemName, map).getData();

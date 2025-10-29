@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -211,7 +212,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     @Override
     public String getStartTaskDefKey(String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getOrgUnitId();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId：" + itemId + "事项";
         // 获取最新流程定义
@@ -293,7 +294,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
 
     @Override
     public List<ItemStartNodeRoleModel> getAllStartTaskDefKey(String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getOrgUnitId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9FlowableHolder.getOrgUnitId();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId=" + itemId + "事项";
         String processDefinitionKey = item.getWorkflowGuid();

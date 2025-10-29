@@ -12,9 +12,10 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.SpeakInfo;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SpeakInfoService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
@@ -36,6 +37,8 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     private final SpeakInfoService speakInfoService;
 
     private final PersonApi personApi;
+
+    private final UserApi userApi;
 
     /**
      * 逻辑删除发出的沟通消息
@@ -85,9 +88,9 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     @Override
     public Y9Result<List<SpeakInfoModel>> findByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String processInstanceId) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
 
         List<SpeakInfo> siList = speakInfoService.findByProcessInstanceId(processInstanceId);
         return Y9Result.success(ItemAdminModelConvertUtil.speakInfoList2ModelList(siList));
@@ -121,9 +124,9 @@ public class SpeakInfoApiImpl implements SpeakInfoApi {
     @Override
     public Y9Result<String> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestBody SpeakInfoModel speakInfoModel) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         SpeakInfo speakInfo = new SpeakInfo();
         Y9BeanUtil.copyProperties(speakInfoModel, speakInfo);
         return Y9Result.success(speakInfoService.saveOrUpdate(speakInfo));

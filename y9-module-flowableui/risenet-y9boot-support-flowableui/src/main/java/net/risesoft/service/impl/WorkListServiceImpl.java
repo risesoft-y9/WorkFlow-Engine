@@ -16,6 +16,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.OptionClassApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
@@ -296,7 +297,7 @@ public class WorkListServiceImpl implements WorkListService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
-            Position position = Y9LoginUserHolder.getPosition();
+            Position position = Y9FlowableHolder.getPosition();
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String deptId = isBureau ? bureau.getId() : position.getParentId();
@@ -542,7 +543,7 @@ public class WorkListServiceImpl implements WorkListService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
-            Position position = Y9LoginUserHolder.getPosition();
+            Position position = Y9FlowableHolder.getPosition();
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String deptId = isBureau ? bureau.getId() : position.getParentId();
@@ -1132,7 +1133,7 @@ public class WorkListServiceImpl implements WorkListService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9LoginUserHolder.getPositionId();
-            Position position = Y9LoginUserHolder.getPosition();
+            Position position = Y9FlowableHolder.getPosition();
             OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String deptId = isBureau ? bureau.getId() : position.getParentId();

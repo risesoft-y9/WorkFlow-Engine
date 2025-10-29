@@ -6,6 +6,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.enums.platform.org.DepartmentPropCategoryEnum;
@@ -32,7 +33,7 @@ public class CurrentDeptLeadersExtend extends AbstractDynamicRoleMember {
     @Override
     public List<OrgUnit> getOrgUnitList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         List<OrgUnit> leaders =
             departmentApi

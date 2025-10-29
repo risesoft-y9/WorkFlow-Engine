@@ -22,6 +22,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SmsDetailApi;
@@ -338,7 +339,7 @@ public class DocumentRestController {
             return Y9Result.failure("操作失败：保存流程参数启动流程失败!");
         }
         StartProcessResultModel startProcess = startY9Result.getData();
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         // 5 设置原文件的相关信息
         TaskRelatedModel sourceTaskRelated = new TaskRelatedModel();
         sourceTaskRelated.setInfoType(TaskRelatedEnum.YUAN.getValue());

@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
@@ -40,7 +41,7 @@ public class RoleFilter extends AbstractDynamicRoleMember {
     @Override
     public List<Position> getPositionList(String processInstanceId, DynamicRole dynamicRole) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getOrgUnitId();
         OrgUnit currentOrgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
         if (dynamicRole.isUseProcessInstanceId()) {
             ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();

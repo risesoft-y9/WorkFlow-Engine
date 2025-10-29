@@ -10,14 +10,16 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.opinion.OpinionSignApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.opinion.OpinionSign;
 import net.risesoft.model.itemadmin.OpinionSignListModel;
 import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.opinion.OpinionSignService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -39,6 +41,8 @@ public class OpinionSignApiImpl implements OpinionSignApi {
     private final PersonApi personApi;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final UserApi userApi;
 
     /**
      * 验证当前taskId任务节点是否已经签写意见
@@ -111,10 +115,10 @@ public class OpinionSignApiImpl implements OpinionSignApi {
         @RequestParam String userId, @RequestParam String positionId, @RequestParam String processSerialNumber,
         @RequestParam String signDeptDetailId, @RequestParam String itembox,
         @RequestParam(required = false) String taskId, @RequestParam String opinionFrameMark) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
-        Y9LoginUserHolder.setOrgUnitId(positionId);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
+        Y9FlowableHolder.setOrgUnitId(positionId);
         List<OpinionSignListModel> opinionList =
             opinionSignService.list(processSerialNumber, signDeptDetailId, itembox, taskId, opinionFrameMark);
         return Y9Result.success(opinionList);
@@ -134,11 +138,11 @@ public class OpinionSignApiImpl implements OpinionSignApi {
     @Override
     public Y9Result<OpinionSignModel> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String orgUnitId, @RequestBody OpinionSignModel opinionSignModel) throws Exception {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         OpinionSign opinionSign = new OpinionSign();
         Y9BeanUtil.copyProperties(opinionSignModel, opinionSign);
         opinionSign = opinionSignService.saveOrUpdate(opinionSign);

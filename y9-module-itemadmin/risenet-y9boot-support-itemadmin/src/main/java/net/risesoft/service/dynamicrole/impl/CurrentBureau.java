@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ProcessParam;
@@ -34,7 +35,7 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
     @Override
     public List<OrgUnit> getOrgUnitList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, user.getParentId()).getData();
@@ -45,7 +46,7 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
     @Override
     public List<OrgUnit> getOrgUnitList(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
         OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, user.getParentId()).getData();

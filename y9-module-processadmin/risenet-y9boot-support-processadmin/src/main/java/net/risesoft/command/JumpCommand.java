@@ -31,8 +31,8 @@ import org.flowable.variable.service.VariableService;
 
 import lombok.Getter;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.consts.processadmin.SysVariables;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -258,9 +258,9 @@ public class JumpCommand implements Command<Void> {
      */
     private Map<String, Object> createTaskVariables() {
         Map<String, Object> vars = new HashMap<>(16);
-        vars.put(SysVariables.TASK_SENDER, Y9LoginUserHolder.getOrgUnit().getName());
-        vars.put(SysVariables.TASK_SENDER_ID, Y9LoginUserHolder.getOrgUnitId());
-        vars.put(SysVariables.TASK_SENDER_POSITION_ID, Y9LoginUserHolder.getOrgUnitId());
+        vars.put(SysVariables.TASK_SENDER, Y9FlowableHolder.getOrgUnit().getName());
+        vars.put(SysVariables.TASK_SENDER_ID, Y9FlowableHolder.getOrgUnitId());
+        vars.put(SysVariables.TASK_SENDER_POSITION_ID, Y9FlowableHolder.getOrgUnitId());
 
         String user = null;
         if (users.size() == 1) {

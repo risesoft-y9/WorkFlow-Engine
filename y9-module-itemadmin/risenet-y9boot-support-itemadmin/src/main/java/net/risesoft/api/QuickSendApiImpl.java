@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.QuickSendApi;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.QuickSendService;
@@ -41,7 +42,7 @@ public class QuickSendApiImpl implements QuickSendApi {
     public Y9Result<String> getAssignee(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId, @RequestParam String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         return Y9Result.success(quickSendService.getAssignee(itemId, taskKey));
     }
 
@@ -60,7 +61,7 @@ public class QuickSendApiImpl implements QuickSendApi {
     public Y9Result<String> saveOrUpdate(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId, @RequestParam String taskKey, @RequestParam String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         quickSendService.saveOrUpdate(itemId, taskKey, assignee);
         return Y9Result.success();
     }

@@ -36,6 +36,7 @@ import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
@@ -45,7 +46,7 @@ import net.risesoft.model.itemadmin.Y9WordHistoryModel;
 import net.risesoft.model.itemadmin.Y9WordModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -76,6 +77,7 @@ public class FormNTKOController {
     private final ProcessParamApi processParamApi;
     private final DraftApi draftApi;
     private final Y9WordApi y9WordApi;
+    private final UserApi userApi;
 
     /**
      * 删除指定类型的正文
@@ -89,8 +91,8 @@ public class FormNTKOController {
     public void deleteWordByIsTaoHong(@RequestParam(required = false) String isTaoHong,
         @RequestParam String processSerialNumber, @RequestParam String tenantId, @RequestParam String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, isTaoHong);
     }
 
@@ -110,8 +112,8 @@ public class FormNTKOController {
         @RequestParam String tenantId, @RequestParam String userId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         Y9WordHistoryModel model = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
         String fileStoreId = model.getFileStoreId();
         try (ServletOutputStream out = response.getOutputStream()) {
@@ -173,8 +175,8 @@ public class FormNTKOController {
         HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
+            UserInfo userInfo = userApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setUserInfo(userInfo);
             Y9WordModel word = y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
             String fileStoreId = word.getFileStoreId();
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber) + fileType);
@@ -203,8 +205,8 @@ public class FormNTKOController {
         @RequestParam String userId, HttpServletResponse response, HttpServletRequest request) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
+            UserInfo userInfo = userApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setUserInfo(userInfo);
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber) + fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(id, out);
@@ -227,8 +229,8 @@ public class FormNTKOController {
     public Y9WordModel getUpdateWord(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         return y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
     }
 
@@ -701,8 +703,8 @@ public class FormNTKOController {
      */
     private void initializeUserContext(String tenantId, String userId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
     }
 
     /**

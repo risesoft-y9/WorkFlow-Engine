@@ -14,6 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
@@ -116,7 +117,7 @@ public class OfficeFollowRestController {
     @PostMapping(value = "/saveOfficeFollow")
     public Y9Result<String> saveOfficeFollow(@RequestParam @NotBlank String processInstanceId) {
         try {
-            Position position = Y9LoginUserHolder.getPosition();
+            Position position = Y9FlowableHolder.getPosition();
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
             OfficeFollowModel officeFollow = new OfficeFollowModel();
             if (StringUtils.isNotBlank(processInstanceId)) {

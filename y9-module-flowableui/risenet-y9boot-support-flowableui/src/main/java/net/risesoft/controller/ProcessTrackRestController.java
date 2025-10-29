@@ -16,6 +16,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.api.processadmin.RepositoryApi;
@@ -90,7 +91,7 @@ public class ProcessTrackRestController {
      */
     @GetMapping(value = "/historyList")
     public Y9Result<Map<String, Object>> historyList(@RequestParam @NotBlank String processInstanceId) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>();
@@ -114,7 +115,7 @@ public class ProcessTrackRestController {
     @FlowableLog(operationType = FlowableOperationTypeEnum.BROWSE, operationName = "查看电子历程")
     @GetMapping(value = "/list")
     public Y9Result<List<HistoryProcessModel>> list(@RequestParam @NotBlank String processInstanceId) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoryProcessModel> items =
@@ -130,7 +131,7 @@ public class ProcessTrackRestController {
      */
     @GetMapping(value = "/processList")
     public Y9Result<List<HistoryProcessModel>> processList(@RequestParam @NotBlank String processInstanceId) {
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {

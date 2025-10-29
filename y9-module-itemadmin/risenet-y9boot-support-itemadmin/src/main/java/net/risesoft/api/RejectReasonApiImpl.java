@@ -9,7 +9,8 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.RejectReasonApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.api.platform.user.UserApi;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.RejectReasonService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -30,6 +31,8 @@ public class RejectReasonApiImpl implements RejectReasonApi {
 
     private final PersonApi personApi;
 
+    private final UserApi userApi;
+
     /**
      * 保存驳回原因信息
      *
@@ -45,8 +48,8 @@ public class RejectReasonApiImpl implements RejectReasonApi {
     public Y9Result<Object> save(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam Integer action, @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
 
         rejectReasonService.save(reason, taskId, action);
         return Y9Result.success();

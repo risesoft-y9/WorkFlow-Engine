@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -122,7 +123,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     private void setupUserContext(String tenantId, String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
     }
 
     /**

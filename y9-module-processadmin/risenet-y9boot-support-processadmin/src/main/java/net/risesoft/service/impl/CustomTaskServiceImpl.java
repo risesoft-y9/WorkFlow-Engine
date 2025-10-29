@@ -22,6 +22,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.command.JumpSubProcessCommand;
 import net.risesoft.consts.processadmin.SysVariables;
@@ -184,7 +185,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 variables.put(SysVariables.USER, userList.stream().findFirst().get());
             }
             variables.put(SysVariables.USERS, userList);
-            variables.put(SysVariables.ACTION_NAME + ":" + Y9LoginUserHolder.getOrgUnitId(), "结束会签");
+            variables.put(SysVariables.ACTION_NAME + ":" + Y9FlowableHolder.getOrgUnitId(), "结束会签");
             taskService.complete(taskId, variables, false);
         } catch (Exception e) {
             final Writer result = new StringWriter();

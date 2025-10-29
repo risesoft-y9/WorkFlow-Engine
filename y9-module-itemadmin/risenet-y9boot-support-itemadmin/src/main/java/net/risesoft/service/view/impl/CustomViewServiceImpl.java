@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.view.CustomView;
 import net.risesoft.id.IdType;
@@ -20,7 +21,6 @@ import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.view.CustomViewRepository;
 import net.risesoft.service.view.CustomViewService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -41,13 +41,13 @@ public class CustomViewServiceImpl implements CustomViewService {
     @Override
     @Transactional
     public void delCustomView(String viewType) {
-        customViewRepository.deleteByUserIdAndViewType(Y9LoginUserHolder.getOrgUnitId(), viewType);
+        customViewRepository.deleteByUserIdAndViewType(Y9FlowableHolder.getOrgUnitId(), viewType);
     }
 
     @Override
     public Y9Result<List<CustomViewModel>> listCustomView(String viewType) {
         List<CustomView> list =
-            customViewRepository.findByUserIdAndViewTypeOrderByTabIndex(Y9LoginUserHolder.getOrgUnitId(), viewType);
+            customViewRepository.findByUserIdAndViewTypeOrderByTabIndex(Y9FlowableHolder.getOrgUnitId(), viewType);
         List<CustomViewModel> listCustomViewModel = new ArrayList<>();
         for (CustomView customView : list) {
             CustomViewModel customViewModelTemp = new CustomViewModel();
@@ -80,8 +80,8 @@ public class CustomViewServiceImpl implements CustomViewService {
                 info.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             }
             info.setTabIndex(maxTabIndex);
-            info.setUserId(Y9LoginUserHolder.getOrgUnitId());
-            info.setUserName(Y9LoginUserHolder.getOrgUnit().getName());
+            info.setUserId(Y9FlowableHolder.getOrgUnitId());
+            info.setUserName(Y9FlowableHolder.getOrgUnit().getName());
             Y9FormField y9FormField = y9FormFieldRepository.findById(info.getFieldId()).orElse(null);
             if (y9FormField != null) {
                 info.setFormId(y9FormField.getFormId());
@@ -91,6 +91,6 @@ public class CustomViewServiceImpl implements CustomViewService {
                 maxTabIndex++;
             }
         }
-        customViewRepository.deleteByUserIdAndViewTypeAndIdNotIn(Y9LoginUserHolder.getOrgUnitId(), viewType, ids);
+        customViewRepository.deleteByUserIdAndViewTypeAndIdNotIn(Y9FlowableHolder.getOrgUnitId(), viewType, ids);
     }
 }
