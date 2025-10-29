@@ -39,6 +39,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ErrorLogApi;
 import net.risesoft.api.itemadmin.ItemInterfaceApi;
 import net.risesoft.consts.processadmin.SysVariables;
@@ -314,7 +315,7 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         GetMethod method = new GetMethod();
         method.setPath(info.getInterfaceAddress());
         // 默认添加请求头
-        method.addRequestHeader("auth-positionId", Y9LoginUserHolder.getOrgUnitId());
+        method.addRequestHeader("auth-positionId", Y9FlowableHolder.getOrgUnitId());
         method.addRequestHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
         return method;
     }
@@ -597,7 +598,7 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
 
         // y9_userId字段
         sqlStr.append(",y9_userId");
-        valuesStr.append(",'").append(Y9LoginUserHolder.getOrgUnitId()).append("'");
+        valuesStr.append(",'").append(Y9FlowableHolder.getOrgUnitId()).append("'");
     }
 
     @Override
@@ -624,7 +625,7 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         HttpPost httpPost = new HttpPost(info.getInterfaceAddress());
         httpPost.addHeader("Content-Type", "application/json;charset=utf-8");
         // 默认添加请求头
-        httpPost.addHeader("auth-positionId", Y9LoginUserHolder.getOrgUnitId());
+        httpPost.addHeader("auth-positionId", Y9FlowableHolder.getOrgUnitId());
         httpPost.addHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
         return httpPost;
     }

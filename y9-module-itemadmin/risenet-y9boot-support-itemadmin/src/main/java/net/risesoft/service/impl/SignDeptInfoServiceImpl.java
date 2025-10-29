@@ -14,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.ProcessParam;
@@ -70,8 +71,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                 deptType, dept.getId())) {
                 SignDeptInfo signDeptInfo = new SignDeptInfo();
                 signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
-                signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
+                signDeptInfo.setInputPerson(Y9FlowableHolder.getOrgUnit().getName());
+                signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
                 signDeptInfo.setOrderIndex(dept.getTabIndex());
                 signDeptInfo.setDeptId(dept.getId());
                 signDeptInfo.setRecordTime(new Date());
@@ -120,7 +121,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         Map<String, Object> map = new HashMap<>(1);
         StringBuffer deptNames = new StringBuffer();
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-        String starter = null == processParam ? Y9LoginUserHolder.getOrgUnit().getId() : processParam.getStartor();
+        String starter = null == processParam ? Y9FlowableHolder.getOrgUnit().getId() : processParam.getStartor();
         Department bureau = (Department)orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), starter).getData();
         deptNames.append(StringUtils.isNotBlank(bureau.getAliasName()) ? bureau.getAliasName() : bureau.getName());
         List<SignDeptInfo> signDeptList = this.getSignDeptList(processSerialNumber, "0");
@@ -213,8 +214,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         String tzsDeptId) {
         SignDeptInfo signDeptInfo = new SignDeptInfo();
         signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
-        signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
+        signDeptInfo.setInputPerson(Y9FlowableHolder.getOrgUnit().getName());
+        signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
         signDeptInfo.setOrderIndex(dept.getTabIndex());
         signDeptInfo.setDeptId(dept.getId());
         signDeptInfo.setRecordTime(new Date());
@@ -255,7 +256,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
     private void updateTzsDisplayInfo(SignDeptInfo signDeptInfo) {
         try {
             Department bureau =
-                (Department)orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getOrgUnitId())
+                (Department)orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getOrgUnitId())
                     .getData();
             if (bureau != null) {
                 signDeptInfo.setDisplayDeptId(bureau.getId());
@@ -294,8 +295,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         Integer index) {
         SignDeptInfo signDeptInfo = new SignDeptInfo();
         signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
-        signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
+        signDeptInfo.setInputPerson(Y9FlowableHolder.getOrgUnit().getName());
+        signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
         signDeptInfo.setOrderIndex(index);
         signDeptInfo.setDeptId(deptId);
         signDeptInfo.setRecordTime(new Date());
@@ -396,8 +397,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
             SignDeptInfo signDeptInfo = new SignDeptInfo();
             signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            signDeptInfo.setInputPerson(Y9LoginUserHolder.getOrgUnit().getName());
-            signDeptInfo.setInputPersonId(Y9LoginUserHolder.getOrgUnitId());
+            signDeptInfo.setInputPerson(Y9FlowableHolder.getOrgUnit().getName());
+            signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
             signDeptInfo.setOrderIndex(tzsbureau.getTabIndex());
             signDeptInfo.setDeptId(tzsbureau.getId());
             signDeptInfo.setRecordTime(new Date());

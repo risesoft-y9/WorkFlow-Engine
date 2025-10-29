@@ -16,6 +16,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.platform.org.Position;
@@ -43,11 +44,11 @@ public class CheckUserLoginFilter4Flowable implements Filter {
                 String positionId = request.getHeader("positionId");
                 if (StringUtils.isNotBlank(positionId) && !positionId.contains("null")) {
                     session.setAttribute("positionId", positionId);
-                    Y9LoginUserHolder.setPositionId(positionId);
+                    Y9FlowableHolder.setPositionId(positionId);
                     PositionApi positionApi = Y9Context.getBean(PositionApi.class);
                     Position position = positionApi.get(loginPerson.getTenantId(), positionId).getData();
                     if (position != null) {
-                        Y9LoginUserHolder.setPosition(position);
+                        Y9FlowableHolder.setPosition(position);
                     }
                 } else {
                     PersonApi personApi = Y9Context.getBean(PersonApi.class);
@@ -55,7 +56,7 @@ public class CheckUserLoginFilter4Flowable implements Filter {
                         personApi.listPositionsByPersonId(loginPerson.getTenantId(), loginPerson.getPersonId())
                             .getData();
                     if (!list.isEmpty()) {
-                        Y9LoginUserHolder.setPosition(list.get(0));
+                        Y9FlowableHolder.setPosition(list.get(0));
                     }
                 }
             }

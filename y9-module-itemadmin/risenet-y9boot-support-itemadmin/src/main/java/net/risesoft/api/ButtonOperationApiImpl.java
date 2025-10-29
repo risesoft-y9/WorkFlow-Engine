@@ -13,6 +13,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -138,7 +139,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
         @RequestParam String taskId, @RequestParam String routeToTask, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
         String startUserId = "6" + SysVariables.COLON + processInstance.getStartUserId();
         Y9Result<String> y9Result = documentService.forwarding(taskId, "true", startUserId, routeToTask, "");
@@ -171,7 +172,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             String assignee = hti.getAssignee();
             userAndDeptIdList.add(assignee);
             OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-            Y9LoginUserHolder.setOrgUnit(orgUnit);
+            Y9FlowableHolder.setOrgUnit(orgUnit);
             FlowElementModel flowElementModel =
                 processDefinitionApi.getNode(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())
                     .getData();

@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.SpecialOperationApi;
 import net.risesoft.model.platform.org.OrgUnit;
@@ -53,7 +54,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         operationService.reposition(taskId, repositionToTaskId, userChoice, reason, sponsorGuid);
         return Y9Result.success();
     }
@@ -78,7 +79,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         operationService.rollBack2History(taskId, routeToTaskId, userChoice, reason, sponsorGuid);
         return Y9Result.success();
     }
@@ -99,7 +100,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         operationService.rollBack(taskId, reason);
         return Y9Result.success();
     }
@@ -119,7 +120,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         operationService.rollbackToSender(taskId);
         return Y9Result.success();
     }
@@ -140,7 +141,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         operationService.rollbackToStartor(taskId, reason);
         return Y9Result.success();
     }
@@ -161,7 +162,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         operationService.specialComplete(taskId, reason);
         return Y9Result.success();
     }
@@ -182,7 +183,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         operationService.takeBack(taskId, reason);
         return Y9Result.success();
     }
@@ -203,7 +204,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         operationService.takeBack2TaskDefKey(taskId, taskDefKey, reason);
         return Y9Result.success();
     }

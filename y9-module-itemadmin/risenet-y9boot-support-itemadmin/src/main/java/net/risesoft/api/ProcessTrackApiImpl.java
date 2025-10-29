@@ -12,6 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
@@ -125,7 +126,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     public Y9Result<List<HistoryProcessModel>> processTrackList(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         try {
             List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId(processInstanceId);
             return Y9Result.success(items);
@@ -148,7 +149,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     public Y9Result<List<HistoryProcessModel>> processTrackListWithActionName(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         try {
             List<HistoryProcessModel> items =
                 processTrackService.listByProcessInstanceIdWithActionName(processInstanceId);
@@ -172,7 +173,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     public Y9Result<List<HistoryProcessModel>> processTrackList4Simple(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         try {
             List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId4Simple(processInstanceId);
             return Y9Result.success(items);

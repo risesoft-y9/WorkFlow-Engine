@@ -8,6 +8,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.entity.RemindInstance;
 import net.risesoft.enums.ItemRemindTypeEnum;
 import net.risesoft.id.IdType;
@@ -34,7 +35,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
     @Override
     public RemindInstance getRemindInstance(String processInstanceId) {
         return remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId,
-            Y9LoginUserHolder.getOrgUnitId());
+            Y9FlowableHolder.getOrgUnitId());
     }
 
     @Override
@@ -70,7 +71,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
     public Y9Result<String> saveRemindInstance(String processInstanceId, String taskIds, Boolean process,
         String arriveTaskKey, String completeTaskKey) {
         try {
-            String userId = Y9LoginUserHolder.getOrgUnitId();
+            String userId = Y9FlowableHolder.getOrgUnitId();
             RemindInstance remindInstance =
                 remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId, userId);
             // 删除

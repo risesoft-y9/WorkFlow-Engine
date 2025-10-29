@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.RuntimeApi;
@@ -37,7 +38,7 @@ public class CurrentDeptExtend extends AbstractDynamicRoleMember {
     @Override
     public Department getDepartment(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
         Department department = null;
         if (StringUtils.isNotBlank(processInstanceId)) {
             ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();

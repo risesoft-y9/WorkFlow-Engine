@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.OptionClassApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.form.FormDataApi;
@@ -310,7 +311,7 @@ public class Y9FormRestController {
     public Y9Result<Map<String, Object>> getInitData() {
         Map<String, Object> map = new HashMap<>(16);
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String nowDate = Y9DateTimeUtils.formatCurrentDate();
         String year = Y9DateTimeUtils.formatCurrentDateCompact();
         String second = Y9DateTimeUtils.formatCurrentTimeCompact();
@@ -374,7 +375,7 @@ public class Y9FormRestController {
     public Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(@RequestParam @NotBlank String type) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         if ("fwsj".equals(type)) {
-            Position position = Y9LoginUserHolder.getPosition();
+            Position position = Y9FlowableHolder.getPosition();
             List<Organization> orgList = organizationApi.list(tenantId)
                 .getData()
                 .stream()

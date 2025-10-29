@@ -20,6 +20,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.ItemConsts;
@@ -39,6 +40,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Person;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.documentword.Y9WordHistoryRepository;
 import net.risesoft.repository.documentword.Y9WordRepository;
@@ -81,6 +83,8 @@ public class Y9WordApiImpl implements Y9WordApi {
     private final ItemWordTemplateBindRepository wordTemplateBindRepository;
 
     private final PersonApi personApi;
+
+    private final UserApi userApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -155,8 +159,8 @@ public class Y9WordApiImpl implements Y9WordApi {
         Y9WordModel word = new Y9WordModel();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
+            UserInfo userInfo = userApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setUserInfo(userInfo);
             List<Y9Word> list = y9WordService.listByProcessSerialNumber(processSerialNumber);
             if (list != null && !list.isEmpty()) {
                 Y9Word y9Word = list.get(0);
@@ -185,8 +189,8 @@ public class Y9WordApiImpl implements Y9WordApi {
     public Y9Result<Y9WordHistoryModel> findHistoryVersionDoc(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         List<Y9WordHistory> historyWordList = y9WordHistoryService.listByTaskId(taskId);
         Y9WordHistoryModel history = new Y9WordHistoryModel();
         if (null != historyWordList && !historyWordList.isEmpty()) {
@@ -285,8 +289,8 @@ public class Y9WordApiImpl implements Y9WordApi {
         List<Y9WordModel> retList = new ArrayList<>();
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
+            UserInfo userInfo = userApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setUserInfo(userInfo);
             List<Y9Word> list = y9WordRepository.findByProcessSerialNumber(processSerialNumber);
             for (Y9Word word : list) {
                 Y9WordModel model = getY9Word(word);
@@ -315,8 +319,8 @@ public class Y9WordApiImpl implements Y9WordApi {
     public Y9Result<String> openDocument(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String itemId, String bindValue) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
 
         // 尝试获取已存在的正文文件
         List<Y9Word> wordList = getExistingWordList(processSerialNumber, bindValue);
@@ -429,8 +433,8 @@ public class Y9WordApiImpl implements Y9WordApi {
     public Y9Result<String> openDocumentTemplate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String templateGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         LOGGER.debug("call /ntko/openTaoHongTemplate");
         byte[] buf;
         TaoHongTemplate taohongTemplate = taoHongTemplateService.getById(templateGuid);
@@ -464,8 +468,8 @@ public class Y9WordApiImpl implements Y9WordApi {
     public Y9Result<String> openPdf(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         List<Y9Word> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber)) {
             list = y9WordService.listByProcessSerialNumber(processSerialNumber);
@@ -495,8 +499,8 @@ public class Y9WordApiImpl implements Y9WordApi {
     public Y9Result<String> openRevokePdfAfterDocument(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, @RequestParam String isTaoHong) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         List<Y9Word> list = new ArrayList<>();
         if (StringUtils.isNotBlank(processSerialNumber) && StringUtils.isNotBlank(isTaoHong)) {
             list = y9WordService.listByProcessSerialNumberAndIstaohong(processSerialNumber, isTaoHong);
@@ -527,8 +531,8 @@ public class Y9WordApiImpl implements Y9WordApi {
     public Y9Result<String> openTaoHong(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String activitiUser) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         LOGGER.debug("call /ntko/openTaoHong");
         // 当前人员的委办局GUID
         OrgUnit currentBureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser).getData();
@@ -550,8 +554,8 @@ public class Y9WordApiImpl implements Y9WordApi {
     public Y9Result<Boolean> importY9Word(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String docJson, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         boolean checkSave = false;
         try {
             Map<String, Object> documentMap = Y9JsonUtil.readValue(docJson, Map.class);
@@ -597,11 +601,11 @@ public class Y9WordApiImpl implements Y9WordApi {
         String bindValue) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
+            UserInfo userInfo = userApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setUserInfo(userInfo);
 
             Y9WordInfo wordInfo = new Y9WordInfo();
-            populateWordInfoBasics(wordInfo, person, processSerialNumber, itemId, itembox, taskId);
+            populateWordInfoBasics(wordInfo, userInfo, processSerialNumber, itemId, itembox, taskId);
 
             List<Y9Word> wordList = getExistingWordList(processSerialNumber, bindValue);
             if (!wordList.isEmpty()) {
@@ -620,11 +624,11 @@ public class Y9WordApiImpl implements Y9WordApi {
     /**
      * 填充基本信息
      */
-    private void populateWordInfoBasics(Y9WordInfo wordInfo, Person person, String processSerialNumber, String itemId,
+    private void populateWordInfoBasics(Y9WordInfo wordInfo, UserInfo person, String processSerialNumber, String itemId,
         String itembox, String taskId) {
         wordInfo.setProcessSerialNumber(processSerialNumber);
         wordInfo.setUserName(person.getName());
-        wordInfo.setActivitiUser(person.getId());
+        wordInfo.setActivitiUser(person.getPersonId());
         wordInfo.setItemId(itemId);
         wordInfo.setItembox(itembox);
         wordInfo.setTaskId(taskId);
@@ -757,8 +761,8 @@ public class Y9WordApiImpl implements Y9WordApi {
     public Y9Result<List<TaoHongTemplateModel>> taoHongTemplateList(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String currentBureauGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         LOGGER.debug("call /ntko/list");
         List<TaoHongTemplateModel> retList = new ArrayList<>();
         List<TaoHongTemplate> list = taoHongTemplateService.listByBureauGuid(currentBureauGuid);
@@ -801,8 +805,8 @@ public class Y9WordApiImpl implements Y9WordApi {
         @RequestParam String documentTitle, @RequestParam String fileType, @RequestParam String processSerialNumber,
         String isTaoHong, String docCategory, String taskId, String fileSizeString, @RequestParam String fileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         try {
             if (StringUtils.isBlank(processSerialNumber)) {
                 return Y9Result.success(false);

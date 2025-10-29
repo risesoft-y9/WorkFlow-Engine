@@ -10,6 +10,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.core.ActRuDetailApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
@@ -19,7 +20,6 @@ import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.service.Process4CompleteUtilService;
 import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -57,8 +57,8 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 // 3、保存流程数据到ES，截转年度数据
                 Process4CompleteUtilService process4CompleteUtilService =
                     Y9Context.getBean(Process4CompleteUtilService.class);
-                process4CompleteUtilService.saveToEs(tenantId, "", Y9LoginUserHolder.getOrgUnitId(),
-                    executionEntity.getProcessInstanceId(), Y9LoginUserHolder.getOrgUnit().getName());
+                process4CompleteUtilService.saveToEs(tenantId, "", Y9FlowableHolder.getOrgUnitId(),
+                    executionEntity.getProcessInstanceId(), Y9FlowableHolder.getOrgUnit().getName());
                 break;
             case PROCESS_STARTED:
                 FlowableEntityEventImpl entityEventStart = (FlowableEntityEventImpl)event;

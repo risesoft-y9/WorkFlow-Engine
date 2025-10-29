@@ -15,6 +15,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.OfficeFollow;
 import net.risesoft.entity.ProcessParam;
@@ -60,7 +61,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     @Override
     public int countByProcessInstanceId(String processInstanceId) {
         return officeFollowRepository.countByProcessInstanceIdAndUserId(processInstanceId,
-            Y9LoginUserHolder.getOrgUnitId());
+            Y9FlowableHolder.getOrgUnitId());
     }
 
     @Override
@@ -68,7 +69,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     public void delOfficeFollow(String processInstanceIds) {
         String[] ids = processInstanceIds.split(",");
         for (String processInstanceId : ids) {
-            officeFollowRepository.deleteByProcessInstanceId(processInstanceId, Y9LoginUserHolder.getOrgUnitId());
+            officeFollowRepository.deleteByProcessInstanceId(processInstanceId, Y9FlowableHolder.getOrgUnitId());
         }
     }
 
@@ -80,12 +81,12 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
 
     @Override
     public int getFollowCount() {
-        return officeFollowRepository.countByUserId(Y9LoginUserHolder.getOrgUnitId());
+        return officeFollowRepository.countByUserId(Y9FlowableHolder.getOrgUnitId());
     }
 
     @Override
     public Y9Page<OfficeFollowModel> pageBySearchName(String searchName, int page, int rows) {
-        String userId = Y9LoginUserHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getOrgUnitId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OfficeFollowModel> resultList = new ArrayList<>();
 
@@ -219,7 +220,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     @Override
     public Y9Page<OfficeFollowModel> pageBySystemNameAndSearchName(String systemName, String searchName, int page,
         int rows) {
-        String userId = Y9LoginUserHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getOrgUnitId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OfficeFollowModel> resultList = new ArrayList<>();
 

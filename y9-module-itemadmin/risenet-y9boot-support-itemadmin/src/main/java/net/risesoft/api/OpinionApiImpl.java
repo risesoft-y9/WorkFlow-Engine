@@ -11,9 +11,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.opinion.OpinionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
@@ -21,7 +23,7 @@ import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.opinion.OpinionService;
@@ -47,6 +49,8 @@ public class OpinionApiImpl implements OpinionApi {
     private final PersonApi personApi;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final UserApi userApi;
 
     /**
      * 验证当前taskId任务节点是否已经签写意见
@@ -178,9 +182,9 @@ public class OpinionApiImpl implements OpinionApi {
         @RequestParam String userId, @RequestParam String processSerialNumber, String taskId,
         @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId,
         String taskDefinitionKey) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         List<OpinionListModel> opinionList = opinionService.listPersonComment(processSerialNumber, taskId, itembox,
             opinionFrameMark, itemId, taskDefinitionKey);
         return Y9Result.success(opinionList);
@@ -204,9 +208,9 @@ public class OpinionApiImpl implements OpinionApi {
     public Y9Result<OpinionFrameModel> personCommentListNew(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, String taskId, @RequestParam String itembox,
         @RequestParam String opinionFrameMark, @RequestParam String itemId, String taskDefinitionKey) {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         OpinionFrameModel opinionFrameModel = opinionService.listPersonCommentNew(processSerialNumber, taskId, itembox,
             opinionFrameMark, itemId, taskDefinitionKey);
         return Y9Result.success(opinionFrameModel);
@@ -245,11 +249,11 @@ public class OpinionApiImpl implements OpinionApi {
     @Override
     public Y9Result<OpinionModel> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String orgUnitId, @RequestBody OpinionModel opinionModel) throws Exception {
-        Person person = personApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         Opinion opinion = new Opinion();
         Y9BeanUtil.copyProperties(opinionModel, opinion);
         opinion = opinionService.saveOrUpdate(opinion);

@@ -23,10 +23,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.AttachmentModel;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -50,6 +51,8 @@ public class FileNTKOController {
     private final PersonApi personApi;
 
     private final AttachmentApi attachmentApi;
+
+    private final UserApi userApi;
 
     /**
      * 附件中打开正文文件
@@ -115,8 +118,8 @@ public class FileNTKOController {
         try {
             LOGGER.debug("*****************fileId={}", fileId);
             Y9LoginUserHolder.setTenantId(tenantId);
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
+            UserInfo userInfo = userApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setUserInfo(userInfo);
             AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
             MultipartFile multipartFile = multipartRequest.getFile("currentDoc");

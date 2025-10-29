@@ -19,12 +19,13 @@ import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.itemadmin.worklist.DraftApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.Y9WordInfo;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
@@ -56,6 +57,8 @@ public class VueNTKOController {
 
     private final OrgUnitApi orgUnitApi;
 
+    private final UserApi userApi;
+
     /**
      * 获取附件信息
      *
@@ -76,8 +79,8 @@ public class VueNTKOController {
         @RequestParam String tenantId, @RequestParam String userId, @RequestParam(required = false) String positionId) {
         try {
             Map<String, Object> map = new HashMap<>();
-            Person person = personApi.get(tenantId, userId).getData();
-            Y9LoginUserHolder.setPerson(person);
+            UserInfo userInfo = userApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setUserInfo(userInfo);
             AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
             String downloadUrl =
                 y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
@@ -90,7 +93,7 @@ public class VueNTKOController {
             map.put("positionId", positionId);
             map.put("itembox", itembox);
             map.put("fileId", fileId);
-            map.put("userName", person.getName());
+            map.put("userName", userInfo.getName());
             map.put("processSerialNumber", processSerialNumber);
             return Y9Result.success(map, "获取信息成功");
         } catch (Exception e) {

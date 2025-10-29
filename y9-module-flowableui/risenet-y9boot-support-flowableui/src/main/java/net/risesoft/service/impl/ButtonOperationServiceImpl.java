@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
@@ -60,7 +61,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9LoginUserHolder.getPositionId();
-        String userName = Y9LoginUserHolder.getPosition().getName();
+        String userName = Y9FlowableHolder.getPosition().getName();
         Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotBlank(infoOvert)) {
             map.put("infoOvert", infoOvert);
@@ -164,7 +165,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     @Override
     public void resumeToDo(String processInstanceId, String desc) throws Exception {
         String positionId = Y9LoginUserHolder.getPositionId();
-        String userName = Y9LoginUserHolder.getPosition().getName();
+        String userName = Y9FlowableHolder.getPosition().getName();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             /*

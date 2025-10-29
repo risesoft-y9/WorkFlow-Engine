@@ -6,12 +6,12 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.entity.QuickSend;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.QuickSendRepository;
 import net.risesoft.service.QuickSendService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  *
@@ -27,14 +27,14 @@ public class QuickSendServiceImpl implements QuickSendService {
     @Override
     public String getAssignee(String itemId, String taskKey) {
         QuickSend quickSend =
-            quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9LoginUserHolder.getOrgUnitId(), taskKey);
+            quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9FlowableHolder.getOrgUnitId(), taskKey);
         return quickSend != null ? quickSend.getAssignee() : "";
     }
 
     @Override
     public void saveOrUpdate(String itemId, String taskKey, String assignee) {
         QuickSend quickSend =
-            quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9LoginUserHolder.getOrgUnitId(), taskKey);
+            quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9FlowableHolder.getOrgUnitId(), taskKey);
         if (quickSend != null) {
             quickSend.setAssignee(assignee);
             quickSend.setUpdateTime(new Date());
@@ -46,7 +46,7 @@ public class QuickSendServiceImpl implements QuickSendService {
         quickSend.setItemId(itemId);
         quickSend.setAssignee(assignee);
         quickSend.setTaskKey(taskKey);
-        quickSend.setPositionId(Y9LoginUserHolder.getOrgUnitId());
+        quickSend.setPositionId(Y9FlowableHolder.getOrgUnitId());
         quickSend.setUpdateTime(new Date());
         quickSendRepository.save(quickSend);
     }

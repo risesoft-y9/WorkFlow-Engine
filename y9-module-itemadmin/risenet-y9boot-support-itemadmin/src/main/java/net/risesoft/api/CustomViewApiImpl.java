@@ -10,6 +10,7 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.view.CustomViewApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.model.itemadmin.CustomViewModel;
@@ -49,7 +50,7 @@ public class CustomViewApiImpl implements CustomViewApi {
         @RequestParam String viewType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         customViewService.delCustomView(viewType);
         return Y9Result.success();
     }
@@ -68,7 +69,7 @@ public class CustomViewApiImpl implements CustomViewApi {
         @RequestParam String viewType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         return customViewService.listCustomView(viewType);
     }
 
@@ -86,7 +87,7 @@ public class CustomViewApiImpl implements CustomViewApi {
         @RequestParam String jsonData) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         customViewService.saveCustomView(jsonData);
         return Y9Result.success();
     }

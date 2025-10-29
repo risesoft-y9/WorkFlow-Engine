@@ -12,9 +12,11 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.core.DocumentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.ProcessParam;
@@ -27,7 +29,7 @@ import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Person;
+import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.chaosong.ChaoSongInfoService;
@@ -64,6 +66,8 @@ public class DocumentApiImpl implements DocumentApi {
 
     private final ChaoSongInfoService chaoSongInfoService;
 
+    private final UserApi userApi;
+
     /**
      * 新建办件
      *
@@ -78,7 +82,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         DocumentDetailModel model = documentService.add(itemId);
         return Y9Result.success(model);
     }
@@ -98,7 +102,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String itemId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         OpenDataModel model = documentService.add4Old(itemId, mobile);
         return Y9Result.success(model);
     }
@@ -120,7 +124,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         DocumentDetailModel model = documentService.addWithStartTaskDefKey(itemId, startTaskDefKey, mobile);
         return Y9Result.success(model);
     }
@@ -140,7 +144,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String taskId) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         documentService.complete(taskId);
         return Y9Result.success();
     }
@@ -160,7 +164,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String taskId, @RequestParam("userList") List<String> userList) throws Exception {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         documentService.completeSub(taskId, userList);
         return Y9Result.success();
     }
@@ -186,10 +190,10 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String processDefinitionId, String taskId, @RequestParam String routeToTask,
         String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Person person = personApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setPerson(person);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         DocUserChoiseModel model = documentService.docUserChoise(itemId, processDefinitionKey, processDefinitionId,
             taskId, routeToTask, processInstanceId);
         return Y9Result.success(model);
@@ -214,7 +218,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String processInstanceId, @RequestParam String itemId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         OpenDataModel model = documentService.edit(itembox, taskId, processInstanceId, itemId, mobile);
         return Y9Result.success(model);
     }
@@ -234,8 +238,8 @@ public class DocumentApiImpl implements DocumentApi {
     public Y9Result<DocumentDetailModel> editDraft(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String itemId, @RequestParam String processSerialNumber, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
-        Y9LoginUserHolder.setOrgUnit(orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData());
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnit(orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData());
         DocumentDetailModel model = documentService.editDraft(processSerialNumber, itemId, mobile);
         return Y9Result.success(model);
     }
@@ -255,7 +259,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam ItemBoxTypeEnum itemBox, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         DocumentDetailModel model = documentService.editDoing(processInstanceId, documentId, isAdmin, itemBox, mobile);
         return Y9Result.success(model);
     }
@@ -276,7 +280,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam ItemBoxTypeEnum itemBox, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         DocumentDetailModel model = documentService.editDone(processInstanceId, documentId, isAdmin, itemBox, mobile);
         return Y9Result.success(model);
     }
@@ -296,7 +300,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String processInstanceId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         DocumentDetailModel model = documentService.editRecycle(processInstanceId, mobile);
         return Y9Result.success(model);
     }
@@ -317,7 +321,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String id, @RequestParam String processInstanceId, @RequestParam boolean mobile,
         @RequestParam String itembox) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setOrgUnitId(orgUnitId);
         DocumentDetailModel model = documentService.editChaoSong(id, processInstanceId, mobile, itembox);
         chaoSongInfoService.setRead(id);
         return Y9Result.success(model);
@@ -338,8 +342,9 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String orgUnitId, @RequestParam String taskId, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
-        Y9LoginUserHolder.setPerson(personApi.get(tenantId, userId).getData());
+        Y9FlowableHolder.setOrgUnit(orgUnit);
+        UserInfo userInfo = userApi.get(tenantId, userId).getData();
+        Y9LoginUserHolder.setUserInfo(userInfo);
         DocumentDetailModel model = documentService.editTodo(taskId, mobile);
         return Y9Result.success(model);
     }
@@ -349,7 +354,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         return Y9Result.success(documentService.getButtons(taskId));
     }
 
@@ -374,7 +379,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam(required = false) String multiInstance) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         return documentService.parserUser(itemId, processDefinitionId, routeToTaskId, taskDefName, processInstanceId,
             multiInstance);
     }
@@ -405,7 +410,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestBody Map<String, Object> variables) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         Y9Result<String> y9Result;
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
             y9Result = documentService.saveAndForwarding(itemId, processSerialNumber, processDefinitionKey, userChoice,
@@ -439,7 +444,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam(required = false) String sponsorHandle, @RequestParam(required = false) String sponsorGuid) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         return documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
     }
 
@@ -470,7 +475,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String startRouteToTaskId, @RequestBody Map<String, Object> variables) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
             return documentService.saveAndForwardingByTaskKey(itemId, processSerialNumber, processDefinitionKey,
                 userChoice, sponsorGuid, routeToTaskId, startRouteToTaskId, variables);
@@ -498,7 +503,7 @@ public class DocumentApiImpl implements DocumentApi {
         String taskId, @RequestParam String itemId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         Y9Result<Object> y9Result;
         if (StringUtils.isBlank(taskId) || UtilConsts.NULL.equals(taskId)) {
             y9Result = documentService.saveAndSubmitTo(itemId, processSerialNumber);
@@ -530,7 +535,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         SignTaskConfigModel model =
             documentService.signTaskConfig(itemId, processDefinitionId, taskDefinitionKey, processSerialNumber);
         return Y9Result.success(model);
@@ -541,7 +546,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String orgUnitId, @RequestParam String itemId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         List<ItemStartNodeRoleModel> modelList = itemStartNodeRoleService.getAllStartTaskDefKey(itemId);
         return Y9Result.success(modelList);
     }
@@ -563,7 +568,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String processDefinitionKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         StartProcessResultModel model = documentService.startProcess(itemId, processSerialNumber, processDefinitionKey);
         return Y9Result.success(model);
     }
@@ -586,7 +591,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestBody List<String> startOrgUnitIdList) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         StartProcessResultModel model = documentService.startProcessByTheTaskKey(itemId, processSerialNumber,
             processDefinitionKey, startTaskDefKey, startOrgUnitIdList);
         return Y9Result.success(model);
@@ -610,7 +615,7 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String processDefinitionKey, @RequestParam String userIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9LoginUserHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setOrgUnit(orgUnit);
         StartProcessResultModel model =
             documentService.startProcess(itemId, processSerialNumber, processDefinitionKey, userIds);
         return Y9Result.success(model);

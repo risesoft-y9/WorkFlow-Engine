@@ -19,6 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -103,7 +104,7 @@ public class MultiInstanceRestController {
     @GetMapping(value = "/getAddOrDeleteMultiInstance")
     public Y9Result<Map<String, Object>> getAddOrDeleteMultiInstance(@RequestParam @NotBlank String processInstanceId) {
         Map<String, Object> map = new HashMap<>(16);
-        Position position = Y9LoginUserHolder.getPosition();
+        Position position = Y9FlowableHolder.getPosition();
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel task = null;
         List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();

@@ -11,6 +11,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.Item;
@@ -489,7 +490,7 @@ public class EntrustServiceImpl implements EntrustService {
         Entrust newEntrust = new Entrust();
         newEntrust.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         newEntrust.setItemId(entrust.getItemId());
-        newEntrust.setOwnerId(Y9LoginUserHolder.getOrgUnitId());
+        newEntrust.setOwnerId(Y9FlowableHolder.getOrgUnitId());
         newEntrust.setAssigneeId(entrust.getAssigneeId());
         newEntrust.setStartTime(entrust.getStartTime());
         newEntrust.setEndTime(entrust.getEndTime());

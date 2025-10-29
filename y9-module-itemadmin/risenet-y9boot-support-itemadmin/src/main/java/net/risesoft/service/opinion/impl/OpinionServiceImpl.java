@@ -12,6 +12,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -969,8 +970,8 @@ public class OpinionServiceImpl implements OpinionService {
     private Opinion createOpinion(Opinion entity) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        OrgUnit user = Y9LoginUserHolder.getOrgUnit();
-        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        OrgUnit user = Y9FlowableHolder.getOrgUnit();
+        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
 
         Opinion opinion = new Opinion();
         opinion.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -1002,8 +1003,8 @@ public class OpinionServiceImpl implements OpinionService {
     private Opinion updateOpinion(Opinion entity) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        OrgUnit user = Y9LoginUserHolder.getOrgUnit();
-        String orgUnitId = Y9LoginUserHolder.getOrgUnitId();
+        OrgUnit user = Y9FlowableHolder.getOrgUnit();
+        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
         Opinion opinion = opinionRepository.findById(entity.getId()).orElse(null);
         if (opinion == null) {
             return null;
