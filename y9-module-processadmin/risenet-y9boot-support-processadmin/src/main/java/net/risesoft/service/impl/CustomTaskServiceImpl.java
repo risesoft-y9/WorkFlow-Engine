@@ -50,6 +50,8 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Service(value = "customTaskService")
 public class CustomTaskServiceImpl implements CustomTaskService {
 
+    private final static String WHERE_PROC_INST_ID = " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
+
     private final TaskService taskService;
 
     private final HistoryService historyService;
@@ -99,14 +101,14 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             /*
              * 1-备份正在运行的执行实例数据，回复待办的时候会用到，只记录最后一个任务办结前的数据
              */
-            String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
+            String sql0 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + WHERE_PROC_INST_ID;
             List<Execution> list0 = runtimeService.createNativeExecutionQuery()
                 .sql(sql0)
                 .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
                 .list();
             if (!list0.isEmpty()) {
                 // 备份数据已有，则先删除再重新插入备份
-                String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
+                String sql2 = "DELETE FROM FF_ACT_RU_EXECUTION_" + year + WHERE_PROC_INST_ID;
                 runtimeService.createNativeExecutionQuery()
                     .sql(sql2)
                     .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
@@ -121,7 +123,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             /*
              * 2-办结流程
              */
-            String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = #{PROC_INST_ID_}";
+            String sql3 = "SELECT * from FF_ACT_RU_EXECUTION_" + year + WHERE_PROC_INST_ID;
             List<Execution> list1 = runtimeService.createNativeExecutionQuery()
                 .sql(sql3)
                 .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)

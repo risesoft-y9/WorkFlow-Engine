@@ -69,6 +69,7 @@ import net.risesoft.y9public.service.Y9FileStoreService;
 @Service
 public class InterfaceMethodServiceImpl implements InterfaceMethodService {
 
+    private static final String LOOP_COUNTER = "_loopCounter_";
     private final ErrorLogApi errorLogApi;
     private final ItemInterfaceApi itemInterfaceApi;
     private final Y9FileStoreService y9FileStoreService;
@@ -151,7 +152,7 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         List<InterfaceParamsModel> paramsList, Map<String, Object> tableInfo, String dialect, Integer loopCounter)
         throws Exception {
         String tableName = (String)tableInfo.get(SysVariables.TABLENAME_KEY);
-        String guid = processSerialNumber + "_loopCounter_" + loopCounter;
+        String guid = processSerialNumber + LOOP_COUNTER + loopCounter;
 
         StringBuilder sqlStr = getSqlStr(dialect, tableName);
         List<Map<String, Object>> resList = jdbcTemplate.queryForList(sqlStr.toString(), guid);
@@ -246,8 +247,8 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
      * 从guid中提取processSerialNumber
      */
     private String getProcessSerialNumberFromGuid(String guid) {
-        if (guid.contains("_loopCounter_")) {
-            return guid.substring(0, guid.indexOf("_loopCounter_"));
+        if (guid.contains(LOOP_COUNTER)) {
+            return guid.substring(0, guid.indexOf(LOOP_COUNTER));
         }
         return guid;
     }
@@ -466,7 +467,7 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
                 String guid = processSerialNumber;
                 if (table.get(SysVariables.TABLETYPE_KEY) != null && table.get(SysVariables.TABLETYPE_KEY).equals("2")
                     && loopCounter != null) {// 子表
-                    guid = processSerialNumber + "_loopCounter_" + loopCounter;// 拼接子表主键id
+                    guid = processSerialNumber + LOOP_COUNTER + loopCounter;// 拼接子表主键id
                 }
                 List<Map<String, Object>> res_list = jdbcTemplate.queryForList(sqlStr.toString(), guid);
                 table.put(SysVariables.PARAMSLIST_KEY, res_list);
