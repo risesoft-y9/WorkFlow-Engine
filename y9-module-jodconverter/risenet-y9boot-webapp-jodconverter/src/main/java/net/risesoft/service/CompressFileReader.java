@@ -43,10 +43,8 @@ public class CompressFileReader {
         List<String> imgUrls = new ArrayList<>();
         String baseUrl = BaseUrlFilter.getBaseUrl();
         String packagePath = "_";
-        String folderName = filePath.replace(FILE_DIR, ""); // 修复压缩包 多重目录获取路径错误
-        if (fileAttribute.isCompressFile()) {
-            folderName = "_decompression" + folderName;
-        }
+
+        String folderName = getFolderName(filePath, fileAttribute);
         Path folderPath = Paths.get(FILE_DIR, folderName + packagePath);
         Files.createDirectories(folderPath);
 
@@ -55,41 +53,67 @@ public class CompressFileReader {
 
             ISimpleInArchive simpleInArchive = inArchive.getSimpleInterface();
             for (final ISimpleInArchiveItem item : simpleInArchive.getArchiveItems()) {
-                if (!item.isFolder()) {
-                    final Path filePathInsideArchive = getFilePathInsideArchive(item, folderPath);
-                    ExtractOperationResult result = item.extractSlow(data -> {
-                        try (OutputStream out =
-                            new BufferedOutputStream(new FileOutputStream(filePathInsideArchive.toFile(), true))) {
-                            out.write(data);
-                        } catch (IOException e) {
-                            throw new RuntimeException(e);
-                        }
-                        return data.length;
-                    }, filePassword);
-                    if (result != ExtractOperationResult.OK) {
-                        ExtractOperationResult result1 = ExtractOperationResult.valueOf("WRONG_PASSWORD");
-                        if (result1.equals(result)) {
-                            throw new Exception("Password");
-                        } else {
-                            throw new Exception("Failed to extract RAR file.");
-                        }
-                    }
-
-                    FileType type = FileType.typeFromUrl(filePathInsideArchive.toString());
-                    if (type.equals(FileType.PICTURE)) { // 图片缓存到集合，为了特殊符号需要进行编码
-                        imgUrls
-                            .add(baseUrl + URLEncoder.encode(
-                                fileName + packagePath + "/"
-                                    + folderPath.relativize(filePathInsideArchive).toString().replace("\\", "/"),
-                                "UTF-8"));
-                    }
-                }
+                processArchiveItem(item, folderPath, filePassword, imgUrls, fileName, packagePath, baseUrl);
             }
             fileHandlerService.putImgCache(fileName + packagePath, imgUrls);
         } catch (Exception e) {
             throw new Exception("Error processing RAR file: " + e.getMessage(), e);
         }
         return folderName + packagePath;
+    }
+
+    private String getFolderName(String filePath, FileAttribute fileAttribute) {
+        String folderName = filePath.replace(FILE_DIR, ""); // 修复压缩包 多重目录获取路径错误
+        if (fileAttribute != null && fileAttribute.isCompressFile()) {
+            folderName = "_decompression" + folderName;
+        }
+        return folderName;
+    }
+
+    private void processArchiveItem(ISimpleInArchiveItem item, Path folderPath, String filePassword,
+        List<String> imgUrls, String fileName, String packagePath, String baseUrl) throws Exception {
+        if (!item.isFolder()) {
+            final Path filePathInsideArchive = getFilePathInsideArchive(item, folderPath);
+            ExtractOperationResult result = extractItemToFile(item, filePathInsideArchive, filePassword);
+
+            if (result != ExtractOperationResult.OK) {
+                handleExtractionError(result);
+            }
+
+            FileType type = FileType.typeFromUrl(filePathInsideArchive.toString());
+            if (type.equals(FileType.PICTURE)) {
+                addImageUrl(imgUrls, baseUrl, fileName, packagePath, folderPath, filePathInsideArchive);
+            }
+        }
+    }
+
+    private void handleExtractionError(ExtractOperationResult result) throws Exception {
+        if (ExtractOperationResult.WRONG_PASSWORD.equals(result)) {
+            throw new Exception("Password");
+        } else {
+            throw new Exception("Failed to extract RAR file.");
+        }
+    }
+
+    private ExtractOperationResult extractItemToFile(ISimpleInArchiveItem item, Path filePathInsideArchive,
+        String filePassword) throws SevenZipException {
+        return item.extractSlow(data -> {
+            try (OutputStream out =
+                new BufferedOutputStream(new FileOutputStream(filePathInsideArchive.toFile(), true))) {
+                out.write(data);
+            } catch (IOException e) {
+                throw new RuntimeException(e);
+            }
+            return data.length;
+        }, filePassword);
+    }
+
+    private void addImageUrl(List<String> imgUrls, String baseUrl, String fileName, String packagePath, Path folderPath,
+        Path filePathInsideArchive) {
+        String relativePath = folderPath.relativize(filePathInsideArchive).toString().replace("\\", "/");
+        String encodedUrl =
+            baseUrl + URLEncoder.encode(fileName + packagePath + "/" + relativePath, StandardCharsets.UTF_8);
+        imgUrls.add(encodedUrl);
     }
 
     private Path getFilePathInsideArchive(ISimpleInArchiveItem item, Path folderPath)

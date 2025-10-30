@@ -36,6 +36,7 @@ import net.risesoft.utils.LocalOfficeUtils;
 public class OfficePluginManager {
 
     private static final String SOFFICE_BIN = "soffice.bin";
+    private static final String PS_EF_GREP = "ps -ef | grep ";
     private LocalOfficeManager officeManager;
     @Value("${office.plugin.server.ports:2001,2002}")
     private String serverPorts;
@@ -79,58 +80,95 @@ public class OfficePluginManager {
         }
     }
 
-    @SuppressWarnings("java:S4036")
     private boolean killProcess() {
-        boolean flag = false;
         try {
             if (OSUtils.IS_OS_WINDOWS) {
-                Process p = Runtime.getRuntime().exec("cmd /c tasklist ");
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                InputStream os = p.getInputStream();
-                byte[] b = new byte[256];
-                while (os.read(b) > 0) {
-                    baos.write(b);
-                }
-                String s = baos.toString();
-                Runtime.getRuntime().exec("taskkill /im " + SOFFICE_BIN + " /f");
-                if (s.contains(SOFFICE_BIN)) {
-                    flag = true;
-                }
+                return killProcessOnWindows();
             } else if (OSUtils.IS_OS_MAC || OSUtils.IS_OS_MAC_OSX) {
-                Process p = Runtime.getRuntime().exec(new String[] {"sh", "-c", "ps -ef | grep " + SOFFICE_BIN});
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                InputStream os = p.getInputStream();
-                byte[] b = new byte[256];
-                while (os.read(b) > 0) {
-                    baos.write(b);
-                }
-                String s = baos.toString();
-                if (StringUtils.ordinalIndexOf(s, SOFFICE_BIN, 3) > 0) {
-                    String[] cmd = {"sh", "-c", "kill -15 `ps -ef|grep " + SOFFICE_BIN + "|awk 'NR==1{print $2}'`"};
-                    Runtime.getRuntime().exec(cmd);
-                    flag = true;
-                }
+                return killProcessOnMac();
             } else {
-                Process p = Runtime.getRuntime()
-                    .exec(new String[] {"sh", "-c", "ps -ef | grep " + SOFFICE_BIN + " |grep -v grep | wc -l"});
-                ByteArrayOutputStream baos = new ByteArrayOutputStream();
-                InputStream os = p.getInputStream();
-                byte[] b = new byte[256];
-                while (os.read(b) > 0) {
-                    baos.write(b);
-                }
-                String s = baos.toString();
-                if (!s.startsWith("0")) {
-                    String[] cmd =
-                        {"sh", "-c", "ps -ef | grep soffice.bin | grep -v grep | awk '{print \"kill -9 \"$2}' | sh"};
-                    Runtime.getRuntime().exec(cmd);
-                    flag = true;
-                }
+                return killProcessOnLinux();
             }
         } catch (IOException e) {
             LOGGER.error("检测office进程异常", e);
+            return false;
         }
-        return flag;
+    }
+
+    /**
+     * Windows系统下终止Office进程
+     */
+    private boolean killProcessOnWindows() throws IOException {
+        boolean processExists = checkProcessExists("cmd /c tasklist ", SOFFICE_BIN);
+        Runtime.getRuntime().exec("taskkill /im " + SOFFICE_BIN + " /f");
+        return processExists;
+    }
+
+    /**
+     * Mac系统下终止Office进程
+     */
+    private boolean killProcessOnMac() throws IOException {
+        String command = PS_EF_GREP + SOFFICE_BIN;
+        boolean processExists = checkProcessOrdinal(SOFFICE_BIN, 3);
+
+        if (processExists) {
+            String[] cmd = {"sh", "-c", "kill -15 `ps -ef|grep " + SOFFICE_BIN + "|awk 'NR==1{print $2}'`"};
+            Runtime.getRuntime().exec(cmd);
+        }
+
+        return processExists;
+    }
+
+    /**
+     * Linux系统下终止Office进程
+     */
+    private boolean killProcessOnLinux() throws IOException {
+        String checkCommand = PS_EF_GREP + SOFFICE_BIN + " |grep -v grep | wc -l";
+        String processCount = executeCommandAndGetOutput(checkCommand);
+
+        if (!processCount.startsWith("0")) {
+            String[] cmd = {"sh", "-c", "ps -ef | grep soffice.bin | grep -v grep | awk '{print \"kill -9 \"$2}' | sh"};
+            Runtime.getRuntime().exec(cmd);
+            return true;
+        }
+
+        return false;
+    }
+
+    /**
+     * 检查进程是否存在
+     */
+    private boolean checkProcessExists(String command, String processName) throws IOException {
+        String output = executeCommandAndGetOutput(command);
+        return output.contains(processName);
+    }
+
+    /**
+     * 检查进程出现次数
+     */
+    private boolean checkProcessOrdinal(String processName, int ordinal) throws IOException {
+        String command = PS_EF_GREP + processName;
+        String output = executeCommandAndGetOutput(command);
+        return StringUtils.ordinalIndexOf(output, processName, ordinal) > 0;
+    }
+
+    /**
+     * 执行命令并获取输出结果
+     */
+    private String executeCommandAndGetOutput(String command) throws IOException {
+        Process process = Runtime.getRuntime().exec(command);
+        try (ByteArrayOutputStream baos = new ByteArrayOutputStream();
+            InputStream inputStream = process.getInputStream()) {
+
+            byte[] buffer = new byte[256];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) > 0) {
+                baos.write(buffer, 0, bytesRead);
+            }
+            return baos.toString();
+        } finally {
+            process.destroy();
+        }
     }
 
     @PreDestroy

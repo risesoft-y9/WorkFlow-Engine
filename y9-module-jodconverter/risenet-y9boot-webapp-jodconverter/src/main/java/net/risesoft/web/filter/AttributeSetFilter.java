@@ -8,7 +8,6 @@ import jakarta.servlet.FilterConfig;
 import jakarta.servlet.ServletException;
 import jakarta.servlet.ServletRequest;
 import jakarta.servlet.ServletResponse;
-import jakarta.servlet.http.HttpServletRequest;
 
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.config.WatermarkConfigConstants;
@@ -36,7 +35,6 @@ public class AttributeSetFilter implements Filter {
      * @param request request
      */
     private void setFileAttribute(ServletRequest request) {
-        HttpServletRequest httpRequest = (HttpServletRequest)request;
         request.setAttribute("pdfPresentationModeDisable", ConfigConstants.getPdfPresentationModeDisable());
         request.setAttribute("pdfOpenFileDisable", ConfigConstants.getPdfOpenFileDisable());
         request.setAttribute("pdfPrintDisable", ConfigConstants.getPdfPrintDisable());
@@ -61,54 +59,48 @@ public class AttributeSetFilter implements Filter {
      */
 
     private void setWatermarkAttribute(ServletRequest request) {
-        String watermarkTxt = KkFileUtils.htmlEscape(request.getParameter("watermarkTxt"));
-        request.setAttribute("watermarkTxt",
-            watermarkTxt != null ? watermarkTxt : WatermarkConfigConstants.getWatermarkTxt());
-        String watermarkXSpace = KkFileUtils.htmlEscape(request.getParameter("watermarkXSpace"));
-        if (!KkFileUtils.isInteger(watermarkXSpace)) {
-            watermarkXSpace = null;
+        // 设置水印文本
+        setWatermarkParameter(request, "watermarkTxt", WatermarkConfigConstants.getWatermarkTxt());
+
+        // 设置数值型水印参数
+        setNumericWatermarkParameter(request, "watermarkXSpace", WatermarkConfigConstants.getWatermarkXSpace());
+        setNumericWatermarkParameter(request, "watermarkYSpace", WatermarkConfigConstants.getWatermarkYSpace());
+        setNumericWatermarkParameter(request, "watermarkAlpha", WatermarkConfigConstants.getWatermarkAlpha());
+        setNumericWatermarkParameter(request, "watermarkWidth", WatermarkConfigConstants.getWatermarkWidth());
+        setNumericWatermarkParameter(request, "watermarkHeight", WatermarkConfigConstants.getWatermarkHeight());
+        setNumericWatermarkParameter(request, "watermarkAngle", WatermarkConfigConstants.getWatermarkAngle());
+
+        // 设置其他水印参数
+        setWatermarkParameter(request, "watermarkFont", WatermarkConfigConstants.getWatermarkFont());
+        setWatermarkParameter(request, "watermarkFontsize", WatermarkConfigConstants.getWatermarkFontsize());
+        setWatermarkParameter(request, "watermarkColor", WatermarkConfigConstants.getWatermarkColor());
+    }
+
+    /**
+     * 设置水印参数（通用方法）
+     *
+     * @param request Servlet请求
+     * @param paramName 参数名
+     * @param defaultValue 默认值
+     */
+    private void setWatermarkParameter(ServletRequest request, String paramName, String defaultValue) {
+        String paramValue = KkFileUtils.htmlEscape(request.getParameter(paramName));
+        request.setAttribute(paramName, paramValue != null ? paramValue : defaultValue);
+    }
+
+    /**
+     * 设置数值型水印参数
+     *
+     * @param request Servlet请求
+     * @param paramName 参数名
+     * @param defaultValue 默认值
+     */
+    private void setNumericWatermarkParameter(ServletRequest request, String paramName, String defaultValue) {
+        String paramValue = KkFileUtils.htmlEscape(request.getParameter(paramName));
+        if (!KkFileUtils.isInteger(paramValue)) {
+            paramValue = null;
         }
-        request.setAttribute("watermarkXSpace",
-            watermarkXSpace != null ? watermarkXSpace : WatermarkConfigConstants.getWatermarkXSpace());
-        String watermarkYSpace = KkFileUtils.htmlEscape(request.getParameter("watermarkYSpace"));
-        if (!KkFileUtils.isInteger(watermarkYSpace)) {
-            watermarkYSpace = null;
-        }
-        request.setAttribute("watermarkYSpace",
-            watermarkYSpace != null ? watermarkYSpace : WatermarkConfigConstants.getWatermarkYSpace());
-        String watermarkFont = KkFileUtils.htmlEscape(request.getParameter("watermarkFont"));
-        request.setAttribute("watermarkFont",
-            watermarkFont != null ? watermarkFont : WatermarkConfigConstants.getWatermarkFont());
-        String watermarkFontsize = KkFileUtils.htmlEscape(request.getParameter("watermarkFontsize"));
-        request.setAttribute("watermarkFontsize",
-            watermarkFontsize != null ? watermarkFontsize : WatermarkConfigConstants.getWatermarkFontsize());
-        String watermarkColor = KkFileUtils.htmlEscape(request.getParameter("watermarkColor"));
-        request.setAttribute("watermarkColor",
-            watermarkColor != null ? watermarkColor : WatermarkConfigConstants.getWatermarkColor());
-        String watermarkAlpha = KkFileUtils.htmlEscape(request.getParameter("watermarkAlpha"));
-        if (!KkFileUtils.isInteger(watermarkAlpha)) {
-            watermarkAlpha = null;
-        }
-        request.setAttribute("watermarkAlpha",
-            watermarkAlpha != null ? watermarkAlpha : WatermarkConfigConstants.getWatermarkAlpha());
-        String watermarkWidth = KkFileUtils.htmlEscape(request.getParameter("watermarkWidth"));
-        if (!KkFileUtils.isInteger(watermarkWidth)) {
-            watermarkWidth = null;
-        }
-        request.setAttribute("watermarkWidth",
-            watermarkWidth != null ? watermarkWidth : WatermarkConfigConstants.getWatermarkWidth());
-        String watermarkHeight = KkFileUtils.htmlEscape(request.getParameter("watermarkHeight"));
-        if (!KkFileUtils.isInteger(watermarkHeight)) {
-            watermarkHeight = null;
-        }
-        request.setAttribute("watermarkHeight",
-            watermarkHeight != null ? watermarkHeight : WatermarkConfigConstants.getWatermarkHeight());
-        String watermarkAngle = KkFileUtils.htmlEscape(request.getParameter("watermarkAngle"));
-        if (!KkFileUtils.isInteger(watermarkAngle)) {
-            watermarkAngle = null;
-        }
-        request.setAttribute("watermarkAngle",
-            watermarkAngle != null ? watermarkAngle : WatermarkConfigConstants.getWatermarkAngle());
+        request.setAttribute(paramName, paramValue != null ? paramValue : defaultValue);
     }
 
     @Override

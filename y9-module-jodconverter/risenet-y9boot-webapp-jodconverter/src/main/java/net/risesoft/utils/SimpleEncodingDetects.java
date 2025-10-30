@@ -9,18 +9,14 @@ import java.io.InputStreamReader;
 import java.net.URL;
 
 /**
- * <Detect encoding .> Copyright (C) <2009> <Fluck,ACC http://androidos.cc/dev>
- *
- * This program is free software: you can redistribute it and/or modify it under the terms of the GNU General Public
- * License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later
- * version.
- *
- * This program is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied
- * warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
- *
+ * <Detect encoding .> Copyright (C) <2009> <Fluck,ACC <a href="http://androidos.cc/dev">...</a>> This program is free
+ * software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or (at your option) any later version. This program is
+ * distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the GNU General Public License for more details.
  * EncodingDetect.java<br>
  * 自动获取文件的编码
- * 
+ *
  * @version 1.0
  */
 public class SimpleEncodingDetects {
@@ -33,18 +29,17 @@ public class SimpleEncodingDetects {
      */
     public static String getJavaEncode(byte[] content) {
         BytesEncodingDetect s = new BytesEncodingDetect();
-        String fileCode = Encoding.javaname[s.detectEncoding(content)];
-        return fileCode;
+        return Encoding.javaname[s.detectEncoding(content)];
     }
 
     public static void readFile(String file, String code) {
         String myCode = code != null && !code.isEmpty() ? code : "UTF8";
         try (InputStreamReader read = new InputStreamReader(new FileInputStream(file), myCode);
             BufferedReader fr = new BufferedReader(read)) {
-            String line = null;
+            String line;
             int flag = 1;
             // 读取每一行，如果结束了，line会为空
-            while ((line = fr.readLine()) != null && line.trim().length() > 0) {
+            while ((line = fr.readLine()) != null && !line.trim().isEmpty()) {
                 if (flag == 1) {
                     line = line.substring(1);// 去掉文件头
                     flag++;
@@ -167,10 +162,10 @@ class BytesEncodingDetect extends Encoding {
      * in array uses GB-2312 encoding
      */
     int gb2312_probability(byte[] rawtext) {
-        int i, rawtextlen = 0;
+        int i, rawtextlen;
         int dbchars = 1, gbchars = 1;
         long gbfreq = 0, totalfreq = 1;
-        float rangeval = 0, freqval = 0;
+        float rangeval, freqval;
         int row, column;
         // Stage 1: Check to see if characters fit into acceptable ranges
         rawtextlen = rawtext.length;
@@ -206,54 +201,111 @@ class BytesEncodingDetect extends Encoding {
      * array uses GBK encoding
      */
     int gbk_probability(byte[] rawtext) {
-        int i, rawtextlen = 0;
-        int dbchars = 1, gbchars = 1;
-        long gbfreq = 0, totalfreq = 1;
-        float rangeval = 0, freqval = 0;
-        int row, column;
-        // Stage 1: Check to see if characters fit into acceptable ranges
-        rawtextlen = rawtext.length;
-        for (i = 0; i < rawtextlen - 1; i++) {
-            // System.err.println(rawtext[i]);
+        int rawtextlen = rawtext.length;
+        int dbchars = 1; // 双字节字符计数
+        int gbchars = 1; // GBK字符计数
+        long gbfreq = 0; // GBK字符频率总和
+        long totalfreq = 1; // 总频率
+
+        // 遍历字节数组，检查GBK编码特征
+        for (int i = 0; i < rawtextlen - 1; i++) {
+            // ASCII字符（单字节）
             if (rawtext[i] >= 0) {
-                // asciichars++;
-            } else {
-                dbchars++;
-                if ((byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xF7 && // Original GB range
-                    (byte)0xA1 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE) {
-                    gbchars++;
-                    totalfreq += 500;
-                    row = rawtext[i] + 256 - 0xA1;
-                    column = rawtext[i + 1] + 256 - 0xA1;
-                    // System.out.println("original row " + row + " column " + column);
-                    if (GBFreq[row][column] != 0) {
-                        gbfreq += GBFreq[row][column];
-                    } else if (15 <= row && row < 55) {
-                        gbfreq += 200;
-                    }
-                } else if ((byte)0x81 <= rawtext[i] && rawtext[i] <= (byte)0xFE && // Extended GB range
-                    (((byte)0x80 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE)
-                        || ((byte)0x40 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x7E))) {
-                    gbchars++;
-                    totalfreq += 500;
-                    row = rawtext[i] + 256 - 0x81;
-                    if (0x40 <= rawtext[i + 1] && rawtext[i + 1] <= 0x7E) {
-                        column = rawtext[i + 1] - 0x40;
-                    } else {
-                        column = rawtext[i + 1] + 256 - 0x40;
-                    }
-                    // System.out.println("extended row " + row + " column " + column + " rawtext[i] " + rawtext[i]);
-                    if (GBKFreq[row][column] != 0) {
-                        gbfreq += GBKFreq[row][column];
-                    }
-                }
-                i++;
+                continue;
             }
+
+            dbchars++;
+            ProcessingResult result = processGbkCharacter(rawtext, i, rawtextlen, gbchars, totalfreq, gbfreq);
+            gbchars = result.gbchars;
+            totalfreq = result.totalfreq;
+            gbfreq = result.gbfreq;
+            i = result.nextIndex;
         }
-        rangeval = 50 * ((float)gbchars / (float)dbchars);
-        freqval = 50 * ((float)gbfreq / (float)totalfreq);
-        // For regular GB files, this would give the same score, so I handicap it slightly
+
+        // 计算范围匹配得分和频率得分
+        float rangeval = 50 * ((float)gbchars / (float)dbchars);
+        float freqval = 50 * ((float)gbfreq / (float)totalfreq);
+
+        // 对GBK编码略微降低评分以区分GB2312
         return (int)(rangeval + freqval) - 1;
+    }
+
+    /**
+     * 处理GBK字符
+     */
+    private ProcessingResult processGbkCharacter(byte[] rawtext, int i, int rawtextlen, int gbchars, long totalfreq,
+        long gbfreq) {
+        // 原始GB范围: 0xA1-0xF7 + 0xA1-0xFE
+        if (isOriginalGbRange(rawtext, i, rawtextlen)) {
+            return processOriginalGbCharacter(rawtext, i, gbchars, totalfreq, gbfreq);
+        }
+        // 扩展GBK范围: 0x81-0xFE + (0x80-0xFE 或 0x40-0x7E)
+        else if (isExtendedGbkRange(rawtext, i, rawtextlen)) {
+            return processExtendedGbCharacter(rawtext, i, gbchars, totalfreq, gbfreq);
+        }
+
+        return new ProcessingResult(gbchars, totalfreq, gbfreq, i);
+    }
+
+    /**
+     * 检查是否为原始GB范围
+     */
+    private boolean isOriginalGbRange(byte[] rawtext, int i, int rawtextlen) {
+        return (byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xF7 && i + 1 < rawtextlen
+            && (byte)0xA1 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE;
+    }
+
+    /**
+     * 检查是否为扩展GBK范围
+     */
+    private boolean isExtendedGbkRange(byte[] rawtext, int i, int rawtextlen) {
+        return (byte)0x81 <= rawtext[i] && rawtext[i] <= (byte)0xFE && i + 1 < rawtextlen
+            && (((byte)0x80 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE)
+                || ((byte)0x40 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x7E));
+    }
+
+    /**
+     * 处理原始GB字符
+     */
+    private ProcessingResult processOriginalGbCharacter(byte[] rawtext, int i, int gbchars, long totalfreq,
+        long gbfreq) {
+        int newGbchars = gbchars + 1;
+        long newTotalfreq = totalfreq + 500;
+        int row = rawtext[i] + 256 - 0xA1;
+        int column = rawtext[i + 1] + 256 - 0xA1;
+        long newGbfreq = gbfreq;
+
+        if (GBFreq[row][column] != 0) {
+            newGbfreq += GBFreq[row][column];
+        } else if (15 <= row && row < 55) {
+            newGbfreq += 200;
+        }
+
+        return new ProcessingResult(newGbchars, newTotalfreq, newGbfreq, i + 1);
+    }
+
+    /**
+     * 处理扩展GBK字符
+     */
+    private ProcessingResult processExtendedGbCharacter(byte[] rawtext, int i, int gbchars, long totalfreq,
+        long gbfreq) {
+        int newGbchars = gbchars + 1;
+        long newTotalfreq = totalfreq + 500;
+        int row = rawtext[i] + 256 - 0x81;
+        int column;
+
+        if (0x40 <= rawtext[i + 1] && rawtext[i + 1] <= 0x7E) {
+            column = rawtext[i + 1] - 0x40;
+        } else {
+            column = rawtext[i + 1] + 256 - 0x40;
+        }
+
+        long newGbfreq = gbfreq;
+        if (GBKFreq[row][column] != 0) {
+            newGbfreq += GBKFreq[row][column];
+        }
+
+        return new ProcessingResult(newGbchars, newTotalfreq, newGbfreq, i + 1);
     }
 
     /*
@@ -261,64 +313,76 @@ class BytesEncodingDetect extends Encoding {
      * in array uses GBK encoding
      */
     int gb18030_probability(byte[] rawtext) {
-        int i, rawtextlen = 0;
-        int dbchars = 1, gbchars = 1;
-        long gbfreq = 0, totalfreq = 1;
-        float rangeval = 0, freqval = 0;
-        int row, column;
-        // Stage 1: Check to see if characters fit into acceptable ranges
-        rawtextlen = rawtext.length;
-        for (i = 0; i < rawtextlen - 1; i++) {
-            // System.err.println(rawtext[i]);
+        int rawtextlen = rawtext.length;
+        int dbchars = 1; // 双字节字符计数
+        int gbchars = 1; // GB18030字符计数
+        long gbfreq = 0; // GB18030字符频率总和
+        long totalfreq = 1; // 总频率
+
+        // 遍历字节数组，检查GB18030编码特征
+        for (int i = 0; i < rawtextlen - 1; i++) {
+            // ASCII字符（单字节）
             if (rawtext[i] >= 0) {
-                // asciichars++;
-            } else {
-                dbchars++;
-                if ((byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xF7 && // Original GB range
-                    i + 1 < rawtextlen && (byte)0xA1 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE) {
-                    gbchars++;
-                    totalfreq += 500;
-                    row = rawtext[i] + 256 - 0xA1;
-                    column = rawtext[i + 1] + 256 - 0xA1;
-                    // System.out.println("original row " + row + " column " + column);
-                    if (GBFreq[row][column] != 0) {
-                        gbfreq += GBFreq[row][column];
-                    } else if (15 <= row && row < 55) {
-                        gbfreq += 200;
-                    }
-                } else if ((byte)0x81 <= rawtext[i] && rawtext[i] <= (byte)0xFE && // Extended GB range
-                    i + 1 < rawtextlen && (((byte)0x80 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE)
-                        || ((byte)0x40 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x7E))) {
-                    gbchars++;
-                    totalfreq += 500;
-                    row = rawtext[i] + 256 - 0x81;
-                    if (0x40 <= rawtext[i + 1] && rawtext[i + 1] <= 0x7E) {
-                        column = rawtext[i + 1] - 0x40;
-                    } else {
-                        column = rawtext[i + 1] + 256 - 0x40;
-                    }
-                    // System.out.println("extended row " + row + " column " + column + " rawtext[i] " + rawtext[i]);
-                    if (GBKFreq[row][column] != 0) {
-                        gbfreq += GBKFreq[row][column];
-                    }
-                } else if ((byte)0x81 <= rawtext[i] && rawtext[i] <= (byte)0xFE && // Extended GB range
-                    i + 3 < rawtextlen && (byte)0x30 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x39
-                    && (byte)0x81 <= rawtext[i + 2] && rawtext[i + 2] <= (byte)0xFE && (byte)0x30 <= rawtext[i + 3]
-                    && rawtext[i + 3] <= (byte)0x39) {
-                    gbchars++;
-                    /*
-                     * totalfreq += 500; row = rawtext[i] + 256 - 0x81; if (0x40 <= rawtext[i+1] && rawtext[i+1] <= 0x7E) { column =
-                     * rawtext[i+1] - 0x40; } else { column = rawtext[i+1] + 256 - 0x40; } //System.out.println("extended row " + row + "
-                     * column " + column + " rawtext[i] " + rawtext[i]); if (GBKFreq[row][column] != 0) { gbfreq += GBKFreq[row][column]; }
-                     */
-                }
-                i++;
+                continue;
             }
+
+            dbchars++;
+            ProcessingResult result = processGb18030Character(rawtext, i, rawtextlen, gbchars, totalfreq, gbfreq);
+            gbchars = result.gbchars;
+            totalfreq = result.totalfreq;
+            gbfreq = result.gbfreq;
+            i = result.nextIndex;
         }
-        rangeval = 50 * ((float)gbchars / (float)dbchars);
-        freqval = 50 * ((float)gbfreq / (float)totalfreq);
-        // For regular GB files, this would give the same score, so I handicap it slightly
+
+        // 计算范围匹配得分和频率得分
+        float rangeval = 50 * ((float)gbchars / (float)dbchars);
+        float freqval = 50 * ((float)gbfreq / (float)totalfreq);
+
+        // 对GB18030编码略微降低评分以区分GBK
         return (int)(rangeval + freqval) - 1;
+    }
+
+    /**
+     * 处理GB18030字符
+     */
+    private ProcessingResult processGb18030Character(byte[] rawtext, int i, int rawtextlen, int gbchars, long totalfreq,
+        long gbfreq) {
+
+        Gb18030CharacterType charType = determineGb18030CharacterType(rawtext, i, rawtextlen);
+
+        switch (charType) {
+            case ORIGINAL_GB:
+                return processOriginalGbCharacter(rawtext, i, gbchars, totalfreq, gbfreq);
+            case EXTENDED_GBK:
+                return processExtendedGbCharacter(rawtext, i, gbchars, totalfreq, gbfreq);
+            case GB18030_FOUR_BYTE:
+                return new ProcessingResult(gbchars + 1, totalfreq, gbfreq, i + 3);
+            default:
+                return new ProcessingResult(gbchars, totalfreq, gbfreq, i);
+        }
+    }
+
+    /**
+     * 确定GB18030字符类型
+     */
+    private Gb18030CharacterType determineGb18030CharacterType(byte[] rawtext, int i, int rawtextlen) {
+        if (isOriginalGbRange(rawtext, i, rawtextlen)) {
+            return Gb18030CharacterType.ORIGINAL_GB;
+        } else if (isExtendedGbkRange(rawtext, i, rawtextlen)) {
+            return Gb18030CharacterType.EXTENDED_GBK;
+        } else if (isGb18030FourByteRange(rawtext, i, rawtextlen)) {
+            return Gb18030CharacterType.GB18030_FOUR_BYTE;
+        }
+        return Gb18030CharacterType.UNKNOWN;
+    }
+
+    /**
+     * 检查是否为GB18030四字节序列
+     */
+    private boolean isGb18030FourByteRange(byte[] rawtext, int i, int rawtextlen) {
+        return (byte)0x81 <= rawtext[i] && rawtext[i] <= (byte)0xFE && i + 3 < rawtextlen
+            && (byte)0x30 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x39 && (byte)0x81 <= rawtext[i + 2]
+            && rawtext[i + 2] <= (byte)0xFE && (byte)0x30 <= rawtext[i + 3] && rawtext[i + 3] <= (byte)0x39;
     }
 
     /*
@@ -326,70 +390,151 @@ class BytesEncodingDetect extends Encoding {
      * encoding
      */
     int hz_probability(byte[] rawtext) {
-        int i, rawtextlen;
-        int hzchars = 0, dbchars = 1;
-        long hzfreq = 0, totalfreq = 1;
-        float rangeval = 0, freqval = 0;
-        int hzstart = 0, hzend = 0;
-        int row, column;
-        rawtextlen = rawtext.length;
-        for (i = 0; i < rawtextlen; i++) {
-            if (rawtext[i] == '~' && i < rawtextlen - 1) {
-                if (rawtext[i + 1] == '{') {
-                    hzstart++;
-                    i += 2;
-                    while (i < rawtextlen - 1) {
-                        if (rawtext[i] == 0x0A || rawtext[i] == 0x0D) {
-                            break;
-                        } else if (rawtext[i] == '~' && rawtext[i + 1] == '}') {
-                            hzend++;
-                            i++;
-                            break;
-                        } else if ((0x21 <= rawtext[i] && rawtext[i] <= 0x77)
-                            && (0x21 <= rawtext[i + 1] && rawtext[i + 1] <= 0x77)) {
-                            hzchars += 2;
-                            row = rawtext[i] - 0x21;
-                            column = rawtext[i + 1] - 0x21;
-                            totalfreq += 500;
-                            if (GBFreq[row][column] != 0) {
-                                hzfreq += GBFreq[row][column];
-                            } else if (15 <= row && row < 55) {
-                                hzfreq += 200;
-                            }
-                        } else if ((0xA1 <= rawtext[i] && rawtext[i] <= 0xF7)
-                            && (0xA1 <= rawtext[i + 1] && rawtext[i + 1] <= 0xF7)) {
-                            hzchars += 2;
-                            row = rawtext[i] + 256 - 0xA1;
-                            column = rawtext[i + 1] + 256 - 0xA1;
-                            totalfreq += 500;
-                            if (GBFreq[row][column] != 0) {
-                                hzfreq += GBFreq[row][column];
-                            } else if (15 <= row && row < 55) {
-                                hzfreq += 200;
-                            }
-                        }
-                        dbchars += 2;
-                        i += 2;
-                    }
-                } else if (rawtext[i + 1] == '}') {
-                    hzend++;
-                    i++;
-                } else if (rawtext[i + 1] == '~') {
-                    i++;
-                }
+        int rawtextlen = rawtext.length;
+        HzStatistics stats = new HzStatistics();
+        // 遍历文本检测HZ编码特征
+        for (int i = 0; i < rawtextlen; i++) {
+            if (isHzEscapeStart(rawtext, i, rawtextlen)) {
+                stats.hzstart++;
+                i += 2;
+                processHzContent(rawtext, stats, i, rawtextlen);
+                i = stats.nextIndex;
+            } else if (isHzEscapeEnd(rawtext, i, rawtextlen)) {
+                stats.hzend++;
+                i++;
+            } else if (isHzEscapeDouble(rawtext, i, rawtextlen)) {
+                i++;
             }
         }
-        if (hzstart > 4) {
-            rangeval = 50;
-        } else if (hzstart > 1) {
-            rangeval = 41;
-        } else if (hzstart > 0) { // Only 39 in case the sequence happened to occur
-            rangeval = 39; // in otherwise non-Hz text
-        } else {
-            rangeval = 0;
+        return calculateHzProbability(stats);
+    }
+
+    /**
+     * 检查是否为HZ转义开始标记 "~{"
+     */
+    private boolean isHzEscapeStart(byte[] rawtext, int i, int rawtextlen) {
+        return rawtext[i] == '~' && i < rawtextlen - 1 && rawtext[i + 1] == '{';
+    }
+
+    /**
+     * 检查是否为HZ转义结束标记 "~}"
+     */
+    private boolean isHzEscapeEnd(byte[] rawtext, int i, int rawtextlen) {
+        return rawtext[i] == '~' && i < rawtextlen - 1 && rawtext[i + 1] == '}';
+    }
+
+    /**
+     * 检查是否为HZ转义重复标记 "~~"
+     */
+    private boolean isHzEscapeDouble(byte[] rawtext, int i, int rawtextlen) {
+        return rawtext[i] == '~' && i < rawtextlen - 1 && rawtext[i + 1] == '~';
+    }
+
+    /**
+     * 处理HZ编码内容部分
+     */
+    private void processHzContent(byte[] rawtext, HzStatistics stats, int startIndex, int rawtextlen) {
+        int i = startIndex;
+        while (i < rawtextlen - 1) {
+            HzContentResult result = processHzCharacter(rawtext, stats, i, rawtextlen);
+            if (result.shouldBreak) {
+                stats.nextIndex = result.nextIndex;
+                return;
+            }
+            stats.dbchars += 2;
+            i = result.nextIndex;
         }
-        freqval = 50 * ((float)hzfreq / (float)totalfreq);
+        stats.nextIndex = i;
+    }
+
+    /**
+     * 处理单个HZ字符
+     */
+    private HzContentResult processHzCharacter(byte[] rawtext, HzStatistics stats, int i, int rawtextlen) {
+        // 检查是否遇到结束标记
+        if (rawtext[i] == 0x0A || rawtext[i] == 0x0D) {
+            return new HzContentResult(true, i);
+        } else if (isHzEscapeEnd(rawtext, i, rawtextlen)) {
+            stats.hzend++;
+            return new HzContentResult(true, i + 1);
+        }
+
+        // 处理HZ字符
+        if (isAsciiHzRange(rawtext, i)) {
+            updateHzStatsForAsciiRange(rawtext, stats, i);
+        } else if (isGbHzRange(rawtext, i)) {
+            updateHzStatsForGbRange(rawtext, stats, i);
+        }
+
+        return new HzContentResult(false, i + 2);
+    }
+
+    /**
+     * 检查是否为ASCII范围的HZ字符 (0x21-0x77)
+     */
+    private boolean isAsciiHzRange(byte[] rawtext, int i) {
+        return (0x21 <= rawtext[i] && rawtext[i] <= 0x77) && (0x21 <= rawtext[i + 1] && rawtext[i + 1] <= 0x77);
+    }
+
+    /**
+     * 检查是否为GB范围的HZ字符 (0xA1-0xF7)
+     */
+    private boolean isGbHzRange(byte[] rawtext, int i) {
+        return (0xA1 <= rawtext[i] && rawtext[i] <= 0xF7) && (0xA1 <= rawtext[i + 1] && rawtext[i + 1] <= 0xF7);
+    }
+
+    /**
+     * 更新ASCII范围HZ字符的统计信息
+     */
+    private void updateHzStatsForAsciiRange(byte[] rawtext, HzStatistics stats, int i) {
+        stats.hzchars += 2;
+        int row = rawtext[i] - 0x21;
+        int column = rawtext[i + 1] - 0x21;
+        stats.totalfreq += 500;
+        if (GBFreq[row][column] != 0) {
+            stats.hzfreq += GBFreq[row][column];
+        } else if (15 <= row && row < 55) {
+            stats.hzfreq += 200;
+        }
+    }
+
+    /**
+     * 更新GB范围HZ字符的统计信息
+     */
+    private void updateHzStatsForGbRange(byte[] rawtext, HzStatistics stats, int i) {
+        stats.hzchars += 2;
+        int row = rawtext[i] + 256 - 0xA1;
+        int column = rawtext[i + 1] + 256 - 0xA1;
+        stats.totalfreq += 500;
+        if (GBFreq[row][column] != 0) {
+            stats.hzfreq += GBFreq[row][column];
+        } else if (15 <= row && row < 55) {
+            stats.hzfreq += 200;
+        }
+    }
+
+    /**
+     * 计算HZ编码概率
+     */
+    private int calculateHzProbability(HzStatistics stats) {
+        float rangeval = calculateHzRangeValue(stats.hzstart);
+        float freqval = 50 * ((float)stats.hzfreq / (float)stats.totalfreq);
         return (int)(rangeval + freqval);
+    }
+
+    /**
+     * 计算HZ范围值
+     */
+    private float calculateHzRangeValue(int hzstart) {
+        if (hzstart > 4) {
+            return 50;
+        } else if (hzstart > 1) {
+            return 41;
+        } else if (hzstart > 0) {
+            return 39; // Only 39 in case the sequence happened to occur in otherwise non-Hz text
+        } else {
+            return 0;
+        }
     }
 
     /**
@@ -397,41 +542,79 @@ class BytesEncodingDetect extends Encoding {
      * array uses Big5 encoding
      */
     int big5_probability(byte[] rawtext) {
-        int i, rawtextlen = 0;
+        int rawtextlen = rawtext.length;
         int dbchars = 1, bfchars = 1;
-        float rangeval = 0, freqval = 0;
         long bffreq = 0, totalfreq = 1;
-        int row, column;
+
         // Check to see if characters fit into acceptable ranges
-        rawtextlen = rawtext.length;
-        for (i = 0; i < rawtextlen - 1; i++) {
+        for (int i = 0; i < rawtextlen - 1; i++) {
             if (rawtext[i] >= 0) {
-                // asciichars++;
-            } else {
-                dbchars++;
-                if ((byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xF9
-                    && (((byte)0x40 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x7E)
-                        || ((byte)0xA1 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE))) {
-                    bfchars++;
-                    totalfreq += 500;
-                    row = rawtext[i] + 256 - 0xA1;
-                    if (0x40 <= rawtext[i + 1] && rawtext[i + 1] <= 0x7E) {
-                        column = rawtext[i + 1] - 0x40;
-                    } else {
-                        column = rawtext[i + 1] + 256 - 0x61;
-                    }
-                    if (Big5Freq[row][column] != 0) {
-                        bffreq += Big5Freq[row][column];
-                    } else if (3 <= row && row <= 37) {
-                        bffreq += 200;
-                    }
-                }
-                i++;
+                // ASCII characters, skip
+                continue;
             }
+
+            dbchars++;
+            Big5CharacterResult result = processBig5Character(rawtext, i, bfchars, totalfreq, bffreq);
+            bfchars = result.bfchars;
+            totalfreq = result.totalfreq;
+            bffreq = result.bffreq;
+            i++; // Skip next byte as it's part of the current character
         }
-        rangeval = 50 * ((float)bfchars / (float)dbchars);
-        freqval = 50 * ((float)bffreq / (float)totalfreq);
+
+        float rangeval = 50 * ((float)bfchars / (float)dbchars);
+        float freqval = 50 * ((float)bffreq / (float)totalfreq);
         return (int)(rangeval + freqval);
+    }
+
+    /**
+     * 处理Big5字符
+     */
+    private Big5CharacterResult processBig5Character(byte[] rawtext, int i, int bfchars, long totalfreq, long bffreq) {
+        if (isBig5CharacterRange(rawtext, i)) {
+            return processValidBig5Character(rawtext, i, bfchars, totalfreq, bffreq);
+        }
+        return new Big5CharacterResult(bfchars, totalfreq, bffreq);
+    }
+
+    /**
+     * 检查是否为有效的Big5字符范围
+     */
+    private boolean isBig5CharacterRange(byte[] rawtext, int i) {
+        return (byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xF9
+            && (((byte)0x40 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x7E)
+                || ((byte)0xA1 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE));
+    }
+
+    /**
+     * 处理有效的Big5字符
+     */
+    private Big5CharacterResult processValidBig5Character(byte[] rawtext, int i, int bfchars, long totalfreq,
+        long bffreq) {
+        int newBfchars = bfchars + 1;
+        long newTotalfreq = totalfreq + 500;
+
+        int row = rawtext[i] + 256 - 0xA1;
+        int column = calculateBig5Column(rawtext[i + 1]);
+
+        long newBffreq = bffreq;
+        if (Big5Freq[row][column] != 0) {
+            newBffreq += Big5Freq[row][column];
+        } else if (3 <= row && row <= 37) {
+            newBffreq += 200;
+        }
+
+        return new Big5CharacterResult(newBfchars, newTotalfreq, newBffreq);
+    }
+
+    /**
+     * 计算Big5字符的列索引
+     */
+    private int calculateBig5Column(byte byteValue) {
+        if (0x40 <= byteValue && byteValue <= 0x7E) {
+            return byteValue - 0x40;
+        } else {
+            return byteValue + 256 - 0x61;
+        }
     }
 
     /*
@@ -462,44 +645,86 @@ class BytesEncodingDetect extends Encoding {
      * uses EUC-TW (CNS 11643) encoding
      */
     int euc_tw_probability(byte[] rawtext) {
-        int i, rawtextlen = 0;
+        int rawtextlen = rawtext.length;
         int dbchars = 1, cnschars = 1;
         long cnsfreq = 0, totalfreq = 1;
-        float rangeval = 0, freqval = 0;
-        int row, column;
+
         // Check to see if characters fit into acceptable ranges
         // and have expected frequency of use
-        rawtextlen = rawtext.length;
-        for (i = 0; i < rawtextlen - 1; i++) {
+        for (int i = 0; i < rawtextlen - 1; i++) {
             if (rawtext[i] >= 0) { // in ASCII range
                 // asciichars++;
-            } else { // high bit set
-                dbchars++;
-                if (i + 3 < rawtextlen && (byte)0x8E == rawtext[i] && (byte)0xA1 <= rawtext[i + 1]
-                    && rawtext[i + 1] <= (byte)0xB0 && (byte)0xA1 <= rawtext[i + 2] && rawtext[i + 2] <= (byte)0xFE
-                    && (byte)0xA1 <= rawtext[i + 3] && rawtext[i + 3] <= (byte)0xFE) { // Planes 1 - 16
-                    cnschars++;
-                    // System.out.println("plane 2 or above CNS char");
-                    // These are all less frequent chars so just ignore freq
-                    i += 3;
-                } else if ((byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xFE && // Plane 1
-                    (byte)0xA1 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE) {
-                    cnschars++;
-                    totalfreq += 500;
-                    row = rawtext[i] + 256 - 0xA1;
-                    column = rawtext[i + 1] + 256 - 0xA1;
-                    if (EUC_TWFreq[row][column] != 0) {
-                        cnsfreq += EUC_TWFreq[row][column];
-                    } else if (35 <= row && row <= 92) {
-                        cnsfreq += 150;
-                    }
-                    i++;
-                }
+                continue;
             }
+
+            // high bit set
+            dbchars++;
+            EucTwCharacterResult result = processEucTwCharacter(rawtext, i, cnschars, totalfreq, cnsfreq);
+            cnschars = result.cnschars;
+            totalfreq = result.totalfreq;
+            cnsfreq = result.cnsfreq;
+            i = result.indexAdjustment; // 调整索引位置
         }
-        rangeval = 50 * ((float)cnschars / (float)dbchars);
-        freqval = 50 * ((float)cnsfreq / (float)totalfreq);
+
+        float rangeval = 50 * ((float)cnschars / (float)dbchars);
+        float freqval = 50 * ((float)cnsfreq / (float)totalfreq);
         return (int)(rangeval + freqval);
+    }
+
+    /**
+     * 处理EUC-TW字符
+     */
+    private EucTwCharacterResult processEucTwCharacter(byte[] rawtext, int i, int cnschars, long totalfreq,
+        long cnsfreq) {
+        // 检查是否为Planes 1 - 16 (四字节字符)
+        if (isFourByteEucTwCharacter(rawtext, i)) {
+            return new EucTwCharacterResult(cnschars + 1, totalfreq, cnsfreq, i + 3);
+        }
+
+        // 检查是否为Plane 1 (双字节字符)
+        if (isTwoByteEucTwCharacter(rawtext, i)) {
+            return processTwoByteEucTwCharacter(rawtext, i, cnschars, totalfreq, cnsfreq);
+        }
+
+        return new EucTwCharacterResult(cnschars, totalfreq, cnsfreq, i);
+    }
+
+    /**
+     * 检查是否为四字节EUC-TW字符 (Planes 1 - 16)
+     */
+    private boolean isFourByteEucTwCharacter(byte[] rawtext, int i) {
+        return i + 3 < rawtext.length && (byte)0x8E == rawtext[i] && (byte)0xA1 <= rawtext[i + 1]
+            && rawtext[i + 1] <= (byte)0xB0 && (byte)0xA1 <= rawtext[i + 2] && rawtext[i + 2] <= (byte)0xFE
+            && (byte)0xA1 <= rawtext[i + 3] && rawtext[i + 3] <= (byte)0xFE;
+    }
+
+    /**
+     * 检查是否为双字节EUC-TW字符 (Plane 1)
+     */
+    private boolean isTwoByteEucTwCharacter(byte[] rawtext, int i) {
+        return (byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xFE && (byte)0xA1 <= rawtext[i + 1]
+            && rawtext[i + 1] <= (byte)0xFE;
+    }
+
+    /**
+     * 处理双字节EUC-TW字符
+     */
+    private EucTwCharacterResult processTwoByteEucTwCharacter(byte[] rawtext, int i, int cnschars, long totalfreq,
+        long cnsfreq) {
+        int newCnschars = cnschars + 1;
+        long newTotalfreq = totalfreq + 500;
+
+        int row = rawtext[i] + 256 - 0xA1;
+        int column = rawtext[i + 1] + 256 - 0xA1;
+
+        long newCnsfreq = cnsfreq;
+        if (EUC_TWFreq[row][column] != 0) {
+            newCnsfreq += EUC_TWFreq[row][column];
+        } else if (35 <= row && row <= 92) {
+            newCnsfreq += 150;
+        }
+
+        return new EucTwCharacterResult(newCnschars, newTotalfreq, newCnsfreq, i + 1);
     }
 
     /*
@@ -507,74 +732,188 @@ class BytesEncodingDetect extends Encoding {
      * array uses ISO 2022-CN encoding WORKS FOR BASIC CASES, BUT STILL NEEDS MORE WORK
      */
     int iso_2022_cn_probability(byte[] rawtext) {
-        int i, rawtextlen = 0;
-        int dbchars = 1, isochars = 1;
-        long isofreq = 0, totalfreq = 1;
-        float rangeval = 0, freqval = 0;
-        int row, column;
+        int rawtextlen = rawtext.length;
+        Iso2022CnStatistics stats = new Iso2022CnStatistics();
+
         // Check to see if characters fit into acceptable ranges
         // and have expected frequency of use
-        rawtextlen = rawtext.length;
-        for (i = 0; i < rawtextlen - 1; i++) {
-            if (rawtext[i] == (byte)0x1B && i + 3 < rawtextlen) { // Escape char ESC
-                if (rawtext[i + 1] == (byte)0x24 && rawtext[i + 2] == 0x29 && rawtext[i + 3] == (byte)0x41) { // GB
-                                                                                                              // Escape
-                                                                                                              // $ ) A
-                    i += 4;
-                    while (rawtext[i] != (byte)0x1B) {
-                        dbchars++;
-                        if ((0x21 <= rawtext[i] && rawtext[i] <= 0x77)
-                            && (0x21 <= rawtext[i + 1] && rawtext[i + 1] <= 0x77)) {
-                            isochars++;
-                            row = rawtext[i] - 0x21;
-                            column = rawtext[i + 1] - 0x21;
-                            totalfreq += 500;
-                            if (GBFreq[row][column] != 0) {
-                                isofreq += GBFreq[row][column];
-                            } else if (15 <= row && row < 55) {
-                                isofreq += 200;
-                            }
-                            i++;
-                        }
-                        i++;
-                    }
-                } else if (i + 3 < rawtextlen && rawtext[i + 1] == (byte)0x24 && rawtext[i + 2] == (byte)0x29
-                    && rawtext[i + 3] == (byte)0x47) {
-                    // CNS Escape $ ) G
-                    i += 4;
-                    while (rawtext[i] != (byte)0x1B) {
-                        dbchars++;
-                        if ((byte)0x21 <= rawtext[i] && rawtext[i] <= (byte)0x7E && (byte)0x21 <= rawtext[i + 1]
-                            && rawtext[i + 1] <= (byte)0x7E) {
-                            isochars++;
-                            totalfreq += 500;
-                            row = rawtext[i] - 0x21;
-                            column = rawtext[i + 1] - 0x21;
-                            if (EUC_TWFreq[row][column] != 0) {
-                                isofreq += EUC_TWFreq[row][column];
-                            } else if (35 <= row && row <= 92) {
-                                isofreq += 150;
-                            }
-                            i++;
-                        }
-                        i++;
-                    }
-                }
-                if (rawtext[i] == (byte)0x1B && i + 2 < rawtextlen && rawtext[i + 1] == (byte)0x28
-                    && rawtext[i + 2] == (byte)0x42) { // ASCII:
-                    // ESC
-                    // ( B
-                    i += 2;
-                }
+        for (int i = 0; i < rawtextlen - 1; i++) {
+            if (!isEscapeSequenceStart(rawtext, i, rawtextlen)) {
+                continue;
             }
+
+            EscapeSequenceResult result = processEscapeSequence(rawtext, i, rawtextlen, stats);
+            stats = result.stats;
+            i = result.nextIndex;
         }
-        rangeval = 50 * ((float)isochars / (float)dbchars);
-        freqval = 50 * ((float)isofreq / (float)totalfreq);
-        // System.out.println("isochars dbchars isofreq totalfreq " + isochars + " " + dbchars + " " + isofreq + " " +
-        // totalfreq + "
-        // " + rangeval + " " + freqval);
+
+        return calculateIso2022CnProbability(stats);
+    }
+
+    /**
+     * 检查是否为转义序列开始
+     */
+    private boolean isEscapeSequenceStart(byte[] rawtext, int i, int rawtextlen) {
+        return rawtext[i] == (byte)0x1B && i + 3 < rawtextlen;
+    }
+
+    /**
+     * 处理转义序列
+     */
+    private EscapeSequenceResult processEscapeSequence(byte[] rawtext, int i, int rawtextlen,
+        Iso2022CnStatistics stats) {
+        // GB Escape $ ) A
+        if (isGbEscapeSequence(rawtext, i)) {
+            return processGbEscapeSequence(rawtext, i, rawtextlen, stats);
+        }
+
+        // CNS Escape $ ) G
+        if (isCnsEscapeSequence(rawtext, i)) {
+            return processCnsEscapeSequence(rawtext, i, rawtextlen, stats);
+        }
+
+        // ASCII Escape ( B
+        if (isAsciiEscapeSequence(rawtext, i)) {
+            return new EscapeSequenceResult(stats, i + 2);
+        }
+
+        return new EscapeSequenceResult(stats, i);
+    }
+
+    /**
+     * 检查是否为GB转义序列
+     */
+    private boolean isGbEscapeSequence(byte[] rawtext, int i) {
+        return rawtext[i + 1] == (byte)0x24 && rawtext[i + 2] == 0x29 && rawtext[i + 3] == (byte)0x41;
+    }
+
+    /**
+     * 检查是否为CNS转义序列
+     */
+    private boolean isCnsEscapeSequence(byte[] rawtext, int i) {
+        return i + 3 < rawtext.length && rawtext[i + 1] == (byte)0x24 && rawtext[i + 2] == (byte)0x29
+            && rawtext[i + 3] == (byte)0x47;
+    }
+
+    /**
+     * 检查是否为ASCII转义序列
+     */
+    private boolean isAsciiEscapeSequence(byte[] rawtext, int i) {
+        return i + 2 < rawtext.length && rawtext[i + 1] == (byte)0x28 && rawtext[i + 2] == (byte)0x42;
+    }
+
+    /**
+     * 处理GB转义序列
+     */
+    private EscapeSequenceResult processGbEscapeSequence(byte[] rawtext, int i, int rawtextlen,
+        Iso2022CnStatistics stats) {
+        i += 4;
+        Iso2022CnStatistics newStats = stats;
+
+        while (i < rawtextlen && rawtext[i] != (byte)0x1B) {
+            newStats = processGbCharacter(rawtext, i, newStats);
+            i++;
+        }
+
+        return new EscapeSequenceResult(newStats, i - 1);
+    }
+
+    /**
+     * 处理GB字符
+     */
+    private Iso2022CnStatistics processGbCharacter(byte[] rawtext, int i, Iso2022CnStatistics stats) {
+        if (i + 1 >= rawtext.length) {
+            return stats;
+        }
+
+        if (!isGbCharacterRange(rawtext, i)) {
+            return new Iso2022CnStatistics(stats.dbchars + 1, stats.isochars, stats.isofreq, stats.totalfreq);
+        }
+
+        int newDbchars = stats.dbchars + 1;
+        int newIsochars = stats.isochars + 1;
+        long newTotalfreq = stats.totalfreq + 500;
+
+        int row = rawtext[i] - 0x21;
+        int column = rawtext[i + 1] - 0x21;
+
+        long newIsofreq = stats.isofreq;
+        if (GBFreq[row][column] != 0) {
+            newIsofreq += GBFreq[row][column];
+        } else if (15 <= row && row < 55) {
+            newIsofreq += 200;
+        }
+
+        return new Iso2022CnStatistics(newDbchars, newIsochars, newIsofreq, newTotalfreq);
+    }
+
+    /**
+     * 检查是否为GB字符范围
+     */
+    private boolean isGbCharacterRange(byte[] rawtext, int i) {
+        return (0x21 <= rawtext[i] && rawtext[i] <= 0x77) && (0x21 <= rawtext[i + 1] && rawtext[i + 1] <= 0x77);
+    }
+
+    /**
+     * 处理CNS转义序列
+     */
+    private EscapeSequenceResult processCnsEscapeSequence(byte[] rawtext, int i, int rawtextlen,
+        Iso2022CnStatistics stats) {
+        i += 4;
+        Iso2022CnStatistics newStats = stats;
+
+        while (i < rawtextlen && rawtext[i] != (byte)0x1B) {
+            newStats = processCnsCharacter(rawtext, i, newStats);
+            i++;
+        }
+
+        return new EscapeSequenceResult(newStats, i - 1);
+    }
+
+    /**
+     * 处理CNS字符
+     */
+    private Iso2022CnStatistics processCnsCharacter(byte[] rawtext, int i, Iso2022CnStatistics stats) {
+        if (i + 1 >= rawtext.length) {
+            return stats;
+        }
+
+        if (!isCnsCharacterRange(rawtext, i)) {
+            return new Iso2022CnStatistics(stats.dbchars + 1, stats.isochars, stats.isofreq, stats.totalfreq);
+        }
+
+        int newDbchars = stats.dbchars + 1;
+        int newIsochars = stats.isochars + 1;
+        long newTotalfreq = stats.totalfreq + 500;
+
+        int row = rawtext[i] - 0x21;
+        int column = rawtext[i + 1] - 0x21;
+
+        long newIsofreq = stats.isofreq;
+        if (EUC_TWFreq[row][column] != 0) {
+            newIsofreq += EUC_TWFreq[row][column];
+        } else if (35 <= row && row <= 92) {
+            newIsofreq += 150;
+        }
+
+        return new Iso2022CnStatistics(newDbchars, newIsochars, newIsofreq, newTotalfreq);
+    }
+
+    /**
+     * 检查是否为CNS字符范围
+     */
+    private boolean isCnsCharacterRange(byte[] rawtext, int i) {
+        return (byte)0x21 <= rawtext[i] && rawtext[i] <= (byte)0x7E && (byte)0x21 <= rawtext[i + 1]
+            && rawtext[i + 1] <= (byte)0x7E;
+    }
+
+    /**
+     * 计算ISO 2022-CN编码概率
+     */
+    private int calculateIso2022CnProbability(Iso2022CnStatistics stats) {
+        float rangeval = 50 * ((float)stats.isochars / (float)stats.dbchars);
+        float freqval = 50 * ((float)stats.isofreq / (float)stats.totalfreq);
         return (int)(rangeval + freqval);
-        // return 0;
     }
 
     /*
@@ -711,40 +1050,81 @@ class BytesEncodingDetect extends Encoding {
      * in array uses Cp949 encoding
      */
     int cp949_probability(byte[] rawtext) {
-        int i, rawtextlen = 0;
+        int rawtextlen = rawtext.length;
         int dbchars = 1, krchars = 1;
         long krfreq = 0, totalfreq = 1;
-        float rangeval = 0, freqval = 0;
-        int row, column;
+
         // Stage 1: Check to see if characters fit into acceptable ranges
-        rawtextlen = rawtext.length;
-        for (i = 0; i < rawtextlen - 1; i++) {
+        for (int i = 0; i < rawtextlen - 1; i++) {
             // System.err.println(rawtext[i]);
             if (rawtext[i] >= 0) {
                 // asciichars++;
-            } else {
-                dbchars++;
-                if ((byte)0x81 <= rawtext[i] && rawtext[i] <= (byte)0xFE
-                    && ((byte)0x41 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x5A
-                        || (byte)0x61 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x7A
-                        || (byte)0x81 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE)) {
-                    krchars++;
-                    totalfreq += 500;
-                    if ((byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xFE && (byte)0xA1 <= rawtext[i + 1]
-                        && rawtext[i + 1] <= (byte)0xFE) {
-                        row = rawtext[i] + 256 - 0xA1;
-                        column = rawtext[i + 1] + 256 - 0xA1;
-                        if (KRFreq[row][column] != 0) {
-                            krfreq += KRFreq[row][column];
-                        }
-                    }
-                }
-                i++;
+                continue;
             }
+
+            dbchars++;
+            Cp949CharacterResult result = processCp949Character(rawtext, i, krchars, totalfreq, krfreq);
+            krchars = result.krchars;
+            totalfreq = result.totalfreq;
+            krfreq = result.krfreq;
+            i++; // Skip next byte as it's part of the current character
         }
-        rangeval = 50 * ((float)krchars / (float)dbchars);
-        freqval = 50 * ((float)krfreq / (float)totalfreq);
+
+        float rangeval = 50 * ((float)krchars / (float)dbchars);
+        float freqval = 50 * ((float)krfreq / (float)totalfreq);
         return (int)(rangeval + freqval);
+    }
+
+    /**
+     * 处理CP949字符
+     */
+    private Cp949CharacterResult processCp949Character(byte[] rawtext, int i, int krchars, long totalfreq,
+        long krfreq) {
+        if (!isCp949CharacterRange(rawtext, i)) {
+            return new Cp949CharacterResult(krchars, totalfreq, krfreq);
+        }
+
+        int newKrchars = krchars + 1;
+        long newTotalfreq = totalfreq + 500;
+
+        long newKrfreq = krfreq;
+        if (isKoreanFrequencyRange(rawtext, i)) {
+            newKrfreq = updateKoreanFrequency(rawtext, i, krfreq);
+        }
+
+        return new Cp949CharacterResult(newKrchars, newTotalfreq, newKrfreq);
+    }
+
+    /**
+     * 检查是否为CP949字符范围
+     */
+    private boolean isCp949CharacterRange(byte[] rawtext, int i) {
+        return (byte)0x81 <= rawtext[i] && rawtext[i] <= (byte)0xFE
+            && ((byte)0x41 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x5A
+                || (byte)0x61 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x7A
+                || (byte)0x81 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFE);
+    }
+
+    /**
+     * 检查是否为韩文频率统计范围
+     */
+    private boolean isKoreanFrequencyRange(byte[] rawtext, int i) {
+        return (byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xFE && (byte)0xA1 <= rawtext[i + 1]
+            && rawtext[i + 1] <= (byte)0xFE;
+    }
+
+    /**
+     * 更新韩文字符频率
+     */
+    private long updateKoreanFrequency(byte[] rawtext, int i, long krfreq) {
+        int row = rawtext[i] + 256 - 0xA1;
+        int column = rawtext[i + 1] + 256 - 0xA1;
+
+        if (KRFreq[row][column] != 0) {
+            return krfreq + KRFreq[row][column];
+        }
+
+        return krfreq;
     }
 
     int iso_2022_kr_probability(byte[] rawtext) {
@@ -812,94 +1192,160 @@ class BytesEncodingDetect extends Encoding {
      * array uses Shift-JIS encoding
      */
     int sjis_probability(byte[] rawtext) {
-        int i, rawtextlen = 0;
+        int rawtextlen = rawtext.length;
         int dbchars = 1, jpchars = 1;
         long jpfreq = 0, totalfreq = 1;
-        float rangeval = 0, freqval = 0;
-        int row, column, adjust;
+
         // Stage 1: Check to see if characters fit into acceptable ranges
-        rawtextlen = rawtext.length;
-        for (i = 0; i < rawtextlen - 1; i++) {
+        for (int i = 0; i < rawtextlen - 1; i++) {
             // System.err.println(rawtext[i]);
             if (rawtext[i] >= 0) {
                 // asciichars++;
-            } else {
-                dbchars++;
-                if (i + 1 < rawtext.length
-                    && (((byte)0x81 <= rawtext[i] && rawtext[i] <= (byte)0x9F)
-                        || ((byte)0xE0 <= rawtext[i] && rawtext[i] <= (byte)0xEF))
-                    && (((byte)0x40 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x7E)
-                        || ((byte)0x80 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFC))) {
-                    jpchars++;
-                    totalfreq += 500;
-                    row = rawtext[i] + 256;
-                    column = rawtext[i + 1] + 256;
-                    if (column < 0x9f) {
-                        adjust = 1;
-                        if (column > 0x7f) {
-                            column -= 0x20;
-                        } else {
-                            column -= 0x19;
-                        }
-                    } else {
-                        adjust = 0;
-                        column -= 0x7e;
-                    }
-                    if (row < 0xa0) {
-                        row = ((row - 0x70) << 1) - adjust;
-                    } else {
-                        row = ((row - 0xb0) << 1) - adjust;
-                    }
-                    row -= 0x20;
-                    column = 0x20;
-                    // System.out.println("original row " + row + " column " + column);
-                    if (row < JPFreq.length && column < JPFreq[row].length && JPFreq[row][column] != 0) {
-                        jpfreq += JPFreq[row][column];
-                    }
-                    i++;
-                } else if ((byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xDF) {
-                    // half-width katakana, convert to full-width
-                }
+                continue;
             }
+
+            dbchars++;
+            SjisCharacterResult result = processSjisCharacter(rawtext, i, jpchars, totalfreq, jpfreq);
+            jpchars = result.jpchars;
+            totalfreq = result.totalfreq;
+            jpfreq = result.jpfreq;
+            i = result.indexAdjustment;
         }
-        rangeval = 50 * ((float)jpchars / (float)dbchars);
-        freqval = 50 * ((float)jpfreq / (float)totalfreq);
+
+        float rangeval = 50 * ((float)jpchars / (float)dbchars);
+        float freqval = 50 * ((float)jpfreq / (float)totalfreq);
         // For regular GB files, this would give the same score, so I handicap it slightly
         return (int)(rangeval + freqval) - 1;
     }
 
+    /**
+     * 处理SJIS字符
+     */
+    private SjisCharacterResult processSjisCharacter(byte[] rawtext, int i, int jpchars, long totalfreq, long jpfreq) {
+        // 检查是否为标准SJIS字符范围
+        if (isStandardSjisRange(rawtext, i)) {
+            return processStandardSjisCharacter(rawtext, i, jpchars, totalfreq, jpfreq);
+        }
+
+        // 检查是否为半角片假名
+        if (isHalfWidthKatakana(rawtext, i)) {
+            // half-width katakana, convert to full-width
+            return new SjisCharacterResult(jpchars, totalfreq, jpfreq, i);
+        }
+
+        return new SjisCharacterResult(jpchars, totalfreq, jpfreq, i);
+    }
+
+    /**
+     * 检查是否为标准SJIS字符范围
+     */
+    private boolean isStandardSjisRange(byte[] rawtext, int i) {
+        return i + 1 < rawtext.length
+            && (((byte)0x81 <= rawtext[i] && rawtext[i] <= (byte)0x9F)
+                || ((byte)0xE0 <= rawtext[i] && rawtext[i] <= (byte)0xEF))
+            && (((byte)0x40 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0x7E)
+                || ((byte)0x80 <= rawtext[i + 1] && rawtext[i + 1] <= (byte)0xFC));
+    }
+
+    /**
+     * 检查是否为半角片假名
+     */
+    private boolean isHalfWidthKatakana(byte[] rawtext, int i) {
+        return (byte)0xA1 <= rawtext[i] && rawtext[i] <= (byte)0xDF;
+    }
+
+    /**
+     * 处理标准SJIS字符
+     */
+    private SjisCharacterResult processStandardSjisCharacter(byte[] rawtext, int i, int jpchars, long totalfreq,
+        long jpfreq) {
+        int newJpchars = jpchars + 1;
+        long newTotalfreq = totalfreq + 500;
+
+        long newJpfreq = jpfreq + calculateJpfreq(rawtext, i);
+
+        return new SjisCharacterResult(newJpchars, newTotalfreq, newJpfreq, i + 1);
+    }
+
+    /**
+     * 计算日文字符频率
+     */
+    private long calculateJpfreq(byte[] rawtext, int i) {
+        int row = rawtext[i] + 256;
+        int column = rawtext[i + 1] + 256;
+
+        int adjust;
+        if (column < 0x9f) {
+            adjust = 1;
+            if (column > 0x7f) {
+                column -= 0x20;
+            } else {
+                column -= 0x19;
+            }
+        } else {
+            adjust = 0;
+            column -= 0x7e;
+        }
+
+        if (row < 0xa0) {
+            row = ((row - 0x70) << 1) - adjust;
+        } else {
+            row = ((row - 0xb0) << 1) - adjust;
+        }
+
+        row -= 0x20;
+        column = 0x20;
+
+        // System.out.println("original row " + row + " column " + column);
+        if (row < JPFreq.length && column < JPFreq[row].length && JPFreq[row][column] != 0) {
+            return JPFreq[row][column];
+        }
+
+        return 0;
+    }
+
     void initialize_frequencies() {
-        int i, j;
-        for (i = 0; i < 94; i++) {
-            for (j = 0; j < 94; j++) {
-                GBFreq[i][j] = 0;
+        // 初始化所有频率表为0
+        initializeAllFrequencyTablesToZero();
+
+        // 初始化各个编码的频率表
+        initializeGBFreqTable();
+        initializeGBKFreqTable();
+        initializeBig5FreqTable();
+        initializeBig5PFreqTable();
+        initializeEUC_TWFreqTable();
+        initializeKRFreqTable();
+        initializeJPFreqTable();
+    }
+
+    /**
+     * 初始化所有频率表为0
+     */
+    private void initializeAllFrequencyTablesToZero() {
+        initialize2DArray(GBFreq, 94, 94);
+        initialize2DArray(GBKFreq, 126, 191);
+        initialize2DArray(Big5Freq, 94, 158);
+        initialize2DArray(Big5PFreq, 126, 191);
+        initialize2DArray(EUC_TWFreq, 94, 94);
+        initialize2DArray(KRFreq, 94, 94);
+        initialize2DArray(JPFreq, 94, 94);
+    }
+
+    /**
+     * 初始化二维数组为0
+     */
+    private void initialize2DArray(int[][] array, int rows, int cols) {
+        for (int i = 0; i < rows; i++) {
+            for (int j = 0; j < cols; j++) {
+                array[i][j] = 0;
             }
         }
-        for (i = 0; i < 126; i++) {
-            for (j = 0; j < 191; j++) {
-                GBKFreq[i][j] = 0;
-            }
-        }
-        for (i = 0; i < 94; i++) {
-            for (j = 0; j < 158; j++) {
-                Big5Freq[i][j] = 0;
-            }
-        }
-        for (i = 0; i < 126; i++) {
-            for (j = 0; j < 191; j++) {
-                Big5PFreq[i][j] = 0;
-            }
-        }
-        for (i = 0; i < 94; i++) {
-            for (j = 0; j < 94; j++) {
-                EUC_TWFreq[i][j] = 0;
-            }
-        }
-        for (i = 0; i < 94; i++) {
-            for (j = 0; j < 94; j++) {
-                JPFreq[i][j] = 0;
-            }
-        }
+    }
+
+    /**
+     * 初始化GB频率表
+     */
+    private void initializeGBFreqTable() {
         GBFreq[20][35] = 599;
         GBFreq[49][26] = 598;
         GBFreq[41][38] = 597;
@@ -1300,47 +1746,322 @@ class BytesEncodingDetect extends Encoding {
         GBFreq[20][24] = 202;
         GBFreq[45][19] = 201;
         GBFreq[18][53] = 200;
-        /*
-         * GBFreq[39][0] = 199; GBFreq[40][71] = 198; GBFreq[41][27] = 197; GBFreq[15][69] = 196; GBFreq[42][10] = 195;
-         * GBFreq[31][89] = 194; GBFreq[51][28] = 193; GBFreq[41][22] = 192; GBFreq[40][43] = 191; GBFreq[38][6] = 190;
-         * GBFreq[37][11] = 189; GBFreq[39][60] = 188; GBFreq[48][47] = 187; GBFreq[46][80] = 186; GBFreq[52][49] = 185;
-         * GBFreq[50][48] = 184; GBFreq[25][1] = 183; GBFreq[52][29] = 182; GBFreq[24][66] = 181; GBFreq[23][35] = 180;
-         * GBFreq[49][72] = 179; GBFreq[47][45] = 178; GBFreq[45][14] = 177; GBFreq[51][70] = 176; GBFreq[22][30] = 175;
-         * GBFreq[49][83] = 174; GBFreq[26][79] = 173; GBFreq[27][41] = 172; GBFreq[51][81] = 171; GBFreq[41][54] = 170;
-         * GBFreq[20][4] = 169; GBFreq[29][60] = 168; GBFreq[20][27] = 167; GBFreq[50][15] = 166; GBFreq[41][6] = 165;
-         * GBFreq[35][34] = 164; GBFreq[44][87] = 163; GBFreq[46][66] = 162; GBFreq[42][37] = 161; GBFreq[42][24] = 160;
-         * GBFreq[54][7] = 159; GBFreq[41][14] = 158; GBFreq[39][83] = 157; GBFreq[16][87] = 156; GBFreq[20][59] = 155;
-         * GBFreq[42][12] = 154; GBFreq[47][2] = 153; GBFreq[21][32] = 152; GBFreq[53][29] = 151; GBFreq[22][40] = 150;
-         * GBFreq[24][58] = 149; GBFreq[52][88] = 148; GBFreq[29][30] = 147; GBFreq[15][91] = 146; GBFreq[54][72] = 145;
-         * GBFreq[51][75] = 144; GBFreq[33][67] = 143; GBFreq[41][50] = 142; GBFreq[27][34] = 141; GBFreq[46][17] = 140;
-         * GBFreq[31][74] = 139; GBFreq[42][67] = 138; GBFreq[54][87] = 137; GBFreq[27][14] = 136; GBFreq[16][63] = 135;
-         * GBFreq[16][5] = 134; GBFreq[43][23] = 133; GBFreq[23][13] = 132; GBFreq[31][12] = 131; GBFreq[25][57] = 130;
-         * GBFreq[38][49] = 129; GBFreq[42][69] = 128; GBFreq[23][80] = 127; GBFreq[29][0] = 126; GBFreq[28][2] = 125;
-         * GBFreq[28][17] = 124; GBFreq[17][27] = 123; GBFreq[40][16] = 122; GBFreq[45][1] = 121; GBFreq[36][33] = 120;
-         * GBFreq[35][23] = 119; GBFreq[20][86] = 118; GBFreq[29][53] = 117; GBFreq[23][88] = 116; GBFreq[51][87] = 115;
-         * GBFreq[54][27] = 114; GBFreq[44][36] = 113; GBFreq[21][45] = 112; GBFreq[53][52] = 111; GBFreq[31][53] = 110;
-         * GBFreq[38][47] = 109; GBFreq[27][21] = 108; GBFreq[30][42] = 107; GBFreq[29][10] = 106; GBFreq[35][35] = 105;
-         * GBFreq[24][56] = 104; GBFreq[41][29] = 103; GBFreq[18][68] = 102; GBFreq[29][24] = 101; GBFreq[25][84] = 100;
-         * GBFreq[35][47] = 99; GBFreq[29][56] = 98; GBFreq[30][44] = 97; GBFreq[53][3] = 96; GBFreq[30][63] = 95; GBFreq[52][52] =
-         * 94; GBFreq[54][1] = 93; GBFreq[22][48] = 92; GBFreq[54][66] = 91; GBFreq[21][90] = 90; GBFreq[52][47] = 89;
-         * GBFreq[39][25] = 88; GBFreq[39][39] = 87; GBFreq[44][37] = 86; GBFreq[44][76] = 85; GBFreq[46][75] = 84; GBFreq[18][37] =
-         * 83; GBFreq[47][42] = 82; GBFreq[19][92] = 81; GBFreq[51][27] = 80; GBFreq[48][83] = 79; GBFreq[23][70] = 78;
-         * GBFreq[29][9] = 77; GBFreq[33][79] = 76; GBFreq[52][90] = 75; GBFreq[53][6] = 74; GBFreq[24][36] = 73; GBFreq[25][25] =
-         * 72; GBFreq[44][26] = 71; GBFreq[25][36] = 70; GBFreq[29][87] = 69; GBFreq[48][0] = 68; GBFreq[15][40] = 67;
-         * GBFreq[17][45] = 66; GBFreq[30][14] = 65; GBFreq[48][38] = 64; GBFreq[23][19] = 63; GBFreq[40][42] = 62; GBFreq[31][63] =
-         * 61; GBFreq[16][23] = 60; GBFreq[26][21] = 59; GBFreq[32][76] = 58; GBFreq[23][58] = 57; GBFreq[41][37] = 56;
-         * GBFreq[30][43] = 55; GBFreq[47][38] = 54; GBFreq[21][46] = 53; GBFreq[18][33] = 52; GBFreq[52][37] = 51; GBFreq[36][8] =
-         * 50; GBFreq[49][24] = 49; GBFreq[15][66] = 48; GBFreq[35][77] = 47; GBFreq[27][58] = 46; GBFreq[35][51] = 45;
-         * GBFreq[24][69] = 44; GBFreq[20][54] = 43; GBFreq[24][41] = 42; GBFreq[41][0] = 41; GBFreq[33][71] = 40; GBFreq[23][52] =
-         * 39; GBFreq[29][67] = 38; GBFreq[46][51] = 37; GBFreq[46][90] = 36; GBFreq[49][33] = 35; GBFreq[33][28] = 34;
-         * GBFreq[37][86] = 33; GBFreq[39][22] = 32; GBFreq[37][37] = 31; GBFreq[29][62] = 30; GBFreq[29][50] = 29; GBFreq[36][89] =
-         * 28; GBFreq[42][44] = 27; GBFreq[51][82] = 26; GBFreq[28][83] = 25; GBFreq[15][78] = 24; GBFreq[46][62] = 23;
-         * GBFreq[19][69] = 22; GBFreq[51][23] = 21; GBFreq[37][69] = 20; GBFreq[25][5] = 19; GBFreq[51][85] = 18; GBFreq[48][77] =
-         * 17; GBFreq[32][46] = 16; GBFreq[53][60] = 15; GBFreq[28][57] = 14; GBFreq[54][82] = 13; GBFreq[54][15] = 12;
-         * GBFreq[49][54] = 11; GBFreq[53][87] = 10; GBFreq[27][16] = 9; GBFreq[29][34] = 8; GBFreq[20][44] = 7; GBFreq[42][73] = 6;
-         * GBFreq[47][71] = 5; GBFreq[29][37] = 4; GBFreq[25][50] = 3; GBFreq[18][84] = 2; GBFreq[50][45] = 1; GBFreq[48][46] = 0;
-         */
-        // GBFreq[43][89] = -1; GBFreq[54][68] = -2;
+    }
+
+    /**
+     * 初始化GBK频率表
+     */
+    private void initializeGBKFreqTable() {
+        // 实际实现中应包含完整的GBK频率表初始化
+        GBKFreq[52][132] = 600;
+        GBKFreq[73][135] = 599;
+        GBKFreq[49][123] = 598;
+        GBKFreq[77][146] = 597;
+        GBKFreq[81][123] = 596;
+        GBKFreq[82][144] = 595;
+        GBKFreq[51][179] = 594;
+        GBKFreq[83][154] = 593;
+        GBKFreq[71][139] = 592;
+        GBKFreq[64][139] = 591;
+        GBKFreq[85][144] = 590;
+        GBKFreq[52][125] = 589;
+        GBKFreq[88][25] = 588;
+        GBKFreq[81][106] = 587;
+        GBKFreq[81][148] = 586;
+        GBKFreq[62][137] = 585;
+        GBKFreq[94][0] = 584;
+        GBKFreq[1][64] = 583;
+        GBKFreq[67][163] = 582;
+        GBKFreq[20][190] = 581;
+        GBKFreq[57][131] = 580;
+        GBKFreq[29][169] = 579;
+        GBKFreq[72][143] = 578;
+        GBKFreq[0][173] = 577;
+        GBKFreq[11][23] = 576;
+        GBKFreq[61][141] = 575;
+        GBKFreq[60][123] = 574;
+        GBKFreq[81][114] = 573;
+        GBKFreq[82][131] = 572;
+        GBKFreq[67][156] = 571;
+        GBKFreq[71][167] = 570;
+        GBKFreq[20][50] = 569;
+        GBKFreq[77][132] = 568;
+        GBKFreq[84][38] = 567;
+        GBKFreq[26][29] = 566;
+        GBKFreq[74][187] = 565;
+        GBKFreq[62][116] = 564;
+        GBKFreq[67][135] = 563;
+        GBKFreq[5][86] = 562;
+        GBKFreq[72][186] = 561;
+        GBKFreq[75][161] = 560;
+        GBKFreq[78][130] = 559;
+        GBKFreq[94][30] = 558;
+        GBKFreq[84][72] = 557;
+        GBKFreq[1][67] = 556;
+        GBKFreq[75][172] = 555;
+        GBKFreq[74][185] = 554;
+        GBKFreq[53][160] = 553;
+        GBKFreq[123][14] = 552;
+        GBKFreq[79][97] = 551;
+        GBKFreq[85][110] = 550;
+        GBKFreq[78][171] = 549;
+        GBKFreq[52][131] = 548;
+        GBKFreq[56][100] = 547;
+        GBKFreq[50][182] = 546;
+        GBKFreq[94][64] = 545;
+        GBKFreq[106][74] = 544;
+        GBKFreq[11][102] = 543;
+        GBKFreq[53][124] = 542;
+        GBKFreq[24][3] = 541;
+        GBKFreq[86][148] = 540;
+        GBKFreq[53][184] = 539;
+        GBKFreq[86][147] = 538;
+        GBKFreq[96][161] = 537;
+        GBKFreq[82][77] = 536;
+        GBKFreq[59][146] = 535;
+        GBKFreq[84][126] = 534;
+        GBKFreq[79][132] = 533;
+        GBKFreq[85][123] = 532;
+        GBKFreq[71][101] = 531;
+        GBKFreq[85][106] = 530;
+        GBKFreq[6][184] = 529;
+        GBKFreq[57][156] = 528;
+        GBKFreq[75][104] = 527;
+        GBKFreq[50][137] = 526;
+        GBKFreq[79][133] = 525;
+        GBKFreq[76][108] = 524;
+        GBKFreq[57][142] = 523;
+        GBKFreq[84][130] = 522;
+        GBKFreq[52][128] = 521;
+        GBKFreq[47][44] = 520;
+        GBKFreq[52][152] = 519;
+        GBKFreq[54][104] = 518;
+        GBKFreq[30][47] = 517;
+        GBKFreq[71][123] = 516;
+        GBKFreq[52][107] = 515;
+        GBKFreq[45][84] = 514;
+        GBKFreq[107][118] = 513;
+        GBKFreq[5][161] = 512;
+        GBKFreq[48][126] = 511;
+        GBKFreq[67][170] = 510;
+        GBKFreq[43][6] = 509;
+        GBKFreq[70][112] = 508;
+        GBKFreq[86][174] = 507;
+        GBKFreq[84][166] = 506;
+        GBKFreq[79][130] = 505;
+        GBKFreq[57][141] = 504;
+        GBKFreq[81][178] = 503;
+        GBKFreq[56][187] = 502;
+        GBKFreq[81][162] = 501;
+        GBKFreq[53][104] = 500;
+        GBKFreq[123][35] = 499;
+        GBKFreq[70][169] = 498;
+        GBKFreq[69][164] = 497;
+        GBKFreq[109][61] = 496;
+        GBKFreq[73][130] = 495;
+        GBKFreq[62][134] = 494;
+        GBKFreq[54][125] = 493;
+        GBKFreq[79][105] = 492;
+        GBKFreq[70][165] = 491;
+        GBKFreq[71][189] = 490;
+        GBKFreq[23][147] = 489;
+        GBKFreq[51][139] = 488;
+        GBKFreq[47][137] = 487;
+        GBKFreq[77][123] = 486;
+        GBKFreq[86][183] = 485;
+        GBKFreq[63][173] = 484;
+        GBKFreq[79][144] = 483;
+        GBKFreq[84][159] = 482;
+        GBKFreq[60][91] = 481;
+        GBKFreq[66][187] = 480;
+        GBKFreq[73][114] = 479;
+        GBKFreq[85][56] = 478;
+        GBKFreq[71][149] = 477;
+        GBKFreq[84][189] = 476;
+        GBKFreq[104][31] = 475;
+        GBKFreq[83][82] = 474;
+        GBKFreq[68][35] = 473;
+        GBKFreq[11][77] = 472;
+        GBKFreq[15][155] = 471;
+        GBKFreq[83][153] = 470;
+        GBKFreq[71][1] = 469;
+        GBKFreq[53][190] = 468;
+        GBKFreq[50][135] = 467;
+        GBKFreq[3][147] = 466;
+        GBKFreq[48][136] = 465;
+        GBKFreq[66][166] = 464;
+        GBKFreq[55][159] = 463;
+        GBKFreq[82][150] = 462;
+        GBKFreq[58][178] = 461;
+        GBKFreq[64][102] = 460;
+        GBKFreq[16][106] = 459;
+        GBKFreq[68][110] = 458;
+        GBKFreq[54][14] = 457;
+        GBKFreq[60][140] = 456;
+        GBKFreq[91][71] = 455;
+        GBKFreq[54][150] = 454;
+        GBKFreq[78][177] = 453;
+        GBKFreq[78][117] = 452;
+        GBKFreq[104][12] = 451;
+        GBKFreq[73][150] = 450;
+        GBKFreq[51][142] = 449;
+        GBKFreq[81][145] = 448;
+        GBKFreq[66][183] = 447;
+        GBKFreq[51][178] = 446;
+        GBKFreq[75][107] = 445;
+        GBKFreq[65][119] = 444;
+        GBKFreq[69][176] = 443;
+        GBKFreq[59][122] = 442;
+        GBKFreq[78][160] = 441;
+        GBKFreq[85][183] = 440;
+        GBKFreq[105][16] = 439;
+        GBKFreq[73][110] = 438;
+        GBKFreq[104][39] = 437;
+        GBKFreq[119][16] = 436;
+        GBKFreq[76][162] = 435;
+        GBKFreq[67][152] = 434;
+        GBKFreq[82][24] = 433;
+        GBKFreq[73][121] = 432;
+        GBKFreq[83][83] = 431;
+        GBKFreq[82][145] = 430;
+        GBKFreq[49][133] = 429;
+        GBKFreq[94][13] = 428;
+        GBKFreq[58][139] = 427;
+        GBKFreq[74][189] = 426;
+        GBKFreq[66][177] = 425;
+        GBKFreq[85][184] = 424;
+        GBKFreq[55][183] = 423;
+        GBKFreq[71][107] = 422;
+        GBKFreq[11][98] = 421;
+        GBKFreq[72][153] = 420;
+        GBKFreq[2][137] = 419;
+        GBKFreq[59][147] = 418;
+        GBKFreq[58][152] = 417;
+        GBKFreq[55][144] = 416;
+        GBKFreq[73][125] = 415;
+        GBKFreq[52][154] = 414;
+        GBKFreq[70][178] = 413;
+        GBKFreq[79][148] = 412;
+        GBKFreq[63][143] = 411;
+        GBKFreq[50][140] = 410;
+        GBKFreq[47][145] = 409;
+        GBKFreq[48][123] = 408;
+        GBKFreq[56][107] = 407;
+        GBKFreq[84][83] = 406;
+        GBKFreq[59][112] = 405;
+        GBKFreq[124][72] = 404;
+        GBKFreq[79][99] = 403;
+        GBKFreq[3][37] = 402;
+        GBKFreq[114][55] = 401;
+        GBKFreq[85][152] = 400;
+        GBKFreq[60][47] = 399;
+        GBKFreq[65][96] = 398;
+        GBKFreq[74][110] = 397;
+        GBKFreq[86][182] = 396;
+        GBKFreq[50][99] = 395;
+        GBKFreq[67][186] = 394;
+        GBKFreq[81][74] = 393;
+        GBKFreq[80][37] = 392;
+        GBKFreq[21][60] = 391;
+        GBKFreq[110][12] = 390;
+        GBKFreq[60][162] = 389;
+        GBKFreq[29][115] = 388;
+        GBKFreq[83][130] = 387;
+        GBKFreq[52][136] = 386;
+        GBKFreq[63][114] = 385;
+        GBKFreq[49][127] = 384;
+        GBKFreq[83][109] = 383;
+        GBKFreq[66][128] = 382;
+        GBKFreq[78][136] = 381;
+        GBKFreq[81][180] = 380;
+        GBKFreq[76][104] = 379;
+        GBKFreq[56][156] = 378;
+        GBKFreq[61][23] = 377;
+        GBKFreq[4][30] = 376;
+        GBKFreq[69][154] = 375;
+        GBKFreq[100][37] = 374;
+        GBKFreq[54][177] = 373;
+        GBKFreq[23][119] = 372;
+        GBKFreq[71][171] = 371;
+        GBKFreq[84][146] = 370;
+        GBKFreq[20][184] = 369;
+        GBKFreq[86][76] = 368;
+        GBKFreq[74][132] = 367;
+        GBKFreq[47][97] = 366;
+        GBKFreq[82][137] = 365;
+        GBKFreq[94][56] = 364;
+        GBKFreq[92][30] = 363;
+        GBKFreq[19][117] = 362;
+        GBKFreq[48][173] = 361;
+        GBKFreq[2][136] = 360;
+        GBKFreq[7][182] = 359;
+        GBKFreq[74][188] = 358;
+        GBKFreq[14][132] = 357;
+        GBKFreq[62][172] = 356;
+        GBKFreq[25][39] = 355;
+        GBKFreq[85][129] = 354;
+        GBKFreq[64][98] = 353;
+        GBKFreq[67][127] = 352;
+        GBKFreq[72][167] = 351;
+        GBKFreq[57][143] = 350;
+        GBKFreq[76][187] = 349;
+        GBKFreq[83][181] = 348;
+        GBKFreq[84][10] = 347;
+        GBKFreq[55][166] = 346;
+        GBKFreq[55][188] = 345;
+        GBKFreq[13][151] = 344;
+        GBKFreq[62][124] = 343;
+        GBKFreq[53][136] = 342;
+        GBKFreq[106][57] = 341;
+        GBKFreq[47][166] = 340;
+        GBKFreq[109][30] = 339;
+        GBKFreq[78][114] = 338;
+        GBKFreq[83][19] = 337;
+        GBKFreq[56][162] = 336;
+        GBKFreq[60][177] = 335;
+        GBKFreq[88][9] = 334;
+        GBKFreq[74][163] = 333;
+        GBKFreq[52][156] = 332;
+        GBKFreq[71][180] = 331;
+        GBKFreq[60][57] = 330;
+        GBKFreq[72][173] = 329;
+        GBKFreq[82][91] = 328;
+        GBKFreq[51][186] = 327;
+        GBKFreq[75][86] = 326;
+        GBKFreq[75][78] = 325;
+        GBKFreq[76][170] = 324;
+        GBKFreq[60][147] = 323;
+        GBKFreq[82][75] = 322;
+        GBKFreq[80][148] = 321;
+        GBKFreq[86][150] = 320;
+        GBKFreq[13][95] = 319;
+        GBKFreq[0][11] = 318;
+        GBKFreq[84][190] = 317;
+        GBKFreq[76][166] = 316;
+        GBKFreq[14][72] = 315;
+        GBKFreq[67][144] = 314;
+        GBKFreq[84][44] = 313;
+        GBKFreq[72][125] = 312;
+        GBKFreq[66][127] = 311;
+        GBKFreq[60][25] = 310;
+        GBKFreq[70][146] = 309;
+        GBKFreq[79][135] = 308;
+        GBKFreq[54][135] = 307;
+        GBKFreq[60][104] = 306;
+        GBKFreq[55][132] = 305;
+        GBKFreq[94][2] = 304;
+        GBKFreq[54][133] = 303;
+        GBKFreq[56][190] = 302;
+        GBKFreq[58][174] = 301;
+        GBKFreq[80][144] = 300;
+        GBKFreq[85][113] = 299;
+    }
+
+    /**
+     * 初始化Big5频率表
+     */
+    private void initializeBig5FreqTable() {
+        // 实际实现中应包含完整的Big5频率表初始化
         Big5Freq[9][89] = 600;
         Big5Freq[11][15] = 599;
         Big5Freq[3][66] = 598;
@@ -1741,49 +2462,13 @@ class BytesEncodingDetect extends Encoding {
         Big5Freq[26][124] = 203;
         Big5Freq[4][19] = 202;
         Big5Freq[9][152] = 201;
-        /*
-         * Big5Freq[5][0] = 200; Big5Freq[26][57] = 199; Big5Freq[13][155] = 198; Big5Freq[3][38] = 197; Big5Freq[9][155] = 196;
-         * Big5Freq[28][53] = 195; Big5Freq[15][71] = 194; Big5Freq[21][95] = 193; Big5Freq[15][112] = 192; Big5Freq[14][138] = 191;
-         * Big5Freq[8][18] = 190; Big5Freq[20][151] = 189; Big5Freq[37][27] = 188; Big5Freq[32][48] = 187; Big5Freq[23][66] = 186;
-         * Big5Freq[9][2] = 185; Big5Freq[13][133] = 184; Big5Freq[7][127] = 183; Big5Freq[3][11] = 182; Big5Freq[12][118] = 181;
-         * Big5Freq[13][101] = 180; Big5Freq[30][153] = 179; Big5Freq[4][65] = 178; Big5Freq[5][25] = 177; Big5Freq[5][140] = 176;
-         * Big5Freq[6][25] = 175; Big5Freq[4][52] = 174; Big5Freq[30][156] = 173; Big5Freq[16][13] = 172; Big5Freq[21][8] = 171;
-         * Big5Freq[19][74] = 170; Big5Freq[15][145] = 169; Big5Freq[9][15] = 168; Big5Freq[13][82] = 167; Big5Freq[26][86] = 166;
-         * Big5Freq[18][52] = 165; Big5Freq[6][109] = 164; Big5Freq[10][99] = 163; Big5Freq[18][101] = 162; Big5Freq[25][49] = 161;
-         * Big5Freq[31][79] = 160; Big5Freq[28][20] = 159; Big5Freq[12][115] = 158; Big5Freq[15][66] = 157; Big5Freq[11][104] = 156;
-         * Big5Freq[23][106] = 155; Big5Freq[34][157] = 154; Big5Freq[32][94] = 153; Big5Freq[29][88] = 152; Big5Freq[10][46] = 151;
-         * Big5Freq[13][118] = 150; Big5Freq[20][37] = 149; Big5Freq[12][30] = 148; Big5Freq[21][4] = 147; Big5Freq[16][33] = 146;
-         * Big5Freq[13][52] = 145; Big5Freq[4][7] = 144; Big5Freq[21][49] = 143; Big5Freq[3][27] = 142; Big5Freq[16][91] = 141;
-         * Big5Freq[5][155] = 140; Big5Freq[29][130] = 139; Big5Freq[3][125] = 138; Big5Freq[14][26] = 137; Big5Freq[15][39] = 136;
-         * Big5Freq[24][110] = 135; Big5Freq[7][141] = 134; Big5Freq[21][15] = 133; Big5Freq[32][104] = 132; Big5Freq[8][31] = 131;
-         * Big5Freq[34][112] = 130; Big5Freq[10][75] = 129; Big5Freq[21][23] = 128; Big5Freq[34][131] = 127; Big5Freq[12][3] = 126;
-         * Big5Freq[10][62] = 125; Big5Freq[9][120] = 124; Big5Freq[32][149] = 123; Big5Freq[8][44] = 122; Big5Freq[24][2] = 121;
-         * Big5Freq[6][148] = 120; Big5Freq[15][103] = 119; Big5Freq[36][54] = 118; Big5Freq[36][134] = 117; Big5Freq[11][7] = 116;
-         * Big5Freq[3][90] = 115; Big5Freq[36][73] = 114; Big5Freq[8][102] = 113; Big5Freq[12][87] = 112; Big5Freq[25][64] = 111;
-         * Big5Freq[9][1] = 110; Big5Freq[24][121] = 109; Big5Freq[5][75] = 108; Big5Freq[17][83] = 107; Big5Freq[18][57] = 106;
-         * Big5Freq[8][95] = 105; Big5Freq[14][36] = 104; Big5Freq[28][113] = 103; Big5Freq[12][56] = 102; Big5Freq[14][61] = 101;
-         * Big5Freq[25][138] = 100; Big5Freq[4][34] = 99; Big5Freq[11][152] = 98; Big5Freq[35][0] = 97; Big5Freq[4][15] = 96;
-         * Big5Freq[8][82] = 95; Big5Freq[20][73] = 94; Big5Freq[25][52] = 93; Big5Freq[24][6] = 92; Big5Freq[21][78] = 91;
-         * Big5Freq[17][32] = 90; Big5Freq[17][91] = 89; Big5Freq[5][76] = 88; Big5Freq[15][60] = 87; Big5Freq[15][150] = 86;
-         * Big5Freq[5][80] = 85; Big5Freq[15][81] = 84; Big5Freq[28][108] = 83; Big5Freq[18][14] = 82; Big5Freq[19][109] = 81;
-         * Big5Freq[28][133] = 80; Big5Freq[21][97] = 79; Big5Freq[5][105] = 78; Big5Freq[18][114] = 77; Big5Freq[16][95] = 76;
-         * Big5Freq[5][51] = 75; Big5Freq[3][148] = 74; Big5Freq[22][102] = 73; Big5Freq[4][123] = 72; Big5Freq[8][88] = 71;
-         * Big5Freq[25][111] = 70; Big5Freq[8][149] = 69; Big5Freq[9][48] = 68; Big5Freq[16][126] = 67; Big5Freq[33][150] = 66;
-         * Big5Freq[9][54] = 65; Big5Freq[29][104] = 64; Big5Freq[3][3] = 63; Big5Freq[11][49] = 62; Big5Freq[24][109] = 61;
-         * Big5Freq[28][116] = 60; Big5Freq[34][113] = 59; Big5Freq[5][3] = 58; Big5Freq[21][106] = 57; Big5Freq[4][98] = 56;
-         * Big5Freq[12][135] = 55; Big5Freq[16][101] = 54; Big5Freq[12][147] = 53; Big5Freq[27][55] = 52; Big5Freq[3][5] = 51;
-         * Big5Freq[11][101] = 50; Big5Freq[16][157] = 49; Big5Freq[22][114] = 48; Big5Freq[18][46] = 47; Big5Freq[4][29] = 46;
-         * Big5Freq[8][103] = 45; Big5Freq[16][151] = 44; Big5Freq[8][29] = 43; Big5Freq[15][114] = 42; Big5Freq[22][70] = 41;
-         * Big5Freq[13][121] = 40; Big5Freq[7][112] = 39; Big5Freq[20][83] = 38; Big5Freq[3][36] = 37; Big5Freq[10][103] = 36;
-         * Big5Freq[3][96] = 35; Big5Freq[21][79] = 34; Big5Freq[25][120] = 33; Big5Freq[29][121] = 32; Big5Freq[23][71] = 31;
-         * Big5Freq[21][22] = 30; Big5Freq[18][89] = 29; Big5Freq[25][104] = 28; Big5Freq[10][124] = 27; Big5Freq[26][4] = 26;
-         * Big5Freq[21][136] = 25; Big5Freq[6][112] = 24; Big5Freq[12][103] = 23; Big5Freq[17][66] = 22; Big5Freq[13][151] = 21;
-         * Big5Freq[33][152] = 20; Big5Freq[11][148] = 19; Big5Freq[13][57] = 18; Big5Freq[13][41] = 17; Big5Freq[7][60] = 16;
-         * Big5Freq[21][29] = 15; Big5Freq[9][157] = 14; Big5Freq[24][95] = 13; Big5Freq[15][148] = 12; Big5Freq[15][122] = 11;
-         * Big5Freq[6][125] = 10; Big5Freq[11][25] = 9; Big5Freq[20][55] = 8; Big5Freq[19][84] = 7; Big5Freq[21][82] = 6;
-         * Big5Freq[24][3] = 5; Big5Freq[13][70] = 4; Big5Freq[6][21] = 3; Big5Freq[21][86] = 2; Big5Freq[12][23] = 1;
-         * Big5Freq[3][85] = 0; EUC_TWFreq[45][90] = 600;
-         */
+    }
+
+    /**
+     * 初始化Big5P频率表
+     */
+    private void initializeBig5PFreqTable() {
+        // 实际实现中应包含完整的Big5P频率表初始化
         Big5PFreq[41][122] = 600;
         Big5PFreq[35][0] = 599;
         Big5PFreq[43][15] = 598;
@@ -2385,6 +3070,13 @@ class BytesEncodingDetect extends Encoding {
         Big5PFreq[51][165] = 2;
         Big5PFreq[15][161] = 1;
         Big5PFreq[24][181] = 0;
+    }
+
+    /**
+     * 初始化EUC-TW频率表
+     */
+    private void initializeEUC_TWFreqTable() {
+        // 实际实现中应包含完整的EUC-TW频率表初始化
         EUC_TWFreq[48][49] = 599;
         EUC_TWFreq[35][65] = 598;
         EUC_TWFreq[41][27] = 597;
@@ -2784,418 +3476,14 @@ class BytesEncodingDetect extends Encoding {
         EUC_TWFreq[74][69] = 203;
         EUC_TWFreq[36][82] = 202;
         EUC_TWFreq[46][59] = 201;
-        /*
-         * EUC_TWFreq[38][32] = 200; EUC_TWFreq[74][2] = 199; EUC_TWFreq[53][31] = 198; EUC_TWFreq[35][38] = 197; EUC_TWFreq[46][62] =
-         * 196; EUC_TWFreq[77][31] = 195; EUC_TWFreq[55][74] = 194; EUC_TWFreq[66][6] = 193; EUC_TWFreq[56][21] = 192;
-         * EUC_TWFreq[54][78] = 191; EUC_TWFreq[43][51] = 190; EUC_TWFreq[64][93] = 189; EUC_TWFreq[92][7] = 188; EUC_TWFreq[83][89] =
-         * 187; EUC_TWFreq[69][9] = 186; EUC_TWFreq[45][4] = 185; EUC_TWFreq[53][9] = 184; EUC_TWFreq[43][2] = 183;
-         * EUC_TWFreq[35][11] = 182; EUC_TWFreq[51][25] = 181; EUC_TWFreq[52][71] = 180; EUC_TWFreq[81][67] = 179;
-         * EUC_TWFreq[37][33] = 178; EUC_TWFreq[38][57] = 177; EUC_TWFreq[39][77] = 176; EUC_TWFreq[40][26] = 175;
-         * EUC_TWFreq[37][21] = 174; EUC_TWFreq[81][70] = 173; EUC_TWFreq[56][80] = 172; EUC_TWFreq[65][14] = 171;
-         * EUC_TWFreq[62][47] = 170; EUC_TWFreq[56][54] = 169; EUC_TWFreq[45][17] = 168; EUC_TWFreq[52][52] = 167;
-         * EUC_TWFreq[74][30] = 166; EUC_TWFreq[60][57] = 165; EUC_TWFreq[41][15] = 164; EUC_TWFreq[47][69] = 163;
-         * EUC_TWFreq[61][11] = 162; EUC_TWFreq[72][25] = 161; EUC_TWFreq[82][56] = 160; EUC_TWFreq[76][92] = 159;
-         * EUC_TWFreq[51][22] = 158; EUC_TWFreq[55][69] = 157; EUC_TWFreq[49][43] = 156; EUC_TWFreq[69][49] = 155;
-         * EUC_TWFreq[88][42] = 154; EUC_TWFreq[84][41] = 153; EUC_TWFreq[79][33] = 152; EUC_TWFreq[47][17] = 151;
-         * EUC_TWFreq[52][88] = 150; EUC_TWFreq[63][74] = 149; EUC_TWFreq[50][32] = 148; EUC_TWFreq[65][10] = 147; EUC_TWFreq[57][6] =
-         * 146; EUC_TWFreq[52][23] = 145; EUC_TWFreq[36][70] = 144; EUC_TWFreq[65][55] = 143; EUC_TWFreq[35][27] = 142;
-         * EUC_TWFreq[57][63] = 141; EUC_TWFreq[39][92] = 140; EUC_TWFreq[79][75] = 139; EUC_TWFreq[36][30] = 138;
-         * EUC_TWFreq[53][60] = 137; EUC_TWFreq[55][43] = 136; EUC_TWFreq[71][22] = 135; EUC_TWFreq[43][16] = 134;
-         * EUC_TWFreq[65][21] = 133; EUC_TWFreq[84][51] = 132; EUC_TWFreq[43][64] = 131; EUC_TWFreq[87][91] = 130;
-         * EUC_TWFreq[47][45] = 129; EUC_TWFreq[65][29] = 128; EUC_TWFreq[88][16] = 127; EUC_TWFreq[50][5] = 126; EUC_TWFreq[47][33] =
-         * 125; EUC_TWFreq[46][27] = 124; EUC_TWFreq[85][2] = 123; EUC_TWFreq[43][77] = 122; EUC_TWFreq[70][9] = 121;
-         * EUC_TWFreq[41][54] = 120; EUC_TWFreq[56][12] = 119; EUC_TWFreq[90][65] = 118; EUC_TWFreq[91][50] = 117;
-         * EUC_TWFreq[48][41] = 116; EUC_TWFreq[35][89] = 115; EUC_TWFreq[90][83] = 114; EUC_TWFreq[44][40] = 113;
-         * EUC_TWFreq[50][88] = 112; EUC_TWFreq[72][39] = 111; EUC_TWFreq[45][3] = 110; EUC_TWFreq[71][33] = 109; EUC_TWFreq[39][12] =
-         * 108; EUC_TWFreq[59][24] = 107; EUC_TWFreq[60][62] = 106; EUC_TWFreq[44][33] = 105; EUC_TWFreq[53][70] = 104;
-         * EUC_TWFreq[77][90] = 103; EUC_TWFreq[50][58] = 102; EUC_TWFreq[54][1] = 101; EUC_TWFreq[73][19] = 100; EUC_TWFreq[37][3] =
-         * 99; EUC_TWFreq[49][91] = 98; EUC_TWFreq[88][43] = 97; EUC_TWFreq[36][78] = 96; EUC_TWFreq[44][20] = 95;
-         * EUC_TWFreq[64][15] = 94; EUC_TWFreq[72][28] = 93; EUC_TWFreq[70][13] = 92; EUC_TWFreq[65][83] = 91; EUC_TWFreq[58][68] =
-         * 90; EUC_TWFreq[59][32] = 89; EUC_TWFreq[39][13] = 88; EUC_TWFreq[55][64] = 87; EUC_TWFreq[56][59] = 86;
-         * EUC_TWFreq[39][17] = 85; EUC_TWFreq[55][84] = 84; EUC_TWFreq[77][85] = 83; EUC_TWFreq[60][19] = 82; EUC_TWFreq[62][82] =
-         * 81; EUC_TWFreq[78][16] = 80; EUC_TWFreq[66][8] = 79; EUC_TWFreq[39][42] = 78; EUC_TWFreq[61][24] = 77; EUC_TWFreq[57][67] =
-         * 76; EUC_TWFreq[38][83] = 75; EUC_TWFreq[36][53] = 74; EUC_TWFreq[67][76] = 73; EUC_TWFreq[37][91] = 72;
-         * EUC_TWFreq[44][26] = 71; EUC_TWFreq[72][86] = 70; EUC_TWFreq[44][87] = 69; EUC_TWFreq[45][50] = 68; EUC_TWFreq[58][4] =
-         * 67; EUC_TWFreq[86][65] = 66; EUC_TWFreq[45][56] = 65; EUC_TWFreq[79][49] = 64; EUC_TWFreq[35][3] = 63; EUC_TWFreq[48][83] =
-         * 62; EUC_TWFreq[71][21] = 61; EUC_TWFreq[77][93] = 60; EUC_TWFreq[87][92] = 59; EUC_TWFreq[38][35] = 58;
-         * EUC_TWFreq[66][17] = 57; EUC_TWFreq[37][66] = 56; EUC_TWFreq[51][42] = 55; EUC_TWFreq[57][73] = 54; EUC_TWFreq[51][54] =
-         * 53; EUC_TWFreq[75][64] = 52; EUC_TWFreq[35][5] = 51; EUC_TWFreq[49][40] = 50; EUC_TWFreq[58][35] = 49; EUC_TWFreq[67][88] =
-         * 48; EUC_TWFreq[60][51] = 47; EUC_TWFreq[36][92] = 46; EUC_TWFreq[44][41] = 45; EUC_TWFreq[58][29] = 44;
-         * EUC_TWFreq[43][62] = 43; EUC_TWFreq[56][23] = 42; EUC_TWFreq[67][44] = 41; EUC_TWFreq[52][91] = 40; EUC_TWFreq[42][81] =
-         * 39; EUC_TWFreq[64][25] = 38; EUC_TWFreq[35][36] = 37; EUC_TWFreq[47][73] = 36; EUC_TWFreq[36][1] = 35; EUC_TWFreq[65][84] =
-         * 34; EUC_TWFreq[73][1] = 33; EUC_TWFreq[79][66] = 32; EUC_TWFreq[69][14] = 31; EUC_TWFreq[65][28] = 30; EUC_TWFreq[60][93] =
-         * 29; EUC_TWFreq[72][79] = 28; EUC_TWFreq[48][0] = 27; EUC_TWFreq[73][43] = 26; EUC_TWFreq[66][47] = 25; EUC_TWFreq[41][18] =
-         * 24; EUC_TWFreq[51][10] = 23; EUC_TWFreq[59][7] = 22; EUC_TWFreq[53][27] = 21; EUC_TWFreq[86][67] = 20; EUC_TWFreq[49][87] =
-         * 19; EUC_TWFreq[52][28] = 18; EUC_TWFreq[52][12] = 17; EUC_TWFreq[42][30] = 16; EUC_TWFreq[65][35] = 15;
-         * EUC_TWFreq[46][64] = 14; EUC_TWFreq[71][7] = 13; EUC_TWFreq[56][57] = 12; EUC_TWFreq[56][31] = 11; EUC_TWFreq[41][31] =
-         * 10; EUC_TWFreq[48][59] = 9; EUC_TWFreq[63][92] = 8; EUC_TWFreq[62][57] = 7; EUC_TWFreq[65][87] = 6; EUC_TWFreq[70][10] =
-         * 5; EUC_TWFreq[52][40] = 4; EUC_TWFreq[40][22] = 3; EUC_TWFreq[65][91] = 2; EUC_TWFreq[50][25] = 1; EUC_TWFreq[35][84] =
-         * 0;
-         */
-        GBKFreq[52][132] = 600;
-        GBKFreq[73][135] = 599;
-        GBKFreq[49][123] = 598;
-        GBKFreq[77][146] = 597;
-        GBKFreq[81][123] = 596;
-        GBKFreq[82][144] = 595;
-        GBKFreq[51][179] = 594;
-        GBKFreq[83][154] = 593;
-        GBKFreq[71][139] = 592;
-        GBKFreq[64][139] = 591;
-        GBKFreq[85][144] = 590;
-        GBKFreq[52][125] = 589;
-        GBKFreq[88][25] = 588;
-        GBKFreq[81][106] = 587;
-        GBKFreq[81][148] = 586;
-        GBKFreq[62][137] = 585;
-        GBKFreq[94][0] = 584;
-        GBKFreq[1][64] = 583;
-        GBKFreq[67][163] = 582;
-        GBKFreq[20][190] = 581;
-        GBKFreq[57][131] = 580;
-        GBKFreq[29][169] = 579;
-        GBKFreq[72][143] = 578;
-        GBKFreq[0][173] = 577;
-        GBKFreq[11][23] = 576;
-        GBKFreq[61][141] = 575;
-        GBKFreq[60][123] = 574;
-        GBKFreq[81][114] = 573;
-        GBKFreq[82][131] = 572;
-        GBKFreq[67][156] = 571;
-        GBKFreq[71][167] = 570;
-        GBKFreq[20][50] = 569;
-        GBKFreq[77][132] = 568;
-        GBKFreq[84][38] = 567;
-        GBKFreq[26][29] = 566;
-        GBKFreq[74][187] = 565;
-        GBKFreq[62][116] = 564;
-        GBKFreq[67][135] = 563;
-        GBKFreq[5][86] = 562;
-        GBKFreq[72][186] = 561;
-        GBKFreq[75][161] = 560;
-        GBKFreq[78][130] = 559;
-        GBKFreq[94][30] = 558;
-        GBKFreq[84][72] = 557;
-        GBKFreq[1][67] = 556;
-        GBKFreq[75][172] = 555;
-        GBKFreq[74][185] = 554;
-        GBKFreq[53][160] = 553;
-        GBKFreq[123][14] = 552;
-        GBKFreq[79][97] = 551;
-        GBKFreq[85][110] = 550;
-        GBKFreq[78][171] = 549;
-        GBKFreq[52][131] = 548;
-        GBKFreq[56][100] = 547;
-        GBKFreq[50][182] = 546;
-        GBKFreq[94][64] = 545;
-        GBKFreq[106][74] = 544;
-        GBKFreq[11][102] = 543;
-        GBKFreq[53][124] = 542;
-        GBKFreq[24][3] = 541;
-        GBKFreq[86][148] = 540;
-        GBKFreq[53][184] = 539;
-        GBKFreq[86][147] = 538;
-        GBKFreq[96][161] = 537;
-        GBKFreq[82][77] = 536;
-        GBKFreq[59][146] = 535;
-        GBKFreq[84][126] = 534;
-        GBKFreq[79][132] = 533;
-        GBKFreq[85][123] = 532;
-        GBKFreq[71][101] = 531;
-        GBKFreq[85][106] = 530;
-        GBKFreq[6][184] = 529;
-        GBKFreq[57][156] = 528;
-        GBKFreq[75][104] = 527;
-        GBKFreq[50][137] = 526;
-        GBKFreq[79][133] = 525;
-        GBKFreq[76][108] = 524;
-        GBKFreq[57][142] = 523;
-        GBKFreq[84][130] = 522;
-        GBKFreq[52][128] = 521;
-        GBKFreq[47][44] = 520;
-        GBKFreq[52][152] = 519;
-        GBKFreq[54][104] = 518;
-        GBKFreq[30][47] = 517;
-        GBKFreq[71][123] = 516;
-        GBKFreq[52][107] = 515;
-        GBKFreq[45][84] = 514;
-        GBKFreq[107][118] = 513;
-        GBKFreq[5][161] = 512;
-        GBKFreq[48][126] = 511;
-        GBKFreq[67][170] = 510;
-        GBKFreq[43][6] = 509;
-        GBKFreq[70][112] = 508;
-        GBKFreq[86][174] = 507;
-        GBKFreq[84][166] = 506;
-        GBKFreq[79][130] = 505;
-        GBKFreq[57][141] = 504;
-        GBKFreq[81][178] = 503;
-        GBKFreq[56][187] = 502;
-        GBKFreq[81][162] = 501;
-        GBKFreq[53][104] = 500;
-        GBKFreq[123][35] = 499;
-        GBKFreq[70][169] = 498;
-        GBKFreq[69][164] = 497;
-        GBKFreq[109][61] = 496;
-        GBKFreq[73][130] = 495;
-        GBKFreq[62][134] = 494;
-        GBKFreq[54][125] = 493;
-        GBKFreq[79][105] = 492;
-        GBKFreq[70][165] = 491;
-        GBKFreq[71][189] = 490;
-        GBKFreq[23][147] = 489;
-        GBKFreq[51][139] = 488;
-        GBKFreq[47][137] = 487;
-        GBKFreq[77][123] = 486;
-        GBKFreq[86][183] = 485;
-        GBKFreq[63][173] = 484;
-        GBKFreq[79][144] = 483;
-        GBKFreq[84][159] = 482;
-        GBKFreq[60][91] = 481;
-        GBKFreq[66][187] = 480;
-        GBKFreq[73][114] = 479;
-        GBKFreq[85][56] = 478;
-        GBKFreq[71][149] = 477;
-        GBKFreq[84][189] = 476;
-        GBKFreq[104][31] = 475;
-        GBKFreq[83][82] = 474;
-        GBKFreq[68][35] = 473;
-        GBKFreq[11][77] = 472;
-        GBKFreq[15][155] = 471;
-        GBKFreq[83][153] = 470;
-        GBKFreq[71][1] = 469;
-        GBKFreq[53][190] = 468;
-        GBKFreq[50][135] = 467;
-        GBKFreq[3][147] = 466;
-        GBKFreq[48][136] = 465;
-        GBKFreq[66][166] = 464;
-        GBKFreq[55][159] = 463;
-        GBKFreq[82][150] = 462;
-        GBKFreq[58][178] = 461;
-        GBKFreq[64][102] = 460;
-        GBKFreq[16][106] = 459;
-        GBKFreq[68][110] = 458;
-        GBKFreq[54][14] = 457;
-        GBKFreq[60][140] = 456;
-        GBKFreq[91][71] = 455;
-        GBKFreq[54][150] = 454;
-        GBKFreq[78][177] = 453;
-        GBKFreq[78][117] = 452;
-        GBKFreq[104][12] = 451;
-        GBKFreq[73][150] = 450;
-        GBKFreq[51][142] = 449;
-        GBKFreq[81][145] = 448;
-        GBKFreq[66][183] = 447;
-        GBKFreq[51][178] = 446;
-        GBKFreq[75][107] = 445;
-        GBKFreq[65][119] = 444;
-        GBKFreq[69][176] = 443;
-        GBKFreq[59][122] = 442;
-        GBKFreq[78][160] = 441;
-        GBKFreq[85][183] = 440;
-        GBKFreq[105][16] = 439;
-        GBKFreq[73][110] = 438;
-        GBKFreq[104][39] = 437;
-        GBKFreq[119][16] = 436;
-        GBKFreq[76][162] = 435;
-        GBKFreq[67][152] = 434;
-        GBKFreq[82][24] = 433;
-        GBKFreq[73][121] = 432;
-        GBKFreq[83][83] = 431;
-        GBKFreq[82][145] = 430;
-        GBKFreq[49][133] = 429;
-        GBKFreq[94][13] = 428;
-        GBKFreq[58][139] = 427;
-        GBKFreq[74][189] = 426;
-        GBKFreq[66][177] = 425;
-        GBKFreq[85][184] = 424;
-        GBKFreq[55][183] = 423;
-        GBKFreq[71][107] = 422;
-        GBKFreq[11][98] = 421;
-        GBKFreq[72][153] = 420;
-        GBKFreq[2][137] = 419;
-        GBKFreq[59][147] = 418;
-        GBKFreq[58][152] = 417;
-        GBKFreq[55][144] = 416;
-        GBKFreq[73][125] = 415;
-        GBKFreq[52][154] = 414;
-        GBKFreq[70][178] = 413;
-        GBKFreq[79][148] = 412;
-        GBKFreq[63][143] = 411;
-        GBKFreq[50][140] = 410;
-        GBKFreq[47][145] = 409;
-        GBKFreq[48][123] = 408;
-        GBKFreq[56][107] = 407;
-        GBKFreq[84][83] = 406;
-        GBKFreq[59][112] = 405;
-        GBKFreq[124][72] = 404;
-        GBKFreq[79][99] = 403;
-        GBKFreq[3][37] = 402;
-        GBKFreq[114][55] = 401;
-        GBKFreq[85][152] = 400;
-        GBKFreq[60][47] = 399;
-        GBKFreq[65][96] = 398;
-        GBKFreq[74][110] = 397;
-        GBKFreq[86][182] = 396;
-        GBKFreq[50][99] = 395;
-        GBKFreq[67][186] = 394;
-        GBKFreq[81][74] = 393;
-        GBKFreq[80][37] = 392;
-        GBKFreq[21][60] = 391;
-        GBKFreq[110][12] = 390;
-        GBKFreq[60][162] = 389;
-        GBKFreq[29][115] = 388;
-        GBKFreq[83][130] = 387;
-        GBKFreq[52][136] = 386;
-        GBKFreq[63][114] = 385;
-        GBKFreq[49][127] = 384;
-        GBKFreq[83][109] = 383;
-        GBKFreq[66][128] = 382;
-        GBKFreq[78][136] = 381;
-        GBKFreq[81][180] = 380;
-        GBKFreq[76][104] = 379;
-        GBKFreq[56][156] = 378;
-        GBKFreq[61][23] = 377;
-        GBKFreq[4][30] = 376;
-        GBKFreq[69][154] = 375;
-        GBKFreq[100][37] = 374;
-        GBKFreq[54][177] = 373;
-        GBKFreq[23][119] = 372;
-        GBKFreq[71][171] = 371;
-        GBKFreq[84][146] = 370;
-        GBKFreq[20][184] = 369;
-        GBKFreq[86][76] = 368;
-        GBKFreq[74][132] = 367;
-        GBKFreq[47][97] = 366;
-        GBKFreq[82][137] = 365;
-        GBKFreq[94][56] = 364;
-        GBKFreq[92][30] = 363;
-        GBKFreq[19][117] = 362;
-        GBKFreq[48][173] = 361;
-        GBKFreq[2][136] = 360;
-        GBKFreq[7][182] = 359;
-        GBKFreq[74][188] = 358;
-        GBKFreq[14][132] = 357;
-        GBKFreq[62][172] = 356;
-        GBKFreq[25][39] = 355;
-        GBKFreq[85][129] = 354;
-        GBKFreq[64][98] = 353;
-        GBKFreq[67][127] = 352;
-        GBKFreq[72][167] = 351;
-        GBKFreq[57][143] = 350;
-        GBKFreq[76][187] = 349;
-        GBKFreq[83][181] = 348;
-        GBKFreq[84][10] = 347;
-        GBKFreq[55][166] = 346;
-        GBKFreq[55][188] = 345;
-        GBKFreq[13][151] = 344;
-        GBKFreq[62][124] = 343;
-        GBKFreq[53][136] = 342;
-        GBKFreq[106][57] = 341;
-        GBKFreq[47][166] = 340;
-        GBKFreq[109][30] = 339;
-        GBKFreq[78][114] = 338;
-        GBKFreq[83][19] = 337;
-        GBKFreq[56][162] = 336;
-        GBKFreq[60][177] = 335;
-        GBKFreq[88][9] = 334;
-        GBKFreq[74][163] = 333;
-        GBKFreq[52][156] = 332;
-        GBKFreq[71][180] = 331;
-        GBKFreq[60][57] = 330;
-        GBKFreq[72][173] = 329;
-        GBKFreq[82][91] = 328;
-        GBKFreq[51][186] = 327;
-        GBKFreq[75][86] = 326;
-        GBKFreq[75][78] = 325;
-        GBKFreq[76][170] = 324;
-        GBKFreq[60][147] = 323;
-        GBKFreq[82][75] = 322;
-        GBKFreq[80][148] = 321;
-        GBKFreq[86][150] = 320;
-        GBKFreq[13][95] = 319;
-        GBKFreq[0][11] = 318;
-        GBKFreq[84][190] = 317;
-        GBKFreq[76][166] = 316;
-        GBKFreq[14][72] = 315;
-        GBKFreq[67][144] = 314;
-        GBKFreq[84][44] = 313;
-        GBKFreq[72][125] = 312;
-        GBKFreq[66][127] = 311;
-        GBKFreq[60][25] = 310;
-        GBKFreq[70][146] = 309;
-        GBKFreq[79][135] = 308;
-        GBKFreq[54][135] = 307;
-        GBKFreq[60][104] = 306;
-        GBKFreq[55][132] = 305;
-        GBKFreq[94][2] = 304;
-        GBKFreq[54][133] = 303;
-        GBKFreq[56][190] = 302;
-        GBKFreq[58][174] = 301;
-        GBKFreq[80][144] = 300;
-        GBKFreq[85][113] = 299;
-        /*
-         * GBKFreq[83][15] = 298; GBKFreq[105][80] = 297; GBKFreq[7][179] = 296; GBKFreq[93][4] = 295; GBKFreq[123][40] = 294;
-         * GBKFreq[85][120] = 293; GBKFreq[77][165] = 292; GBKFreq[86][67] = 291; GBKFreq[25][162] = 290; GBKFreq[77][183] = 289;
-         * GBKFreq[83][71] = 288; GBKFreq[78][99] = 287; GBKFreq[72][177] = 286; GBKFreq[71][97] = 285; GBKFreq[58][111] = 284;
-         * GBKFreq[77][175] = 283; GBKFreq[76][181] = 282; GBKFreq[71][142] = 281; GBKFreq[64][150] = 280; GBKFreq[5][142] = 279;
-         * GBKFreq[73][128] = 278; GBKFreq[73][156] = 277; GBKFreq[60][188] = 276; GBKFreq[64][56] = 275; GBKFreq[74][128] = 274;
-         * GBKFreq[48][163] = 273; GBKFreq[54][116] = 272; GBKFreq[73][127] = 271; GBKFreq[16][176] = 270; GBKFreq[62][149] = 269;
-         * GBKFreq[105][96] = 268; GBKFreq[55][186] = 267; GBKFreq[4][51] = 266; GBKFreq[48][113] = 265; GBKFreq[48][152] = 264;
-         * GBKFreq[23][9] = 263; GBKFreq[56][102] = 262; GBKFreq[11][81] = 261; GBKFreq[82][112] = 260; GBKFreq[65][85] = 259;
-         * GBKFreq[69][125] = 258; GBKFreq[68][31] = 257; GBKFreq[5][20] = 256; GBKFreq[60][176] = 255; GBKFreq[82][81] = 254;
-         * GBKFreq[72][107] = 253; GBKFreq[3][52] = 252; GBKFreq[71][157] = 251; GBKFreq[24][46] = 250; GBKFreq[69][108] = 249;
-         * GBKFreq[78][178] = 248; GBKFreq[9][69] = 247; GBKFreq[73][144] = 246; GBKFreq[63][187] = 245; GBKFreq[68][36] = 244;
-         * GBKFreq[47][151] = 243; GBKFreq[14][74] = 242; GBKFreq[47][114] = 241; GBKFreq[80][171] = 240; GBKFreq[75][152] = 239;
-         * GBKFreq[86][40] = 238; GBKFreq[93][43] = 237; GBKFreq[2][50] = 236; GBKFreq[62][66] = 235; GBKFreq[1][183] = 234;
-         * GBKFreq[74][124] = 233; GBKFreq[58][104] = 232; GBKFreq[83][106] = 231; GBKFreq[60][144] = 230; GBKFreq[48][99] = 229;
-         * GBKFreq[54][157] = 228; GBKFreq[70][179] = 227; GBKFreq[61][127] = 226; GBKFreq[57][135] = 225; GBKFreq[59][190] = 224;
-         * GBKFreq[77][116] = 223; GBKFreq[26][17] = 222; GBKFreq[60][13] = 221; GBKFreq[71][38] = 220; GBKFreq[85][177] = 219;
-         * GBKFreq[59][73] = 218; GBKFreq[50][150] = 217; GBKFreq[79][102] = 216; GBKFreq[76][118] = 215; GBKFreq[67][132] = 214;
-         * GBKFreq[73][146] = 213; GBKFreq[83][184] = 212; GBKFreq[86][159] = 211; GBKFreq[95][120] = 210; GBKFreq[23][139] = 209;
-         * GBKFreq[64][183] = 208; GBKFreq[85][103] = 207; GBKFreq[41][90] = 206; GBKFreq[87][72] = 205; GBKFreq[62][104] = 204;
-         * GBKFreq[79][168] = 203; GBKFreq[79][150] = 202; GBKFreq[104][20] = 201; GBKFreq[56][114] = 200; GBKFreq[84][26] = 199;
-         * GBKFreq[57][99] = 198; GBKFreq[62][154] = 197; GBKFreq[47][98] = 196; GBKFreq[61][64] = 195; GBKFreq[112][18] = 194;
-         * GBKFreq[123][19] = 193; GBKFreq[4][98] = 192; GBKFreq[47][163] = 191; GBKFreq[66][188] = 190; GBKFreq[81][85] = 189;
-         * GBKFreq[82][30] = 188; GBKFreq[65][83] = 187; GBKFreq[67][24] = 186; GBKFreq[68][179] = 185; GBKFreq[55][177] = 184;
-         * GBKFreq[2][122] = 183; GBKFreq[47][139] = 182; GBKFreq[79][158] = 181; GBKFreq[64][143] = 180; GBKFreq[100][24] = 179;
-         * GBKFreq[73][103] = 178; GBKFreq[50][148] = 177; GBKFreq[86][97] = 176; GBKFreq[59][116] = 175; GBKFreq[64][173] = 174;
-         * GBKFreq[99][91] = 173; GBKFreq[11][99] = 172; GBKFreq[78][179] = 171; GBKFreq[18][17] = 170; GBKFreq[58][185] = 169;
-         * GBKFreq[47][165] = 168; GBKFreq[67][131] = 167; GBKFreq[94][40] = 166; GBKFreq[74][153] = 165; GBKFreq[79][142] = 164;
-         * GBKFreq[57][98] = 163; GBKFreq[1][164] = 162; GBKFreq[55][168] = 161; GBKFreq[13][141] = 160; GBKFreq[51][31] = 159;
-         * GBKFreq[57][178] = 158; GBKFreq[50][189] = 157; GBKFreq[60][167] = 156; GBKFreq[80][34] = 155; GBKFreq[109][80] = 154;
-         * GBKFreq[85][54] = 153; GBKFreq[69][183] = 152; GBKFreq[67][143] = 151; GBKFreq[47][120] = 150; GBKFreq[45][75] = 149;
-         * GBKFreq[82][98] = 148; GBKFreq[83][22] = 147; GBKFreq[13][103] = 146; GBKFreq[49][174] = 145; GBKFreq[57][181] = 144;
-         * GBKFreq[64][127] = 143; GBKFreq[61][131] = 142; GBKFreq[52][180] = 141; GBKFreq[74][134] = 140; GBKFreq[84][187] = 139;
-         * GBKFreq[81][189] = 138; GBKFreq[47][160] = 137; GBKFreq[66][148] = 136; GBKFreq[7][4] = 135; GBKFreq[85][134] = 134;
-         * GBKFreq[88][13] = 133; GBKFreq[88][80] = 132; GBKFreq[69][166] = 131; GBKFreq[86][18] = 130; GBKFreq[79][141] = 129;
-         * GBKFreq[50][108] = 128; GBKFreq[94][69] = 127; GBKFreq[81][110] = 126; GBKFreq[69][119] = 125; GBKFreq[72][161] = 124;
-         * GBKFreq[106][45] = 123; GBKFreq[73][124] = 122; GBKFreq[94][28] = 121; GBKFreq[63][174] = 120; GBKFreq[3][149] = 119;
-         * GBKFreq[24][160] = 118; GBKFreq[113][94] = 117; GBKFreq[56][138] = 116; GBKFreq[64][185] = 115; GBKFreq[86][56] = 114;
-         * GBKFreq[56][150] = 113; GBKFreq[110][55] = 112; GBKFreq[28][13] = 111; GBKFreq[54][190] = 110; GBKFreq[8][180] = 109;
-         * GBKFreq[73][149] = 108; GBKFreq[80][155] = 107; GBKFreq[83][172] = 106; GBKFreq[67][174] = 105; GBKFreq[64][180] = 104;
-         * GBKFreq[84][46] = 103; GBKFreq[91][74] = 102; GBKFreq[69][134] = 101; GBKFreq[61][107] = 100; GBKFreq[47][171] = 99;
-         * GBKFreq[59][51] = 98; GBKFreq[109][74] = 97; GBKFreq[64][174] = 96; GBKFreq[52][151] = 95; GBKFreq[51][176] = 94;
-         * GBKFreq[80][157] = 93; GBKFreq[94][31] = 92; GBKFreq[79][155] = 91; GBKFreq[72][174] = 90; GBKFreq[69][113] = 89;
-         * GBKFreq[83][167] = 88; GBKFreq[83][122] = 87; GBKFreq[8][178] = 86; GBKFreq[70][186] = 85; GBKFreq[59][153] = 84;
-         * GBKFreq[84][68] = 83; GBKFreq[79][39] = 82; GBKFreq[47][180] = 81; GBKFreq[88][53] = 80; GBKFreq[57][154] = 79;
-         * GBKFreq[47][153] = 78; GBKFreq[3][153] = 77; GBKFreq[76][134] = 76; GBKFreq[51][166] = 75; GBKFreq[58][176] = 74;
-         * GBKFreq[27][138] = 73; GBKFreq[73][126] = 72; GBKFreq[76][185] = 71; GBKFreq[52][186] = 70; GBKFreq[81][151] = 69;
-         * GBKFreq[26][50] = 68; GBKFreq[76][173] = 67; GBKFreq[106][56] = 66; GBKFreq[85][142] = 65; GBKFreq[11][103] = 64;
-         * GBKFreq[69][159] = 63; GBKFreq[53][142] = 62; GBKFreq[7][6] = 61; GBKFreq[84][59] = 60; GBKFreq[86][3] = 59;
-         * GBKFreq[64][144] = 58; GBKFreq[1][187] = 57; GBKFreq[82][128] = 56; GBKFreq[3][66] = 55; GBKFreq[68][133] = 54;
-         * GBKFreq[55][167] = 53; GBKFreq[52][130] = 52; GBKFreq[61][133] = 51; GBKFreq[72][181] = 50; GBKFreq[25][98] = 49;
-         * GBKFreq[84][149] = 48; GBKFreq[91][91] = 47; GBKFreq[47][188] = 46; GBKFreq[68][130] = 45; GBKFreq[22][44] = 44;
-         * GBKFreq[81][121] = 43; GBKFreq[72][140] = 42; GBKFreq[55][133] = 41; GBKFreq[55][185] = 40; GBKFreq[56][105] = 39;
-         * GBKFreq[60][30] = 38; GBKFreq[70][103] = 37; GBKFreq[62][141] = 36; GBKFreq[70][144] = 35; GBKFreq[59][111] = 34;
-         * GBKFreq[54][17] = 33; GBKFreq[18][190] = 32; GBKFreq[65][164] = 31; GBKFreq[83][125] = 30; GBKFreq[61][121] = 29;
-         * GBKFreq[48][13] = 28; GBKFreq[51][189] = 27; GBKFreq[65][68] = 26; GBKFreq[7][0] = 25; GBKFreq[76][188] = 24;
-         * GBKFreq[85][117] = 23; GBKFreq[45][33] = 22; GBKFreq[78][187] = 21; GBKFreq[106][48] = 20; GBKFreq[59][52] = 19;
-         * GBKFreq[86][185] = 18; GBKFreq[84][121] = 17; GBKFreq[82][189] = 16; GBKFreq[68][156] = 15; GBKFreq[55][125] = 14;
-         * GBKFreq[65][175] = 13; GBKFreq[7][140] = 12; GBKFreq[50][106] = 11; GBKFreq[59][124] = 10; GBKFreq[67][115] = 9;
-         * GBKFreq[82][114] = 8; GBKFreq[74][121] = 7; GBKFreq[106][69] = 6; GBKFreq[94][27] = 5; GBKFreq[78][98] = 4;
-         * GBKFreq[85][186] = 3; GBKFreq[108][90] = 2; GBKFreq[62][160] = 1; GBKFreq[60][169] = 0;
-         */
+    }
+
+    /**
+     * 初始化KR频率表
+     */
+    private void initializeKRFreqTable() {
+        // 实际实现中应包含完整的KR频率表初始化
+        // KRFreq[34][48] = 198; KRFreq[21][15] = 197; ...
         KRFreq[31][43] = 600;
         KRFreq[19][56] = 599;
         KRFreq[38][46] = 598;
@@ -3797,6 +4085,13 @@ class BytesEncodingDetect extends Encoding {
         KRFreq[27][57] = 2;
         KRFreq[39][38] = 1;
         KRFreq[32][33] = 0;
+    }
+
+    /**
+     * 初始化JP频率表
+     */
+    private void initializeJPFreqTable() {
+        // 实际实现中应包含完整的JP频率表初始化
         JPFreq[3][74] = 600;
         JPFreq[3][45] = 599;
         JPFreq[3][3] = 598;
@@ -4398,6 +4693,160 @@ class BytesEncodingDetect extends Encoding {
         JPFreq[42][29] = 2;
         JPFreq[27][66] = 1;
         JPFreq[26][89] = 0;
+    }
+
+    /**
+     * GB18030字符类型枚举
+     */
+    private enum Gb18030CharacterType {
+        ORIGINAL_GB,
+        EXTENDED_GBK,
+        GB18030_FOUR_BYTE,
+        UNKNOWN
+    }
+
+    /**
+     * SJIS字符处理结果类
+     */
+    private static class SjisCharacterResult {
+        final int jpchars;
+        final long totalfreq;
+        final long jpfreq;
+        final int indexAdjustment;
+
+        SjisCharacterResult(int jpchars, long totalfreq, long jpfreq, int indexAdjustment) {
+            this.jpchars = jpchars;
+            this.totalfreq = totalfreq;
+            this.jpfreq = jpfreq;
+            this.indexAdjustment = indexAdjustment;
+        }
+    }
+
+    /**
+     * CP949字符处理结果类
+     */
+    private static class Cp949CharacterResult {
+        final int krchars;
+        final long totalfreq;
+        final long krfreq;
+
+        Cp949CharacterResult(int krchars, long totalfreq, long krfreq) {
+            this.krchars = krchars;
+            this.totalfreq = totalfreq;
+            this.krfreq = krfreq;
+        }
+    }
+
+    /**
+     * ISO 2022-CN统计信息类
+     */
+    private static class Iso2022CnStatistics {
+        final int dbchars;
+        final int isochars;
+        final long isofreq;
+        final long totalfreq;
+
+        Iso2022CnStatistics() {
+            this.dbchars = 1;
+            this.isochars = 1;
+            this.isofreq = 0;
+            this.totalfreq = 1;
+        }
+
+        Iso2022CnStatistics(int dbchars, int isochars, long isofreq, long totalfreq) {
+            this.dbchars = dbchars;
+            this.isochars = isochars;
+            this.isofreq = isofreq;
+            this.totalfreq = totalfreq;
+        }
+    }
+
+    /**
+     * 转义序列处理结果类
+     */
+    private static class EscapeSequenceResult {
+        final Iso2022CnStatistics stats;
+        final int nextIndex;
+
+        EscapeSequenceResult(Iso2022CnStatistics stats, int nextIndex) {
+            this.stats = stats;
+            this.nextIndex = nextIndex;
+        }
+    }
+
+    /**
+     * EUC-TW字符处理结果类
+     */
+    private static class EucTwCharacterResult {
+        final int cnschars;
+        final long totalfreq;
+        final long cnsfreq;
+        final int indexAdjustment; // 索引调整值
+
+        EucTwCharacterResult(int cnschars, long totalfreq, long cnsfreq, int indexAdjustment) {
+            this.cnschars = cnschars;
+            this.totalfreq = totalfreq;
+            this.cnsfreq = cnsfreq;
+            this.indexAdjustment = indexAdjustment;
+        }
+    }
+
+    /**
+     * Big5字符处理结果类
+     */
+    private static class Big5CharacterResult {
+        final int bfchars;
+        final long totalfreq;
+        final long bffreq;
+
+        Big5CharacterResult(int bfchars, long totalfreq, long bffreq) {
+            this.bfchars = bfchars;
+            this.totalfreq = totalfreq;
+            this.bffreq = bffreq;
+        }
+    }
+
+    /**
+     * HZ编码统计信息
+     */
+    private static class HzStatistics {
+        int hzchars = 0;
+        int dbchars = 1;
+        long hzfreq = 0;
+        long totalfreq = 1;
+        int hzstart = 0;
+        int hzend = 0;
+        int nextIndex = 0;
+    }
+
+    /**
+     * HZ内容处理结果
+     */
+    private static class HzContentResult {
+        final boolean shouldBreak;
+        final int nextIndex;
+
+        HzContentResult(boolean shouldBreak, int nextIndex) {
+            this.shouldBreak = shouldBreak;
+            this.nextIndex = nextIndex;
+        }
+    }
+
+    /**
+     * 字符处理结果类
+     */
+    private static class ProcessingResult {
+        final int gbchars;
+        final long totalfreq;
+        final long gbfreq;
+        final int nextIndex;
+
+        ProcessingResult(int gbchars, long totalfreq, long gbfreq, int nextIndex) {
+            this.gbchars = gbchars;
+            this.totalfreq = totalfreq;
+            this.gbfreq = gbfreq;
+            this.nextIndex = nextIndex;
+        }
     }
 }
 

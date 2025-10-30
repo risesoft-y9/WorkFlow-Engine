@@ -339,63 +339,50 @@ public class FileHandlerService implements InitializingBean {
      */
     public FileAttribute getFileAttribute(String url, HttpServletRequest req) {
         FileAttribute attribute = new FileAttribute();
-        String suffix;
-        FileType type;
-        String originFileName; // 原始文件名
-        String outFilePath; // 生成文件的路径
-        String originFilePath; // 原始文件路径
-        String fullFileName = WebUtils.getUrlParameterReg(url, "fullfilename");
-        String compressFileKey = WebUtils.getUrlParameterReg(url, "kkCompressfileKey"); // 压缩包获取文件名
-        String compressFilePath = WebUtils.getUrlParameterReg(url, "kkCompressfilepath"); // 压缩包获取文件路径
-        if (StringUtils.hasText(fullFileName)) {
-            originFileName = fullFileName;
-            type = FileType.typeFromFileName(fullFileName);
-            suffix = KkFileUtils.suffixFromFileName(fullFileName);
-            // 移除fullfilename参数
-            url = WebUtils.clearFullfilenameParam(url);
-        } else {
-            originFileName = WebUtils.getFileNameFromURL(url);
-            type = FileType.typeFromUrl(url);
-            suffix = WebUtils.suffixFromUrl(url);
-        }
+        // 解析文件基本信息
+        FileInfo fileInfo = parseFileInfo(url);
+        String originFileName = fileInfo.originFileName;
+        FileType type = fileInfo.type;
+        String suffix = fileInfo.suffix;
+        url = fileInfo.url;
+
+        // 处理压缩文件相关逻辑
+        String compressFileKey = WebUtils.getUrlParameterReg(url, "kkCompressfileKey");
         boolean isCompressFile = !ObjectUtils.isEmpty(compressFileKey);
-        if (isCompressFile) { // 判断是否使用特定压缩包符号
+        if (isCompressFile) {
             try {
-                originFileName = URLDecoder.decode(originFileName, uriEncoding); // 转义的文件名 解下出原始文件名
+                originFileName = URLDecoder.decode(originFileName, uriEncoding);
                 attribute.setSkipDownLoad(true);
             } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
+                LOGGER.error("URL解码失败: {}", originFileName, e);
             }
         }
-        if (UrlEncoderUtils.hasUrlEncoded(originFileName)) { // 判断文件名是否转义
-            try {
-                originFileName = URLDecoder.decode(originFileName, uriEncoding); // 转义的文件名 解下出原始文件名
-            } catch (UnsupportedEncodingException e) {
-                e.printStackTrace();
-            }
-        } else {
-            // 对未转义的url进行转义
+
+        // 处理URL编码
+        originFileName = handleUrlEncoding(originFileName);
+
+        // 处理未编码的URL
+        if (!UrlEncoderUtils.hasUrlEncoded(originFileName)) {
             url = WebUtils.encodeUrlFileName(url);
         }
-        originFileName = KkFileUtils.htmlEscape(originFileName); // 文件名处理
-        boolean isHtmlView =
-            suffix.equalsIgnoreCase("xls") || suffix.equalsIgnoreCase("xlsx") || suffix.equalsIgnoreCase("csv")
-                || suffix.equalsIgnoreCase("xlsm") || suffix.equalsIgnoreCase("xlt") || suffix.equalsIgnoreCase("xltm")
-                || suffix.equalsIgnoreCase("et") || suffix.equalsIgnoreCase("ett") || suffix.equalsIgnoreCase("xlam");
-        String cacheFilePrefixName = null;
-        try {
-            cacheFilePrefixName = originFileName.substring(0, originFileName.lastIndexOf(".")) + suffix + "."; // 这里统一文件名处理
-                                                                                                               // 下面更具类型
-                                                                                                               // 各自添加后缀
-        } catch (Exception e) {
-            LOGGER.error("获取文件名后缀错误：", e);
-            // e.printStackTrace();
-        }
+
+        // 文件名转义处理
+        originFileName = KkFileUtils.htmlEscape(originFileName);
+
+        // 判断是否为HTML视图
+        boolean isHtmlView = isHtmlView(suffix);
+
+        // 生成缓存文件前缀名
+        String cacheFilePrefixName = generateCacheFilePrefix(originFileName, suffix);
+
+        // 获取缓存文件名
         String cacheFileName =
             this.getCacheFileName(type, originFileName, cacheFilePrefixName, isHtmlView, isCompressFile);
-        outFilePath = fileDir + cacheFileName;
-        originFilePath = fileDir + originFileName;
-        String cacheListName = cacheFilePrefixName + "ListName"; // 文件列表缓存文件名
+        String outFilePath = fileDir + cacheFileName;
+        String originFilePath = fileDir + originFileName;
+        String cacheListName = cacheFilePrefixName + "ListName";
+
+        // 设置文件属性
         attribute.setType(type);
         attribute.setName(originFileName);
         attribute.setCacheName(cacheFileName);
@@ -405,39 +392,117 @@ public class FileHandlerService implements InitializingBean {
         attribute.setOriginFilePath(originFilePath);
         attribute.setSuffix(suffix);
         attribute.setUrl(url);
-        if (req != null) {
-            String officePreviewType = req.getParameter("officePreviewType");
-            String forceUpdatedCache = req.getParameter("forceUpdatedCache");
-            String usePasswordCache = req.getParameter("usePasswordCache");
-            if (StringUtils.hasText(officePreviewType)) {
-                attribute.setOfficePreviewType(officePreviewType);
-            }
-            if (StringUtils.hasText(compressFileKey)) {
-                attribute.setCompressFile(isCompressFile);
-                attribute.setCompressFileKey(compressFileKey);
-            }
-            if ("true".equalsIgnoreCase(forceUpdatedCache)) {
-                attribute.setForceUpdatedCache(true);
-            }
 
-            String tifPreviewType = req.getParameter("tifPreviewType");
-            if (StringUtils.hasText(tifPreviewType)) {
-                attribute.setTifPreviewType(tifPreviewType);
-            }
-
-            String filePassword = req.getParameter("filePassword");
-            if (StringUtils.hasText(filePassword)) {
-                attribute.setFilePassword(filePassword);
-            }
-            if ("true".equalsIgnoreCase(usePasswordCache)) {
-                attribute.setUsePasswordCache(true);
-            }
-            String kkProxyAuthorization = req.getHeader("kk-proxy-authorization");
-            attribute.setKkProxyAuthorization(kkProxyAuthorization);
-
-        }
+        // 处理请求参数
+        processRequestParameters(req, attribute, compressFileKey, isCompressFile);
 
         return attribute;
+    }
+
+    /**
+     * 解析文件基本信息
+     */
+    private FileInfo parseFileInfo(String url) {
+        FileInfo info = new FileInfo();
+        String fullFileName = WebUtils.getUrlParameterReg(url, "fullfilename");
+
+        if (StringUtils.hasText(fullFileName)) {
+            info.originFileName = fullFileName;
+            info.type = FileType.typeFromFileName(fullFileName);
+            info.suffix = KkFileUtils.suffixFromFileName(fullFileName);
+            info.url = WebUtils.clearFullfilenameParam(url);
+        } else {
+            info.originFileName = WebUtils.getFileNameFromURL(url);
+            info.type = FileType.typeFromUrl(url);
+            info.suffix = WebUtils.suffixFromUrl(url);
+            info.url = url;
+        }
+
+        return info;
+    }
+
+    /**
+     * 处理URL编码
+     */
+    private String handleUrlEncoding(String originFileName) {
+        if (UrlEncoderUtils.hasUrlEncoded(originFileName)) {
+            try {
+                return URLDecoder.decode(originFileName, uriEncoding);
+            } catch (UnsupportedEncodingException e) {
+                LOGGER.error("URL解码失败: {}", originFileName, e);
+            }
+        }
+        return originFileName;
+    }
+
+    /**
+     * 判断是否为HTML视图
+     */
+    private boolean isHtmlView(String suffix) {
+        return suffix.equalsIgnoreCase("xls") || suffix.equalsIgnoreCase("xlsx") || suffix.equalsIgnoreCase("csv")
+            || suffix.equalsIgnoreCase("xlsm") || suffix.equalsIgnoreCase("xlt") || suffix.equalsIgnoreCase("xltm")
+            || suffix.equalsIgnoreCase("et") || suffix.equalsIgnoreCase("ett") || suffix.equalsIgnoreCase("xlam");
+    }
+
+    /**
+     * 生成缓存文件前缀名
+     */
+    private String generateCacheFilePrefix(String originFileName, String suffix) {
+        try {
+            return originFileName.substring(0, originFileName.lastIndexOf(".")) + suffix + ".";
+        } catch (Exception e) {
+            LOGGER.error("获取文件名后缀错误：", e);
+            return null;
+        }
+    }
+
+    /**
+     * 处理请求参数
+     */
+    private void processRequestParameters(HttpServletRequest req, FileAttribute attribute, String compressFileKey,
+        boolean isCompressFile) {
+        if (req == null)
+            return;
+
+        // 处理Office预览类型
+        String officePreviewType = req.getParameter("officePreviewType");
+        if (StringUtils.hasText(officePreviewType)) {
+            attribute.setOfficePreviewType(officePreviewType);
+        }
+
+        // 处理压缩文件相关参数
+        if (StringUtils.hasText(compressFileKey)) {
+            attribute.setCompressFile(isCompressFile);
+            attribute.setCompressFileKey(compressFileKey);
+        }
+
+        // 处理强制更新缓存参数
+        String forceUpdatedCache = req.getParameter("forceUpdatedCache");
+        if ("true".equalsIgnoreCase(forceUpdatedCache)) {
+            attribute.setForceUpdatedCache(true);
+        }
+
+        // 处理TIF预览类型
+        String tifPreviewType = req.getParameter("tifPreviewType");
+        if (StringUtils.hasText(tifPreviewType)) {
+            attribute.setTifPreviewType(tifPreviewType);
+        }
+
+        // 处理文件密码
+        String filePassword = req.getParameter("filePassword");
+        if (StringUtils.hasText(filePassword)) {
+            attribute.setFilePassword(filePassword);
+        }
+
+        // 处理密码缓存参数
+        String usePasswordCache = req.getParameter("usePasswordCache");
+        if ("true".equalsIgnoreCase(usePasswordCache)) {
+            attribute.setUsePasswordCache(true);
+        }
+
+        // 处理代理授权头
+        String kkProxyAuthorization = req.getHeader("kk-proxy-authorization");
+        attribute.setKkProxyAuthorization(kkProxyAuthorization);
     }
 
     /**
@@ -538,102 +603,179 @@ public class FileHandlerService implements InitializingBean {
     public List<String> pdf2jpg(String fileNameFilePath, String pdfFilePath, String pdfName,
         FileAttribute fileAttribute) throws Exception {
         List<String> imageUrls = new ArrayList<>();
-        try {
-            boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
-            boolean usePasswordCache = fileAttribute.getUsePasswordCache();
-            String filePassword = fileAttribute.getFilePassword();
-            PDDocument doc;
-            final String[] pdfPassword = {null};
-            final int[] pageCount = new int[1];
-            if (!forceUpdatedCache) {
-                List<String> cacheResult = this.loadPdf2jpgCache(pdfFilePath);
-                if (!CollectionUtils.isEmpty(cacheResult)) {
-                    return cacheResult;
-                }
-            }
-            File pdfFile = new File(fileNameFilePath);
-            if (!pdfFile.exists()) {
-                LOGGER.error("pdf文件不存在！");
-                return null;
-            }
-            int index = pdfFilePath.lastIndexOf(".");
-            String folder = pdfFilePath.substring(0, index);
-            File path = new File(folder);
-            if (!path.exists() && !path.mkdirs()) {
-                LOGGER.error("创建转换文件【{}】目录失败，请检查目录权限！", folder);
-            }
-            try {
-                doc = Loader.loadPDF(pdfFile, filePassword);
-                doc.setResourceCache(new NotResourceCache());
-                pageCount[0] = doc.getNumberOfPages();
-            } catch (IOException e) {
-                Throwable[] throwableArray = ExceptionUtils.getThrowables(e);
-                for (Throwable throwable : throwableArray) {
-                    if (throwable instanceof IOException || throwable instanceof EncryptedDocumentException) {
-                        if (e.getMessage().toLowerCase().contains(PDF_PASSWORD_MSG)) {
-                            pdfPassword[0] = PDF_PASSWORD_MSG; // 查询到该文件是密码文件 输出带密码的值
-                        }
-                    }
-                }
-                if (!PDF_PASSWORD_MSG.equals(pdfPassword[0])) { // 该文件异常 错误原因非密码原因输出错误
-                    LOGGER.error("Convert pdf exception, pdfFilePath：{}", pdfFilePath, e);
-                }
-                throw new Exception(e);
-            }
-            Callable<List<String>> call = () -> {
-                try {
-                    String imageFilePath;
-                    BufferedImage image = null;
-                    PDFRenderer pdfRenderer = new PDFRenderer(doc);
-                    pdfRenderer.setSubsamplingAllowed(true);
-                    for (int pageIndex = 0; pageIndex < pageCount[0]; pageIndex++) {
-                        imageFilePath = folder + File.separator + pageIndex + PDF2JPG_IMAGE_FORMAT;
-                        image =
-                            pdfRenderer.renderImageWithDPI(pageIndex, ConfigConstants.getPdf2JpgDpi(), ImageType.RGB);
-                        ImageIOUtil.writeImage(image, imageFilePath, ConfigConstants.getPdf2JpgDpi());
-                        String imageUrl = this.getPdf2jpgUrl(pdfFilePath, pageIndex);
-                        imageUrls.add(imageUrl);
-                    }
-                    image.flush();
-                } catch (IOException e) {
-                    LOGGER.error("Convert pdf exception, pdfFilePath：{}", pdfFilePath, e);
-                    throw new Exception(e);
-                } finally {
-                    doc.close();
-                }
-                return imageUrls;
-            };
-            Future<List<String>> result = pool.submit(call);
-            int pdftimeout;
-            if (pageCount[0] <= 50) {
-                pdftimeout = ConfigConstants.getPdfTimeout();
-            } else if (pageCount[0] <= 200) {
-                pdftimeout = ConfigConstants.getPdfTimeout80();
-            } else {
-                pdftimeout = ConfigConstants.getPdfTimeout200();
-            }
-            try {
-                result.get(pdftimeout, TimeUnit.SECONDS);
-                // 如果在超时时间内，没有数据返回：则抛出TimeoutException异常
-            } catch (InterruptedException e) {
-                Thread.currentThread().interrupt();
-                throw new Exception(e);
-            } catch (ExecutionException e) {
-                throw new Exception(e);
-            } catch (TimeoutException e) {
-                throw new Exception("overtime");
-            } finally {
-                // 关闭
-                doc.close();
-            }
-            if (usePasswordCache || ObjectUtils.isEmpty(filePassword)) { // 加密文件 判断是否启用缓存命令
-                this.addPdf2jpgCache(pdfFilePath, pageCount[0]);
-            }
-        } catch (Exception e) {
-            LOGGER.error("pdf文件转换成jpg图片集失败！", e);
-            throw new Exception("pdf文件转换成jpg图片集失败！");
+
+        // 检查缓存
+        List<String> cacheResult = checkCache(fileAttribute, pdfFilePath);
+        if (cacheResult != null) {
+            return cacheResult;
         }
+
+        // 验证文件和创建目录
+        if (!validateAndPrepareFile(fileNameFilePath, pdfFilePath)) {
+            return null;
+        }
+
+        // 加载PDF文档
+        PDDocument doc = null;
+        try {
+            doc = loadPdfDocument(fileNameFilePath, fileAttribute);
+            int pageCount = doc.getNumberOfPages();
+
+            // 执行转换
+            imageUrls = executePdfToJpgConversion(doc, pdfFilePath, pageCount);
+
+            // 设置缓存
+            handleCacheStorage(fileAttribute, pdfFilePath, pageCount);
+
+        } finally {
+            if (doc != null) {
+                try {
+                    doc.close();
+                } catch (IOException e) {
+                    LOGGER.warn("关闭PDF文档时出错: {}", pdfFilePath, e);
+                }
+            }
+        }
+
         return imageUrls;
+    }
+
+    /**
+     * 检查缓存
+     */
+    private List<String> checkCache(FileAttribute fileAttribute, String pdfFilePath) throws Exception {
+        boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
+        if (!forceUpdatedCache) {
+            List<String> cacheResult = this.loadPdf2jpgCache(pdfFilePath);
+            if (!CollectionUtils.isEmpty(cacheResult)) {
+                return cacheResult;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * 验证文件和创建目录
+     */
+    private boolean validateAndPrepareFile(String fileNameFilePath, String pdfFilePath) {
+        File pdfFile = new File(fileNameFilePath);
+        if (!pdfFile.exists()) {
+            LOGGER.error("pdf文件不存在！");
+            return false;
+        }
+
+        int index = pdfFilePath.lastIndexOf(".");
+        String folder = pdfFilePath.substring(0, index);
+        File path = new File(folder);
+        if (!path.exists() && !path.mkdirs()) {
+            LOGGER.error("创建转换文件【{}】目录失败，请检查目录权限！", folder);
+        }
+
+        return true;
+    }
+
+    /**
+     * 加载PDF文档
+     */
+    private PDDocument loadPdfDocument(String fileNameFilePath, FileAttribute fileAttribute) throws Exception {
+        PDDocument doc = null;
+        String filePassword = fileAttribute.getFilePassword();
+        String[] pdfPassword = {null};
+
+        try {
+            doc = Loader.loadPDF(new File(fileNameFilePath), filePassword);
+            doc.setResourceCache(new NotResourceCache());
+            return doc;
+        } catch (IOException e) {
+            handlePdfLoadException(e, pdfPassword);
+            throw new Exception(e);
+        }
+    }
+
+    /**
+     * 处理PDF加载异常
+     */
+    private void handlePdfLoadException(IOException e, String[] pdfPassword) {
+        Throwable[] throwableArray = ExceptionUtils.getThrowables(e);
+        for (Throwable throwable : throwableArray) {
+            if (throwable instanceof IOException || throwable instanceof EncryptedDocumentException) {
+                if (e.getMessage().toLowerCase().contains(PDF_PASSWORD_MSG)) {
+                    pdfPassword[0] = PDF_PASSWORD_MSG;
+                }
+            }
+        }
+        if (!PDF_PASSWORD_MSG.equals(pdfPassword[0])) {
+            LOGGER.error("Convert pdf exception", e);
+        }
+    }
+
+    /**
+     * 执行PDF到JPG的转换
+     */
+    private List<String> executePdfToJpgConversion(PDDocument doc, String pdfFilePath, int pageCount) throws Exception {
+        List<String> imageUrls = new ArrayList<>();
+        int index = pdfFilePath.lastIndexOf(".");
+        String folder = pdfFilePath.substring(0, index);
+
+        Callable<List<String>> call = () -> {
+            try {
+                PDFRenderer pdfRenderer = new PDFRenderer(doc);
+                pdfRenderer.setSubsamplingAllowed(true);
+
+                for (int pageIndex = 0; pageIndex < pageCount; pageIndex++) {
+                    String imageFilePath = folder + File.separator + pageIndex + PDF2JPG_IMAGE_FORMAT;
+                    BufferedImage image =
+                        pdfRenderer.renderImageWithDPI(pageIndex, ConfigConstants.getPdf2JpgDpi(), ImageType.RGB);
+                    ImageIOUtil.writeImage(image, imageFilePath, ConfigConstants.getPdf2JpgDpi());
+                    String imageUrl = this.getPdf2jpgUrl(pdfFilePath, pageIndex);
+                    imageUrls.add(imageUrl);
+                    image.flush();
+                }
+            } catch (IOException e) {
+                LOGGER.error("Convert pdf exception, pdfFilePath：{}", pdfFilePath, e);
+                throw new Exception(e);
+            }
+            return imageUrls;
+        };
+
+        Future<List<String>> result = pool.submit(call);
+        int pdftimeout = determineTimeout(pageCount);
+
+        try {
+            return result.get(pdftimeout, TimeUnit.SECONDS);
+        } catch (InterruptedException e) {
+            Thread.currentThread().interrupt();
+            throw new Exception(e);
+        } catch (ExecutionException e) {
+            throw new Exception(e);
+        } catch (TimeoutException e) {
+            throw new Exception("overtime");
+        }
+    }
+
+    /**
+     * 确定超时时间
+     */
+    private int determineTimeout(int pageCount) {
+        if (pageCount <= 50) {
+            return ConfigConstants.getPdfTimeout();
+        } else if (pageCount <= 200) {
+            return ConfigConstants.getPdfTimeout80();
+        } else {
+            return ConfigConstants.getPdfTimeout200();
+        }
+    }
+
+    /**
+     * 处理缓存存储
+     */
+    private void handleCacheStorage(FileAttribute fileAttribute, String pdfFilePath, int pageCount) {
+        boolean usePasswordCache = fileAttribute.getUsePasswordCache();
+        String filePassword = fileAttribute.getFilePassword();
+
+        if (usePasswordCache || ObjectUtils.isEmpty(filePassword)) {
+            this.addPdf2jpgCache(pdfFilePath, pageCount);
+        }
     }
 
     /**
@@ -644,5 +786,15 @@ public class FileHandlerService implements InitializingBean {
      */
     public void putImgCache(String fileKey, List<String> imgs) {
         cacheService.putImgCache(fileKey, imgs);
+    }
+
+    /**
+     * 文件信息内部类
+     */
+    private static class FileInfo {
+        String originFileName;
+        FileType type;
+        String suffix;
+        String url;
     }
 }
