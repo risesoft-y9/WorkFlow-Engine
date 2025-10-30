@@ -49,7 +49,7 @@ public class DoneServiceImpl implements DoneService {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-        String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
+        String itemName = item.getName();
         y9Page = officeDoneInfoApi.searchByUserId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
         List<OfficeDoneInfoModel> list = y9Page.getRows();

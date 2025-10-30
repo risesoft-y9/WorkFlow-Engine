@@ -17,6 +17,7 @@ import net.risesoft.api.itemadmin.SpeakInfoApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.ItemBoxAndTaskIdModel;
 import net.risesoft.model.itemadmin.RemindInstanceModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.org.OrgUnit;
@@ -203,10 +204,9 @@ public class UtilServiceImpl implements UtilService {
     }
 
     @Override
-    public List<String> getItemBoxAndTaskId(List<TaskModel> taskList) {
-        String userId = Y9LoginUserHolder.getPersonId();
+    public ItemBoxAndTaskIdModel getItemBoxAndTaskId(List<TaskModel> taskList) {
+        String userId = Y9LoginUserHolder.getPositionId();
         String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
-        List<String> list = new ArrayList<>();
         for (TaskModel task : taskList) {
             String assignee = task.getAssignee();
             if (StringUtils.isNotBlank(assignee)) {
@@ -216,8 +216,6 @@ public class UtilServiceImpl implements UtilService {
                 }
             }
         }
-        list.add(itembox);
-        list.add(taskId);
-        return list;
+        return new ItemBoxAndTaskIdModel(itembox, taskId);
     }
 }

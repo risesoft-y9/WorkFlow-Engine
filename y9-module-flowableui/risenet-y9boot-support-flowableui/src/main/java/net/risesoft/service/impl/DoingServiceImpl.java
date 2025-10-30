@@ -189,13 +189,11 @@ public class DoingServiceImpl implements DoingService {
         try {
             String positionId = Y9LoginUserHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            // 获取事项信息
             ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             String itemName = item.getName();
             Y9Page<ProcessInstanceModel> piPage;
             boolean isSearch = StringUtils.isNotBlank(searchTerm);
-            // 根据是否有搜索条件获取数据
             if (isSearch) {
                 piPage = this.processDoingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
                     processDefinitionKey, searchTerm, page, rows);

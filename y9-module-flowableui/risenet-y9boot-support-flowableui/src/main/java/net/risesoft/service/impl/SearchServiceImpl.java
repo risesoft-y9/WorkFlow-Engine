@@ -15,8 +15,10 @@ import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.ItemBoxAndTaskIdModel;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -96,12 +98,12 @@ public class SearchServiceImpl implements SearchService {
             mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
             if (StringUtils.isBlank(model.getEndTime())) {
                 List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                List<String> listTemp = utilService.getItemBoxAndTaskId(taskList);
                 String assigneeNames = utilService.getAssigneeNames(taskList, null);
                 mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                mapTemp.put("taskId", listTemp.get(0).equals(ItemBoxTypeEnum.TODO.getValue()) ? listTemp.get(1) : "");
                 mapTemp.put("taskAssignee", assigneeNames);
-                mapTemp.put("itembox", listTemp.get(2));
+                ItemBoxAndTaskIdModel itemBoxAndTaskId = utilService.getItemBoxAndTaskId(taskList);
+                mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, itemBoxAndTaskId.getItemBox());
+                mapTemp.put(FlowableUiConsts.TASKID_KEY, itemBoxAndTaskId.getTaskId());
             }
             int countFollow =
                 officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
