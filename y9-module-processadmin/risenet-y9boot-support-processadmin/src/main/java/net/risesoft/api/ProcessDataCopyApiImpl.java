@@ -49,11 +49,8 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
     public Y9Result<Object> copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId,
         @RequestParam String modelKey) {
         try {
-            /*
-             * 查找原租户中的模型
-             */
+            // 查找原租户中的模型
             FlowableTenantInfoHolder.setTenantId(sourceTenantId);
-
             String modelId = null;
             List<AbstractModel> sourceModelList = modelService.getModelsByModelType(AbstractModel.MODEL_TYPE_BPMN);
             for (AbstractModel aModel : sourceModelList) {
@@ -63,13 +60,9 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
                 }
             }
             Model sourceModel = modelService.getModel(modelId);
-            /*
-             * 切换租户
-             */
+            // 切换租户
             FlowableTenantInfoHolder.setTenantId(targetTenantId);
-            /*
-             * 判断目标租户是否存在该流程，不存在才新增
-             */
+            // 判断目标租户是否存在该流程，不存在才新增
             boolean has = false;
             List<AbstractModel> targetModelList = modelService.getModelsByModelType(AbstractModel.MODEL_TYPE_BPMN);
             for (AbstractModel aModel : targetModelList) {
@@ -79,15 +72,11 @@ public class ProcessDataCopyApiImpl implements ProcessDataCopyApi {
                 }
             }
             if (!has) {
-                /*
-                 * 复制流程
-                 */
+                // 复制流程
                 sourceModel.setId(null);
                 sourceModel.setTenantId(targetTenantId);
                 Model modelData = modelService.createModel(sourceModel, "管理员");
-                /*
-                 * 部署流程
-                 */
+                // 部署流程
                 BpmnModel bpmnModel = modelService.getBpmnModel(modelData);
                 byte[] bpmnBytes = new BpmnXMLConverter().convertToXML(bpmnModel);
                 String processName = modelData.getName() + ".bpmn20.xml";
