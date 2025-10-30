@@ -20,8 +20,10 @@ import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.worklist.QueryListApi;
 import net.risesoft.api.processadmin.TaskApi;
+import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.ItemBoxAndTaskIdModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
@@ -68,6 +70,7 @@ public class QueryListServiceImpl implements QueryListService {
             int serialNumber = (page - 1) * rows;
             Map<String, Object> mapTemp;
             String processInstanceId;
+            String title = "";
             List<String> processSerialNumbers = new ArrayList<>();
             for (ActRuDetailModel actRuDetail : hpiModelList) {
                 processSerialNumbers.add(actRuDetail.getProcessSerialNumber());
@@ -77,6 +80,7 @@ public class QueryListServiceImpl implements QueryListService {
                 try {
                     OfficeDoneInfoModel officeDoneInfo =
                         officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    title = officeDoneInfo.getTitle();
                     String startTime = officeDoneInfo.getStartTime().substring(0, 16);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
                     mapTemp.put("processInstanceId", processInstanceId);
@@ -88,28 +92,25 @@ public class QueryListServiceImpl implements QueryListService {
                     mapTemp.put("taskAssignee", officeDoneInfo.getUserComplete());
                     mapTemp.put("creatUserName", officeDoneInfo.getCreatUserName());
                     mapTemp.put("itemId", actRuDetail.getItemId());
-                    String level = officeDoneInfo.getUrgency();
-                    String number = officeDoneInfo.getDocNumber();
-                    mapTemp.put("level", StringUtils.defaultString(level));
-                    mapTemp.put("number", StringUtils.defaultString(number));
+                    mapTemp.put("level", StringUtils.defaultString(officeDoneInfo.getUrgency()));
+                    mapTemp.put("number", StringUtils.defaultString(officeDoneInfo.getDocNumber()));
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        List<String> listTemp = utilService.getItemBoxAndTaskId(taskList);
                         String assigneeNames = utilService.getAssigneeNames(taskList, null);
-                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put("taskId",
-                            listTemp.get(0).equals(ItemBoxTypeEnum.TODO.getValue()) ? listTemp.get(1) : "");
                         mapTemp.put("taskAssignee", assigneeNames);
-                        mapTemp.put("itembox", listTemp.get(2));
+                        mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
+                        ItemBoxAndTaskIdModel itemBoxAndTaskId = utilService.getItemBoxAndTaskId(taskList);
+                        mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, itemBoxAndTaskId.getItemBox());
+                        mapTemp.put(FlowableUiConsts.TASKID_KEY, itemBoxAndTaskId.getTaskId());
                     }
                     mapTemp.put("processInstanceId", processInstanceId);
                     int countFollow =
                         officeFollowApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
-                    LOGGER.error("获取流程实例信息失败processInstanceId:{}", processInstanceId, e);
+                    LOGGER.error("获取流程实例信息失败title:{},processInstanceId:{}", title, processInstanceId, e);
                 }
                 mapTemp.put("serialNumber", serialNumber + 1);
                 serialNumber += 1;

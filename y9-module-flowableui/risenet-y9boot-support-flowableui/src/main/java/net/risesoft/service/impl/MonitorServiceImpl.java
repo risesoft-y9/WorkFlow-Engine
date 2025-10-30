@@ -25,6 +25,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.ItemBoxAndTaskIdModel;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
@@ -92,13 +93,12 @@ public class MonitorServiceImpl implements MonitorService {
                     if (StringUtils.isBlank(model.getEndTime())) {
                         List<TaskModel> taskList =
                             taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                        List<String> listTemp = utilService.getItemBoxAndTaskId(taskList);
+                        ItemBoxAndTaskIdModel itemBoxAndTaskId = utilService.getItemBoxAndTaskId(taskList);
                         String assigneeNames = utilService.getAssigneeNames(taskList, null);
                         mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
-                        mapTemp.put(FlowableUiConsts.TASKID_KEY,
-                            listTemp.get(0).equals(ItemBoxTypeEnum.TODO.getValue()) ? listTemp.get(1) : "");
                         mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
-                        mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, listTemp.get(0));
+                        mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, itemBoxAndTaskId.getItemBox());
+                        mapTemp.put(FlowableUiConsts.TASKID_KEY, itemBoxAndTaskId.getTaskId());
                     }
                 } catch (Exception e) {
                     LOGGER.error("获取单位所有件列表失败，异常：{}", processInstanceId, e);
@@ -157,13 +157,12 @@ public class MonitorServiceImpl implements MonitorService {
 
             if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
                 List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                List<String> listTemp = utilService.getItemBoxAndTaskId(taskList);
                 String assigneeNames = utilService.getAssigneeNames(taskList, null);
-                mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
-                mapTemp.put(FlowableUiConsts.TASKID_KEY,
-                    listTemp.get(0).equals(ItemBoxTypeEnum.TODO.getValue()) ? listTemp.get(1) : "");
                 mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
-                mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, listTemp.get(0));
+                mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
+                ItemBoxAndTaskIdModel itemBoxAndTaskId = utilService.getItemBoxAndTaskId(taskList);
+                mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, itemBoxAndTaskId.getItemBox());
+                mapTemp.put(FlowableUiConsts.TASKID_KEY, itemBoxAndTaskId.getTaskId());
             }
         } catch (Exception e) {
             LOGGER.error("获取任务信息失败{}", processInstanceId, e);

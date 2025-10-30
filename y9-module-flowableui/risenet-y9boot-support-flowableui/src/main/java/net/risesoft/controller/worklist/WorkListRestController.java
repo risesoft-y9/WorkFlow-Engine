@@ -41,8 +41,9 @@ public class WorkListRestController {
     private final QueryListService queryListService;
 
     /**
-     * 获取待办件列表
-     *
+     * 获取待办件列表数据 <br>
+     * 使用flowable原生接口查询
+     * 
      * @param itemId 事项id
      * @param searchTerm 搜索词
      * @param page 页码
@@ -52,11 +53,12 @@ public class WorkListRestController {
     @GetMapping(value = "/todoList")
     public Y9Page<Map<String, Object>> todoList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.todoService.list(itemId, searchTerm, page, rows);
+        return todoService.list(itemId, searchTerm, page, rows);
     }
 
     /**
-     * 获取在办件列表
+     * 获取在办件列表数据 <br>
+     * 使用flowable原生接口查询
      *
      * @param itemId 事项id
      * @param searchTerm 搜索词
@@ -67,12 +69,13 @@ public class WorkListRestController {
     @GetMapping(value = "/doingList")
     public Y9Page<Map<String, Object>> doingList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.doingService.list(itemId, searchTerm, page, rows);
+        return doingService.list(itemId, searchTerm, page, rows);
     }
 
     /**
-     * 获取办结件列表
-     *
+     * 获取办结件列表 <br>
+     * 查询 elasticsearch的索引y9_office_doneinfo
+     * 
      * @param itemId 事项id
      * @param searchTerm 搜索词
      * @param page 页码
@@ -82,11 +85,12 @@ public class WorkListRestController {
     @GetMapping(value = "/doneList")
     public Y9Page<Map<String, Object>> doneList(@RequestParam String itemId,
         @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.doneService.list(itemId, searchTerm, page, rows);
+        return doneService.list(itemId, searchTerm, page, rows);
     }
 
     /**
-     * 综合查询
+     * 综合查询 <br>
+     * 使用FF_ACT_RU_DETAIL和业务表联合查询tableName
      *
      * @param itemId 事项id
      * @param state 状态
@@ -102,6 +106,6 @@ public class WorkListRestController {
         @RequestParam(required = false) String state, @RequestParam(required = false) String createDate,
         @RequestParam(required = false) String tableName, @RequestParam(required = false) String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.queryListService.pageQueryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
+        return queryListService.pageQueryList(itemId, state, createDate, tableName, searchMapStr, page, rows);
     }
 }

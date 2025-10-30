@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.impl.HistoricProcessInstanceQueryProperty;
 import org.flowable.engine.runtime.ProcessInstance;
@@ -55,14 +56,14 @@ public class CustomDoingServiceImpl implements CustomDoingService {
             .active()
             .variableNotExists(userId)
             .processDefinitionKey(processDefinitionKey)
-            .variableValueLike("searchTerm", "%" + searchTerm + "%")
+            .variableValueLike("searchTerm", "%" + StringUtils.defaultString(searchTerm) + "%")
             .count();
         List<ProcessInstance> hpiList = runtimeService.createProcessInstanceQuery()
             .involvedUser(userId)
             .active()
             .variableNotExists(userId)
             .processDefinitionKey(processDefinitionKey)
-            .variableValueLike("searchTerm", "%" + searchTerm + "%")
+            .variableValueLike("searchTerm", "%" + StringUtils.defaultString(searchTerm) + "%")
             .orderBy(HistoricProcessInstanceQueryProperty.START_TIME)
             .desc()
             .listPage((page - 1) * rows, rows);
