@@ -447,7 +447,7 @@ public class Y9WordController {
             if (uploadSuccess) {
                 result.put(UtilConsts.SUCCESS, true);
                 result.put("msg", "上传成功");
-                if (fileType.equals(".pdf") || fileType.equals(".tif")) {
+                if (StringUtils.equals(fileType, ".pdf") || StringUtils.equals(fileType, ".tif")) {
                     result.put("isPdf", true);
                 }
             } else {
