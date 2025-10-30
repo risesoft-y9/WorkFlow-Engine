@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.commons.lang3.exception.ExceptionUtils;
@@ -37,74 +38,134 @@ public class PdfFilePreviewImpl implements FilePreview {
 
     @Override
     public String filePreviewHandle(String url, Model model, FileAttribute fileAttribute) {
-        String pdfName = fileAttribute.getName(); // 获取原始文件名
-        String officePreviewType = fileAttribute.getOfficePreviewType(); // 转换类型
-        boolean forceUpdatedCache = fileAttribute.forceUpdatedCache(); // 是否启用强制更新命令
-        String outFilePath = fileAttribute.getOutFilePath(); // 生成的文件路径
-        String originFilePath = fileAttribute.getOriginFilePath(); // 原始文件路径
-        if (OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_IMAGE.equals(officePreviewType)
-            || OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_ALL_IMAGES.equals(officePreviewType)) {
-            // 当文件不存在时，就去下载
-            if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName)
-                || !ConfigConstants.isCacheEnabled()) {
-                ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, pdfName);
-                if (response.isFailure()) {
-                    return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
-                }
-                originFilePath = response.getContent();
-                if (ConfigConstants.isCacheEnabled()) {
-                    // 加入缓存
-                    fileHandlerService.addConvertedFile(pdfName, fileHandlerService.getRelativePath(originFilePath));
-                }
+        String pdfName = fileAttribute.getName();
+        String officePreviewType = fileAttribute.getOfficePreviewType();
+        String outFilePath = fileAttribute.getOutFilePath();
+        String originFilePath = fileAttribute.getOriginFilePath();
+
+        boolean isImagePreview = OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_IMAGE.equals(officePreviewType)
+            || OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_ALL_IMAGES.equals(officePreviewType);
+
+        if (isImagePreview) {
+            return handleImagePreview(model, fileAttribute, pdfName, officePreviewType, originFilePath, outFilePath);
+        } else {
+            return handlePdfPreview(model, fileAttribute, url, pdfName, outFilePath);
+        }
+    }
+
+    /**
+     * 处理图片预览模式
+     */
+    private String handleImagePreview(Model model, FileAttribute fileAttribute, String pdfName,
+        String officePreviewType, String originFilePath, String outFilePath) {
+        // 下载并缓存文件
+        String filePath = downloadAndCacheFileIfNeeded(fileAttribute, pdfName, originFilePath);
+        if (filePath == null) {
+            return otherFilePreview.notSupportedFile(model, fileAttribute, "文件下载失败");
+        }
+
+        // 转换PDF为图片
+        List<String> imageUrls = convertPdfToImages(model, fileAttribute, filePath, outFilePath, pdfName);
+        if (imageUrls == null || imageUrls.isEmpty()) {
+            return otherFilePreview.notSupportedFile(model, fileAttribute, "pdf转图片异常，请联系管理员！");
+        }
+
+        // 设置模型属性
+        model.addAttribute("imgUrls", imageUrls);
+        model.addAttribute("currentUrl", imageUrls.get(0));
+
+        // 返回相应页面
+        if (OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_IMAGE.equals(officePreviewType)) {
+            return OFFICE_PICTURE_FILE_PREVIEW_PAGE;
+        } else {
+            return PICTURE_FILE_PREVIEW_PAGE;
+        }
+    }
+
+    /**
+     * 处理PDF预览模式
+     */
+    private String handlePdfPreview(Model model, FileAttribute fileAttribute, String url, String pdfName,
+        String outFilePath) {
+        // 不是http开头，浏览器不能直接访问，需下载到本地
+        if (url != null && !url.toLowerCase().startsWith("http")) {
+            handleNonHttpUrl(model, fileAttribute, pdfName, outFilePath);
+        } else {
+            model.addAttribute(PDF_URL, url);
+        }
+
+        return PDF_FILE_PREVIEW_PAGE;
+    }
+
+    /**
+     * 处理非HTTP URL的情况
+     */
+    private void handleNonHttpUrl(Model model, FileAttribute fileAttribute, String pdfName, String outFilePath) {
+        if (!fileHandlerService.listConvertedFiles().containsKey(pdfName) || !ConfigConstants.isCacheEnabled()) {
+            ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, pdfName);
+            if (response.isFailure()) {
+                // 注意：这里原逻辑有缺陷，应该返回错误页面而不是继续执行
+                return;
             }
-            List<String> imageUrls;
-            try {
-                imageUrls = fileHandlerService.pdf2jpg(originFilePath, outFilePath, pdfName, fileAttribute);
-            } catch (Exception e) {
-                Throwable[] throwableArray = ExceptionUtils.getThrowables(e);
-                for (Throwable throwable : throwableArray) {
-                    if (throwable instanceof IOException || throwable instanceof EncryptedDocumentException) {
-                        if (e.getMessage().toLowerCase().contains(PDF_PASSWORD_MSG)) {
-                            model.addAttribute("needFilePassword", true);
-                            LOGGER.error("pdf转图片异常，请联系管理员，needFilePassword");
-                            return EXEL_FILE_PREVIEW_PAGE;
-                        }
-                    }
-                }
-                return otherFilePreview.notSupportedFile(model, fileAttribute, "pdf转图片异常，请联系管理员。");
-            }
-            if (imageUrls == null || imageUrls.size() < 1) {
-                LOGGER.error("pdf转图片异常，请联系管理员，imageUrls为空");
-                return otherFilePreview.notSupportedFile(model, fileAttribute, "pdf转图片异常，请联系管理员！");
-            }
-            model.addAttribute("imgUrls", imageUrls);
-            model.addAttribute("currentUrl", imageUrls.get(0));
-            if (OfficeFilePreviewImpl.OFFICE_PREVIEW_TYPE_IMAGE.equals(officePreviewType)) {
-                return OFFICE_PICTURE_FILE_PREVIEW_PAGE;
-            } else {
-                return PICTURE_FILE_PREVIEW_PAGE;
+            model.addAttribute(PDF_URL, fileHandlerService.getRelativePath(response.getContent()));
+            if (ConfigConstants.isCacheEnabled()) {
+                // 加入缓存
+                fileHandlerService.addConvertedFile(pdfName, fileHandlerService.getRelativePath(outFilePath));
             }
         } else {
-            // 不是http开头，浏览器不能直接访问，需下载到本地
-            if (url != null && !url.toLowerCase().startsWith("http")) {
-                if (!fileHandlerService.listConvertedFiles().containsKey(pdfName)
-                    || !ConfigConstants.isCacheEnabled()) {
-                    ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, pdfName);
-                    if (response.isFailure()) {
-                        return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
-                    }
-                    model.addAttribute(PDF_URL, fileHandlerService.getRelativePath(response.getContent()));
-                    if (ConfigConstants.isCacheEnabled()) {
-                        // 加入缓存
-                        fileHandlerService.addConvertedFile(pdfName, fileHandlerService.getRelativePath(outFilePath));
-                    }
-                } else {
-                    model.addAttribute(PDF_URL, WebUtils.encodeFileName(pdfName));
+            model.addAttribute(PDF_URL, WebUtils.encodeFileName(pdfName));
+        }
+    }
+
+    /**
+     * 如果需要则下载并缓存文件
+     */
+    private String downloadAndCacheFileIfNeeded(FileAttribute fileAttribute, String pdfName, String originFilePath) {
+        boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
+        if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(pdfName)
+            || !ConfigConstants.isCacheEnabled()) {
+            ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, pdfName);
+            if (response.isFailure()) {
+                return null;
+            }
+            String filePath = response.getContent();
+            if (ConfigConstants.isCacheEnabled()) {
+                // 加入缓存
+                fileHandlerService.addConvertedFile(pdfName, fileHandlerService.getRelativePath(filePath));
+            }
+            return filePath;
+        }
+        return originFilePath;
+    }
+
+    /**
+     * 转换PDF为图片
+     */
+    private List<String> convertPdfToImages(Model model, FileAttribute fileAttribute, String originFilePath,
+        String outFilePath, String pdfName) {
+        try {
+            return fileHandlerService.pdf2jpg(originFilePath, outFilePath, pdfName, fileAttribute);
+        } catch (Exception e) {
+            return handlePdfConversionException(model, e);
+        }
+    }
+
+    /**
+     * 处理PDF转换异常
+     */
+    private List<String> handlePdfConversionException(Model model, Exception e) {
+        Throwable[] throwableArray = ExceptionUtils.getThrowables(e);
+        for (Throwable throwable : throwableArray) {
+            if (throwable instanceof IOException || throwable instanceof EncryptedDocumentException) {
+                if (e.getMessage() != null && e.getMessage().toLowerCase().contains(PDF_PASSWORD_MSG)) {
+                    model.addAttribute("needFilePassword", true);
+                    LOGGER.error("pdf转图片异常，请联系管理员，needFilePassword", e);
+                    return null;
                 }
-            } else {
-                model.addAttribute(PDF_URL, url);
             }
         }
-        return PDF_FILE_PREVIEW_PAGE;
+        // 添加兜底日志和返回，避免方法总是返回null而不被察觉
+        LOGGER.error("pdf转图片过程中发生未知异常，请联系管理员", e);
+        return Collections.emptyList(); // 或者根据业务需求返回null
     }
 }

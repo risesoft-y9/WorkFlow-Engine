@@ -36,6 +36,7 @@ public class BaseUrlFilter implements Filter {
     }
 
     @Override
+    @SuppressWarnings("java:S2696")
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain filterChain)
         throws IOException, ServletException {
 
@@ -62,9 +63,6 @@ public class BaseUrlFilter implements Filter {
 
         // SonarQube: This assignment is intentional as BASE_URL is a static field
         // that needs to be updated globally across all filter instances
-        // 注意：此处对静态字段 BASE_URL 的赋值是有意设计的
-        // 用于确保在所有过滤器实例间共享最新的 baseUrl 值
-        // 这样可以在 getBaseUrl() 方法中获取到最新的 baseUrl
         BASE_URL = baseUrl;
         request.setAttribute("baseUrl", baseUrl);
         filterChain.doFilter(request, response);

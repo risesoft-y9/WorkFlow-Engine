@@ -24,29 +24,20 @@ public class OfficeUtils {
      * @return 是否受密码保护
      */
     public static boolean isPwdProtected(String path) {
-        InputStream propStream = null;
-        try {
-            propStream = Files.newInputStream(Paths.get(path));
+        try (InputStream propStream = Files.newInputStream(Paths.get(path))) {
             ExtractorFactory.createExtractor(propStream);
-        } catch (IOException | EncryptedDocumentException e) {
-            if (e.getMessage().toLowerCase().contains(POI_INVALID_PASSWORD_MSG)) {
+        } catch (Exception e) {
+            // 统一处理所有异常，检查是否包含密码相关的错误信息
+            if (e.getMessage() != null && e.getMessage().toLowerCase().contains(POI_INVALID_PASSWORD_MSG)) {
                 return true;
             }
-        } catch (Exception e) {
+            // 检查嵌套异常
             Throwable[] throwableArray = ExceptionUtils.getThrowables(e);
             for (Throwable throwable : throwableArray) {
-                if (throwable instanceof IOException || throwable instanceof EncryptedDocumentException) {
-                    if (e.getMessage().toLowerCase().contains(POI_INVALID_PASSWORD_MSG)) {
-                        return true;
-                    }
-                }
-            }
-        } finally {
-            if (propStream != null) {// 如果文件输入流不是null
-                try {
-                    propStream.close();// 关闭文件输入流
-                } catch (IOException e) {
-                    e.printStackTrace();
+                if ((throwable instanceof IOException || throwable instanceof EncryptedDocumentException)
+                    && throwable.getMessage() != null
+                    && throwable.getMessage().toLowerCase().contains(POI_INVALID_PASSWORD_MSG)) {
+                    return true;
                 }
             }
         }

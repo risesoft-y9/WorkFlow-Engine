@@ -39,92 +39,182 @@ public class TiffFilePreviewImpl implements FilePreview {
         String cacheName = fileAttribute.getCacheName();
         String outFilePath = fileAttribute.getOutFilePath();
         boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
-        if ("jpg".equalsIgnoreCase(tifPreviewType) || "pdf".equalsIgnoreCase(tifPreviewType)) {
-            if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(cacheName)
-                || !ConfigConstants.isCacheEnabled()) {
-                ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
-                if (response.isFailure()) {
-                    return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
-                }
-                String filePath = response.getContent();
-                if ("pdf".equalsIgnoreCase(tifPreviewType)) {
-                    try {
-                        ConvertPicUtil.convertJpg2Pdf(filePath, outFilePath);
-                    } catch (Exception e) {
-                        if (e.getMessage().contains("Bad endianness tag (not 0x4949 or 0x4d4d)")) {
-                            model.addAttribute(IMAURLS, url);
-                            model.addAttribute(CURRENTURL, url);
-                            return PICTURE_FILE_PREVIEW_PAGE;
-                        } else {
-                            return otherFilePreview.notSupportedFile(model, fileAttribute, "TIF转pdf异常，请联系系统管理员!");
-                        }
-                    }
-                    // 是否保留TIFF源文件
-                    if (!fileAttribute.isCompressFile() && ConfigConstants.getDeleteSourceFile()) {
-                        // KkFileUtils.deleteFileByPath(filePath);
-                    }
-                    if (ConfigConstants.isCacheEnabled()) {
-                        // 加入缓存
-                        fileHandlerService.addConvertedFile(cacheName, fileHandlerService.getRelativePath(outFilePath));
-                    }
-                    model.addAttribute("pdfUrl", WebUtils.encodeFileName(cacheName));
-                    return PDF_FILE_PREVIEW_PAGE;
-                } else {
-                    // 将tif转换为jpg，返回转换后的文件路径、文件名的list
-                    List<String> listPic2Jpg;
-                    try {
-                        listPic2Jpg = ConvertPicUtil.convertTif2Jpg(filePath, outFilePath, forceUpdatedCache);
-                    } catch (Exception e) {
-                        if (e.getMessage().contains("Bad endianness tag (not 0x4949 or 0x4d4d)")) {
-                            model.addAttribute(IMAURLS, url);
-                            model.addAttribute(CURRENTURL, url);
-                            return PICTURE_FILE_PREVIEW_PAGE;
-                        } else {
-                            return otherFilePreview.notSupportedFile(model, fileAttribute, "TIF转JPG异常，请联系系统管理员!");
-                        }
-                    }
-                    // 是否保留源文件,转换失败保留源文件,转换成功删除源文件
-                    if (!fileAttribute.isCompressFile() && ConfigConstants.getDeleteSourceFile()) {
-                        KkFileUtils.deleteFileByPath(filePath);
-                    }
-                    if (ConfigConstants.isCacheEnabled()) {
-                        // 加入缓存
-                        fileHandlerService.putImgCache(cacheName, listPic2Jpg);
-                        fileHandlerService.addConvertedFile(cacheName, fileHandlerService.getRelativePath(outFilePath));
-                    }
-                    model.addAttribute(IMAURLS, listPic2Jpg);
-                    model.addAttribute(CURRENTURL, listPic2Jpg.get(0));
-                    return PICTURE_FILE_PREVIEW_PAGE;
-                }
-            }
-            if ("pdf".equalsIgnoreCase(tifPreviewType)) {
-                model.addAttribute("pdfUrl", WebUtils.encodeFileName(cacheName));
-                return PDF_FILE_PREVIEW_PAGE;
-            } else if ("jpg".equalsIgnoreCase(tifPreviewType)) {
-                model.addAttribute(IMAURLS, fileHandlerService.getImgCache(cacheName));
-                model.addAttribute(CURRENTURL, fileHandlerService.getImgCache(cacheName).get(0));
-                return PICTURE_FILE_PREVIEW_PAGE;
-            }
+
+        // 处理转换预览类型
+        if (isSupportedPreviewType(tifPreviewType)) {
+            return handleConversionPreview(model, fileAttribute, fileName, tifPreviewType, cacheName, outFilePath);
         }
+
+        // 处理直接预览
+        return handleDirectPreview(model, fileAttribute, url, fileName, outFilePath, forceUpdatedCache);
+    }
+
+    /**
+     * 判断是否为支持的预览类型
+     */
+    private boolean isSupportedPreviewType(String tifPreviewType) {
+        return "jpg".equalsIgnoreCase(tifPreviewType) || "pdf".equalsIgnoreCase(tifPreviewType);
+    }
+
+    /**
+     * 处理需要转换的预览
+     */
+    private String handleConversionPreview(Model model, FileAttribute fileAttribute, String fileName,
+        String tifPreviewType, String cacheName, String outFilePath) {
+        if (shouldConvertFile(fileAttribute, cacheName)) {
+            return performFileConversion(model, fileAttribute, fileName, tifPreviewType, cacheName, outFilePath);
+        } else {
+            return serveFromCache(model, tifPreviewType, cacheName);
+        }
+    }
+
+    /**
+     * 判断是否需要转换文件
+     */
+    private boolean shouldConvertFile(FileAttribute fileAttribute, String cacheName) {
+        boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
+        return forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(cacheName)
+            || !ConfigConstants.isCacheEnabled();
+    }
+
+    /**
+     * 执行文件转换
+     */
+    private String performFileConversion(Model model, FileAttribute fileAttribute, String fileName,
+        String tifPreviewType, String cacheName, String outFilePath) {
+        ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
+        if (response.isFailure()) {
+            return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
+        }
+
+        String filePath = response.getContent();
+
+        if ("pdf".equalsIgnoreCase(tifPreviewType)) {
+            return convertToPdf(model, fileAttribute, filePath, outFilePath, cacheName);
+        } else {
+            return convertToJpg(model, fileAttribute, filePath, outFilePath, cacheName);
+        }
+    }
+
+    /**
+     * 转换为PDF格式
+     */
+    private String convertToPdf(Model model, FileAttribute fileAttribute, String filePath, String outFilePath,
+        String cacheName) {
+        try {
+            ConvertPicUtil.convertJpg2Pdf(filePath, outFilePath);
+            handlePostConversion(fileAttribute, cacheName, outFilePath);
+            model.addAttribute("pdfUrl", WebUtils.encodeFileName(cacheName));
+            return PDF_FILE_PREVIEW_PAGE;
+        } catch (Exception e) {
+            return handleConversionException(model, fileAttribute, e);
+        }
+    }
+
+    /**
+     * 转换为JPG格式
+     */
+    private String convertToJpg(Model model, FileAttribute fileAttribute, String filePath, String outFilePath,
+        String cacheName) {
+        try {
+            List<String> listPic2Jpg =
+                ConvertPicUtil.convertTif2Jpg(filePath, outFilePath, fileAttribute.forceUpdatedCache());
+            // 是否保留源文件,转换失败保留源文件,转换成功删除源文件
+            if (!fileAttribute.isCompressFile() && ConfigConstants.getDeleteSourceFile()) {
+                KkFileUtils.deleteFileByPath(filePath);
+            }
+            if (ConfigConstants.isCacheEnabled()) {
+                // 加入缓存
+                fileHandlerService.putImgCache(cacheName, listPic2Jpg);
+                fileHandlerService.addConvertedFile(cacheName, fileHandlerService.getRelativePath(outFilePath));
+            }
+            model.addAttribute(IMAURLS, listPic2Jpg);
+            model.addAttribute(CURRENTURL, listPic2Jpg.get(0));
+            return PICTURE_FILE_PREVIEW_PAGE;
+        } catch (Exception e) {
+            return handleConversionException(model, fileAttribute, e);
+        }
+    }
+
+    /**
+     * 处理转换后操作
+     */
+    private void handlePostConversion(FileAttribute fileAttribute, String cacheName, String outFilePath) {
+        // 是否保留TIFF源文件
+        if (!fileAttribute.isCompressFile() && ConfigConstants.getDeleteSourceFile()) {
+            // KkFileUtils.deleteFileByPath(filePath);
+        }
+        if (ConfigConstants.isCacheEnabled()) {
+            // 加入缓存
+            fileHandlerService.addConvertedFile(cacheName, fileHandlerService.getRelativePath(outFilePath));
+        }
+    }
+
+    /**
+     * 处理转换异常
+     */
+    private String handleConversionException(Model model, FileAttribute fileAttribute, Exception e) {
+        if (e.getMessage() != null && e.getMessage().contains("Bad endianness tag (not 0x4949 or 0x4d4d)")) {
+            model.addAttribute(IMAURLS, model.getAttribute("url")); // 假设url在model中
+            model.addAttribute(CURRENTURL, model.getAttribute("url"));
+            return FilePreview.PICTURE_FILE_PREVIEW_PAGE;
+        } else {
+            return otherFilePreview.notSupportedFile(model, fileAttribute, "TIF转JPG异常，请联系系统管理员!");
+        }
+    }
+
+    /**
+     * 从缓存提供服务
+     */
+    private String serveFromCache(Model model, String tifPreviewType, String cacheName) {
+        if ("pdf".equalsIgnoreCase(tifPreviewType)) {
+            model.addAttribute("pdfUrl", WebUtils.encodeFileName(cacheName));
+            return PDF_FILE_PREVIEW_PAGE;
+        } else if ("jpg".equalsIgnoreCase(tifPreviewType)) {
+            List<String> imgCache = fileHandlerService.getImgCache(cacheName);
+            if (imgCache != null && !imgCache.isEmpty()) {
+                model.addAttribute(IMAURLS, imgCache);
+                model.addAttribute(CURRENTURL, imgCache.get(0));
+            }
+            return PICTURE_FILE_PREVIEW_PAGE;
+        }
+        return PICTURE_FILE_PREVIEW_PAGE;
+    }
+
+    /**
+     * 处理直接预览
+     */
+    private String handleDirectPreview(Model model, FileAttribute fileAttribute, String url, String fileName,
+        String outFilePath, boolean forceUpdatedCache) {
         // 不是http开头，浏览器不能直接访问，需下载到本地
         if (url != null && !url.toLowerCase().startsWith("http")) {
-            if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(fileName)
-                || !ConfigConstants.isCacheEnabled()) {
-                ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
-                if (response.isFailure()) {
-                    return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
-                }
-                model.addAttribute(CURRENTURL, fileHandlerService.getRelativePath(response.getContent()));
-                if (ConfigConstants.isCacheEnabled()) {
-                    // 加入缓存
-                    fileHandlerService.addConvertedFile(fileName, fileHandlerService.getRelativePath(outFilePath));
-                }
-            } else {
-                model.addAttribute(CURRENTURL, WebUtils.encodeFileName(fileName));
-            }
-            return TIFF_FILE_PREVIEW_PAGE;
+            return handleNonHttpUrl(model, fileAttribute, fileName, outFilePath, forceUpdatedCache);
         }
+
         model.addAttribute(CURRENTURL, url);
         return TIFF_FILE_PREVIEW_PAGE;
     }
+
+    /**
+     * 处理非HTTP URL
+     */
+    private String handleNonHttpUrl(Model model, FileAttribute fileAttribute, String fileName, String outFilePath,
+        boolean forceUpdatedCache) {
+        if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(fileName)
+            || !ConfigConstants.isCacheEnabled()) {
+            ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
+            if (response.isFailure()) {
+                return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
+            }
+            model.addAttribute(CURRENTURL, fileHandlerService.getRelativePath(response.getContent()));
+            if (ConfigConstants.isCacheEnabled()) {
+                // 加入缓存
+                fileHandlerService.addConvertedFile(fileName, fileHandlerService.getRelativePath(outFilePath));
+            }
+        } else {
+            model.addAttribute(CURRENTURL, WebUtils.encodeFileName(fileName));
+        }
+        return TIFF_FILE_PREVIEW_PAGE;
+    }
+
 }

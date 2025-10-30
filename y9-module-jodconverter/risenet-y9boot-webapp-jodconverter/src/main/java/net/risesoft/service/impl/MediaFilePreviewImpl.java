@@ -9,6 +9,8 @@ import org.bytedeco.javacv.Frame;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 
+import lombok.extern.slf4j.Slf4j;
+
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
 import net.risesoft.model.FileType;
@@ -17,6 +19,7 @@ import net.risesoft.service.FileHandlerService;
 import net.risesoft.service.FilePreview;
 import net.risesoft.utils.DownloadUtils;
 
+@Slf4j
 @Service
 public class MediaFilePreviewImpl implements FilePreview {
 
@@ -90,52 +93,102 @@ public class MediaFilePreviewImpl implements FilePreview {
         String suffix = fileAttribute.getSuffix();
         String cacheName = fileAttribute.getCacheName();
         String outFilePath = fileAttribute.getOutFilePath();
-        boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
         FileType type = fileAttribute.getType();
-        String[] mediaTypesConvert = FileType.MEDIA_CONVERT_TYPES; // 获取支持的转换格式
-        boolean mediaTypes = false;
-        for (String temp : mediaTypesConvert) {
-            if (suffix.equals(temp)) {
-                mediaTypes = true;
-                break;
-            }
+
+        // 检查是否需要转换处理
+        boolean mediaTypes = isSupportedConvertFormat(suffix);
+        boolean needConvert = !url.toLowerCase().startsWith("http") || checkNeedConvert(mediaTypes);
+
+        if (needConvert) {
+            return handleConvertPreview(model, fileAttribute, fileName, cacheName, outFilePath, mediaTypes);
         }
-        if (!url.toLowerCase().startsWith("http") || checkNeedConvert(mediaTypes)) { // 不是http协议的 // 开启转换方式并是支持转换格式的
-            if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(cacheName)
-                || !ConfigConstants.isCacheEnabled()) { // 查询是否开启缓存
-                ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
-                if (response.isFailure()) {
-                    return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
-                }
-                String filePath = response.getContent();
-                String convertedUrl = null;
-                try {
-                    if (mediaTypes) {
-                        convertedUrl = convertToMp4(filePath, outFilePath, fileAttribute);
-                    } else {
-                        convertedUrl = outFilePath; // 其他协议的 不需要转换方式的文件 直接输出
-                    }
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-                if (convertedUrl == null) {
-                    return otherFilePreview.notSupportedFile(model, fileAttribute, "视频转换异常，请联系管理员");
-                }
-                if (ConfigConstants.isCacheEnabled()) {
-                    // 加入缓存
-                    fileHandlerService.addConvertedFile(cacheName, fileHandlerService.getRelativePath(outFilePath));
-                }
-                model.addAttribute(MEDIAURL, fileHandlerService.getRelativePath(outFilePath));
-            } else {
-                model.addAttribute(MEDIAURL, fileHandlerService.listConvertedFiles().get(cacheName));
-            }
-            return MEDIA_FILE_PREVIEW_PAGE;
-        }
-        if (type.equals(FileType.MEDIA)) { // 支持输出 只限默认格式
+
+        // 处理直接预览情况
+        if (type.equals(FileType.MEDIA)) {
             model.addAttribute(MEDIAURL, url);
             return MEDIA_FILE_PREVIEW_PAGE;
         }
+
         return otherFilePreview.notSupportedFile(model, fileAttribute, "系统还不支持该格式文件的在线预览");
+    }
+
+    /**
+     * 处理需要转换的文件预览
+     */
+    private String handleConvertPreview(Model model, FileAttribute fileAttribute, String fileName, String cacheName,
+        String outFilePath, boolean mediaTypes) {
+        boolean forceUpdatedCache = fileAttribute.forceUpdatedCache();
+
+        if (forceUpdatedCache || !fileHandlerService.listConvertedFiles().containsKey(cacheName)
+            || !ConfigConstants.isCacheEnabled()) {
+            return handleFileConversion(model, fileAttribute, fileName, cacheName, outFilePath, mediaTypes);
+        } else {
+            // 从缓存获取
+            model.addAttribute(MEDIAURL, fileHandlerService.listConvertedFiles().get(cacheName));
+            return MEDIA_FILE_PREVIEW_PAGE;
+        }
+    }
+
+    /**
+     * 处理文件转换
+     */
+    private String handleFileConversion(Model model, FileAttribute fileAttribute, String fileName, String cacheName,
+        String outFilePath, boolean mediaTypes) {
+        ReturnResponse<String> response = DownloadUtils.downLoad(fileAttribute, fileName);
+        if (response.isFailure()) {
+            return otherFilePreview.notSupportedFile(model, fileAttribute, response.getMsg());
+        }
+
+        String filePath = response.getContent();
+        String convertedUrl = convertFile(filePath, outFilePath, fileAttribute, mediaTypes);
+
+        if (convertedUrl == null) {
+            return otherFilePreview.notSupportedFile(model, fileAttribute, "视频转换异常，请联系管理员");
+        }
+
+        // 缓存处理
+        handleCacheStorage(cacheName, outFilePath);
+
+        model.addAttribute(MEDIAURL, fileHandlerService.getRelativePath(outFilePath));
+        return MEDIA_FILE_PREVIEW_PAGE;
+    }
+
+    /**
+     * 转换文件格式
+     */
+    private String convertFile(String filePath, String outFilePath, FileAttribute fileAttribute, boolean mediaTypes) {
+        try {
+            if (mediaTypes) {
+                return convertToMp4(filePath, outFilePath, fileAttribute);
+            } else {
+                return outFilePath;
+            }
+        } catch (Exception e) {
+            LOGGER.error("文件转换异常: {}", filePath, e);
+            return null;
+        }
+    }
+
+    /**
+     * 处理缓存存储
+     */
+    private void handleCacheStorage(String cacheName, String outFilePath) {
+        if (ConfigConstants.isCacheEnabled()) {
+            fileHandlerService.addConvertedFile(cacheName, fileHandlerService.getRelativePath(outFilePath));
+        }
+    }
+
+    /**
+     * 检查是否为支持转换的格式
+     */
+    private boolean isSupportedConvertFormat(String suffix) {
+        String[] mediaTypesConvert = FileType.MEDIA_CONVERT_TYPES;
+        for (String temp : mediaTypesConvert) {
+            if (suffix.equals(temp)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     /**
