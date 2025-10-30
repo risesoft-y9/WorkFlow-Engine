@@ -164,6 +164,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
+    @SuppressWarnings("java:S2077")
     public Map<String, Object> getData(String guid, String tableName) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(ItemConsts.EDITTYPE_KEY, "0");
@@ -172,7 +173,7 @@ public class Y9FormServiceImpl implements Y9FormService {
                 return map;
             }
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
-            String dataSql = buildSelectSql(dialect, tableName) + " where guid=?";
+            String dataSql = buildSelectSql(dialect, tableName) + " where guid = ?";
             List<Map<String, Object>> dataMap = jdbcTemplate4Tenant.queryForList(dataSql, guid);
             if (dataMap.isEmpty()) {
                 map.put(ItemConsts.EDITTYPE_KEY, "0");
@@ -220,6 +221,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     /**
      * 获取主表数据
      */
+    @SuppressWarnings("java:S2077")
     private void fetchMainTableData(String dialect, String tableName, String formId, String guid,
         Map<String, Object> formData) {
         try {
@@ -271,6 +273,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     /**
      * 获取变量数据
      */
+    @SuppressWarnings("java:S2077")
     private void fetchVariableData(String dialect, String tableName, String guid, String tableId,
         Map<String, Object> result) {
         try {
@@ -305,6 +308,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
+    @SuppressWarnings("java:S2077")
     public List<Map<String, Object>> listChildFormData(String formId, String parentProcessSerialNumber) {
         List<Map<String, Object>> dataMap = new ArrayList<>();
         String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
@@ -314,7 +318,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             List<Y9FormField> tableFieldList = y9FormFieldRepository.findByTableName(tableName);
             String userIdSql = "";
             for (Y9FormField formField : tableFieldList) {// 表单如果绑定了y9_userId，则加上y9_userId为查询条件
-                if (formField.getFieldName().equals("y9_userId") || formField.getFieldName().equals("Y9_USERID")) {
+                if (formField.getFieldName().equalsIgnoreCase("y9_userId")) {
                     userIdSql = " and y9_userId = ?";
                     break;
                 }
@@ -330,6 +334,7 @@ public class Y9FormServiceImpl implements Y9FormService {
     }
 
     @Override
+    @SuppressWarnings("java:S2077")
     public List<Map<String, Object>> listChildTableData(String formId, String tableId, String processSerialNumber)
         throws Exception {
         List<Map<String, Object>> dataMap;
@@ -341,7 +346,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             dataMap = jdbcTemplate4Tenant.queryForList(sqlStr, processSerialNumber);
             return dataMap;
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("获取子表数据列表失败, formId: {}, tableId: {}, guid: {}", formId, tableId, processSerialNumber);
             throw new Exception("Y9FormServiceImpl getChildTableData error");
         }
     }
