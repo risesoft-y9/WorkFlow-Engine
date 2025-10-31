@@ -77,6 +77,7 @@ public class ItemViewConfRestController {
      */
     @GetMapping(value = "/findByItemId")
     public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam String itemId, @RequestParam String viewType) {
+        itemViewConfService.init(itemId, viewType);
         List<ItemViewConf> list = itemViewConfService.listByItemIdAndViewType(itemId, viewType);
         return Y9Result.success(list, "获取成功");
     }
