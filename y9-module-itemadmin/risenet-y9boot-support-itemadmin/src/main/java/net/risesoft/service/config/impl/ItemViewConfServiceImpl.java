@@ -1,6 +1,7 @@
 package net.risesoft.service.config.impl;
 
 import java.util.List;
+import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -105,8 +106,29 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
+    @Transactional
     public List<ItemViewConf> listByItemIdAndViewType(String itemId, String viewType) {
+        init(itemId, viewType);
         return itemViewConfRepository.findByItemIdAndViewTypeOrderByTabIndexAsc(itemId, viewType);
+    }
+
+    private void init(String itemId, String viewType) {
+        List<ItemViewConf> list = itemViewConfRepository.findByItemIdAndViewTypeOrderByTabIndexAsc(itemId, viewType);
+        if (list.isEmpty()) {
+            Map<String, String> map = Map.of("serialNumber", "序号", "opt", "操作");
+            map.forEach((key, value) -> {
+                ItemViewConf newConf = new ItemViewConf();
+                newConf.setColumnName(key);
+                newConf.setDisPlayWidth("150");
+                newConf.setDisPlayName(value);
+                newConf.setDisPlayAlign("center");
+                newConf.setItemId(itemId);
+                newConf.setViewType(viewType);
+                newConf.setUserId("");
+                newConf.setUserName("");
+                saveOrUpdate(newConf);
+            });
+        }
     }
 
     @Override
@@ -119,7 +141,6 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     public void removeByViewType(String viewType) {
         List<ItemViewConf> list = itemViewConfRepository.findByViewTypeOrderByTabIndexAsc(viewType);
         itemViewConfRepository.deleteAll(list);
-
     }
 
     @Override
@@ -167,8 +188,8 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
         newConf.setItemId(itemViewConf.getItemId());
         newConf.setTableName(itemViewConf.getTableName());
         newConf.setViewType(itemViewConf.getViewType());
-        newConf.setUserId(person.getPersonId());
-        newConf.setUserName(person.getName());
+        newConf.setUserId(null == person ? "" : person.getPersonId());
+        newConf.setUserName(null == person ? "" : person.getName());
         newConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newConf.setInputBoxType(itemViewConf.getInputBoxType());
@@ -177,11 +198,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
         newConf.setOptionClass(itemViewConf.getOptionClass());
         newConf.setSpanWidth(itemViewConf.getSpanWidth());
         Integer index = itemViewConfRepository.getMaxTabIndex(itemViewConf.getItemId(), itemViewConf.getViewType());
-        if (index == null) {
-            newConf.setTabIndex(1);
-        } else {
-            newConf.setTabIndex(index + 1);
-        }
+        newConf.setTabIndex(index == null ? 1 : index + 1);
         itemViewConfRepository.save(newConf);
     }
 
