@@ -70,6 +70,14 @@ public interface ItemViewConfService {
     List<ItemViewConf> listByItemIdAndViewType(String itemId, String viewType);
 
     /**
+     * 初始化基本的视图类型
+     *
+     * @param itemId 事项唯一标示
+     * @param viewType 视图类型
+     */
+    void init(String itemId, String viewType);
+
+    /**
      * 
      *
      * @param viewType 视图类型

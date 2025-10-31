@@ -106,13 +106,13 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     }
 
     @Override
-    @Transactional
     public List<ItemViewConf> listByItemIdAndViewType(String itemId, String viewType) {
-        init(itemId, viewType);
         return itemViewConfRepository.findByItemIdAndViewTypeOrderByTabIndexAsc(itemId, viewType);
     }
 
-    private void init(String itemId, String viewType) {
+    @Override
+    @Transactional
+    public void init(String itemId, String viewType) {
         List<ItemViewConf> list = itemViewConfRepository.findByItemIdAndViewTypeOrderByTabIndexAsc(itemId, viewType);
         if (list.isEmpty()) {
             Map<String, String> map = Map.of("serialNumber", "序号", "opt", "操作");
