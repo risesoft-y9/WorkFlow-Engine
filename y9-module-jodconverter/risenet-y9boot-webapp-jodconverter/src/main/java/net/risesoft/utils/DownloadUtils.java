@@ -73,7 +73,7 @@ public class DownloadUtils {
      */
     private static String prepareUrl(FileAttribute fileAttribute) {
         try {
-            SslUtils.ignoreSsl();
+            // SslUtils.ignoreSsl();
             return fileAttribute.getUrl().replace("+", "%20").replace(" ", "%20");
         } catch (Exception e) {
             LOGGER.error("忽略SSL证书异常:", e);
