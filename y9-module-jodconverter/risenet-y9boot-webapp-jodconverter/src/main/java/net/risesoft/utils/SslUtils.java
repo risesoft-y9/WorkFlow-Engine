@@ -1,3 +1,4 @@
+/*
 package net.risesoft.utils;
 
 import java.security.cert.CertificateException;
@@ -28,34 +29,37 @@ public class SslUtils {
         System.out.println(dateStr);
     }
 
-    /**
-     * 忽略HTTPS请求的SSL证书，必须在openConnection之前调用
-     */
-    public static void ignoreSsl() throws Exception {
-        HostnameVerifier hv = (urlHostName, session) -> true;
-        trustAllHttpsCertificates();
-        HttpsURLConnection.setDefaultHostnameVerifier(hv);
+    */
+/**
+ * 忽略HTTPS请求的SSL证书，必须在openConnection之前调用
+ *//*
+   
+   public static void ignoreSsl() throws Exception {
+    HostnameVerifier hv = (urlHostName, session) -> true;
+    trustAllHttpsCertificates();
+    HttpsURLConnection.setDefaultHostnameVerifier(hv);
+   }
+   
+   static class miTM implements TrustManager, X509TrustManager {
+    @Override
+    public X509Certificate[] getAcceptedIssuers() {
+        return null;
     }
-
-    static class miTM implements TrustManager, X509TrustManager {
-        @Override
-        public X509Certificate[] getAcceptedIssuers() {
-            return null;
-        }
-
-        @Override
-        public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
-            // 空实现 - 用于创建信任所有服务器证书的TrustManager
-            // 在开发/测试环境中绕过SSL证书验证时使用
-            // 注意：在生产环境中不应使用此实现，存在安全风险
-        }
-
-        @Override
-        public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
-            // 空实现 - 用于创建信任所有客户端证书的TrustManager
-            // 在开发/测试环境中绕过SSL证书验证时使用
-            // 注意：在生产环境中不应使用此实现，存在安全风险
-        }
+   
+    @Override
+    public void checkServerTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+        // 空实现 - 用于创建信任所有服务器证书的TrustManager
+        // 在开发/测试环境中绕过SSL证书验证时使用
+        // 注意：在生产环境中不应使用此实现，存在安全风险
     }
-
-}
+   
+    @Override
+    public void checkClientTrusted(X509Certificate[] certs, String authType) throws CertificateException {
+        // 空实现 - 用于创建信任所有客户端证书的TrustManager
+        // 在开发/测试环境中绕过SSL证书验证时使用
+        // 注意：在生产环境中不应使用此实现，存在安全风险
+    }
+   }
+   
+   }
+   */
