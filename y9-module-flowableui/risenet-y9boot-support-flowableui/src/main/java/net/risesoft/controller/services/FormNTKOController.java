@@ -70,7 +70,12 @@ public class FormNTKOController {
     private static final String UTF8LINK_KEY = "=?UTF-8?B?";
     private static final String CONTENT_DIS_KEY = "Content-Disposition";
     private static final String USER_AGENT_KEY = "USER-AGENT";
-    private static final String CONTENT_TYPE_KEY = "Content-Type";
+    private static final String PARAM_NULL_KEY = "必要参数为空";
+    private static final String FILE_NOT_EXIST_KEY = "文件不存在";
+    private static final String OCTET_STREAM = "application/octet-stream";
+    private static final String CONTENT_TYPE = "Content-type";
+    private static final String SUCCESS_FALSE = "success:false";
+    private static final String SAVE_ERROR = "保存正文信息失败";
     private final Y9FileStoreService y9FileStoreService;
     private final PersonApi personApi;
     private final OrgUnitApi orgUnitApi;
