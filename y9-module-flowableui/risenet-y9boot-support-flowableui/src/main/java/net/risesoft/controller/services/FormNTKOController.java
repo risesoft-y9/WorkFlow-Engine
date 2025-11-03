@@ -589,11 +589,10 @@ public class FormNTKOController {
      * 获取上传的文件
      */
     private MultipartFile getUploadedFile(HttpServletRequest request) {
-        if (!(request instanceof MultipartHttpServletRequest)) {
+        if (!(request instanceof MultipartHttpServletRequest multipartRequest)) {
             LOGGER.warn("请求不是MultipartHttpServletRequest类型");
             return null;
         }
-        MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
         return multipartRequest.getFile("currentDoc");
     }
 
