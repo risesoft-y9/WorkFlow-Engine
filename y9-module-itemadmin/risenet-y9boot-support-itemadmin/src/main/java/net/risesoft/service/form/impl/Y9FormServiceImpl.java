@@ -1,7 +1,6 @@
 package net.risesoft.service.form.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -936,7 +935,6 @@ public class Y9FormServiceImpl implements Y9FormService {
         targetForm.setSystemCnName(sourceForm.getSystemCnName());
         targetForm.setSystemName(sourceForm.getSystemName());
         targetForm.setTemplateType(sourceForm.getTemplateType());
-        targetForm.setUpdateTime(new Date());
         targetForm.setPersonId(Y9LoginUserHolder.getPersonId());
         targetForm.setOriginalContent(sourceForm.getOriginalContent());
         targetForm.setCssUrl(sourceForm.getCssUrl());

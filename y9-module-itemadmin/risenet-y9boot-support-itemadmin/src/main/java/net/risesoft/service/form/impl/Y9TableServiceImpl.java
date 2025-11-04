@@ -40,7 +40,6 @@ import net.risesoft.service.ItemWorkDayService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.sqlddl.DbMetaDataUtil;
 import net.risesoft.y9.sqlddl.pojo.DbColumn;
 
@@ -97,7 +96,6 @@ public class Y9TableServiceImpl implements Y9TableService {
         try {
             Y9Table y9Table = new Y9Table();
             y9Table.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            y9Table.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             y9Table.setOldTableName("");
             y9Table.setTableCnName(tableName);
             y9Table.setSystemName(systemName);
@@ -573,7 +571,6 @@ public class Y9TableServiceImpl implements Y9TableService {
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }
-            table.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             return y9TableRepository.save(table);
         } catch (Exception e) {
             LOGGER.error("保存失败", e);

@@ -1,7 +1,6 @@
 package net.risesoft.entity.form;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -9,15 +8,13 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 import org.hibernate.annotations.Comment;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 import net.risesoft.enums.ItemFormTemplateTypeEnum;
 import net.risesoft.enums.ItemFormTypeEnum;
 import net.risesoft.persistence.ItemEnumConverter;
@@ -32,7 +29,7 @@ import net.risesoft.persistence.ItemEnumConverter;
 @Comment("表单定义")
 @NoArgsConstructor
 @Data
-public class Y9Form implements Serializable {
+public class Y9Form extends ItemAdminBaseEntity implements Serializable {
     private static final long serialVersionUID = 5697306206116924397L;
 
     @Id
@@ -105,11 +102,4 @@ public class Y9Form implements Serializable {
     @Column(name = "INITDATAURL", length = 255)
     @Comment("初始化数据url路径")
     private String initDataUrl;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "UPDATETIME")
-    @Comment("修改时间")
-    private Date updateTime;
-
 }

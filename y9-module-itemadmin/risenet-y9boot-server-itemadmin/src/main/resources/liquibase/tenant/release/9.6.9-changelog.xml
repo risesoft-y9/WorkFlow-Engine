@@ -117,4 +117,48 @@
                       columnDataType="datetime"
                       remarks="更新时间"/>
     </changeSet>
+
+    <changeSet id="1704700546666-9" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="Y9FORM_DEFINE" columnName="CREATETIME"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="Y9FORM_DEFINE">
+            <column name="CREATETIME" remarks="创建时间" type="datetime"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700546666-10" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="Y9FORM_TABLE" columnName="UPDATETIME"/>
+            </not>
+        </preConditions>
+        <comment>将 CREATETIME 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="Y9FORM_TABLE">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE Y9FORM_TABLE
+            SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATETIME IS NOT NULL
+              AND CREATETIME != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="Y9FORM_TABLE">
+            <column name="CREATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="Y9FORM_TABLE"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <addColumn tableName="Y9FORM_TABLE">
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

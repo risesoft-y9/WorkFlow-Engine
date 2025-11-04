@@ -13,6 +13,7 @@ import org.hibernate.annotations.Comment;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 import net.risesoft.enums.ItemTableTypeEnum;
 import net.risesoft.persistence.ItemEnumConverter;
 
@@ -26,7 +27,7 @@ import net.risesoft.persistence.ItemEnumConverter;
 @Comment("业务表定义")
 @NoArgsConstructor
 @Data
-public class Y9Table implements Serializable {
+public class Y9Table extends ItemAdminBaseEntity implements Serializable {
     private static final long serialVersionUID = 2788176269486752045L;
 
     @Id
@@ -66,9 +67,4 @@ public class Y9Table implements Serializable {
     @Column(name = "SYSTEMCNNAME", length = 50)
     @Comment("系统中文名称")
     private String systemCnName;
-
-    @Column(name = "CREATETIME", length = 50)
-    @Comment("创建时间")
-    private String createTime;
-
 }

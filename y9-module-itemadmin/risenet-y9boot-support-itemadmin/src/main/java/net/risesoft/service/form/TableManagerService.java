@@ -26,7 +26,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.util.form.DdlKingbase;
 import net.risesoft.util.form.DdlMysql;
 import net.risesoft.util.form.DdlOracle;
@@ -446,7 +445,6 @@ public class TableManagerService {
             if (DialectEnum.MYSQL.getValue().equals(dialect)) {
                 table.setTableName(table.getTableName().toLowerCase());
             }
-            table.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             y9TableRepository.save(table);
         } catch (Exception e) {
             e.printStackTrace();
