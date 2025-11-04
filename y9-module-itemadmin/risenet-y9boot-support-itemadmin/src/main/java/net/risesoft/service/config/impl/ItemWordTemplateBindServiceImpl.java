@@ -93,25 +93,20 @@ public class ItemWordTemplateBindServiceImpl implements ItemWordTemplateBindServ
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        try {
-            List<ItemWordTemplateBind> list =
-                wordTemplateBindRepository.findByItemIdAndProcessDefinitionIdOrderByBindStatus(itemId, lastVersionPid);
-            if (null != list && !list.isEmpty()) {
-                for (ItemWordTemplateBind templateBind : list) {
-                    ItemWordTemplateBind bind = new ItemWordTemplateBind();
-                    bind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    bind.setItemId(newItemId);
-                    bind.setProcessDefinitionId(lastVersionPid);
-                    bind.setTemplateId(templateBind.getTemplateId());
-                    bind.setBindStatus(templateBind.getBindStatus());
-                    bind.setBindValue(templateBind.getBindValue());
-                    bind.setTenantId(Y9LoginUserHolder.getTenantId());
-                    wordTemplateBindRepository.save(bind);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制正文模板绑定信息失败", e);
+        List<ItemWordTemplateBind> list =
+            wordTemplateBindRepository.findByItemIdAndProcessDefinitionIdOrderByBindStatus(itemId, lastVersionPid);
+        for (ItemWordTemplateBind templateBind : list) {
+            ItemWordTemplateBind bind = new ItemWordTemplateBind();
+            bind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            bind.setItemId(newItemId);
+            bind.setProcessDefinitionId(lastVersionPid);
+            bind.setTemplateId(templateBind.getTemplateId());
+            bind.setBindStatus(templateBind.getBindStatus());
+            bind.setBindValue(templateBind.getBindValue());
+            bind.setTenantId(Y9LoginUserHolder.getTenantId());
+            wordTemplateBindRepository.save(bind);
         }
+
     }
 
     @Override

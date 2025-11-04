@@ -246,29 +246,23 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        try {
-            List<ItemButtonBind> bindList =
-                buttonItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, lastVersionPid);
-            if (null != bindList && !bindList.isEmpty()) {
-                for (ItemButtonBind bind : bindList) {
-                    ItemButtonBind newBind = new ItemButtonBind();
-                    newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    newBind.setButtonId(bind.getButtonId());
-                    newBind.setButtonType(bind.getButtonType());
-                    newBind.setItemId(newItemId);
-                    newBind.setProcessDefinitionId(lastVersionPid);
-                    newBind.setTaskDefKey(bind.getTaskDefKey());
-                    newBind.setTenantId(tenantId);
-                    newBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                    newBind.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                    newBind.setUserId(userId);
-                    newBind.setUserName(userName);
-                    newBind.setTabIndex(bind.getTabIndex());
-                    buttonItemBindRepository.save(newBind);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制按钮绑定信息失败", e);
+        List<ItemButtonBind> bindList =
+            buttonItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, lastVersionPid);
+        for (ItemButtonBind bind : bindList) {
+            ItemButtonBind newBind = new ItemButtonBind();
+            newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newBind.setButtonId(bind.getButtonId());
+            newBind.setButtonType(bind.getButtonType());
+            newBind.setItemId(newItemId);
+            newBind.setProcessDefinitionId(lastVersionPid);
+            newBind.setTaskDefKey(bind.getTaskDefKey());
+            newBind.setTenantId(tenantId);
+            newBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+            newBind.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
+            newBind.setUserId(userId);
+            newBind.setUserName(userName);
+            newBind.setTabIndex(bind.getTabIndex());
+            buttonItemBindRepository.save(newBind);
         }
     }
 

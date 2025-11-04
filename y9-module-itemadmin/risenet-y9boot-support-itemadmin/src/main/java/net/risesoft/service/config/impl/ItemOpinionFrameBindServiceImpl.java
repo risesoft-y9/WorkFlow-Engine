@@ -209,22 +209,18 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = currentUser.getPersonId();
         String userName = currentUser.getName();
-        try {
-            List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository
-                .findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId, lastVersionPid);
-            if (null != bindList && !bindList.isEmpty()) {
-                for (ItemOpinionFrameBind bind : bindList) {
-                    // 创建新的意见框绑定
-                    String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                    ItemOpinionFrameBind newBind =
-                        createOpinionFrameBind(newBindId, newItemId, tenantId, userId, userName, lastVersionPid, bind);
-                    itemOpinionFrameBindRepository.save(newBind);
-                    // 复制意见框一键设置的配置
-                    copyOpinionFrameOneClickSettings(bind.getId(), newBindId, userId);
-                }
+        List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository
+            .findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId, lastVersionPid);
+        if (null != bindList && !bindList.isEmpty()) {
+            for (ItemOpinionFrameBind bind : bindList) {
+                // 创建新的意见框绑定
+                String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+                ItemOpinionFrameBind newBind =
+                    createOpinionFrameBind(newBindId, newItemId, tenantId, userId, userName, lastVersionPid, bind);
+                itemOpinionFrameBindRepository.save(newBind);
+                // 复制意见框一键设置的配置
+                copyOpinionFrameOneClickSettings(bind.getId(), newBindId, userId);
             }
-        } catch (Exception e) {
-            LOGGER.error("复制意见框绑定信息失败", e);
         }
     }
 

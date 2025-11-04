@@ -6,8 +6,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
-
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.consts.processadmin.SysVariables;
@@ -50,7 +48,7 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void removeOrganWordPropertys(String[] organWordPropertyIds) {
         for (String id : organWordPropertyIds) {
             organWordPropertyRepository.deleteById(id);
@@ -58,7 +56,7 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public OrganWordProperty save(OrganWordProperty organWordProperty) {
         String id = organWordProperty.getId();
         if (StringUtils.isNotEmpty(id)) {
@@ -84,21 +82,15 @@ public class OrganWordPropertyServiceImpl implements OrganWordPropertyService {
         } else {
             newop.setTabIndex(index + 1);
         }
-
         return organWordPropertyRepository.save(newop);
     }
 
     @Override
-    @Transactional(readOnly = false)
+    @Transactional
     public void update4Order(String[] idAndTabIndexs) {
-        List<String> list = Lists.newArrayList(idAndTabIndexs);
-        try {
-            for (String s : list) {
-                String[] arr = s.split(SysVariables.COLON);
-                organWordPropertyRepository.update4Order(Integer.parseInt(arr[1]), arr[0]);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (String s : idAndTabIndexs) {
+            String[] arr = s.split(SysVariables.COLON);
+            organWordPropertyRepository.update4Order(Integer.parseInt(arr[1]), arr[0]);
         }
     }
 }
