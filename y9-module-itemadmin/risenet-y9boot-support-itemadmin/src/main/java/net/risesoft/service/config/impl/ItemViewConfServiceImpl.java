@@ -7,8 +7,6 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import com.google.common.collect.Lists;
-
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -36,28 +34,24 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
 
     private final ItemViewConfRepository itemViewConfRepository;
 
+    private final ItemViewConfService self;
+
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        try {
-            List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(itemId);
-            if (null != list && !list.isEmpty()) {
-                for (ItemViewConf itemViewConf : list) {
-                    ItemViewConf newConf = new ItemViewConf();
-                    Y9BeanUtil.copyProperties(itemViewConf, newConf);
-                    newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    newConf.setItemId(newItemId);
-                    newConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                    newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                    newConf.setUserId(person.getPersonId());
-                    newConf.setUserName(person.getName());
-                    newConf.setTabIndex(itemViewConf.getTabIndex());
-                    itemViewConfRepository.save(newConf);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制视图配置信息失败", e);
+        List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(itemId);
+        for (ItemViewConf itemViewConf : list) {
+            ItemViewConf newConf = new ItemViewConf();
+            Y9BeanUtil.copyProperties(itemViewConf, newConf);
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newConf.setItemId(newItemId);
+            newConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
+            newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
+            newConf.setUserId(person.getPersonId());
+            newConf.setUserName(person.getName());
+            newConf.setTabIndex(itemViewConf.getTabIndex());
+            itemViewConfRepository.save(newConf);
         }
     }
 
@@ -124,9 +118,7 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
                 newConf.setDisPlayAlign("center");
                 newConf.setItemId(itemId);
                 newConf.setViewType(viewType);
-                newConf.setUserId("");
-                newConf.setUserName("");
-                saveOrUpdate(newConf);
+                self.saveOrUpdate(newConf);
             });
         }
     }
@@ -188,8 +180,8 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
         newConf.setItemId(itemViewConf.getItemId());
         newConf.setTableName(itemViewConf.getTableName());
         newConf.setViewType(itemViewConf.getViewType());
-        newConf.setUserId(null == person ? "" : person.getPersonId());
-        newConf.setUserName(null == person ? "" : person.getName());
+        newConf.setUserId(person.getPersonId());
+        newConf.setUserName(person.getName());
         newConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newConf.setInputBoxType(itemViewConf.getInputBoxType());
@@ -205,14 +197,9 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     @Override
     @Transactional
     public void update4Order(String[] idAndTabIndexs) {
-        List<String> list = Lists.newArrayList(idAndTabIndexs);
-        try {
-            for (String s : list) {
-                String[] arr = s.split(SysVariables.COLON);
-                itemViewConfRepository.update4Order(Integer.parseInt(arr[1]), arr[0]);
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        for (String s : idAndTabIndexs) {
+            String[] arr = s.split(SysVariables.COLON);
+            itemViewConfRepository.update4Order(Integer.parseInt(arr[1]), arr[0]);
         }
     }
 }
