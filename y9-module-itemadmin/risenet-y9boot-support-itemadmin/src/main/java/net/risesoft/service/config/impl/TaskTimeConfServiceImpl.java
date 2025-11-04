@@ -40,21 +40,16 @@ public class TaskTimeConfServiceImpl implements TaskTimeConfService {
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        try {
-            List<TaskTimeConf> confList =
-                taskTimeConfRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
-            for (TaskTimeConf conf : confList) {
-                TaskTimeConf newConf = new TaskTimeConf();
-                newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                newConf.setItemId(newItemId);
-                newConf.setProcessDefinitionId(conf.getProcessDefinitionId());
-                newConf.setTaskDefKey(conf.getTaskDefKey());
-                newConf.setTimeoutInterrupt(conf.getTimeoutInterrupt());
-                newConf.setLeastTime(conf.getLeastTime());
-                taskTimeConfRepository.save(newConf);
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制签收配置失败", e);
+        List<TaskTimeConf> confList = taskTimeConfRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
+        for (TaskTimeConf conf : confList) {
+            TaskTimeConf newConf = new TaskTimeConf();
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newConf.setItemId(newItemId);
+            newConf.setProcessDefinitionId(conf.getProcessDefinitionId());
+            newConf.setTaskDefKey(conf.getTaskDefKey());
+            newConf.setTimeoutInterrupt(conf.getTimeoutInterrupt());
+            newConf.setLeastTime(conf.getLeastTime());
+            taskTimeConfRepository.save(newConf);
         }
     }
 

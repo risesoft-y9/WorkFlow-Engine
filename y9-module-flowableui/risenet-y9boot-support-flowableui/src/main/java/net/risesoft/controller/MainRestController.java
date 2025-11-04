@@ -194,7 +194,7 @@ public class MainRestController {
         map.put(MONITOR_DONE_KEY, monitorDone);
         try {
             draftCount = draftApi.countBySystemName(tenantId, positionId, systemName).getData();
-            // draftRecycleCount = draftApi.getDeleteDraftCount(tenantId, positionId, systemName);
+            draftRecycleCount = draftApi.getDeleteDraftCount(tenantId, positionId, systemName).getData();
             Y9FlowableCountModel flowableCountModel =
                 processTodoApi.getCountByUserIdAndSystemName(tenantId, positionId, systemName).getData();
             todoCount = flowableCountModel.getTodoCount();

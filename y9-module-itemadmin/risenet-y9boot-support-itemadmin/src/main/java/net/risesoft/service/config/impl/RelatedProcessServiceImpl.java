@@ -29,22 +29,18 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId) {
-        try {
-            List<RelatedProcess> list = relatedProcessRepository.findByParentItemId(itemId);
-            if (null != list && !list.isEmpty()) {
-                for (RelatedProcess associated : list) {
-                    RelatedProcess item = new RelatedProcess();
-                    item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    item.setParentItemId(newItemId);
-                    item.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-                    item.setItemId(associated.getItemId());
-                    item.setItemName(associated.getItemName());
-                    item.setTenantId(associated.getTenantId());
-                    relatedProcessRepository.save(item);
-                }
+        List<RelatedProcess> list = relatedProcessRepository.findByParentItemId(itemId);
+        if (null != list && !list.isEmpty()) {
+            for (RelatedProcess associated : list) {
+                RelatedProcess item = new RelatedProcess();
+                item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+                item.setParentItemId(newItemId);
+                item.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+                item.setItemId(associated.getItemId());
+                item.setItemName(associated.getItemName());
+                item.setTenantId(associated.getTenantId());
+                relatedProcessRepository.save(item);
             }
-        } catch (Exception e) {
-            LOGGER.error("复制关联流程绑定信息失败", e);
         }
     }
 

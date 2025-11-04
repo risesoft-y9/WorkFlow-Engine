@@ -53,21 +53,17 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId) {
-        try {
-            ItemPrintTemplateBind printTemplateItemBind = itemPrintTemplateBindRepository.findByItemId(itemId);
-            if (null != printTemplateItemBind) {
-                ItemPrintTemplateBind newPrintTemplateItemBind = new ItemPrintTemplateBind();
-                newPrintTemplateItemBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                newPrintTemplateItemBind.setItemId(newItemId);
-                newPrintTemplateItemBind.setTenantId(Y9LoginUserHolder.getTenantId());
-                newPrintTemplateItemBind.setTemplateId(printTemplateItemBind.getTemplateId());
-                newPrintTemplateItemBind.setTemplateName(printTemplateItemBind.getTemplateName());
-                newPrintTemplateItemBind.setTemplateUrl(printTemplateItemBind.getTemplateUrl());
-                newPrintTemplateItemBind.setTemplateType(printTemplateItemBind.getTemplateType());
-                itemPrintTemplateBindRepository.save(newPrintTemplateItemBind);
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制绑定信息失败", e);
+        ItemPrintTemplateBind printTemplateItemBind = itemPrintTemplateBindRepository.findByItemId(itemId);
+        if (null != printTemplateItemBind) {
+            ItemPrintTemplateBind newPrintTemplateItemBind = new ItemPrintTemplateBind();
+            newPrintTemplateItemBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newPrintTemplateItemBind.setItemId(newItemId);
+            newPrintTemplateItemBind.setTenantId(Y9LoginUserHolder.getTenantId());
+            newPrintTemplateItemBind.setTemplateId(printTemplateItemBind.getTemplateId());
+            newPrintTemplateItemBind.setTemplateName(printTemplateItemBind.getTemplateName());
+            newPrintTemplateItemBind.setTemplateUrl(printTemplateItemBind.getTemplateUrl());
+            newPrintTemplateItemBind.setTemplateType(printTemplateItemBind.getTemplateType());
+            itemPrintTemplateBindRepository.save(newPrintTemplateItemBind);
         }
     }
 

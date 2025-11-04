@@ -174,26 +174,20 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName();
-        try {
-            List<ItemOrganWordBind> bindList =
-                itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
-            if (null != bindList && !bindList.isEmpty()) {
-                for (ItemOrganWordBind bind : bindList) {
-                    ItemOrganWordBind itemOrganWordBind = new ItemOrganWordBind();
-                    itemOrganWordBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    itemOrganWordBind.setItemId(newItemId);
-                    itemOrganWordBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-                    itemOrganWordBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
-                    itemOrganWordBind.setOrganWordCustom(bind.getOrganWordCustom());
-                    itemOrganWordBind.setProcessDefinitionId(lastVersionPid);
-                    itemOrganWordBind.setTaskDefKey(bind.getTaskDefKey());
-                    itemOrganWordBind.setUserId(userId);
-                    itemOrganWordBind.setUserName(userName);
-                    itemOrganWordBindRepository.save(itemOrganWordBind);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制编号绑定关系失败", e);
+        List<ItemOrganWordBind> bindList =
+            itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
+        for (ItemOrganWordBind bind : bindList) {
+            ItemOrganWordBind itemOrganWordBind = new ItemOrganWordBind();
+            itemOrganWordBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            itemOrganWordBind.setItemId(newItemId);
+            itemOrganWordBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
+            itemOrganWordBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
+            itemOrganWordBind.setOrganWordCustom(bind.getOrganWordCustom());
+            itemOrganWordBind.setProcessDefinitionId(lastVersionPid);
+            itemOrganWordBind.setTaskDefKey(bind.getTaskDefKey());
+            itemOrganWordBind.setUserId(userId);
+            itemOrganWordBind.setUserName(userName);
+            itemOrganWordBindRepository.save(itemOrganWordBind);
         }
     }
 

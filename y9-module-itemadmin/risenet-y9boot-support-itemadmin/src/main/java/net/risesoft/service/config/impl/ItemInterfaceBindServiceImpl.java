@@ -45,18 +45,14 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId) {
-        try {
-            List<ItemInterfaceBind> bindList = itemInterfaceBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
-            for (ItemInterfaceBind bind : bindList) {
-                ItemInterfaceBind newBind = new ItemInterfaceBind();
-                newBind.setItemId(newItemId);
-                newBind.setInterfaceId(bind.getInterfaceId());
-                newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                newBind.setCreateTime(bind.getCreateTime());
-                itemInterfaceBindRepository.save(newBind);
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制事项接口绑定关系失败", e);
+        List<ItemInterfaceBind> bindList = itemInterfaceBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
+        for (ItemInterfaceBind bind : bindList) {
+            ItemInterfaceBind newBind = new ItemInterfaceBind();
+            newBind.setItemId(newItemId);
+            newBind.setInterfaceId(bind.getInterfaceId());
+            newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newBind.setCreateTime(bind.getCreateTime());
+            itemInterfaceBindRepository.save(newBind);
         }
     }
 

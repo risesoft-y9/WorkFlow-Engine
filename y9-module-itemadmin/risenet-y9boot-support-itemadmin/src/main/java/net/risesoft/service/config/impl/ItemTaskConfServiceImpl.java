@@ -40,22 +40,18 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     @Override
     @Transactional
     public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        try {
-            List<ItemTaskConf> confList = taskConfRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
-            for (ItemTaskConf conf : confList) {
-                ItemTaskConf newConf = new ItemTaskConf();
-                newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                newConf.setItemId(newItemId);
-                newConf.setProcessDefinitionId(conf.getProcessDefinitionId());
-                newConf.setSignOpinion(conf.getSignOpinion());
-                newConf.setSponsor(conf.getSponsor());
-                newConf.setTaskDefKey(conf.getTaskDefKey());
-                newConf.setTenantId(Y9LoginUserHolder.getTenantId());
-                newConf.setSignTask(conf.getSignTask());
-                taskConfRepository.save(newConf);
-            }
-        } catch (Exception e) {
-            LOGGER.error("复制签收配置失败", e);
+        List<ItemTaskConf> confList = taskConfRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
+        for (ItemTaskConf conf : confList) {
+            ItemTaskConf newConf = new ItemTaskConf();
+            newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newConf.setItemId(newItemId);
+            newConf.setProcessDefinitionId(conf.getProcessDefinitionId());
+            newConf.setSignOpinion(conf.getSignOpinion());
+            newConf.setSponsor(conf.getSponsor());
+            newConf.setTaskDefKey(conf.getTaskDefKey());
+            newConf.setTenantId(Y9LoginUserHolder.getTenantId());
+            newConf.setSignTask(conf.getSignTask());
+            taskConfRepository.save(newConf);
         }
     }
 
