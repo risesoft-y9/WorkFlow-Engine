@@ -4,10 +4,10 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.consts.processadmin.SysVariables;
@@ -27,7 +27,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
  * @date 2022/12/20
  */
 @Service
-@RequiredArgsConstructor
 @Slf4j
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public class ItemViewConfServiceImpl implements ItemViewConfService {
@@ -35,6 +34,11 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
     private final ItemViewConfRepository itemViewConfRepository;
 
     private final ItemViewConfService self;
+
+    public ItemViewConfServiceImpl(ItemViewConfRepository itemViewConfRepository, @Lazy ItemViewConfService self) {
+        this.itemViewConfRepository = itemViewConfRepository;
+        this.self = self;
+    }
 
     @Override
     @Transactional

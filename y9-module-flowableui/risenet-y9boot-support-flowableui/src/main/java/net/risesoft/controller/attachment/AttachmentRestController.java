@@ -6,11 +6,13 @@ import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
 import java.util.Date;
 import java.util.List;
 import java.util.zip.ZipEntry;
@@ -154,10 +156,8 @@ public class AttachmentRestController {
             String fileZip = base_name + ".zip";
             String packDownloadPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "packDownload";
             File folder = new File(packDownloadPath);
-            if (!folder.exists() && !folder.isDirectory()) {
-                if (!folder.mkdirs()) {
-                    LOGGER.error("创建目录失败：{}", packDownloadPath);
-                }
+            if (!folder.exists() && !folder.isDirectory() && !folder.mkdirs()) {
+                LOGGER.error("创建目录失败：{}", packDownloadPath);
             }
             String zipPath = packDownloadPath + File.separator + fileZip;
             BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(zipPath));
@@ -207,8 +207,10 @@ public class AttachmentRestController {
                 }
                 in.close();
                 // 删除服务器本地产生的临时压缩文件
-                if (!reportZip.delete()) {
-                    LOGGER.warn("删除服务器本地产生的临时压缩文件失败！{}", reportZip.getAbsolutePath());
+                try {
+                    Files.delete(reportZip.toPath());
+                } catch (IOException e) {
+                    LOGGER.warn("删除服务器本地产生的临时压缩文件失败！{}", reportZip.getAbsolutePath(), e);
                 }
             }
         } catch (Exception e) {

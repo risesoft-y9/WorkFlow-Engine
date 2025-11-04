@@ -1,7 +1,6 @@
 package net.risesoft.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -9,18 +8,16 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 import org.hibernate.annotations.Type;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 
 /**
  * @author qinman
@@ -32,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_APPROVEITEM")
 @org.hibernate.annotations.Table(comment = "事项定义信息表", appliesTo = "FF_APPROVEITEM")
-public class Item implements Serializable {
+public class Item extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -2923177835926495218L;
 
@@ -75,12 +72,6 @@ public class Item implements Serializable {
     @Column(name = "CREATERNAME")
     private String createrName;
 
-    @Comment("创建时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "CREATEDATE")
-    private Date createDate;
-
     @Comment("修改人id")
     @Column(name = "REVISERID", length = 50)
     private String reviserId;
@@ -88,12 +79,6 @@ public class Item implements Serializable {
     @Comment("修改人姓名")
     @Column(name = "REVISERNAME", length = 50)
     private String reviserName;
-
-    @Comment("修改时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "REVISEDATE")
-    private Date reviseDate = new Date();
 
     @Comment("系统级别")
     @Column(name = "SYSLEVEL", length = 50)

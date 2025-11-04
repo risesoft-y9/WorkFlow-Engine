@@ -1,9 +1,11 @@
 package net.risesoft.controller.wps;
 
 import java.io.File;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.file.Files;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -537,8 +539,10 @@ public class DocumentWpsController {
             uploadRequest.setFilePath(tempFile.getAbsolutePath());
             UploadTransactionPatchResponse uploadResponse =
                 appFilesApi.appCreateUploadTransaction(VOLUME, ROOT, uploadRequest);
-            if (!tempFile.delete()) {
-                LOGGER.error("删除临时文件失败");
+            try {
+                Files.delete(tempFile.toPath());
+            } catch (IOException e) {
+                LOGGER.error("删除临时文件失败: {}", tempFile.getAbsolutePath(), e);
             }
             String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {

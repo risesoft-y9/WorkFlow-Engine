@@ -24,6 +24,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ChaoSongApi;
+import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SmsDetailApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
@@ -101,6 +102,7 @@ public class DocumentRestController {
     private final FormDataApi formDataApi;
     private final Y9FlowableProperties y9FlowableProperties;
     private final SmsDetailApi smsDetailApi;
+    private final OfficeFollowApi officeFollowApi;
 
     /**
      * 检查是否可以批量发送
@@ -348,7 +350,6 @@ public class DocumentRestController {
         sourceTaskRelated.setExecutionId(oldProcessParam.getProcessInstanceId());
         sourceTaskRelated.setTaskId("copy2Todo");
         sourceTaskRelated.setSub(false);
-        // sourceTaskRelated.setMsgContent(numberY9Result.getData());
         sourceTaskRelated.setSenderId(position.getId());
         sourceTaskRelated.setSenderName(position.getName());
         Y9Result<Object> yuanResult = taskRelatedApi.saveOrUpdate(tenantId, sourceTaskRelated);
@@ -538,8 +539,8 @@ public class DocumentRestController {
             map.put("itemMap", listMap);
             map.put("notReadCount",
                 chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
-            // int followCount = officeFollowApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId());
-            // map.put("followCount", followCount);
+            int followCount = officeFollowApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId()).getData();
+            map.put("followCount", followCount);
             // 公共角色
             boolean b =
                 positionRoleApi
@@ -547,14 +548,12 @@ public class DocumentRestController {
                         Y9LoginUserHolder.getPositionId())
                     .getData();
             map.put("monitorManage", b);
-
             boolean b1 =
                 positionRoleApi
                     .hasRole(tenantId, Y9Context.getSystemName(), "", y9FlowableProperties.getLeaveManageRoleName(),
                         Y9LoginUserHolder.getPositionId())
                     .getData();
             map.put("leaveManage", b1);
-
             return Y9Result.success(map, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取事项列表失败", e);

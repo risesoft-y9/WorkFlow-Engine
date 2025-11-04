@@ -1,7 +1,5 @@
 package net.risesoft.controller.document;
 
-import java.util.List;
-
 import javax.validation.constraints.NotBlank;
 
 import org.springframework.http.MediaType;
@@ -21,7 +19,6 @@ import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.log.FlowableLogLevelEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.core.DocumentDetailModel;
-import net.risesoft.model.processadmin.HistoricVariableInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -184,11 +181,6 @@ public class DocumentEditRestController {
     public Y9Result<DocumentDetailModel> todo(@RequestParam @NotBlank String taskId) {
         try {
             TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
-            List<HistoricVariableInstanceModel> modelList =
-                historicVariableApi.getByTaskId(Y9LoginUserHolder.getTenantId(), taskId).getData();
-            modelList.forEach(hvi -> {
-                System.out.println(hvi.getValue());
-            });
             if (null == task) {
                 return Y9Result.failure("当前待办已处理！");
             }
