@@ -94,7 +94,6 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="APPURL" remarks="应用url" type="VARCHAR(200)"/>
-            <column name="CREATEDATE" remarks="创建时间" type="datetime"/>
             <column name="CREATERID" remarks="创建人id" type="VARCHAR(255)"/>
             <column name="CREATERNAME" remarks="创建人姓名" type="VARCHAR(255)"/>
             <column defaultValueNumeric="0" name="CUSTOMITEM" remarks="是否可定制事项" type="INT">
@@ -109,7 +108,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="NATURE" remarks="事项管理员" type="VARCHAR(200)"/>
-            <column name="REVISEDATE" remarks="修改时间" type="datetime"/>
             <column name="REVISERID" remarks="修改人id" type="VARCHAR(50)"/>
             <column name="REVISERNAME" remarks="修改人姓名" type="VARCHAR(50)"/>
             <column defaultValueNumeric="0" name="SHOWSUBMITBUTTON" remarks="显示提交按钮" type="INT">
@@ -119,6 +117,8 @@
             <column name="SYSTEMNAME" remarks="系统名称" type="VARCHAR(50)"/>
             <column name="TYPE" remarks="事项类型" type="VARCHAR(50)"/>
             <column name="WORKFLOWGUID" remarks="工作流GUID" type="VARCHAR(100)"/>
+            <column name="CREATETIME" remarks="创建时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-4" author="mengjuhua" runOnChange="true">

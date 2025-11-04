@@ -2,6 +2,7 @@ package net.risesoft.controller;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.Objects;
@@ -188,10 +189,8 @@ public class SignController {
     private String calculateDays(String leaveStartTime, String leaveEndTime, String leaveType, String holidayStr)
         throws Exception {
         boolean excludeHolidays = shouldExcludeHolidays(leaveType);
-        if (leaveStartTime.equals(leaveEndTime)) {
-            if (excludeHolidays && holidayStr.contains(leaveStartTime)) {
-                return "0";
-            }
+        if (leaveStartTime.equals(leaveEndTime) && excludeHolidays && holidayStr.contains(leaveStartTime)) {
+            return "0";
         }
         int count = 0;
         String currentDate = leaveStartTime;
@@ -354,7 +353,7 @@ public class SignController {
      * 计算单天小时数
      */
     private double calculateDayHours(String currentDate, String leaveStartTime, String leaveEndTime,
-        String selStartTime, String selEndTime, SimpleDateFormat sdf) throws Exception {
+        String selStartTime, String selEndTime, SimpleDateFormat sdf) throws ParseException {
         if (currentDate.equals(leaveStartTime) && StringUtils.isNotBlank(selStartTime)) {
             // 开始日期选择时间
             double waitTime = calculateHoursBetween(selStartTime, selEndTime, sdf);
@@ -378,7 +377,7 @@ public class SignController {
     /**
      * 计算工作小时数（减去午休时间）
      */
-    private double calculateWorkHours(String startTime, String endTime, SimpleDateFormat sdf) throws Exception {
+    private double calculateWorkHours(String startTime, String endTime, SimpleDateFormat sdf) throws ParseException {
         double waitTime = calculateHoursBetween(startTime, endTime, sdf);
         // 减去中间包含的1.5个小时午休时间
         if (Integer.parseInt(startTime.split(":")[0]) < 12 && Integer.parseInt(endTime.split(":")[0]) > 12) {
@@ -472,7 +471,7 @@ public class SignController {
         return totalHours;
     }
 
-    private double calculateHoursBetween(String startTime, String endTime, SimpleDateFormat sdf) throws Exception {
+    private double calculateHoursBetween(String startTime, String endTime, SimpleDateFormat sdf) throws ParseException {
         long time = sdf.parse(endTime).getTime() - sdf.parse(startTime).getTime();
         double hours = (double)time / (60 * 60 * 1000);
         BigDecimal a = BigDecimal.valueOf(hours);

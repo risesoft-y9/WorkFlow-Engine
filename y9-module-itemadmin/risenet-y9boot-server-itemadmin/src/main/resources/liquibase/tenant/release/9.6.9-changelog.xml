@@ -102,4 +102,19 @@
             <column name="REMINDER_MAKE_TYPE"/>
         </dropColumn>
     </changeSet>
+    <changeSet id="1704700546666-8" author="qinMan">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_APPROVEITEM" columnName="CREATEDATE"/>
+        </preConditions>
+        <renameColumn tableName="FF_APPROVEITEM"
+                      oldColumnName="CREATEDATE"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <renameColumn tableName="FF_APPROVEITEM"
+                      oldColumnName="REVISEDATE"
+                      newColumnName="UPDATETIME"
+                      columnDataType="datetime"
+                      remarks="更新时间"/>
+    </changeSet>
 </databaseChangeLog>

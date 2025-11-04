@@ -1,7 +1,6 @@
 package net.risesoft.service.core.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 
@@ -133,7 +132,6 @@ public class ItemServiceImpl implements ItemService {
                 Y9BeanUtil.copyProperties(item, newItem);
                 String newItemId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
                 newItem.setId(newItemId);
-                newItem.setCreateDate(new Date());
                 Integer tabIndex = itemRepository.getMaxTabIndex();
                 newItem.setName(item.getName() + "副本");
                 newItem.setTabIndex(null != tabIndex ? tabIndex + 1 : 1);
@@ -342,7 +340,6 @@ public class ItemServiceImpl implements ItemService {
     public Y9Result<Item> save(Item item) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            item.setCreateDate(new Date());
             item.setCreaterId(person.getPersonId());
             item.setCreaterName(person.getName());
             Item olditem = itemRepository.findById(item.getId()).orElse(null);

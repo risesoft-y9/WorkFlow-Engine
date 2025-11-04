@@ -203,7 +203,6 @@ public class InitTableDataService {
             item.setName(SYSTEMCNNAME);
             item.setSysLevel(SYSTEMCNNAME);
             item.setSystemName(SYSTEMNAME);
-            item.setCreateDate(new Date());
             itemRepository.save(item);
         }
     }
