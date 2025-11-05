@@ -193,4 +193,56 @@
             <column name="CREATETIME" remarks="创建时间" type="datetime"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700546666-12" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ATTACHMENT_TYPE" columnName="CREATETIME"/>
+            </not>
+        </preConditions>
+        <comment>将 CREATEDATE 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ATTACHMENT_TYPE">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_ATTACHMENT_TYPE
+            SET CREATETIME_NEW = STR_TO_DATE(CREATEDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATEDATE IS NOT NULL
+              AND CREATEDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_ATTACHMENT_TYPE">
+            <column name="CREATEDATE"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_ATTACHMENT_TYPE"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <comment>将 MODIFYDATE 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ATTACHMENT_TYPE">
+            <column name="UPDATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_ATTACHMENT_TYPE
+            SET UPDATETIME_NEW = STR_TO_DATE(MODIFYDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE MODIFYDATE IS NOT NULL
+              AND MODIFYDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_ATTACHMENT_TYPE">
+            <column name="MODIFYDATE"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_ATTACHMENT_TYPE"
+                      oldColumnName="UPDATETIME_NEW"
+                      newColumnName="UPDATETIME"
+                      columnDataType="datetime"
+                      remarks="更新时间"/>
+    </changeSet>
 </databaseChangeLog>

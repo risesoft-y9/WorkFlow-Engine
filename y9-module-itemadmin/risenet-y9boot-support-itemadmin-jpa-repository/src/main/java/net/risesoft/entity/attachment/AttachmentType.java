@@ -74,19 +74,4 @@ public class AttachmentType implements Serializable {
     @Comment("是否删除")
     @Column(name = "DELETED")
     private Integer deleted = 0;
-
-    /**
-     * 生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATEDATE")
-    private String createDate;
-
-    /**
-     * 最后的修改时间
-     */
-    @Comment("修改时间")
-    @Column(name = "MODIFYDATE")
-    private String modifyDate;
-
 }
