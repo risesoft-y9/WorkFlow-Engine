@@ -19,7 +19,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.attachment.AttachmentConfRepository;
 import net.risesoft.repository.attachment.AttachmentTypeRepository;
 import net.risesoft.service.attachment.AttachmentTypeService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Service
@@ -76,7 +75,6 @@ public class AttachmentTypeServiceImpl implements AttachmentTypeService {
             if (StringUtils.isNotEmpty(id)) {
                 AttachmentType oldof = this.getById(id);
                 if (null != oldof) {
-                    oldof.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                     oldof.setName(AttachmentType.getName());
                     oldof.setUserId(null == person ? "" : person.getPersonId());
                     oldof.setUserName(null == person ? "" : person.getName());
@@ -89,8 +87,6 @@ public class AttachmentTypeServiceImpl implements AttachmentTypeService {
             AttachmentType newof = new AttachmentType();
             newof.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             newof.setMark(AttachmentType.getMark());
-            newof.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-            newof.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             newof.setName(AttachmentType.getName());
             newof.setTenantId(person.getTenantId());
             newof.setUserId(person.getPersonId());
