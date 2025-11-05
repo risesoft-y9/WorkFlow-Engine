@@ -14,12 +14,14 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "FF_ATTACHMENT_TYPE")
 @org.hibernate.annotations.Table(comment = "附件类型信息表", appliesTo = "FF_ATTACHMENT_TYPE")
-public class AttachmentType implements Serializable {
+public class AttachmentType extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -3668629910203969082L;
 

@@ -15,13 +15,15 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 @NoArgsConstructor
 @Accessors(chain = true)
 @Data
 @Entity
 @Table(name = "FF_ATTACHMENT_CONF")
 @org.hibernate.annotations.Table(comment = "附件配置表", appliesTo = "FF_ATTACHMENT_CONF")
-public class AttachmentConf implements Serializable {
+public class AttachmentConf extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6993689468890094985L;
 
