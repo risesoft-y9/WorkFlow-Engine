@@ -65,7 +65,7 @@ public class ItemOpinionFrameBind implements Serializable {
     private String itemId;
 
     @Comment("流程定义Id")
-    @Column(name = "PROCESSDEFINITIONID", length = 255, nullable = false)
+    @Column(name = "PROCESSDEFINITIONID", nullable = false)
     private String processDefinitionId;
 
     @Comment("任务key")

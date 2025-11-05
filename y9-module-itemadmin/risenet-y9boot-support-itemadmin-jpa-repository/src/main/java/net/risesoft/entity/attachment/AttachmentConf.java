@@ -79,8 +79,4 @@ public class AttachmentConf implements Serializable {
     @Comment("序号")
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
-
-    @Comment("更新时间")
-    @Column(name = "UPDATETIME", length = 50)
-    private String updateTime;
 }

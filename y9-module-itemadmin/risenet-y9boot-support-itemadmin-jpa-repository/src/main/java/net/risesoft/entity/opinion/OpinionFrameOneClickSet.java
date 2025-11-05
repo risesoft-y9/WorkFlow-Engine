@@ -33,9 +33,12 @@ public class OpinionFrameOneClickSet implements Serializable {
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
 
+    /**
+     * oneClickSign-一键签批 oneClickRead- 一键阅知 同意 已阅
+     */
     @Comment("一键设置类型")
     @Column(name = "ONESET_TYPE", length = 100)
-    private String oneSetType;// oneClickSign-一键签批 oneClickRead- 一键阅知 同意 已阅
+    private String oneSetType;
 
     @Comment("对应执行动作")
     @Column(name = "EXECUTEACTION", length = 100)

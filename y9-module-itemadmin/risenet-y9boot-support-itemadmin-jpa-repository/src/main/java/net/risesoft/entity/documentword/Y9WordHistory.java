@@ -53,21 +53,21 @@ public class Y9WordHistory implements Serializable {
      * 标题
      */
     @Comment("标题")
-    @Column(name = "TITLE", length = 1000, nullable = true)
+    @Column(name = "TITLE", length = 1000)
     private String title;
 
     /**
      * 文件类型
      */
     @Comment("文件类型")
-    @Column(name = "FILETYPE", length = 50, nullable = true)
+    @Column(name = "FILETYPE", length = 50)
     private String fileType;
 
     /**
      * 包括文件名+后缀
      */
     @Comment("文件名")
-    @Column(name = "FILENAME", length = 1000, nullable = true)
+    @Column(name = "FILENAME", length = 1000)
     private String fileName;
 
     /**
