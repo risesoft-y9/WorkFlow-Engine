@@ -154,29 +154,21 @@
             <column name="ID" remarks="主键" type="VARCHAR(38)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="DELETETIME" remarks="删除时间" type="VARCHAR(100)"/>
-            <column name="deleted" remarks="软删除标记" type="INT"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(38)"/>
+            <column name="TASKID" remarks="任务id" type="VARCHAR(38)"/>
+            <column name="FILENAME" remarks="文件名称" type="VARCHAR(100)"/>
+            <column name="FILESOURCE" remarks="附件来源" type="VARCHAR(50)"/>
+            <column name="FILESIZE" remarks="文件大小" type="VARCHAR(20)"/>
+            <column name="FILETYPE" remarks="文件类型" type="VARCHAR(20)"/>
+            <column name="UPLOADTIME" remarks="上传时间" type="VARCHAR(100)"/>
+            <column name="PERSONID" remarks="上传人员Id" type="VARCHAR(50)"/>
+            <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
             <column name="DEPTID" remarks="上传人员部门Id" type="VARCHAR(50)"/>
             <column name="DEPTNAME" remarks="上传人员部门名称" type="VARCHAR(100)"/>
             <column name="DESCRIBES" remarks="文件描述" type="VARCHAR(255)"/>
-            <column name="DETELEUSERID" remarks="删除操作的人员id" type="VARCHAR(38)"/>
-            <column name="FILESIZE" remarks="文件大小" type="VARCHAR(20)"/>
-            <column name="FILESOURCE" remarks="附件来源" type="VARCHAR(50)"/>
-            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
-            <column name="FILETYPE" remarks="文件类型" type="VARCHAR(20)"/>
-            <column name="FULLPATH" remarks="绝对路径" type="VARCHAR(255)"/>
-            <column name="FILENAME" remarks="文件名称" type="VARCHAR(100)"/>
-            <column name="PERSONID" remarks="上传人员Id" type="VARCHAR(50)"/>
-            <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
-            <column name="POSITIONID" remarks="岗位id" type="VARCHAR(50)"/>
-            <column name="positionName" type="VARCHAR(255)"/>
-            <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(38)"/>
-            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
-            <column name="REALFILENAME" remarks="存放的文件名称" type="VARCHAR(100)"/>
-            <column name="serialNumber" type="INT"/>
             <column name="TABINDEX" remarks="文件索引" type="INT"/>
-            <column name="TASKID" remarks="任务id" type="VARCHAR(38)"/>
-            <column name="UPLOADTIME" remarks="上传时间" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-6" author="mengjuhua" runOnChange="true">

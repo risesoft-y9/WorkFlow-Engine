@@ -5,6 +5,28 @@
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.26.xsd"
         objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="1704700543333-2" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="ff_attachment_ele"/>
+            </not>
+        </preConditions>
+        <createTable remarks="电子附件信息表" tableName="ff_attachment_ele">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="FILENAME" remarks="文件名称" type="VARCHAR(255)"/>
+            <column name="MIJI" remarks="密级" type="VARCHAR(20)"/>
+            <column name="ATTACHMENTTYPE" remarks="附件类型" type="VARCHAR(20)"/>
+            <column name="UPLOADTIME" remarks="上传时间" type="VARCHAR(100)"/>
+            <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
+            <column name="PERSONID" remarks="上传人员Id" type="VARCHAR(50)"/>
+            <column name="TABINDEX" remarks="文件索引" type="INT"/>
+        </createTable>
+    </changeSet>
     <changeSet id="1704700543333-3" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -157,10 +179,9 @@
             </not>
         </preConditions>
         <createTable remarks="发文单位表,委外会签单位表" tableName="FF_SIGN_OUT_DEPT">
-            <column name="DEPTID" remarks="单位Id" type="INT">
+            <column name="DEPTID" remarks="单位Id" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="DEPTIDOLD" remarks="单位Id-old" type="VARCHAR(50)"/>
             <column name="DEPTTYPEID" remarks="单位类型Id" type="VARCHAR(50)"/>
             <column name="DEPTNAME" remarks="单位名称" type="VARCHAR(100)"/>
             <column name="DEPTORDER" remarks="单位序号" type="INT"/>
@@ -170,7 +191,6 @@
             <column name="DEPTNAMEMAX" remarks="单位全称" type="VARCHAR(100)"/>
             <column name="FULLSPELL" remarks="全拼" type="VARCHAR(100)"/>
             <column name="FIRSTSPELL" remarks="第一字母简拼" type="VARCHAR(100)"/>
-            <column name="FULLDEPTNAME" remarks="单位总称" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700543333-11" author="qinMan" runOnChange="true">
@@ -260,7 +280,35 @@
             <column name="PROCESSSERIALNUMBER" type="VARCHAR(50)" remarks="流程编号"/>
         </addColumn>
     </changeSet>
+
     <changeSet id="1704700543333-16" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_SIGN_OUT_DEPT" columnName="ISFORBIDDEN"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_SIGN_OUT_DEPT">
+            <column name="ISFORBIDDEN" type="INT" defaultValueNumeric="0" remarks="是否禁止"/>
+            <column name="LDCW" type="VARCHAR(50)" remarks="领导称谓"/>
+            <column name="DEPTSUFFIX" type="VARCHAR(50)" remarks="单位后缀"/>
+        </addColumn>
+    </changeSet>
+    <changeSet id="1704700543333-17" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_SIGN_OUT_DEPT_TYPE"/>
+            </not>
+        </preConditions>
+        <createTable remarks="委外会签单位类型表" tableName="FF_SIGN_OUT_DEPT_TYPE">
+            <column name="DEPTTYPEID" remarks="单位类型Id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="DEPTTYPE" remarks="单位类型" type="VARCHAR(50)"/>
+            <column name="ISFORBIDDEN" type="INT" defaultValueNumeric="0" remarks="是否禁止"/>
+            <column name="TABINDEX" type="INT" remarks="序号"/>
+        </createTable>
+    </changeSet>
+    <changeSet id="1704700543333-18" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <tableExists tableName="FF_URGEINFO"/>
@@ -281,7 +329,7 @@
         </createTable>
     </changeSet>
 
-    <changeSet id="1704700543333-17" author="qinMan" runOnChange="true">
+    <changeSet id="1704700543333-19" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <indexExists tableName="FF_URGEINFO" columnNames="PROCESSSERIALNUMBER"/>
@@ -290,6 +338,32 @@
         <createIndex indexName="ff_urgeinfo_index_001" tableName="FF_URGEINFO">
             <column name="PROCESSSERIALNUMBER"/>
         </createIndex>
+    </changeSet>
+
+    <changeSet id="1704700543333-20" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_TYPESETTING_INFO"/>
+            </not>
+        </preConditions>
+        <createTable remarks="发文单排版信息表" tableName="FF_TYPESETTING_INFO">
+            <column name="ID" remarks="主键id" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="way" remarks="排版方式" type="VARCHAR(50)"/>
+            <column name="template" type="VARCHAR(100)" remarks="模板"/>
+            <column name="processSerialNumber" type="VARCHAR(50)" remarks="流程编号"/>
+            <column name="qingyangFile" type="VARCHAR(50)" remarks="清样文件"/>
+            <column name="banshiFile" type="VARCHAR(50)" remarks="板式文件"/>
+            <column name="typeSettingOpinion" type="VARCHAR(500)" remarks="排版意见"/>
+            <column name="typeSettingUserName" type="VARCHAR(50)" remarks="排版人"/>
+            <column name="typeSettingTime" type="VARCHAR(50)" remarks="排版时间"/>
+            <column name="checkOpinion" type="VARCHAR(500)" remarks="校对意见"/>
+            <column name="shenheOpinion" type="VARCHAR(500)" remarks="校对审核意见"/>
+            <column name="checkUserName" type="VARCHAR(50)" remarks="校对审核人"/>
+            <column name="checkTime" type="VARCHAR(50)" remarks="校对时间"/>
+            <column name="tabIndex" type="INT" remarks="排序号"/>
+        </createTable>
     </changeSet>
 
     <changeSet id="1704700543333-22" author="qinMan" runOnChange="true">
@@ -382,7 +456,7 @@
                 <tableExists tableName="FF_OPINION_COPY"/>
             </not>
         </preConditions>
-        <createTable remarks="抄送件意见信息表" tableName="FF_OPINION_COPY">
+        <createTable remarks="抄送信息表" tableName="FF_OPINION_COPY">
             <column name="ID" remarks="主键" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
@@ -493,6 +567,29 @@
         </addColumn>
     </changeSet>
 
+    <changeSet id="1704700543333-38" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_LEADER_OPINION"/>
+            </not>
+        </preConditions>
+        <createTable remarks="领导批示表" tableName="FF_LEADER_OPINION">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="PROCESSSERIALNUMBER" remarks="流程实例编号" type="VARCHAR(50)"/>
+            <column name="POSITIONNAME" remarks="批示领导岗位名称" type="VARCHAR(50)"/>
+            <column name="OPINIONCONTENT" remarks="批示内容" type="VARCHAR(500)"/>
+            <column name="OPINIONDATE" remarks="批示日期" type="VARCHAR(100)"/>
+            <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
+            <column name="FILENAME" remarks="文件名称" type="VARCHAR(200)"/>
+            <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
+            <column name="PERSONID" remarks="上传人员Id" type="VARCHAR(50)"/>
+            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
+            <column name="UPDATEDATE" remarks="修改时间" type="VARCHAR(50)"/>
+        </createTable>
+    </changeSet>
+
     <changeSet id="1704700543333-39" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -539,6 +636,20 @@
         </preConditions>
         <addColumn tableName="FF_SIGN_DEPT_DETAIL">
             <column name="TABINDEX" type="INT" remarks="部门排序"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700543333-44" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_TYPESETTING_INFO" columnName="ifHaveYj"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_TYPESETTING_INFO">
+            <column name="ifHaveYj" remarks="拟稿人校对意见类型" type="VARCHAR(100)"/>
+            <column name="hgrOpinion" type="VARCHAR(100)" remarks="校对审核意见类型"/>
+            <column name="auditUserName" type="VARCHAR(50)" remarks="校对审核人"/>
+            <column name="auditTime" type="VARCHAR(50)" remarks="校对审核时间"/>
         </addColumn>
     </changeSet>
 
@@ -609,7 +720,8 @@
             <column name="LABELNAME" remarks="标签名称" type="VARCHAR(20)"/>
             <column name="OPTIONCLASS" remarks="绑定数据字典" type="VARCHAR(50)"/>
             <column name="TABINDEX" remarks="序号" type="INT"/>
-            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="创建时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
 
@@ -660,15 +772,26 @@
             <column name="FULLDEPTNAME" remarks="单位总称" type="VARCHAR(50)"/>
         </addColumn>
     </changeSet>
-
     <changeSet id="1704700543333-56" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_TYPESETTING_INFO" columnName="isHave"/>
+            </not>
+        </preConditions>
+        <addColumn tableName="FF_TYPESETTING_INFO">
+            <column name="isHave" remarks="是否保存过" type="VARCHAR(50)"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700543333-57" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
                 <columnExists tableName="Y9FORM_FIELD" columnName="CONTENT_USED_FOR"/>
             </not>
         </preConditions>
         <addColumn tableName="Y9FORM_FIELD">
-            <column name="CONTENT_USED_FOR" remarks="字段内容作为，title：文件标题，number：文件编号，level：紧急程度" type="VARCHAR(50)"/>
+            <column name="CONTENT_USED_FOR" remarks="字段内容作为，title：文件标题，number：文件编号，level：紧急程度"
+                    type="VARCHAR(50)"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>

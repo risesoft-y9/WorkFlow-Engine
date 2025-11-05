@@ -91,15 +91,15 @@ public class Y9Form extends ItemAdminBaseEntity implements Serializable {
     @Comment("修改人")
     private String personId;
 
-    @Column(name = "CSSURL", length = 255)
+    @Column(name = "CSSURL")
     @Comment("引用css")
     private String cssUrl;
 
-    @Column(name = "JSURL", length = 255)
+    @Column(name = "JSURL")
     @Comment("引用js")
     private String jsUrl;
 
-    @Column(name = "INITDATAURL", length = 255)
+    @Column(name = "INITDATAURL")
     @Comment("初始化数据url路径")
     private String initDataUrl;
 }

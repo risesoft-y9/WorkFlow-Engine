@@ -57,11 +57,11 @@ public class Y9FormItemBind implements Serializable {
     private String itemId;
 
     @Comment("流程定义Id")
-    @Column(name = "PROCESSDEFINITIONID", length = 255, nullable = false)
+    @Column(name = "PROCESSDEFINITIONID", nullable = false)
     private String processDefinitionId;
 
     @Comment("任务key")
-    @Column(name = "TASKDEFKEY", length = 255)
+    @Column(name = "TASKDEFKEY")
     private String taskDefKey;
 
     @Comment("排序号")

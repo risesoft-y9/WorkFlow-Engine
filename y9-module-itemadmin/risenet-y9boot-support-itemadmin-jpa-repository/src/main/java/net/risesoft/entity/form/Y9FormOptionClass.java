@@ -28,13 +28,13 @@ public class Y9FormOptionClass implements Serializable {
     private static final long serialVersionUID = -5901383621072805572L;
 
     @Id
-    @Column(name = "TYPE", length = 255, nullable = false)
+    @Column(name = "TYPE", nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     @Comment("主键，类型名称")
     private String type;
 
-    @Column(name = "NAME", length = 255, nullable = false)
+    @Column(name = "NAME", nullable = false)
     @Comment("中文名称")
     private String name;
 

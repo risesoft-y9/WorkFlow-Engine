@@ -61,9 +61,6 @@ public class Y9TableField implements Serializable {
     @Comment("字段长度")
     private Integer fieldLength = 0;
 
-    /**
-     * // 1为是，0为否
-     */
     @Column(name = "ISMAYNULL")
     @Comment("是否允许为空")
     private Integer isMayNull = 1;
@@ -73,7 +70,7 @@ public class Y9TableField implements Serializable {
     private Integer isSystemField = 0;
 
     /**
-     * // -1未生成表字段，1为已经生成表字段
+     * -1未生成表字段，1为已经生成表字段
      */
     @Column(name = "STATE")
     @Comment("字段状态")

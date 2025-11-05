@@ -17,7 +17,6 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.attachment.AttachmentConfRepository;
 import net.risesoft.service.attachment.AttachmentConfService;
-import net.risesoft.util.Y9DateTimeUtils;
 
 @Service
 @RequiredArgsConstructor
@@ -63,7 +62,6 @@ public class AttachmentConfServiceImpl implements AttachmentConfService {
                 oldConf.setDisPlayWidth(attachmentConf.getDisPlayWidth());
                 oldConf.setDisPlayName(attachmentConf.getDisPlayName());
                 oldConf.setDisPlayAlign(attachmentConf.getDisPlayAlign());
-                oldConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 oldConf.setInputBoxType(attachmentConf.getInputBoxType());
                 oldConf.setLabelName(attachmentConf.getLabelName());
                 oldConf.setConfigType(attachmentConf.getConfigType());
@@ -84,8 +82,6 @@ public class AttachmentConfServiceImpl implements AttachmentConfService {
         newConf.setDisPlayName(attachmentConf.getDisPlayName());
         newConf.setDisPlayAlign(attachmentConf.getDisPlayAlign());
         newConf.setAttachmentType(attachmentConf.getAttachmentType());
-        newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newConf.setInputBoxType(attachmentConf.getInputBoxType());
         newConf.setLabelName(attachmentConf.getLabelName());
         newConf.setConfigType(attachmentConf.getConfigType());

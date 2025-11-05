@@ -28,17 +28,17 @@ public class Y9FormOptionValue implements Serializable {
     private static final long serialVersionUID = 497989593405504925L;
 
     @Id
-    @Column(name = "ID", length = 255, nullable = false)
+    @Column(name = "ID", nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     @Comment("主键id")
     private String id;
 
-    @Column(name = "CODE", length = 255)
+    @Column(name = "CODE")
     @Comment("数据代码")
     private String code;
 
-    @Column(name = "NAME", length = 255, nullable = false)
+    @Column(name = "NAME", nullable = false)
     @Comment("主键名称")
     private String name;
 
@@ -46,7 +46,7 @@ public class Y9FormOptionValue implements Serializable {
     @Comment("排序号")
     private Integer tabIndex;
 
-    @Column(name = "TYPE", length = 255, nullable = false)
+    @Column(name = "TYPE", nullable = false)
     @Comment("字典类型")
     private String type;
 

@@ -117,7 +117,6 @@
                       columnDataType="datetime"
                       remarks="更新时间"/>
     </changeSet>
-
     <changeSet id="1704700546666-9" author="qinMan" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
@@ -159,6 +158,39 @@
                       remarks="创建时间"/>
         <addColumn tableName="Y9FORM_TABLE">
             <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700546666-11" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ATTACHMENT_CONF" columnName="CREATETIME"/>
+            </not>
+        </preConditions>
+        <comment>将 UPDATETIME 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ATTACHMENT_CONF">
+            <column name="UPDATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_ATTACHMENT_CONF
+            SET UPDATETIME_NEW = STR_TO_DATE(UPDATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE UPDATETIME IS NOT NULL
+              AND UPDATETIME != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_ATTACHMENT_CONF">
+            <column name="UPDATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_ATTACHMENT_CONF"
+                      oldColumnName="UPDATETIME_NEW"
+                      newColumnName="UPDATETIME"
+                      columnDataType="datetime"
+                      remarks="更新时间"/>
+        <addColumn tableName="FF_ATTACHMENT_CONF">
+            <column name="CREATETIME" remarks="创建时间" type="datetime"/>
         </addColumn>
     </changeSet>
 </databaseChangeLog>
