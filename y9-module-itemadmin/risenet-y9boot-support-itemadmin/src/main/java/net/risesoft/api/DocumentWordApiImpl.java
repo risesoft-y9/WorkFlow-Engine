@@ -84,7 +84,7 @@ public class DocumentWordApiImpl implements DocumentWordApi {
         @RequestParam String processSerialNumber, @RequestParam String wordType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<DocumentHistoryWord> list = documentHistoryWordRepository
-            .findByProcessSerialNumberAndWordTypeOrderByUpdateDateAsc(processSerialNumber, wordType);
+            .findByProcessSerialNumberAndWordTypeOrderByCreateTimeAsc(processSerialNumber, wordType);
         List<DocumentWordModel> resultList = new ArrayList<>();
         for (DocumentHistoryWord documentWord : list) {
             DocumentWordModel documentWordModel = new DocumentWordModel();

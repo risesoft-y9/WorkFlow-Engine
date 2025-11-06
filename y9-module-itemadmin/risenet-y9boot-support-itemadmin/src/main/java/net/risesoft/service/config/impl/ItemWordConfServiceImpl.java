@@ -23,7 +23,6 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.repository.documentword.ItemWordConfRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.config.ItemWordConfService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -96,7 +95,6 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
                     ItemWordConf newBind = new ItemWordConf();
                     newBind.setId(newBindId);
                     newBind.setItemId(itemId);
-                    newBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     newBind.setWordType(bind.getWordType());
                     newBind.setProcessDefinitionId(latestId);
                     newBind.setTaskDefKey(currentTaskDefKey);
@@ -204,7 +202,6 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
             itemWordConf.setTaskDefKey(StringUtils.isBlank(taskDefKey) ? "" : taskDefKey);
         }
         itemWordConf.setWordType(wordType);
-        itemWordConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         itemWordConfRepository.save(itemWordConf);
     }
 }

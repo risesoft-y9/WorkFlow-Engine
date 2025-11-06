@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_DOCUMENT_WORD_HIS")
 @Comment("历史正文表")
-public class DocumentHistoryWord implements Serializable {
+public class DocumentHistoryWord extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6074193525663532657L;
     /**
@@ -84,13 +86,6 @@ public class DocumentHistoryWord implements Serializable {
     private Integer type;
 
     /**
-     * 保存时间
-     */
-    @Comment("保存时间")
-    @Column(name = "SAVEDATE", length = 50)
-    private String saveDate;
-
-    /**
      * 流程序号
      */
     @Comment("流程编号")
@@ -114,9 +109,4 @@ public class DocumentHistoryWord implements Serializable {
     @Comment("任务id")
     @Column(name = "TASKID", length = 50)
     private String taskId;
-
-    @Comment("更新时间")
-    @Column(name = "UPDATEDATE", length = 50)
-    private String updateDate;
-
 }

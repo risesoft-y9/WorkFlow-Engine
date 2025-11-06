@@ -428,7 +428,6 @@
             <column name="ISTAOHONG" remarks="是否套红" type="VARCHAR(10)"/>
             <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(64)"/>
             <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(38)"/>
-            <column name="SAVEDATE" remarks="保存时间" type="VARCHAR(100)"/>
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
@@ -436,6 +435,8 @@
             <column name="USERID" remarks="上传人员id" type="VARCHAR(38)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-16" author="mengjuhua" runOnChange="true">
@@ -456,7 +457,6 @@
             <column name="ISTAOHONG" remarks="是否套红" type="VARCHAR(10)"/>
             <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(64)"/>
             <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(38)"/>
-            <column name="SAVEDATE" remarks="保存时间" type="VARCHAR(38)"/>
             <column name="TASKID" remarks="任务id" type="VARCHAR(50)"/>
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
@@ -466,6 +466,8 @@
                 <constraints nullable="false"/>
             </column>
             <column name="VERSION" remarks="版本" type="INT"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-17" author="mengjuhua" runOnChange="true">
@@ -487,7 +489,6 @@
             <column name="ISTAOHONG" remarks="是否套红" type="VARCHAR(10)"/>
             <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(64)"/>
             <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(38)"/>
-            <column name="SAVEDATE" remarks="保存时间" type="VARCHAR(100)"/>
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
@@ -497,6 +498,8 @@
             <column name="VOLUMEID" remarks="卷Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-18" author="mengjuhua" runOnChange="true">

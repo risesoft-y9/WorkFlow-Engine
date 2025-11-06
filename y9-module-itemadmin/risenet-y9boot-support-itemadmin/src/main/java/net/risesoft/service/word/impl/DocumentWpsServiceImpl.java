@@ -44,7 +44,6 @@ public class DocumentWpsServiceImpl implements DocumentWpsService {
             wps.setHasContent(documentWps.getHasContent());
             wps.setIstaohong(documentWps.getIstaohong());
             wps.setProcessInstanceId(documentWps.getProcessInstanceId());
-            wps.setSaveDate(documentWps.getSaveDate());
             wps.setTenantId(documentWps.getTenantId());
             wps.setUserId(documentWps.getUserId());
             wps.setVolumeId(documentWps.getVolumeId());

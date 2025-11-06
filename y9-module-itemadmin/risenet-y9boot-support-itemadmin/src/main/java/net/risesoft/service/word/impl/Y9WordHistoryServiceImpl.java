@@ -15,7 +15,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.documentword.Y9WordHistoryRepository;
 import net.risesoft.service.word.Y9WordHistoryService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
@@ -111,7 +110,6 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
         y9WordHistory.setTaskId(taskId);
         Integer version = y9WordHistoryRepository.getMaxHistoryVersion(processSerialNumber);
         y9WordHistory.setVersion(version != null ? version + 1 : 1);
-        y9WordHistory.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
         y9WordHistory.setTenantId(tenantId);
         y9WordHistory.setTitle(documentTitle);
         y9WordHistory.setFileName(StringUtils.isNotBlank(documentTitle) ? documentTitle + fileType : "正文" + fileType);
@@ -148,8 +146,7 @@ public class Y9WordHistoryServiceImpl implements Y9WordHistoryService {
     public void updateById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong,
         String docCategory, String userId, String id) {
         if (StringUtils.isNotBlank(id)) {
-            y9WordHistoryRepository.updateById(fileStoreId, fileSize, isTaoHong, docCategory,
-                Y9DateTimeUtils.formatCurrentDateTime(), userId, id);
+            y9WordHistoryRepository.updateById(fileStoreId, fileSize, isTaoHong, docCategory, userId, id);
         }
     }
 
