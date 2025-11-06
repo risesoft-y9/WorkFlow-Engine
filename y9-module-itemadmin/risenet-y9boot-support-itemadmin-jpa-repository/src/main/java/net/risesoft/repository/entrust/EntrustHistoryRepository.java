@@ -56,5 +56,5 @@ public interface EntrustHistoryRepository
     @Query("from EntrustHistory t where t.ownerId=?1 and t.itemId=?2  order by t.startTime desc")
     List<EntrustHistory> findByOwnerIdAndItemId(String ownerId, String itemId);
 
-    Page<EntrustHistory> findByOwnerIdOrderByCreatTimeDesc(String ownerId, Pageable pageable);
+    Page<EntrustHistory> findByOwnerIdOrderByCreateTimeDesc(String ownerId, Pageable pageable);
 }

@@ -46,5 +46,4 @@ public class EntrustDetailServiceImpl implements EntrustDetailService {
         newed.setTaskId(taskId);
         entrustDetailRepository.save(newed);
     }
-
 }

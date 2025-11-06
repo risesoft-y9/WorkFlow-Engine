@@ -15,6 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ENTRUST")
 @Comment("出差委托表")
-public class Entrust implements Serializable {
+public class Entrust extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6623504879552636137L;
     /**
@@ -100,18 +102,4 @@ public class Entrust implements Serializable {
     @Comment("是否已经使用")
     @Transient
     private Integer used;
-
-    /**
-     * 委托事项的生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATTIME", nullable = false)
-    private String creatTime;
-
-    /**
-     * 委托事项编辑时间
-     */
-    @Comment("编辑时间")
-    @Column(name = "UPDATETIME", nullable = false)
-    private String updateTime;
 }
