@@ -753,7 +753,6 @@
             <column name="BUTTONTYPE" remarks="按钮类型" type="INT">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="ITEMID" remarks="事项Id" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
@@ -767,7 +766,8 @@
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="生成时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
             <column name="USERID" remarks="创建人id" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="创建人名称" type="VARCHAR(50)"/>
         </createTable>
@@ -1711,7 +1711,6 @@
             <column name="ID" remarks="主键" type="VARCHAR(38)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(255)"/>
             <column name="CUSTOMID" remarks="按钮标识" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
@@ -1721,7 +1720,8 @@
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="UPDATETIME" remarks="生成时间" type="VARCHAR(255)"/>
+            <column name="CREATETIME" remarks="创建时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="生成时间" type="datetime"/>
             <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
         </createTable>
