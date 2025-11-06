@@ -53,9 +53,4 @@ public class Y9FormOptionValue implements Serializable {
     @Column(name = "DEFAULTSELECTED", length = 2, nullable = false)
     @Comment("是否默认选中")
     private Integer defaultSelected = 0;
-
-    @Column(name = "UPDATETIME", length = 50)
-    @Comment("更新时间")
-    private String updateTime;
-
 }

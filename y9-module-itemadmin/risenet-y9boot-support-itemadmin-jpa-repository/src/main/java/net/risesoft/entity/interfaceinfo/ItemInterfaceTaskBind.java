@@ -15,6 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  *
  * @author zhangchongjie
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ITEM_INTERFACE_TASK_BIND")
 @Comment("事项接口任务绑定表")
-public class ItemInterfaceTaskBind implements Serializable {
+public class ItemInterfaceTaskBind extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 5824973042664138544L;
 
@@ -55,10 +57,6 @@ public class ItemInterfaceTaskBind implements Serializable {
     @Comment("执行条件")
     @Column(name = "EXECUTECONDITION", length = 100)
     private String executeCondition;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME")
-    private String createTime;
 
     /**
      * 接口名称

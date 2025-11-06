@@ -20,7 +20,6 @@
             <column name="requestType" remarks="请求类型" type="VARCHAR(20)"/>
             <column defaultValue="0" name="asyn" remarks="是否异步调用接口" type="VARCHAR(10)"/>
             <column defaultValue="0" name="abnormalStop" remarks="是否异常停止" type="VARCHAR(10)"/>
-            <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
     <changeSet id="1717137489499-2" author="zhangchongjie (generated)" runOnChange="true">
@@ -36,7 +35,6 @@
             <column name="interfaceId" remarks="接口id" type="VARCHAR(50)"/>
             <column name="parameterType" remarks="参数类型" type="VARCHAR(20)"/>
             <column name="parameterName" remarks="参数名称" type="VARCHAR(50)"/>
-            <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
             <column name="remark" remarks="参数备注" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
@@ -52,7 +50,6 @@
             </column>
             <column name="interfaceId" remarks="接口id" type="VARCHAR(50)"/>
             <column name="parameterName" remarks="参数名称" type="VARCHAR(50)"/>
-            <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
             <column name="remark" remarks="参数备注" type="VARCHAR(100)"/>
         </createTable>
     </changeSet>
@@ -68,7 +65,6 @@
             </column>
             <column name="itemId" remarks="事项Id" type="VARCHAR(50)"/>
             <column name="interfaceId" remarks="接口id" type="VARCHAR(50)"/>
-            <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
     <changeSet id="1717137489499-5" author="zhangchongjie (generated)" runOnChange="true">
@@ -88,7 +84,6 @@
             <column name="bindType" remarks="绑定类型" type="VARCHAR(50)"/>
             <column name="tableName" remarks="表名称" type="VARCHAR(50)"/>
             <column name="columnName" remarks="列名称" type="VARCHAR(100)"/>
-            <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
     <changeSet id="1717137489499-6" author="zhangchongjie (generated)" runOnChange="true">
@@ -106,7 +101,6 @@
             <column name="processDefinitionId" remarks="流程定义Id" type="VARCHAR(255)"/>
             <column name="taskDefKey" remarks="任务key" type="VARCHAR(100)"/>
             <column name="executeCondition" remarks="执行条件" type="VARCHAR(100)"/>
-            <column name="createTime" remarks="生成时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
     <changeSet id="1717137489499-7" author="zhangchongjie (generated)" runOnChange="true">
@@ -175,5 +169,5 @@
             <column name="createTime" remarks="创建时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
- 
+
 </databaseChangeLog>

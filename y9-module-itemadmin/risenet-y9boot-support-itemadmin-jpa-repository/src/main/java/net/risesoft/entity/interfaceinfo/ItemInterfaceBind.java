@@ -15,6 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  *
  * @author zhangchongjie
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ITEM_INTERFACE_BIND")
 @Comment("事项接口绑定表")
-public class ItemInterfaceBind implements Serializable {
+public class ItemInterfaceBind extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -7459152125523867706L;
 
@@ -43,10 +45,6 @@ public class ItemInterfaceBind implements Serializable {
     @Comment("接口id")
     @Column(name = "INTERFACEID", length = 50)
     private String interfaceId;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME")
-    private String createTime;
 
     /**
      * 接口名称

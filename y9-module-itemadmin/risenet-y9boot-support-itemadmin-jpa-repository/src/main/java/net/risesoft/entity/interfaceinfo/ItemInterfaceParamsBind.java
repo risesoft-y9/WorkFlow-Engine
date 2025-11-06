@@ -15,6 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 import net.risesoft.enums.ItemInterfaceTypeEnum;
 import net.risesoft.persistence.ItemEnumConverter;
 
@@ -28,7 +29,7 @@ import net.risesoft.persistence.ItemEnumConverter;
 @Entity
 @Table(name = "FF_ITEM_INTERFACE_PARAMS_BIND")
 @Comment("事项接口参数绑定表")
-public class ItemInterfaceParamsBind implements Serializable {
+public class ItemInterfaceParamsBind extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -2886788624623913907L;
 
@@ -72,9 +73,4 @@ public class ItemInterfaceParamsBind implements Serializable {
     @Comment("列名称")
     @Column(name = "COLUMNNAME", length = 100)
     private String columnName;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME")
-    private String createTime;
-
 }

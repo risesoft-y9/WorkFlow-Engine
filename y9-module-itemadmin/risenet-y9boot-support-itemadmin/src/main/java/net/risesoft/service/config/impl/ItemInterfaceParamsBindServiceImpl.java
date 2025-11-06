@@ -13,7 +13,6 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceParamsBindRepository;
 import net.risesoft.service.config.ItemInterfaceParamsBindService;
-import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  * @author zhangchongjie
@@ -68,7 +67,6 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
                 item.setTableType(info.getTableType());
                 item.setItemId(info.getItemId());
                 item.setId(info.getId());
-                item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 itemInterfaceParamsBindRepository.save(item);
             }
         } else {
@@ -82,7 +80,6 @@ public class ItemInterfaceParamsBindServiceImpl implements ItemInterfaceParamsBi
             item.setItemId(info.getItemId());
             item.setTableType(info.getTableType());
             item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             itemInterfaceParamsBindRepository.save(item);
         }
     }
