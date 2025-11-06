@@ -68,8 +68,8 @@ public class DeleteTaskCommand implements Command<Void> {
             identityLinkService.deleteIdentityLinksByTaskId(taskId);
             variableService.deleteVariablesByExecutionId(executionId);
             taskService.deleteTask(taskEntity, true);
-            CommandContextUtil.getHistoryManager().recordTaskEnd(taskEntity, executionEntity, taskEntity.getAssignee(),
-                reason, new Date());
+            CommandContextUtil.getHistoryManager()
+                .recordTaskEnd(taskEntity, executionEntity, taskEntity.getAssignee(), reason, new Date());
             CommandContextUtil.getActivityInstanceEntityManager().recordActivityEnd(executionEntity, reason);
         }
         return null;
