@@ -14,7 +14,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.button.SendButtonRepository;
 import net.risesoft.service.SendButtonService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -64,28 +63,23 @@ public class SendButtonServiceImpl implements SendButtonService {
         String userId = person.getParentId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
         String id = sendButton.getId();
         if (StringUtils.isNotEmpty(id)) {
-            SendButton oldsb = this.getById(id);
-            if (null != oldsb) {
-                oldsb.setName(sendButton.getName());
-                oldsb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                oldsb.setUserId(userId);
-                oldsb.setUserName(userName);
-
-                return sendButtonRepository.save(oldsb);
+            SendButton existsSendButton = this.getById(id);
+            if (null != existsSendButton) {
+                existsSendButton.setName(sendButton.getName());
+                existsSendButton.setUserId(userId);
+                existsSendButton.setUserName(userName);
+                return sendButtonRepository.save(existsSendButton);
             } else {
                 return sendButtonRepository.save(sendButton);
             }
         }
-
-        SendButton newsb = new SendButton();
-        newsb.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newsb.setName(sendButton.getName());
-        newsb.setCustomId("send_" + sendButton.getCustomId());
-        newsb.setUserId(userId);
-        newsb.setUserName(userName);
-        newsb.setTenantId(tenantId);
-        newsb.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newsb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        return sendButtonRepository.save(newsb);
+        SendButton newSendButton = new SendButton();
+        newSendButton.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newSendButton.setName(sendButton.getName());
+        newSendButton.setCustomId("send_" + sendButton.getCustomId());
+        newSendButton.setUserId(userId);
+        newSendButton.setUserName(userName);
+        newSendButton.setTenantId(tenantId);
+        return sendButtonRepository.save(newSendButton);
     }
 }

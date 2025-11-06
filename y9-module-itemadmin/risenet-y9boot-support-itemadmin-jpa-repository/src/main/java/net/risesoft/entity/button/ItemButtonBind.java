@@ -17,6 +17,7 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 import net.risesoft.enums.ItemButtonTypeEnum;
 import net.risesoft.persistence.ItemEnumConverter;
 
@@ -30,7 +31,7 @@ import net.risesoft.persistence.ItemEnumConverter;
 @Entity
 @Table(name = "FF_ITEM_BUTTONBIND")
 @Comment("事项按钮绑定表")
-public class ItemButtonBind implements Serializable {
+public class ItemButtonBind extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 8492379510656608228L;
 
@@ -127,18 +128,4 @@ public class ItemButtonBind implements Serializable {
     @Comment("序号")
     @Column(name = "TABINDEX", length = 3)
     private Integer tabIndex;
-
-    /**
-     * 生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
-
-    /**
-     * 更新时间
-     */
-    @Comment("更新时间")
-    @Column(name = "UPDATETIME", length = 50)
-    private String updateTime;
 }

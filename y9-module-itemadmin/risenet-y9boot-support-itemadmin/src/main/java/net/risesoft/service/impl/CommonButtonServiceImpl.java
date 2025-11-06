@@ -14,7 +14,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.button.CommonButtonRepository;
 import net.risesoft.service.CommonButtonService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -64,28 +63,23 @@ public class CommonButtonServiceImpl implements CommonButtonService {
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId();
         String id = commonButton.getId();
         if (StringUtils.isNotEmpty(id)) {
-            CommonButton oldcb = this.getById(id);
-            if (null != oldcb) {
-                oldcb.setName(commonButton.getName());
-                oldcb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                oldcb.setUserId(userId);
-                oldcb.setUserName(userName);
-
-                return commonButtonRepository.save(oldcb);
+            CommonButton existCommonButton = this.getById(id);
+            if (null != existCommonButton) {
+                existCommonButton.setName(commonButton.getName());
+                existCommonButton.setUserId(userId);
+                existCommonButton.setUserName(userName);
+                return commonButtonRepository.save(existCommonButton);
             } else {
                 return commonButtonRepository.save(commonButton);
             }
         }
-
-        CommonButton newcb = new CommonButton();
-        newcb.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newcb.setName(commonButton.getName());
-        newcb.setCustomId("common_" + commonButton.getCustomId());
-        newcb.setUserId(userId);
-        newcb.setUserName(userName);
-        newcb.setTenantId(tenantId);
-        newcb.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newcb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        return commonButtonRepository.save(newcb);
+        CommonButton newcbCommonButton = new CommonButton();
+        newcbCommonButton.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newcbCommonButton.setName(commonButton.getName());
+        newcbCommonButton.setCustomId("common_" + commonButton.getCustomId());
+        newcbCommonButton.setUserId(userId);
+        newcbCommonButton.setUserName(userName);
+        newcbCommonButton.setTenantId(tenantId);
+        return commonButtonRepository.save(newcbCommonButton);
     }
 }

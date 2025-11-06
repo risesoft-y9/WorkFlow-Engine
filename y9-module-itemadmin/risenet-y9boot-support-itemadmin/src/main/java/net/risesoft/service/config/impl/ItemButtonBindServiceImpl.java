@@ -32,7 +32,6 @@ import net.risesoft.service.CommonButtonService;
 import net.risesoft.service.SendButtonService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemButtonRoleService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -85,8 +84,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         itemButtonBind.setProcessDefinitionId(processDefinitionId);
         itemButtonBind.setTaskDefKey(taskDefKey);
         itemButtonBind.setTenantId(tenantId);
-        itemButtonBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        itemButtonBind.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         itemButtonBind.setUserId(userId);
         itemButtonBind.setUserName(userName);
         return itemButtonBind;
@@ -223,8 +220,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         newBind.setProcessDefinitionId(processDefinitionId);
         newBind.setTaskDefKey(taskDefKey);
         newBind.setTenantId(tenantId);
-        newBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newBind.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newBind.setUserId(userId);
         newBind.setUserName(userName);
         setTabIndex(newBind, itemId, processDefinitionId, taskDefKey, sourceBind.getButtonType());
@@ -257,8 +252,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
             newBind.setProcessDefinitionId(lastVersionPid);
             newBind.setTaskDefKey(bind.getTaskDefKey());
             newBind.setTenantId(tenantId);
-            newBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-            newBind.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             newBind.setUserId(userId);
             newBind.setUserName(userName);
             newBind.setTabIndex(bind.getTabIndex());
@@ -498,7 +491,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         ItemButtonBind itemButtonBind = this.getById(id);
         if (null != itemButtonBind) {
             itemButtonBind.setTenantId(tenantId);
-            itemButtonBind.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             itemButtonBind.setUserId(userId);
             itemButtonBind.setUserName(userName);
 
@@ -537,7 +529,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
             String[] arr = idAndTabIndex.split(SysVariables.COLON);
             ItemButtonBind oldBib = this.getById(arr[0]);
             oldBib.setTabIndex(Integer.valueOf(arr[1]));
-            oldBib.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             oldBib.setUserId(userId);
             oldBib.setUserName(userName);
 

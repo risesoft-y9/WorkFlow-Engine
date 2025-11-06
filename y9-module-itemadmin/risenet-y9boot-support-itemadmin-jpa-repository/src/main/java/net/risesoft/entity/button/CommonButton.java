@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_COMMONBUTTON")
 @Comment("按钮信息表")
-public class CommonButton implements Serializable {
+public class CommonButton extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -4794987057156388177L;
 
@@ -72,18 +74,4 @@ public class CommonButton implements Serializable {
     @Comment("创建人id")
     @Column(name = "USERID", length = 50)
     private String userId;
-
-    /**
-     * 生成时间
-     */
-    @Comment("创建时间")
-    @Column(name = "CREATETIME")
-    private String createTime;
-
-    /**
-     * 生成时间
-     */
-    @Comment("修改时间")
-    @Column(name = "UPDATETIME")
-    private String updateTime;
 }
