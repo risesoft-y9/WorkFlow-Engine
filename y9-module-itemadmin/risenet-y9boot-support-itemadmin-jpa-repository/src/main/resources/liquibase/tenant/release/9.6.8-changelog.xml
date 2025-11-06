@@ -210,10 +210,11 @@
             <column name="USERID" remarks="上传人员id" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="上传人员名称" type="VARCHAR(50)"/>
             <column name="TYPE" remarks="数据类型" type="INT"/>
-            <column name="SAVEDATE" remarks="保存时间" type="VARCHAR(50)"/>
             <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)"/>
             <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)"/>
             <column name="WORDTYPE" remarks="正文类别" type="VARCHAR(10)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700543333-12" author="qinMan" runOnChange="true">
@@ -233,12 +234,12 @@
             <column name="USERID" remarks="上传人员id" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="上传人员名称" type="VARCHAR(50)"/>
             <column name="TYPE" remarks="数据类型" type="INT"/>
-            <column name="SAVEDATE" remarks="保存时间" type="VARCHAR(50)"/>
             <column name="PROCESSSERIALNUMBER" remarks="流程编号" type="VARCHAR(50)"/>
             <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(50)"/>
             <column name="WORDTYPE" remarks="正文类别" type="VARCHAR(10)"/>
             <column name="TASKID" remarks="任务id" type="VARCHAR(50)"/>
-            <column name="UPDATEDATE" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1702001405829-1-13" author="zhangchongjie" runOnChange="true">
@@ -257,7 +258,6 @@
             <column name="ID" remarks="主键" type="VARCHAR(38)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="ITEMID" remarks="事项Id" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
@@ -268,6 +268,8 @@
             <column name="TASKDEFKEY" remarks="流程节点Key" type="VARCHAR(100)"/>
             <column name="TASKDEFNAME" remarks="流程节点名称" type="VARCHAR(100)"/>
             <column name="WORDTYPE" remarks="正文类型" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700543333-15" author="qinMan" runOnChange="true">

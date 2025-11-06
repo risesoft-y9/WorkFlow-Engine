@@ -50,7 +50,6 @@ import net.risesoft.service.core.ItemService;
 import net.risesoft.service.template.TaoHongTemplateService;
 import net.risesoft.service.word.Y9WordHistoryService;
 import net.risesoft.service.word.Y9WordService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -209,7 +208,6 @@ public class Y9WordApiImpl implements Y9WordApi {
         history.setFileSize(historyWord.getFileSize());
         history.setId(historyWord.getId());
         history.setProcessSerialNumber(historyWord.getProcessSerialNumber());
-        history.setSaveDate(historyWord.getSaveDate());
         history.setFileStoreId(historyWord.getFileStoreId());
         history.setFileType(historyWord.getFileType());
         history.setIsTaoHong(StringUtils.isNotBlank(historyWord.getIstaohong()) ? historyWord.getIstaohong() : "");
@@ -267,7 +265,6 @@ public class Y9WordApiImpl implements Y9WordApi {
         wordModel.setFileSize(y9Word.getFileSize());
         wordModel.setFileName(y9Word.getFileName());
         wordModel.setProcessSerialNumber(y9Word.getProcessSerialNumber());
-        wordModel.setSaveDate(y9Word.getSaveDate());
         wordModel.setUserId(y9Word.getUserId());
         wordModel.setIsTaoHong(y9Word.getIstaohong());
         wordModel.setFileType(y9Word.getFileType());
@@ -568,7 +565,6 @@ public class Y9WordApiImpl implements Y9WordApi {
                 tw.setFileStoreId(dMap.get("filePath").toString());
                 tw.setFileType(dMap.get("fileType").toString());
                 tw.setProcessSerialNumber(processSerialNumber);
-                tw.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
                 tw.setTenantId(dMap.get("tenantId").toString());
                 tw.setUserId(dMap.get("userId").toString());
                 tw.setTitle(dMap.get("title") == null ? "" : dMap.get("title").toString());
@@ -655,7 +651,6 @@ public class Y9WordApiImpl implements Y9WordApi {
      */
     private void populateWordInfoFromExistingWord(Y9WordInfo wordInfo, Y9Word word) {
         wordInfo.setFileDocumentId(word.getId());
-        wordInfo.setSaveDate(word.getSaveDate());
         wordInfo.setFileType(word.getFileType());
         wordInfo.setFileStoreId(word.getFileStoreId());
         wordInfo.setUid(word.getFileStoreId());

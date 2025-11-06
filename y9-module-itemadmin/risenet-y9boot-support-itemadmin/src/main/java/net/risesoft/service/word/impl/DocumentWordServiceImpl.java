@@ -16,7 +16,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.documentword.DocumentHistoryWordRepository;
 import net.risesoft.repository.documentword.DocumentWordRepository;
 import net.risesoft.service.word.DocumentWordService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -45,7 +44,7 @@ public class DocumentWordServiceImpl implements DocumentWordService {
         });
         documentWordRepository.saveAll(list);
         List<DocumentHistoryWord> hisList = documentHistoryWordRepository
-            .findByProcessSerialNumberAndWordTypeOrderByUpdateDateAsc(sourceProcessSerialNumber, wordType);
+            .findByProcessSerialNumberAndWordTypeOrderByCreateTimeAsc(sourceProcessSerialNumber, wordType);
         hisList.forEach(documentHistoryWord -> {
             documentHistoryWord.setId(Y9IdGenerator.genId());
             documentHistoryWord.setProcessSerialNumber(targetProcessSerialNumber);
@@ -80,7 +79,6 @@ public class DocumentWordServiceImpl implements DocumentWordService {
         DocumentHistoryWord documentHistoryWord = new DocumentHistoryWord();
         Y9BeanUtil.copyProperties(oldDocumentWord, documentHistoryWord);
         documentHistoryWord.setTaskId(taskId);
-        documentHistoryWord.setUpdateDate(Y9DateTimeUtils.formatCurrentDateTime());
         documentHistoryWordRepository.save(documentHistoryWord);
         documentWordRepository.deleteById(oldId);
     }

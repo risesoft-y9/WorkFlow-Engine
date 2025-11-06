@@ -15,6 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ITEM_WORD_CONF")
 @org.hibernate.annotations.Table(comment = "事项正文组件权限配置", appliesTo = "FF_ITEM_WORD_CONF")
-public class ItemWordConf implements Serializable {
+public class ItemWordConf extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -3985582253198013194L;
 
@@ -59,10 +61,6 @@ public class ItemWordConf implements Serializable {
     @Comment("角色ids")
     @Column(name = "ROLEIDS", length = 500)
     private String roleIds;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
 
     /**
      * 绑定的角色名称

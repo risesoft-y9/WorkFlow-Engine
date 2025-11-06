@@ -380,4 +380,155 @@
                       columnDataType="datetime"
                       remarks="更新时间"/>
     </changeSet>
+
+    <changeSet id="1704700556666-16" author="qinMan" runOnChange="true">
+        <comment>将 SAVEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_DOCUMENT_WORD_HIS">
+            <column name="CREATETIME" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_DOCUMENT_WORD_HIS
+            SET CREATETIME = STR_TO_DATE(SAVEDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE SAVEDATE IS NOT NULL
+              AND SAVEDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_DOCUMENT_WORD_HIS">
+            <column name="SAVEDATE"/>
+        </dropColumn>
+        <comment>将 UPDATEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_DOCUMENT_WORD_HIS">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_DOCUMENT_WORD_HIS
+            SET UPDATETIME = STR_TO_DATE(UPDATEDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE UPDATEDATE IS NOT NULL
+              AND UPDATEDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_DOCUMENT_WORD_HIS">
+            <column name="UPDATEDATE"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-17" author="qinMan" runOnChange="true">
+        <comment>将 SAVEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_DOCUMENT_WORD">
+            <column name="CREATETIME" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_DOCUMENT_WORD
+            SET CREATETIME = STR_TO_DATE(SAVEDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE SAVEDATE IS NOT NULL
+              AND SAVEDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_DOCUMENT_WORD">
+            <column name="SAVEDATE"/>
+        </dropColumn>
+        <addColumn tableName="FF_DOCUMENT_WORD">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-18" author="qinMan" runOnChange="true">
+        <comment>将 SAVEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_DOCUMENTWPS">
+            <column name="CREATETIME" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_DOCUMENTWPS
+            SET CREATETIME = STR_TO_DATE(SAVEDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE SAVEDATE IS NOT NULL
+              AND SAVEDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_DOCUMENTWPS">
+            <column name="SAVEDATE"/>
+        </dropColumn>
+        <addColumn tableName="FF_DOCUMENTWPS">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-19" author="qinMan" runOnChange="true">
+        <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ITEM_WORD_CONF">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_ITEM_WORD_CONF
+            SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATETIME IS NOT NULL
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_ITEM_WORD_CONF">
+            <column name="CREATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_ITEM_WORD_CONF"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ITEM_WORD_CONF">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-20" author="qinMan" runOnChange="true">
+        <comment>将 SAVEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_DOCUMENTWORD">
+            <column name="CREATETIME" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_DOCUMENTWORD
+            SET CREATETIME = STR_TO_DATE(SAVEDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE SAVEDATE IS NOT NULL
+              AND SAVEDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_DOCUMENTWORD">
+            <column name="SAVEDATE"/>
+        </dropColumn>
+        <addColumn tableName="FF_DOCUMENTWORD">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-21" author="qinMan" runOnChange="true">
+        <comment>将 SAVEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_DOCUMENTWORD_HIS">
+            <column name="CREATETIME" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_DOCUMENTWORD_HIS
+            SET CREATETIME = STR_TO_DATE(SAVEDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE SAVEDATE IS NOT NULL
+              AND SAVEDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_DOCUMENTWORD_HIS">
+            <column name="SAVEDATE"/>
+        </dropColumn>
+        <addColumn tableName="FF_DOCUMENTWORD_HIS">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

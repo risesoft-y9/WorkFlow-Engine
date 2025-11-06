@@ -27,7 +27,7 @@ public interface Y9WordHistoryRepository
      * @param processSerialNumber
      * @return
      */
-    @Query("From Y9WordHistory d where d.processSerialNumber=?1 order by d.saveDate desc")
+    @Query("From Y9WordHistory d where d.processSerialNumber=?1 order by d.createTime desc")
     List<Y9WordHistory> findByProcessSerialNumber(String processSerialNumber);
 
     /**
@@ -36,7 +36,7 @@ public interface Y9WordHistoryRepository
      * @param processSerialNumber
      * @return
      */
-    @Query("From Y9WordHistory d where d.processSerialNumber=?1 and d.istaohong=?2 order by d.saveDate desc")
+    @Query("From Y9WordHistory d where d.processSerialNumber=?1 and d.istaohong=?2 order by d.createTime desc")
     List<Y9WordHistory> findByProcessSerialNumberAndIsTaoHong(String processSerialNumber, String isTaoHong);
 
     @Query("From Y9WordHistory d where d.processSerialNumber in (?1)")
@@ -48,7 +48,7 @@ public interface Y9WordHistoryRepository
      * @param taskId 任务ID
      * @return
      */
-    @Query("From Y9WordHistory d where d.taskId=?1 order by d.saveDate desc")
+    @Query("From Y9WordHistory d where d.taskId=?1 order by d.createTime desc")
     List<Y9WordHistory> findListByTaskId(String taskId);
 
     /**
@@ -57,7 +57,7 @@ public interface Y9WordHistoryRepository
      * @param processSerialNumber
      * @return
      */
-    @Query("From Y9WordHistory d where d.processSerialNumber=?1 and d.istaohong=?2 and d.taskId=?3 order by d.saveDate desc")
+    @Query("From Y9WordHistory d where d.processSerialNumber=?1 and d.istaohong=?2 and d.taskId=?3 order by d.createTime desc")
     List<Y9WordHistory> getByProcessSerialNumberAndIsTaoHongAndTaskId(String processSerialNumber, String istaohong,
         String taskId);
 
@@ -67,7 +67,7 @@ public interface Y9WordHistoryRepository
      * @param processSerialNumber
      * @return
      */
-    @Query("From Y9WordHistory d where d.processSerialNumber=?1 and d.taskId=?2 order by d.saveDate desc")
+    @Query("From Y9WordHistory d where d.processSerialNumber=?1 and d.taskId=?2 order by d.createTime desc")
     List<Y9WordHistory> getByProcessSerialNumberAndTaskId(String processSerialNumber, String taskId);
 
     /**
@@ -76,7 +76,7 @@ public interface Y9WordHistoryRepository
      * @param processSerialNumber
      * @return
      */
-    @Query("From Y9WordHistory d where d.processSerialNumber=?1 and d.istaohong=?2 and d.taskId=?3 order by d.saveDate desc")
+    @Query("From Y9WordHistory d where d.processSerialNumber=?1 and d.istaohong=?2 and d.taskId=?3 order by d.createTime desc")
     List<Y9WordHistory> getByProcessSerialNumberAndTaskIdAndIsTaoHong(String processSerialNumber, String istaohong,
         String taskId);
 
@@ -97,13 +97,12 @@ public interface Y9WordHistoryRepository
      * @param fileSize
      * @param isTaoHong
      * @param docCategory
-     * @param saveDate
      * @param userId
      * @param id
      */
     @Transactional()
     @Modifying
-    @Query("update Y9WordHistory t set t.fileStoreId=?1,t.fileSize=?2,t.istaohong=?3,t.docCategory=?4,t.saveDate=?5,t.userId=?6 where t.id=?7")
-    void updateById(String fileStoreId, String fileSize, String isTaoHong, String docCategory, String saveDate,
-        String userId, String id);
+    @Query("update Y9WordHistory t set t.fileStoreId=?1,t.fileSize=?2,t.istaohong=?3,t.docCategory=?4,t.userId=?5 where t.id=?6")
+    void updateById(String fileStoreId, String fileSize, String isTaoHong, String docCategory, String userId,
+        String id);
 }

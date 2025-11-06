@@ -19,6 +19,6 @@ import net.risesoft.entity.documentword.DocumentHistoryWord;
 public interface DocumentHistoryWordRepository
     extends JpaRepository<DocumentHistoryWord, String>, JpaSpecificationExecutor<DocumentHistoryWord> {
 
-    List<DocumentHistoryWord> findByProcessSerialNumberAndWordTypeOrderByUpdateDateAsc(String processSerialNumber,
+    List<DocumentHistoryWord> findByProcessSerialNumberAndWordTypeOrderByCreateTimeAsc(String processSerialNumber,
         String wordType);
 }

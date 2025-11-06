@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_DOCUMENTWORD")
 @org.hibernate.annotations.Table(comment = "正文信息表", appliesTo = "FF_DOCUMENTWORD")
-public class Y9Word implements Serializable {
+public class Y9Word extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -8485514305692770264L;
 
@@ -90,13 +92,6 @@ public class Y9Word implements Serializable {
     @Comment("是否套红")
     @Column(name = "ISTAOHONG", length = 10)
     private String istaohong;
-
-    /**
-     * 保存时间
-     */
-    @Comment("保存时间")
-    @Column(name = "SAVEDATE", length = 100)
-    private String saveDate;
 
     /**
      * 流程序号

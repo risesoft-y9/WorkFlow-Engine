@@ -26,7 +26,7 @@ public interface Y9WordRepository extends JpaRepository<Y9Word, String>, JpaSpec
      * @param processSerialNumber
      * @return
      */
-    @Query("From Y9Word d where d.processSerialNumber=?1 order by d.saveDate desc")
+    @Query("From Y9Word d where d.processSerialNumber=?1 order by d.createTime desc")
     List<Y9Word> findByProcessSerialNumber(String processSerialNumber);
 
     List<Y9Word> findByProcessSerialNumberAndDocCategory(String processSerialNumber, String docCategory);
@@ -38,7 +38,7 @@ public interface Y9WordRepository extends JpaRepository<Y9Word, String>, JpaSpec
      * @param taohong
      * @return
      */
-    @Query("From Y9Word d where d.processSerialNumber=?1 and d.istaohong=?2 order by d.saveDate desc")
+    @Query("From Y9Word d where d.processSerialNumber=?1 and d.istaohong=?2 order by d.createTime desc")
     List<Y9Word> findByProcessSerialNumberAndIstaohong(String processSerialNumber, String taohong);
 
     @Query("From Y9Word d where d.processSerialNumber in (?1)")
@@ -51,15 +51,14 @@ public interface Y9WordRepository extends JpaRepository<Y9Word, String>, JpaSpec
      * @param fileType
      * @param fileName
      * @param fileSize
-     * @param saveDate
      * @param isTaoHong
      * @param userId
      * @param id
      */
     @Transactional()
     @Modifying
-    @Query("update Y9Word t set t.fileStoreId=?1,t.fileType=?2,t.fileName=?3,t.fileSize=?4,t.saveDate=?5,t.istaohong=?6,t.userId=?7 where t.id=?8")
-    void updateById(String fileStoreId, String fileType, String fileName, String fileSize, String saveDate,
-        String isTaoHong, String userId, String id);
+    @Query("update Y9Word t set t.fileStoreId=?1,t.fileType=?2,t.fileName=?3,t.fileSize=?4,t.istaohong=?5,t.userId=?6 where t.id=?7")
+    void updateById(String fileStoreId, String fileType, String fileName, String fileSize, String isTaoHong,
+        String userId, String id);
 
 }
