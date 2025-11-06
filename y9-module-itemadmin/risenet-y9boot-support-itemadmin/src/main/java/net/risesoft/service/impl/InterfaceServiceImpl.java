@@ -28,7 +28,6 @@ import net.risesoft.repository.interfaceinfo.InterfaceResponseParamsRepository;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceBindRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.InterfaceService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
@@ -179,7 +178,6 @@ public class InterfaceServiceImpl implements InterfaceService {
                 item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 item.setInterfaceId(interfaceId);
                 item.setParameterName(columnName);
-                item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 item.setRemark("");
                 interfaceResponseParamsRepository.saveAndFlush(item);
             }
@@ -208,7 +206,6 @@ public class InterfaceServiceImpl implements InterfaceService {
         item.setInterfaceAddress(info.getInterfaceAddress());
         item.setAbnormalStop(info.getAbnormalStop());
         item.setAsyn(info.getAsyn());
-        item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         return interfaceInfoRepository.saveAndFlush(item);
     }
 
@@ -231,7 +228,6 @@ public class InterfaceServiceImpl implements InterfaceService {
         item.setInterfaceId(info.getInterfaceId());
         item.setParameterName(info.getParameterName());
         item.setParameterType(info.getParameterType());
-        item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         item.setRemark(info.getRemark());
         interfaceRequestParamsRepository.saveAndFlush(item);
     }
@@ -254,10 +250,8 @@ public class InterfaceServiceImpl implements InterfaceService {
         item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         item.setInterfaceId(info.getInterfaceId());
         item.setParameterName(info.getParameterName());
-        item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         item.setRemark(info.getRemark());
         item.setFileType(info.getFileType());
         interfaceResponseParamsRepository.saveAndFlush(item);
     }
-
 }

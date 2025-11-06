@@ -2032,7 +2032,6 @@
             <column name="TYPE" remarks="字典类型" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
-            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-100" author="mengjuhua" runOnChange="true">

@@ -625,4 +625,192 @@
                       columnDataType="datetime"
                       remarks="更新时间"/>
     </changeSet>
+    <changeSet id="1704700556666-24" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="Y9FORM_OPTIONVALUE" columnName="UPDATETIME"/>
+        </preConditions>
+        <dropColumn tableName="Y9FORM_OPTIONVALUE">
+            <column name="UPDATETIME"/>
+        </dropColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-25" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_INTERFACE_INFO" columnName="CREATETIME"/>
+        </preConditions>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_INTERFACE_INFO">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_INTERFACE_INFO
+            SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATETIME IS NOT NULL
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_INTERFACE_INFO">
+            <column name="CREATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_INTERFACE_INFO"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_INTERFACE_INFO">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-26" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_INTERFACE_REQUEST_PARAMS" columnName="CREATETIME"/>
+        </preConditions>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_INTERFACE_REQUEST_PARAMS">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_INTERFACE_REQUEST_PARAMS
+            SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATETIME IS NOT NULL
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_INTERFACE_REQUEST_PARAMS">
+            <column name="CREATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_INTERFACE_REQUEST_PARAMS"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_INTERFACE_REQUEST_PARAMS">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-27" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_INTERFACE_RESPONSE_PARAMS" columnName="CREATETIME"/>
+        </preConditions>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_INTERFACE_RESPONSE_PARAMS">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_INTERFACE_RESPONSE_PARAMS
+            SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATETIME IS NOT NULL
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_INTERFACE_RESPONSE_PARAMS">
+            <column name="CREATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_INTERFACE_RESPONSE_PARAMS"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_INTERFACE_RESPONSE_PARAMS">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-28" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ITEM_INTERFACE_BIND" columnName="CREATETIME"/>
+        </preConditions>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ITEM_INTERFACE_BIND">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_ITEM_INTERFACE_BIND
+            SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATETIME IS NOT NULL
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_ITEM_INTERFACE_BIND">
+            <column name="CREATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_ITEM_INTERFACE_BIND"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ITEM_INTERFACE_BIND">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-29" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ITEM_INTERFACE_PARAMS_BIND" columnName="CREATETIME"/>
+        </preConditions>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ITEM_INTERFACE_PARAMS_BIND">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_ITEM_INTERFACE_PARAMS_BIND
+            SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATETIME IS NOT NULL
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_ITEM_INTERFACE_PARAMS_BIND">
+            <column name="CREATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_ITEM_INTERFACE_PARAMS_BIND"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ITEM_INTERFACE_PARAMS_BIND">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-30" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ITEM_INTERFACE_TASK_BIND" columnName="CREATETIME"/>
+        </preConditions>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ITEM_INTERFACE_TASK_BIND">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_ITEM_INTERFACE_TASK_BIND
+            SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATETIME IS NOT NULL
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_ITEM_INTERFACE_TASK_BIND">
+            <column name="CREATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_ITEM_INTERFACE_TASK_BIND"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_ITEM_INTERFACE_TASK_BIND">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
 </databaseChangeLog>

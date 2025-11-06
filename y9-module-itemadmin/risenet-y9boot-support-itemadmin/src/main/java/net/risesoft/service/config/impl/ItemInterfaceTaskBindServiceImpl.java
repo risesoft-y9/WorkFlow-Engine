@@ -17,7 +17,6 @@ import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.config.ItemInterfaceTaskBindService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -68,7 +67,6 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
                     newBind.setItemId(itemId);
                     newBind.setInterfaceId(interfaceId);
                     newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                    newBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     newBind.setExecuteCondition(bind.getExecuteCondition());
                     newBind.setProcessDefinitionId(latestPdId);
                     newBind.setTaskDefKey(currentTaskDefKey);
@@ -99,7 +97,6 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
             bind.setItemId(itemId);
             bind.setInterfaceId(interfaceId);
             bind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            bind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             bind.setExecuteCondition(condition);
             bind.setProcessDefinitionId(processDefinitionId);
             bind.setTaskDefKey(elementKey);

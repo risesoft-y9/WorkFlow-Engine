@@ -15,6 +15,7 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 import net.risesoft.enums.ItemInterfaceTypeEnum;
 import net.risesoft.persistence.ItemEnumConverter;
 
@@ -28,7 +29,7 @@ import net.risesoft.persistence.ItemEnumConverter;
 @Entity
 @Table(name = "FF_INTERFACE_INFO")
 @org.hibernate.annotations.Table(comment = "接口信息表", appliesTo = "FF_INTERFACE_INFO")
-public class InterfaceInfo implements Serializable {
+public class InterfaceInfo extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 5724668342027403903L;
 
@@ -59,9 +60,4 @@ public class InterfaceInfo implements Serializable {
     @Comment("是否异常停止")
     @Column(name = "abnormalStop", length = 10)
     private String abnormalStop = "0";
-
-    @Comment("创建时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
-
 }

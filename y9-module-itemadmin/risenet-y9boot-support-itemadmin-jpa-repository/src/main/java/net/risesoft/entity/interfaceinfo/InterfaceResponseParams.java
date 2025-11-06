@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  *
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_INTERFACE_RESPONSE_PARAMS")
 @org.hibernate.annotations.Table(comment = "接口响应参数信息表", appliesTo = "FF_INTERFACE_RESPONSE_PARAMS")
-public class InterfaceResponseParams implements Serializable {
+public class InterfaceResponseParams extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 2349336106886222608L;
 
@@ -50,9 +52,4 @@ public class InterfaceResponseParams implements Serializable {
     @Comment("参数备注")
     @Column(name = "remark", length = 100)
     private String remark;
-
-    @Comment("创建时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
-
 }

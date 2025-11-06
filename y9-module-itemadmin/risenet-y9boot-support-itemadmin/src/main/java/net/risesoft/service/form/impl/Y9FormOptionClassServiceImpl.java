@@ -18,7 +18,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormOptionClassRepository;
 import net.risesoft.repository.form.Y9FormOptionValueRepository;
 import net.risesoft.service.form.Y9FormOptionClassService;
-import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  * @author qinman
@@ -137,7 +136,6 @@ public class Y9FormOptionClassServiceImpl implements Y9FormOptionClassService {
             y9FormOptionValue.setCode(optionValue.getCode());
             y9FormOptionValue.setName(optionValue.getName());
             y9FormOptionValue.setType(optionValue.getType());
-            y9FormOptionValue.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             y9FormOptionValue = y9FormOptionValueRepository.save(y9FormOptionValue);
 
             return Y9Result.success(y9FormOptionValue, "保存成功");

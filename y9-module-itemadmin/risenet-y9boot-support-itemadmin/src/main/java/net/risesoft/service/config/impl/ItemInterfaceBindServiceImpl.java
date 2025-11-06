@@ -19,7 +19,6 @@ import net.risesoft.repository.interfaceinfo.ItemInterfaceParamsBindRepository;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceTaskBindRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.config.ItemInterfaceBindService;
-import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  *
@@ -51,7 +50,6 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
             newBind.setItemId(newItemId);
             newBind.setInterfaceId(bind.getInterfaceId());
             newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newBind.setCreateTime(bind.getCreateTime());
             itemInterfaceBindRepository.save(newBind);
         }
     }
@@ -110,7 +108,6 @@ public class ItemInterfaceBindServiceImpl implements ItemInterfaceBindService {
                 item.setItemId(itemId);
                 item.setInterfaceId(interfaceId);
                 item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                item.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 itemInterfaceBindRepository.save(item);
             }
         }
