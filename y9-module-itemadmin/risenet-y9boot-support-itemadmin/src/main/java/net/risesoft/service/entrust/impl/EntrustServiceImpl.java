@@ -61,8 +61,6 @@ public class EntrustServiceImpl implements EntrustService {
             eh.setAssigneeId(entrust.getAssigneeId());
             eh.setStartTime(entrust.getStartTime());
             eh.setEndTime(entrust.getEndTime());
-            eh.setCreatTime(entrust.getCreatTime());
-            eh.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             entrustHistoryRepository.save(eh);
             entrustRepository.delete(entrust);
         } else {
@@ -82,8 +80,6 @@ public class EntrustServiceImpl implements EntrustService {
             eh.setAssigneeId(entrust.getAssigneeId());
             eh.setStartTime(entrust.getStartTime());
             eh.setEndTime(entrust.getEndTime());
-            eh.setCreatTime(entrust.getCreatTime());
-            eh.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             entrustHistoryRepository.save(eh);
             entrustRepository.delete(entrust);
         }
@@ -101,8 +97,6 @@ public class EntrustServiceImpl implements EntrustService {
             eh.setAssigneeId(entrust.getAssigneeId());
             eh.setStartTime(entrust.getStartTime());
             eh.setEndTime(entrust.getEndTime());
-            eh.setCreatTime(entrust.getCreatTime());
-            eh.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             entrustHistoryRepository.save(eh);
             entrustRepository.delete(entrust);
         }
@@ -483,7 +477,6 @@ public class EntrustServiceImpl implements EntrustService {
             old.setAssigneeId(entrust.getAssigneeId());
             old.setStartTime(entrust.getStartTime());
             old.setEndTime(entrust.getEndTime());
-            old.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             entrustRepository.save(old);
             return old;
         }
@@ -494,8 +487,6 @@ public class EntrustServiceImpl implements EntrustService {
         newEntrust.setAssigneeId(entrust.getAssigneeId());
         newEntrust.setStartTime(entrust.getStartTime());
         newEntrust.setEndTime(entrust.getEndTime());
-        newEntrust.setCreatTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newEntrust.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         entrustRepository.save(newEntrust);
         return newEntrust;
     }

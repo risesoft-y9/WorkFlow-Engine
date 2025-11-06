@@ -564,12 +564,6 @@
             <column name="ASSIGNEEID" remarks="委托对象Id" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATTIME" remarks="生成时间" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="ENDTIME" remarks="委托结束时间" type="VARCHAR(30)">
-                <constraints nullable="false"/>
-            </column>
             <column name="ITEMID" remarks="事项Id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -579,9 +573,11 @@
             <column name="STARTTIME" remarks="委托开始时间" type="VARCHAR(30)">
                 <constraints nullable="false"/>
             </column>
-            <column name="UPDATETIME" remarks="编辑时间" type="VARCHAR(255)">
+            <column name="ENDTIME" remarks="委托结束时间" type="VARCHAR(30)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-21" author="mengjuhua" runOnChange="true">
@@ -597,12 +593,6 @@
             <column name="ASSIGNEEID" remarks="受托人Id" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATTIME" remarks="生成时间" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
-            <column name="ENDTIME" remarks="委托结束时间" type="VARCHAR(30)">
-                <constraints nullable="false"/>
-            </column>
             <column name="ITEMID" remarks="事项Id" type="VARCHAR(255)">
                 <constraints nullable="false"/>
             </column>
@@ -612,9 +602,11 @@
             <column name="STARTTIME" remarks="委托开始时间" type="VARCHAR(30)">
                 <constraints nullable="false"/>
             </column>
-            <column name="updateTime" remarks="编辑时间" type="VARCHAR(255)">
+            <column name="ENDTIME" remarks="委托结束时间" type="VARCHAR(30)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-22" author="mengjuhua" runOnChange="true">

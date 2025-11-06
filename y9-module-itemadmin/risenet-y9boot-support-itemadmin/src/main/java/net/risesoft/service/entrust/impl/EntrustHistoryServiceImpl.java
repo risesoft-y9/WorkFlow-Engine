@@ -41,8 +41,8 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
     public List<EntrustHistory> listByOwnerId(String ownerId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<EntrustHistory> ehList = entrustHistoryRepository.findByOwnerId(ownerId);
-        Person pTemp = null;
-        Item itemTemp = null;
+        Person pTemp;
+        Item itemTemp;
         for (EntrustHistory eh : ehList) {
             pTemp = personApi.get(tenantId, eh.getAssigneeId()).getData();
             eh.setAssigneeName(pTemp.getName());
@@ -63,11 +63,11 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
     @Override
     public List<EntrustHistory> listByOwnerIdAndItemId(String ownerId, String itemId) {
         List<EntrustHistory> ehList = entrustHistoryRepository.findByOwnerIdAndItemId(ownerId, itemId);
-        Person pTemp = null;
+        Person pTemp;
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Item itemTemp = null;
+        Item itemTemp;
 
-        String itemName = "此事项不存在";
+        String itemName;
         if (UtilConsts.ALL.equals(itemId)) {
             itemName = "所有事项";
         } else {
@@ -100,7 +100,7 @@ public class EntrustHistoryServiceImpl implements EntrustHistoryService {
     @Override
     public Page<EntrustHistory> pageByOwnerId(String ownerId, int page, int rows) {
         Pageable pageable = PageRequest.of(page - 1, rows);
-        return entrustHistoryRepository.findByOwnerIdOrderByCreatTimeDesc(ownerId, pageable);
+        return entrustHistoryRepository.findByOwnerIdOrderByCreateTimeDesc(ownerId, pageable);
     }
 
     @Override

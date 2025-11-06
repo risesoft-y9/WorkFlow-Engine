@@ -15,6 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ENTRUST_HISTORY")
 @org.hibernate.annotations.Table(comment = "出差委托历史表", appliesTo = "FF_ENTRUST_HISTORY")
-public class EntrustHistory implements Serializable {
+public class EntrustHistory extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 5575438162078024036L;
 
@@ -94,18 +96,4 @@ public class EntrustHistory implements Serializable {
     @Comment("委托结束时间")
     @Column(name = "ENDTIME", nullable = false, length = 30)
     private String endTime;
-
-    /**
-     * 委托事项的生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATTIME", nullable = false)
-    private String creatTime;
-
-    /**
-     * 委托事项编辑时间
-     */
-    @Comment("编辑时间")
-    @Column(name = "updateTime", nullable = false)
-    private String updateTime;
 }
