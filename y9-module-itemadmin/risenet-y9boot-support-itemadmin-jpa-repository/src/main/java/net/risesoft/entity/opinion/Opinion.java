@@ -16,6 +16,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_OPINION")
 @Comment("意见信息表")
-public class Opinion implements Serializable, Comparable<Opinion> {
+public class Opinion extends ItemAdminBaseEntity implements Serializable, Comparable<Opinion> {
 
     private static final long serialVersionUID = -611638086177612070L;
 
@@ -110,20 +112,6 @@ public class Opinion implements Serializable, Comparable<Opinion> {
     @Comment("部门名称")
     @Column(name = "DEPTNAME", length = 100)
     private String deptName;
-
-    /**
-     * 意见生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATEDATE", length = 50)
-    private String createDate;
-
-    /**
-     * 意见最后的修改时间
-     */
-    @Comment("修改时间")
-    @Column(name = "MODIFYDATE", length = 50)
-    private String modifyDate;
 
     @Comment("岗位id")
     @Column(name = "POSITIONID", length = 38)

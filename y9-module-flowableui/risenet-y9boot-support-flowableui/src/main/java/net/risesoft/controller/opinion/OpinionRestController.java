@@ -167,7 +167,7 @@ public class OpinionRestController {
         if (StringUtils.isNotBlank(id)) {
             OpinionModel opinion = opinionApi.getById(tenantId, id).getData();
             map.put("opinion", opinion);
-            map.put("date", opinion.getCreateDate());
+            map.put("date", opinion.getCreateTime());
         }
         return Y9Result.success(map, "获取成功");
     }

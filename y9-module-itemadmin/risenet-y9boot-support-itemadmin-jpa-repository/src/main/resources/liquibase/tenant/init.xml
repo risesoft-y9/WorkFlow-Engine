@@ -843,11 +843,9 @@
             <column name="ID" remarks="主键" type="VARCHAR(38)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(255)"/>
             <column name="ITEMID" remarks="事项Id" type="VARCHAR(200)">
                 <constraints nullable="false"/>
             </column>
-            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(255)"/>
             <column name="OPINIONFRAMEMARK" remarks="意见框标识" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
@@ -864,6 +862,8 @@
             </column>
             <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-31" author="mengjuhua" runOnChange="true">
@@ -1234,10 +1234,8 @@
             <column name="CONTENT" remarks="意见内容" type="LONGTEXT">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="DEPTID" remarks="部门id" type="VARCHAR(38)"/>
             <column name="DEPTNAME" remarks="部门名称" type="VARCHAR(100)"/>
-            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
             <column name="OPINIONFRAMEMARK" remarks="意见框标识" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
@@ -1258,6 +1256,8 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-45" author="mengjuhua" runOnChange="true">
@@ -1273,11 +1273,9 @@
             <column name="CONTENT" remarks="意见内容" type="LONGTEXT">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="DEPTID" remarks="部门id" type="VARCHAR(38)"/>
             <column name="DEPTNAME" remarks="部门名称" type="VARCHAR(100)"/>
             <column name="ISAGENT" remarks="是否是代录意见" type="INT"/>
-            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
             <column name="OPINIONFRAMEMARK" remarks="意见框标识" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
@@ -1297,6 +1295,8 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-46" author="mengjuhua" runOnChange="true">

@@ -228,19 +228,18 @@ public class InitTableDataService {
 
     private void createItemOpinionFrame(String processDefinitionId) {
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindRepository
-            .findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(ITEM_ID, processDefinitionId);
+            .findByItemIdAndProcessDefinitionIdOrderByCreateTimeAsc(ITEM_ID, processDefinitionId);
         if (list.isEmpty()) {
-            ItemOpinionFrameBind newoftrb = new ItemOpinionFrameBind();
-            newoftrb.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newoftrb.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-            newoftrb.setOpinionFrameMark(OPINION_FRAME_MARK);
-            newoftrb.setOpinionFrameName(OPINION_FRAME_NAME);
-            newoftrb.setItemId(ITEM_ID);
-            newoftrb.setTaskDefKey("");
-            newoftrb.setTenantId(Y9LoginUserHolder.getTenantId());
-            newoftrb.setProcessDefinitionId(processDefinitionId);
-            newoftrb.setSignOpinion(false);
-            itemOpinionFrameBindRepository.save(newoftrb);
+            ItemOpinionFrameBind newItemOpinionFrameBind = new ItemOpinionFrameBind();
+            newItemOpinionFrameBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newItemOpinionFrameBind.setOpinionFrameMark(OPINION_FRAME_MARK);
+            newItemOpinionFrameBind.setOpinionFrameName(OPINION_FRAME_NAME);
+            newItemOpinionFrameBind.setItemId(ITEM_ID);
+            newItemOpinionFrameBind.setTaskDefKey("");
+            newItemOpinionFrameBind.setTenantId(Y9LoginUserHolder.getTenantId());
+            newItemOpinionFrameBind.setProcessDefinitionId(processDefinitionId);
+            newItemOpinionFrameBind.setSignOpinion(false);
+            itemOpinionFrameBindRepository.save(newItemOpinionFrameBind);
         }
     }
 

@@ -266,11 +266,9 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
             OpinionHistory history = new OpinionHistory();
             history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             history.setContent(oldOpinion.getContent());
-            history.setCreateDate(oldOpinion.getCreateDate());
             history.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
             history.setDeptId(oldOpinion.getDeptId());
             history.setDeptName(oldOpinion.getDeptName());
-            history.setModifyDate(oldOpinion.getModifyDate());
             history.setOpinionFrameMark(oldOpinion.getOpinionFrameMark());
             history.setOpinionType(opinionType);
             history.setProcessInstanceId(oldOpinion.getProcessInstanceId());

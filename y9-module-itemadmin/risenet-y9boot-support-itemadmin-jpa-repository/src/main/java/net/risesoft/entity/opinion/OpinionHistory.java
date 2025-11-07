@@ -15,6 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_OPINION_HISTORY")
 @Comment("意见历史表")
-public class OpinionHistory implements Serializable {
+public class OpinionHistory extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -611638086177612070L;
 
@@ -111,20 +113,6 @@ public class OpinionHistory implements Serializable {
     private String deptName;
 
     /**
-     * 意见生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATEDATE", length = 50)
-    private String createDate;
-
-    /**
-     * 意见最后的修改时间
-     */
-    @Comment("修改时间")
-    @Column(name = "MODIFYDATE", length = 50)
-    private String modifyDate;
-
-    /**
      * 操作、保存时间
      */
     @Comment("操作、保存时间")
@@ -137,5 +125,4 @@ public class OpinionHistory implements Serializable {
     @Comment("意见类型")
     @Column(name = "OPINIONTYPE", length = 5)
     private String opinionType = "1";
-
 }

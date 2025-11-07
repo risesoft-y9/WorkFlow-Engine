@@ -27,13 +27,13 @@ public interface ItemOpinionFrameBindRepository
     ItemOpinionFrameBind findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(String itemId,
         String processDefinitionId, String taskDefKey, String opinionFrameMark);
 
-    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(String itemId,
+    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateTimeAsc(String itemId,
         String processDefinitionId, String taskDefKey);
 
-    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(String itemId,
+    List<ItemOpinionFrameBind> findByItemIdAndProcessDefinitionIdOrderByCreateTimeAsc(String itemId,
         String processDefinitionId);
 
-    List<ItemOpinionFrameBind> findByOpinionFrameMarkOrderByItemIdDescModifyDateDesc(String mark);
+    List<ItemOpinionFrameBind> findByOpinionFrameMarkOrderByItemIdDescUpdateTimeDesc(String mark);
 
     @Query("SELECT t.opinionFrameMark from ItemOpinionFrameBind t where t.itemId=?1 and t.processDefinitionId=?2 GROUP BY t.opinionFrameMark")
     List<String> getBindOpinionFrame(String itemId, String processDefinitionId);
