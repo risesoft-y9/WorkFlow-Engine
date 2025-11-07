@@ -17,6 +17,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @date 2025/02/10
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_OPINION_COPY", indexes = {@Index(name = "ff_opinion_copy_001", columnList = "processSerialNumber")})
 @Comment("传签意见信息表")
-public class OpinionCopy implements Serializable {
+public class OpinionCopy extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -7912583687012196515L;
 
@@ -58,12 +60,4 @@ public class OpinionCopy implements Serializable {
     @Comment("人员名称")
     @Column(name = "USERNAME", length = 50, nullable = false)
     private String userName;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 100)
-    private String createTime;
-
-    @Comment("更新时间")
-    @Column(name = "UPDATETIME", length = 100)
-    private String updateTime;
 }

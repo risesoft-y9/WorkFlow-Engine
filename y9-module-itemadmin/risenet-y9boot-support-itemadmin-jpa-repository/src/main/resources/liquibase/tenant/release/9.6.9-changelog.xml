@@ -815,7 +815,7 @@
     </changeSet>
 
     <changeSet id="1704700556666-31" author="qinMan" runOnChange="true">
-        <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
+        <comment>将 CREATEDATE 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_ITEM_OPINIONFRAME">
             <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
@@ -837,7 +837,7 @@
                       newColumnName="CREATETIME"
                       columnDataType="datetime"
                       remarks="创建时间"/>
-        <comment>将 UPDATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
+        <comment>将 MODIFYDATE 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_ITEM_OPINIONFRAME">
             <column name="UPDATETIME_NEW" type="datetime" remarks="更新时间"/>
@@ -953,5 +953,166 @@
                       newColumnName="UPDATETIME"
                       columnDataType="datetime"
                       remarks="更新时间"/>
+    </changeSet>
+
+    <changeSet id="1704700556666-34" author="qinMan" runOnChange="true">
+        <comment>将 CREATETIME 字段从 VARCHAR(100) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_OPINION_COPY">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_OPINION_COPY
+            SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATETIME IS NOT NULL
+              AND CREATETIME != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_OPINION_COPY">
+            <column name="CREATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_OPINION_COPY"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <comment>将 UPDATETIME 字段从 VARCHAR(100) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_OPINION_COPY">
+            <column name="UPDATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_OPINION_COPY
+            SET UPDATETIME_NEW = STR_TO_DATE(UPDATETIME, '%Y-%m-%d %H:%i:%s')
+            WHERE UPDATETIME IS NOT NULL
+              AND UPDATETIME != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_OPINION_COPY">
+            <column name="UPDATETIME"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_OPINION_COPY"
+                      oldColumnName="UPDATETIME_NEW"
+                      newColumnName="UPDATETIME"
+                      columnDataType="datetime"
+                      remarks="更新时间"/>
+    </changeSet>
+
+    <changeSet id="1704700556666-35" author="qinMan" runOnChange="true">
+        <comment>将 CREATEDATE 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_OPINIONFRAME">
+            <column name="CREATETIME_NEW" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_OPINIONFRAME
+            SET CREATETIME_NEW = STR_TO_DATE(CREATEDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATEDATE IS NOT NULL
+              AND CREATEDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_OPINIONFRAME">
+            <column name="CREATEDATE"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_OPINIONFRAME"
+                      oldColumnName="CREATETIME_NEW"
+                      newColumnName="CREATETIME"
+                      columnDataType="datetime"
+                      remarks="创建时间"/>
+        <comment>将 MODIFYDATE 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_OPINIONFRAME">
+            <column name="UPDATETIME_NEW" type="datetime" remarks="更新时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_OPINIONFRAME
+            SET UPDATETIME_NEW = STR_TO_DATE(MODIFYDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE MODIFYDATE IS NOT NULL
+              AND MODIFYDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_OPINIONFRAME">
+            <column name="MODIFYDATE"/>
+        </dropColumn>
+        <!-- 步骤4: 重命名新字段 -->
+        <renameColumn tableName="FF_OPINIONFRAME"
+                      oldColumnName="UPDATETIME_NEW"
+                      newColumnName="UPDATETIME"
+                      columnDataType="datetime"
+                      remarks="更新时间"/>
+    </changeSet>
+
+    <changeSet id="1704700556666-36" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="UPDATETIME" tableName="FF_OPINIONFRAME_ONECLICKSET"/>
+            </not>
+        </preConditions>
+        <comment>将 CREATE_DATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_OPINIONFRAME_ONECLICKSET">
+            <column name="CREATETIME" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_OPINIONFRAME_ONECLICKSET
+            SET CREATETIME = STR_TO_DATE(CREATE_DATE, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATE_DATE IS NOT NULL
+              AND CREATE_DATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_OPINIONFRAME_ONECLICKSET">
+            <column name="CREATE_DATE"/>
+        </dropColumn>
+        <addColumn tableName="FF_OPINIONFRAME_ONECLICKSET">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+    </changeSet>
+
+    <changeSet id="1704700556666-37" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists columnName="UPDATETIME" tableName="FF_OPINION_SIGN"/>
+            </not>
+        </preConditions>
+        <comment>将 CREATEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_OPINION_SIGN">
+            <column name="CREATETIME" type="datetime" remarks="创建时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_OPINION_SIGN
+            SET CREATETIME = STR_TO_DATE(CREATEDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE CREATEDATE IS NOT NULL
+              AND CREATEDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_OPINION_SIGN">
+            <column name="CREATEDATE"/>
+        </dropColumn>
+        <comment>将 MODIFYDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
+        <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
+        <addColumn tableName="FF_OPINION_SIGN">
+            <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
+        </addColumn>
+        <!-- 步骤2: 迁移现有数据 -->
+        <sql>
+            UPDATE FF_OPINION_SIGN
+            SET UPDATETIME = STR_TO_DATE(MODIFYDATE, '%Y-%m-%d %H:%i:%s')
+            WHERE MODIFYDATE IS NOT NULL
+              AND MODIFYDATE != ''
+        </sql>
+        <!-- 步骤3: 删除旧字段 -->
+        <dropColumn tableName="FF_OPINION_SIGN">
+            <column name="MODIFYDATE"/>
+        </dropColumn>
     </changeSet>
 </databaseChangeLog>

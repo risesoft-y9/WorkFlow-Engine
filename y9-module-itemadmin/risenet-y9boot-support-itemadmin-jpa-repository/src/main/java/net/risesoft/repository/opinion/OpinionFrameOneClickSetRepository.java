@@ -12,9 +12,5 @@ import net.risesoft.entity.opinion.OpinionFrameOneClickSet;
 public interface OpinionFrameOneClickSetRepository
     extends JpaRepository<OpinionFrameOneClickSet, String>, JpaSpecificationExecutor<OpinionFrameOneClickSet> {
 
-    OpinionFrameOneClickSet findByBindIdAndOneSetTypeAndExecuteAction(String bindId, String oneSetType,
-        String executeAction);
-
     List<OpinionFrameOneClickSet> findByBindId(String bindId);
-
 }

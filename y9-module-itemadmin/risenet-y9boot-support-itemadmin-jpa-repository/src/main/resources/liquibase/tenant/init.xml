@@ -1309,18 +1309,18 @@
             <column name="ID" remarks="主键" type="VARCHAR(38)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(255)"/>
             <column name="DELETED" remarks="是否删除" type="INT"/>
             <column name="MARK" remarks="意见框标识" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(255)"/>
             <column name="NAME" remarks="意见框名称" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)"/>
             <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-47" author="mengjuhua" runOnChange="true">

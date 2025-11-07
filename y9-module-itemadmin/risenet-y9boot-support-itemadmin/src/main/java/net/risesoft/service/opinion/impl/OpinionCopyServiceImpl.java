@@ -14,7 +14,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.opinion.OpinionCopyRepository;
 import net.risesoft.service.opinion.OpinionCopyService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -48,7 +47,6 @@ public class OpinionCopyServiceImpl implements OpinionCopyService {
             if (optional.isPresent()) {
                 OpinionCopy oldOc = optional.get();
                 oldOc.setContent(opinionCopy.getContent());
-                oldOc.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 return Optional.of(opinionCopyRepository.save(oldOc));
             }
         }
@@ -59,8 +57,6 @@ public class OpinionCopyServiceImpl implements OpinionCopyService {
         newOc.setContent(opinionCopy.getContent());
         newOc.setUserId(userInfo.getPersonId());
         newOc.setUserName(userInfo.getName());
-        newOc.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newOc.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newOc.setSend(opinionCopy.isSend());
         return Optional.of(opinionCopyRepository.save(newOc));
     }

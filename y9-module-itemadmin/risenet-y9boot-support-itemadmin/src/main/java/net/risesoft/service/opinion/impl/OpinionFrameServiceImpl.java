@@ -21,7 +21,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.opinion.OpinionFrameRepository;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.opinion.OpinionFrameService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -109,7 +108,6 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
             if (StringUtils.isNotEmpty(id)) {
                 OpinionFrame oldof = this.getById(id);
                 if (null != oldof) {
-                    oldof.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                     oldof.setName(opinionFrame.getName());
                     oldof.setUserId(null == person ? "" : person.getPersonId());
                     oldof.setUserName(null == person ? "" : person.getName());
@@ -123,8 +121,6 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
             OpinionFrame newof = new OpinionFrame();
             newof.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             newof.setMark(opinionFrame.getMark());
-            newof.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-            newof.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             newof.setName(opinionFrame.getName());
             newof.setTenantId(person.getTenantId());
             newof.setUserId(person.getPersonId());

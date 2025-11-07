@@ -14,12 +14,14 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "FF_OPINIONFRAME_ONECLICKSET")
 @Comment("意见框一键设置表")
-public class OpinionFrameOneClickSet implements Serializable {
+public class OpinionFrameOneClickSet extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -8789316082610929817L;
 
@@ -63,9 +65,4 @@ public class OpinionFrameOneClickSet implements Serializable {
     @Comment("操作人员id")
     @Column(name = "USER_ID", length = 50)
     private String userId;
-
-    @Comment("创建时间")
-    @Column(name = "CREATE_DATE")
-    private String createDate;
-
 }

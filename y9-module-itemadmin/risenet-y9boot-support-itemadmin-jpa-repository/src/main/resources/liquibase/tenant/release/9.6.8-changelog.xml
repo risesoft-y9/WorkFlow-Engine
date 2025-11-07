@@ -167,8 +167,8 @@
             </column>
             <column name="DEPTID" remarks="部门id" type="VARCHAR(50)"/>
             <column name="DEPTNAME" remarks="部门名称" type="VARCHAR(100)"/>
-            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
-            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
 
@@ -475,8 +475,8 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
-            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
 

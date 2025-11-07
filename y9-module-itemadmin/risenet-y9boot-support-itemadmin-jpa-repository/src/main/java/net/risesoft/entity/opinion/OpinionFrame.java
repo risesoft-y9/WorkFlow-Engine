@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_OPINIONFRAME")
 @Comment("意见框信息表")
-public class OpinionFrame implements Serializable {
+public class OpinionFrame extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 743873889002635064L;
 
@@ -70,7 +72,7 @@ public class OpinionFrame implements Serializable {
      * 录入意见框的人员的Id
      */
     @Comment("人员id")
-    @Column(name = "USERID", length = 50, nullable = true)
+    @Column(name = "USERID", length = 50)
     private String userId;
 
     /**
@@ -79,19 +81,4 @@ public class OpinionFrame implements Serializable {
     @Comment("是否删除")
     @Column(name = "DELETED")
     private Integer deleted = 0;
-
-    /**
-     * 生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATEDATE")
-    private String createDate;
-
-    /**
-     * 最后的修改时间
-     */
-    @Comment("修改时间")
-    @Column(name = "MODIFYDATE")
-    private String modifyDate;
-
 }
