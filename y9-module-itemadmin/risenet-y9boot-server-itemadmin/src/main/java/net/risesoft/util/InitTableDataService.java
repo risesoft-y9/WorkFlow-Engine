@@ -277,7 +277,6 @@ public class InitTableDataService {
     private void createItemViewConf() {
         List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(ITEM_ID);
         if (list.isEmpty()) {
-            String date = Y9DateTimeUtils.formatCurrentDateTime();
             List<ItemViewConf> list0 = new ArrayList<>();
             ItemViewConf newConf = new ItemViewConf();
             int i = 0;
@@ -289,8 +288,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DRAFT.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -301,8 +299,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.DRAFT.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -313,8 +310,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.DRAFT.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -325,8 +321,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.DRAFT.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -337,8 +332,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.DRAFT.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -349,8 +343,7 @@ public class InitTableDataService {
                 .setTabIndex(i)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DRAFT.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
             itemViewConfRepository.saveAll(list0);
             i = 0;
@@ -364,8 +357,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.TODO.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -376,8 +368,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.TODO.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -388,8 +379,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.TODO.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -400,8 +390,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.TODO.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -412,8 +401,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.TODO.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -424,8 +412,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.TODO.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -436,8 +423,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.TODO.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -448,8 +434,7 @@ public class InitTableDataService {
                 .setTabIndex(i)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.TODO.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             itemViewConfRepository.saveAll(list0);
             i = 0;
@@ -463,8 +448,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DOING.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -475,8 +459,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.DOING.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -487,8 +470,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.DOING.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -499,8 +481,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.DOING.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -511,8 +492,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DOING.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -523,8 +503,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DOING.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -535,8 +514,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DOING.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -547,8 +525,7 @@ public class InitTableDataService {
                 .setTabIndex(i)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DOING.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             itemViewConfRepository.saveAll(list0);
             i = 0;
@@ -562,8 +539,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DONE.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -574,8 +550,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.DONE.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -586,8 +561,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.DONE.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -598,8 +572,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName(Y9_TABLE_NAME)
-                .setViewType(ItemBoxTypeEnum.DONE.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -610,8 +583,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DONE.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -622,8 +594,7 @@ public class InitTableDataService {
                 .setTabIndex(i++)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DONE.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
@@ -634,8 +605,7 @@ public class InitTableDataService {
                 .setTabIndex(i)
                 .setItemId(ITEM_ID)
                 .setTableName("")
-                .setViewType(ItemBoxTypeEnum.DONE.getValue())
-                .setCreateTime(date);
+                .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
             itemViewConfRepository.saveAll(list0);
         }

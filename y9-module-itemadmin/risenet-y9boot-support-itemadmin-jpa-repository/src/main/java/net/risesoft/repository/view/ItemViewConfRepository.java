@@ -30,12 +30,6 @@ public interface ItemViewConfRepository
     @Query("select max(t.tabIndex) from ItemViewConf t where t.itemId=?1 and t.viewType=?2")
     Integer getMaxTabIndex(String itemId, String viewType);
 
-    /**
-     * 根据id修改tabIndex
-     * 
-     * @param tabIndex
-     * @param id
-     */
     @Modifying
     @Transactional(readOnly = false)
     @Query("update ItemViewConf t set t.tabIndex=?1 where t.id=?2")

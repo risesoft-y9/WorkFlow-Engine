@@ -20,7 +20,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.view.ViewTypeRepository;
 import net.risesoft.service.config.ItemViewConfService;
 import net.risesoft.service.view.ViewTypeService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -87,7 +86,6 @@ public class ViewTypeServiceImpl implements ViewTypeService {
             if (StringUtils.isNotEmpty(id)) {
                 ViewType oldViewType = this.findById(id);
                 if (null != oldViewType) {
-                    oldViewType.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
                     oldViewType.setName(viewType.getName());
                     oldViewType.setUserName(null == person ? "" : person.getName());
                     viewTypeRepository.save(oldViewType);
@@ -100,8 +98,6 @@ public class ViewTypeServiceImpl implements ViewTypeService {
             ViewType newViewType = new ViewType();
             newViewType.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             newViewType.setMark(viewType.getMark());
-            newViewType.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-            newViewType.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             newViewType.setName(viewType.getName());
             newViewType.setUserName(person.getName());
             viewTypeRepository.save(newViewType);

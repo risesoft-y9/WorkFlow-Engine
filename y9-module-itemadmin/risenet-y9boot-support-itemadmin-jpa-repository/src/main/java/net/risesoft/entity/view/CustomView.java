@@ -15,6 +15,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -26,7 +28,7 @@ import lombok.experimental.Accessors;
 @Entity
 @Table(name = "FF_CUSTOM_VIEW")
 @Comment("自定义视图表")
-public class CustomView implements Serializable {
+public class CustomView extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 2682317166903809753L;
 
@@ -68,8 +70,4 @@ public class CustomView implements Serializable {
     @Comment("人员名称")
     @Column(name = "USERNAME", length = 50)
     private String userName;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
 }

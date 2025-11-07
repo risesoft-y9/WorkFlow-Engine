@@ -53,12 +53,4 @@ public class ViewType implements Serializable {
     @Comment("人员名称")
     @Column(name = "USERNAME", length = 50)
     private String userName;
-
-    @Comment("生成时间")
-    @Column(name = "CREATEDATE")
-    private String createDate;
-
-    @Comment("修改时间")
-    @Column(name = "MODIFYDATE")
-    private String modifyDate;
 }

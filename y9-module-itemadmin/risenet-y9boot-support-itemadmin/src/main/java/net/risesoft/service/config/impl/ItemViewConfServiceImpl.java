@@ -17,7 +17,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.view.ItemViewConfRepository;
 import net.risesoft.service.config.ItemViewConfService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -50,8 +49,6 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
             Y9BeanUtil.copyProperties(itemViewConf, newConf);
             newConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             newConf.setItemId(newItemId);
-            newConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-            newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             newConf.setUserId(person.getPersonId());
             newConf.setUserName(person.getName());
             newConf.setTabIndex(itemViewConf.getTabIndex());
@@ -67,8 +64,6 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
             ItemViewConf newView = new ItemViewConf();
             Y9BeanUtil.copyProperties(oldView, newView);
             newView.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newView.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-            newView.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             newView.setViewType(viewType);
             itemViewConfRepository.save(newView);
         }
@@ -160,7 +155,6 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
                 oldConf.setDisPlayName(itemViewConf.getDisPlayName());
                 oldConf.setDisPlayAlign(itemViewConf.getDisPlayAlign());
                 oldConf.setTableName(itemViewConf.getTableName());
-                oldConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 oldConf.setUserId(person.getPersonId());
                 oldConf.setUserName(person.getName());
                 oldConf.setInputBoxType(itemViewConf.getInputBoxType());
@@ -186,8 +180,6 @@ public class ItemViewConfServiceImpl implements ItemViewConfService {
         newConf.setViewType(itemViewConf.getViewType());
         newConf.setUserId(person.getPersonId());
         newConf.setUserName(person.getName());
-        newConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newConf.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newConf.setInputBoxType(itemViewConf.getInputBoxType());
         newConf.setLabelName(itemViewConf.getLabelName());
         newConf.setOpenSearch(itemViewConf.getOpenSearch());
