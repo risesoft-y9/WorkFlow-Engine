@@ -14,7 +14,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.template.BookMarkBindRepository;
 import net.risesoft.service.BookMarkBindService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -56,28 +55,24 @@ public class BookMarkBindServiceImpl implements BookMarkBindService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String id = bookMarkBind.getId();
         if (StringUtils.isNotBlank(id)) {
-            BookMarkBind oldbmb = this.findById(id);
-            oldbmb.setTableName(bookMarkBind.getTableName());
-            oldbmb.setColumnName(bookMarkBind.getColumnName());
-            oldbmb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-            oldbmb.setUserId(person.getPersonId());
-            oldbmb.setUserName(person.getName());
-            oldbmb.setBookMarkType(1);
-
-            bookMarkBindRepository.save(oldbmb);
+            BookMarkBind existBookMarkBind = this.findById(id);
+            existBookMarkBind.setTableName(bookMarkBind.getTableName());
+            existBookMarkBind.setColumnName(bookMarkBind.getColumnName());
+            existBookMarkBind.setUserId(person.getPersonId());
+            existBookMarkBind.setUserName(person.getName());
+            existBookMarkBind.setBookMarkType(1);
+            bookMarkBindRepository.save(existBookMarkBind);
             return;
         }
-        BookMarkBind newbmb = new BookMarkBind();
-        newbmb.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newbmb.setWordTemplateId(bookMarkBind.getWordTemplateId());
-        newbmb.setBookMarkName(bookMarkBind.getBookMarkName());
-        newbmb.setBookMarkType(1);
-        newbmb.setTableName(bookMarkBind.getTableName());
-        newbmb.setColumnName(bookMarkBind.getColumnName());
-        newbmb.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newbmb.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newbmb.setUserId(person.getPersonId());
-        newbmb.setUserName(person.getName());
-        bookMarkBindRepository.save(newbmb);
+        BookMarkBind newBookMarkBind = new BookMarkBind();
+        newBookMarkBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newBookMarkBind.setWordTemplateId(bookMarkBind.getWordTemplateId());
+        newBookMarkBind.setBookMarkName(bookMarkBind.getBookMarkName());
+        newBookMarkBind.setBookMarkType(1);
+        newBookMarkBind.setTableName(bookMarkBind.getTableName());
+        newBookMarkBind.setColumnName(bookMarkBind.getColumnName());
+        newBookMarkBind.setUserId(person.getPersonId());
+        newBookMarkBind.setUserName(person.getName());
+        bookMarkBindRepository.save(newBookMarkBind);
     }
 }

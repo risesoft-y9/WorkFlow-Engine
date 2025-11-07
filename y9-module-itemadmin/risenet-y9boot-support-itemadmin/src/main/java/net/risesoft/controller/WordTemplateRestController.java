@@ -31,6 +31,7 @@ import net.risesoft.service.form.Y9TableFieldService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.service.template.WordTemplateService;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
  * @author qinman
@@ -170,15 +171,10 @@ public class WordTemplateRestController {
         }
         List<WordTemplateVO> items = new ArrayList<>();
         for (WordTemplate wordTemplate : list) {
-            WordTemplateVO map = new WordTemplateVO();
-            map.setId(wordTemplate.getId());
-            map.setFileName(wordTemplate.getFileName());
-            map.setFileSize(wordTemplate.getFileSize());
-            map.setPersonName(wordTemplate.getPersonName());
-            map.setUploadTime(wordTemplate.getUploadTime());
-            map.setWordTemplateType(wordTemplate.getFileName().endsWith("doc") ? "doc" : "docx");
-            map.setFilePath(wordTemplate.getFilePath());
-            items.add(map);
+            WordTemplateVO wordTemplateVO = new WordTemplateVO();
+            Y9BeanUtil.copyProperties(wordTemplate, wordTemplateVO);
+            wordTemplateVO.setWordTemplateType(wordTemplate.getFileName().endsWith("doc") ? "doc" : "docx");
+            items.add(wordTemplateVO);
         }
         return Y9Result.success(items, "获取成功");
     }

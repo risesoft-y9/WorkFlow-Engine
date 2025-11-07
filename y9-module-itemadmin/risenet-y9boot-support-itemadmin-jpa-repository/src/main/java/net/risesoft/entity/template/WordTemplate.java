@@ -1,23 +1,20 @@
 package net.risesoft.entity.template;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 
 /**
  * @author qinman
@@ -29,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_WORDTEMPLATE")
 @org.hibernate.annotations.Table(comment = "正文模板信息表", appliesTo = "FF_WORDTEMPLATE")
-public class WordTemplate implements Serializable {
+public class WordTemplate extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -7420288864269881175L;
 
@@ -55,12 +52,6 @@ public class WordTemplate implements Serializable {
     @Comment("文件大小")
     @Column(name = "FILESIZE", length = 20)
     private String fileSize;
-
-    @Comment("上传时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "UPLOADTIME")
-    private Date uploadTime;
 
     @Comment("上传人Id")
     @Column(name = "PERSONID", length = 50)

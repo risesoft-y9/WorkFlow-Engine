@@ -2,9 +2,9 @@ package net.risesoft.repository.template;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Query;
 
 import net.risesoft.entity.template.WordTemplate;
 
@@ -15,11 +15,8 @@ import net.risesoft.entity.template.WordTemplate;
  */
 public interface WordTemplateRepository
     extends JpaRepository<WordTemplate, String>, JpaSpecificationExecutor<WordTemplate> {
-    @Override
-    @Query("from WordTemplate t order by t.uploadTime desc")
-    List<WordTemplate> findAll();
 
-    List<WordTemplate> findByBureauIdOrderByUploadTimeDesc(String bureauId);
+    List<WordTemplate> findByBureauId(String bureauId, Sort sort);
 
-    List<WordTemplate> findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId, String fileName);
+    List<WordTemplate> findByBureauIdAndFileNameContaining(String bureauId, String fileName, Sort sort);
 }

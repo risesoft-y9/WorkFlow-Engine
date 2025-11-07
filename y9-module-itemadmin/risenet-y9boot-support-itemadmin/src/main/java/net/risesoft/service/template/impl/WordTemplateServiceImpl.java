@@ -6,7 +6,6 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -17,6 +16,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.apache.commons.io.IOUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.multipart.MultipartFile;
@@ -106,7 +106,8 @@ public class WordTemplateServiceImpl implements WordTemplateService {
 
     @Override
     public List<WordTemplate> listAll() {
-        return wordTemplateRepository.findAll();
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        return wordTemplateRepository.findAll(sort);
     }
 
     @Override
@@ -148,12 +149,14 @@ public class WordTemplateServiceImpl implements WordTemplateService {
     @Override
     public List<WordTemplate> listByBureauIdAndFileNameContainingOrderByUploadTimeDesc(String bureauId,
         String fileName) {
-        return wordTemplateRepository.findByBureauIdAndFileNameContainingOrderByUploadTimeDesc(bureauId, fileName);
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        return wordTemplateRepository.findByBureauIdAndFileNameContaining(bureauId, fileName, sort);
     }
 
     @Override
     public List<WordTemplate> listByBureauIdOrderByUploadTimeDesc(String bureauId) {
-        return wordTemplateRepository.findByBureauIdOrderByUploadTimeDesc(bureauId);
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
+        return wordTemplateRepository.findByBureauId(bureauId, sort);
     }
 
     @Override
@@ -173,8 +176,6 @@ public class WordTemplateServiceImpl implements WordTemplateService {
                 oldWord.setFileSize(wordTemplate.getFileSize());
                 oldWord.setPersonId(personId);
                 oldWord.setPersonName(personName);
-                oldWord.setUploadTime(new Date());
-
                 wordTemplateRepository.save(oldWord);
             } else {
                 wordTemplateRepository.save(wordTemplate);
@@ -191,8 +192,6 @@ public class WordTemplateServiceImpl implements WordTemplateService {
         newWord.setFileSize(wordTemplate.getFileSize());
         newWord.setPersonId(personId);
         newWord.setPersonName(personName);
-        newWord.setUploadTime(new Date());
-
         wordTemplateRepository.save(newWord);
     }
 
@@ -218,7 +217,6 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             wordTemplate.setPersonId(person.getPersonId());
             wordTemplate.setPersonName(person.getName());
             wordTemplate.setBureauId(orgUnitApi.getBureau(tenantId, personId).getData().getId());
-            wordTemplate.setUploadTime(new Date());
             wordTemplate.setDescribes("");
             wordTemplate.setFilePath(y9FileStore.getId());
             wordTemplate.setFileSize(y9FileStore.getDisplayFileSize());
