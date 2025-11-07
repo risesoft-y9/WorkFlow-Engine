@@ -3,6 +3,7 @@ package net.risesoft.service.template.impl;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,12 +41,14 @@ public class TaoHongTemplateTypeServiceImpl implements TaoHongTemplateTypeServic
 
     @Override
     public List<TaoHongTemplateType> listAll() {
-        return taoHongTemplateTypeRepository.findAll();
+        Sort sort = Sort.by(Sort.Direction.ASC, "tabIndex");
+        return taoHongTemplateTypeRepository.findAll(sort);
     }
 
     @Override
     public List<TaoHongTemplateType> listByBureauId(String bureauId) {
-        return taoHongTemplateTypeRepository.findByBureauId(bureauId);
+        Sort sort = Sort.by(Sort.Direction.ASC, "tabIndex");
+        return taoHongTemplateTypeRepository.findByBureauId(bureauId, sort);
     }
 
     @Override

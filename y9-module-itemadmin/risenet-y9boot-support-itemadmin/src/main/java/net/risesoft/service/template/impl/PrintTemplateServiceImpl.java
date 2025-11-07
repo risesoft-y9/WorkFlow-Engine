@@ -3,7 +3,6 @@ package net.risesoft.service.template.impl;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import jakarta.servlet.http.HttpServletRequest;
@@ -209,7 +208,6 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
                 oldPrint.setPersonId(personId);
                 oldPrint.setPersonName(personName);
                 oldPrint.setTenantId(tenantId);
-                oldPrint.setUploadTime(printTemplate.getUploadTime());
                 printTemplateRepository.save(oldPrint);
                 return;
             } else {
@@ -226,7 +224,6 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
         newPrint.setPersonId(personId);
         newPrint.setPersonName(personName);
         newPrint.setTenantId(tenantId);
-        newPrint.setUploadTime(printTemplate.getUploadTime());
         printTemplateRepository.save(newPrint);
     }
 
@@ -251,7 +248,6 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
             printTemplate.setPersonId(person.getPersonId());
             printTemplate.setPersonName(person.getName());
             printTemplate.setTenantId(Y9LoginUserHolder.getTenantId());
-            printTemplate.setUploadTime(new Date());
             printTemplate.setDescribes("");
             printTemplate.setFilePath(y9FileStore.getId());
             printTemplate.setFileSize(y9FileStore.getDisplayFileSize());

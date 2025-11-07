@@ -1,7 +1,6 @@
 package net.risesoft.entity.template;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -9,17 +8,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Lob;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 import jakarta.persistence.Transient;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 
 /**
  * @author qinman
@@ -31,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Comment("套红模板信息表")
 @Table(name = "FF_TAOHONGTEMPLATE")
-public class TaoHongTemplate implements Serializable {
+public class TaoHongTemplate extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -9021379988316606779L;
 
@@ -57,12 +54,6 @@ public class TaoHongTemplate implements Serializable {
     @Comment("上传人")
     @Column(name = "USERID", length = 38)
     private String userId;
-
-    @Comment("上传时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(nullable = false)
-    private Date uploadTime;
 
     @Comment("文件内容")
     @Lob

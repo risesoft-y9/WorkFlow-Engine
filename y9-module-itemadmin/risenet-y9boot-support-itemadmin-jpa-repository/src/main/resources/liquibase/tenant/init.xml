@@ -209,11 +209,9 @@
             <column name="COLUMNAME" remarks="绑定的数据库表字段" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATETIME" remarks="绑定时间" type="VARCHAR(100)"/>
             <column name="TABLENAME" remarks="绑定的数据库表" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="UPDATETIME" remarks="更新绑定时间" type="VARCHAR(100)"/>
             <column name="USERID" remarks="绑定的人员Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
@@ -223,6 +221,8 @@
             <column name="WORDTEMPLATEID" remarks="正文模板Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-8" author="mengjuhua" runOnChange="true">
@@ -1448,7 +1448,8 @@
             <column name="PERSONID" remarks="上传人Id" type="VARCHAR(50)"/>
             <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)"/>
-            <column name="UPLOADTIME" remarks="上传时间" type="datetime"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-52" author="mengjuhua" runOnChange="true">
@@ -1804,10 +1805,9 @@
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="uploadTime" remarks="上传时间" type="datetime">
-                <constraints nullable="false"/>
-            </column>
             <column name="USERID" remarks="上传人" type="VARCHAR(38)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-68" author="mengjuhua" runOnChange="true">
@@ -1889,7 +1889,8 @@
             <column name="FILESIZE" remarks="文件大小" type="VARCHAR(20)"/>
             <column name="PERSONID" remarks="上传人Id" type="VARCHAR(50)"/>
             <column name="PERSONNAME" remarks="上传人" type="VARCHAR(100)"/>
-            <column name="UPLOADTIME" remarks="上传时间" type="datetime"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-89" author="mengjuhua" runOnChange="true">

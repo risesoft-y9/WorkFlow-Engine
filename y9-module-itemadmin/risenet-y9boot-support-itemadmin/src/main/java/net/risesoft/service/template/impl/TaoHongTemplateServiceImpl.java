@@ -1,6 +1,5 @@
 package net.risesoft.service.template.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -74,7 +73,6 @@ public class TaoHongTemplateServiceImpl implements TaoHongTemplateService {
                 oldtt.setBureauName(bureauName);
                 oldtt.setUserId(userId);
                 oldtt.setTemplateType(t.getTemplateType());
-                oldtt.setUploadTime(new Date());
                 if (StringUtils.isNotBlank(t.getTemplateFileName())) {
                     oldtt.setTemplateContent(t.getTemplateContent());
                     oldtt.setTemplateFileName(t.getTemplateFileName());
@@ -92,7 +90,6 @@ public class TaoHongTemplateServiceImpl implements TaoHongTemplateService {
         newtt.setBureauName(bureauName);
         newtt.setUserId(userId);
         newtt.setTemplateType(t.getTemplateType());
-        newtt.setUploadTime(new Date());
         if (StringUtils.isNotBlank(t.getTemplateFileName())) {
             newtt.setTemplateContent(t.getTemplateContent());
             newtt.setTemplateFileName(t.getTemplateFileName());

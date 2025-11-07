@@ -36,13 +36,13 @@ public class AttachmentTypeServiceImpl implements AttachmentTypeService {
 
     @Override
     public List<AttachmentType> listAll() {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
         return attachmentTypeRepository.findAll(sort);
     }
 
     @Override
     public Page<AttachmentType> pageAll(int page, int rows) {
-        Sort sort = Sort.by(Sort.Direction.ASC, "createDate");
+        Sort sort = Sort.by(Sort.Direction.ASC, "createTime");
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return attachmentTypeRepository.findAll(pageable);
     }

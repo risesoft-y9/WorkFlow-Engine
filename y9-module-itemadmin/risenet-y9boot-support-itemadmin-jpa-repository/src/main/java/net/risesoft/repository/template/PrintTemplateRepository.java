@@ -18,7 +18,7 @@ import net.risesoft.entity.template.PrintTemplate;
 public interface PrintTemplateRepository
     extends JpaRepository<PrintTemplate, String>, JpaSpecificationExecutor<PrintTemplate> {
 
-    @Query("from PrintTemplate t order by t.uploadTime DESC")
+    @Query("from PrintTemplate t order by t.createTime ASC")
     List<PrintTemplate> findAllOrderByUploadTimeDesc();
 
     List<PrintTemplate> findByFileNameContaining(String fileName);

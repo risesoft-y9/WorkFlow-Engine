@@ -97,7 +97,7 @@ public class PrintRestController {
             map.put("fileSize", printTemplate.getFileSize());
             map.put("fileUrl", printTemplate.getFilePath());
             map.put("personName", printTemplate.getPersonName());
-            map.put("uploadTime", Y9DateTimeUtils.formatDateTime(printTemplate.getUploadTime()));
+            map.put("uploadTime", Y9DateTimeUtils.formatDateTime(printTemplate.getCreateTime()));
             items.add(map);
         }
         return Y9Result.success(items, "获取成功");

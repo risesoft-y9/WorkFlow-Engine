@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_BOOKMARKBIND")
 @Comment("正文模板书签绑定数据库表字段信息")
-public class BookMarkBind implements Serializable {
+public class BookMarkBind extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 3758496712029777467L;
 
@@ -62,12 +64,4 @@ public class BookMarkBind implements Serializable {
     @Comment("绑定的人员Id")
     @Column(name = "USERID", length = 50, nullable = false)
     private String userId;
-
-    @Comment("绑定时间")
-    @Column(name = "CREATETIME", length = 100)
-    private String createTime;
-
-    @Comment("更新绑定时间")
-    @Column(name = "UPDATETIME", length = 100)
-    private String updateTime;
 }

@@ -2,6 +2,7 @@ package net.risesoft.repository.template;
 
 import java.util.List;
 
+import org.springframework.data.domain.Sort;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
 import org.springframework.data.jpa.repository.Modifying;
@@ -18,18 +19,14 @@ import net.risesoft.entity.template.TaoHongTemplateType;
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
 public interface TaoHongTemplateTypeRepository
     extends JpaRepository<TaoHongTemplateType, String>, JpaSpecificationExecutor<TaoHongTemplateType> {
-    @Override
-    @Query("from TaoHongTemplateType t order by t.tabIndex")
-    List<TaoHongTemplateType> findAll();
 
-    @Query("from TaoHongTemplateType t where t.bureauId=?1 order by t.tabIndex")
-    List<TaoHongTemplateType> findByBureauId(String bureauId);
+    List<TaoHongTemplateType> findByBureauId(String bureauId, Sort sort);
 
     @Query("select max(t.tabIndex) from TaoHongTemplateType t where t.bureauId=?1")
     Integer getMaxTabIndex(String bureauId);
 
     @Modifying
-    @Transactional(readOnly = false)
+    @Transactional
     @Query("update TaoHongTemplateType t set t.tabIndex=?1 where t.id=?2")
     void update4Order(Integer tabIndex, String id);
 }

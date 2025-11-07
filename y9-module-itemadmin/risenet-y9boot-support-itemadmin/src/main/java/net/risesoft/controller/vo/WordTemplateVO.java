@@ -35,12 +35,6 @@ public class WordTemplateVO implements Serializable {
     private String fileSize;
 
     /**
-     * 上传时间
-     */
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    private Date uploadTime;
-
-    /**
      * 上传人
      */
     private String personName;
@@ -49,4 +43,16 @@ public class WordTemplateVO implements Serializable {
      * 文件类型
      */
     private String wordTemplateType;
+
+    /**
+     * 上传时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
+
+    /**
+     * 上传时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 }
