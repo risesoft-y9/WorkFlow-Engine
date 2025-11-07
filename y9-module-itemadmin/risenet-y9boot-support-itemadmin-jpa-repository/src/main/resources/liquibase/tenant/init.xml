@@ -1075,7 +1075,6 @@
             <column name="COLUMNNAME" remarks="属性名称" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="DISPLAYALIGN" remarks="排列" type="VARCHAR(10)">
                 <constraints nullable="false"/>
             </column>
@@ -1097,12 +1096,13 @@
             <column name="SPANWIDTH" remarks="搜索框宽度" type="VARCHAR(50)"/>
             <column name="TABINDEX" remarks="序号" type="INT"/>
             <column name="TABLENAME" remarks="表名称" type="VARCHAR(50)"/>
-            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
             <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
             <column name="VIEWTYPE" remarks="视图类型" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-40" author="mengjuhua" runOnChange="true">
@@ -1861,15 +1861,15 @@
             <column name="ID" remarks="主键" type="VARCHAR(38)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(255)"/>
             <column name="MARK" remarks="视图类型标识" type="VARCHAR(50)">
                 <constraints nullable="false" unique="true"/>
             </column>
-            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(255)"/>
             <column name="NAME" remarks="视图类型名称" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-71" author="mengjuhua" runOnChange="true">

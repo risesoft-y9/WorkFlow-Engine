@@ -20,7 +20,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.view.CustomViewRepository;
 import net.risesoft.service.view.CustomViewService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -77,7 +76,6 @@ public class CustomViewServiceImpl implements CustomViewService {
             viewType = info.getViewType();
             if (StringUtils.isBlank(info.getId())) {
                 info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                info.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             }
             info.setTabIndex(maxTabIndex);
             info.setUserId(Y9FlowableHolder.getOrgUnitId());

@@ -16,6 +16,8 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 import lombok.experimental.Accessors;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -27,7 +29,7 @@ import lombok.experimental.Accessors;
 @Entity
 @Table(name = "FF_ITEM_VIEWCONF")
 @org.hibernate.annotations.Table(comment = "事项视图配置表", appliesTo = "FF_ITEM_VIEWCONF")
-public class ItemViewConf implements Serializable {
+public class ItemViewConf extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6023418927806462716L;
 
@@ -98,12 +100,4 @@ public class ItemViewConf implements Serializable {
     @Comment("人员名称")
     @Column(name = "USERNAME", length = 50)
     private String userName;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
-
-    @Comment("更新时间")
-    @Column(name = "UPDATETIME", length = 50)
-    private String updateTime;
 }

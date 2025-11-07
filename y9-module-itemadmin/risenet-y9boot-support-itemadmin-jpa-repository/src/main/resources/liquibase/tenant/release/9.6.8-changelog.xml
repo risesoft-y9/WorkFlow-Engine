@@ -406,13 +406,14 @@
             </column>
             <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)"/>
             <column name="FIELDID" remarks="字段id" type="VARCHAR(50)"/>
-            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="TABINDEX" remarks="序号" type="INT"/>
             <column name="USERID" remarks="人员id" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)"/>
             <column name="VIEWTYPE" remarks="视图类型" type="VARCHAR(20)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
 
