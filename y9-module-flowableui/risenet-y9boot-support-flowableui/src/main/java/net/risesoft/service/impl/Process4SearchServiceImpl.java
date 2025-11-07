@@ -127,14 +127,12 @@ public class Process4SearchServiceImpl implements Process4SearchService {
         String time = Y9DateTimeUtils.formatCurrentDateTime();
         ErrorLogModel errorLogModel = new ErrorLogModel();
         errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        errorLogModel.setCreateTime(time);
         errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_OFFICE_DONE + "4Search2");
         errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
         errorLogModel.setExtendField(errorField);
         errorLogModel.setProcessInstanceId(processInstanceId);
         errorLogModel.setTaskId(taskId);
         errorLogModel.setText(msg);
-        errorLogModel.setUpdateTime(time);
         try {
             errorLogApi.saveErrorLog(tenantId, errorLogModel);
         } catch (Exception e1) {

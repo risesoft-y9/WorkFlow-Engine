@@ -122,14 +122,12 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 // 保存任务发送错误日志
                 ErrorLog errorLog = new ErrorLog();
                 errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                errorLog.setCreateTime(time);
                 errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_FORWRDING);
                 errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
                 errorLog.setExtendField("发送多人失败：" + num);
                 errorLog.setProcessInstanceId(processInstanceId);
                 errorLog.setTaskId(taskId);
                 errorLog.setText(msg);
-                errorLog.setUpdateTime(time);
                 errorLogService.saveErrorLog(errorLog);
 
                 TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");

@@ -927,18 +927,15 @@ public class DocumentServiceImpl implements DocumentService {
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            String time = Y9DateTimeUtils.formatCurrentDateTime();
             // 保存任务发送错误日志
             ErrorLog errorLog = new ErrorLog();
             errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLog.setCreateTime(time);
             errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_FORWRDING);
             errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
             errorLog.setExtendField("发送少数人失败");
             errorLog.setProcessInstanceId(processInstanceId);
             errorLog.setTaskId(taskId);
             errorLog.setText(msg);
-            errorLog.setUpdateTime(time);
             errorLogService.saveErrorLog(errorLog);
         } catch (Exception e2) {
             LOGGER.error("保存任务发送错误日志失败！", e2);
@@ -2445,18 +2442,15 @@ public class DocumentServiceImpl implements DocumentService {
                 final PrintWriter print = new PrintWriter(result);
                 e.printStackTrace(print);
                 String msg = result.toString();
-                String time = Y9DateTimeUtils.formatCurrentDateTime();
                 // 保存任务发送错误日志
                 ErrorLog errorLog = new ErrorLog();
                 errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                errorLog.setCreateTime(time);
                 errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_FORWRDING);
                 errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
                 errorLog.setExtendField("启动流程发送少数人失败");
                 errorLog.setProcessInstanceId(processInstanceId);
                 errorLog.setTaskId(taskId);
                 errorLog.setText(msg);
-                errorLog.setUpdateTime(time);
                 errorLogService.saveErrorLog(errorLog);
             } catch (Exception e2) {
                 LOGGER.error("保存任务发送错误日志失败！", e2);

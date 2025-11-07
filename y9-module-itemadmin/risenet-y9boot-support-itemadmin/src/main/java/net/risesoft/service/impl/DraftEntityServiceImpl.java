@@ -1,7 +1,6 @@
 package net.risesoft.service.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -259,7 +258,6 @@ public class DraftEntityServiceImpl implements DraftEntityService {
      * 更新已存在的草稿
      */
     private void updateExistingDraft(DraftEntity draft, String number, String urgency, String title, String type) {
-        draft.setDraftTime(new Date());
         draft.setUrgency(urgency);
         draft.setDocNumber(number);
         draft.setTitle(title);
@@ -286,11 +284,9 @@ public class DraftEntityServiceImpl implements DraftEntityService {
                 .getData();
         draft.setCreater(orgUnit.getName());
         draft.setDelFlag(false);
-        draft.setDraftTime(new Date());
         draft.setUrgency(urgency);
         draft.setDocNumber(number);
         draft.setTitle(title);
-
         // 设置类型信息
         setTypeAndSystemInfo(draft, type, itemId);
 

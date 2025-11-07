@@ -244,14 +244,12 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         String time = Y9DateTimeUtils.formatCurrentDateTime();
         ErrorLog errorLog = new ErrorLog();
         errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        errorLog.setCreateTime(time);
         errorLog.setErrorFlag(errorFlag);
         errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
         errorLog.setExtendField(extendField);
         errorLog.setProcessInstanceId(processInstanceId);
         errorLog.setTaskId(taskId);
         errorLog.setText(text);
-        errorLog.setUpdateTime(time);
         return errorLog;
     }
 

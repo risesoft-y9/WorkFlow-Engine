@@ -640,7 +640,6 @@
             <column name="ID" remarks="主键" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(50)"/>
             <column name="ERRORFLAG" remarks="错误标识" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
@@ -651,7 +650,8 @@
             <column name="PROCESSINSTANCEID" remarks="流程实例" type="VARCHAR(50)"/>
             <column name="TASKID" remarks="任务id" type="VARCHAR(50)"/>
             <column name="TEXT" remarks="错误日志信息" type="LONGTEXT"/>
-            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-24" author="mengjuhua" runOnChange="true">
@@ -814,7 +814,6 @@
             <column name="COLUMNNAME" remarks="列名称" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
@@ -831,6 +830,8 @@
             <column name="TABLENAME" remarks="表名称" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-30" author="mengjuhua" runOnChange="true">
@@ -936,7 +937,6 @@
             <column name="ID" remarks="主键" type="VARCHAR(255)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="CREATDATE" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="ITEMID" remarks="事项Id" type="VARCHAR(55)">
                 <constraints nullable="false"/>
             </column>
@@ -948,6 +948,8 @@
             <column name="TABINDEX" remarks="排序号" type="INT"/>
             <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(255)"/>
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-35" author="mengjuhua" runOnChange="true">

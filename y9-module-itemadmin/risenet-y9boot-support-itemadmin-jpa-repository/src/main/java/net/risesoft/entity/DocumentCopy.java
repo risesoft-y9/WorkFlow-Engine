@@ -16,6 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 import net.risesoft.enums.DocumentCopyStatusEnum;
 import net.risesoft.persistence.ItemEnumConverter;
 
@@ -30,7 +31,7 @@ import net.risesoft.persistence.ItemEnumConverter;
     indexes = {@Index(name = "ff_document_copy_001", columnList = "senderId"),
         @Index(name = "ff_document_copy_002", columnList = "opinionCopyId")})
 @org.hibernate.annotations.Table(comment = "办件副本信息表", appliesTo = "FF_DOCUMENT_COPY")
-public class DocumentCopy implements Serializable {
+public class DocumentCopy extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 7926782499224720763L;
 
@@ -77,12 +78,4 @@ public class DocumentCopy implements Serializable {
     @Comment("系统英文名称")
     @Column(name = "SYSTEMNAME", length = 50, nullable = false)
     private String systemName;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 100)
-    private String createTime;
-
-    @Comment("更新时间")
-    @Column(name = "UPDATETIME", length = 100)
-    private String updateTime;
 }

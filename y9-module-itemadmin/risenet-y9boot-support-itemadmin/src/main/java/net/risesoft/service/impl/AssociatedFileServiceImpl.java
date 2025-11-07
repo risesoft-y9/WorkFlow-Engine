@@ -1,7 +1,6 @@
 package net.risesoft.service.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -69,7 +68,6 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
         AssociatedFile associatedFile = associatedFileRepository.findByProcessSerialNumber(processSerialNumber);
         if (associatedFile != null && associatedFile.getId() != null) {
             String newAssociatedId = getAssociatedId(delIds, associatedFile);
-            associatedFile.setCreateTime(new Date());
             associatedFile.setAssociatedId(newAssociatedId);
             associatedFileRepository.save(associatedFile);
         }
@@ -88,7 +86,6 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                     newAssociatedId = Y9Util.genCustomStr(newAssociatedId, id);
                 }
             }
-            associatedFile.setCreateTime(new Date());
             associatedFile.setAssociatedId(newAssociatedId);
             associatedFileRepository.save(associatedFile);
         }
@@ -216,7 +213,6 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
         if (associatedFile == null || associatedFile.getId() == null) {
             associatedFile = new AssociatedFile();
             associatedFile.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            associatedFile.setCreateTime(new Date());
             associatedFile.setAssociatedId(processInstanceIds);
             associatedFile.setProcessSerialNumber(processSerialNumber);
             associatedFile.setUserId(Y9FlowableHolder.getOrgUnitId());
@@ -238,7 +234,6 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             newAssociatedId = Y9Util.genCustomStr(associatedId, newAssociatedId);
             associatedFile.setUserId(Y9FlowableHolder.getOrgUnitId());
             associatedFile.setUserName(Y9FlowableHolder.getOrgUnit().getName());
-            associatedFile.setCreateTime(new Date());
             associatedFile.setAssociatedId(newAssociatedId);
         }
         associatedFileRepository.save(associatedFile);

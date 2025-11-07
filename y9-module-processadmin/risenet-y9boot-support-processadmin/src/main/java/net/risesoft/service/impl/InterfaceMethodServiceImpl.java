@@ -924,14 +924,12 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
             String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLogModel.setCreateTime(time);
             errorLogModel.setErrorFlag("InterfaceCall");
             errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
             errorLogModel.setExtendField("接口调用失败:任务key【" + taskKey + "】,接口地址:" + interfaceAddress);
             errorLogModel.setProcessInstanceId(processInstanceId);
             errorLogModel.setTaskId(taskId);
             errorLogModel.setText(msg);
-            errorLogModel.setUpdateTime(time);
             errorLogApi.saveErrorLog(tenantId, errorLogModel);
             return new AsyncResult<>(true);
         } catch (Exception e) {

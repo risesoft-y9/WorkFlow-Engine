@@ -721,18 +721,14 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             PrintWriter printWriter = new PrintWriter(stringWriter);
             e.printStackTrace(printWriter);
             String errorMsg = stringWriter.toString();
-
-            String currentTime = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLog errorLog = new ErrorLog();
             errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLog.setCreateTime(currentTime);
             errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_CHAOSONG);
             errorLog.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
             errorLog.setExtendField("抄送保存失败");
             errorLog.setProcessInstanceId(processInstanceId);
             errorLog.setTaskId("");
             errorLog.setText(errorMsg);
-            errorLog.setUpdateTime(currentTime);
             errorLogService.saveErrorLog(errorLog);
         } catch (Exception ex) {
             LOGGER.error("保存抄送失败信息异常", ex);

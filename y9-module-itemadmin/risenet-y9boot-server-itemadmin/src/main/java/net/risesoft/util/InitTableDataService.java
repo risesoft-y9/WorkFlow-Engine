@@ -255,7 +255,6 @@ public class InitTableDataService {
             newIp.setRoleType(ItemPermissionEnum.ROLE_DYNAMIC);
             newIp.setTaskDefKey("");
             newIp.setTenantId(Y9LoginUserHolder.getTenantId());
-            newIp.setCreatDate(Y9DateTimeUtils.formatCurrentDateTime());
             itemPermissionRepository.save(newIp);
         }
     }
