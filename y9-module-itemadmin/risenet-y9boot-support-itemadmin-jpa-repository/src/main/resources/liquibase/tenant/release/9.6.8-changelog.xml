@@ -448,8 +448,8 @@
             <column name="SYSTEMNAME" remarks="系统英文名称" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
-            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
-            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="生成时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
 

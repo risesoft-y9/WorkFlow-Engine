@@ -772,14 +772,12 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLog errorLog = new ErrorLog();
             errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLog.setCreateTime(time);
             errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_CHAOSONG);
             errorLog.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
             errorLog.setExtendField("抄送保存失败");
             errorLog.setProcessInstanceId(processInstanceId);
             errorLog.setTaskId("");
             errorLog.setText(msg);
-            errorLog.setUpdateTime(time);
             errorLogService.saveErrorLog(errorLog);
         } catch (Exception e2) {
             LOGGER.error("保存抄送失败异常,错误信息为：", e2);

@@ -16,6 +16,7 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.persistence.ItemEnumConverter;
 
@@ -29,7 +30,7 @@ import net.risesoft.persistence.ItemEnumConverter;
 @Entity
 @Table(name = "FF_ITEM_PERMISSION")
 @Comment("事项权限绑定")
-public class ItemPermission implements Serializable {
+public class ItemPermission extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -2591411629315187196L;
 
@@ -58,23 +59,19 @@ public class ItemPermission implements Serializable {
     private String itemId;
 
     @Comment("流程定义Id")
-    @Column(name = "PROCESSDEFINITIONID", length = 255, nullable = false)
+    @Column(name = "PROCESSDEFINITIONID", nullable = false)
     private String processDefinitionId;
 
     /**
      * taskDefKey为空表示是流程的缺省表单
      */
     @Comment("任务key")
-    @Column(name = "TASKDEFKEY", length = 255)
+    @Column(name = "TASKDEFKEY")
     private String taskDefKey;
 
     @Comment("排序号")
     @Column(name = "TABINDEX", length = 10)
     private Integer tabIndex;
-
-    @Comment("生成时间")
-    @Column(name = "CREATDATE", length = 50)
-    private String creatDate;
 
     /**
      * 角色名称

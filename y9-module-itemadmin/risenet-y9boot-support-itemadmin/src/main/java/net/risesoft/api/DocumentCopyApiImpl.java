@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentCopyApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.DocumentCopy;
 import net.risesoft.entity.ProcessParam;
@@ -38,7 +37,6 @@ import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.opinion.OpinionCopyService;
 import net.risesoft.service.util.ItemPageService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -72,7 +70,6 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         ProcessParamService processParamService,
         OpinionCopyService opinionCopyService,
         ItemPageService itemPageService,
-        PersonApi personApi,
         UserApi userApi,
         OrgUnitApi orgUnitApi,
         @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
@@ -267,8 +264,6 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                 documentCopy.setSenderName(orgUnit.getName());
                 documentCopy.setStatus(DocumentCopyStatusEnum.TODO_SIGN);
                 documentCopy.setSystemName(processParam.getSystemName());
-                documentCopy.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                documentCopy.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 list.add(documentCopy);
             });
             documentCopyService.save(list);
@@ -286,7 +281,6 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         if (optional.isPresent()) {
             DocumentCopy documentCopy = optional.get();
             documentCopy.setStatus(status);
-            documentCopy.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             documentCopyService.save(documentCopy);
             return Y9Result.success();
         }
@@ -303,7 +297,6 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
             .filter(documentCopy -> documentCopy.getStatus().getValue() < DocumentCopyStatusEnum.CANCEL.getValue())
             .forEach(documentCopy -> {
                 documentCopy.setStatus(DocumentCopyStatusEnum.DELETE);
-                documentCopy.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 documentCopyService.save(documentCopy);
             });
         return Y9Result.success();

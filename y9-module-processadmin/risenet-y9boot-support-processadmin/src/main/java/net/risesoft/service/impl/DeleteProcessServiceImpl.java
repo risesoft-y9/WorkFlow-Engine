@@ -22,7 +22,6 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.service.DeleteProcessService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -140,17 +139,14 @@ public class DeleteProcessServiceImpl implements DeleteProcessService {
         final PrintWriter print = new PrintWriter(result);
         e.printStackTrace(print);
         String msg = result.toString();
-        String time = Y9DateTimeUtils.formatCurrentDateTime();
         ErrorLogModel errorLogModel = new ErrorLogModel();
         errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        errorLogModel.setCreateTime(time);
         errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_DELETE_YEARDATA);
         errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
         errorLogModel.setExtendField("删除流程实例，删除年度表数据失败");
         errorLogModel.setProcessInstanceId(processInstanceId);
         errorLogModel.setTaskId("");
         errorLogModel.setText(msg);
-        errorLogModel.setUpdateTime(time);
         errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
         LOGGER.error("**********删除年度表数据失败", e);
     }

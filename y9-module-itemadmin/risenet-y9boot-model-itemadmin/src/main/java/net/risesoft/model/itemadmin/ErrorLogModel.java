@@ -89,15 +89,4 @@ public class ErrorLogModel implements Serializable {
      * 错误日志信息
      */
     private String text;
-
-    /**
-     * 创建时间
-     */
-    private String createTime;
-
-    /**
-     * 更新时间
-     */
-    private String updateTime;
-
 }

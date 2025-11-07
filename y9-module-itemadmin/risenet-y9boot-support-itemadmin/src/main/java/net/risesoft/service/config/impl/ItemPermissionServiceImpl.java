@@ -34,7 +34,6 @@ import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
 import net.risesoft.service.config.ItemPermissionService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -355,7 +354,6 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         newPermission.setRoleId(roleId);
         newPermission.setRoleType(roleType);
         newPermission.setTenantId(tenantId);
-        newPermission.setCreatDate(Y9DateTimeUtils.formatCurrentDateTime());
         newPermission.setTaskDefKey(taskDefKey);
         // 设置标签索引
         Integer maxTabIndex = itemPermissionRepository.getMaxTabIndex(itemId, processDefinitionId, taskDefKey);

@@ -61,14 +61,6 @@ public class ItemViewConfModel implements Serializable {
      */
     private String userName;
     /**
-     * 创建时间
-     */
-    private String createTime;
-    /**
-     * 更新时间
-     */
-    private String updateTime;
-    /**
      * 是否开启搜索条件,绑定数据库表和字段时，可开启搜索条件
      */
     private Integer openSearch;

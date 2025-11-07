@@ -13,7 +13,6 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.service.config.ItemMappingConfService;
-import net.risesoft.util.Y9DateTimeUtils;
 
 /**
  * @author qinman
@@ -50,12 +49,10 @@ public class ItemMappingConfServiceImpl implements ItemMappingConfService {
                 oldConf.setMappingName(itemMappingConf.getMappingName());
                 oldConf.setMappingTableName(itemMappingConf.getMappingTableName());
                 oldConf.setTableName(itemMappingConf.getTableName());
-                oldConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 itemMappingConfRepository.save(oldConf);
             }
         } else {
             itemMappingConf.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            itemMappingConf.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             itemMappingConfRepository.save(itemMappingConf);
         }
     }

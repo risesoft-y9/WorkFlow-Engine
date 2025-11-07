@@ -48,9 +48,4 @@ public class ItemMappingConfModel implements Serializable {
      * 映射字段名
      */
     private String mappingName;
-    /**
-     * 生成时间
-     */
-    private String createTime;
-
 }

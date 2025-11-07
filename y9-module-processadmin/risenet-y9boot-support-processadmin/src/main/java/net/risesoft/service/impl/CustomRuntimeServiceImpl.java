@@ -591,14 +591,12 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLogModel.setCreateTime(time);
             errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_RECOVERY_COMLETED);
             errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
             errorLogModel.setExtendField(extendField);
             errorLogModel.setProcessInstanceId(processInstanceId);
             errorLogModel.setTaskId("");
             errorLogModel.setText(errorMsg);
-            errorLogModel.setUpdateTime(time);
             errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
         } catch (Exception e) {
             LOGGER.error("保存错误日志失败", e);

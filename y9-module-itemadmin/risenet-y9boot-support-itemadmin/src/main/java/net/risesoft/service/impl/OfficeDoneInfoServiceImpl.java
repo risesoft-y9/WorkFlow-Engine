@@ -40,7 +40,6 @@ import net.risesoft.nosql.elastic.repository.OfficeDoneInfoRepository;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
@@ -251,17 +250,14 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             e.printStackTrace(print);
             String msg = result.toString();
             LOGGER.warn("异常", e);
-            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLog errorLogModel = new ErrorLog();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLogModel.setCreateTime(time);
             errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_OFFICE_DONE);
             errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
             errorLogModel.setExtendField("ES流程信息数据保存失败");
             errorLogModel.setProcessInstanceId(processInstanceId);
             errorLogModel.setTaskId("");
             errorLogModel.setText(msg);
-            errorLogModel.setUpdateTime(time);
             try {
                 errorLogService.saveErrorLog(errorLogModel);
             } catch (Exception e1) {

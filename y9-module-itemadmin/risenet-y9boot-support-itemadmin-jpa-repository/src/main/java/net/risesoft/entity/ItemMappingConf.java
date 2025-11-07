@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ITEM_MAPPINGCONF")
 @Comment("事项对接字段映射配置")
-public class ItemMappingConf implements Serializable {
+public class ItemMappingConf extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6023418927806462716L;
 
@@ -71,9 +73,4 @@ public class ItemMappingConf implements Serializable {
     @Comment("映射字段名")
     @Column(name = "MAPPINGNAME", length = 50, nullable = false)
     private String mappingName;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
-
 }

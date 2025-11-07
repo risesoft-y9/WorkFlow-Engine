@@ -15,6 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ERRORLOG")
 @Comment("错误日志记录表")
-public class ErrorLog implements Serializable {
+public class ErrorLog extends ItemAdminBaseEntity implements Serializable {
     private static final long serialVersionUID = 2537599274208903877L;
 
     @Id
@@ -52,20 +54,11 @@ public class ErrorLog implements Serializable {
     private String errorFlag;
 
     @Comment("扩展字段")
-    @Column(name = "EXTENDFIELD", length = 255)
+    @Column(name = "EXTENDFIELD")
     private String extendField;
 
     @Comment("错误日志信息")
     @Lob
     @Column(name = "TEXT")
     private String text;
-
-    @Comment("创建时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
-
-    @Comment("更新时间")
-    @Column(name = "UPDATETIME", length = 50)
-    private String updateTime;
-
 }

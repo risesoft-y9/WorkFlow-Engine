@@ -47,7 +47,7 @@ public class OfficeFollow implements Serializable {
      * 事项id
      */
     @Comment("事项id")
-    @Column(name = "ITEMID", length = 50, nullable = true)
+    @Column(name = "ITEMID", length = 50)
     private String itemId;
 
     /**
@@ -61,63 +61,63 @@ public class OfficeFollow implements Serializable {
      * 紧急程度
      */
     @Comment("紧急程度")
-    @Column(name = "JINJICHENGDU", length = 50, nullable = true)
+    @Column(name = "JINJICHENGDU", length = 50)
     private String jinjichengdu;
 
     /**
      * 文件编号
      */
     @Comment("文件编号")
-    @Column(name = "NUMBERS", length = 50, nullable = true)
+    @Column(name = "NUMBERS", length = 50)
     private String numbers;
 
     /**
      * 来文单位/拟稿单位
      */
     @Comment("来文单位/拟稿单位")
-    @Column(name = "sendDept", length = 150, nullable = true)
+    @Column(name = "sendDept", length = 150)
     private String sendDept;
 
     /**
      * 文件类型
      */
     @Comment("文件类型")
-    @Column(name = "FILETYPE", length = 50, nullable = true)
+    @Column(name = "FILETYPE", length = 50)
     private String fileType;
 
     /**
      * 系统名称
      */
     @Comment("系统名称")
-    @Column(name = "SYSTEMNAME", length = 50, nullable = true)
+    @Column(name = "SYSTEMNAME", length = 50)
     private String systemName;
 
     /**
      * 标题
      */
     @Comment("标题")
-    @Column(name = "DOCUMENTTITLE", length = 500, nullable = true)
+    @Column(name = "DOCUMENTTITLE", length = 500)
     private String documentTitle;
 
     /**
      * 办理期限
      */
     @Comment("办理期限")
-    @Column(name = "handleTerm", length = 50, nullable = true)
+    @Column(name = "handleTerm", length = 50)
     private String handleTerm;
 
     /**
      * 委办局id
      */
     @Comment("委办局id")
-    @Column(name = "BUREAUID", length = 50, nullable = true)
+    @Column(name = "BUREAUID", length = 50)
     private String bureauId;
 
     /**
      * 委办局名称
      */
     @Comment("委办局名称")
-    @Column(name = "BUREAUNAME", length = 200, nullable = true)
+    @Column(name = "BUREAUNAME", length = 200)
     private String bureauName;
 
     /**

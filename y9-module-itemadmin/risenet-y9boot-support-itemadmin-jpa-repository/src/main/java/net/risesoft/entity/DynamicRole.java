@@ -37,7 +37,7 @@ public class DynamicRole implements Serializable {
 
     @Id
     @Comment("主键")
-    @Column(name = "ID", length = 255, nullable = false)
+    @Column(name = "ID", length = 50, nullable = false)
     @GeneratedValue(generator = "uuid")
     @GenericGenerator(name = "uuid", strategy = "assigned")
     private String id;
@@ -47,7 +47,7 @@ public class DynamicRole implements Serializable {
     private String tenantId;
 
     @Comment("动态角色名称")
-    @Column(name = "NAME", length = 255)
+    @Column(name = "NAME")
     private String name;
 
     @Comment("动态角色种类")

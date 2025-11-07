@@ -17,7 +17,6 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.opinion.OpinionCopyApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.DocumentCopy;
 import net.risesoft.entity.opinion.OpinionCopy;
@@ -28,7 +27,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.opinion.OpinionCopyService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -46,8 +44,6 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
     private final DocumentCopyService documentCopyService;
 
     private final OpinionCopyService opinionCopyService;
-
-    private final PersonApi personApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -98,7 +94,6 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
                 opinionCopy.getProcessSerialNumber(), orgUnitId, DocumentCopyStatusEnum.TODO_SIGN);
             dcList.forEach(dc -> {
                 dc.setStatus(DocumentCopyStatusEnum.SIGN);
-                dc.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 documentCopyService.save(dc);
             });
             Y9BeanUtil.copyProperties(optional.get(), opinionCopyModel);

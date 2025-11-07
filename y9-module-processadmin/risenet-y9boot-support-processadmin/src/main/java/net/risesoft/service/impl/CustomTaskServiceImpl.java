@@ -140,17 +140,14 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLogModel.setCreateTime(time);
             errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_PROCESS_COMLETE);
             errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
             errorLogModel.setExtendField("流程办结失败");
             errorLogModel.setProcessInstanceId(processInstanceId);
             errorLogModel.setTaskId(taskId);
             errorLogModel.setText(msg);
-            errorLogModel.setUpdateTime(time);
             try {
                 errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {
@@ -194,17 +191,14 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);
             String msg = result.toString();
-            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLogModel errorLogModel = new ErrorLogModel();
             errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            errorLogModel.setCreateTime(time);
             errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_PROCESS_COMLETE);
             errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
             errorLogModel.setExtendField("流程办结失败");
             errorLogModel.setProcessInstanceId(processInstanceId);
             errorLogModel.setTaskId(taskId);
             errorLogModel.setText(msg);
-            errorLogModel.setUpdateTime(time);
             try {
                 errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
             } catch (Exception e1) {

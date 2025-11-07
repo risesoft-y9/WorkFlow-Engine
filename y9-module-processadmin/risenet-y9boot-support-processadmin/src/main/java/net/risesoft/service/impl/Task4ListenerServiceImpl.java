@@ -21,7 +21,6 @@ import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.service.SetDeptIdUtilService;
 import net.risesoft.service.Task4ListenerService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -119,10 +118,8 @@ public class Task4ListenerServiceImpl implements Task4ListenerService {
         final PrintWriter print = getPrintWriter(msgResult);
         extracted(e, print);
         String msg = getMsg(msgResult);
-        String time = Y9DateTimeUtils.formatCurrentDateTime();
         ErrorLogModel errorLogModel = new ErrorLogModel();
         errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        errorLogModel.setCreateTime(time);
         errorLogModel.setErrorFlag("update orgUnitName");
         errorLogModel.setErrorType(ErrorLogModel.ERROR_TASK);
         errorLogModel.setExtendField(
@@ -130,7 +127,6 @@ public class Task4ListenerServiceImpl implements Task4ListenerService {
         errorLogModel.setProcessInstanceId(task.getProcessInstanceId());
         errorLogModel.setTaskId(task.getId());
         errorLogModel.setText(msg);
-        errorLogModel.setUpdateTime(time);
         errorLogApi.saveErrorLog(tenantId, errorLogModel);
     }
 }

@@ -51,7 +51,7 @@ public class ActRuExecutionBackup implements Serializable {
     private String processInstanceId;
 
     @Comment("流程业务key")
-    @Column(name = "BUSINESS_KEY_", length = 255)
+    @Column(name = "BUSINESS_KEY_")
     private String businessKey;
 
     @Comment("父流程实例Id")
@@ -108,15 +108,15 @@ public class ActRuExecutionBackup implements Serializable {
     private Integer cachedEntState;
 
     @Comment("租户Id")
-    @Column(name = "TENANT_ID_", length = 255)
+    @Column(name = "TENANT_ID_")
     private String tenantId;
 
     @Comment("节点名称")
-    @Column(name = "NAME_", length = 255)
+    @Column(name = "NAME_")
     private String name;
 
     @Comment("开始任务节点Id")
-    @Column(name = "START_ACT_ID_", length = 255)
+    @Column(name = "START_ACT_ID_")
     private String startActId;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -125,7 +125,7 @@ public class ActRuExecutionBackup implements Serializable {
     private Date startTime;
 
     @Comment("流程启动人Id")
-    @Column(name = "START_USER_ID_", length = 255)
+    @Column(name = "START_USER_ID_")
     private String startUserId;
 
     @Temporal(TemporalType.TIMESTAMP)
@@ -171,10 +171,10 @@ public class ActRuExecutionBackup implements Serializable {
     private Integer idLinkCount = 0;
 
     @Comment("callBackId")
-    @Column(name = "CALLBACK_ID_", length = 255)
+    @Column(name = "CALLBACK_ID_")
     private String callBackId;
 
     @Comment("callBackType")
-    @Column(name = "CALLBACK_TYPE_", length = 255)
+    @Column(name = "CALLBACK_TYPE_")
     private String callBackType;
 }
