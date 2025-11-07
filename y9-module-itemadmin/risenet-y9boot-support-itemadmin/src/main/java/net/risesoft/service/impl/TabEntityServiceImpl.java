@@ -15,7 +15,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.tab.TabEntityRepository;
 import net.risesoft.service.TabEntityService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -59,7 +58,6 @@ public class TabEntityServiceImpl implements TabEntityService {
             if (null != oldTabEntity) {
                 oldTabEntity.setName(tabEntity.getName());
                 oldTabEntity.setUrl(tabEntity.getUrl());
-                oldTabEntity.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 oldTabEntity.setUserId(userId);
                 oldTabEntity.setUserName(userName);
                 return tabEntityRepository.save(oldTabEntity);
@@ -75,8 +73,6 @@ public class TabEntityServiceImpl implements TabEntityService {
         newTabEntity.setUserId(userId);
         newTabEntity.setUserName(userName);
         newTabEntity.setTenantId(tenantId);
-        newTabEntity.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newTabEntity.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         return tabEntityRepository.save(newTabEntity);
     }
 }

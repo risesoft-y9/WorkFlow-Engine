@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ORGANWORD_DETAIL")
 @Comment("公文编号详细表")
-public class OrganWordDetail implements Serializable {
+public class OrganWordDetail extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -223673649868267898L;
 
@@ -79,12 +81,4 @@ public class OrganWordDetail implements Serializable {
     @Comment("当前值")
     @Column(name = "CURRENTNUMBER", length = 10, nullable = false)
     private Integer number;
-
-    /**
-     * 生成、修改时间
-     */
-    @Comment("修改时间")
-    @Column(name = "CREATETIME", nullable = false)
-    private String createTime;
-
 }

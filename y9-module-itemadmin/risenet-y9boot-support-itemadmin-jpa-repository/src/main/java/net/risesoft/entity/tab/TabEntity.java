@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_TABENTITY")
 @Comment("自定义页签表")
-public class TabEntity implements Serializable {
+public class TabEntity extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -1231641987535504621L;
 
@@ -72,19 +74,4 @@ public class TabEntity implements Serializable {
     @Comment("人员id")
     @Column(name = "USERID", length = 50)
     private String userId;
-
-    /**
-     * 生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
-
-    /**
-     * 更新时间
-     */
-    @Comment("更新时间")
-    @Column(name = "UPDATETIME", length = 50)
-    private String updateTime;
-
 }

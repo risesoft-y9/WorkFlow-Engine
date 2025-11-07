@@ -29,7 +29,6 @@ import net.risesoft.repository.organword.ItemOrganWordBindRepository;
 import net.risesoft.repository.organword.OrganWordRepository;
 import net.risesoft.service.config.ItemOrganWordBindService;
 import net.risesoft.service.config.ItemOrganWordRoleService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -148,8 +147,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         ItemOrganWordBind newBind = new ItemOrganWordBind();
         newBind.setId(bindId);
         newBind.setItemId(itemId);
-        newBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-        newBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         newBind.setOrganWordCustom(sourceBind.getOrganWordCustom());
         newBind.setProcessDefinitionId(processDefinitionId);
         newBind.setTaskDefKey(taskDefKey);
@@ -180,8 +177,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             ItemOrganWordBind itemOrganWordBind = new ItemOrganWordBind();
             itemOrganWordBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             itemOrganWordBind.setItemId(newItemId);
-            itemOrganWordBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-            itemOrganWordBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             itemOrganWordBind.setOrganWordCustom(bind.getOrganWordCustom());
             itemOrganWordBind.setProcessDefinitionId(lastVersionPid);
             itemOrganWordBind.setTaskDefKey(bind.getTaskDefKey());
@@ -329,7 +324,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     @Transactional
     public void save(String id, String name, String custom) {
         ItemOrganWordBind taskRoleBind = this.findById(id);
-        taskRoleBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         taskRoleBind.setOrganWordCustom(custom);
         itemOrganWordBindRepository.save(taskRoleBind);
     }
@@ -348,8 +342,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             taskRoleBind.setTaskDefKey(taskDefKey);
             taskRoleBind.setUserId(Y9LoginUserHolder.getPersonId());
             taskRoleBind.setUserName(Y9LoginUserHolder.getUserInfo().getName());
-            taskRoleBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-            taskRoleBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             itemOrganWordBindRepository.save(taskRoleBind);
         } else {
             bind.setOrganWordCustom(custom);
@@ -357,7 +349,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             bind.setTaskDefKey(taskDefKey);
             bind.setUserId(Y9LoginUserHolder.getPersonId());
             bind.setUserName(Y9LoginUserHolder.getUserInfo().getName());
-            bind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             itemOrganWordBindRepository.save(bind);
         }
     }

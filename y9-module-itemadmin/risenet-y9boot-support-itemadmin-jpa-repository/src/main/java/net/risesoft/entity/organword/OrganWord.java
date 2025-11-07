@@ -16,6 +16,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ORGANWORD")
 @Comment("编号标识表")
-public class OrganWord implements Serializable {
+public class OrganWord extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 991194093927556827L;
 
@@ -59,9 +61,4 @@ public class OrganWord implements Serializable {
     @Comment("人员名称")
     @Column(name = "USERNAME", length = 50, nullable = false)
     private String userName;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME")
-    private String createTime;
-
 }
