@@ -37,7 +37,6 @@ import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
 import net.risesoft.service.opinion.OpinionSignService;
 import net.risesoft.util.CommentUtil;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -76,7 +75,6 @@ public class OpinionSignServiceImpl implements OpinionSignService {
         if (StringUtils.isNotBlank(id)) {
             OpinionSign old = this.findById(id);
             old.setContent(opinionSign.getContent());
-            old.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             return opinionSignRepository.save(old);
         }
         OpinionSign newOs = new OpinionSign();
@@ -90,8 +88,6 @@ public class OpinionSignServiceImpl implements OpinionSignService {
         SignDeptDetail signDeptDetail = signDeptDetailService.findById(opinionSign.getSignDeptDetailId());
         newOs.setDeptId(signDeptDetail.getDeptId());
         newOs.setDeptName(signDeptDetail.getDeptName());
-        newOs.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-        newOs.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         return opinionSignRepository.save(newOs);
     }
 
@@ -108,7 +104,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
             model.setOpinionFrameMark(opinionFrameMark);
             model.setOneClickSetList(oneClickSetList);
             List<OpinionSign> list = opinionSignRepository
-                .findBySignDeptDetailIdAndOpinionFrameMarkOrderByCreateDateAsc(signDeptDetailId, opinionFrameMark);
+                .findBySignDeptDetailIdAndOpinionFrameMarkOrderByCreateTimeAsc(signDeptDetailId, opinionFrameMark);
             if (itemBox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
                 handleTodoBox(resList, model, list, tenantId, taskId, personId, person, opinionFrameMark);
             } else if (isProcessedBox(itemBox)) {
@@ -156,14 +152,6 @@ public class OpinionSignServiceImpl implements OpinionSignService {
     private OpinionSignListModel createOpinionSignListModel(OpinionSign opinionSign) {
         OpinionSignListModel opinionSignListModel = new OpinionSignListModel();
         opinionSign.setContent(CommentUtil.replaceEnter2Br(opinionSign.getContent()));
-        try {
-            opinionSign.setModifyDate(
-                Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getModifyDate())));
-            opinionSign.setCreateDate(
-                Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinionSign.getCreateDate())));
-        } catch (Exception e) {
-            LOGGER.warn(e.getMessage());
-        }
         OpinionSignModel opinionSignModel = new OpinionSignModel();
         Y9BeanUtil.copyProperties(opinionSign, opinionSignModel);
         opinionSignListModel.setOpinionSignModel(opinionSignModel);
@@ -276,13 +264,13 @@ public class OpinionSignServiceImpl implements OpinionSignService {
     @Override
     public List<OpinionSign> findBySignDeptDetailIdAndOpinionFrameMark(String signDeptDetailId,
         String opinionFrameMark) {
-        return opinionSignRepository.findBySignDeptDetailIdAndOpinionFrameMarkOrderByCreateDateAsc(signDeptDetailId,
+        return opinionSignRepository.findBySignDeptDetailIdAndOpinionFrameMarkOrderByCreateTimeAsc(signDeptDetailId,
             opinionFrameMark);
     }
 
     @Override
     public List<OpinionSign> findBySignDeptDetailId(String signDeptDetailId) {
-        return opinionSignRepository.findBySignDeptDetailIdOrderByCreateDateAsc(signDeptDetailId);
+        return opinionSignRepository.findBySignDeptDetailIdOrderByCreateTimeAsc(signDeptDetailId);
     }
 
     @Override

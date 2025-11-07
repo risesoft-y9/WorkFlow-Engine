@@ -84,7 +84,8 @@
             </column>
             <column name="USER_ID" remarks="操作人员id" type="VARCHAR(50)">
             </column>
-            <column name="CREATE_DATE" remarks="创建时间" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
 

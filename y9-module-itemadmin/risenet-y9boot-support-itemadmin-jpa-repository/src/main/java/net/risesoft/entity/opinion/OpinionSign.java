@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @date 2024/12/16
@@ -23,7 +25,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_OPINION_SIGN")
 @org.hibernate.annotations.Table(comment = "会签意见信息表", appliesTo = "FF_OPINION_SIGN")
-public class OpinionSign implements Serializable {
+public class OpinionSign extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 4287475181460776706L;
 
@@ -92,18 +94,4 @@ public class OpinionSign implements Serializable {
     @Comment("部门名称")
     @Column(name = "DEPTNAME", length = 100)
     private String deptName;
-
-    /**
-     * 意见生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATEDATE", length = 50)
-    private String createDate;
-
-    /**
-     * 意见最后的修改时间
-     */
-    @Comment("修改时间")
-    @Column(name = "MODIFYDATE", length = 50)
-    private String modifyDate;
 }

@@ -15,8 +15,8 @@ import net.risesoft.entity.opinion.OpinionSign;
 public interface OpinionSignRepository
     extends JpaRepository<OpinionSign, String>, JpaSpecificationExecutor<OpinionSign> {
 
-    List<OpinionSign> findBySignDeptDetailIdAndOpinionFrameMarkOrderByCreateDateAsc(String signDeptDetailId,
+    List<OpinionSign> findBySignDeptDetailIdAndOpinionFrameMarkOrderByCreateTimeAsc(String signDeptDetailId,
         String opinionFrameMark);
 
-    List<OpinionSign> findBySignDeptDetailIdOrderByCreateDateAsc(String signDeptDetailId);
+    List<OpinionSign> findBySignDeptDetailIdOrderByCreateTimeAsc(String signDeptDetailId);
 }

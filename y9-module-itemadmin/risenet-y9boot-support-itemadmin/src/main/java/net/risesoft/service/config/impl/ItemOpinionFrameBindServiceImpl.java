@@ -32,7 +32,6 @@ import net.risesoft.repository.opinion.ItemOpinionFrameBindRepository;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.config.ItemOpinionFrameRoleService;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -190,7 +189,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         for (OpinionFrameOneClickSet set : setList) {
             OpinionFrameOneClickSet newSet = new OpinionFrameOneClickSet();
             newSet.setBindId(targetBindId);
-            newSet.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
             newSet.setOneSetType(set.getOneSetType());
             newSet.setOneSetTypeName(set.getOneSetTypeName());
             newSet.setExecuteAction(set.getExecuteAction());

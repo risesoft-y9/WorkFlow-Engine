@@ -19,7 +19,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OpinionFrameOneClickSetModel;
 import net.risesoft.repository.opinion.OpinionFrameOneClickSetRepository;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -64,7 +63,6 @@ public class OpinionFrameOneClickSetServiceImpl implements OpinionFrameOneClickS
         try {
             if (StringUtils.isBlank(opinionFrameOneClickSet.getId())) {
                 opinionFrameOneClickSet.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                opinionFrameOneClickSet.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
                 opinionFrameOneClickSet.setUserId(Y9LoginUserHolder.getPersonId());
                 opinionFrameOneClickSetRepository.save(opinionFrameOneClickSet);
             } else {
