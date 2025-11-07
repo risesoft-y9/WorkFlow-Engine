@@ -990,7 +990,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     private void setOpinionInfoForProcessTrack(HistoryProcessModel modelTrack, String taskId, String processTrackId) {
         try {
             List<Opinion> opinionProcessTrack =
-                this.opinionRepository.findByTaskIdAndProcessTrackIdOrderByCreateDateDesc(taskId, processTrackId);
+                this.opinionRepository.findByTaskIdAndProcessTrackIdOrderByCreateTimeDesc(taskId, processTrackId);
             modelTrack.setOpinion(opinionProcessTrack.isEmpty() ? "" : opinionProcessTrack.get(0).getContent());
         } catch (Exception e) {
             LOGGER.warn("获取流程跟踪意见信息失败，taskId: {}, processTrackId: {}", taskId, processTrackId, e);

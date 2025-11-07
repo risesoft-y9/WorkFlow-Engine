@@ -122,7 +122,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     private void copyOpinionFrameBindingsForNode(String itemId, String tenantId, String userId, String userName,
         String latestProcessDefinitionId, String previousProcessDefinitionId, String currentTaskDefKey) {
         List<ItemOpinionFrameBind> bindList =
-            itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(itemId,
+            itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateTimeAsc(itemId,
                 previousProcessDefinitionId, currentTaskDefKey);
         for (ItemOpinionFrameBind bind : bindList) {
             ItemOpinionFrameBind existingBind =
@@ -161,8 +161,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         ItemOpinionFrameBind newBind = new ItemOpinionFrameBind();
         newBind.setId(bindId);
         newBind.setItemId(itemId);
-        newBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-        newBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         newBind.setOpinionFrameMark(sourceBind.getOpinionFrameMark());
         newBind.setOpinionFrameName(sourceBind.getOpinionFrameName());
         newBind.setProcessDefinitionId(processDefinitionId);
@@ -210,7 +208,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         String userId = currentUser.getPersonId();
         String userName = currentUser.getName();
         List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository
-            .findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId, lastVersionPid);
+            .findByItemIdAndProcessDefinitionIdOrderByCreateTimeAsc(itemId, lastVersionPid);
         if (null != bindList && !bindList.isEmpty()) {
             for (ItemOpinionFrameBind bind : bindList) {
                 // 创建新的意见框绑定
@@ -232,8 +230,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         ItemOpinionFrameBind newBind = new ItemOpinionFrameBind();
         newBind.setId(bindId);
         newBind.setItemId(itemId);
-        newBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-        newBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         newBind.setOpinionFrameMark(sourceBind.getOpinionFrameMark());
         newBind.setOpinionFrameName(sourceBind.getOpinionFrameName());
         newBind.setProcessDefinitionId(processDefinitionId);
@@ -321,14 +317,14 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
 
     @Override
     public List<ItemOpinionFrameBind> listByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId) {
-        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdOrderByCreateDateAsc(itemId,
+        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdOrderByCreateTimeAsc(itemId,
             processDefinitionId);
     }
 
     @Override
     public List<ItemOpinionFrameBind> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId,
         String processDefinitionId, String taskDefKey) {
-        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(
+        return itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateTimeAsc(
             itemId, processDefinitionId, taskDefKey);
     }
 
@@ -337,7 +333,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         String processDefinitionId, String taskDefKey) {
         List<ItemOpinionFrameBind> result = new ArrayList<>();
         List<ItemOpinionFrameBind> bindList =
-            itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateDateAsc(itemId,
+            itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateTimeAsc(itemId,
                 processDefinitionId, taskDefKey);
 
         for (ItemOpinionFrameBind bind : bindList) {
@@ -374,7 +370,7 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     @Override
     public List<ItemOpinionFrameBind> listByMark(String mark) {
         return StringUtils.isNotEmpty(mark)
-            ? itemOpinionFrameBindRepository.findByOpinionFrameMarkOrderByItemIdDescModifyDateDesc(mark) : null;
+            ? itemOpinionFrameBindRepository.findByOpinionFrameMarkOrderByItemIdDescUpdateTimeDesc(mark) : null;
     }
 
     @Override
@@ -419,8 +415,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         String processDefinitionId, String taskDefKey, String tenantId, String userId, String userName) {
         ItemOpinionFrameBind newBind = new ItemOpinionFrameBind();
         newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newBind.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-        newBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         newBind.setOpinionFrameMark(mark);
         newBind.setOpinionFrameName(name);
         newBind.setItemId(itemId);

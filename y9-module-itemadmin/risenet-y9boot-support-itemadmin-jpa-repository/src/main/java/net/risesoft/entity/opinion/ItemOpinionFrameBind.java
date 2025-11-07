@@ -18,6 +18,8 @@ import org.hibernate.annotations.Type;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -28,7 +30,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ITEM_OPINIONFRAME")
 @org.hibernate.annotations.Table(comment = "意见框任务绑定表", appliesTo = "FF_ITEM_OPINIONFRAME")
-public class ItemOpinionFrameBind implements Serializable {
+public class ItemOpinionFrameBind extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 2858871622683426060L;
 
@@ -109,18 +111,4 @@ public class ItemOpinionFrameBind implements Serializable {
     @Comment("人员id")
     @Column(name = "USERID", length = 50)
     private String userId;
-
-    /**
-     * 生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATEDATE")
-    private String createDate;
-
-    /**
-     * 最后的修改时间
-     */
-    @Comment("修改时间")
-    @Column(name = "MODIFYDATE")
-    private String modifyDate;
 }

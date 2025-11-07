@@ -30,7 +30,6 @@ import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.config.ItemOpinionFrameRoleService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -252,7 +251,6 @@ public class ItemOpinionFrameBindRestController {
         String mark = opinionFrameNameAndMark[1];
         opinionBind.setOpinionFrameMark(mark);
         opinionBind.setOpinionFrameName(name);
-        opinionBind.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         itemOpinionFrameBindService.save(opinionBind);
         return Y9Result.successMsg("修改成功");
     }

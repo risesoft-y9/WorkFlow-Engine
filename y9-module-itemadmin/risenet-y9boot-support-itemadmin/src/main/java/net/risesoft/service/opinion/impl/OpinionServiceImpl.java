@@ -158,12 +158,12 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public List<Opinion> listByProcessSerialNumber(String processSerialNumber) {
-        return opinionRepository.findByProcessSerialNumber(processSerialNumber);
+        return opinionRepository.findByProcessSerialNumberOrderByCreateTimeAsc(processSerialNumber);
     }
 
     @Override
     public List<Opinion> listByTaskId(String taskId) {
-        return opinionRepository.findByTaskId(taskId);
+        return opinionRepository.findByTaskIdOrderByCreateTimeAsc(taskId);
     }
 
     @Override
@@ -173,7 +173,7 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     public List<Opinion> listByTaskIdAndProcessTrackId(String taskId, String processTrackId) {
-        return opinionRepository.findByTaskIdAndProcessTrackIdOrderByCreateDateDesc(taskId, processTrackId);
+        return opinionRepository.findByTaskIdAndProcessTrackIdOrderByCreateTimeDesc(taskId, processTrackId);
     }
 
     @Override
@@ -229,7 +229,8 @@ public class OpinionServiceImpl implements OpinionService {
 
         try {
             List<Opinion> opinionList =
-                opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+                opinionRepository.findByProcessSerialNumberAndOpinionFrameMarkOrderByCreateTimeAsc(processSerialNumber,
+                    opinionFrameMark);
 
             for (Opinion opinion : opinionList) {
                 OpinionHistoryModel historyModel = createOpinionHistoryModelFromOpinion(opinion);
@@ -250,11 +251,9 @@ public class OpinionServiceImpl implements OpinionService {
         OpinionHistoryModel history = new OpinionHistoryModel();
         history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         history.setContent(opinion.getContent());
-        history.setCreateDate(opinion.getCreateDate());
         history.setSaveDate("");
         history.setDeptId(opinion.getDeptId());
         history.setDeptName(opinion.getDeptName());
-        history.setModifyDate(opinion.getModifyDate());
         history.setOpinionFrameMark(opinion.getOpinionFrameMark());
         history.setOpinionType("");
         history.setProcessInstanceId(opinion.getProcessInstanceId());
@@ -336,8 +335,8 @@ public class OpinionServiceImpl implements OpinionService {
         opinionListModel.setAddable(true);
         opinionListModel.setOpinionFrameMark(opinionFrameMark);
         opinionListModel.setOneClickSetList(new ArrayList<>());
-        List<Opinion> opinionList =
-            opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+        List<Opinion> opinionList = opinionRepository
+            .findByProcessSerialNumberAndOpinionFrameMarkOrderByCreateTimeAsc(processSerialNumber, opinionFrameMark);
         // 按岗位排序号排序
         boolean opinionOrderBy = itemSettingService.getConfSetting().isOpinionOrderBy();
         if (opinionOrderBy && opinionList.size() > 1) {
@@ -372,8 +371,8 @@ public class OpinionServiceImpl implements OpinionService {
         opinionFrameModel.setMark(opinionFrameMark);
         opinionFrameModel.setOneClickSetList(new ArrayList<>());
         boolean opinionOrderBy = itemSettingService.getConfSetting().isOpinionOrderBy();
-        List<Opinion> opinionList =
-            opinionRepository.findByProcSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
+        List<Opinion> opinionList = opinionRepository
+            .findByProcessSerialNumberAndOpinionFrameMarkOrderByCreateTimeAsc(processSerialNumber, opinionFrameMark);
         switch (ItemBoxTypeEnum.fromString(itembox)) {
             case DRAFT:
             case ADD:
@@ -476,14 +475,6 @@ public class OpinionServiceImpl implements OpinionService {
 
     private void format(Opinion opinion) {
         opinion.setContent(CommentUtil.replaceEnter2Br(opinion.getContent()));
-        try {
-            opinion.setModifyDate(
-                Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinion.getModifyDate())));
-            opinion.setCreateDate(
-                Y9DateTimeUtils.formatDateTimeMinute(Y9DateTimeUtils.parseDateTime(opinion.getCreateDate())));
-        } catch (Exception e) {
-            LOGGER.error(e.getMessage(), e);
-        }
     }
 
     private List<OpinionListModel> listPersonComment4Todo(String itemId, OpinionListModel opinionListModel,
@@ -987,11 +978,8 @@ public class OpinionServiceImpl implements OpinionService {
         opinion.setOpinionFrameMark(entity.getOpinionFrameMark());
         opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
         opinion.setContent(entity.getContent());
-        opinion.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-        opinion.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         opinion.setPositionId(orgUnitId);
         opinion.setPositionName(user.getName());
-
         handleProcessTrack(opinion, entity.getTaskId());
 
         opinionRepository.save(opinion);
@@ -1014,7 +1002,6 @@ public class OpinionServiceImpl implements OpinionService {
         opinion.setUserId(person.getPersonId());
         opinion.setUserName(person.getName());
         opinion.setTaskId(entity.getTaskId());
-        opinion.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
         opinion.setContent(entity.getContent());
         opinion.setProcessInstanceId(entity.getProcessInstanceId());
         opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
