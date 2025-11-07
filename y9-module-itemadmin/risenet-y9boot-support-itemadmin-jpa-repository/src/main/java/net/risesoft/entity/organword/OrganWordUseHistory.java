@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ORGANWORD_USEHISTORY")
 @org.hibernate.annotations.Table(comment = "公文编号使用历史表", appliesTo = "FF_ORGANWORD_USEHISTORY")
-public class OrganWordUseHistory implements Serializable {
+public class OrganWordUseHistory extends ItemAdminBaseEntity implements Serializable {
 
     /**
      * 机关代字使用详情
@@ -89,12 +91,4 @@ public class OrganWordUseHistory implements Serializable {
     @Comment("人员名称")
     @Column(name = "USERNAME", length = 50, nullable = false)
     private String userName;
-
-    /**
-     * 编号时间
-     */
-    @Comment("编号时间")
-    @Column(name = "CREATETIME", nullable = false)
-    private String createTime;
-
 }

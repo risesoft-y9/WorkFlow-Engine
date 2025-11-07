@@ -49,7 +49,6 @@ import net.risesoft.service.organword.OrganWordDetailService;
 import net.risesoft.service.organword.OrganWordPropertyService;
 import net.risesoft.service.organword.OrganWordService;
 import net.risesoft.service.organword.OrganWordUseHistoryService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -148,7 +147,6 @@ public class OrganWordServiceImpl implements OrganWordService {
                     Integer number = owd.getNumber() + 1;
                     if (numberTemp.equals(number) && status == 1) {
                         owd.setNumber(numberTemp);
-                        owd.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                         organWordDetailService.save(owd);
                     }
                 } else {
@@ -158,7 +156,6 @@ public class OrganWordServiceImpl implements OrganWordService {
                     OrganWordUseHistory organWordUseHistory = new OrganWordUseHistory();
                     organWordUseHistory.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     organWordUseHistory.setItemId(itemId);
-                    organWordUseHistory.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     organWordUseHistory.setCustom(custom);
                     organWordUseHistory.setProcessSerialNumber(processSerialNumber);
                     organWordUseHistory.setTenantId(Y9LoginUserHolder.getTenantId());
@@ -172,7 +169,6 @@ public class OrganWordServiceImpl implements OrganWordService {
                     newOrganWordDetail.setItemId(itemId);
                     newOrganWordDetail.setTenantId(Y9LoginUserHolder.getTenantId());
                     newOrganWordDetail.setNumber(num);
-                    newOrganWordDetail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     newOrganWordDetail.setItemId(itemId);
                     newOrganWordDetail.setYear(year);
                     newOrganWordDetail.setCharacterValue(characterValue);
@@ -210,7 +206,6 @@ public class OrganWordServiceImpl implements OrganWordService {
                     OrganWordUseHistory organWordUseHistory = new OrganWordUseHistory();
                     organWordUseHistory.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                     organWordUseHistory.setItemId(itemId);
-                    organWordUseHistory.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     organWordUseHistory.setCustom(custom);
                     organWordUseHistory.setProcessSerialNumber(processSerialNumber);
                     organWordUseHistory.setTenantId(Y9LoginUserHolder.getTenantId());
@@ -220,7 +215,6 @@ public class OrganWordServiceImpl implements OrganWordService {
                     organWordUseHistoryService.save(organWordUseHistory);
 
                     owd.setNumber(numberTemp);
-                    owd.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     organWordDetailService.save(owd);
                     return 1;
                 }
@@ -228,7 +222,6 @@ public class OrganWordServiceImpl implements OrganWordService {
                 OrganWordUseHistory organWordUseHistory = new OrganWordUseHistory();
                 organWordUseHistory.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 organWordUseHistory.setItemId(itemId);
-                organWordUseHistory.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 organWordUseHistory.setCustom(custom);
                 organWordUseHistory.setProcessSerialNumber(processSerialNumber);
                 organWordUseHistory.setTenantId(Y9LoginUserHolder.getTenantId());
@@ -242,7 +235,6 @@ public class OrganWordServiceImpl implements OrganWordService {
                 newOrganWordDetail.setItemId(itemId);
                 newOrganWordDetail.setTenantId(Y9LoginUserHolder.getTenantId());
                 newOrganWordDetail.setNumber(numberTemp);
-                newOrganWordDetail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 newOrganWordDetail.setItemId(itemId);
                 newOrganWordDetail.setYear(year);
                 newOrganWordDetail.setCharacterValue(deptName);
@@ -297,7 +289,6 @@ public class OrganWordServiceImpl implements OrganWordService {
                 organWordUseHistory = new OrganWordUseHistory();
                 organWordUseHistory.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 organWordUseHistory.setItemId(itemId);
-                organWordUseHistory.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 organWordUseHistory.setCustom(custom);
                 organWordUseHistory.setProcessSerialNumber(processSerialNumber);
                 organWordUseHistory.setTenantId(Y9LoginUserHolder.getTenantId());
@@ -491,7 +482,6 @@ public class OrganWordServiceImpl implements OrganWordService {
         organWord.setId(organWordId);
         organWord.setCustom(custom);
         organWord.setName(characterValue);
-        organWord.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         organWord.setUserName(person.getName());
         self.save(organWord);
 
@@ -796,7 +786,6 @@ public class OrganWordServiceImpl implements OrganWordService {
 
         OrganWord newOw = new OrganWord();
         newOw.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newOw.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newOw.setUserName(person.getName());
         newOw.setCustom(organWord.getCustom());
         newOw.setName(organWord.getName());
@@ -874,7 +863,6 @@ public class OrganWordServiceImpl implements OrganWordService {
             detail.setItemId(itemId);
             detail.setCharacterValue(numberString);
             detail.setYear(year);
-            detail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             organWordDetailService.save(detail);
         } else {
             oldDetail.setNumber(oldDetail.getNumber() + 1);
@@ -908,7 +896,6 @@ public class OrganWordServiceImpl implements OrganWordService {
             detail.setCharacterValue(characterValue);
             detail.setItemId(itemId);
             detail.setYear(year);
-            detail.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             organWordDetailService.save(detail);
         } else {
             oldDetail.setNumber(oldDetail.getNumber() + 1);
@@ -930,7 +917,6 @@ public class OrganWordServiceImpl implements OrganWordService {
         history.setUserId(person.getPersonId());
         history.setUserName(person.getName());
         history.setTenantId(tenantId);
-        history.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         organWordUseHistoryService.save(history);
     }
 

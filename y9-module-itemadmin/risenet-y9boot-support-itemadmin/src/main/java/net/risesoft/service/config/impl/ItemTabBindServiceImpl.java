@@ -19,7 +19,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.tab.ItemTabBindRepository;
 import net.risesoft.service.TabEntityService;
 import net.risesoft.service.config.ItemTabBindService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -64,8 +63,6 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
                     bindTemp.setTenantId(tenantId);
                     bindTemp.setUserId(personId);
                     bindTemp.setUserName(personName);
-                    bindTemp.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                    bindTemp.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                     Integer index = tabItemBindRepository.getMaxTabIndex(itemId, processDefinitionId);
                     if (index == null) {
                         bindTemp.setTabIndex(1);
@@ -132,7 +129,6 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
             String[] arr = idAndTabIndex.split(SysVariables.COLON);
             ItemTabBind oldtib = this.getById(arr[0]);
             oldtib.setTabIndex(Integer.valueOf(arr[1]));
-            oldtib.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             oldtib.setUserId(userId);
             oldtib.setUserName(userName);
 
@@ -151,11 +147,9 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
         ItemTabBind tabItemBind = new ItemTabBind();
         tabItemBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         tabItemBind.setTenantId(tenantId);
-        tabItemBind.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         tabItemBind.setItemId(itemId);
         tabItemBind.setProcessDefinitionId(processDefinitionId);
         tabItemBind.setTabId(tabEntity.getId());
-        tabItemBind.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         tabItemBind.setUserId(userId);
         tabItemBind.setUserName(userName);
         tabItemBind.setTabName(tabEntity.getName());
