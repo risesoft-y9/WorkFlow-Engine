@@ -61,14 +61,6 @@ public class TaskRelatedModel implements Serializable {
      */
     private String senderName;
     /**
-     * 创建时间
-     */
-    private Date createTime;
-    /**
-     * 修改时间
-     */
-    private Date modifyTime;
-    /**
      * 阅读时间
      */
     private Date readTime;

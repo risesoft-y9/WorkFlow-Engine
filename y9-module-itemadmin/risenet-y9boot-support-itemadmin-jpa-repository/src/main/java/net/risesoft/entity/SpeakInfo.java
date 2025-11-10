@@ -16,6 +16,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_SPEAKINFO")
 @Comment("沟通交流信息表")
-public class SpeakInfo implements Serializable {
+public class SpeakInfo extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 4264601224577400231L;
 
@@ -81,20 +83,6 @@ public class SpeakInfo implements Serializable {
     @Comment("是否删除")
     @Column(name = "DELETED", length = 50)
     private boolean deleted;
-
-    /**
-     * 发言时间
-     */
-    @Comment("发言时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
-
-    /**
-     * 发言时间
-     */
-    @Comment("修改时间")
-    @Column(name = "UPDATETIME", length = 50)
-    private String updateTime;
 
     /**
      * 已看人员id

@@ -1,7 +1,6 @@
 package net.risesoft.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Convert;
@@ -10,17 +9,15 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.Id;
 import jakarta.persistence.Index;
 import jakarta.persistence.Table;
-import jakarta.persistence.Temporal;
-import jakarta.persistence.TemporalType;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
-import com.fasterxml.jackson.annotation.JsonFormat;
-
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 
 /**
  * @author qinman
@@ -31,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Comment("催办信息表")
 @Table(name = "FF_URGEINFO", indexes = {@Index(name = "ff_urgeinfo_index_001", columnList = "processSerialNumber")})
-public class UrgeInfo implements Serializable {
+public class UrgeInfo extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -4825747252393459230L;
 
@@ -71,10 +68,4 @@ public class UrgeInfo implements Serializable {
     @Comment("催办内容")
     @Column(name = "MSGCONTENT", length = 1000, nullable = false)
     private String msgContent;
-
-    @Comment("创建时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "CREATETIME")
-    private Date createTime;
 }

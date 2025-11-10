@@ -1,10 +1,7 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
-import java.util.Date;
 import java.util.List;
-
-import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -101,12 +98,6 @@ public class SignDeptDetailModel implements Serializable {
      * 是否是新的
      */
     private boolean newed;
-
-    /**
-     * 生成时间
-     */
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    private Date createTime;
 
     private List<OpinionSignModel> opinionList;
 

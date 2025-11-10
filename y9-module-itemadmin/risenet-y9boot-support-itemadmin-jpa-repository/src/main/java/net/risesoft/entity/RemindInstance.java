@@ -15,6 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_REMIND_INSTANCE")
 @Comment("消息提醒实例表")
-public class RemindInstance implements Serializable {
+public class RemindInstance extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 1614771486879038754L;
 
@@ -64,8 +66,4 @@ public class RemindInstance implements Serializable {
     @Comment("人员id")
     @Column(name = "USERID", length = 38, nullable = false)
     private String userId;
-
-    @Comment("创建时间")
-    @Column(name = "CREATETIME", nullable = false)
-    private String createTime;
 }

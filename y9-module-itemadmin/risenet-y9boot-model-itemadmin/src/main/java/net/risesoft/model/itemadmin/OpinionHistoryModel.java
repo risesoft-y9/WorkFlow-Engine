@@ -1,6 +1,9 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
@@ -93,16 +96,6 @@ public class OpinionHistoryModel implements Serializable {
     private Integer isAgent = 0;
 
     /**
-     * 意见生成时间
-     */
-    private String createDate;
-
-    /**
-     * 意见最后的修改时间
-     */
-    private String modifyDate;
-
-    /**
      * 操作、保存时间
      */
     private String saveDate;
@@ -111,4 +104,16 @@ public class OpinionHistoryModel implements Serializable {
      * 意见类型，1为修改，2为删除
      */
     private String opinionType;
+
+    /**
+     * 意见生成时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
+    private Date createTime;
+
+    /**
+     * 意见最后的修改时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm", timezone = "GMT+8")
+    private Date updateTime;
 }

@@ -45,7 +45,4 @@ public class CustomViewModel implements Serializable {
 
     // 人员名称
     private String userName;
-
-    // 生成时间
-    private String createTime;
 }

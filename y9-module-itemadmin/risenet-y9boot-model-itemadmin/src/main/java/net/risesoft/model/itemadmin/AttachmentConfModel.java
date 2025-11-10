@@ -80,9 +80,4 @@ public class AttachmentConfModel implements Serializable {
      * 排序
      */
     private Integer tabIndex;
-
-    /**
-     * 更新时间
-     */
-    private String updateTime;
 }

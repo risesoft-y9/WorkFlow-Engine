@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
 import java.util.List;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
@@ -213,7 +214,9 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         if (hpi == null) {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
-                String year = processParam.getCreateTime().substring(0, 4);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(processParam.getCreateTime());
+                String year = String.valueOf(calendar.get(Calendar.YEAR));
                 hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
                 processDefInfo.setProcessDefinitionId(hpi.getProcessDefinitionId());
                 processDefInfo

@@ -21,7 +21,7 @@ public class DraftModel implements Serializable {
 
     private static final long serialVersionUID = -2196986462380652871L;
 
-    private String id;//
+    private String id;
 
     /**
      * 事项id

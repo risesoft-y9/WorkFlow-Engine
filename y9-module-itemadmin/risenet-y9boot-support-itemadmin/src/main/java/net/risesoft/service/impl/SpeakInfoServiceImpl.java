@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.entity.SpeakInfo;
 import net.risesoft.id.IdType;
@@ -25,6 +26,7 @@ import net.risesoft.y9.util.Y9Util;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -40,7 +42,7 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
         Date dateAfterCreateDate5Minute;
         Date currentDate;
         try {
-            createDate = Y9DateTimeUtils.parseDateTime(speakInfo.getCreateTime());
+            createDate = speakInfo.getCreateTime();
             dateAfterCreateDate5Minute = new Date(createDate.getTime() + 300000);
             currentDate = Y9DateTimeUtils.parseDateTime(Y9DateTimeUtils.formatCurrentDateTime());
             if (currentDate.after(dateAfterCreateDate5Minute)) {
@@ -50,7 +52,7 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("删除信息失败", e);
         }
         return Y9Result.failure("删除失败!");
     }
@@ -67,9 +69,9 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
         String currentUserId = person.getPersonId();
         List<SpeakInfo> siList =
             speakInfoRepository.findByProcessInstanceIdAndDeletedFalseOrderByCreateTimeAsc(processInstanceId);
-        Date createDate = new Date();
-        Date dateAfterCreateDate5Minute = new Date();
-        Date currentDate = new Date();
+        Date createDate;
+        Date dateAfterCreateDate5Minute;
+        Date currentDate;
         for (SpeakInfo speakInfo : siList) {
             String readUserId = StringUtils.isBlank(speakInfo.getReadUserId()) ? "" : speakInfo.getReadUserId();
             if (!readUserId.contains(currentUserId)) {
@@ -82,15 +84,11 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
                 speakInfo.setEdited(false);
                 continue;
             }
-            try {
-                createDate = Y9DateTimeUtils.parseDateTime(speakInfo.getCreateTime());
-                dateAfterCreateDate5Minute = new Date(createDate.getTime() + 300000);
-                currentDate = Y9DateTimeUtils.parseDateTime(Y9DateTimeUtils.formatCurrentDateTime());
-                if (currentDate.after(dateAfterCreateDate5Minute)) {
-                    speakInfo.setEdited(false);
-                }
-            } catch (Exception e) {
-                e.printStackTrace();
+            createDate = speakInfo.getCreateTime();
+            dateAfterCreateDate5Minute = new Date(createDate.getTime() + 300000);
+            currentDate = new Date();
+            if (currentDate.after(dateAfterCreateDate5Minute)) {
+                speakInfo.setEdited(false);
             }
         }
         return siList;
@@ -109,7 +107,6 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
         if (StringUtils.isNotEmpty(id)) {
             SpeakInfo oldSpeakInfo = this.findById(id);
             oldSpeakInfo.setContent(speakInfo.getContent());
-            oldSpeakInfo.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
             speakInfoRepository.save(oldSpeakInfo);
             return id;
         }
@@ -121,8 +118,6 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
         newSpeakInfo.setProcessInstanceId(speakInfo.getProcessInstanceId());
         newSpeakInfo.setContent(speakInfo.getContent());
         newSpeakInfo.setDeleted(false);
-        newSpeakInfo.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
-        newSpeakInfo.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         newSpeakInfo.setUserId(userId);
         newSpeakInfo.setUserName(userName);
         newSpeakInfo.setReadUserId(userId);

@@ -43,10 +43,11 @@
             <column name="USERNAME" remarks="签字人姓名" type="VARCHAR(50)"/>
             <column name="SIGNDATE" remarks="签字日期" type="VARCHAR(20)"/>
             <column name="DEPTTYPE" remarks="单位类型" type="VARCHAR(20)"/>
-            <column name="RECORDTIME" remarks="录入时间" type="datetime"/>
             <column name="INPUTPERSON" remarks="录入人" type="VARCHAR(50)"/>
             <column name="INPUTPERSONID" remarks="录入人id" type="VARCHAR(50)"/>
             <column name="ORDERINDEX" remarks="部门排序" type="INT"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700543333-4" author="qinMan" runOnChange="true">
@@ -75,7 +76,7 @@
             <column name="SENDERID" remarks="发送人id" type="VARCHAR(50)"/>
             <column name="SENDERNAME" remarks="单位类型" type="VARCHAR(20)"/>
             <column name="CREATETIME" remarks="创建时间" type="datetime"/>
-            <column name="MODIFYTIME" remarks="修改时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="修改时间" type="datetime"/>
             <column name="READTIME" remarks="阅读时间" type="datetime"/>
         </createTable>
     </changeSet>
@@ -135,7 +136,8 @@
             <column name="DEPTMANAGER" remarks="单位负责人" type="VARCHAR(50)"/>
             <column defaultValueNumeric="0" name="NEWED" remarks="是否是新的" type="INT"/>
             <column name="STATUS" remarks="状态" type="INT"/>
-            <column name="CREATETIME" remarks="生成时间" type="timestamp(3)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
 
@@ -327,7 +329,8 @@
             <column name="USERID" remarks="催办人员唯一标识" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="催办人员姓名" type="VARCHAR(20)"/>
             <column name="MSGCONTENT" remarks="签注人电话" type="VARCHAR(1000)"/>
-            <column name="CREATETIME" remarks="生成时间" type="timestamp(3)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
 

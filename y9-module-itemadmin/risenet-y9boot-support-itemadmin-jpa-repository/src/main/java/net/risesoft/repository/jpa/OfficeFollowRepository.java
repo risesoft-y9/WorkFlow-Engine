@@ -26,12 +26,12 @@ public interface OfficeFollowRepository
     Integer countByUserId(String userId);
 
     @Modifying
-    @Transactional(readOnly = false)
+    @Transactional
     @Query("delete OfficeFollow t where t.processInstanceId=?1")
     void deleteByProcessInstanceId(String processInstanceId);
 
     @Modifying
-    @Transactional(readOnly = false)
+    @Transactional
     @Query("delete OfficeFollow t where t.processInstanceId=?1 and t.userId=?2")
     void deleteByProcessInstanceId(String processInstanceId, String userId);
 

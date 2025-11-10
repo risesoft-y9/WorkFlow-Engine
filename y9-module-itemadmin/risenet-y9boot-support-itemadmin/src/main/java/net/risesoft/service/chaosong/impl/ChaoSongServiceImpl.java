@@ -3,6 +3,7 @@ package net.risesoft.service.chaosong.impl;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -215,7 +216,9 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         if (hpi == null) {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
-                String year = processParam.getCreateTime().substring(0, 4);
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(processParam.getCreateTime());
+                String year = String.valueOf(calendar.get(Calendar.YEAR));
                 hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
                 processDefInfo.setProcessDefinitionId(hpi.getProcessDefinitionId());
                 processDefInfo

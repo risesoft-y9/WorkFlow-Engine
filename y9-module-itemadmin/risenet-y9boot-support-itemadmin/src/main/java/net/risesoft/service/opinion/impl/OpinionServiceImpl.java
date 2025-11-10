@@ -1,6 +1,7 @@
 package net.risesoft.service.opinion.impl;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -56,7 +57,6 @@ import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
 import net.risesoft.service.opinion.OpinionService;
 import net.risesoft.service.setting.ItemSettingService;
 import net.risesoft.util.CommentUtil;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -271,21 +271,21 @@ public class OpinionServiceImpl implements OpinionService {
     private int compareOpinionHistoryByDate(OpinionHistoryModel o1, OpinionHistoryModel o2) {
         try {
             // 首先按创建日期比较
-            String createTime1 = o1.getCreateDate();
-            String createTime2 = o2.getCreateDate();
+            Date createTime1 = o1.getCreateTime();
+            Date createTime2 = o2.getCreateTime();
 
-            if (StringUtils.isBlank(createTime1) && StringUtils.isBlank(createTime2)) {
+            if (null == createTime1 && null == createTime2) {
                 return 0;
             }
-            if (StringUtils.isBlank(createTime1)) {
+            if (null == createTime1) {
                 return -1;
             }
-            if (StringUtils.isBlank(createTime2)) {
+            if (null == createTime2) {
                 return 1;
             }
 
-            long time1 = Y9DateTimeUtils.parseDateTime(createTime1).getTime();
-            long time2 = Y9DateTimeUtils.parseDateTime(createTime2).getTime();
+            long time1 = createTime1.getTime();
+            long time2 = createTime2.getTime();
 
             int createTimeComparison = Long.compare(time1, time2);
             if (createTimeComparison != 0) {
@@ -304,22 +304,22 @@ public class OpinionServiceImpl implements OpinionService {
      * 按修改日期比较
      */
     private int compareByModifyDate(OpinionHistoryModel o1, OpinionHistoryModel o2) {
-        String modifyDate1 = o1.getModifyDate();
-        String modifyDate2 = o2.getModifyDate();
+        Date modifyDate1 = o1.getUpdateTime();
+        Date modifyDate2 = o2.getUpdateTime();
 
-        if (StringUtils.isBlank(modifyDate1) && StringUtils.isBlank(modifyDate2)) {
+        if (null == modifyDate1 && null == modifyDate2) {
             return 0;
         }
-        if (StringUtils.isBlank(modifyDate1)) {
+        if (null == modifyDate1) {
             return -1;
         }
-        if (StringUtils.isBlank(modifyDate2)) {
+        if (null == modifyDate2) {
             return 1;
         }
 
         try {
-            long time1 = Y9DateTimeUtils.parseDateTime(modifyDate1).getTime();
-            long time2 = Y9DateTimeUtils.parseDateTime(modifyDate2).getTime();
+            long time1 = modifyDate1.getTime();
+            long time2 = modifyDate2.getTime();
             return Long.compare(time1, time2);
         } catch (Exception e) {
             LOGGER.error("解析修改日期时发生错误", e);

@@ -26,9 +26,6 @@ public interface ItemStartNodeRoleRepository
     ItemStartNodeRole findByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
         String taskDefKey);
 
-    List<ItemStartNodeRole> findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(String itemId,
-        String processDefinitionId);
-
     List<ItemStartNodeRole> findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(String itemId,
         String processDefinitionId);
 

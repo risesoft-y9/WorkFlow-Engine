@@ -17,6 +17,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @date 2025/08/22
@@ -26,7 +28,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_SMS_DETAIL")
 @Comment("短信详情")
-public class SmsDetail implements Serializable {
+public class SmsDetail extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 8594290794735213206L;
 
@@ -69,12 +71,4 @@ public class SmsDetail implements Serializable {
     @Lob
     @Column(name = "POSITIONIDS")
     private String positionIds;
-
-    @Comment("生成时间")
-    @Column(name = "CREATEDATE", length = 50)
-    private String createDate;
-
-    @Comment("修改时间")
-    @Column(name = "MODIFYDATE", length = 50)
-    private String modifyDate;
 }

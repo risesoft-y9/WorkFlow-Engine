@@ -11,7 +11,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.SignaturePictureRepository;
 import net.risesoft.service.SignaturePictureService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -47,22 +46,17 @@ public class SignaturePictureServiceImpl implements SignaturePictureService {
     public SignaturePicture saveOrUpdate(SignaturePicture sp) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        SignaturePicture oldsp = this.findByUserId(userId);
-        if (null != oldsp) {
-            oldsp.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
-            oldsp.setFileStoreId(sp.getFileStoreId());
-            return signaturePictureRepository.save(oldsp);
+        SignaturePicture existSignaturePicture = this.findByUserId(userId);
+        if (null != existSignaturePicture) {
+            existSignaturePicture.setFileStoreId(sp.getFileStoreId());
+            return signaturePictureRepository.save(existSignaturePicture);
         }
-
-        SignaturePicture newsp = new SignaturePicture();
-        newsp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newsp.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-        newsp.setFileStoreId(sp.getFileStoreId());
-        newsp.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
-        newsp.setTenantId(tenantId);
-        newsp.setUserId(userId);
-        newsp.setUserName(userName);
-
-        return signaturePictureRepository.save(newsp);
+        SignaturePicture newSignaturePicture = new SignaturePicture();
+        newSignaturePicture.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newSignaturePicture.setFileStoreId(sp.getFileStoreId());
+        newSignaturePicture.setTenantId(tenantId);
+        newSignaturePicture.setUserId(userId);
+        newSignaturePicture.setUserName(userName);
+        return signaturePictureRepository.save(newSignaturePicture);
     }
 }

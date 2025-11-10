@@ -40,15 +40,4 @@ public class SignaturePictureModel implements Serializable {
      * 签名归属人员名称
      */
     private String userName;
-
-    /**
-     * 生成时间
-     */
-    private String createDate;
-
-    /**
-     * 最后的修改时间
-     */
-    private String modifyDate;
-
 }

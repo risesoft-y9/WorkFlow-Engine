@@ -115,7 +115,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 e.printStackTrace(print);
                 String msg = result.toString();
                 int num = userAndDeptIdList.size();
-                String time = Y9DateTimeUtils.formatCurrentDateTime();
                 // 发送失败,可能会出现统一待办已经保存成功,但任务没有在数据库产生,需要删除统一待办数据,只保存当前发送人的待办任务。
                 Y9Context.publishEvent(new Y9TodoUpdateEvent<>(new TodoTaskEventModel(
                     TodoTaskEventActionEnum.DELETE_PROCESSINSTANCEID, tenantId, processInstanceId, taskId, "0")));
@@ -131,7 +130,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
                 errorLogService.saveErrorLog(errorLog);
 
                 TaskVariable taskVariable = taskVariableRepository.findByTaskIdAndKeyName(taskId, "isForwarding");
-                taskVariable.setUpdateTime(time);
                 taskVariable.setText("false:" + num);
                 taskVariableRepository.save(taskVariable);
             } catch (Exception e2) {

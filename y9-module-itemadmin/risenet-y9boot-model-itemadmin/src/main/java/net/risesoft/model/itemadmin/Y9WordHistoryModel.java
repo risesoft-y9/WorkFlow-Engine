@@ -53,11 +53,6 @@ public class Y9WordHistoryModel implements Serializable {
     private String isTaoHong;
 
     /**
-     * 保存时间
-     */
-    private String saveDate;
-
-    /**
      * 任务ID
      */
     private String taskId;

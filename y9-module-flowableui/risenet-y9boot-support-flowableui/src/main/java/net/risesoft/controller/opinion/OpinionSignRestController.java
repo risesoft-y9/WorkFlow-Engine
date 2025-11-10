@@ -62,7 +62,7 @@ public class OpinionSignRestController {
                 opinionSignApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
             map.put("checkSignOpinion", checkSignOpinion);
         } catch (Exception e) {
-            LOGGER.error("查询" + taskId + "是否签写意见失败！", e);
+            LOGGER.error("查询{}是否签写意见失败！", taskId, e);
         }
         return Y9Result.success(map, "查询成功");
     }
@@ -119,7 +119,7 @@ public class OpinionSignRestController {
         if (StringUtils.isNotBlank(id)) {
             OpinionSignModel opinion = opinionSignApi.getById(tenantId, id).getData();
             map.put("opinion", opinion);
-            map.put("date", opinion.getCreateDate());
+            map.put("date", opinion.getCreateTime());
         }
         return Y9Result.success(map, "获取成功");
     }

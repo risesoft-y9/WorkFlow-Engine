@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -30,11 +29,10 @@ public class TaskRelatedServiceImpl implements TaskRelatedService {
     public void saveOrUpdate(TaskRelated taskRelated) {
         String id = taskRelated.getId();
         if (StringUtils.isNotBlank(id)) {
-            TaskRelated old = taskRelatedRepository.findById(id).orElse(null);
-            if (null != old) {
-                old.setModifyTime(new Date());
-                old.setMsgContent(taskRelated.getMsgContent());
-                taskRelatedRepository.save(old);
+            TaskRelated existTaskRelated = taskRelatedRepository.findById(id).orElse(null);
+            if (null != existTaskRelated) {
+                existTaskRelated.setMsgContent(taskRelated.getMsgContent());
+                taskRelatedRepository.save(existTaskRelated);
                 return;
             }
         }
@@ -49,8 +47,6 @@ public class TaskRelatedServiceImpl implements TaskRelatedService {
         newTaskRelated.setSub(taskRelated.isSub());
         newTaskRelated.setSenderId(taskRelated.getSenderId());
         newTaskRelated.setSenderName(taskRelated.getSenderName());
-        newTaskRelated.setCreateTime(new Date());
-        newTaskRelated.setModifyTime(new Date());
         taskRelatedRepository.save(newTaskRelated);
     }
 

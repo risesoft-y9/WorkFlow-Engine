@@ -7,6 +7,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.Y9FlowableHolder;
 import net.risesoft.entity.RemindInstance;
@@ -16,7 +17,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.RemindInstanceRepository;
 import net.risesoft.service.RemindInstanceService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -25,6 +25,7 @@ import net.risesoft.y9.util.Y9Util;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@Slf4j
 @Service
 @RequiredArgsConstructor
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -100,7 +101,6 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
                 remindInstance.setRemindType(remindType);
                 remindInstance.setArriveTaskKey(arriveTaskKey);
                 remindInstance.setCompleteTaskKey(completeTaskKey);
-                remindInstance.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 remindInstanceRepository.save(remindInstance);
                 return Y9Result.successMsg("保存成功");
             }
@@ -113,11 +113,10 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
             remindInstance.setRemindType(remindType);
             remindInstance.setArriveTaskKey(arriveTaskKey);
             remindInstance.setCompleteTaskKey(completeTaskKey);
-            remindInstance.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             remindInstanceRepository.save(remindInstance);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error(e.getMessage(), e);
         }
         return Y9Result.failure("保存失败");
     }

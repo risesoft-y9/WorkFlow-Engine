@@ -19,6 +19,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -29,7 +31,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_REMINDER")
 @Comment("催办信息表")
-public class Reminder implements Serializable {
+public class Reminder extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 879932521397158651L;
 
@@ -63,18 +65,6 @@ public class Reminder implements Serializable {
     @Comment("消息内容")
     @Column(name = "MSGCONTENT", length = 1000, nullable = false)
     private String msgContent;
-
-    @Comment("创建时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "CREATETIME", nullable = false)
-    private Date createTime;
-
-    @Comment("修改时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "MODIFYTIME", nullable = false)
-    private Date modifyTime;
 
     @Comment("阅读时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

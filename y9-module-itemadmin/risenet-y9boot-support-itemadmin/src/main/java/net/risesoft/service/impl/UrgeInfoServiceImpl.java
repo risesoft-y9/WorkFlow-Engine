@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.springframework.stereotype.Service;
@@ -51,7 +50,6 @@ public class UrgeInfoServiceImpl implements UrgeInfoService {
         urgeInfo.setUserId(userInfo.getPersonId());
         urgeInfo.setUserName(userInfo.getName());
         urgeInfo.setMsgContent(msgContent);
-        urgeInfo.setCreateTime(new Date());
         urgeInfo.setExecutionId(isSubAndProcessSerialNumberAndExecutionId[2]);
         urgeInfoRepository.save(urgeInfo);
     }

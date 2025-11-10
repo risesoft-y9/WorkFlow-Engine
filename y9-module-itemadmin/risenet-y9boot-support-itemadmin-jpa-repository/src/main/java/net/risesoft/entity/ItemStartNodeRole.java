@@ -15,6 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_ITEM_STARTNODE_ROLE")
 @Comment("启动节点绑定角色信息表")
-public class ItemStartNodeRole implements Serializable {
+public class ItemStartNodeRole extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 5753820699147405666L;
 
@@ -69,8 +71,4 @@ public class ItemStartNodeRole implements Serializable {
     @Comment("创建人名称")
     @Column(name = "USERNAME", length = 50)
     private String userName;
-
-    @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
 }

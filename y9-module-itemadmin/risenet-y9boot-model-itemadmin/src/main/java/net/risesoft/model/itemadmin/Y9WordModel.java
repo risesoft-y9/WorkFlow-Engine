@@ -53,11 +53,6 @@ public class Y9WordModel implements Serializable {
     private String userName;
 
     /**
-     * 保存时间
-     */
-    private String saveDate;
-
-    /**
      * 流程序号
      */
     private String processSerialNumber;
@@ -71,5 +66,4 @@ public class Y9WordModel implements Serializable {
      * 是否套红、1为套红word，0为word
      */
     private String isTaoHong;
-
 }
