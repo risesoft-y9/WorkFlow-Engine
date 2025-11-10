@@ -40,7 +40,6 @@ import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.service.impl.TaoHongServiceImpl;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -420,7 +419,6 @@ public class DocumentWpsController {
             documentWps.setIstaohong("0");
             documentWps.setProcessInstanceId(processInstanceId);
             documentWps.setProcessSerialNumber(processSerialNumber);
-            documentWps.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
             documentWps.setTenantId(tenantId);
             documentWps.setUserId(userId);
             documentWps.setVolumeId(result.getVolumeId());
@@ -566,7 +564,6 @@ public class DocumentWpsController {
             documentWps.setIstaohong("0");
             documentWps.setProcessInstanceId(processInstanceId);
             documentWps.setProcessSerialNumber(processSerialNumber);
-            documentWps.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
             documentWps.setTenantId(tenantId);
             documentWps.setUserId(userId);
             documentWps.setVolumeId(File.getVolumeId());

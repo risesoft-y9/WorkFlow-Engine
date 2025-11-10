@@ -990,7 +990,6 @@
             <column name="ID" remarks="主键" type="VARCHAR(38)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="CREATETIME" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="ITEMID" remarks="事项Id" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
@@ -1004,6 +1003,8 @@
             </column>
             <column name="TASKDEFNAME" remarks="流程节点名称" type="VARCHAR(100)"/>
             <column name="USERNAME" remarks="创建人名称" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-37" author="mengjuhua" runOnChange="true">
@@ -1199,7 +1200,6 @@
             </column>
             <column name="BUREAUID" remarks="委办局id" type="VARCHAR(50)"/>
             <column name="BUREAUNAME" remarks="委办局名称" type="VARCHAR(200)"/>
-            <column name="CREATETIME" remarks="关注时间" type="VARCHAR(255)"/>
             <column name="DOCUMENTTITLE" remarks="标题" type="VARCHAR(500)"/>
             <column name="FILETYPE" remarks="文件类型" type="VARCHAR(50)"/>
             <column name="handleTerm" remarks="办理期限" type="VARCHAR(50)"/>
@@ -1221,6 +1221,8 @@
             <column name="USERNAME" remarks="关注人姓名" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-44" author="mengjuhua" runOnChange="true">
@@ -1466,7 +1468,6 @@
             </column>
             <column name="BUREAUIDS" remarks="委办局Id" type="VARCHAR(200)"/>
             <column name="COMPLETER" remarks="办结人员" type="VARCHAR(50)"/>
-            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(50)"/>
             <column defaultValueNumeric="0" name="CUSTOMITEM" remarks="是否定制流程" type="INT">
                 <constraints nullable="false"/>
             </column>
@@ -1503,6 +1504,8 @@
             <column name="TITLE" remarks="标题" type="VARCHAR(1000)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-55" author="mengjuhua" runOnChange="true">
@@ -1559,7 +1562,8 @@
             <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)"/>
             <column name="POSITIONID" remarks="岗位id" type="VARCHAR(50)"/>
             <column name="TASKKEY" remarks="任务key" type="VARCHAR(50)"/>
-            <column name="UPDATETIME" remarks="生成时间" type="datetime"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-58" author="mengjuhua" runOnChange="true">
@@ -1637,9 +1641,6 @@
             </column>
             <column name="arriveTaskKey" remarks="节点到达任务key" type="VARCHAR(500)"/>
             <column name="completeTaskKey" remarks="节点完成任务key" type="VARCHAR(500)"/>
-            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(255)">
-                <constraints nullable="false"/>
-            </column>
             <column name="PROCESSINSTANCEID" remarks="流程实例id" type="VARCHAR(64)">
                 <constraints nullable="false"/>
             </column>
@@ -1653,6 +1654,8 @@
             <column name="USERID" remarks="人员id" type="VARCHAR(38)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-62" author="mengjuhua" runOnChange="true">
@@ -1668,7 +1671,7 @@
             <column name="CREATETIME" remarks="创建时间" type="datetime">
                 <constraints nullable="false"/>
             </column>
-            <column name="MODIFYTIME" remarks="修改时间" type="datetime">
+            <column name="UPDATETIME" remarks="更新时间" type="datetime">
                 <constraints nullable="false"/>
             </column>
             <column name="MSGCONTENT" remarks="消息内容" type="VARCHAR(1000)">
@@ -1678,12 +1681,6 @@
                 <constraints nullable="false"/>
             </column>
             <column name="READTIME" remarks="阅读时间" type="datetime"/>
-            <column name="REMINDER_MAKE_TYPE" remarks="提醒类型" type="INT">
-                <constraints nullable="false"/>
-            </column>
-            <column name="REMINDER_SEND_TYPE" remarks="催办发送类型" type="VARCHAR(50)">
-                <constraints nullable="false"/>
-            </column>
             <column name="SENDERID" remarks="发送人id" type="VARCHAR(38)">
                 <constraints nullable="false"/>
             </column>
@@ -1733,9 +1730,7 @@
             <column name="ID" remarks="主键" type="VARCHAR(38)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="CREATEDATE" remarks="生成时间" type="VARCHAR(50)"/>
             <column name="FILESTOREID" remarks="文件仓库Id" type="VARCHAR(50)"/>
-            <column name="MODIFYDATE" remarks="修改时间" type="VARCHAR(50)"/>
             <column name="TENANTID" remarks="租户Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
@@ -1745,6 +1740,8 @@
             <column name="USERNAME" remarks="人员名称" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-65" author="mengjuhua" runOnChange="true">
@@ -1758,15 +1755,15 @@
                 <constraints nullable="false" primaryKey="true"/>
             </column>
             <column name="CONTENT" remarks="发言信息" type="VARCHAR(1000)"/>
-            <column name="CREATETIME" remarks="发言时间" type="VARCHAR(50)"/>
             <column name="DELETED" remarks="是否删除" type="INT"/>
             <column name="PROCESSINSTANCEID" remarks="流程实例Id" type="VARCHAR(50)">
                 <constraints nullable="false"/>
             </column>
             <column name="READUSERID" remarks="已看人员id" type="VARCHAR(2000)"/>
-            <column name="UPDATETIME" remarks="修改时间" type="VARCHAR(50)"/>
             <column name="USERID" remarks="发言人Id" type="VARCHAR(50)"/>
             <column name="USERNAME" remarks="发言人名称" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-66" author="mengjuhua" runOnChange="true">
@@ -1839,7 +1836,6 @@
             <column name="ID" remarks="主键" type="VARCHAR(50)">
                 <constraints nullable="false" primaryKey="true"/>
             </column>
-            <column name="CREATETIME" remarks="创建时间" type="VARCHAR(50)"/>
             <column name="KEYNAME" remarks="变量名称" type="VARCHAR(100)">
                 <constraints nullable="false"/>
             </column>
@@ -1850,7 +1846,8 @@
                 <constraints nullable="false"/>
             </column>
             <column name="TEXT" remarks="变量值" type="LONGTEXT"/>
-            <column name="UPDATETIME" remarks="更新时间" type="VARCHAR(50)"/>
+            <column name="CREATETIME" remarks="保存时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
     <changeSet id="1704700547152-70" author="mengjuhua" runOnChange="true">

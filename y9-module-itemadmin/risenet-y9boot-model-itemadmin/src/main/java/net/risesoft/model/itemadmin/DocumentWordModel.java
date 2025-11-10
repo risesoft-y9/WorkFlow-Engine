@@ -58,11 +58,6 @@ public class DocumentWordModel implements Serializable {
     private Integer type;
 
     /**
-     * 保存时间
-     */
-    private String saveDate;
-
-    /**
      * 流程序号
      */
     private String processSerialNumber;
@@ -83,11 +78,6 @@ public class DocumentWordModel implements Serializable {
     private String taskId;
 
     /**
-     * 更新时间
-     */
-    private String updateDate;
-
-    /**
      * 当前委办局id
      */
     private String currentBureauId;
@@ -96,5 +86,4 @@ public class DocumentWordModel implements Serializable {
      * 当前人员名称
      */
     private String currentUserName;
-
 }

@@ -10,7 +10,6 @@ import net.risesoft.entity.SmsDetail;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.SmsDetailRepository;
 import net.risesoft.service.SmsDetailService;
-import net.risesoft.util.Y9DateTimeUtils;
 
 @Slf4j
 @Service
@@ -35,12 +34,9 @@ public class SmsDetailServiceImpl implements SmsDetailService {
             oldSmsDetail.setSign(smsDetail.isSign());
             oldSmsDetail.setSend(smsDetail.isSend());
             oldSmsDetail.setPositionIds(smsDetail.getPositionIds());
-            oldSmsDetail.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             smsDetailRepository.save(oldSmsDetail);
         } else {
             smsDetail.setId(Y9IdGenerator.genId());
-            smsDetail.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
-            smsDetail.setModifyDate(Y9DateTimeUtils.formatCurrentDateTime());
             smsDetailRepository.save(smsDetail);
         }
     }

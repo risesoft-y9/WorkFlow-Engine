@@ -76,15 +76,4 @@ public class ItemOpinionFrameBindModel implements Serializable {
      * 最后操作的人员的Id
      */
     private String userId;
-
-    /**
-     * 生成时间
-     */
-    private String createDate;
-
-    /**
-     * 最后的修改时间
-     */
-    private String modifyDate;
-
 }

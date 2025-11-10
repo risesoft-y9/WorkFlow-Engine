@@ -1,7 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.util.Date;
-
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -37,7 +35,6 @@ public class QuickSendServiceImpl implements QuickSendService {
             quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9FlowableHolder.getOrgUnitId(), taskKey);
         if (quickSend != null) {
             quickSend.setAssignee(assignee);
-            quickSend.setUpdateTime(new Date());
             quickSendRepository.save(quickSend);
             return;
         }
@@ -47,7 +44,6 @@ public class QuickSendServiceImpl implements QuickSendService {
         quickSend.setAssignee(assignee);
         quickSend.setTaskKey(taskKey);
         quickSend.setPositionId(Y9FlowableHolder.getOrgUnitId());
-        quickSend.setUpdateTime(new Date());
         quickSendRepository.save(quickSend);
     }
 

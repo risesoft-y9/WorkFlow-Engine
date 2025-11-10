@@ -57,14 +57,4 @@ public class SmsDetailModel implements Serializable {
      * 接收短信岗位id
      */
     private String positionIds;
-
-    /**
-     * 创建时间
-     */
-    private String createDate;
-
-    /**
-     * 修改时间
-     */
-    private String modifyDate;
 }

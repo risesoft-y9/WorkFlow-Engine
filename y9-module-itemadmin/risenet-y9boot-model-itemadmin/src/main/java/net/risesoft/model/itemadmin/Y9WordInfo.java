@@ -27,10 +27,6 @@ public class Y9WordInfo implements Serializable {
     private String userName;
 
     /**
-     * 保存时间
-     */
-    private String saveDate;
-    /**
      * 打开方式
      */
     private String openWordOrPdf;

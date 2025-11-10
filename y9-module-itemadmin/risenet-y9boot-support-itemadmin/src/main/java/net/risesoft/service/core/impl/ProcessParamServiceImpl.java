@@ -17,7 +17,6 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ProcessParamRepository;
 import net.risesoft.service.core.ProcessParamService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -108,8 +107,6 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         newProcessParam.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         // 设置所有字段
         updateProcessParamFields(newProcessParam, processParam);
-        // 设置创建时间
-        newProcessParam.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         // 设置默认标题
         newProcessParam.setTitle(StringUtils.isBlank(processParam.getTitle()) ? "暂无标题" : processParam.getTitle());
         processParamRepository.save(newProcessParam);

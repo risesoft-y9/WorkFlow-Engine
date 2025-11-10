@@ -63,9 +63,4 @@ public class RemindInstanceModel implements Serializable {
      * 人员id
      */
     private String userId;
-
-    /**
-     * 创建时间
-     */
-    private String createTime;
 }

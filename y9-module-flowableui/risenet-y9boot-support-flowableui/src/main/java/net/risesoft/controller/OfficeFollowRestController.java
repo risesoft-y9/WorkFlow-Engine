@@ -127,7 +127,6 @@ public class OfficeFollowRestController {
                 OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, position.getParentId()).getData();
                 officeFollow.setBureauId(orgUnit != null ? orgUnit.getId() : "");
                 officeFollow.setBureauName(orgUnit != null ? orgUnit.getName() : "");
-                officeFollow.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 officeFollow.setDocumentTitle(processParamModel.getTitle());
                 officeFollow.setFileType(processParamModel.getItemName());
                 officeFollow.setHandleTerm("");

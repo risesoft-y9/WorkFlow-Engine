@@ -1,6 +1,9 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
@@ -47,13 +50,14 @@ public class SpeakInfoModel implements Serializable {
     private boolean edited;
 
     /**
-     * 发言时间
+     * 创建时间
      */
-    private String createTime;
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
 
     /**
-     * 发言时间
+     * 更新时间
      */
-    private String updateTime;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 }

@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -24,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_SIGNATUREPICTURE")
 @org.hibernate.annotations.Table(comment = "签名图片表", appliesTo = "FF_SIGNATUREPICTURE")
-public class SignaturePicture implements Serializable {
+public class SignaturePicture extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -7463992527577039409L;
 
@@ -65,19 +67,4 @@ public class SignaturePicture implements Serializable {
     @Comment("人员名称")
     @Column(name = "USERNAME", length = 50, nullable = false)
     private String userName;
-
-    /**
-     * 生成时间
-     */
-    @Comment("生成时间")
-    @Column(name = "CREATEDATE", length = 50)
-    private String createDate;
-
-    /**
-     * 最后的修改时间
-     */
-    @Comment("修改时间")
-    @Column(name = "MODIFYDATE", length = 50)
-    private String modifyDate;
-
 }

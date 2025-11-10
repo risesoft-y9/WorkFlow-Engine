@@ -1,7 +1,6 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import lombok.Data;
 
@@ -14,6 +13,8 @@ import lombok.Data;
  */
 @Data
 public class SignDeptModel implements Serializable {
+
+    private static final long serialVersionUID = -8363910241099986220L;
 
     private String id;
 
@@ -40,9 +41,6 @@ public class SignDeptModel implements Serializable {
 
     // 单位类型（0：委内，1：委外，2：联合发文）
     private String deptType;
-
-    // 录入时间
-    private Date recordTime;
 
     // 录入人
     private String inputPerson;

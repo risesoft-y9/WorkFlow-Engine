@@ -22,6 +22,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -32,7 +34,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_TASK_RELATED", indexes = {@Index(name = "ff_task_related_001_taskId", columnList = "taskId")})
 @org.hibernate.annotations.Table(comment = "任务相关信息", appliesTo = "FF_TASK_RELATED")
-public class TaskRelated implements Serializable {
+public class TaskRelated extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 879932521397158651L;
 
@@ -80,18 +82,6 @@ public class TaskRelated implements Serializable {
     @Comment("发送人名称")
     @Column(name = "SENDERNAME", length = 20)
     private String senderName;
-
-    @Comment("创建时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "CREATETIME", nullable = false)
-    private Date createTime;
-
-    @Comment("修改时间")
-    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "MODIFYTIME", nullable = false)
-    private Date modifyTime;
 
     @Comment("阅读时间")
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")

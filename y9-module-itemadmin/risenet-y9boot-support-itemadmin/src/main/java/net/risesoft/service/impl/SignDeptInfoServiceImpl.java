@@ -1,7 +1,6 @@
 package net.risesoft.service.impl;
 
 import java.util.Arrays;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -75,7 +74,6 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                 signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
                 signDeptInfo.setOrderIndex(dept.getTabIndex());
                 signDeptInfo.setDeptId(dept.getId());
-                signDeptInfo.setRecordTime(new Date());
                 Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), dept.getId()).getData();
                 signDeptInfo.setDeptName(department == null ? "部门不存在" : StringUtils.isBlank(department.getAliasName())
                     ? department.getName() : department.getAliasName());
@@ -218,7 +216,6 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
         signDeptInfo.setOrderIndex(dept.getTabIndex());
         signDeptInfo.setDeptId(dept.getId());
-        signDeptInfo.setRecordTime(new Date());
 
         // 设置部门名称
         Department department = getDepartmentInfo(dept.getId());
@@ -299,15 +296,11 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
         signDeptInfo.setOrderIndex(index);
         signDeptInfo.setDeptId(deptId);
-        signDeptInfo.setRecordTime(new Date());
-
         // 设置部门名称
         Optional<SignOutDept> signOutDept = signOutDeptRepository.findById(deptId);
         signDeptInfo.setDeptName(signOutDept.isPresent() ? signOutDept.get().getDeptName() : deptId);
-
         signDeptInfo.setProcessSerialNumber(processSerialNumber);
         signDeptInfo.setDeptType(deptType);
-
         return signDeptInfo;
     }
 
@@ -401,7 +394,6 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
             signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
             signDeptInfo.setOrderIndex(tzsbureau.getTabIndex());
             signDeptInfo.setDeptId(tzsbureau.getId());
-            signDeptInfo.setRecordTime(new Date());
             signDeptInfo.setDeptName(
                 StringUtils.isBlank(tzsbureau.getAliasName()) ? tzsbureau.getName() : tzsbureau.getAliasName());
             signDeptInfo.setProcessSerialNumber(processSerialNumber);

@@ -1,6 +1,9 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
+import java.util.Date;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
@@ -13,34 +16,20 @@ import lombok.Data;
 @Data
 public class ReminderModel implements Serializable {
     private static final long serialVersionUID = -2007663540431278959L;
-
     /** 主键 */
     private String id;
-
     /** 租户Id */
     private String tenantId;
-
     /** 流程实例id */
     private String procInstId;
-
     /** 任务id */
     private String taskId;
-
     /** 发送人id */
     private String senderId;
-
     /** 发送人名称 */
     private String senderName;
-
     /** 消息内容 */
     private String msgContent;
-
-    /** 创建时间 */
-    private String createTime;
-
-    /** 修改时间 */
-    private String modifyTime;
-
     /** "阅读时间" */
     private String readTime;
 
@@ -53,4 +42,14 @@ public class ReminderModel implements Serializable {
     /** 任务名称 */
     private String taskName;
 
+    /**
+     * 创建时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
+    /**
+     * 更新时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 }

@@ -6,6 +6,8 @@ import java.io.Writer;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -133,7 +135,6 @@ import net.risesoft.service.word.Y9WordService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.util.ItemButton;
 import net.risesoft.util.ListUtil;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -460,7 +461,7 @@ public class DocumentServiceImpl implements DocumentService {
 
         if (hpi == null) {
             if (officeDoneInfo == null) {
-                String year = processParam.getCreateTime().substring(0, 4);
+                String year = getYear(processParam.getCreateTime());
                 hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
                 data.processDefinitionId = hpi.getProcessDefinitionId();
                 data.processDefinitionKey = data.processDefinitionId.split(SysVariables.COLON)[0];
@@ -483,6 +484,12 @@ public class DocumentServiceImpl implements DocumentService {
             TaskModel taskTemp = taskApi.findById(tenantId, data.taskId).getData();
             data.taskDefinitionKey = taskTemp.getTaskDefinitionKey();
         }
+    }
+
+    private String getYear(Date createTime) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(createTime);
+        return String.valueOf(calendar.get(Calendar.YEAR));
     }
 
     /**
@@ -547,7 +554,7 @@ public class DocumentServiceImpl implements DocumentService {
         if (hpi == null) {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
-                String year = processParam.getCreateTime().substring(0, 4);
+                String year = getYear(processParam.getCreateTime());
                 hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
                 processDefinitionId = hpi.getProcessDefinitionId();
                 processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
@@ -667,7 +674,7 @@ public class DocumentServiceImpl implements DocumentService {
         starter = processParam.getStartor();
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
         if (officeDoneInfo == null) {
-            String year = processParam.getCreateTime().substring(0, 4);
+            String year = getYear(processParam.getCreateTime());
             HistoricProcessInstanceModel hpi =
                 historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
             processDefinitionId = hpi.getProcessDefinitionId();
@@ -708,7 +715,7 @@ public class DocumentServiceImpl implements DocumentService {
         startor = processParam.getStartor();
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
         if (officeDoneInfo == null) {
-            String year = processParam.getCreateTime().substring(0, 4);
+            String year = getYear(processParam.getCreateTime());
             HistoricProcessInstanceModel hpi =
                 historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
             processDefinitionId = hpi.getProcessDefinitionId();
@@ -911,9 +918,7 @@ public class DocumentServiceImpl implements DocumentService {
             taskVariable.setProcessInstanceId(processInstanceId);
             taskVariable.setTaskId(taskId);
             taskVariable.setKeyName(ItemConsts.ISFORWARDING_KEY);
-            taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         }
-        taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
         taskVariable.setText(TRUE_STR_KEY + userCount);
         return taskVariable;
     }
@@ -2422,9 +2427,7 @@ public class DocumentServiceImpl implements DocumentService {
                     taskVariable.setProcessInstanceId(processInstanceId);
                     taskVariable.setTaskId(taskId);
                     taskVariable.setKeyName(ItemConsts.ISFORWARDING_KEY);
-                    taskVariable.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 }
-                taskVariable.setUpdateTime(Y9DateTimeUtils.formatCurrentDateTime());
                 taskVariable.setText(TRUE_STR_KEY + num);
                 taskVariableRepository.save(taskVariable);
                 asyncHandleService.forwarding(tenantId, orgUnit, processInstanceId, processParam, "", sponsorGuid,

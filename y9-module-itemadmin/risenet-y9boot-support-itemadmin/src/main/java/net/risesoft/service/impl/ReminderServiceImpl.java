@@ -86,8 +86,6 @@ public class ReminderServiceImpl implements ReminderService {
             reminder.setSenderId(person.getId());
             reminder.setSenderName(person.getName());
             reminder.setTaskId(taskIds[i]);
-            reminder.setCreateTime(new Date());
-            reminder.setModifyTime(new Date());
             list.add(reminder);
         }
         reminderRepository.saveAll(list);
@@ -141,7 +139,7 @@ public class ReminderServiceImpl implements ReminderService {
     private void populateBasicInfo(ReminderModel model, Reminder reminder, int index) {
         model.setId(reminder.getId());
         model.setMsgContent(reminder.getMsgContent());
-        model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
+        model.setCreateTime(reminder.getCreateTime());
         model.setReadTime(formatReadTime(reminder.getReadTime()));
         model.setSenderName(reminder.getSenderName());
         model.setUserName("无");
@@ -280,7 +278,7 @@ public class ReminderServiceImpl implements ReminderService {
             ReminderModel model = new ReminderModel();
             model.setId(reminder.getId());
             model.setMsgContent(reminder.getMsgContent());
-            model.setCreateTime(DATE_TIME_FORMAT.format(reminder.getCreateTime()));
+            model.setCreateTime(reminder.getCreateTime());
             model.setReadTime(null == reminder.getReadTime() ? "" : DATE_TIME_FORMAT.format(reminder.getReadTime()));
             model.setSenderName(reminder.getSenderName());
             model.setUserName(pTemp.getName());
@@ -299,7 +297,6 @@ public class ReminderServiceImpl implements ReminderService {
         if (StringUtils.isNotBlank(id)) {
             Reminder r = this.findById(id);
             r.setMsgContent(reminder.getMsgContent());
-            r.setModifyTime(new Date());
             r.setReadTime(null);
             reminderRepository.save(r);
             return r;
@@ -308,8 +305,6 @@ public class ReminderServiceImpl implements ReminderService {
         OrgUnit orgUnit = Y9FlowableHolder.getOrgUnit();
         Reminder r = new Reminder();
         r.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        r.setCreateTime(new Date());
-        r.setModifyTime(new Date());
         r.setSenderId(orgUnit.getId());
         r.setSenderName(orgUnit.getName());
         r.setTenantId(tenantId);

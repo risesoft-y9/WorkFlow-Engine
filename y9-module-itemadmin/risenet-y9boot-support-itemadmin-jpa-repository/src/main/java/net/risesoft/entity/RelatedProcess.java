@@ -14,12 +14,14 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 @NoArgsConstructor
 @Data
 @Entity
 @Table(name = "FF_ITEM_RELATEDPROCESS")
 @org.hibernate.annotations.Table(comment = "事项配置关联流程表", appliesTo = "FF_ITEM_RELATEDPROCESS")
-public class RelatedProcess implements Serializable {
+public class RelatedProcess extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 6372379519852059380L;
 
@@ -45,9 +47,4 @@ public class RelatedProcess implements Serializable {
     @Comment("被关联的流程的事项名称")
     @Column(name = "ITEM_NAME", length = 100, nullable = false)
     private String itemName;
-
-    @Comment("创建时间")
-    @Column(name = "CREATE_DATE", length = 50)
-    private String createDate;
-
 }

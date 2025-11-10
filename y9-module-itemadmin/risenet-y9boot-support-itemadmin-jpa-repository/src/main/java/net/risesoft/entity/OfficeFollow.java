@@ -14,6 +14,8 @@ import org.hibernate.annotations.GenericGenerator;
 
 import lombok.Data;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -23,7 +25,7 @@ import lombok.Data;
 @Entity
 @Table(name = "FF_OFFICE_FOLLOW")
 @org.hibernate.annotations.Table(comment = "办件关注信息表", appliesTo = "FF_OFFICE_FOLLOW")
-public class OfficeFollow implements Serializable {
+public class OfficeFollow extends ItemAdminBaseEntity implements Serializable {
     private static final long serialVersionUID = -2749619146231540189L;
 
     /**
@@ -142,13 +144,6 @@ public class OfficeFollow implements Serializable {
     private String startTime;
 
     /**
-     * 关注时间
-     */
-    @Comment("关注时间")
-    @Column(name = "CREATETIME")
-    private String createTime;
-
-    /**
      * 任务id
      */
     @Transient
@@ -189,5 +184,4 @@ public class OfficeFollow implements Serializable {
      */
     @Transient
     private boolean msgremind;
-
 }

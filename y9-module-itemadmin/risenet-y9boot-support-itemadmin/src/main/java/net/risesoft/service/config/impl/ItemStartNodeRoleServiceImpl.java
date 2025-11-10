@@ -28,7 +28,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.repository.jpa.ItemStartNodeRoleRepository;
 import net.risesoft.service.config.ItemStartNodeRoleService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -157,7 +156,6 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         newStartNodeRole.setTaskDefKey(taskDefKey);
         newStartNodeRole.setRoleIds(sourceStartNodeRole.getRoleIds());
         newStartNodeRole.setUserName(userName);
-        newStartNodeRole.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         Integer maxTabIndex = itemStartNodeRoleRepository.getMaxTabIndex(itemId, processDefinitionId);
         newStartNodeRole.setTabIndex(maxTabIndex == null ? 1 : maxTabIndex + 1);
         itemStartNodeRoleRepository.save(newStartNodeRole);
@@ -343,7 +341,6 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             itemStartNodeRole.setTaskDefName(taskDefName);
             itemStartNodeRole.setRoleIds("");
             itemStartNodeRole.setUserName(userName);
-            itemStartNodeRole.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
             Integer index = itemStartNodeRoleRepository.getMaxTabIndex(itemId, processDefinitionId);
             if (index == null) {
                 itemStartNodeRole.setTabIndex(1);
@@ -495,7 +492,6 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         newStartNodeRole.setTaskDefKey(taskDefKey);
         newStartNodeRole.setRoleIds(roleIds);
         newStartNodeRole.setUserName(userName);
-        newStartNodeRole.setCreateTime(Y9DateTimeUtils.formatCurrentDateTime());
         Integer maxTabIndex = itemStartNodeRoleRepository.getMaxTabIndex(itemId, processDefinitionId);
         newStartNodeRole.setTabIndex(maxTabIndex == null ? 1 : maxTabIndex + 1);
         return newStartNodeRole;

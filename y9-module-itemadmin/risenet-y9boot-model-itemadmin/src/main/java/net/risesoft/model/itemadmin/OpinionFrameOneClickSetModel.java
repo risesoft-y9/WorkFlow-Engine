@@ -27,7 +27,4 @@ public class OpinionFrameOneClickSetModel implements Serializable {
     private String bindId;// 绑定的id
 
     private String userId;// 用户id
-
-    private String createDate;// 创建日期
-
 }

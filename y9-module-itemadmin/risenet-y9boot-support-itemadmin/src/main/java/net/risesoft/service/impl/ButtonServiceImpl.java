@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -1140,7 +1141,9 @@ public class ButtonServiceImpl implements ButtonService {
             case DONE:
                 ProcessParam processParam =
                     processParamService.findByProcessSerialNumber(model.getProcessSerialNumber());
-                String year = processParam != null ? processParam.getCreateTime().substring(0, 4) : "";
+                Calendar calendar = Calendar.getInstance();
+                calendar.setTime(processParam.getCreateTime());
+                String year = String.valueOf(calendar.get(Calendar.YEAR));
                 List<HistoricTaskInstanceModel> list =
                     historictaskApi
                         .getByProcessInstanceIdOrderByEndTimeDesc(Y9LoginUserHolder.getTenantId(),
@@ -1218,7 +1221,7 @@ public class ButtonServiceImpl implements ButtonService {
         handleEndButton(buttonList, context);
 
         // 处理回收站按钮
-        handleRecycleBinButton(buttonList, context, tenantId);
+        handleRecycleBinButton(context, tenantId);
 
         // 添加基础按钮
         buttonList.add(ItemButton.chaoSong);
@@ -1667,7 +1670,7 @@ public class ButtonServiceImpl implements ButtonService {
     /**
      * 处理回收站按钮
      */
-    private void handleRecycleBinButton(List<ItemButtonModel> buttonList, TodoTaskContext context, String tenantId) {
+    private void handleRecycleBinButton(TodoTaskContext context, String tenantId) {
         if (context.isAssignee) {
             // 目前注释掉的逻辑，可根据需要启用
             if (nodeList.isEmpty()) {

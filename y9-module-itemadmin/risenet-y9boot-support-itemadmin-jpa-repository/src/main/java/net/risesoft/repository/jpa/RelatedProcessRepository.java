@@ -14,7 +14,7 @@ import net.risesoft.entity.RelatedProcess;
 public interface RelatedProcessRepository
     extends JpaRepository<RelatedProcess, String>, JpaSpecificationExecutor<RelatedProcess> {
 
-    Page<RelatedProcess> findByParentItemIdOrderByCreateDateAsc(String itemId, Pageable pageable);
+    Page<RelatedProcess> findByParentItemIdOrderByCreateTimeAsc(String itemId, Pageable pageable);
 
     List<RelatedProcess> findByParentItemId(String parentItemId);
 

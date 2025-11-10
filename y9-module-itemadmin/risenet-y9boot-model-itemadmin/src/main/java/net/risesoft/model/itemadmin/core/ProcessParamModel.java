@@ -107,10 +107,6 @@ public class ProcessParamModel implements Serializable {
     private String sended;
 
     /**
-     * 创建时间
-     */
-    private String createTime;
-    /**
      * 是否定制流程
      */
     private Boolean customItem;
@@ -130,4 +126,16 @@ public class ProcessParamModel implements Serializable {
      * 描述
      */
     private String description;
+
+    /**
+     * 创建时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 }

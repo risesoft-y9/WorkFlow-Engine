@@ -1,22 +1,20 @@
 package net.risesoft.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 
 /**
  * @author qinman
@@ -28,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_SIGN_DEPT_INFO")
 @org.hibernate.annotations.Table(comment = "会签信息表", appliesTo = "FF_SIGN_DEPT_INFO")
-public class SignDeptInfo implements Serializable {
+public class SignDeptInfo extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 869230755677925186L;
 
@@ -70,12 +68,6 @@ public class SignDeptInfo implements Serializable {
     @Comment("单位类型（0：委内，1：委外，2：联合发文）")
     @Column(name = "DEPTTYPE", length = 20)
     private String deptType;
-
-    @Comment("录入时间")
-    @Column(name = "RECORDTIME", length = 50)
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Temporal(TemporalType.TIMESTAMP)
-    private Date recordTime;
 
     @Comment("录入人")
     @Column(name = "INPUTPERSON", length = 50)

@@ -15,6 +15,8 @@ import org.hibernate.annotations.GenericGenerator;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -25,7 +27,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @org.hibernate.annotations.Table(comment = "任务变量信息表", appliesTo = "FF_TASKVARIABLE")
 @Table(name = "FF_TASKVARIABLE")
-public class TaskVariable implements Serializable {
+public class TaskVariable extends ItemAdminBaseEntity implements Serializable {
     private static final long serialVersionUID = 4795951592230702404L;
 
     @Id
@@ -51,13 +53,4 @@ public class TaskVariable implements Serializable {
     @Lob
     @Column(name = "TEXT")
     private String text;
-
-    @Comment("创建时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
-
-    @Comment("更新时间")
-    @Column(name = "UPDATETIME", length = 50)
-    private String updateTime;
-
 }

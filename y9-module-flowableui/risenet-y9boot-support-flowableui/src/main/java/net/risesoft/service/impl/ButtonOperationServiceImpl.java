@@ -2,6 +2,8 @@ package net.risesoft.service.impl;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -179,7 +181,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             } else {
                 ProcessParamModel processParamModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
+                year = getYear(processParamModel.getCreateTime());
             }
             HistoricTaskInstanceModel hisTaskModelTemp =
                 historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
@@ -219,6 +221,12 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         }
     }
 
+    private String getYear(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return String.valueOf(calendar.get(Calendar.YEAR));
+    }
+
     @Override
     public Y9Result<String> resumeToDoAndReposition(String processInstanceId, String desc) {
         String positionId = Y9LoginUserHolder.getPositionId();
@@ -233,7 +241,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             } else {
                 ProcessParamModel processParamModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                year = processParamModel != null ? processParamModel.getCreateTime().substring(0, 4) : "";
+                year = getYear(processParamModel.getCreateTime());
             }
             HistoricTaskInstanceModel hisTaskModel =
                 historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)

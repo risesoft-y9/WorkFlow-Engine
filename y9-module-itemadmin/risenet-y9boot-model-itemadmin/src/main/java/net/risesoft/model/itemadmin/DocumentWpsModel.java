@@ -59,11 +59,6 @@ public class DocumentWpsModel implements Serializable {
     private String istaohong;
 
     /**
-     * 保存时间
-     */
-    private String saveDate;
-
-    /**
      * 流程序号
      */
     private String processSerialNumber;

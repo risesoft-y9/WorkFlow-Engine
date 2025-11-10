@@ -1,7 +1,6 @@
 package net.risesoft.entity;
 
 import java.io.Serializable;
-import java.util.Date;
 
 import javax.persistence.Column;
 import javax.persistence.Convert;
@@ -9,16 +8,14 @@ import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
-import org.springframework.format.annotation.DateTimeFormat;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.persistence.ItemEnumConverter;
 
@@ -32,7 +29,7 @@ import net.risesoft.persistence.ItemEnumConverter;
 @Entity
 @Table(name = "FF_SIGN_DEPT_DETAIL")
 @org.hibernate.annotations.Table(comment = "会签部门详情", appliesTo = "FF_SIGN_DEPT_DETAIL")
-public class SignDeptDetail implements Serializable {
+public class SignDeptDetail extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -832654023448013336L;
 
@@ -103,12 +100,6 @@ public class SignDeptDetail implements Serializable {
     @Comment("是否是新的")
     @Column(name = "NEWED", length = 2)
     private boolean newed;
-
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Comment("生成时间")
-    @Column(name = "CREATETIME", length = 50)
-    private Date createTime;
 
     @Comment("部门排序")
     @Column(name = "TABINDEX", length = 10)

@@ -3,21 +3,20 @@ package net.risesoft.model.itemadmin;
 import java.io.Serializable;
 import java.util.Date;
 
-import org.springframework.format.annotation.DateTimeFormat;
-
 import com.fasterxml.jackson.annotation.JsonFormat;
 
 import lombok.Data;
 
 /**
  * 催办信息
- * 
+ *
  * @author qinman
  * @date 2024/12/24
  */
 @Data
 public class UrgeInfoModel implements Serializable {
 
+    private static final long serialVersionUID = 2913082851033227521L;
     /**
      * 主键
      */
@@ -62,6 +61,11 @@ public class UrgeInfoModel implements Serializable {
      * 创建时间
      */
     @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
-    @DateTimeFormat(pattern = "yyyy-MM-dd HH:mm:ss")
     private Date createTime;
+
+    /**
+     * 更新时间
+     */
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd HH:mm:ss", timezone = "GMT+8")
+    private Date updateTime;
 }

@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.util.Date;
 import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
@@ -121,7 +120,6 @@ public class SignDeptDetailServiceImpl implements SignDeptDetailService {
             return;
         }
         signDeptDetail.setId(Y9IdGenerator.genId());
-        signDeptDetail.setCreateTime(new Date());
         signDeptDetail.setNewed(false);
         signDeptDetail.setStatus(
             null == signDeptDetail.getStatus() ? SignDeptDetailStatusEnum.DOING : signDeptDetail.getStatus());

@@ -24,6 +24,8 @@ import com.fasterxml.jackson.annotation.JsonFormat;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -36,7 +38,7 @@ import lombok.NoArgsConstructor;
 @Table(name = "FF_PROCESS_PARAM",
     indexes = {@Index(name = "index_001_processInstanceId", columnList = "processInstanceId"),
         @Index(name = "index_002_processSerialNumber", columnList = "processSerialNumber")})
-public class ProcessParam implements Serializable {
+public class ProcessParam extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = -5245779237483037821L;
 
@@ -123,10 +125,6 @@ public class ProcessParam implements Serializable {
     @Comment("这个件是否发送过")
     @Column(name = "SENDED", length = 10)
     private String sended = "false";
-
-    @Comment("创建时间")
-    @Column(name = "CREATETIME", length = 50)
-    private String createTime;
 
     @Type(type = "numeric_boolean")
     @Comment("是否定制流程")

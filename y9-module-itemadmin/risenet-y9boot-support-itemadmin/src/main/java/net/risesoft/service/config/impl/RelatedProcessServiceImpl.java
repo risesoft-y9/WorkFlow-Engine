@@ -15,7 +15,6 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.RelatedProcessRepository;
 import net.risesoft.service.config.RelatedProcessService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Transactional(value = "rsTenantTransactionManager", readOnly = true)
@@ -35,7 +34,6 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
                 RelatedProcess item = new RelatedProcess();
                 item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
                 item.setParentItemId(newItemId);
-                item.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
                 item.setItemId(associated.getItemId());
                 item.setItemName(associated.getItemName());
                 item.setTenantId(associated.getTenantId());
@@ -63,7 +61,7 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
     @Override
     public Page<RelatedProcess> pageByParentItemId(String parentItemId, int page, int rows) {
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows);
-        return relatedProcessRepository.findByParentItemIdOrderByCreateDateAsc(parentItemId, pageable);
+        return relatedProcessRepository.findByParentItemIdOrderByCreateTimeAsc(parentItemId, pageable);
     }
 
     @Override
@@ -80,7 +78,6 @@ public class RelatedProcessServiceImpl implements RelatedProcessService {
                 item.setItemName(array[1]);
                 item.setParentItemId(parentItemId);
                 item.setTenantId(tenantId);
-                item.setCreateDate(Y9DateTimeUtils.formatCurrentDateTime());
                 relatedProcessRepository.save(item);
             }
         }

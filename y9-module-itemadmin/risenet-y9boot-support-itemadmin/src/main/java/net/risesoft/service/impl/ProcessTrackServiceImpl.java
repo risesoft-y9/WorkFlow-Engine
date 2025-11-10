@@ -1,6 +1,7 @@
 package net.risesoft.service.impl;
 
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
@@ -582,7 +583,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             }
 
             ProcessParam processParam = this.processParamService.findByProcessInstanceId(processInstanceId);
-            return processParam != null ? processParam.getCreateTime().substring(0, 4) : "";
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(processParam.getCreateTime());
+            return String.valueOf(calendar.get(Calendar.YEAR));
         } catch (Exception e) {
             LOGGER.warn("获取流程年份失败，processInstanceId: {}", processInstanceId, e);
             return "";
