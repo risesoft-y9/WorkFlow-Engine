@@ -16,8 +16,7 @@ import org.springframework.beans.BeansException;
 
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.ManagerApi;
-import net.risesoft.model.platform.org.Manager;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9Context;
@@ -43,11 +42,10 @@ public class ProcessAdminCheckUserLoginFilter implements Filter {
                 String personId = request.getParameter("personId");
                 if (StringUtils.isNotBlank(personId)) {
                     try {
-                        ManagerApi managerApi = Y9Context.getBean(ManagerApi.class);
-                        Manager manager = managerApi.get(personId.split(":")[0], personId.split(":")[1]).getData();
-                        loginUser = manager.toUserInfo();
+                        UserApi userApi = Y9Context.getBean(UserApi.class);
+                        loginUser = userApi.get(personId.split(":")[0], personId.split(":")[1]).getData();
                     } catch (BeansException e) {
-                        LOGGER.error("Failed to get managerApi bean");
+                        LOGGER.error("Failed to get userApi bean");
                     }
                 }
             }

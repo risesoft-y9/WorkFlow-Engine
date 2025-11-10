@@ -111,7 +111,6 @@ public class SendReceiveRestController {
                 Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
                 nodeTreeVO.setIsParent(false);
                 nodeTreeVO.setSex(per.getSex().getValue());
-                nodeTreeVO.setDuty(per.getDuty());
             }
             item.add(nodeTreeVO);
         }
@@ -157,7 +156,6 @@ public class SendReceiveRestController {
                     Person person = personApi.get(tenantId, orgunit.getId()).getData();
                     nodeTreeVO.setIsParent(false);
                     nodeTreeVO.setSex(person.getSex().getValue());
-                    nodeTreeVO.setDuty(person.getDuty());
                 } else {
                     continue;
                 }
@@ -204,7 +202,6 @@ public class SendReceiveRestController {
                     Person person = personApi.get(tenantId, orgunit.getId()).getData();
                     nodeTreeVO.setIsParent(false);
                     nodeTreeVO.setSex(person.getSex().getValue());
-                    nodeTreeVO.setDuty(person.getDuty());
                 } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
                     nodeTreeVO.setIsParent(false);
                 } else {

@@ -91,7 +91,6 @@ public class EntrustController {
             if (OrgTypeEnum.PERSON.equals(orgUnit0.getOrgType())) {
                 Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit0.getId()).getData();
                 map.setSex(per.getSex().getValue());
-                map.setDuty(per.getDuty());
                 map.setIsParent(false);
             }
             item.add(map);
@@ -138,7 +137,6 @@ public class EntrustController {
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
                     Person person = personApi.get(tenantId, orgunit.getId()).getData();
                     map.setSex(person.getSex().getValue());
-                    map.setDuty(person.getDuty());
                     map.setIsParent(false);
                 } else {
                     continue;
