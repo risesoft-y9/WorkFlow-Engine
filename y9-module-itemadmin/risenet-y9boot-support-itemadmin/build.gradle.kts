@@ -22,6 +22,7 @@ dependencies {
     api("net.risesoft:risenet-y9boot-starter-cache-redis")
     api("net.risesoft:risenet-y9boot-starter-listener-kafka")
     api("net.risesoft:risenet-y9boot-support-file-service-ftp")
+    api("net.risesoft:risenet-y9boot-support-file-service-local")
     api("net.risesoft:risenet-y9boot-api-feignclient-platform")
 
     api(y9libs.google.guava)
