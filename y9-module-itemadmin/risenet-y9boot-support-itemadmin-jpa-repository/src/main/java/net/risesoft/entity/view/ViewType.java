@@ -9,6 +9,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.persistence.Transient;
 
+import net.risesoft.entity.base.ItemAdminBaseEntity;
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
 
@@ -25,7 +26,7 @@ import lombok.NoArgsConstructor;
 @Entity
 @Table(name = "FF_VIEWTYPE")
 @org.hibernate.annotations.Table(comment = "视图类型表", appliesTo = "FF_VIEWTYPE")
-public class ViewType implements Serializable {
+public class ViewType extends ItemAdminBaseEntity implements Serializable {
 
     private static final long serialVersionUID = 4808283868156401772L;
 

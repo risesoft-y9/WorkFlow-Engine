@@ -49,13 +49,13 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
 
     @Override
     public List<OpinionFrame> listAll() {
-        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATEDATE_KEY);
+        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATETIME_KEY);
         return opinionFrameRepository.findAll(sort);
     }
 
     @Override
     public Page<OpinionFrame> pageAll(int page, int rows) {
-        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATEDATE_KEY);
+        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return opinionFrameRepository.findAll(pageable);
     }
@@ -69,7 +69,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
         for (ItemOpinionFrameBind bind : bindList) {
             markList.add(bind.getOpinionFrameMark());
         }
-        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATEDATE_KEY);
+        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         if (markList.isEmpty()) {
             return opinionFrameRepository.findAll(pageable);
@@ -136,7 +136,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
 
     @Override
     public Page<OpinionFrame> search(int page, int rows, final String keyword) {
-        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATEDATE_KEY);
+        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         return opinionFrameRepository.findByNameContaining(keyword, pageable);
     }
@@ -151,7 +151,7 @@ public class OpinionFrameServiceImpl implements OpinionFrameService {
             markList.add(bind.getOpinionFrameMark());
         }
 
-        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATEDATE_KEY);
+        Sort sort = Sort.by(Sort.Direction.ASC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page > 0 ? page - 1 : 0, rows, sort);
         if (markList.isEmpty()) {
             if (StringUtils.isEmpty(keyword)) {
