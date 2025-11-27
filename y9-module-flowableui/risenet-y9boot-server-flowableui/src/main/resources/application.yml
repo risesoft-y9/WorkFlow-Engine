@@ -125,24 +125,23 @@ y9:
                 reportMethod: kafka
     service:
         itemAdmin:
-            directUrl: http://localhost:7057
+            directUrl: http://localhost:7059
         processAdmin:
-            directUrl: http://localhost:7056
+            directUrl: http://localhost:7059
         org:
-            directUrl: http://localhost:7055
+            directUrl: https://test.youshengyun.com
         todo:
-            directUrl: http://localhost:7055
+            directUrl: https://test.youshengyun.com
     common:
         cacheEnabled: true
-        kafkaEnabled: true
-        flowableBaseUrl: http://localhost:7058/server-flowableui
-        itemAdminBaseUrl: http://localhost:7057/server-itemadmin
-        orgBaseUrl: http://localhost:7055/server-platform
-        processAdminBaseUrl: http://localhost:7056/server-processadmin
+        flowableBaseUrl: http://localhost:7059/server-flowableui
+        itemAdminBaseUrl: http://localhost:7059/server-itemadmin
+        orgBaseUrl: https://test.youshengyun.com/server-platform
+        processAdminBaseUrl: http://localhost:7059/server-processadmin
         todoBaseUrl: https://test.youshengyun.com/server-todo
-        jodconverterBaseUrl: http://localhost:7055/jodconverter/onlinePreview?url=
-        logBaseUrl: http://localhost:7056/server-log
-        userOnlineBaseUrl: http://localhost:7056/server-useronline
+        jodconverterBaseUrl: https://test.youshengyun.com/jodconverter/onlinePreview?url=
+        logBaseUrl: https://test.youshengyun.com/server-log
+        userOnlineBaseUrl: https://test.youshengyun.com/server-useronline
         tenantId: 1714687473316511744
         systemManagerPersonId: 1715428451071197184
         systemManagerPositionId: 1715428451641622528
@@ -254,5 +253,5 @@ y9:
                 opaque:
                     client-id: clientid_oidc
                     client-secret: secret_oidc
-                    introspection-uri: http://localhost:7055/sso/oidc/introspect
-                    profile-uri: http://localhost:7055/sso/oidc/profile
+                    introspection-uri: http://test-internal.youshengyun.com/sso/oidc/introspect
+                    profile-uri: http://test-internal.youshengyun.com/sso/oidc/profile

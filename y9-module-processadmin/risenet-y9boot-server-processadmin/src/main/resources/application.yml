@@ -159,7 +159,6 @@ y9:
             directUrl: http://localhost:7055
     common:
         cacheEnabled: true
-        kafkaEnabled: true
         orgBaseUrl: http://localhost:7055/server-platform
         processAdminBaseUrl: http://localhost:7056/server-processadmin
         itemAdminBaseUrl: http://localhost:7056/server-itemadmin

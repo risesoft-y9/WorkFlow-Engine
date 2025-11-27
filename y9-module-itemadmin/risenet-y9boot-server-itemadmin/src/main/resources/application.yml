@@ -151,7 +151,6 @@ y9:
             directUrl: https://test.youshengyun.com
     common:
         cacheEnabled: true
-        kafkaEnabled: true
         orgBaseUrl: https://test.youshengyun.com/server-platform
         processAdminBaseUrl: http://localhost:7059/server-processadmin
         itemAdminBaseUrl: http://localhost:7059/server-itemadmin

@@ -26,7 +26,7 @@
             <groupId>org.flowable</groupId>
             <artifactId>flowable-spring-boot-starter-process</artifactId>
         </dependency>
-        
+
         <dependency>
             <groupId>org.flowable</groupId>
             <artifactId>flowable-idm-spring</artifactId>
@@ -55,7 +55,7 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-starter-kafka</artifactId>
+            <artifactId>risenet-y9boot-properties</artifactId>
             <version>${project.version}</version>
         </dependency>
 
@@ -104,12 +104,6 @@
         <dependency>
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-api-interface-processadmin</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.risesoft</groupId>
-            <artifactId>risenet-y9boot-properties</artifactId>
             <version>${project.version}</version>
         </dependency>
 
