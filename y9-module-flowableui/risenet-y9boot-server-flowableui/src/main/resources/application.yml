@@ -186,7 +186,6 @@ y9:
             directUrl: https://test.youshengyun.com
     common:
         cacheEnabled: true
-        kafkaEnabled: true
         flowableBaseUrl: http://localhost:7059/server-flowableui
         itemAdminBaseUrl: http://localhost:7059/server-itemadmin
         orgBaseUrl: https://test.youshengyun.com/server-platform
