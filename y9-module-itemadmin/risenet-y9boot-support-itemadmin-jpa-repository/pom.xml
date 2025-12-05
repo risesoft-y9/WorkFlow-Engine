@@ -35,6 +35,12 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-starter-liquibase</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-elasticsearch</artifactId>
             <version>${project.version}</version>
         </dependency>
