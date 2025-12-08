@@ -194,7 +194,7 @@ public class FlowableLogAdvice implements MethodInterceptor {
         log.setOperateType(flowableLog.operationType().getValue());
         log.setLogTime(new Date());
         log.setMethodName(method.getDeclaringClass().getName() + "." + method.getName());
-        log.setElapsedTime(String.valueOf(elapsedTime));
+        log.setElapsedTime(elapsedTime);
         log.setServerIp(Y9Context.getHostIp());
 
         if (exceptionInfo != null) {
