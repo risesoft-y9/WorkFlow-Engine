@@ -35,15 +35,20 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
 
     private final RepositoryService repositoryService;
 
-    private void createDeployment(String processDefinitionKey) {
+    /**
+     * 启动时，部署流程定义，仅在只有一个租户（默认生成的租户）时需要部署， 因为启动的时候还不能监听到租户租用系统的消息
+     */
+    private void createDeployment() {
         try {
-            List<Tenant> tlist = tenantApi.listAllTenants().getData();
-            for (Tenant tenant : tlist) {
-                Y9LoginUserHolder.setTenantId(tenant.getId());
-                FlowableTenantInfoHolder.setTenantId(tenant.getId());
+            List<Tenant> tenantList = tenantApi.listAllTenants().getData();
+            if (1 == tenantList.size()) {
+                String tenantId = tenantList.get(0).getId();
+                String tenantName = tenantList.get(0).getName();
+                Y9LoginUserHolder.setTenantId(tenantId);
+                FlowableTenantInfoHolder.setTenantId(tenantId);
                 try {
                     ProcessDefinition processDefinition = repositoryService.createProcessDefinitionQuery()
-                        .processDefinitionKey(processDefinitionKey)
+                        .processDefinitionKey("ziyouliucheng")
                         .latestVersion()
                         .singleResult();
                     if (null == processDefinition) {
@@ -56,7 +61,7 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
                             .deploy();
                     }
                 } catch (Exception e) {
-                    LOGGER.error("租户：{}，创建流程定义失败", tenant.getName(), e);
+                    LOGGER.error("租户：{}，创建流程定义失败", tenantName, e);
                 }
             }
         } catch (Exception e) {
@@ -67,8 +72,6 @@ public class OnApplicationReady implements ApplicationListener<ApplicationReadyE
     @Override
     public void onApplicationEvent(ApplicationReadyEvent event) {
         LOGGER.info("processAdmin ApplicationReady...");
-        // createSystem("processAdmin");
-        // createTenantSystem("processAdmin");
-        // createDeployment("ziyouliucheng");
+        createDeployment();
     }
 }
