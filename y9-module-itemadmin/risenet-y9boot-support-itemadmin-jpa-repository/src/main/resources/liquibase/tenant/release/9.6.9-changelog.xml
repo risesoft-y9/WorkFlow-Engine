@@ -382,6 +382,11 @@
     </changeSet>
 
     <changeSet id="1704700556666-16" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_DOCUMENT_WORD_HIS" columnName="CREATETIME"/>
+            </not>
+        </preConditions>
         <comment>将 SAVEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_DOCUMENT_WORD_HIS">
@@ -417,6 +422,11 @@
     </changeSet>
 
     <changeSet id="1704700556666-17" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_DOCUMENT_WORD" columnName="CREATETIME"/>
+            </not>
+        </preConditions>
         <comment>将 SAVEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_DOCUMENT_WORD">
@@ -439,6 +449,11 @@
     </changeSet>
 
     <changeSet id="1704700556666-18" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_DOCUMENTWPS" columnName="CREATETIME"/>
+            </not>
+        </preConditions>
         <comment>将 SAVEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_DOCUMENTWPS">
@@ -482,6 +497,14 @@
                       newColumnName="CREATETIME"
                       columnDataType="datetime"
                       remarks="创建时间"/>
+    </changeSet>
+
+    <changeSet id="1704700556666-19-1" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_ITEM_WORD_CONF" columnName="UPDATETIME"/>
+            </not>
+        </preConditions>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_ITEM_WORD_CONF">
             <column name="UPDATETIME" type="datetime" remarks="更新时间"/>
@@ -489,6 +512,11 @@
     </changeSet>
 
     <changeSet id="1704700556666-20" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_DOCUMENTWORD" columnName="CREATETIME"/>
+            </not>
+        </preConditions>
         <comment>将 SAVEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_DOCUMENTWORD">
@@ -511,6 +539,11 @@
     </changeSet>
 
     <changeSet id="1704700556666-21" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <columnExists tableName="FF_DOCUMENTWORD_HIS" columnName="CREATETIME"/>
+            </not>
+        </preConditions>
         <comment>将 SAVEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_DOCUMENTWORD_HIS">
@@ -533,6 +566,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-22" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ENTRUST" columnName="CREATTIME"/>
+        </preConditions>
         <comment>将 CREATTIME 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_ENTRUST">
@@ -580,6 +616,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-23" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ENTRUST_HISTORY" columnName="CREATTIME"/>
+        </preConditions>
         <comment>将 CREATTIME 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_ENTRUST_HISTORY">
@@ -815,6 +854,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-31" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ITEM_OPINIONFRAME" columnName="CREATEDATE"/>
+        </preConditions>
         <comment>将 CREATEDATE 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_ITEM_OPINIONFRAME">
@@ -862,6 +904,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-32" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_OPINION" columnName="CREATEDATE"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_OPINION">
@@ -909,6 +954,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-33" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_OPINION_HISTORY" columnName="CREATEDATE"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_OPINION_HISTORY">
@@ -966,7 +1014,6 @@
             UPDATE FF_OPINION_COPY
             SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
             WHERE CREATETIME IS NOT NULL
-              AND CREATETIME != ''
         </sql>
         <!-- 步骤3: 删除旧字段 -->
         <dropColumn tableName="FF_OPINION_COPY">
@@ -978,6 +1025,9 @@
                       newColumnName="CREATETIME"
                       columnDataType="datetime"
                       remarks="创建时间"/>
+    </changeSet>
+
+    <changeSet id="1704700556666-34-1" author="qinMan" runOnChange="true">
         <comment>将 UPDATETIME 字段从 VARCHAR(100) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_OPINION_COPY">
@@ -988,7 +1038,6 @@
             UPDATE FF_OPINION_COPY
             SET UPDATETIME_NEW = STR_TO_DATE(UPDATETIME, '%Y-%m-%d %H:%i:%s')
             WHERE UPDATETIME IS NOT NULL
-              AND UPDATETIME != ''
         </sql>
         <!-- 步骤3: 删除旧字段 -->
         <dropColumn tableName="FF_OPINION_COPY">
@@ -1003,6 +1052,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-35" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_OPINIONFRAME" columnName="CREATEDATE"/>
+        </preConditions>
         <comment>将 CREATEDATE 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_OPINIONFRAME">
@@ -1117,6 +1169,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-38" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ITEM_ORGANWORD" columnName="CREATEDATE"/>
+        </preConditions>
         <comment>将 CREATEDATE 字段从 VARCHAR(50) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加 DATETIME 类型字段 -->
         <addColumn tableName="FF_ITEM_ORGANWORD">
@@ -1152,6 +1207,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-39" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ORGANWORD" columnName="UPDATETIME"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_ORGANWORD">
@@ -1162,7 +1220,6 @@
             UPDATE FF_ORGANWORD
             SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
             WHERE CREATETIME IS NOT NULL
-              AND CREATETIME != ''
         </sql>
         <!-- 步骤3: 删除旧字段 -->
         <dropColumn tableName="FF_ORGANWORD">
@@ -1196,7 +1253,6 @@
             UPDATE FF_ORGANWORD_DETAIL
             SET CREATETIME_NEW = STR_TO_DATE(CREATETIME, '%Y-%m-%d %H:%i:%s')
             WHERE CREATETIME IS NOT NULL
-              AND CREATETIME != ''
         </sql>
         <!-- 步骤3: 删除旧字段 -->
         <dropColumn tableName="FF_ORGANWORD_DETAIL">
@@ -1249,6 +1305,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-42" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ITEM_TABBIND" columnName="CREATETIME"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_ITEM_TABBIND">
@@ -1294,6 +1353,9 @@
                       remarks="创建时间"/>
     </changeSet>
     <changeSet id="1704700556666-43" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_TABENTITY" columnName="CREATETIME"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_TABENTITY">
@@ -1340,6 +1402,9 @@
                       remarks="创建时间"/>
     </changeSet>
     <changeSet id="1704700556666-44" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_BOOKMARKBIND" columnName="CREATETIME"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_BOOKMARKBIND">
@@ -1466,6 +1531,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-49" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ITEM_VIEWCONF" columnName="CREATETIME"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_ITEM_VIEWCONF">
@@ -1553,6 +1621,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-51" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_DOCUMENT_COPY" columnName="CREATETIME"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_DOCUMENT_COPY">
@@ -1600,6 +1671,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-52" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_ERRORLOG" columnName="CREATETIME"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_ERRORLOG">
@@ -2000,6 +2074,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-66" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_SPEAKINFO" columnName="CREATETIME"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_SPEAKINFO">
@@ -2060,6 +2137,9 @@
     </changeSet>
 
     <changeSet id="1704700556666-68" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <columnExists tableName="FF_TASKVARIABLE" columnName="CREATETIME"/>
+        </preConditions>
         <comment>将 CREATETIME 字段从 VARCHAR(255) 转换为 DATETIME 类型</comment>
         <!-- 步骤1: 添加新的 DATETIME 类型字段 -->
         <addColumn tableName="FF_TASKVARIABLE">
