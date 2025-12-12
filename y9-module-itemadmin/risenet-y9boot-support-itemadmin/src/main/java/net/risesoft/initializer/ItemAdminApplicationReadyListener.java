@@ -2,8 +2,6 @@ package net.risesoft.initializer;
 
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
-import org.springframework.core.Ordered;
-import org.springframework.core.annotation.Order;
 import org.springframework.stereotype.Component;
 
 import lombok.RequiredArgsConstructor;
@@ -35,7 +33,6 @@ import net.risesoft.y9.configuration.Y9Properties;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-@Order(Ordered.LOWEST_PRECEDENCE + 10)
 public class ItemAdminApplicationReadyListener implements ApplicationListener<ApplicationReadyEvent> {
 
     private final InitTableDataService initTableDataService;
