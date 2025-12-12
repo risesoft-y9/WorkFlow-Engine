@@ -1,4 +1,4 @@
-package net.risesoft.util;
+package net.risesoft.service.init;
 
 import java.util.ArrayList;
 import java.util.Date;
@@ -10,6 +10,7 @@ import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
 import net.risesoft.consts.ItemConsts;
+import net.risesoft.consts.ItemInitDataConsts;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemPermission;
@@ -22,6 +23,8 @@ import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 import net.risesoft.entity.opinion.OpinionFrame;
 import net.risesoft.entity.template.ItemPrintTemplateBind;
 import net.risesoft.entity.view.ItemViewConf;
+import net.risesoft.enums.DynamicRoleKindsEnum;
+import net.risesoft.enums.DynamicRoleRangesEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.ItemTableTypeEnum;
@@ -41,6 +44,7 @@ import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
 import net.risesoft.repository.view.ItemViewConfRepository;
 import net.risesoft.service.SyncYearTableService;
 import net.risesoft.service.form.TableManagerService;
+import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.sqlddl.pojo.DbColumn;
@@ -53,66 +57,6 @@ import net.risesoft.y9.sqlddl.pojo.DbColumn;
 @Service(value = "initTableDataService")
 public class InitTableDataService {
 
-    /**
-     * 动态角色id
-     */
-    public static final String DYNAMIC_ROLE_ID = "11111111-1111-1111-1111-111111111113";
-    /**
-     * 事项id
-     */
-    public static final String ITEM_ID = "11111111-1111-1111-1111-111111111111";
-    /**
-     * 意见框id
-     */
-    public static final String OPINION_FRAME_ID = "11111111-1111-1111-1111-111111111112";
-    /**
-     * 意见框标识
-     */
-    public static final String OPINION_FRAME_MARK = "personalComment";
-    /**
-     * 意见框名称
-     */
-    public static final String OPINION_FRAME_NAME = "个人意见";
-    /**
-     * 打印表单id
-     */
-    public static final String PRINT_FORM_ID = "11111111-1111-1111-1111-111111111116";
-    /**
-     * 打印表单名称
-     */
-    public static final String PRINT_FORM_NAME = "表单信息(打印)";
-    /**
-     * 流程定义key
-     */
-    public static final String PROCESSDEFINITIONKEY = "ziyouliucheng";
-    /**
-     * 系统中文名，事项名称
-     */
-    public static final String SYSTEMCNNAME = "办件";
-    /**
-     * 系统英文名
-     */
-    public static final String SYSTEMNAME = "banjian";
-    /**
-     * 表单id
-     */
-    public static final String Y9_FORM_ID = "11111111-1111-1111-1111-111111111115";
-    /**
-     * 表单名称
-     */
-    public static final String Y9_FORM_NAME = "表单信息";
-    /**
-     * 业务表中文名称
-     */
-    public static final String Y9_TABLE_CNNAME = "办件信息表";
-    /**
-     * 业务表id
-     */
-    public static final String Y9_TABLE_ID = "11111111-1111-1111-1111-111111111114";
-    /**
-     * 业务表名称
-     */
-    public static final String Y9_TABLE_NAME = "y9_form_ziyoubanjian";
     private final JdbcTemplate jdbcTemplate4Tenant;
 
     private final SyncYearTableService syncYearTableService;
@@ -181,11 +125,13 @@ public class InitTableDataService {
     }
 
     private void createDynamicRole() {
-        DynamicRole dynamicRole = dynamicRoleRepository.findById(DYNAMIC_ROLE_ID).orElse(null);
+        DynamicRole dynamicRole = dynamicRoleRepository.findById(ItemInitDataConsts.DYNAMIC_ROLE_ID).orElse(null);
         if (null == dynamicRole) {
             dynamicRole = new DynamicRole();
-            dynamicRole.setId(DYNAMIC_ROLE_ID);
+            dynamicRole.setId(ItemInitDataConsts.DYNAMIC_ROLE_ID);
             dynamicRole.setName("当前组织架构");
+            dynamicRole.setKinds(DynamicRoleKindsEnum.NONE);
+            dynamicRole.setRanges(DynamicRoleRangesEnum.NONE);
             dynamicRole.setClassPath("net.risesoft.service.dynamicrole.impl.CurrentOrg");
             dynamicRole.setTenantId(Y9LoginUserHolder.getTenantId());
             dynamicRoleRepository.save(dynamicRole);
@@ -193,29 +139,30 @@ public class InitTableDataService {
     }
 
     private void createItem() {
-        Item item = itemRepository.findById(ITEM_ID).orElse(null);
+        Item item = itemRepository.findById(ItemInitDataConsts.ITEM_ID).orElse(null);
         if (null == item) {
             item = new Item();
-            item.setId(ITEM_ID);
+            item.setId(ItemInitDataConsts.ITEM_ID);
             item.setTabIndex(1);
-            item.setWorkflowGuid(PROCESSDEFINITIONKEY);
-            item.setAppUrl(y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ITEM_ID);
-            item.setName(SYSTEMCNNAME);
-            item.setSysLevel(SYSTEMCNNAME);
-            item.setSystemName(SYSTEMNAME);
+            item.setWorkflowGuid(ItemInitDataConsts.PROCESSDEFINITIONKEY);
+            item.setAppUrl(y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ItemInitDataConsts.ITEM_ID);
+            item.setName(ItemInitDataConsts.SYSTEM_CN_NAME);
+            item.setSysLevel(ItemInitDataConsts.SYSTEM_CN_NAME);
+            item.setSystemName(ItemInitDataConsts.SYSTEM_NAME);
             itemRepository.save(item);
         }
     }
 
     private void createItemForm(String processDefinitionId) {
-        List<Y9FormItemBind> list = y9FormItemBindRepository.findByItemIdAndProcDefId(ITEM_ID, processDefinitionId);
+        List<Y9FormItemBind> list =
+            y9FormItemBindRepository.findByItemIdAndProcDefId(ItemInitDataConsts.ITEM_ID, processDefinitionId);
         if (list.isEmpty()) {
             Y9FormItemBind bind = new Y9FormItemBind();
-            bind.setFormId(Y9_FORM_ID);
-            bind.setFormName(Y9_FORM_NAME);
+            bind.setFormId(ItemInitDataConsts.Y9_FORM_ID);
+            bind.setFormName(ItemInitDataConsts.Y9_FORM_NAME);
             bind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            bind.setItemId(ITEM_ID);
-            bind.setItemName(SYSTEMCNNAME);
+            bind.setItemId(ItemInitDataConsts.ITEM_ID);
+            bind.setItemName(ItemInitDataConsts.SYSTEM_CN_NAME);
             bind.setProcessDefinitionId(processDefinitionId);
             bind.setShowFileTab(true);
             bind.setShowHistoryTab(true);
@@ -228,13 +175,13 @@ public class InitTableDataService {
 
     private void createItemOpinionFrame(String processDefinitionId) {
         List<ItemOpinionFrameBind> list = itemOpinionFrameBindRepository
-            .findByItemIdAndProcessDefinitionIdOrderByCreateTimeAsc(ITEM_ID, processDefinitionId);
+            .findByItemIdAndProcessDefinitionIdOrderByCreateTimeAsc(ItemInitDataConsts.ITEM_ID, processDefinitionId);
         if (list.isEmpty()) {
             ItemOpinionFrameBind newItemOpinionFrameBind = new ItemOpinionFrameBind();
             newItemOpinionFrameBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newItemOpinionFrameBind.setOpinionFrameMark(OPINION_FRAME_MARK);
-            newItemOpinionFrameBind.setOpinionFrameName(OPINION_FRAME_NAME);
-            newItemOpinionFrameBind.setItemId(ITEM_ID);
+            newItemOpinionFrameBind.setOpinionFrameMark(ItemInitDataConsts.OPINION_FRAME_MARK);
+            newItemOpinionFrameBind.setOpinionFrameName(ItemInitDataConsts.OPINION_FRAME_NAME);
+            newItemOpinionFrameBind.setItemId(ItemInitDataConsts.ITEM_ID);
             newItemOpinionFrameBind.setTaskDefKey("");
             newItemOpinionFrameBind.setTenantId(Y9LoginUserHolder.getTenantId());
             newItemOpinionFrameBind.setProcessDefinitionId(processDefinitionId);
@@ -244,14 +191,14 @@ public class InitTableDataService {
     }
 
     private void createItemPermission(String processDefinitionId) {
-        List<ItemPermission> list =
-            itemPermissionRepository.findByItemIdAndProcessDefinitionId(ITEM_ID, processDefinitionId);
+        List<ItemPermission> list = itemPermissionRepository
+            .findByItemIdAndProcessDefinitionId(ItemInitDataConsts.ITEM_ID, processDefinitionId);
         if (list.isEmpty()) {
             ItemPermission newIp = new ItemPermission();
             newIp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newIp.setItemId(ITEM_ID);
+            newIp.setItemId(ItemInitDataConsts.ITEM_ID);
             newIp.setProcessDefinitionId(processDefinitionId);
-            newIp.setRoleId(DYNAMIC_ROLE_ID);
+            newIp.setRoleId(ItemInitDataConsts.DYNAMIC_ROLE_ID);
             newIp.setRoleType(ItemPermissionEnum.ROLE_DYNAMIC);
             newIp.setTaskDefKey("");
             newIp.setTenantId(Y9LoginUserHolder.getTenantId());
@@ -260,21 +207,22 @@ public class InitTableDataService {
     }
 
     private void createItemPrintTemplate() {
-        ItemPrintTemplateBind printTemplateItemBind = itemPrintTemplateBindRepository.findByItemId(ITEM_ID);
+        ItemPrintTemplateBind printTemplateItemBind =
+            itemPrintTemplateBindRepository.findByItemId(ItemInitDataConsts.ITEM_ID);
         if (printTemplateItemBind == null) {
             printTemplateItemBind = new ItemPrintTemplateBind();
             printTemplateItemBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             printTemplateItemBind.setTenantId(Y9LoginUserHolder.getTenantId());
-            printTemplateItemBind.setItemId(ITEM_ID);
-            printTemplateItemBind.setTemplateId(PRINT_FORM_ID);
-            printTemplateItemBind.setTemplateName(PRINT_FORM_NAME);
+            printTemplateItemBind.setItemId(ItemInitDataConsts.ITEM_ID);
+            printTemplateItemBind.setTemplateId(ItemInitDataConsts.PRINT_FORM_ID);
+            printTemplateItemBind.setTemplateName(ItemInitDataConsts.PRINT_FORM_NAME);
             printTemplateItemBind.setTemplateType("2");
             itemPrintTemplateBindRepository.save(printTemplateItemBind);
         }
     }
 
     private void createItemViewConf() {
-        List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(ITEM_ID);
+        List<ItemViewConf> list = itemViewConfRepository.findByItemIdOrderByTabIndexAsc(ItemInitDataConsts.ITEM_ID);
         if (list.isEmpty()) {
             List<ItemViewConf> list0 = new ArrayList<>();
             ItemViewConf newConf = new ItemViewConf();
@@ -285,7 +233,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("60")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
@@ -296,8 +244,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("120")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -307,8 +255,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("180")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -318,8 +266,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("auto")
                 .setDisPlayAlign("left")
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -329,8 +277,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("150")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -340,7 +288,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("180")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DRAFT.getValue());
             list0.add(newConf);
@@ -354,7 +302,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("60")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
@@ -365,8 +313,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("180")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -376,8 +324,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("90")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -387,8 +335,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("auto")
                 .setDisPlayAlign("left")
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -398,7 +346,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("120")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
@@ -409,7 +357,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("150")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
@@ -420,7 +368,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("120")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
@@ -431,7 +379,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("300")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.TODO.getValue());
             list0.add(newConf);
@@ -445,7 +393,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("60")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
@@ -456,8 +404,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("180")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -467,8 +415,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("90")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -478,8 +426,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("auto")
                 .setDisPlayAlign("left")
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -489,7 +437,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("120")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
@@ -500,7 +448,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("150")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
@@ -511,7 +459,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("150")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
@@ -522,7 +470,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("300")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DOING.getValue());
             list0.add(newConf);
@@ -536,7 +484,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("60")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
@@ -547,8 +495,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("180")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -558,8 +506,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("90")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -569,8 +517,8 @@ public class InitTableDataService {
                 .setDisPlayWidth("auto")
                 .setDisPlayAlign("left")
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
-                .setTableName(Y9_TABLE_NAME)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME)
                 .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
             newConf = new ItemViewConf();
@@ -580,7 +528,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("150")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
@@ -591,7 +539,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("150")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i++)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
@@ -602,7 +550,7 @@ public class InitTableDataService {
                 .setDisPlayWidth("200")
                 .setDisPlayAlign(ItemConsts.CENTER_KEY)
                 .setTabIndex(i)
-                .setItemId(ITEM_ID)
+                .setItemId(ItemInitDataConsts.ITEM_ID)
                 .setTableName("")
                 .setViewType(ItemBoxTypeEnum.DONE.getValue());
             list0.add(newConf);
@@ -612,12 +560,12 @@ public class InitTableDataService {
     }
 
     private void createOpinionFrame() {
-        OpinionFrame opinionFrame = opinionFrameRepository.findById(OPINION_FRAME_ID).orElse(null);
+        OpinionFrame opinionFrame = opinionFrameRepository.findById(ItemInitDataConsts.OPINION_FRAME_ID).orElse(null);
         if (null == opinionFrame) {
             opinionFrame = new OpinionFrame();
-            opinionFrame.setId(OPINION_FRAME_ID);
-            opinionFrame.setMark(OPINION_FRAME_MARK);
-            opinionFrame.setName(OPINION_FRAME_NAME);
+            opinionFrame.setId(ItemInitDataConsts.OPINION_FRAME_ID);
+            opinionFrame.setMark(ItemInitDataConsts.OPINION_FRAME_MARK);
+            opinionFrame.setName(ItemInitDataConsts.OPINION_FRAME_NAME);
             opinionFrame.setTenantId(Y9LoginUserHolder.getTenantId());
             opinionFrame.setDeleted(0);
             opinionFrameRepository.save(opinionFrame);
@@ -625,13 +573,13 @@ public class InitTableDataService {
     }
 
     private void createPrintForm() {
-        Y9Form y9Form = y9FormRepository.findById(PRINT_FORM_ID).orElse(null);
+        Y9Form y9Form = y9FormRepository.findById(ItemInitDataConsts.PRINT_FORM_ID).orElse(null);
         if (null == y9Form) {
             y9Form = new Y9Form();
-            y9Form.setId(PRINT_FORM_ID);
-            y9Form.setFormName(PRINT_FORM_NAME);
-            y9Form.setSystemCnName(SYSTEMCNNAME);
-            y9Form.setSystemName(SYSTEMNAME);
+            y9Form.setId(ItemInitDataConsts.PRINT_FORM_ID);
+            y9Form.setFormName(ItemInitDataConsts.PRINT_FORM_NAME);
+            y9Form.setSystemCnName(ItemInitDataConsts.SYSTEM_CN_NAME);
+            y9Form.setSystemName(ItemInitDataConsts.SYSTEM_NAME);
             y9Form.setTenantId(Y9LoginUserHolder.getTenantId());
             // TODO: 获取表单json
             y9Form.setFormJson(
@@ -644,157 +592,157 @@ public class InitTableDataService {
                 .setFieldCnName("主键")
                 .setFieldName(ItemConsts.GUID_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("文件编号")
                 .setFieldName(ItemConsts.NUMBER_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("类型")
                 .setFieldName(ItemConsts.TYPE_KEY)
                 .setFieldType(ItemConsts.VARCHAR20_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("字号")
                 .setFieldName(ItemConsts.WORDSIZE_KEY)
                 .setFieldType(ItemConsts.VARCHAR20_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("标题")
                 .setFieldName(ItemConsts.TITLE_KEY)
                 .setFieldType(ItemConsts.VARCHAR500_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建部门")
                 .setFieldName(ItemConsts.DEPARTMENT_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建人")
                 .setFieldName(ItemConsts.CREATER_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建时间")
                 .setFieldName(ItemConsts.CREATEDATE_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("联系方式")
                 .setFieldName(ItemConsts.CONTACT_KEY)
                 .setFieldType(ItemConsts.VARCHAR20_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("主题词")
                 .setFieldName(ItemConsts.MOTIVE_KEY)
                 .setFieldType(ItemConsts.VARCHAR2000_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("发送对象")
                 .setFieldName(ItemConsts.SEND_KEY)
                 .setFieldType(ItemConsts.VARCHAR500_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("紧急程度")
                 .setFieldName(ItemConsts.LEVEL_KEY)
                 .setFieldType(ItemConsts.VARCHAR20_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("签发人")
                 .setFieldName(ItemConsts.SIGNANDISSUE_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("签发日期")
                 .setFieldName(ItemConsts.DATEOFISSUE_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("备注")
                 .setFieldName(ItemConsts.REMARKS_KEY)
                 .setFieldType(ItemConsts.VARCHAR500_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("文件概要")
                 .setFieldName(ItemConsts.OUTLINE_KEY)
                 .setFieldType(ItemConsts.VARCHAR2000_KEY)
-                .setFormId(PRINT_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.PRINT_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             y9FormFieldRepository.saveAll(list);
         }
     }
 
     private void createY9Form() {
-        Y9Form y9Form = y9FormRepository.findById(Y9_FORM_ID).orElse(null);
+        Y9Form y9Form = y9FormRepository.findById(ItemInitDataConsts.Y9_FORM_ID).orElse(null);
         if (null == y9Form) {
             y9Form = new Y9Form();
-            y9Form.setId(Y9_FORM_ID);
-            y9Form.setFormName(Y9_FORM_NAME);
-            y9Form.setSystemCnName(SYSTEMCNNAME);
-            y9Form.setSystemName(SYSTEMNAME);
+            y9Form.setId(ItemInitDataConsts.Y9_FORM_ID);
+            y9Form.setFormName(ItemInitDataConsts.Y9_FORM_NAME);
+            y9Form.setSystemCnName(ItemInitDataConsts.SYSTEM_CN_NAME);
+            y9Form.setSystemName(ItemInitDataConsts.SYSTEM_NAME);
             y9Form.setTenantId(Y9LoginUserHolder.getTenantId());
             y9Form.setFormJson(
                 "{\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"formheader\",\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">办件信息</div>\",\"required\":false,\"remoteFunc\":\"func_1622619081352\",\"remoteOption\":\"option_1622619081352\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"办件信息\",\"key\":\"1622619081352\",\"model\":\"\",\"rules\":[]},{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"\",\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":true,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1623031603653\",\"remoteOption\":\"option_1623031603653\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"\",\"key\":\"1623031603653\",\"model\":\"guid\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"},{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"\",\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":true,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1623031607288\",\"remoteOption\":\"option_1623031607288\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"单行文本\",\"key\":\"1623031607288\",\"model\":\"processInstanceId\",\"rules\":[]},{\"type\":\"report\",\"icon\":\"icon-table1\",\"options\":{\"customClass\":\"table\",\"hidden\":false,\"borderWidth\":2,\"borderColor\":\"#F70434\",\"width\":\"690px\",\"remoteFunc\":\"func_1622518382735\",\"remoteOption\":\"option_1622518382735\",\"tableColumn\":false},\"rows\":[{\"columns\":[{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":0,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">文件编号</div>\",\"required\":false,\"remoteFunc\":\"func_1622619484999\",\"remoteOption\":\"option_1622619484999\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"\",\"key\":\"1622619484999\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"80px\",\"height\":\"\"},\"key\":\"kwj6q28x\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"$_number\",\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"readonly\":true,\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1623058442021\",\"remoteOption\":\"option_1623058442021\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"单行文本\",\"key\":\"1623058442021\",\"model\":\"number\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"laz0ay9t\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">类型</div>\",\"required\":false,\"remoteFunc\":\"func_1622619560645\",\"remoteOption\":\"option_1622619560645\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"类型\",\"key\":\"1622619560645\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"80px\",\"height\":\"\"},\"key\":\"erum9hdu\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"自由办件\",\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"readonly\":true,\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1623049264602\",\"remoteOption\":\"option_1623049264602\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"单行文本\",\"key\":\"1623049264602\",\"model\":\"type\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"80px\",\"height\":\"\"},\"key\":\"f74fih4i\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">字号</div>\",\"required\":false,\"remoteFunc\":\"func_1622620205114\",\"remoteOption\":\"option_1622620205114\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"\",\"key\":\"1622620205114\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"td_12\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"80px\",\"height\":\"\"},\"key\":\"io2ijobw\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"$_zihao\",\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"readonly\":true,\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1623058458466\",\"remoteOption\":\"option_1623058458466\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"单行文本\",\"key\":\"1623058458466\",\"model\":\"wordSize\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"td_right_border\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"150px\",\"height\":\"\"},\"key\":\"i4jrow3s\",\"rules\":[]}]},{\"columns\":[{\"type\":\"td\",\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">文件标题</div>\",\"required\":false,\"remoteFunc\":\"func_1622620587996\",\"remoteOption\":\"option_1622620587996\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"\",\"key\":\"1622620587996\",\"model\":\"\",\"rules\":[]}],\"key\":\"t3op0byh\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"\",\"required\":true,\"requiredMessage\":\"请输入文件标题。\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1622518410686\",\"remoteOption\":\"option_1622518410686\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"单行文本\",\"key\":\"1622518410686\",\"model\":\"title\",\"rules\":[{\"required\":true,\"message\":\"请输入文件标题。\"}],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"td_right_border\",\"colspan\":5,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"markCol\":0,\"markRow\":0},\"key\":\"rhnhg09l\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":1,\"markRow\":0},\"key\":\"gll2o2rj\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":2,\"markRow\":0},\"key\":\"pv8s5nee\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":2,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"markCol\":3,\"markRow\":0,\"invisible\":true},\"key\":\"x1420xkf\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":4,\"markRow\":0},\"key\":\"6mqjsfvc\"}]},{\"columns\":[{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">创建部门</div>\",\"required\":false,\"remoteFunc\":\"func_1622620622928\",\"remoteOption\":\"option_1622620622928\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"创建部门\",\"key\":\"1622620622928\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"vxrmj5zb\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"$_deptName\",\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"readonly\":true,\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1623058477924\",\"remoteOption\":\"option_1623058477924\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"单行文本\",\"key\":\"1623058477924\",\"model\":\"department\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"\",\"colspan\":2,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"markCol\":0,\"markRow\":0},\"key\":\"cqwjdr37\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":1,\"markRow\":0},\"key\":\"nizqs2un\"},{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">创建人</div>\",\"required\":false,\"remoteFunc\":\"func_1622620627563\",\"remoteOption\":\"option_1622620627563\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"\",\"key\":\"1622620627563\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"lzbmolxr\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"$_userName\",\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"readonly\":true,\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1623058505798\",\"remoteOption\":\"option_1623058505798\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"单行文本\",\"key\":\"1623058505798\",\"model\":\"creater\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"td_right_border\",\"colspan\":2,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"markCol\":0,\"markRow\":0},\"key\":\"79c002x5\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":1,\"markRow\":0},\"key\":\"qlafytm9\"}]},{\"columns\":[{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">创建日期</div>\",\"required\":false,\"remoteFunc\":\"func_1622620629399\",\"remoteOption\":\"option_1622620629399\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"创建日期\",\"key\":\"1622620629399\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"gkwmyweu\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"$_createDate\",\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"readonly\":true,\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1623058529522\",\"remoteOption\":\"option_1623058529522\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"单行文本\",\"key\":\"1623058529522\",\"model\":\"createDate\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"\",\"colspan\":2,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"markCol\":0,\"markRow\":0,\"invisible\":false},\"key\":\"3au18nns\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":1,\"markRow\":0},\"key\":\"af7vu9uk\"},{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">联系方式</div>\",\"required\":false,\"remoteFunc\":\"func_1623119814666\",\"remoteOption\":\"option_1623119814666\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"\",\"key\":\"1623119814666\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":false,\"markCol\":0,\"markRow\":0},\"key\":\"5h4aq9io\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"$_mobile\",\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1622604893427\",\"remoteOption\":\"option_1622604893427\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"单行文本\",\"key\":\"1622604893427\",\"model\":\"contact\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"td_right_border\",\"colspan\":2,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":false,\"markCol\":0,\"markRow\":0},\"key\":\"v9o626w8\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":1,\"markRow\":0},\"key\":\"cedoyzx9\"}]},{\"columns\":[{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">文件概要</div>\",\"required\":false,\"remoteFunc\":\"func_1623119829222\",\"remoteOption\":\"option_1623119829222\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"文件概要\",\"key\":\"1623119829222\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"c6zapnmm\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"textarea\",\"icon\":\"icon-diy-com-textarea\",\"options\":{\"width\":\"\",\"defaultValue\":\"\",\"fieldPermission\":\"\",\"readonly\":false,\"required\":false,\"requiredMessage\":\"\",\"disabled\":false,\"pattern\":\"\",\"patternMessage\":\"\",\"validatorCheck\":false,\"validator\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"clearable\":false,\"maxlength\":\"500\",\"showWordLimit\":false,\"rows\":5,\"autosize\":true,\"customProps\":{},\"remoteFunc\":\"func_55qfuh0o\",\"remoteOption\":\"option_55qfuh0o\",\"tableColumn\":false,\"hideLabel\":true,\"subform\":false},\"events\":{\"onChange\":\"\",\"onFocus\":\"\",\"onBlur\":\"\"},\"name\":\"多行文本\",\"key\":\"55qfuh0o\",\"model\":\"outline\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"td_right_border\",\"colspan\":5,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"markCol\":0,\"markRow\":0},\"key\":\"b4sh7qp4\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":1,\"markRow\":0},\"key\":\"ln1rgosr\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":2,\"markRow\":0},\"key\":\"upzrwt8z\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":3,\"markRow\":0},\"key\":\"kty20t84\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":4,\"markRow\":0},\"key\":\"me37fxgi\"}]},{\"columns\":[{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">发送对象</div>\",\"required\":false,\"remoteFunc\":\"func_1622620634986\",\"remoteOption\":\"option_1622620634986\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"发送对象\",\"key\":\"1622620634986\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"8tv1zu1n\"},{\"type\":\"td\",\"list\":[{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"\",\"defaultValue\":\"\",\"fieldPermission\":\"\",\"readonly\":false,\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"validatorCheck\":false,\"validator\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_em58mw4k\",\"remoteOption\":\"option_em58mw4k\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\",\"onFocus\":\"\",\"onBlur\":\"\"},\"name\":\"单行文本\",\"key\":\"em58mw4k\",\"model\":\"send\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"td_right_border\",\"colspan\":5,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"markCol\":0,\"markRow\":0},\"key\":\"vh76l5jo\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":1,\"markRow\":0},\"key\":\"vt8dw177\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":2,\"markRow\":0},\"key\":\"ujqdwxnj\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":3,\"markRow\":0},\"key\":\"b1moimfz\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":4,\"markRow\":0},\"key\":\"eekc7l0o\"}]},{\"columns\":[{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">紧急程度</div>\",\"required\":false,\"remoteFunc\":\"func_1622620637117\",\"remoteOption\":\"option_1622620637117\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"紧急程度\",\"key\":\"1622620637117\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"100px\",\"height\":\"\"},\"key\":\"9qqbzxnp\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"select\",\"icon\":\"icon-select\",\"options\":{\"defaultValue\":\"一般\",\"fieldPermission\":\"\",\"optionData\":\"报销类别(baoxiaoleibie)\",\"multiple\":false,\"disabled\":false,\"clearable\":false,\"placeholder\":\"\",\"required\":false,\"requiredMessage\":\"\",\"validatorCheck\":false,\"validator\":\"\",\"showLabel\":false,\"width\":\"\",\"options\":[{\"value\":\"一般\"},{\"value\":\"紧急\"},{\"value\":\"重要\"}],\"remote\":false,\"remoteType\":\"func\",\"remoteOption\":\"option_ifro72rr\",\"filterable\":false,\"remoteOptions\":[],\"props\":{\"value\":\"value\",\"label\":\"label\"},\"remoteFunc\":\"getOptionData\",\"customClass\":\"\",\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\",\"onFocus\":\"\",\"onBlur\":\"\"},\"name\":\"下拉选择框\",\"key\":\"ifro72rr\",\"model\":\"level\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":false,\"markCol\":0,\"markRow\":1},\"key\":\"debvsswi\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">签发人</div>\",\"required\":false,\"remoteFunc\":\"func_1622620316591\",\"remoteOption\":\"option_1622620316591\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"签发人\",\"key\":\"1622620316591\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"p1yc1nuu\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"input\",\"icon\":\"icon-input\",\"options\":{\"width\":\"100%\",\"defaultValue\":\"\",\"required\":false,\"requiredMessage\":\"\",\"dataType\":\"number\",\"dataTypeCheck\":false,\"dataTypeMessage\":\"\",\"pattern\":\"\",\"patternCheck\":false,\"patternMessage\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"disabled\":false,\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"showPassword\":false,\"remoteFunc\":\"func_1622518488297\",\"remoteOption\":\"option_1622518488297\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"单行文本\",\"key\":\"1622518488297\",\"model\":\"signAndIssue\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"xybg4l94\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">签发日期</div>\",\"required\":false,\"remoteFunc\":\"func_1622620389681\",\"remoteOption\":\"option_1622620389681\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"签发日期\",\"key\":\"1622620389681\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"kjr0eaz7\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"date\",\"icon\":\"icon-date\",\"options\":{\"defaultValue\":\"\",\"fieldPermission\":\"\",\"bindDatabase\":true,\"readonly\":false,\"disabled\":false,\"editable\":true,\"clearable\":true,\"placeholder\":\"\",\"startPlaceholder\":\"\",\"endPlaceholder\":\"\",\"type\":\"date\",\"format\":\"YYYY-MM-DD\",\"timestamp\":false,\"required\":false,\"requiredMessage\":\"\",\"validatorCheck\":false,\"validator\":\"\",\"width\":\"\",\"customClass\":\"\",\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"remoteFunc\":\"func_za06mp2r\",\"remoteOption\":\"option_za06mp2r\",\"tableColumn\":false,\"hideLabel\":true,\"subform\":false},\"events\":{\"onChange\":\"\",\"onFocus\":\"\",\"onBlur\":\"\"},\"name\":\"日期选择器\",\"key\":\"za06mp2r\",\"model\":\"dateOfIssue\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"td_right_border\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"ewgt6p2c\",\"rules\":[]}]},{\"columns\":[{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">备注</div>\",\"required\":false,\"remoteFunc\":\"func_1622620639888\",\"remoteOption\":\"option_1622620639888\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"备注\",\"key\":\"1622620639888\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"w4gwxmjc\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"type\":\"textarea\",\"icon\":\"icon-diy-com-textarea\",\"options\":{\"width\":\"\",\"defaultValue\":\"\",\"fieldPermission\":\"\",\"readonly\":false,\"required\":false,\"requiredMessage\":\"\",\"disabled\":false,\"pattern\":\"\",\"patternMessage\":\"\",\"validatorCheck\":false,\"validator\":\"\",\"placeholder\":\"\",\"customClass\":\"\",\"labelWidth\":100,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"clearable\":false,\"maxlength\":\"500\",\"showWordLimit\":false,\"rows\":5,\"autosize\":true,\"customProps\":{},\"remoteFunc\":\"func_ee3f6vyf\",\"remoteOption\":\"option_ee3f6vyf\",\"tableColumn\":false,\"hideLabel\":true,\"subform\":false},\"events\":{\"onChange\":\"\",\"onFocus\":\"\",\"onBlur\":\"\"},\"name\":\"多行文本\",\"key\":\"ee3f6vyf\",\"model\":\"remarks\",\"rules\":[],\"bindTable\":\"y9_form_ziyoubanjian\"}],\"options\":{\"customClass\":\"td_right_border\",\"colspan\":5,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"markCol\":0,\"markRow\":0},\"key\":\"m02pov8b\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":1,\"markRow\":0},\"key\":\"j6l0143b\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":2,\"markRow\":0},\"key\":\"yn1q0gxb\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":3,\"markRow\":0},\"key\":\"xxgfdlr3\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":4,\"markRow\":0},\"key\":\"tdf8j37g\"}]},{\"columns\":[{\"type\":\"td\",\"list\":[{\"type\":\"component\",\"icon\":\"icon-component\",\"options\":{\"customClass\":\"label_name\",\"labelWidth\":70,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"template\":\"<div style=\\\"text-align: center;\\\">意见指示</div>\",\"required\":false,\"remoteFunc\":\"func_1622620641650\",\"remoteOption\":\"option_1622620641650\",\"tableColumn\":false,\"hideLabel\":true},\"events\":{\"onChange\":\"\"},\"name\":\"意见指示\",\"key\":\"1622620641650\",\"model\":\"\",\"rules\":[]}],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\"},\"key\":\"3qfxn08o\",\"rules\":[]},{\"type\":\"td\",\"list\":[{\"name\":\"个人意见\",\"el\":\"custom-opinion\",\"options\":{\"defaultValue\":{},\"customClass\":\"\",\"labelWidth\":0,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"required\":false,\"minHeight\":\"\",\"pattern\":\"\",\"remoteFunc\":\"func_ndx7o69w\",\"remoteOption\":\"option_ndx7o69w\",\"tableColumn\":false,\"hideLabel\":true,\"subform\":false},\"type\":\"custom\",\"icon\":\"icon-extend\",\"key\":\"ndx7o69w\",\"model\":\"custom_opinion@personalComment\",\"rules\":[]}],\"options\":{\"customClass\":\"td_right_border\",\"colspan\":5,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"markCol\":0,\"markRow\":0},\"key\":\"vyp91xlq\",\"rules\":[]},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":1,\"markRow\":0},\"key\":\"pmuquuh6\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":2,\"markRow\":0},\"key\":\"x8neojtr\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":3,\"markRow\":0},\"key\":\"me4c2fth\"},{\"type\":\"td\",\"list\":[],\"options\":{\"customClass\":\"\",\"colspan\":1,\"rowspan\":1,\"align\":\"left\",\"valign\":\"top\",\"width\":\"\",\"height\":\"\",\"invisible\":true,\"markCol\":4,\"markRow\":0},\"key\":\"h3s6cgvv\"}]}],\"name\":\"表格布局\",\"key\":\"1622518382735\",\"model\":\"report_1622518382735\",\"rules\":[]},{\"name\":\"附件列表\",\"el\":\"custom-file\",\"icon\":\"el-icon-document\",\"options\":{\"defaultValue\":{},\"customClass\":\"\",\"labelWidth\":0,\"isLabelWidth\":false,\"hidden\":false,\"dataBind\":true,\"required\":false,\"pattern\":\"\",\"remoteFunc\":\"func_1623396951612\",\"remoteOption\":\"option_1623396951612\",\"tableColumn\":false,\"hideLabel\":true},\"type\":\"custom\",\"key\":\"1623396951612\",\"model\":\"custom_file\",\"rules\":[]}],\"config\":{\"ui\":\"element\",\"size\":\"small\",\"width\":\"750px\",\"layout\":\"horizontal\",\"labelCol\":3,\"hideLabel\":false,\"labelWidth\":100,\"customClass\":\"form\",\"labelPosition\":\"right\",\"hideErrorMessage\":false,\"styleSheets\":\"\\n.formheader{\\n  width:750px;\\n  margin: auto;\\n}\\n.formheader .el-form-item__content{\\n  text-align: center;\\n  font-size: 38px;\\n  margin: 50px 0 30px 0;\\n  letter-spacing: 5px;\\n  color:red;\\n} \\n\\n.form .el-form-item__content{\\n  line-height: 40px;\\n}\\n.form{\\n  background-color:#fff;\\n  margin: auto;\\n  box-shadow: 0px 2px 14px 0px rgba(0,0,0,0.15);\\n  padding-bottom: 30px;\\n}\\n.form .el-textarea__inner{\\n  resize: none;\\n  border:none;\\n  box-shadow: none;\\n  padding:0;\\n  color: #000;\\n  min-height: 40px !important;\\n}\\n.form .el-date-editor.el-input, .el-date-editor.el-input__inner{\\n  width:100%;\\n  height: 35px;\\n  line-height: 35px;\\n}\\n.form .el-input__wrapper{\\n  border:none;\\n  box-shadow: none;\\n}\\n\\n.form .el-input__inner{\\n  padding:0;\\n  width:100%;\\n  color: #000;\\n}\\n.form .el-input--prefix .el-input__inner{\\n  padding-left: 0px;\\n}\\n.form .el-input--suffix .el-input__inner{\\n  padding-right:0;\\n}\\n.form .el-input--prefix .el-input__inner{\\n  padding-left: 30px;\\n}\\n.form .el-input--small .el-input__inner {\\n  height: 35px;\\n  line-height: 35px;\\n}\\n.label_name .el-form-item__content{\\n  text-align: center;\\n  padding:0;\\n  color:red;\\n  font-weight: bold;\\n  line-height: 40px;\\n  width:100%;\\n  margin-left: 0;\\n}\\n.table{\\n  margin: auto;\\n  border-left: 0px;\\n}\\n.table .td_right_border{\\n  border-right: 0px;\\n}\\n.td_right_border{\\n  border-right: 0px;\\n}\\n.form .el-input.is-disabled .el-input__inner {\\n  background-color:#fff;\\n  color: #000;\\n  -webkit-text-fill-color: #000;\\n}\\n.form .el-select{\\n  --el-select-disabled-border: none;\\n}\\n\\n\\n.form .el-input.is-disabled .el-input__wrapper {\\n  background-color: #fff;\\n  box-shadow: none;\\n}\\n\\n.form .el-textarea.is-disabled .el-textarea__inner{\\n   background-color:#fff;\\n   color: #000;\\n}\\n\\n\\n.form .el-divider--horizontal {\\n    display: block;\\n    height: 1px;\\n    width: 690px;\\n    margin: 30px auto 20px;\\n}\\n.form .el-divider__text{\\n    font-weight: 500;\\n    font-size: 20px;\\n    line-height: 20px;\\n}\\n.form .el-form-item--small.el-form-item{\\n  margin-bottom: 0px;\\n}\\n.form .el-form-item--small .el-form-item__error {\\n  padding-top: 0px;\\n  margin-top: -8px;\\n}\\n\",\"dataSource\":[{\"key\":\"yow40f7g\",\"name\":\"初始化数据\",\"url\":\"https://vue.youshengyun.com:8443/flowableUI/vue/y9form/getInitData\",\"method\":\"GET\",\"auto\":false,\"params\":{},\"headers\":{},\"responseFunc\":\"let initdata = res.data;\\nlet data = {};\\ndata.number = initdata.number;\\ndata.wordSize = initdata.zihao;\\ndata.department = initdata.deptName;\\ndata.creater = initdata.userName;\\ndata.createDate = initdata.createDate;\\ndata.contact = initdata.mobile;\\nthis.setData(data);\\nreturn res;\",\"requestFunc\":\"return config;\"}],\"eventScript\":[{\"key\":\"mounted\",\"name\":\"mounted\",\"func\":\"\"}],\"initDataUrl\":\"\"}}");
@@ -805,159 +753,159 @@ public class InitTableDataService {
                 .setFieldCnName("主键")
                 .setFieldName(ItemConsts.GUID_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("文件编号")
                 .setFieldName(ItemConsts.NUMBER_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("类型")
                 .setFieldName(ItemConsts.TYPE_KEY)
                 .setFieldType(ItemConsts.VARCHAR20_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("字号")
                 .setFieldName(ItemConsts.WORDSIZE_KEY)
                 .setFieldType(ItemConsts.VARCHAR20_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("标题")
                 .setFieldName(ItemConsts.TITLE_KEY)
                 .setFieldType(ItemConsts.VARCHAR500_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建部门")
                 .setFieldName(ItemConsts.DEPARTMENT_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建人")
                 .setFieldName(ItemConsts.CREATER_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("创建时间")
                 .setFieldName(ItemConsts.CREATEDATE_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("联系方式")
                 .setFieldName(ItemConsts.CONTACT_KEY)
                 .setFieldType(ItemConsts.VARCHAR20_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("主题词")
                 .setFieldName(ItemConsts.MOTIVE_KEY)
                 .setFieldType(ItemConsts.VARCHAR2000_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("发送对象")
                 .setFieldName(ItemConsts.SEND_KEY)
                 .setFieldType(ItemConsts.VARCHAR500_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("紧急程度")
                 .setFieldName(ItemConsts.LEVEL_KEY)
                 .setFieldType(ItemConsts.VARCHAR20_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("签发人")
                 .setFieldName(ItemConsts.SIGNANDISSUE_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("签发日期")
                 .setFieldName(ItemConsts.DATEOFISSUE_KEY)
                 .setFieldType(ItemConsts.VARCHAR50_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("备注")
                 .setFieldName(ItemConsts.REMARKS_KEY)
                 .setFieldType(ItemConsts.VARCHAR500_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             newField = new Y9FormField();
             newField.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE))
                 .setFieldCnName("文件概要")
                 .setFieldName(ItemConsts.OUTLINE_KEY)
                 .setFieldType(ItemConsts.VARCHAR2000_KEY)
-                .setFormId(Y9_FORM_ID)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setFormId(ItemInitDataConsts.Y9_FORM_ID)
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(newField);
             y9FormFieldRepository.saveAll(list);
         }
     }
 
     private void createY9Table() {
-        Y9Table y9Table = y9TableRepository.findById(Y9_TABLE_ID).orElse(null);
+        Y9Table y9Table = y9TableRepository.findById(ItemInitDataConsts.Y9_TABLE_ID).orElse(null);
         if (null == y9Table) {
             y9Table = new Y9Table();
-            y9Table.setId(Y9_TABLE_ID);
-            y9Table.setSystemCnName(SYSTEMCNNAME);
-            y9Table.setSystemName(SYSTEMNAME);
-            y9Table.setTableName(Y9_TABLE_NAME);
+            y9Table.setId(ItemInitDataConsts.Y9_TABLE_ID);
+            y9Table.setSystemCnName(ItemInitDataConsts.SYSTEM_CN_NAME);
+            y9Table.setSystemName(ItemInitDataConsts.SYSTEM_NAME);
+            y9Table.setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             y9Table.setTableType(ItemTableTypeEnum.MAIN);
-            y9Table.setTableCnName(Y9_TABLE_CNNAME);
+            y9Table.setTableCnName(ItemInitDataConsts.Y9_TABLE_CNNAME);
             y9TableRepository.save(y9Table);
             List<DbColumn> dbcs = new ArrayList<>();
             List<Y9TableField> list = new ArrayList<>();
@@ -972,8 +920,8 @@ public class InitTableDataService {
                 .setIsSystemField(1)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -984,8 +932,8 @@ public class InitTableDataService {
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -996,8 +944,8 @@ public class InitTableDataService {
                 .setFieldLength(20)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1008,8 +956,8 @@ public class InitTableDataService {
                 .setFieldLength(20)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1020,8 +968,8 @@ public class InitTableDataService {
                 .setFieldLength(500)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1032,8 +980,8 @@ public class InitTableDataService {
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1044,8 +992,8 @@ public class InitTableDataService {
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1056,8 +1004,8 @@ public class InitTableDataService {
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1068,8 +1016,8 @@ public class InitTableDataService {
                 .setFieldLength(20)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1080,8 +1028,8 @@ public class InitTableDataService {
                 .setFieldLength(2000)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1092,8 +1040,8 @@ public class InitTableDataService {
                 .setFieldLength(500)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1104,8 +1052,8 @@ public class InitTableDataService {
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1116,8 +1064,8 @@ public class InitTableDataService {
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1128,8 +1076,8 @@ public class InitTableDataService {
                 .setFieldLength(50)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1140,8 +1088,8 @@ public class InitTableDataService {
                 .setFieldLength(500)
                 .setDisplayOrder(i++)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             field = new Y9TableField();
@@ -1152,8 +1100,8 @@ public class InitTableDataService {
                 .setFieldLength(2000)
                 .setDisplayOrder(i)
                 .setState(1)
-                .setTableId(Y9_TABLE_ID)
-                .setTableName(Y9_TABLE_NAME);
+                .setTableId(ItemInitDataConsts.Y9_TABLE_ID)
+                .setTableName(ItemInitDataConsts.Y9_TABLE_NAME);
             list.add(field);
             dbcs.add(tableField2DbColumn(field));
             y9TableFieldRepository.saveAll(list);
@@ -1185,8 +1133,9 @@ public class InitTableDataService {
         createPrintForm();// 创建打印表单
 
         // 获取流程定义id
-        String sql = "SELECT ID_ FROM act_re_procdef WHERE KEY_ = '" + PROCESSDEFINITIONKEY
-            + "' AND VERSION_ = (SELECT MAX(VERSION_) FROM act_re_procdef WHERE KEY_ = '" + PROCESSDEFINITIONKEY + "')";
+        String sql = "SELECT ID_ FROM act_re_procdef WHERE KEY_ = '" + ItemInitDataConsts.PROCESSDEFINITIONKEY
+            + "' AND VERSION_ = (SELECT MAX(VERSION_) FROM act_re_procdef WHERE KEY_ = '"
+            + ItemInitDataConsts.PROCESSDEFINITIONKEY + "')";
         List<Map<String, Object>> qlist = jdbcTemplate4Tenant.queryForList(sql);
         String processDefinitionId = qlist.get(0).get("ID_").toString();
 
