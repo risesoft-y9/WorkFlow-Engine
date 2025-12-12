@@ -17,8 +17,8 @@ import com.alibaba.druid.pool.DruidDataSource;
 
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.consts.InitDataConsts;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.util.base64.Y9Base64Util;
@@ -32,22 +32,23 @@ import net.risesoft.y9.util.base64.Y9Base64Util;
 @Component
 public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenantProcessEngineConfiguration {
 
-    public static final String SYSTEM_ID = "11111111-1111-1111-1111-111111111100";
-
     private final JdbcTemplate jdbcTemplate4Public;
     private final DruidDataSource defaultDataSource;
     private final Y9Properties y9Properties;
+    private final SystemApi systemApi;
 
     private final JndiDataSourceLookup jndiDataSourceLookup = new JndiDataSourceLookup();
 
     public MultiTenantProcessEngineConfiguration(
         @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public,
         @Qualifier("y9FlowableDS") DruidDataSource defaultDataSource,
-        Y9Properties y9Properties) {
+        Y9Properties y9Properties,
+        SystemApi systemApi) {
         super(getFlowableTenantInfoHolder());
         this.jdbcTemplate4Public = jdbcTemplate4Public;
         this.defaultDataSource = defaultDataSource;
         this.y9Properties = y9Properties;
+        this.systemApi = systemApi;
     }
 
     private static TenantInfoHolder getFlowableTenantInfoHolder() {
@@ -58,48 +59,44 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
 
     @Override
     public ProcessEngine buildProcessEngine() {
-        createSystem(y9Properties.getSystemName());
-        createTenantSystem(y9Properties.getSystemName());
+        String systemId = createSystem(y9Properties.getSystemName());
         LOGGER.info("start registerTenant");
-        // 设置默认的租户数据源
+        // 设置默认的数据源(y9_flowable)
         registerTenant(AbstractEngineConfiguration.NO_TENANT_ID, defaultDataSource);
         ProcessEngine processEngine = super.buildProcessEngine();
         // 初始化租户数据源配置
-        initializeTenantDataSources();
+        initializeTenantDataSources(systemId);
         return processEngine;
+    }
+
+    private String createSystem(String systemName) {
+        String systemId = "";
+        try {
+            net.risesoft.model.platform.System system = systemApi.getByName(systemName).getData();
+            if (system == null) {
+                // 注册系统并自动租用
+                system = systemApi.registrySystem(systemName, "流程管理", "/server-" + systemName, InitDataConsts.TENANT_ID)
+                    .getData();
+
+            }
+            systemId = system.getId();
+        } catch (Exception e) {
+            LOGGER.error("在数字底座创建[流程管理]系统失败", e);
+        }
+        return systemId;
     }
 
     /**
      * 初始化租户数据源配置
      */
-    private void initializeTenantDataSources() {
-        String systemName = y9Properties.getSystemName();
-        String systemId = getSystemIdByName(systemName);
-
+    private void initializeTenantDataSources(String systemId) {
         if (systemId == null) {
             createDefaultTenantDataSource();
             return;
         }
 
         List<Map<String, Object>> tenantSystems = getTenantSystemsBySystemId(systemId);
-        if (tenantSystems.isEmpty()) {
-            createDefaultTenantDataSource();
-            return;
-        }
-
-        boolean isDefaultTenantRegistered = registerTenantDataSources(tenantSystems);
-        if (!isDefaultTenantRegistered) {
-            createDefaultTenantDataSource();
-        }
-    }
-
-    /**
-     * 根据系统名称获取系统ID
-     */
-    private String getSystemIdByName(String systemName) {
-        List<Map<String, Object>> systems =
-            jdbcTemplate4Public.queryForList("SELECT ID FROM Y9_COMMON_SYSTEM T WHERE T.NAME=?", systemName);
-        return systems.isEmpty() ? null : (String)systems.get(0).get("ID");
+        registerTenantDataSources(tenantSystems);
     }
 
     /**
@@ -112,7 +109,7 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
 
     /**
      * 注册租户数据源
-     * 
+     *
      * @return 是否注册了默认租户数据源
      */
     private boolean registerTenantDataSources(List<Map<String, Object>> tenantSystems) {
@@ -142,52 +139,14 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
     private void createDefaultTenantDataSource() {
         List<Map<String, Object>> defaultTenant = jdbcTemplate4Public.queryForList(
             "SELECT ID, DEFAULT_DATA_SOURCE_ID FROM Y9_COMMON_TENANT WHERE ID=?", InitDataConsts.TENANT_ID);
-        List<Map<String, Object>> defaultDataSource = jdbcTemplate4Public
-            .queryForList("SELECT * FROM Y9_COMMON_DATASOURCE T WHERE T.ID = ?", InitDataConsts.DATASOURCE_ID);
-        if (!defaultTenant.isEmpty() && !defaultDataSource.isEmpty()) {
+        if (!defaultTenant.isEmpty()) {
             String defaultTenantId = defaultTenant.get(0).get("ID").toString();
-            registerTenant(defaultTenantId, defaultDataSource.get(0));
-        }
-    }
-
-    private void createSystem(String systemName) {
-        try {
-            String sql = "select * from y9_common_system where NAME = ?";
-            List<Map<String, Object>> list = jdbcTemplate4Public.queryForList(sql, systemName);
-            if (list.isEmpty()) {
-                sql =
-                    "INSERT INTO y9_common_system (ID, CONTEXT_PATH, NAME, CN_NAME, TAB_INDEX, ENABLED, AUTO_INIT, CREATE_TIME) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
-                jdbcTemplate4Public.update(sql, SYSTEM_ID, "processAdmin", systemName, "流程管理", 100, 1, 1,
-                    Y9DateTimeUtils.formatCurrentDateTime());
+            String defaultDataSourceId = defaultTenant.get(0).get("DEFAULT_DATA_SOURCE_ID").toString();
+            List<Map<String, Object>> defaultDataSource = jdbcTemplate4Public
+                .queryForList("SELECT * FROM Y9_COMMON_DATASOURCE T WHERE T.ID = ?", defaultDataSourceId);
+            if (!defaultDataSource.isEmpty()) {
+                registerTenant(defaultTenantId, defaultDataSource.get(0));
             }
-        } catch (Exception e) {
-            LOGGER.error("在数字底座创建[流程管理]系统失败", e);
-        }
-    }
-
-    private void createTenantSystem(String systemName) {
-        try {
-            String sql = "select * from y9_common_system where NAME = ?";
-            List<Map<String, Object>> list = jdbcTemplate4Public.queryForList(sql, systemName);
-            if (list.size() == 1) {
-                Map<String, Object> smap = list.get(0);
-                sql = "select * from Y9_COMMON_TENANT";
-                List<Map<String, Object>> tlist = jdbcTemplate4Public.queryForList(sql);
-                for (Map<String, Object> map : tlist) {
-                    sql = "select * from y9_common_tenant_system where TENANT_ID = ? and SYSTEM_ID = ?";
-                    List<Map<String, Object>> qlist =
-                        jdbcTemplate4Public.queryForList(sql, map.get("ID").toString(), smap.get("ID").toString());
-                    if (qlist.isEmpty()) {
-                        long id = System.currentTimeMillis();
-                        sql =
-                            "INSERT INTO y9_common_tenant_system (ID, SYSTEM_ID, TENANT_ID, TENANT_DATA_SOURCE, CREATE_TIME) VALUES (?, ?, ?, ?, ?)";
-                        jdbcTemplate4Public.update(sql, id, smap.get("ID").toString(), map.get("ID").toString(),
-                            map.get("DEFAULT_DATA_SOURCE_ID").toString(), Y9DateTimeUtils.formatCurrentDateTime());
-                    }
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("createTenantSystem error {}", e.getMessage());
         }
     }
 
