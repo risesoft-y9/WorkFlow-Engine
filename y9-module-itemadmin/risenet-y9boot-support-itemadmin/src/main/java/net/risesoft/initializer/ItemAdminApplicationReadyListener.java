@@ -1,9 +1,5 @@
 package net.risesoft.initializer;
 
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
-
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
 import org.springframework.core.Ordered;
@@ -102,15 +98,9 @@ public class ItemAdminApplicationReadyListener implements ApplicationListener<Ap
     public void onApplicationEvent(ApplicationReadyEvent event) {
         LOGGER.info("itemAdmin ApplicationReady...");
         try {
-            ScheduledExecutorService executor = Executors.newSingleThreadScheduledExecutor();
-            Runnable task = () -> {
-                createSystem();
-                creatApp();
-                createPublicRoles();
-                LOGGER.info("延迟执行事项默认注册任务完成...");
-            };
-            executor.schedule(task, 1, TimeUnit.MINUTES); // 延迟10秒执行
-            executor.shutdown(); // 任务完成后关闭
+            createSystem();
+            creatApp();
+            createPublicRoles();
 
             // 初始化默认租户的表数据
             // Y9LoginUserHolder.setTenantId(InitDataConsts.TENANT_ID);
