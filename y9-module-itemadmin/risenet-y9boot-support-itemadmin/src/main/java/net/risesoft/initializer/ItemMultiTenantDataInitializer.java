@@ -1,4 +1,4 @@
-package net.risesoft.listener;
+package net.risesoft.initializer;
 
 import java.util.List;
 import java.util.Map;
@@ -13,6 +13,7 @@ import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.platform.resource.SystemApi;
 import net.risesoft.api.platform.tenant.TenantApi;
 import net.risesoft.consts.ItemConsts;
+import net.risesoft.consts.ItemInitDataConsts;
 import net.risesoft.enums.platform.org.ManagerLevelEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -20,24 +21,20 @@ import net.risesoft.init.TenantDataInitializer;
 import net.risesoft.model.platform.System;
 import net.risesoft.model.platform.resource.App;
 import net.risesoft.model.platform.tenant.Tenant;
-import net.risesoft.util.InitTableDataService;
+import net.risesoft.service.init.InitTableDataService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.configuration.Y9Properties;
 
 /**
+ * 监听数据源变化
+ * 
  * @author qinman
  * @author zhangchongjie
  * @date 2023/01/03
  */
 @Slf4j
 @Component
-public class ItemMultiTenantListener implements TenantDataInitializer {
-
-    /**
-     * 事项id
-     */
-    public static final String ITEM_ID = "11111111-1111-1111-1111-111111111111";
+public class ItemMultiTenantDataInitializer implements TenantDataInitializer {
 
     private final JdbcTemplate jdbcTemplate;
 
@@ -49,44 +46,22 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
 
     private final AppApi appApi;
 
-    private final Y9Properties y9Config;
-
-    public ItemMultiTenantListener(
+    public ItemMultiTenantDataInitializer(
         @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate,
         TenantApi tenantApi,
         SystemApi systemApi,
         InitTableDataService initTableDataService,
-        AppApi appApi,
-        Y9Properties y9Config) {
+        AppApi appApi) {
         this.jdbcTemplate = jdbcTemplate;
         this.tenantApi = tenantApi;
         this.systemApi = systemApi;
         this.initTableDataService = initTableDataService;
         this.appApi = appApi;
-        this.y9Config = y9Config;
-    }
-
-    private void creatApp() {
-        try {
-            System y9System = systemApi.getByName("itemAdmin").getData();
-            if (null != y9System) {
-                App app = appApi.findBySystemIdAndCustomId(y9System.getId(), ItemConsts.BANJIAN_KEY).getData();
-                if (null == app) {
-                    String sql =
-                        "INSERT INTO y9_common_app_store (ID,NAME, TAB_INDEX, URL, CHECKED, OPEN_TYPE,SYSTEM_ID,CREATE_TIME,CUSTOM_ID,TYPE,INHERIT,RESOURCE_TYPE,SHOW_NUMBER,ENABLED,HIDDEN) VALUES (?,?,?,?,?,?,?,?,?,?,?,?,?,?,?)";
-                    jdbcTemplate.update(sql, Y9IdGenerator.genId(IdType.SNOWFLAKE), "办件", 0,
-                        y9Config.getCommon().getFlowableBaseUrl() + "?itemId=" + ITEM_ID, 1, 1, y9System.getId(),
-                        Y9DateTimeUtils.formatCurrentDateTime(), ItemConsts.BANJIAN_KEY, 2, 0, 0, 0, 1, 0);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("创建办件app失败", e);
-        }
     }
 
     private void createTenantApp(Tenant tenant) {
         try {
-            System y9System = systemApi.getByName("itemAdmin").getData();
+            System y9System = systemApi.getByName(ItemInitDataConsts.Y9_SYSTEM_NAME).getData();
             if (null != y9System) {
                 App app = appApi.findBySystemIdAndCustomId(y9System.getId(), ItemConsts.BANJIAN_KEY).getData();
                 if (null != app) {
@@ -111,7 +86,6 @@ public class ItemMultiTenantListener implements TenantDataInitializer {
     public void init(String tenantId) {
         LOGGER.info("租户:{}租用itemAdmin 初始化数据.........", tenantId);
         Tenant tenant = tenantApi.getById(tenantId).getData();
-        creatApp();
         createTenantApp(tenant);
         initTableDataService.init(tenantId);
         LOGGER.info("{}, 同步租户数据源信息, 成功！", Y9Context.getSystemName());
