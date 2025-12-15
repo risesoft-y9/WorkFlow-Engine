@@ -72,6 +72,7 @@ public class ItemAdminApplicationReadyListener implements ApplicationListener<Ap
                 System y9System = systemApi
                     .registrySystem(ItemConsts.ITEMADMIN_KEY, "事项管理", "/server-itemadmin", InitDataConsts.TENANT_ID)
                     .getData();
+                systemId = y9System.getId();
             } else {
                 systemId = system.getId();
             }
