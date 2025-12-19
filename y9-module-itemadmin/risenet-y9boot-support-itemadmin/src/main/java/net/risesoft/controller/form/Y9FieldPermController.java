@@ -139,9 +139,9 @@ public class Y9FieldPermController {
         }
         // 手机端表单
         if (bindList.isEmpty()) {
-            List<Y9FormItemMobileBind> bindList1 = y9FormItemMobileBindRepository.findByFormIdList(list);
-            if (!bindList1.isEmpty()) {
-                itemId = bindList1.get(0).getItemId();
+            List<Y9FormItemMobileBind> mobileBindList = y9FormItemMobileBindRepository.findByFormIdList(list);
+            if (!mobileBindList.isEmpty()) {
+                itemId = mobileBindList.get(0).getItemId();
             }
         }
         if (StringUtils.isBlank(itemId)) {
@@ -201,9 +201,9 @@ public class Y9FieldPermController {
             processDefinitionId = bindList.get(0).getProcessDefinitionId();
         }
         if (bindList.isEmpty()) {// 手机端表单
-            List<Y9FormItemMobileBind> bindList1 = y9FormItemMobileBindRepository.findByFormIdList(list);
-            if (!bindList1.isEmpty()) {
-                processDefinitionId = bindList1.get(0).getProcessDefinitionId();
+            List<Y9FormItemMobileBind> mobileBindList = y9FormItemMobileBindRepository.findByFormIdList(list);
+            if (!mobileBindList.isEmpty()) {
+                processDefinitionId = mobileBindList.get(0).getProcessDefinitionId();
             }
         }
         y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName, taskDefKey);
@@ -240,6 +240,12 @@ public class Y9FieldPermController {
         List<Y9FormItemBind> bindList = y9FormItemBindRepository.findByFormIdList(list);
         if (!bindList.isEmpty()) {
             processDefinitionId = bindList.get(0).getProcessDefinitionId();
+        } else {
+            // 手机端表单
+            List<Y9FormItemMobileBind> mobileBindList = y9FormItemMobileBindRepository.findByFormIdList(list);
+            if (!mobileBindList.isEmpty()) {
+                processDefinitionId = mobileBindList.get(0).getProcessDefinitionId();
+            }
         }
         y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName, taskDefKey);
         if (y9FieldPerm == null) {
