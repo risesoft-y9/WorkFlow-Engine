@@ -90,7 +90,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         Y9FlowableHolder.setOrgUnit(orgUnit);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
-        List<ItemRoleOrgUnitModel> list = roleService.findByRoleId(roleId, principalType, id);
+        List<ItemRoleOrgUnitModel> list = roleService.listByRoleId(roleId, principalType, id);
         return Y9Result.success(list);
     }
 

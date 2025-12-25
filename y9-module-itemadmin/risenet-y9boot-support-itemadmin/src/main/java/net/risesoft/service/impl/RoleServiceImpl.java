@@ -66,8 +66,193 @@ public class RoleServiceImpl implements RoleService {
 
     private final DynamicRoleService dynamicRoleService;
 
+    /**
+     * 创建组织单元模型
+     */
+    private ItemRoleOrgUnitModel createOrgUnitModel(OrgUnit orgUnit, String parentId) {
+        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+        model.setId(orgUnit.getId());
+        model.setParentId(parentId);
+        model.setName(getOrgUnitDisplayName(orgUnit));
+        model.setGuidPath(orgUnit.getGuidPath());
+        model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+        model.setOrgType(orgUnit.getOrgType().getValue());
+        model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ? ItemPermissionEnum.DEPARTMENT
+            : ItemPermissionEnum.POSITION);
+        if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+            model.setPerson("6:" + orgUnit.getId());
+        }
+        model.setTabIndex(orgUnit.getTabIndex());
+        return model;
+    }
+
+    /**
+     * 创建子组织单元模型
+     */
+    private ItemRoleOrgUnitModel createSubOrgUnitModel(OrgUnit orgUnit, String parentId) {
+        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+        model.setId(orgUnit.getId());
+        model.setParentId(parentId);
+        model.setName(orgUnit.getName());
+        model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
+        model.setOrgType(orgUnit.getOrgType().getValue());
+        model.setGuidPath(orgUnit.getGuidPath());
+
+        if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
+            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
+            model.setName(getOrgUnitDisplayName(orgUnit));
+        } else if (OrgTypeEnum.POSITION.equals(orgUnit.getOrgType())) {
+            model.setPrincipalType(ItemPermissionEnum.POSITION);
+            model.setPerson("6:" + orgUnit.getId());
+        }
+        model.setTabIndex(orgUnit.getTabIndex());
+        return model;
+    }
+
+    /**
+     * 创建部门模型
+     */
+    private ItemRoleOrgUnitModel createDepartmentModel(OrgUnit org) {
+        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+        model.setId(org.getId());
+        model.setParentId(org.getParentId());
+        model.setName(getOrgUnitDisplayName(org));
+        model.setIsParent(true);
+        model.setGuidPath(org.getGuidPath());
+        model.setOrgType(org.getOrgType().getValue());
+        model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
+        model.setTabIndex(org.getTabIndex());
+        return model;
+    }
+
+    /**
+     * 创建岗位模型
+     */
+    private ItemRoleOrgUnitModel createPositionModel(Position position) {
+        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+        model.setId(position.getId());
+        model.setParentId(position.getParentId());
+        model.setName(position.getName());
+        model.setIsParent(false);
+        model.setOrgType(position.getOrgType().getValue());
+        model.setOrderedPath(position.getOrderedPath());
+        model.setPrincipalType(ItemPermissionEnum.POSITION);
+        model.setPerson("6:" + position.getId());
+        model.setGuidPath(position.getGuidPath());
+        model.setTabIndex(position.getTabIndex());
+        return model;
+    }
+
+    /**
+     * 创建部门搜索模型
+     */
+    private ItemRoleOrgUnitModel createDepartmentSearchModel(OrgUnit orgUnit) {
+        // 过滤不需要的组织类型
+        if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON) || orgUnit.getOrgType().equals(OrgTypeEnum.GROUP)) {
+            return null;
+        }
+
+        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+        model.setId(orgUnit.getId());
+        model.setParentId(orgUnit.getParentId());
+        model.setName(orgUnit.getName());
+        model.setOrgType(orgUnit.getOrgType().getValue());
+
+        if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+            || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
+            model.setIsParent(true);
+        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+            model.setPerson("6:" + orgUnit.getId());
+            model.setIsParent(true);
+        }
+        model.setTabIndex(orgUnit.getTabIndex());
+        return model;
+    }
+
+    /**
+     * 创建搜索用的部门模型
+     */
+    private ItemRoleOrgUnitModel createSearchDepartmentModel(OrgUnit orgUnit) {
+        // 过滤不需要的组织类型
+        if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON) || orgUnit.getOrgType().equals(OrgTypeEnum.GROUP)) {
+            return null;
+        }
+
+        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+        model.setId(orgUnit.getId());
+        model.setName(orgUnit.getName());
+        model.setOrgType(orgUnit.getOrgType().getValue());
+        model.setParentId(orgUnit.getParentId());
+        model.setGuidPath(orgUnit.getGuidPath());
+
+        if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
+            || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
+            model.setIsParent(true);
+        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
+            model.setPerson("6:" + orgUnit.getId());
+            model.setIsParent(false);
+        }
+        model.setTabIndex(orgUnit.getTabIndex());
+        return model;
+    }
+
+    /**
+     * 创建自定义组模型
+     */
+    private ItemRoleOrgUnitModel createCustomGroupModel(CustomGroup customGroup) {
+        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+        model.setId(customGroup.getId());
+        model.setParentId("");
+        model.setName(customGroup.getGroupName());
+        model.setIsParent(true);
+        model.setOrgType(ItemConsts.CUSTOMGROUP_KEY);
+        model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
+        model.setTabIndex(customGroup.getTabIndex());
+        return model;
+    }
+
+    /**
+     * 创建自定义组成员模型
+     */
+    private ItemRoleOrgUnitModel createCustomGroupMemberModel(OrgUnit user, CustomGroupMember customGroupMember,
+        String parentId) {
+        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
+        model.setId(customGroupMember.getMemberId());
+        model.setParentId(parentId);
+        model.setName(user.getName());
+        model.setIsParent(false);
+        model.setOrgType(user.getOrgType().getValue());
+        model.setPerson("6:" + user.getId() + ":" + user.getParentId());
+        model.setPrincipalType(ItemPermissionEnum.POSITION);
+        model.setTabIndex(customGroupMember.getTabIndex());
+        return model;
+    }
+
     @Override
-    public List<ItemRoleOrgUnitModel> findByRoleId(String roleId, Integer principalType, String id) {
+    public List<ItemRoleOrgUnitModel> listAllPermUser(String itemId, String processDefinitionId, String taskDefKey,
+        Integer principalType, String id, String processInstanceId, String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            List<ItemPermission> permissions = itemPermissionService
+                .listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
+
+            boolean isPositionType = ItemPrincipalTypeEnum.POSITION.getValue().equals(principalType);
+            boolean isDepartmentType = ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType);
+
+            if (StringUtils.isBlank(id)) {
+                return handleBlankIdCase(tenantId, permissions, isPositionType, isDepartmentType, processInstanceId,
+                    taskId);
+            } else {
+                return handleNonBlankIdCase(tenantId, id);
+            }
+        } catch (Exception e) {
+            LOGGER.error("获取权限用户列表失败", e);
+            return new ArrayList<>();
+        }
+    }
+
+    @Override
+    public List<ItemRoleOrgUnitModel> listByRoleId(String roleId, Integer principalType, String id) {
         List<ItemRoleOrgUnitModel> allItemList = new ArrayList<>();
         List<ItemRoleOrgUnitModel> itemList = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -126,29 +311,6 @@ public class RoleServiceImpl implements RoleService {
             getParent(itemList, parentModel);
         }
         return itemList;
-    }
-
-    @Override
-    public List<ItemRoleOrgUnitModel> listAllPermUser(String itemId, String processDefinitionId, String taskDefKey,
-        Integer principalType, String id, String processInstanceId, String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            List<ItemPermission> permissions = itemPermissionService
-                .listByItemIdAndProcessDefinitionIdAndTaskDefKeyExtra(itemId, processDefinitionId, taskDefKey);
-
-            boolean isPositionType = ItemPrincipalTypeEnum.POSITION.getValue().equals(principalType);
-            boolean isDepartmentType = ItemPrincipalTypeEnum.DEPT.getValue().equals(principalType);
-
-            if (StringUtils.isBlank(id)) {
-                return handleBlankIdCase(tenantId, permissions, isPositionType, isDepartmentType, processInstanceId,
-                    taskId);
-            } else {
-                return handleNonBlankIdCase(tenantId, id);
-            }
-        } catch (Exception e) {
-            LOGGER.error("获取权限用户列表失败", e);
-            return new ArrayList<>();
-        }
     }
 
     /**
@@ -350,23 +512,6 @@ public class RoleServiceImpl implements RoleService {
     }
 
     /**
-     * 创建岗位模型
-     */
-    private ItemRoleOrgUnitModel createPositionModel(Position position) {
-        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-        model.setId(position.getId());
-        model.setParentId(position.getParentId());
-        model.setName(position.getName());
-        model.setIsParent(false);
-        model.setOrgType(position.getOrgType().getValue());
-        model.setOrderedPath(position.getOrderedPath());
-        model.setPrincipalType(ItemPermissionEnum.POSITION);
-        model.setPerson("6:" + position.getId());
-        model.setGuidPath(position.getGuidPath());
-        return model;
-    }
-
-    /**
      * 构建部门树结构
      */
     private List<ItemRoleOrgUnitModel> buildDepartmentTree(String tenantId, List<OrgUnit> deptList) {
@@ -406,40 +551,6 @@ public class RoleServiceImpl implements RoleService {
     }
 
     /**
-     * 创建部门模型
-     */
-    private ItemRoleOrgUnitModel createDepartmentModel(OrgUnit org) {
-        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-        model.setId(org.getId());
-        model.setParentId(org.getParentId());
-        model.setName(getOrgUnitDisplayName(org));
-        model.setIsParent(true);
-        model.setGuidPath(org.getGuidPath());
-        model.setOrgType(org.getOrgType().getValue());
-        model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
-        return model;
-    }
-
-    /**
-     * 创建组织单元模型
-     */
-    private ItemRoleOrgUnitModel createOrgUnitModel(OrgUnit orgUnit, String parentId) {
-        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-        model.setId(orgUnit.getId());
-        model.setParentId(parentId);
-        model.setName(getOrgUnitDisplayName(orgUnit));
-        model.setGuidPath(orgUnit.getGuidPath());
-        model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
-        model.setOrgType(orgUnit.getOrgType().getValue());
-        model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ? ItemPermissionEnum.DEPARTMENT
-            : ItemPermissionEnum.POSITION);
-        if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-            model.setPerson("6:" + orgUnit.getId());
-        }
-        return model;
-    }
-
-    /**
      * 获取组织单元显示名称
      */
     private String getOrgUnitDisplayName(OrgUnit orgUnit) {
@@ -466,29 +577,6 @@ public class RoleServiceImpl implements RoleService {
         }
 
         return itemList;
-    }
-
-    /**
-     * 创建子组织单元模型
-     */
-    private ItemRoleOrgUnitModel createSubOrgUnitModel(OrgUnit orgunit, String parentId) {
-        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-        model.setId(orgunit.getId());
-        model.setParentId(parentId);
-        model.setName(orgunit.getName());
-        model.setIsParent(orgunit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
-        model.setOrgType(orgunit.getOrgType().getValue());
-        model.setGuidPath(orgunit.getGuidPath());
-
-        if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
-            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
-            model.setName(getOrgUnitDisplayName(orgunit));
-        } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
-            model.setPrincipalType(ItemPermissionEnum.POSITION);
-            model.setPerson("6:" + orgunit.getId());
-        }
-
-        return model;
     }
 
     @Override
@@ -631,36 +719,6 @@ public class RoleServiceImpl implements RoleService {
         }
     }
 
-    /**
-     * 创建自定义组模型
-     */
-    private ItemRoleOrgUnitModel createCustomGroupModel(CustomGroup customGroup) {
-        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-        model.setId(customGroup.getId());
-        model.setParentId("");
-        model.setName(customGroup.getGroupName());
-        model.setIsParent(true);
-        model.setOrgType(ItemConsts.CUSTOMGROUP_KEY);
-        model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
-        return model;
-    }
-
-    /**
-     * 创建自定义组成员模型
-     */
-    private ItemRoleOrgUnitModel createCustomGroupMemberModel(OrgUnit user, CustomGroupMember customGroupMember,
-        String parentId) {
-        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-        model.setId(customGroupMember.getMemberId());
-        model.setParentId(parentId);
-        model.setName(user.getName());
-        model.setIsParent(false);
-        model.setOrgType(user.getOrgType().getValue());
-        model.setPerson("6:" + user.getId() + ":" + user.getParentId());
-        model.setPrincipalType(ItemPermissionEnum.POSITION);
-        return model;
-    }
-
     @Override
     public List<ItemRoleOrgUnitModel> listCsUser4Bureau(String id) {
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
@@ -708,7 +766,7 @@ public class RoleServiceImpl implements RoleService {
             LOGGER.error("搜索抄送用户失败", e);
         }
 
-        return items;
+        return items.stream().distinct().collect(Collectors.toList());
     }
 
     /**
@@ -739,32 +797,6 @@ public class RoleServiceImpl implements RoleService {
         }
 
         return items;
-    }
-
-    /**
-     * 创建部门搜索模型
-     */
-    private ItemRoleOrgUnitModel createDepartmentSearchModel(OrgUnit orgUnit) {
-        // 过滤不需要的组织类型
-        if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON) || orgUnit.getOrgType().equals(OrgTypeEnum.GROUP)) {
-            return null;
-        }
-
-        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-        model.setId(orgUnit.getId());
-        model.setParentId(orgUnit.getParentId());
-        model.setName(orgUnit.getName());
-        model.setOrgType(orgUnit.getOrgType().getValue());
-
-        if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-            || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
-            model.setIsParent(true);
-        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-            model.setPerson("6:" + orgUnit.getId());
-            model.setIsParent(true);
-        }
-
-        return model;
     }
 
     /**
@@ -849,7 +881,7 @@ public class RoleServiceImpl implements RoleService {
             LOGGER.error("获取权限用户列表失败", e);
         }
 
-        return allItemList;
+        return allItemList.stream().distinct().collect(Collectors.toList());
     }
 
     /**
@@ -1510,33 +1542,6 @@ public class RoleServiceImpl implements RoleService {
     }
 
     /**
-     * 创建搜索用的部门模型
-     */
-    private ItemRoleOrgUnitModel createSearchDepartmentModel(OrgUnit orgUnit) {
-        // 过滤不需要的组织类型
-        if (orgUnit.getOrgType().equals(OrgTypeEnum.PERSON) || orgUnit.getOrgType().equals(OrgTypeEnum.GROUP)) {
-            return null;
-        }
-
-        ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
-        model.setId(orgUnit.getId());
-        model.setName(orgUnit.getName());
-        model.setOrgType(orgUnit.getOrgType().getValue());
-        model.setParentId(orgUnit.getParentId());
-        model.setGuidPath(orgUnit.getGuidPath());
-
-        if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-            || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
-            model.setIsParent(true);
-        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-            model.setPerson("6:" + orgUnit.getId());
-            model.setIsParent(false);
-        }
-
-        return model;
-    }
-
-    /**
      * 处理自定义组搜索
      */
     private List<ItemRoleOrgUnitModel> handleCustomGroupSearch(String name, String tenantId) {
@@ -1640,7 +1645,7 @@ public class RoleServiceImpl implements RoleService {
         } catch (Exception e) {
             e.printStackTrace();
         }
-        return item;
+        return item.stream().distinct().collect(Collectors.toList());
     }
 
     /**
