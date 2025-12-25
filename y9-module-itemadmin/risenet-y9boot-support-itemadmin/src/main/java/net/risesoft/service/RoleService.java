@@ -27,7 +27,15 @@ public interface RoleService {
     List<ItemRoleOrgUnitModel> listAllPermUser(String itemId, String processDefinitionId, String taskDefKey,
         Integer principalType, String id, String processInstanceId, String taskId);
 
-    List<ItemRoleOrgUnitModel> findByRoleId(String roleId, Integer principalType, String id);
+    /**
+     * 根据角色id，获取成员列表
+     *
+     * @param roleId
+     * @param principalType
+     * @param id
+     * @return
+     */
+    List<ItemRoleOrgUnitModel> listByRoleId(String roleId, Integer principalType, String id);
 
     /**
      * Description:

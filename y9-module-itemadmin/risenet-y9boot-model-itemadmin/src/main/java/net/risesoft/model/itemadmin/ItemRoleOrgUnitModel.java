@@ -1,6 +1,7 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
+import java.util.Comparator;
 
 import lombok.Data;
 
@@ -61,8 +62,15 @@ public class ItemRoleOrgUnitModel implements Serializable, Comparable<ItemRoleOr
      */
     private String guidPath;
 
+    /**
+     * 排序序号
+     */
+    protected Integer tabIndex;
+
     @Override
     public int compareTo(ItemRoleOrgUnitModel o) {
-        return this.orderedPath.compareTo(o.getOrderedPath());
+        return Comparator.comparing(ItemRoleOrgUnitModel::getParentId, Comparator.nullsFirst(String::compareTo))
+            .thenComparing(ItemRoleOrgUnitModel::getTabIndex)
+            .compare(this, o);
     }
 }
