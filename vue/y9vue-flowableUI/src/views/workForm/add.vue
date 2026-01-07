@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2024-04-23 15:08:38
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-05-13 10:05:01
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-flowableUI\src\views\workForm\add.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 09:09:17
+ * @FilePath: \vue\y9vue-flowableUI\src\views\workForm\add.vue
 -->
 <template>
     <el-container>
@@ -23,19 +23,20 @@
     </el-container>
 </template>
 <script lang="ts" setup>
-    import { computed, onMounted, reactive, watch } from 'vue';
+    import { computed, nextTick, onMounted, reactive, ref, toRefs, watch } from 'vue';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { getFormInitData, getFormJson } from '@/api/flowableUI/form';
     import { getBindPreFormByItemId, savePreFormData } from '@/api/flowableUI/preform';
     import { useI18n } from 'vue-i18n';
+    import { useRoute, useRouter } from 'vue-router';
 
     const { t } = useI18n();
     const router = useRouter();
     const currentrRute = useRoute();
     const flowableStore = useFlowableStore();
 
+    let generateForm = ref();
     const data = reactive({
-        generateForm: '',
         formJson: { list: [], config: {} },
         edit: true, //表单是否可编辑
         remoteFuncs: {},
@@ -61,7 +62,7 @@
                                             ElMessage({
                                                 type: 'success',
                                                 message: t('保存表单成功'),
-                                                appendTo: '.newForm-container'
+                                                appendTo: '.y9Form-container'
                                             });
                                             let path = '/index/edit';
                                             if (currentrRute.path.indexOf('workIndex') > -1) {
@@ -80,7 +81,7 @@
                                             ElMessage({
                                                 type: 'success',
                                                 message: t('保存表单发生异常'),
-                                                appendTo: '.newForm-container'
+                                                appendTo: '.y9Form-container'
                                             });
                                             reject();
                                         }
@@ -88,7 +89,7 @@
                                         ElMessage({
                                             type: 'error',
                                             message: t('保存表单失败'),
-                                            appendTo: '.newForm-container'
+                                            appendTo: '.y9Form-container'
                                         });
                                         reject();
                                     }
@@ -99,7 +100,7 @@
                                 });
                         })
                         .catch(() => {
-                            ElMessage({ type: 'error', message: t('表单验证不通过'), appendTo: '.newForm-container' });
+                            ElMessage({ type: 'error', message: t('表单验证不通过'), appendTo: '.y9Form-container' });
                             reject(new Error(t('表单验证不通过')).message);
                         });
                 });
@@ -108,7 +109,7 @@
         }
     });
 
-    let { generateForm, formJson, edit, remoteFuncs, initDataUrl, formId, dialogConfig } = toRefs(data);
+    let { formJson, edit, remoteFuncs, initDataUrl, formId, dialogConfig } = toRefs(data);
 
     onMounted(() => {
         openForm();
@@ -139,7 +140,6 @@
             showPreForm();
             return;
         }
-        //let itemId = currentrRute.query.itemId;
 
         let path = '/index/edit';
         if (currentrRute.path.indexOf('workIndex') > -1) {

@@ -1,3 +1,12 @@
+<!--
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2024-01-26 17:36:06
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-26 15:39:00
+ * @Descripttion: 退回
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\views\workForm\dialogContent\rollbackOrTakeback.vue
+-->
 <template>
     <div
         v-loading="loading"
@@ -33,7 +42,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject } from 'vue';
+    import { computed, inject, reactive, toRefs } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { buttonApi } from '@/api/flowableUI/buttonOpt';
     import { useI18n } from 'vue-i18n';

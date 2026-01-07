@@ -8,16 +8,16 @@ var flowableRequest = new Request();
  * @param taskKey 
  * @returns 
  */
-export function getAssignee(itemId,taskKey){
-  const params = {
-    itemId,
-    taskKey
-  };
-  return flowableRequest({
-    url:'/vue/quickSend/getAssignee',
-    method: 'get',
-    params: params
-  });
+export function getAssignee(itemId, taskKey) {
+    const params = {
+        itemId,
+        taskKey
+    };
+    return flowableRequest({
+        url: '/vue/quickSend/getAssignee',
+        method: 'get',
+        params: params
+    });
 }
 
 /**
@@ -27,16 +27,16 @@ export function getAssignee(itemId,taskKey){
  * @param assignee 
  * @returns 
  */
-export function saveOrUpdate(itemId,taskKey,assignee){
-  const params = {
-    itemId,
-    taskKey,
-    assignee
-  };
-  return flowableRequest({
-    url:'/vue/quickSend/saveOrUpdate',
-    method: 'POST',
-    params: params
-  });
+export function saveOrUpdate(itemId, taskKey, assignee) {
+    const params = {
+        itemId,
+        taskKey,
+        assignee
+    };
+    return flowableRequest({
+        url: '/vue/quickSend/saveOrUpdate',
+        method: 'POST',
+        params: params
+    });
 }
 

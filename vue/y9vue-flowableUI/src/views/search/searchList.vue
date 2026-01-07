@@ -1,7 +1,7 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-05-13 14:59:12
+ * @LastEditTime: 2024-06-14 10:44:03
  * @LastEditors: zhangchongjie
  * @Description:  个人所有件
 -->
@@ -227,7 +227,8 @@
         },
         historyListRef: '',
         processInstanceId: '',
-        processDefinitionId: ''
+        processDefinitionId: '',
+        backList: false //是否是返回列表
     });
 
     let {
@@ -239,25 +240,17 @@
         dialogConfig,
         historyListRef,
         processInstanceId,
-        processDefinitionId
+        processDefinitionId,
+        backList
     } = toRefs(data);
 
-    onMounted(() => {
-        if (flowableStore.currentPage.indexOf('_back') > -1) {
-            //返回列表获取当前页
-            tableConfig.value.pageConfig.currentPage = flowableStore.currentPage.split('_')[0];
-        }
-        flowableStore.$patch({
-            //重新设置
-            currentPage: tableConfig.value.pageConfig.currentPage.toString(),
-            itemName: '综合搜索'
-        });
+    onMounted(async () => {
         let type = currentrRute.query.type ? currentrRute.query.type : '';
         itemList.value = flowableStore.itemList;
-        filterConfig.value.itemList.forEach((items) => {
+        await filterConfig.value.itemList.forEach(async (items) => {
             if (items.type == 'select' && items.key == 'itemId') {
                 items.props.options.push({ label: computed(() => t('全部')), value: '' });
-                itemList.value.forEach((element) => {
+                await itemList.value.forEach((element) => {
                     items.props.options.push({ label: element.name, value: element.url });
                 });
                 items.value = items.props.options[0].value; //默认选择第一项
@@ -266,6 +259,28 @@
                 return items.props.options;
             }
         });
+
+        if (flowableStore.currentPage.indexOf('_back') > -1) {
+            //返回列表获取当前页
+            tableConfig.value.pageConfig.currentPage = flowableStore.currentPage.split('_')[0];
+            backList.value = true;
+            if (flowableStore.searchContent != '') {
+                //搜索内容不为空
+                await filterConfig.value.itemList.forEach((items) => {
+                    //设置搜索内容
+                    if (items.key != undefined && flowableStore.searchContent[items.key] != undefined) {
+                        items.value = flowableStore.searchContent[items.key];
+                    }
+                });
+                currFilters.value = flowableStore.searchContent;
+            }
+        }
+        flowableStore.$patch({
+            //重新设置
+            currentPage: tableConfig.value.pageConfig.currentPage.toString(),
+            itemName: '综合搜索'
+        });
+
         if (type == 'doing') {
             filterConfig.value.itemList.forEach((items) => {
                 if (items.key == 'state') {
@@ -282,7 +297,9 @@
                 }
             });
         } else {
-            reloadTable();
+            setTimeout(() => {
+                reloadTable();
+            }, 100);
         }
     });
 
@@ -301,11 +318,19 @@
     );
 
     function selectchange(val) {
-        reloadTable();
+        if (!backList.value) {
+            //不是返回列表才执行
+            reloadTable();
+        }
     }
 
-    function refreshTable() {
-        filterRef.value.elTableFilterRef.onReset();
+    async function refreshTable() {
+        await filterConfig.value.itemList.forEach((items) => {
+            //设置搜索内容
+            items.value = '';
+            currFilters.value[items.key] = '';
+        });
+        await filterRef.value.elTableFilterRef.onReset();
         tableConfig.value.pageConfig.currentPage = 1;
         tableConfig.value.pageConfig.pageSize = 20;
         setTimeout(() => {
@@ -314,9 +339,12 @@
     }
 
     async function reloadTable() {
+        backList.value = false;
+        flowableStore.searchContent = '';
         tableConfig.value.loading = true;
         let page = tableConfig.value.pageConfig.currentPage;
         let rows = tableConfig.value.pageConfig.pageSize;
+
         let res = await getSearchList(
             currFilters.value.name,
             currFilters.value.itemId,
@@ -358,7 +386,11 @@
     }
 
     async function openDoc(row) {
+        if (JSON.stringify(currFilters.value) != '{}') {
+            flowableStore.searchContent = currFilters.value;
+        }
         let link = currentrRute.matched[0].path;
+        console.log("link:"+link);
         let query = {
             itemId: row.itemId,
             processSerialNumber: row.processSerialNumber,

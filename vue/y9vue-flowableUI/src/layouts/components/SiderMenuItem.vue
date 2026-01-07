@@ -162,8 +162,8 @@
         </template>
     </template>
 </template>
-<script lang="ts">
-    import { computed, ComputedRef, defineComponent, inject, nextTick, PropType, Ref, toRefs } from 'vue';
+<script lang="ts" setup>
+    import { computed, ComputedRef, defineComponent, inject, nextTick, PropType, ref, Ref, toRefs } from 'vue';
     import { getRouteBelongTopMenu, hasChildRoute, RoutesDataItem } from '@/utils/routes';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useFlowableStore } from '@/store/modules/flowableStore';
@@ -172,90 +172,63 @@
     import settings from '@/settings';
     import { useRoute, useRouter } from 'vue-router';
 
-    interface SiderMenuItemSetupData {
-        item: Ref;
-        topMenuPath: ComputedRef<string>;
-        hasChildRoute: (children: RoutesDataItem[]) => boolean;
-        toggleCollapsedFunc: () => void;
-        flowableStore;
-        getImageUrl;
-        setAppType;
-        openEmail;
-        fontSizeObj;
-    }
-
-    export default defineComponent({
-        name: 'SiderMenuItem',
-        props: {
-            routeItem: {
-                type: Object as PropType<RoutesDataItem>,
-                required: true
-            },
-            belongTopMenu: {
-                type: String,
-                default: ''
-            }
+    const props = defineProps({
+        routeItem: {
+            type: Object as PropType<RoutesDataItem>,
+            required: true
         },
-        components: {
-            ALink,
-            Icon
-        },
-        setup(props): SiderMenuItemSetupData {
-            const { routeItem } = toRefs(props);
-            const topMenuPath = computed<string>(() => getRouteBelongTopMenu(routeItem.value as RoutesDataItem));
-            const router = useRouter();
-            const currentrRute = useRoute();
-            const flowableStore = useFlowableStore();
-            const settingStore = useSettingStore();
-            const { toggleCollapsed } = settingStore;
-            const toggleCollapsedFunc = () => {
-                if (settingStore.getDevice === 'mobile') {
-                    toggleCollapsed();
-                }
-            };
-            const getImageUrl = (name) => {
-                return new URL(`../../assets/${name}`, import.meta.url).href;
-            };
-            const setAppType = (app) => {
-                if (routeItem.value.path.indexOf('/workIndex') > -1) {
-                    flowableStore.$patch({
-                        appType: app.name,
-                        itemName: app.parentTitle,
-                        itemId: app.itemId != undefined ? app.itemId : flowableStore.itemId
-                    });
-                    if (currentrRute.path == routeItem.value.path && app.itemId != undefined) {
-                        flowableStore.$patch({
-                            isReload: false
-                        });
-                        setTimeout(() => {
-                            nextTick(() => {
-                                flowableStore.$patch({
-                                    isReload: true
-                                });
-                            });
-                        }, 500);
-                    }
-                }
-            };
-
-            const openEmail = () => {
-                window.location.href = settings.emailURL;
-            };
-            // 注入 字体对象
-            const fontSizeObj: any = inject('sizeObjInfo');
-            return {
-                item: routeItem,
-                topMenuPath: topMenuPath,
-                hasChildRoute,
-                toggleCollapsedFunc,
-                flowableStore,
-                getImageUrl,
-                setAppType,
-                openEmail,
-                fontSizeObj
-            };
+        belongTopMenu: {
+            type: String,
+            default: ''
         }
     });
+
+    // 注入 字体对象
+    const fontSizeObj: any = inject('sizeObjInfo');
+
+    const { routeItem } = toRefs(props);
+    const topMenuPath = computed<string>(() => getRouteBelongTopMenu(routeItem.value as RoutesDataItem));
+    const router = useRouter();
+    const currentrRute = useRoute();
+    const flowableStore = useFlowableStore();
+    const settingStore = useSettingStore();
+    const { toggleCollapsed } = settingStore;
+    const toggleCollapsedFunc = () => {
+        if (settingStore.getDevice === 'mobile') {
+            toggleCollapsed();
+        }
+    };
+    const getImageUrl = (name) => {
+        return new URL(`../../assets/${name}`, import.meta.url).href;
+    };
+    const setAppType = (app) => {
+        if (routeItem.value.path.indexOf('/workIndex') > -1) {
+            flowableStore.$patch({
+                appType: app.name,
+                itemName: app.parentTitle,
+                itemId: app.itemId != undefined ? app.itemId : flowableStore.itemId
+            });
+            if (currentrRute.path == routeItem.value.path && app.itemId != undefined) {
+                flowableStore.$patch({
+                    isReload: false
+                });
+                setTimeout(() => {
+                    nextTick(() => {
+                        flowableStore.$patch({
+                            isReload: true
+                        });
+                    });
+                }, 500);
+            }
+        }
+    };
+
+    const openEmail = () => {
+        window.location.href = settings.emailURL;
+    };
+
+    let item: any = ref({});
+    item.value = routeItem.value;
 </script>
 
 <style lang="scss" scoped>

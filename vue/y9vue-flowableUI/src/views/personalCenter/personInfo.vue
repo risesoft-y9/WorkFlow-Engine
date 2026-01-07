@@ -1,3 +1,11 @@
+<!--
+ * @Author: mengjuhua
+ * @Date: 2026-01-05 16:44:54
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 13:56:56
+ * @FilePath: \vue\y9vue-flowableUI\src\views\personalCenter\personInfo.vue
+ * @Description: 
+-->
 <template>
     <el-dialog
         v-model="dialogVisible"
@@ -20,7 +28,7 @@
     </el-dialog>
 </template>
 <script lang="ts" setup>
-    import { defineExpose, inject, ref } from 'vue';
+    import { inject, ref } from 'vue';
     import CommonManage from '@/views/personalCenter/commonManage.vue';
     import EntrustManage from '@/views/personalCenter/entrustManage.vue';
     // 注入 字体对象

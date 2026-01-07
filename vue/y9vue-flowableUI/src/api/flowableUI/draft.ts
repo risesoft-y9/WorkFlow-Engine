@@ -1,14 +1,13 @@
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
-
 //获取草稿列表视图配置
 export function draftViewConf(itemId) {
     const params = {
         itemId: itemId
     };
     return flowableRequest({
-        url: '/vue/draft/draftViewConf',
+        url: "/vue/draft/draftViewConf",
         method: 'get',
         params: params
     });
@@ -23,7 +22,7 @@ export function getDraftList(itemId, searchTerm, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: '/vue/draft/draftList',
+        url: "/vue/draft/draftList",
         method: 'get',
         params: params
     });
@@ -38,7 +37,7 @@ export function getDraftRecycleList(itemId, searchTerm, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: '/vue/draft/draftRecycleList',
+        url: "/vue/draft/draftRecycleList",
         method: 'get',
         params: params
     });
@@ -50,7 +49,7 @@ export function removeDraft(ids) {
         ids: ids
     };
     return flowableRequest({
-        url: '/vue/draft/removeDraft',
+        url: "/vue/draft/removeDraft",
         method: 'post',
         params: params
     });
@@ -62,7 +61,7 @@ export function deleteDraft(ids) {
         ids: ids
     };
     return flowableRequest({
-        url: '/vue/draft/deleteDraft',
+        url: "/vue/draft/deleteDraft",
         method: 'post',
         params: params
     });
@@ -74,18 +73,19 @@ export function reduction(id) {
         id: id
     };
     return flowableRequest({
-        url: '/vue/draft/reduction',
+        url: "/vue/draft/reduction",
         method: 'post',
         params: params
     });
 }
+
 
 //获取打开草稿数据
 export function openDraft(processSerialNumber, itemId) {
     const params = {
         processSerialNumber: processSerialNumber,
         itemId: itemId,
-        draftRecycle: ''
+        draftRecycle: '',
     };
     return flowableRequest({
         url: '/vue/document/edit/draft',
@@ -110,3 +110,5 @@ export function saveDraft(processSerialNumber, itemId, processDefinitionKey, num
         params: params
     });
 }
+
+

@@ -397,7 +397,7 @@
     "未配置办理人": "Manager not configured",
     "确定生成该流程定制并发送?": "Are you sure you want to generate this process customization and send it?",
     "已取消保存": "Save canceled",
-    "关联流程": "Associated flow",
+    "关联流程": "Associated files",
     "沟通交流": "Communication",
     "流程图": "Flow chart",
     "确定返回发起人?": "Are you sure to return to the initiator?",
@@ -500,5 +500,7 @@
     "】的阅件，请及时办理。": "】Please handle the review in a timely manner.",
     "返回发起人": "Return to initiator",
     "返回发送人": "Return to sender",
-    "发送拟稿人": "Send Drafter"
+    "发送拟稿人": "Send Drafter",
+    "License过期": "License expired",
+    "License无效": "License invalid"
 }

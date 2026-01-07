@@ -12,23 +12,23 @@ import Request from '@/api/lib/request';
 var flowableRequest = new Request();
 
 //获取流程图
-export function getFlowChart(params){
-  return flowableRequest({
-    url: "/vue/processTrack/getFlowChart",
-    method: 'get',
-    params: params
-  });
+export function getFlowChart(params) {
+    return flowableRequest({
+        url: "/vue/processTrack/getFlowChart",
+        method: 'get',
+        params: params
+    });
 }
 
 //获取流程图任务节点信息
-export function getTaskList(processInstanceId){
-  const params = {
-    processInstanceId
-  };
-  return flowableRequest({
-    url: "/vue/processTrack/getTaskList",
-    method: 'get',
-    params: params
-  });
+export function getTaskList(processInstanceId) {
+    const params = {
+        processInstanceId
+    };
+    return flowableRequest({
+        url: "/vue/processTrack/getTaskList",
+        method: 'get',
+        params: params
+    });
 }
 

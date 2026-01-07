@@ -1,3 +1,10 @@
+<!--
+ * @Author: zhangchongjie
+ * @Date: 2022-01-10 18:09:52
+ * @LastEditTime: 2026-01-07 10:47:07
+ * @LastEditors: mengjuhua
+ * @Description:  自定义附件列表组件
+-->
 <template>
     <div class="from-file" style="width: 670px; height: 97.7%; margin: 15px auto">
         <div style="padding-bottom: 15px; vertical-align: middle">
@@ -35,13 +42,13 @@
                 </el-link>
             </template>
             <template #opt="{ row, column, index }">
-                <a :href="downloadUrl + '&id=' + row.id" style="text-decoration: none">
-                    <i
+                <a :href="downloadUrl + '&id=' + row.id" style="text-decoration: none"
+                    ><i
                         :style="{ fontSize: fontSizeObj.mediumFontSize }"
                         :title="$t('点击下载')"
                         class="ri-download-cloud-2-line"
-                    ></i>
-                </a>
+                    ></i
+                ></a>
                 <i
                     v-if="y9UserInfo.personId == row.personId && optShow"
                     :style="{ fontSize: fontSizeObj.mediumFontSize, marginLeft: '5px', color: '#586cb1' }"
@@ -81,7 +88,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject, onMounted, reactive, toRefs } from 'vue';
+    import { computed, inject, onMounted, reactive } from 'vue';
     import { delAttachment, getAttachmentList, saveOrder } from '@/api/flowableUI/attachment';
     import settings from '@/settings';
     import y9_storage from '@/utils/storage';

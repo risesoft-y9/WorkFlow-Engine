@@ -1,9 +1,18 @@
+<!-- 
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2024-04-23 15:08:38
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-06 16:59:39
+ * @Descripttion: 编辑/查看 详情信息
+ * @FilePath: \vue\y9vue-flowableUI\src\views\workForm\y9Document.vue
+-->
 <template>
     <el-container
         v-loading="loading"
         :element-loading-text="$t(loadingtext)"
         :style="style"
-        class="newDocument-container"
+        class="y9Document-container"
         element-loading-background="rgba(0, 0, 0, 0.8)"
         element-loading-spinner="el-icon-loading"
     >
@@ -34,8 +43,12 @@
                     v-show="activeName.indexOf('y9form') > -1"
                     ref="myForm"
                     :basicData="basicData"
+                    :saveFormId="saveFormId"
                     :processInstanceId="processInstanceId"
+                    :initFormData="initFormData"
                     @refreshCount="updateLeftListCount"
+                    @fromBindValue="getFromBindValue"
+                    @oneClickSet="oneClickSetMethod"
                 />
                 <!-- 附件 -->
                 <fileList
@@ -146,42 +159,18 @@
         </y9Dialog>
 
         <el-dialog v-model="dialogVisible" :title="$t('办结提示')" class="tishi" width="20%">
-            <template v-if="y9UserInfo.tenantId == settings.risesoftTenantId">
-                <span :style="{ fontSize: fontSizeObj.mediumFontSize }">
-                    <i
-                        :style="{
-                            fontSize: fontSizeObj.extraLargeFont,
-                            verticalAlign: 'middle',
-                            marginRight: '-2px',
-                            color: '#FF7F50'
-                        }"
-                        class="ri-error-warning-line"
-                    ></i>
-                    {{ $t('数据是否在数据中心公开显示?') }}' </span
-                ><br />
-                <el-radio-group v-model="infoOvert" style="margin-left: 3px">
-                    <el-radio label="1"
-                        >{{ $t('公开') }}<font color="red">({{ $t('所有人可搜索到该办件') }})</font>
-                    </el-radio>
-                    <el-radio label="0"
-                        >{{ $t('不公开') }}<font color="red">({{ $t('仅参与人可搜索到该办件') }})</font>
-                    </el-radio>
-                </el-radio-group>
-            </template>
-            <template v-else>
-                <span :style="{ fontSize: fontSizeObj.mediumFontSize }">
-                    <i
-                        :style="{
-                            fontSize: fontSizeObj.extraLargeFont,
-                            verticalAlign: 'middle',
-                            marginRight: '-2px',
-                            color: '#FF7F50'
-                        }"
-                        class="ri-error-warning-line"
-                    ></i>
-                    {{ $t('确定办结该件') }}?
-                </span>
-            </template>
+            <span :style="{ fontSize: fontSizeObj.mediumFontSize }">
+                <i
+                    :style="{
+                        fontSize: fontSizeObj.extraLargeFont,
+                        verticalAlign: 'middle',
+                        marginRight: '-2px',
+                        color: '#FF7F50'
+                    }"
+                    class="ri-error-warning-line"
+                ></i>
+                {{ $t('确定办结该件') }}?
+            </span>
             <template #footer>
                 <span class="dialog-footer">
                     <el-button
@@ -205,32 +194,32 @@
 </template>
 
 <script lang="ts" setup>
+    import settings from '@/settings';
+    import y9_storage from '@/utils/storage';
+    import { useI18n } from 'vue-i18n';
+    import { computed, h, inject, onMounted, reactive, ref, toRefs } from 'vue';
+    import { ntkoBrowser } from '@/assets/js/ntkobackground.min.js';
+    import { asyncDebounce, debounce__ } from '@/utils';
+    import { useRoute, useRouter } from 'vue-router';
+    import { useSettingStore } from '@/store/modules/settingStore';
+    import { useFlowableStore } from '@/store/modules/flowableStore';
+
+    import myFormRef from '@/views/workForm/y9Form.vue';
+
     import ProcessStatus from '@/components/Handling/ProcessStatus.vue';
-    import { computed, h, inject, onMounted, reactive } from 'vue';
-    import { ElMessage, ElMessageBox } from 'element-plus';
-    import myFormRef from '@/views/workForm/newForm.vue';
     import fileList from '@/views/file/fileList.vue';
     import associatedFileList from '@/views/associatedFile/associatedFileList.vue';
     import processListCom from '@/views/process/processList.vue';
     import speakInfo from '@/views/speakInfo/speakInfo.vue';
-    import userChoise from '@/views/workForm/userChoise.vue';
-    import csUserChoise from '@/views/chaoSong/csUserChoise.vue';
-    import rollbackOrTakeback from '@/views/workForm/rollbackOrTakeback.vue';
-    import specialComplete from '@/views/workForm/specialComplete.vue';
+    import csUserChoise from '@/views/chaoSong/dialogContent/csUserChoise.vue';
     import multiInstance from '@/views/multiInstance/list.vue';
-    import customProcessCom from '@/views/workForm/customProcess.vue';
     import flowChart from '@/views/flowchart/index.vue';
-    import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
-    import { openDraft } from '@/api/flowableUI/draft';
-    import { buttonApi, forwarding } from '@/api/flowableUI/buttonOpt';
-    import settings from '@/settings';
-    import { useRoute, useRouter } from 'vue-router';
-    import { useFlowableStore } from '@/store/modules/flowableStore';
-    import { processList } from '@/api/flowableUI/process';
-    import y9_storage from '@/utils/storage';
-    import { useSettingStore } from '@/store/modules/settingStore';
-    import { chaoSongSave } from '@/api/flowableUI/chaoSong';
-    import { useI18n } from 'vue-i18n';
+
+    import userChoise from '@/views/workForm/dialogContent/userChoise.vue';
+    import rollbackOrTakeback from '@/views/workForm/dialogContent/rollbackOrTakeback.vue';
+    import specialComplete from '@/views/workForm/dialogContent/specialComplete.vue';
+    import customProcessCom from '@/views/workForm/dialogContent/customProcess.vue';
+
     import {
         addData,
         getDoingData,
@@ -239,6 +228,12 @@
         getMonitorDoneData,
         getTodoData
     } from '@/api/flowableUI/index';
+    import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
+    import { openDraft } from '@/api/flowableUI/draft';
+    import { buttonApi, forwarding } from '@/api/flowableUI/buttonOpt';
+    import { processList } from '@/api/flowableUI/process';
+    import { chaoSongSave } from '@/api/flowableUI/chaoSong';
+    import { getFormInitData } from '@/api/flowableUI/form';
 
     const { t } = useI18n();
     const settingStore = useSettingStore();
@@ -269,16 +264,17 @@
         startTaskDefKey: ''
     };
 
+    let myForm = ref();
+
     const emits = defineEmits(['refreshCount']);
     const data = reactive({
-        clickCount: '',
-        processDataList: [],
+        clickCount: 0,
+        processDataList: [] as any,
         fromType: '', //区分弹窗选人来源哪个操作
         optType: '',
         routeToTask: '',
         reposition: '',
-        myForm: '',
-        y9UserInfo: {},
+        y9UserInfo: {} as any,
         dialogVisible: false,
         loading: false,
         loadingtext: '拼命加载中',
@@ -287,10 +283,11 @@
         itemId: '',
         itembox: '', //文件类型，add新建，todo待办，doing在办，done办结，draft草稿
         taskId: '',
-        addInitData: {}, //新建数据
-        menuMap: {}, //按钮菜单数据
-        sendMap: {}, //发送菜单数据
-        formList: [{ formName: '未绑定表单' }], //绑定表单数据
+        addInitData: {} as any, //新建数据
+        menuMap: [] as any, //按钮菜单数据
+        sendMap: [] as any, //发送菜单数据
+        repositionMap: [] as any, //重定位菜单
+        formList: [{ formName: '未绑定表单' }] as any, //绑定表单数据
         basicData: baseData1,
         processSerialNumber: '', //流程编号
         processInstanceId: '', //流程实例id
@@ -308,7 +305,6 @@
         processListShow: false,
         speakInfoShow: false,
         associatedFileListShow: false,
-        repositionMap: [], //重定位菜单
         doneManage: false, //地灾租户办结角色
         infoOvert: '0', //办结是否在数据中心显示
         multiInstanceType: '', //定制流程使用，当前节点类型
@@ -317,6 +313,7 @@
         dialogConfig: {
             show: false,
             title: '',
+            type: '',
             onOkLoading: true,
             closeOnClickModal: false, //是否可以通过点击 modal 关闭 Dialog
             onOk: (newConfig) => {
@@ -326,19 +323,21 @@
         },
         userChoiseRef: '',
         // 数组
-        dataList: [],
-        operationBtnList: [],
-        processTimeLineList: [],
+        dataList: [] as any,
+        operationBtnList: [] as any,
+        processTimeLineList: [] as any,
         // 收缩 流程状态
-        processFlag: null,
-        isRefreshButton: false //串行存在未开始人员，如果有发送按钮，提交按钮，办结按钮等，要提醒重新打开办件处理
+        processFlag: false,
+        saveFormId: '', //已经保存过表单数据的表单id，多表单新建时，切换页签先保存表单，避免重新初始化数据。
+        isRefreshButton: false, //串行存在未开始人员，如果有发送按钮，提交按钮，办结按钮等，要提醒重新打开办件处理
+        bindValue: '', //表单数据绑定值，用于根据绑定值获取正文模板
+        initFormData: {} as any //表单初始化数据
     });
 
     let {
         processDataList,
         routeToTask,
         reposition,
-        myForm,
         y9UserInfo,
         dialogVisible,
         loading,
@@ -375,6 +374,7 @@
         processFlag,
         clickCount,
         isRefreshButton,
+        saveFormId,
         repositionMap,
         doneManage,
         infoOvert,
@@ -383,7 +383,9 @@
         dialogConfig,
         userChoiseRef,
         optType,
-        fromType
+        fromType,
+        bindValue,
+        initFormData
     } = toRefs(data);
 
     onMounted(async () => {
@@ -399,6 +401,15 @@
         basicData.value.itembox = itembox.value;
         doneManage.value = false;
         nextNode.value = false;
+
+        // 获取表单初始化数据
+        if (itembox.value === 'add' || itembox.value === 'draft') {
+            let dataRes = await getFormInitData('', processSerialNumber.value);
+            if (dataRes.success) {
+                initFormData.value = dataRes.data;
+            }
+        }
+
         if (itembox.value === 'add') {
             customItem.value = flowableStore.getCustomItem;
             processFlag.value = false;
@@ -414,9 +425,8 @@
             itembox.value === 'monitorDone'
         ) {
             customItem = false;
-            await getOpenTodoData();
+            await getOpenData();
         }
-
         setTimeout(() => {
             getTabs();
         }, 500);
@@ -472,10 +482,6 @@
             dataList.value.push({ label: item.formName, name: 'y9form' + item.formId });
         }
         activeName.value = 'y9form' + formList.value[0].formId;
-        if (showOtherFlag.value.includes('showDocumentTab')) {
-            let name = docNum.value == 0 ? '正文' : '正文(有)';
-            dataList.value.push({ label: name, name: 'word' });
-        }
         if (showOtherFlag.value.includes('showFileTab')) {
             dataList.value.push({ label: fileLabel.value, name: 'attach' });
         }
@@ -692,10 +698,10 @@
             let index = 0;
             for (let item of rows) {
                 index++;
-                let obj = {} as any;
+                let obj: any = {};
                 obj.content = item.name;
                 if (item.assignee.indexOf('（') != -1) {
-                    let nameArr = [];
+                    let nameArr: any = [];
                     let reg = new RegExp('）', 'g');
                     let userName = item.assignee.split('（')[1].replace(reg, '');
                     nameArr.push(userName);
@@ -710,7 +716,7 @@
                     obj.timestamp = item.startTime;
                     obj.type = 'current';
                 } else {
-                    let timneArr = [];
+                    let timneArr: any = [];
                     timneArr.push(item.startTime);
                     timneArr.push(item.endTime);
                     obj.timestamp = timneArr;
@@ -727,7 +733,7 @@
         basicData.value.flowableUIBaseURL = data.flowableUIBaseURL;
         basicData.value.processSerialNumber = data.processSerialNumber;
         basicData.value.tenantId = data.tenantId;
-        basicData.value.userId = data.userId;
+        basicData.value.userId = data.activitiUser;
         basicData.value.processDefinitionId = data.processDefinitionId;
         basicData.value.processDefinitionKey = data.processDefinitionKey;
         basicData.value.taskDefKey = data.taskDefKey;
@@ -786,8 +792,7 @@
         //dialogConfig.value.show = false;
     }
 
-    async function getOpenTodoData() {
-        //获取办件数据
+    async function getOpenData() {
         //获取办件数据
         loading.value = true;
         let res;
@@ -840,7 +845,49 @@
 
     function tabClick(item) {
         //页签切换
+        let oldActiveName = activeName.value;
         activeName.value = item.name;
+        if (formList.value.length > 1 && oldActiveName.indexOf('y9form') > -1) {
+            //多个表单，切换前先保存表单数据
+            debouncedSaveY9Form(false)
+                .then((res) => {
+                    return myForm.value.saveY9ProcessParam();
+                })
+                .then((value) => {
+                    return myForm.value.saveY9Draft();
+                })
+                .then(() => {
+                    if (saveFormId.value.indexOf(oldActiveName) == -1) {
+                        saveFormId.value += oldActiveName;
+                    }
+                    showTab(item);
+                })
+                .catch(() => {
+                    //保存异常不切换
+                    activeName.value = oldActiveName;
+                });
+        } else if (oldActiveName.indexOf('y9form') > -1 && item.name == 'word') {
+            //多个表单，切换前先保存表单数据
+            debouncedSaveY9Form(false)
+                .then((res) => {
+                    return myForm.value.saveY9ProcessParam();
+                })
+                .then((value) => {
+                    return myForm.value.saveY9Draft();
+                })
+                .then(() => {
+                    showTab(item);
+                })
+                .catch(() => {
+                    //保存异常不切换
+                    activeName.value = oldActiveName;
+                });
+        } else {
+            showTab(item);
+        }
+    }
+
+    function showTab(item) {
         if (item.name == 'attach') {
             fileListShow.value = true;
         } else if (item.name == 'process') {
@@ -853,7 +900,95 @@
         } else if (item.name == 'associatedFile') {
             associatedFileListShow.value = true;
         } else if (item.name.indexOf('y9form') > -1) {
-            // myForm.value.show(item.name.slice(6));
+            if (formList.value.length > 1) {
+                //多个表单才切换
+                myForm.value.show(item.name.slice(6), formList.value[0].formId);
+            }
+        }
+    }
+
+    function openWord(type) {
+        //打开word
+        let userAgent = navigator.userAgent;
+        let rMsie = /(msie\s|trident.*rv:)([\w.]+)/;
+        let rFirefox = /(firefox)\/([\w.]+)/;
+        let rOpera = /(opera).+versi1on\/([\w.]+)/;
+        let rChrome = /(chrome)\/([\w.]+)/;
+        let rSafari = /version\/([\w.]+).*(safari)/;
+        let browser;
+        let ua = userAgent.toLowerCase();
+        let match = rMsie.exec(ua);
+        if (match != null) {
+            browser = 'IE';
+        }
+        match = rFirefox.exec(ua);
+        if (match != null) {
+            browser = match[1] || '';
+        }
+        match = rOpera.exec(ua);
+        if (match != null) {
+            browser = match[1] || '';
+        }
+        match = rChrome.exec(ua);
+        if (match != null) {
+            browser = match[1] || '';
+        }
+        match = rSafari.exec(ua);
+        if (match != null) {
+            browser = match[2] || '';
+        }
+        if (match != null) {
+            browser = '';
+        }
+
+        let msg = {
+            msgType: 'openWord',
+            itemId: basicData.value.itemId,
+            itembox: basicData.value.itembox,
+            processSerialNumber: basicData.value.processSerialNumber,
+            processInstanceId: basicData.value.processInstanceId,
+            taskId: basicData.value.taskId,
+            browser: browser,
+            tenantId: basicData.value.tenantId,
+            userId: y9UserInfo.value.personId
+        };
+        if (type == 'print') {
+            //打印
+            msg.msgType = 'printWord';
+            msg.activitiUser = basicData.value.activitiUser;
+            msg.taskDefKey = basicData.value.taskDefKey;
+        }
+
+        let positionId = sessionStorage.getItem('positionId');
+        if (!ntkoBrowser.ExtensionInstalled()) {
+            document.getElementById('risesoftNTKOWord').style.display = '';
+        } else {
+            ntkoBrowser.openWindow(
+                wordUrl.value +
+                    '?cmd=1&ctx=' +
+                    import.meta.env.VUE_APP_HOST_INDEX +
+                    '&apiCtx=' +
+                    import.meta.env.VUE_APP_CONTEXT +
+                    '&itembox=' +
+                    basicData.value.itembox +
+                    '&processSerialNumber=' +
+                    basicData.value.processSerialNumber +
+                    '&itemId=' +
+                    basicData.value.itemId +
+                    '&taskId=' +
+                    basicData.value.taskId +
+                    '&processInstanceId=' +
+                    basicData.value.processInstanceId +
+                    '&browser=' +
+                    browser +
+                    '&tenantId=' +
+                    basicData.value.tenantId +
+                    '&userId=' +
+                    y9UserInfo.value.personId +
+                    '&positionId=' +
+                    positionId,
+                false
+            );
         }
     }
 
@@ -872,8 +1007,7 @@
 
     function customProcess() {
         //流程定制
-        myForm.value
-            .saveY9Form(false)
+        debouncedSaveY9Form(false)
             .then((res) => {
                 loading.value = true;
                 return myForm.value.saveY9ProcessParam();
@@ -895,6 +1029,33 @@
 
     function sendClick() {
         //发送点击
+        if (activeName.value == 'word') {
+            activeName.value = 'y9form';
+        }
+    }
+
+    function oneClickSetMethod(data) {
+        if (data.type == 'toSender') {
+            setTimeout(() => {
+                sendToSender();
+            }, 500);
+        } else if (data.type == 'complete') {
+            setTimeout(() => {
+                buttonEvent('12');
+            }, 500);
+        } else if (data.type == 'processingCompleted') {
+            setTimeout(() => {
+                buttonEvent('09');
+            }, 500);
+        } else if (data.type == 'sendNextTaskDefKey') {
+            setTimeout(() => {
+                sendEvent(sendMap.value[0].sendKey);
+            }, 500);
+        } else if (data.type == 'toSubmit') {
+            setTimeout(() => {
+                submitTo21();
+            }, 500);
+        }
     }
 
     function rollbackToStartor() {
@@ -903,7 +1064,7 @@
             confirmButtonText: t('确定'),
             cancelButtonText: t('取消'),
             type: 'info',
-            appendTo: '.newDocument-container'
+            appendTo: '.y9Document-container'
         })
             .then(() => {
                 loading.value = true;
@@ -917,7 +1078,7 @@
                     type: 'info',
                     message: t('已取消返回发起人'),
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
             });
     }
@@ -931,16 +1092,15 @@
                 message: msg,
                 dangerouslyUseHTMLString: true,
                 offset: 65,
-                appendTo: '.newDocument-container'
+                appendTo: '.y9Document-container'
             });
             return;
         }
-        //myForm.value.saveChangeOpinion();//保存编辑未保存的意见内容
         ElMessageBox.confirm(t('确定返回发送人?'), t('提示'), {
             confirmButtonText: t('确定'),
             cancelButtonText: t('取消'),
             type: 'info',
-            appendTo: '.newDocument-container'
+            appendTo: '.y9Document-container'
         })
             .then(() => {
                 loading.value = true;
@@ -954,7 +1114,7 @@
                     type: 'info',
                     message: t('已取消返回发送人'),
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
             });
     }
@@ -965,7 +1125,7 @@
             confirmButtonText: t('确定'),
             cancelButtonText: t('取消'),
             type: 'info',
-            appendTo: '.newDocument-container'
+            appendTo: '.y9Document-container'
         })
             .then(() => {
                 loading.value = true;
@@ -979,7 +1139,7 @@
                     type: 'info',
                     message: t('已取消返回发送人'),
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
             });
     }
@@ -993,13 +1153,11 @@
                 message: msg,
                 dangerouslyUseHTMLString: true,
                 offset: 65,
-                appendTo: '.newDocument-container'
+                appendTo: '.y9Document-container'
             });
             return;
         }
-        myForm.value.saveChangeOpinion(); //保存编辑未保存的意见内容
-        myForm.value
-            .saveY9Form(false)
+        debouncedSaveY9Form(false)
             .then((res) => {
                 return myForm.value.saveY9ProcessParam();
             })
@@ -1011,7 +1169,7 @@
                     confirmButtonText: t('确定'),
                     cancelButtonText: t('取消'),
                     type: 'info',
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 })
                     .then(() => {
                         loading.value = true;
@@ -1031,7 +1189,7 @@
                             type: 'info',
                             message: t('已取消提交'),
                             offset: 65,
-                            appendTo: '.newDocument-container'
+                            appendTo: '.y9Document-container'
                         });
                     });
             });
@@ -1057,7 +1215,7 @@
             confirmButtonText: t('确定'),
             cancelButtonText: t('取消'),
             type: 'info',
-            appendTo: '.newDocument-container'
+            appendTo: '.y9Document-container'
         })
             .then(() => {
                 loading.value = true;
@@ -1069,7 +1227,7 @@
                     });
             })
             .catch(() => {
-                ElMessage({ type: 'info', message: t('已取消发送'), offset: 65, appendTo: '.newDocument-container' });
+                ElMessage({ type: 'info', message: t('已取消发送'), offset: 65, appendTo: '.y9Document-container' });
             });
     }
 
@@ -1080,7 +1238,7 @@
                 type: 'info',
                 message: t('您已加减签，请重新打开办件处理'),
                 offset: 65,
-                appendTo: '.newDocument-container'
+                appendTo: '.y9Document-container'
             });
             return;
         }
@@ -1091,11 +1249,10 @@
                 message: msg,
                 dangerouslyUseHTMLString: true,
                 offset: 65,
-                appendTo: '.newDocument-container'
+                appendTo: '.y9Document-container'
             });
             return;
         }
-        myForm.value.saveChangeOpinion(); //保存编辑未保存的意见内容
 
         let msg1 = await myForm.value.setNumber(); //编号
         if (msg1 == '') {
@@ -1104,13 +1261,12 @@
                 message: t('编号异常'),
                 dangerouslyUseHTMLString: true,
                 offset: 65,
-                appendTo: '.newDocument-container'
+                appendTo: '.y9Document-container'
             });
             return;
         }
 
-        myForm.value
-            .saveY9Form(false)
+        debouncedSaveY9Form(false)
             .then((res) => {
                 return myForm.value.saveY9ProcessParam();
             })
@@ -1150,7 +1306,7 @@
                                     cancelButtonText: t('取消'),
                                     type: 'info',
                                     dangerouslyUseHTMLString: true,
-                                    appendTo: '.newDocument-container'
+                                    appendTo: '.y9Document-container'
                                 }
                             )
                                 .then(() => {
@@ -1169,7 +1325,7 @@
                                         type: 'info',
                                         message: t('已取消发送'),
                                         offset: 65,
-                                        appendTo: '.newDocument-container'
+                                        appendTo: '.y9Document-container'
                                     });
                                 });
                         } else {
@@ -1236,14 +1392,15 @@
         ).then((res) => {
             loading.value = false;
             if (res.success) {
-                ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.newDocument-container' });
+                ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
                 let query = {
                     itemId: basicData.value.itemId,
                     refreshCount: true
                 };
-                router.push({ path: '/todo', query: query });
+                let link = currentrRute.matched[0].path;
+                router.push({ path: link + '/todo', query: query });
             } else {
-                ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.newDocument-container' });
+                ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
             }
         });
     }
@@ -1296,18 +1453,25 @@
         }
     }
 
+    const debouncedSave = debounce__(() => {
+        myForm.value.saveForm(true);
+    }, 500);
+
+    // 创建防抖版本
+    const debouncedSaveY9Form = asyncDebounce((showMessage = false) => {
+        return myForm.value.saveY9Form(showMessage);
+    }, 500);
+
     function buttonEvent(key) {
         //按钮事件
+        if (activeName.value == 'word') {
+            activeName.value = 'y9form';
+        }
         if (key == '01') {
             //保存
-            myForm.value.saveForm(true);
-            myForm.value.saveChangeOpinion(); //保存编辑未保存的意见内容
-        } else if (key == '03') {
-            //返回
-            backToList();
+            debouncedSave();
         } else if (key == '04') {
             //退回
-            myForm.value.saveChangeOpinion(); //保存编辑未保存的意见内容
             optType.value = 'rollback';
             Object.assign(dialogConfig.value, {
                 show: true,
@@ -1323,7 +1487,7 @@
                     type: 'info',
                     message: t('您已加减签，请重新打开办件处理'),
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
                 return;
             }
@@ -1334,17 +1498,16 @@
                     message: msg,
                     dangerouslyUseHTMLString: true,
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
                 return;
             }
-            myForm.value.saveChangeOpinion(); //保存编辑未保存的意见内容
-            myForm.value.saveY9Form(false).then((res) => {
+            debouncedSaveY9Form(false).then((res) => {
                 ElMessageBox.confirm(t('是否送下一人'), t('提示'), {
                     confirmButtonText: t('确定'),
                     cancelButtonText: t('取消'),
                     type: 'info',
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 })
                     .then(() => {
                         loading.value = true;
@@ -1358,7 +1521,7 @@
                             type: 'info',
                             message: t('已取消送下一人'),
                             offset: 65,
-                            appendTo: '.newDocument-container'
+                            appendTo: '.y9Document-container'
                         });
                     });
             });
@@ -1369,7 +1532,7 @@
                     type: 'info',
                     message: t('您已加减签，请重新打开办件处理'),
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
                 return;
             }
@@ -1380,17 +1543,16 @@
                     message: msg,
                     dangerouslyUseHTMLString: true,
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
                 return;
             }
-            myForm.value.saveChangeOpinion(); //保存编辑未保存的意见内容
-            myForm.value.saveY9Form(false).then((res) => {
+            debouncedSaveY9Form(false).then((res) => {
                 ElMessageBox.confirm(t('是否办理完成'), t('提示'), {
                     confirmButtonText: t('确定'),
                     cancelButtonText: t('取消'),
                     type: 'info',
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 })
                     .then(() => {
                         loading.value = true;
@@ -1423,7 +1585,7 @@
                             type: 'info',
                             message: t('已取消办理完成'),
                             offset: 65,
-                            appendTo: '.newDocument-container'
+                            appendTo: '.y9Document-container'
                         });
                     });
             });
@@ -1434,7 +1596,7 @@
                     type: 'info',
                     message: t('您已加减签，请重新打开办件处理'),
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
                 return;
             }
@@ -1445,12 +1607,11 @@
                     message: msg,
                     dangerouslyUseHTMLString: true,
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
                 return;
             }
-            myForm.value.saveChangeOpinion(); //保存编辑未保存的意见内容
-            myForm.value.saveY9Form(false).then((res) => {
+            debouncedSaveY9Form(false).then((res) => {
                 dialogVisible.value = true;
             });
         } else if (key == '10') {
@@ -1473,7 +1634,7 @@
                 confirmButtonText: t('确定'),
                 cancelButtonText: t('取消'),
                 type: 'warning',
-                appendTo: '.newDocument-container'
+                appendTo: '.y9Document-container'
             })
                 .then(() => {
                     loading.value = true;
@@ -1487,7 +1648,7 @@
                         type: 'info',
                         message: t('已取消拒签'),
                         offset: 65,
-                        appendTo: '.newDocument-container'
+                        appendTo: '.y9Document-container'
                     });
                 });
         } else if (key == '13') {
@@ -1516,11 +1677,14 @@
                     type: 'error',
                     message: t('未配置打印配置'),
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
                 return;
             }
-            if (printFormType.value == '2') {
+            if (printFormType.value == '1') {
+                //打印word
+                openWord('print');
+            } else if (printFormType.value == '2') {
                 //打印表单
                 printUrl.value =
                     import.meta.env.VUE_APP_HOST_INDEX +
@@ -1542,8 +1706,7 @@
             }
         } else if (key == '18') {
             //抄送
-            myForm.value
-                .saveY9Form(false)
+            debouncedSaveY9Form(false)
                 .then((res) => {
                     return myForm.value.saveY9ProcessParam();
                 })
@@ -1568,6 +1731,8 @@
                 type: 'multiInstance',
                 showFooter: false
             });
+        } else if (key == 'common_faqiren') {
+            rollbackToStartor();
         } else if (key == 'common_fasongren') {
             //返回发送人
             sendToSender();
@@ -1578,7 +1743,7 @@
                 cancelButtonText: t('取消'),
                 dangerouslyUseHTMLString: true,
                 type: 'info',
-                appendTo: '.newDocument-container'
+                appendTo: '.y9Document-container'
             })
                 .then(() => {
                     loading.value = true;
@@ -1593,19 +1758,20 @@
                                     type: 'success',
                                     message: res.msg,
                                     offset: 65,
-                                    appendTo: '.newDocument-container'
+                                    appendTo: '.y9Document-container'
                                 });
                                 let link = currentrRute.matched[0].path;
+                                let listType = currentrRute.query.listType;
                                 let query = {
                                     itemId: basicData.value.itemId
                                 };
-                                router.push({ path: link + '/done', query: query });
+                                router.push({ path: link + '/' + listType, query: query });
                             } else {
                                 ElMessage({
                                     type: 'error',
                                     message: res.msg,
                                     offset: 65,
-                                    appendTo: '.newDocument-container'
+                                    appendTo: '.y9Document-container'
                                 });
                             }
                         })
@@ -1615,7 +1781,7 @@
                                 type: 'info',
                                 message: t('发生异常'),
                                 offset: 65,
-                                appendTo: '.newDocument-container'
+                                appendTo: '.y9Document-container'
                             });
                         });
                 })
@@ -1624,7 +1790,7 @@
                         type: 'info',
                         message: t('已取消操作'),
                         offset: 65,
-                        appendTo: '.newDocument-container'
+                        appendTo: '.y9Document-container'
                     });
                 });
         } else if (key == '21') {
@@ -1634,7 +1800,7 @@
                     type: 'info',
                     message: t('您已加减签，请重新打开办件处理'),
                     offset: 65,
-                    appendTo: '.newDocument-container'
+                    appendTo: '.y9Document-container'
                 });
                 return;
             }
@@ -1645,7 +1811,7 @@
     function buttonAfter(res) {
         loading.value = false;
         if (res.success) {
-            ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.newDocument-container' });
+            ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
             let link = currentrRute.matched[0].path;
             let query = {
                 itemId: basicData.value.itemId,
@@ -1653,7 +1819,7 @@
             };
             router.push({ path: link + '/todo', query: query });
         } else {
-            ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.newDocument-container' });
+            ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
         }
     }
 
@@ -1662,13 +1828,13 @@
         delOfficeFollow(basicData.value.processInstanceId).then((res) => {
             if (res.success) {
                 // emits("refreshCount");
-                ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.newDocument-container' });
+                ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
                 follow.value = false;
                 setTimeout(() => {
                     getTabs();
                 }, 100);
             } else {
-                ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.newDocument-container' });
+                ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
             }
         });
     }
@@ -1678,13 +1844,13 @@
         saveOfficeFollow(basicData.value.processInstanceId).then((res) => {
             if (res.success) {
                 // emits("refreshCount");
-                ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.newDocument-container' });
+                ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
                 follow.value = true;
                 setTimeout(() => {
                     getTabs();
                 }, 100);
             } else {
-                ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.newDocument-container' });
+                ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
             }
         });
     }
@@ -1823,7 +1989,7 @@
         font-size: v-bind('fontSizeObj.baseFontSize');
     }
 
-    .newDocument-container {
+    .y9Document-container {
         :global(.el-message .el-message__content) {
             font-size: v-bind('fontSizeObj.baseFontSize');
         }

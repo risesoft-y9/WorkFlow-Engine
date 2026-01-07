@@ -1,3 +1,10 @@
+<!--
+ * @Author: zhangchongjie
+ * @Date: 2022-01-10 18:09:52
+ * @LastEditTime: 2026-01-07 14:09:43
+ * @LastEditors: mengjuhua
+ * @Description:  抄送件详情
+-->
 <template>
     <el-container
         v-loading="loading"
@@ -29,7 +36,7 @@
 
             <div style="margin-top: 104px">
                 <!-- 表单 -->
-                <newForm
+                <Y9Form
                     v-show="activeName == 'y9form'"
                     ref="myForm"
                     :basicData="basicData"
@@ -98,12 +105,12 @@
 
 <script lang="ts" setup>
     import { computed, inject, onBeforeMount, reactive } from 'vue';
-    import newForm from '@/views/workForm/newForm.vue';
+    import Y9Form from '@/views/workForm/y9Form.vue';
     import fileList from '@/views/file/fileList.vue';
     import associatedFileList from '@/views/associatedFile/associatedFileList.vue';
     import processListCom from '@/views/process/processList.vue';
     import speakInfo from '@/views/speakInfo/speakInfo.vue';
-    import csUserChoise from '@/views/chaoSong/csUserChoise.vue';
+    import csUserChoise from '@/views/chaoSong/dialogContent/csUserChoise.vue';
     import flowChart from '@/views/flowchart/index.vue';
     import { chaoSongData } from '@/api/flowableUI/chaoSong';
     import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
@@ -148,6 +155,7 @@
         loading: false,
         activeName: 'y9form',
         itemId: '',
+        itembox: '',
         status: 0,
         addData: {}, //新建数据
         menuMap: [], //按钮菜单数据
@@ -195,6 +203,7 @@
         loading,
         activeName,
         itemId,
+        itembox,
         status,
         addData,
         menuMap,
@@ -230,6 +239,7 @@
         const value = JSON.parse(sessionStorage.getItem('process'));
         processFlag.value = value === null ? true : value;
         itemId.value = currentrRute.query.itemId;
+        itembox.value = currentrRute.query.itembox;
         status.value = currentrRute.query.status;
         id.value = currentrRute.query.id;
         processInstanceId.value = currentrRute.query.processInstanceId;
@@ -245,58 +255,54 @@
     async function getChaoSongData() {
         //获取抄送数据
         loading.value = true;
-        let res = await chaoSongData(id.value, processInstanceId.value, itemId.value, status.value);
+        let res;
+        if (itembox.value != 'monitorChaoSong') {
+            res = await chaoSongData(id.value, processInstanceId.value, itembox.value);
+        } else {
+            res = await monitorChaoSongData(id.value, processInstanceId.value);
+        }
+
         loading.value = false;
         if (res.success) {
             if (status.value == 0) {
                 emits('refreshCount');
             }
-            let csData = res.data;
-            let menuNames = csData.menuName.split(',');
-            let menuKeys = csData.menuKey.split(',');
-            menuMap.value = [];
-            for (let i = 0; i < menuNames.length; i++) {
-                let menu = {};
-                menu.menuName = menuNames[i];
-                menu.menuKey = menuKeys[i];
-                menuMap.value.push(menu);
-            }
-
-            menuMap.value.reverse(); //将menuMap.reverse()倒序
-            formList.value = csData.formList;
-            formId.value = csData.formList[0].formId;
-            showOtherFlag.value = csData.showOtherFlag;
-            processInstanceId.value = csData.processInstanceId;
-            processSerialNumber.value = csData.processSerialNumber;
-            follow.value = csData.follow;
-            printFormType.value = csData.printFormType;
+            let resDate = res.data;
+            menuMap.value = resDate.buttonList;
+            formList.value = resDate.formList;
+            formId.value = resDate.formList[0].formId;
+            showOtherFlag.value = resDate.showOtherFlag;
+            processInstanceId.value = resDate.processInstanceId;
+            processSerialNumber.value = resDate.processSerialNumber;
+            follow.value = resDate.follow;
+            printFormType.value = resDate.printFormType;
 
             //修改标题数据
             flowableStore.$patch({
-                documentTitle: csData.title
+                documentTitle: resDate.title
             });
-            basicData.value.flowableUIBaseURL = csData.flowableUIBaseURL;
-            basicData.value.processSerialNumber = csData.processSerialNumber;
-            basicData.value.tenantId = csData.tenantId;
-            basicData.value.userId = csData.userId;
-            basicData.value.processDefinitionId = csData.processDefinitionId;
-            basicData.value.taskDefKey = csData.taskDefKey;
-            basicData.value.formId = csData.formList[0].formId;
-            basicData.value.printFormId = csData.printFormId;
-            basicData.value.initDataUrl = csData.initDataUrl;
-            basicData.value.itemId = csData.itemId;
-            basicData.value.processInstanceId = csData.processInstanceId;
-            basicData.value.taskId = csData.taskId;
+            basicData.value.flowableUIBaseURL = resDate.flowableUIBaseURL;
+            basicData.value.processSerialNumber = resDate.processSerialNumber;
+            basicData.value.tenantId = resDate.tenantId;
+            basicData.value.userId = resDate.userId;
+            basicData.value.processDefinitionId = resDate.processDefinitionId;
+            basicData.value.taskDefKey = resDate.taskDefKey;
+            basicData.value.formId = resDate.formList[0].formId;
+            basicData.value.printFormId = resDate.printFormId;
+            basicData.value.initDataUrl = resDate.initDataUrl;
+            basicData.value.itemId = itemId.value;
+            basicData.value.processInstanceId = resDate.processInstanceId;
+            basicData.value.taskId = resDate.taskId;
             basicData.value.itembox = 'yuejian';
-            basicData.value.activitiUser = csData.activitiUser;
-            basicData.value.processDefinitionKey = csData.processDefinitionKey;
+            basicData.value.activitiUser = resDate.activitiUser;
+            basicData.value.processDefinitionKey = resDate.processDefinitionKey;
             basicData.value.chaosongId = id.value;
 
-            fileLabel.value = csData.fileNum == 0 ? '附件' : '附件(' + csData.fileNum + ')';
-            docNum.value = csData.docNum;
+            fileLabel.value = resDate.fileNum == 0 ? '附件' : '附件(' + resDate.fileNum + ')';
+            docNum.value = resDate.docNum;
             associatedFileLabel.value =
-                csData.associatedFileNum == 0 ? '关联流程' : '关联流程(' + csData.associatedFileNum + ')';
-            speakInfoLabel.value = csData.speakInfoNum == 0 ? '沟通交流' : '沟通交流(' + csData.speakInfoNum + ')';
+                resDate.associatedFileNum == 0 ? '关联流程' : '关联流程(' + resDate.associatedFileNum + ')';
+            speakInfoLabel.value = resDate.speakInfoNum == 0 ? '沟通交流' : '沟通交流(' + resDate.speakInfoNum + ')';
 
             myForm.value.show(formId.value);
             loading.value = false;
@@ -335,16 +341,16 @@
         dataList.value.push({ label: '流程图', name: 'flowChart' });
         operationBtnList.value = [];
         for (let item of menuMap.value) {
-            if (item.menuKey.indexOf('follow') > -1 && follow.value) {
+            if (item.key.indexOf('follow') > -1 && follow.value) {
                 //关注按钮：取消关注
                 operationBtnList.value.push({
-                    name: '关注',
+                    name: '取消关注',
                     icon: 'ri-star-fill',
                     onClick: () => {
                         delFollow();
                     }
                 });
-            } else if (item.menuKey.indexOf('follow') > -1 && !follow.value) {
+            } else if (item.key.indexOf('follow') > -1 && !follow.value) {
                 //关注按钮：点击关注
                 operationBtnList.value.push({
                     name: '关注',
@@ -356,21 +362,18 @@
             } else {
                 //按钮
                 let iconName = 'ri-mouse-line';
-                if (item.menuKey == '03') {
-                    //返回
-                    iconName = 'ri-arrow-go-back-fill';
-                } else if (item.menuKey == '18') {
+                if (item.key == '18') {
                     //抄送按钮
                     iconName = 'ri-file-copy-2-line';
-                } else if (item.menuKey == '17') {
+                } else if (item.key == '17') {
                     //打印按钮
                     iconName = 'ri-printer-line';
                 }
                 operationBtnList.value.push({
-                    name: item.menuName,
+                    name: item.name,
                     icon: iconName,
                     onClick: () => {
-                        buttonEvent(item.menuKey);
+                        buttonEvent(item.key);
                     }
                 });
             }
@@ -428,10 +431,10 @@
 
     function buttonEvent(key) {
         //按钮事件
-        if (key === '03') {
-            //返回
-            backToList();
-        } else if (key === '17') {
+        if (activeName.value == 'word') {
+            activeName.value = 'y9form';
+        }
+        if (key === '17') {
             //打印
             if (printFormType.value == '') {
                 ElMessage({

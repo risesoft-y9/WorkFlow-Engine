@@ -120,10 +120,15 @@
         overflow: hidden;
         padding: 0 11px;
         min-width: 5px;
+        color: var(--el-menu-text-color);
+        cursor: pointer;
+        line-height: 60px;
+        position: relative;
 
         i {
             position: relative;
-            top: 4px;
+            font-size: v-bind('fontSizeObj.extraLargeFont');
+            // top: 4px;
         }
 
         span {
@@ -132,13 +137,38 @@
         }
 
         &:hover {
-            cursor: pointer;
             color: var(--el-color-primary);
         }
 
+        &:hover {
+            cursor: pointer;
+            border-bottom: none; // 鼠标划过或点击时不显示下划线
+        }
+
+        .name {
+            color: var(--el-text-color-primary);
+            border: none;
+
+            & > div {
+                span {
+                    line-height: 60px;
+                    text-align: end;
+                }
+            }
+
+            i {
+                line-height: 20px;
+            }
+
+            .badge {
+                margin-left: 5px;
+            }
+        }
+
+        /**当前岗位 */
         &.notify {
             .badge {
-                top: -4px;
+                // top: -4px;
                 z-index: 1;
 
                 & > .el-badge__content--danger {
@@ -172,7 +202,7 @@
 
         .badge {
             // position: absolute;
-            top: -4px;
+            //top: -4px;
             margin-left: 7px;
             z-index: 1;
 
@@ -195,10 +225,6 @@
     :deep(.el-badge) {
         .el-badge__content {
             border: none;
-        }
-
-        sup {
-            top: 0;
         }
     }
 </style>

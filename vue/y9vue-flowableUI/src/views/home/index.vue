@@ -545,7 +545,7 @@
 </style>
 <script lang="ts" setup>
     import { inject, reactive, ref } from 'vue';
-    import { MoreFilled, Right, Switch } from '@element-plus/icons';
+    import { MoreFilled, Right, Switch } from '@element-plus/icons-vue';
     import { ElConfigProvider } from 'element-plus';
     import zhCn from 'element-plus/dist/locale/zh-cn.mjs';
     // 注入 字体对象

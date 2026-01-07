@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-06-14 10:06:24
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-03-27 09:03:06
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\y9form\form\formMaking.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-06 17:11:16
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\y9form\form\formMaking.vue
 -->
 <template>
     <fm-making-form
@@ -102,7 +102,7 @@
             {
                 name: '人员树',
                 el: 'custom-personTree',
-                model: 'custom_personTree1',
+                model: 'custom_personTree',
                 options: {
                     defaultValue: {},
                     customClass: '',

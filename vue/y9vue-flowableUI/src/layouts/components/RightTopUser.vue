@@ -59,13 +59,12 @@
     </el-dropdown>
     <PersonInfo ref="personInfo" />
 </template>
-<script lang="ts">
+<script lang="ts" setup>
     import { defineComponent, inject, ref } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import y9_storage from '@/utils/storage';
-    import IconSvg from './IconSvg';
     import PersonInfo from '@/views/personalCenter/personInfo.vue';
 
     interface RightTopUserSetupData {
@@ -78,67 +77,49 @@
         fontSizeObj;
     }
 
-    export default defineComponent({
-        name: 'RightTopUser',
-        components: {
-            IconSvg,
-            PersonInfo
-        },
-        setup(): RightTopUserSetupData {
-            const settingStore = useSettingStore();
-            const flowableStore = useFlowableStore();
-            const router = useRouter();
-            const currentrRute = useRoute();
-            const personInfo = ref();
-            // 注入 字体对象
-            const fontSizeObj: any = inject('sizeObjInfo');
-            // 获取当前登录用户信息
-            const userInfo = y9_storage.getObjectItem('ssoUserInfo');
-            // 点击菜单
-            const onMenuClick = async (command: string) => {
-                switch (command) {
-                    case 'personalCenter':
-                        personInfo.value.show(userInfo);
-                        //router.push({name: "personInfo"})
-                        break;
-                    case 'signIn':
-                        break;
-                    case 'signOut':
-                        break;
-                    case 'changeDept':
-                        break;
-                    case 'backHome':
-                        window.location.href = import.meta.env.VUE_APP_HOMEURL;
-                        break;
+    const settingStore = useSettingStore();
+    const flowableStore = useFlowableStore();
+    const router = useRouter();
+    const currentrRute = useRoute();
+    const personInfo = ref();
+    // 注入 字体对象
+    const fontSizeObj: any = inject('sizeObjInfo');
+    // 获取当前登录用户信息
+    const userInfo = y9_storage.getObjectItem('ssoUserInfo');
+    // 点击菜单
+    const onMenuClick = async (command: string) => {
+        switch (command) {
+            case 'personalCenter':
+                personInfo.value.show(userInfo);
+                //router.push({name: "personInfo"})
+                break;
+            case 'signIn':
+                break;
+            case 'signOut':
+                break;
+            case 'changeDept':
+                break;
+            case 'backHome':
+                window.location.href = import.meta.env.VUE_APP_HOME_INDEX;
+                break;
 
-                    default:
-                        break;
-                }
-            };
-            const setPosition = async (id) => {
-                //切换岗位
-                sessionStorage.setItem('positionId', id);
-                flowableStore.$patch({
-                    currentPositionId: id
-                });
-                let link = currentrRute.matched[0].path;
-                if (link.indexOf('/index') > -1) {
-                    window.location.href = import.meta.env.VUE_APP_HOST_INDEX + 'index?itemId=' + flowableStore.itemId;
-                } else if (link.indexOf('/workIndex') > -1) {
-                    window.location.href = import.meta.env.VUE_APP_HOST_INDEX + 'workIndex';
-                }
-            };
-            return {
-                settingStore,
-                flowableStore,
-                userInfo,
-                onMenuClick,
-                setPosition,
-                personInfo,
-                fontSizeObj
-            };
+            default:
+                break;
         }
-    });
+    };
+    const setPosition = async (id) => {
+        //切换岗位
+        sessionStorage.setItem('positionId', id);
+        flowableStore.$patch({
+            currentPositionId: id
+        });
+        let link = currentrRute.matched[0].path;
+        if (link.indexOf('/index') > -1) {
+            window.location.href = import.meta.env.VUE_APP_HOST_INDEX + 'index?itemId=' + flowableStore.itemId;
+        } else if (link.indexOf('/workIndex') > -1) {
+            window.location.href = import.meta.env.VUE_APP_HOST_INDEX + 'workIndex';
+        }
+    };
 </script>
 <style lang="scss" scoped>
     @import '@/theme/global-vars.scss';

@@ -1,6 +1,7 @@
 <template>
-    <el-container class="personTree" style="height: 480px">
+    <el-container class="personTree">
         <el-header style="height: 36px; padding: 0">
+            <input autocomplete="new-password" hidden type="password" />
             <el-input
                 v-model="searchName"
                 :placeholder="$t('请输入名称按回车键搜索')"
@@ -10,17 +11,7 @@
                 @keyup.enter.native="search()"
             ></el-input>
         </el-header>
-        <el-main
-            style="
-                height: auto;
-                overflow: hidden;
-                border-top: 0px solid #ccc;
-                border-left: 0;
-                border-right: 0;
-                border-bottom: 0;
-            "
-            width="45%"
-        >
+        <el-main class="personTree_main">
             <el-menu
                 ref="kzMenu"
                 :default-active="activeIndex"
@@ -33,7 +24,7 @@
                 <el-menu-item v-if="existDepartment" index="2">{{ $t('部门') }}</el-menu-item>
                 <el-menu-item v-if="existCustomGroup" index="7">{{ $t('用户组') }}</el-menu-item>
             </el-menu>
-            <div class="mytreediv" style="width: 100%; height: 89%; overflow-y: auto">
+            <div class="mytreediv">
                 <y9Tree
                     ref="y9TreeRef"
                     :checkStrictly="checkStrictly"
@@ -42,6 +33,8 @@
                     :lazy="lazy"
                     :load="onTreeLazyLoad"
                     :nodeDblclick="true"
+                    :expandOnClickNode="true"
+                    :defaultExpandAll="true"
                     showCheckbox
                     @node-click="onNodeClick"
                     @node-dblclick="nodeDblclick"
@@ -60,37 +53,8 @@
 <script lang="ts" setup>
     import { Search } from '@element-plus/icons-vue';
     import { $dataType } from '@/utils/object'; //工具类
-    import { reactive, ref } from 'vue';
+    import { inject, nextTick, reactive, ref, toRefs } from 'vue';
     import { findAllPermUser, findPermUserByName } from '@/api/flowableUI/personTree';
-    // 注入 字体对象
-    const data = reactive({
-        activeIndex: '',
-        searchName: '',
-        principalType: 0,
-        existDepartment: false,
-        existCustomGroup: false,
-        existPerson: false,
-        existPosition: false,
-        userChoiseData: {},
-        selectField: [
-            {
-                fieldName: 'orgType',
-                value: ['Department', 'Position', 'customGroup']
-            }
-        ] //设置需要选择的字段
-    });
-
-    let {
-        activeIndex,
-        searchName,
-        principalType,
-        existDepartment,
-        existCustomGroup,
-        existPerson,
-        existPosition,
-        userChoiseData,
-        selectField
-    } = toRefs(data);
 
     const props = defineProps({
         treeApiObj: {
@@ -132,6 +96,38 @@
             type: String
         }
     });
+
+    // 注入 字体对象
+    const fontSizeObj: any = inject('sizeObjInfo') || {};
+    // 注入 字体对象
+    const data = reactive({
+        activeIndex: '',
+        searchName: '',
+        principalType: 0,
+        existDepartment: false,
+        existCustomGroup: false,
+        existPerson: false,
+        existPosition: false,
+        userChoiseData: {},
+        selectField: [
+            {
+                fieldName: 'orgType',
+                value: ['Department', 'Position', 'customGroup']
+            }
+        ] //设置需要选择的字段
+    });
+
+    let {
+        activeIndex,
+        searchName,
+        principalType,
+        existDepartment,
+        existCustomGroup,
+        existPerson,
+        existPosition,
+        userChoiseData,
+        selectField
+    } = toRefs(data);
 
     //已经加载的tree数据
     const alreadyLoadTreeData = ref([]);
@@ -255,11 +251,29 @@
                 //加减签选择，只能选岗位
                 selectField.value[0].value = ['Position'];
             }
+            if (principalType.value == 6) {
+                //加减签选择，只能选岗位
+                selectField.value[0].value = ['Position'];
+            }
 
             //2.格式化数据
             await formatLazyTreeData(data, true);
 
-            return resolve(data); //返回一级节点数据
+            if (principalType.value == 6) {
+                await data?.map((item) => {
+                    let child = data.filter((resultItem) => item.parentId === resultItem.id);
+                    if (child.length == 0) {
+                        item.parentId = '';
+                    }
+                });
+                //根据搜索结果转换成tree结构显示出来
+                alreadyLoadTreeData.value = transformTreeBySearchResult(data);
+                nextTick(() => {
+                    y9TreeRef.value.setExpandAll();
+                });
+            } else {
+                return resolve(data); //返回一级节点数据
+            }
         } else {
             //1.获取数据
             let data = [];
@@ -269,7 +283,7 @@
             } else {
                 //如果没有则取接口数据
                 //整合参数
-                let params = {};
+                let params: any = {};
                 const childLevelParams = props.treeApiObj?.childLevel?.params;
                 if (childLevelParams) {
                     params = childLevelParams;
@@ -330,7 +344,6 @@
             //没有就获取获取已经懒加载过的数据，并且设置默认选中第一个节点、默认展开第一个节点，模拟点击第一个节点
 
             alreadyLoadTreeData.value = y9TreeRef.value.getLazyTreeData(); //获取已经懒加载过的数据
-
             nextTick(() => {
                 if (alreadyLoadTreeData.value.length > 0) {
                     y9TreeRef.value.setCurrentKey(alreadyLoadTreeData.value[0].id); //设置第一个节点为高亮节点
@@ -338,6 +351,8 @@
                     y9TreeRef.value.setExpandKeys([alreadyLoadTreeData.value[0].id]); //设置第一个节点展开
 
                     onNodeClick(alreadyLoadTreeData.value[0]); //模拟点击第一个节点
+                } else {
+                    onRefreshTree();
                 }
             });
         }
@@ -465,6 +480,35 @@
     @import '@/theme/global.scss';
     @import '@/theme/global-vars.scss';
     @import '@/theme/global.scss';
+
+    :deep(.el-menu--horizontal > .el-menu-item) {
+        height: 40px;
+        line-height: 40px;
+        font-size: v-bind('fontSizeObj.baseFontSize');
+    }
+
+    :deep(.el-menu--horizontal.el-menu) {
+        height: 40px;
+        margin-bottom: 5px;
+    }
+
+    :deep(.el-menu--horizontal > .el-menu-item.is-active) {
+        background-color: transparent;
+    }
+    .personTree_main {
+        height: auto;
+        overflow: hidden;
+        border-top: 0px solid #ccc;
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
+    .mytreediv {
+        height: calc(100% - 40px - 10px);
+        width: 100%;
+        overflow-y: auto;
+    }
 
     //过滤样式
     .select-tree-filter-div {

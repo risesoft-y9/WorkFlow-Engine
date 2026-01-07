@@ -1,8 +1,8 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-05-13 14:35:28
- * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-01-06 16:10:15
+ * @LastEditors: mengjuhua
  * @Description:  已阅件
 -->
 <template>
@@ -159,7 +159,8 @@
         },
         historyListRef: '',
         processInstanceId: '',
-        processDefinitionId: ''
+        processDefinitionId: '',
+        backList: false //是否是返回列表
     });
 
     let {
@@ -171,19 +172,35 @@
         dialogConfig,
         historyListRef,
         processInstanceId,
-        processDefinitionId
+        processDefinitionId,
+        backList
     } = toRefs(data);
 
     onMounted(() => {
         if (flowableStore.currentPage.indexOf('_back') > -1) {
             //返回列表获取当前页
             tableConfig.value.pageConfig.currentPage = flowableStore.currentPage.split('_')[0];
+            backList.value = true;
+            if (flowableStore.searchContent != '') {
+                //搜索内容不为空
+                filterConfig.value.itemList.forEach((items) => {
+                    //设置搜索内容
+                    if (items.key == 'name') {
+                        items.value = flowableStore.searchContent.name;
+                    }
+                });
+            }
         }
         flowableStore.$patch({
             //重新设置
             currentPage: tableConfig.value.pageConfig.currentPage.toString()
         });
-        reloadTable();
+        if (!backList.value || flowableStore.searchContent == '') {
+            //不是返回列表，或者搜索内容为空才执行
+            reloadTable();
+        } else {
+            backList.value = false;
+        }
     });
 
     //监听过滤条件改变时，获取列表数据
@@ -201,7 +218,11 @@
     );
 
     function refreshTable() {
-        currFilters.value.name = '';
+        currFilters.value.name = undefined;
+        filterConfig.value.itemList.forEach((items) => {
+            //设置搜索内容
+            items.value = '';
+        });
         filterRef.value.elTableFilterRef.onReset();
         tableConfig.value.pageConfig.currentPage = 1;
         tableConfig.value.pageConfig.pageSize = 20;
@@ -211,6 +232,7 @@
     }
 
     async function reloadTable() {
+        flowableStore.searchContent = '';
         tableConfig.value.loading = true;
         let page = tableConfig.value.pageConfig.currentPage;
         let rows = tableConfig.value.pageConfig.pageSize;
@@ -224,10 +246,13 @@
     }
 
     function openDoc(row) {
+        if (JSON.stringify(currFilters.value) != '{}') {
+            flowableStore.searchContent = currFilters.value;
+        }
         let query = {
             itemId: row.itemId,
             processInstanceId: row.processInstanceId,
-            status: 1,
+            itembox: 'doneChaoSong',
             id: row.id,
             listType: 'csDone'
         };

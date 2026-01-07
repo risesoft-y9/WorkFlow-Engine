@@ -1,6 +1,14 @@
+/*
+ * @Author: your name
+ * @Date: 2022-01-13 17:34:55
+ * @LastEditTime: 2025-12-04 14:06:43
+ * @LastEditors: mengjuhua
+ * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @FilePath: \y9-vue\y9vue-attendance\src\layouts\components\useTopMenuWidth.ts
+ */
 /**
  * 设置 IndexLayout TopMenuWidth
- * @author LiQingSong
+ * @author LiQingSong  
  */
 import { ComputedRef, nextTick, onMounted, ref, Ref, watch } from 'vue';
 

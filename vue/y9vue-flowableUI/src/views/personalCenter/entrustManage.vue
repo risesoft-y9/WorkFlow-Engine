@@ -62,7 +62,6 @@
 
 <script lang="ts" setup>
     import { computed, inject, onMounted, reactive } from 'vue';
-    import type { ElMessage, ElMessageBox } from 'element-plus';
     import {
         deleteEntrust,
         getEntrustList,

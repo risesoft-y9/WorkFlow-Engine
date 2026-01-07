@@ -2,8 +2,8 @@
  * @Author: qinman
  * @Date: 2023-11-10 09:17:03
  * @LastEditors: mengjuhua
- * @LastEditTime: 2025-09-30 10:14:24
- * @Description: 
+ * @LastEditTime: 2026-01-07 10:31:05
+ * @Description:
  * @FilePath: \vue\y9vue-flowableUI\src\views\opinion\opinionList.vue
 -->
 <template>
@@ -52,7 +52,7 @@
                                     >
                                     <font v-else>{{ item.userName }}[{{ item.positionName }}]</font>
                                 </font>
-                                {{ item.modifyDate }}
+                                {{ item.updateTime }}
                             </a>
                         </li>
                         <li v-else :key="item.id"
@@ -70,7 +70,7 @@
                                     >
                                     <font v-else>{{ item.userName }}[{{ item.positionName }}]</font>
                                 </font>
-                                {{ item.modifyDate }}
+                                {{ item.updateTime }}
                             </a>
                         </li>
                     </template>
@@ -135,7 +135,7 @@
                                 :style="{ fontSize: fontSizeObj.smallFontSize }"
                                 size="small"
                                 type="primary"
-                                @click="saveOrUpdateOpinion"
+                                @click="debouncedSave"
                                 >{{ $t('保存') }}
                             </el-button>
                             <el-button :style="{ fontSize: fontSizeObj.smallFontSize }" size="small" @click="cancel">
@@ -157,7 +157,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, defineProps, inject, reactive } from 'vue';
+    import { computed, inject, reactive } from 'vue';
     import opinionHistory from '@/views/opinion/opinionHistory.vue';
     import {
         commonSentencesList,
@@ -172,6 +172,7 @@
     import { useRoute } from 'vue-router';
     import phoneImg from '@/assets/phone.png';
     import { useI18n } from 'vue-i18n';
+    import { debounce__ } from '@/utils';
 
     const { t } = useI18n();
     // 注入 字体对象
@@ -353,7 +354,7 @@
                 opinionContent.value = '已阅。';
             }
         }
-        saveOrUpdateOpinion();
+        debouncedSave();
         let data = {};
         data.clickType = row.executeAction;
         data.type = row.executeAction;
@@ -452,9 +453,11 @@
     function saveChange() {
         //保存未保存的意见内容
         if (opinionContent.value != oldContent.value) {
-            saveOrUpdateOpinion();
+            debouncedSave();
         }
     }
+
+    const debouncedSave = debounce__(saveOrUpdateOpinion, 500);
 
     function saveOrUpdateOpinion() {
         if (opinionId.value == '') {

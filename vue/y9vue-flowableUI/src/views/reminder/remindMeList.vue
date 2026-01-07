@@ -1,10 +1,10 @@
 <!--
  * @Author: your name
  * @Date: 2021-05-14 09:31:03
- * @LastEditTime: 2021-11-11 10:54:33
- * @LastEditors: zhangchongjie
+ * @LastEditTime: 2025-12-26 16:52:28
+ * @LastEditors: mengjuhua
  * @Description: In User Settings Edit
- * @FilePath: \workspace-y9boot-9.5-vue\y9vue-flowableUI\src\views\flowableUI\reminder\remindMeList.vue
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\views\reminder\remindMeList.vue
 -->
 <template>
     <y9Table
@@ -28,7 +28,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject } from 'vue';
+    import { computed, inject, reactive, ref } from 'vue';
     import { reminderMeList, setReadTime } from '@/api/flowableUI/reminder';
     import { useI18n } from 'vue-i18n';
 
@@ -43,6 +43,7 @@
     const data = reactive({
         multipleSelection: [],
         reminderTableConfig: {
+            rowKey: 'taskId',
             columns: [
                 { title: '', type: 'selection', width: 50, fixed: 'left' },
                 { title: computed(() => t('序号')), type: 'index', width: '60' },

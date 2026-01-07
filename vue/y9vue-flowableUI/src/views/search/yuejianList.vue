@@ -1,7 +1,7 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-05-13 14:59:28
+ * @LastEditTime: 2024-06-14 11:46:28
  * @LastEditors: zhangchongjie
  * @Description:  阅件
 -->
@@ -153,7 +153,7 @@
                     type: 'search',
                     key: 'name',
                     props: {
-                        placeholder: computed(() => t('请输入标题或者文号搜索'))
+                        placeholder: computed(() => t('请输入标题搜索'))
                     },
                     span: settingStore.device === 'mobile' ? 6 : 5
                 },
@@ -228,7 +228,8 @@
         },
         historyListRef: '',
         processInstanceId: '',
-        processDefinitionId: ''
+        processDefinitionId: '',
+        backList: false //是否是返回列表
     });
 
     let {
@@ -240,21 +241,12 @@
         dialogConfig,
         historyListRef,
         processInstanceId,
-        processDefinitionId
+        processDefinitionId,
+        backList
     } = toRefs(data);
 
-    onMounted(() => {
-        if (flowableStore.currentPage.indexOf('_back') > -1) {
-            //返回列表获取当前页
-            tableConfig.value.pageConfig.currentPage = flowableStore.currentPage.split('_')[0];
-        }
-        flowableStore.$patch({
-            //重新设置
-            currentPage: tableConfig.value.pageConfig.currentPage.toString()
-        });
-        reloadTable();
+    onMounted(async () => {
         itemList.value = flowableStore.itemList;
-
         filterConfig.value.itemList.forEach((items) => {
             if (items.type == 'select' && items.key == 'itemId') {
                 items.props.options.push({ label: computed(() => t('全部')), value: '' });
@@ -265,6 +257,31 @@
                 return items.props.options;
             }
         });
+
+        if (flowableStore.currentPage.indexOf('_back') > -1) {
+            //返回列表获取当前页
+            tableConfig.value.pageConfig.currentPage = flowableStore.currentPage.split('_')[0];
+            backList.value = true;
+            if (flowableStore.searchContent != '') {
+                //搜索内容不为空
+                await filterConfig.value.itemList.forEach((items) => {
+                    //设置搜索内容
+                    if (items.key != undefined && flowableStore.searchContent[items.key] != undefined) {
+                        items.value = flowableStore.searchContent[items.key];
+                    }
+                });
+                currFilters.value = flowableStore.searchContent;
+            }
+        }
+
+        flowableStore.$patch({
+            //重新设置
+            currentPage: tableConfig.value.pageConfig.currentPage.toString()
+        });
+
+        setTimeout(() => {
+            reloadTable();
+        }, 100);
     });
 
     //监听过滤条件改变时，获取列表数据
@@ -282,10 +299,19 @@
     );
 
     function selectchange(val) {
-        reloadTable();
+        if (!backList.value) {
+            //不是返回列表才执行
+            reloadTable();
+        }
     }
 
-    function refreshTable() {
+    async function refreshTable() {
+        await filterConfig.value.itemList.forEach((items) => {
+            //设置搜索内容
+            items.value = '';
+            currFilters.value[items.key] = '';
+        });
+        await filterRef.value.elTableFilterRef.onReset();
         filterRef.value.elTableFilterRef.onReset();
         tableConfig.value.pageConfig.currentPage = 1;
         tableConfig.value.pageConfig.pageSize = 20;
@@ -295,6 +321,8 @@
     }
 
     async function reloadTable() {
+        backList.value = false;
+        flowableStore.searchContent = '';
         tableConfig.value.loading = true;
         let page = tableConfig.value.pageConfig.currentPage;
         let rows = tableConfig.value.pageConfig.pageSize;
@@ -316,6 +344,9 @@
     }
 
     async function openDoc(row) {
+        if (JSON.stringify(currFilters.value) != '{}') {
+            flowableStore.searchContent = currFilters.value;
+        }
         let link = currentrRute.matched[0].path;
         let query = {
             itemId: row.itemId,

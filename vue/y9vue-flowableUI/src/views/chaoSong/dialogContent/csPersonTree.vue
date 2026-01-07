@@ -1,3 +1,10 @@
+<!--
+ * @Author: zhangchongjie
+ * @Date: 2022-01-10 18:09:52
+ * @LastEditTime: 2026-01-07 11:41:18
+ * @LastEditors: mengjuhua
+ * @Description:  抄送选择成员树
+-->
 <template>
     <el-container class="personTree" style="height: 525px">
         <el-header style="height: 36px; padding: 0">
@@ -10,20 +17,10 @@
                 @keyup.enter.native="search()"
             ></el-input>
         </el-header>
-        <el-main
-            style="
-                height: auto;
-                overflow: hidden;
-                border-top: 0px solid #ccc;
-                border-left: 0;
-                border-right: 0;
-                border-bottom: 0;
-            "
-            width="45%"
-        >
+        <el-main class="personTree_main" width="45%">
             <el-menu ref="csMenu" class="el-menu-demo" default-active="2" mode="horizontal" @select="handleSelect">
                 <el-menu-item index="2">{{ $t('部门') }}</el-menu-item>
-                <el-menu-item index="7">{{ $t('用户组') }}</el-menu-item>
+                <el-menu-item index="7" v-if="existCustomGroup">{{ $t('用户组') }}</el-menu-item>
             </el-menu>
             <div class="mytreediv" style="width: 100%; height: 91%; overflow-y: auto">
                 <y9Tree
@@ -34,6 +31,8 @@
                     :lazy="lazy"
                     :load="onTreeLazyLoad"
                     :nodeDblclick="true"
+                    :expandOnClickNode="true"
+                    :defaultExpandAll="true"
                     showCheckbox
                     @node-click="onNodeClick"
                     @node-dblclick="nodeDblclick"
@@ -52,7 +51,7 @@
 <script lang="ts" setup>
     import { Search } from '@element-plus/icons-vue';
     import { $dataType } from '@/utils/object'; //工具类
-    import { reactive, ref } from 'vue';
+    import { reactive, ref, toRefs } from 'vue';
     import { findCsUser, findCsUserSearch } from '@/api/flowableUI/personTree';
     // 注入 字体对象
     const data = reactive({
@@ -63,10 +62,11 @@
                 fieldName: 'orgType',
                 value: ['Department', 'Position', 'customGroup']
             }
-        ] //设置需要选择的字段
+        ], //设置需要选择的字段
+        existCustomGroup: false
     });
 
-    let { searchName, principalType, selectField } = toRefs(data);
+    let { searchName, principalType, selectField, existCustomGroup } = toRefs(data);
 
     const props = defineProps({
         treeApiObj: {
@@ -373,9 +373,31 @@
 </script>
 
 <style lang="scss" scoped>
-    @import '@/theme/global.scss';
-    @import '@/theme/global-vars.scss';
-    @import '@/theme/global.scss';
+    @import '@/theme/global';
+    @import '@/theme/global-vars';
+    @import '@/theme/global';
+
+    :deep(.el-menu--horizontal > .el-menu-item) {
+        height: 40px;
+        line-height: 40px;
+    }
+
+    :deep(.el-menu--horizontal.el-menu) {
+        height: 40px;
+        margin-bottom: 5px;
+    }
+
+    :deep(.el-menu--horizontal > .el-menu-item.is-active) {
+        background-color: transparent;
+    }
+    .personTree_main {
+        height: auto;
+        overflow: hidden;
+        border-top: 0px solid #ccc;
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
+    }
 
     //过滤样式
     .select-tree-filter-div {

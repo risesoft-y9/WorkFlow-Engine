@@ -4,8 +4,8 @@
  * @Author: zhangchongjie
  * @Date: 2022-10-27 11:46:53
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-07-13 15:37:44
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9boot-9.6-vue\y9vue-flowableUI\src\views\index\work.vue
+ * @LastEditTime: 2024-07-12 11:44:50
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-flowableUI\src\views\index\work.vue
 -->
 <template>
     <el-container></el-container>
@@ -40,13 +40,16 @@
                     openDoc('todo', res.data.processSerialNumber, res.data.processInstanceId, taskId);
                 }
             } else if (type == 'fromHistory') {
+                //关联文件跳转过来
                 let processInstanceId = currentrRute.query.processInstanceId;
                 let res = await getTaskOrProcessInfo('', processInstanceId, type);
                 if (res.data.processInstanceId == '') {
                     //流程不存在,打开待办列表
                     openTodo();
                 } else {
-                    openDoc('done', res.data.processSerialNumber, res.data.processInstanceId, '');
+                    let itembox = currentrRute.query?.itembox;
+                    let taskId = currentrRute.query?.taskId;
+                    openDoc(itembox, res.data.processSerialNumber, res.data.processInstanceId, taskId);
                 }
             } else if (type == 'fromCplane') {
                 let processInstanceId = currentrRute.query.processInstanceId;

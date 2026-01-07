@@ -1,11 +1,11 @@
 <!--
- * @Descripttion: 
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-06-10 16:34:51
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-05-13 09:21:31
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-flowableUI\src\views\flowchart\index.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-25 09:53:50
+ * @Descripttion: 流程图
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\views\flowchart\index.vue
 -->
 
 <template>
@@ -69,7 +69,7 @@
     import moment from 'moment';
     import BpmnViewer from 'bpmn-js/lib/Viewer';
     import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
-    import { defineProps, onMounted, reactive } from 'vue';
+    import { onMounted, reactive, toRefs } from 'vue';
     import { getFlowChart, getTaskList } from '@/api/flowableUI/flowchart';
     import { useSettingStore } from '@/store/modules/settingStore';
 

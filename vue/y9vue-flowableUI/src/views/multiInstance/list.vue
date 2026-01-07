@@ -1,3 +1,12 @@
+<!-- 
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2024-04-23 15:08:38
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-26 16:38:22
+ * @Descripttion: 加减签
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\views\multiInstance\list.vue
+-->
 <template>
     <div
         v-loading="loading"
@@ -59,9 +68,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, defineProps, inject, reactive } from 'vue';
-    import type { ElMessage, ElMessageBox } from 'element-plus';
-    import userChoise from '@/views/workForm/userChoise.vue';
+    import { computed, inject, reactive, toRefs } from 'vue';
+    import userChoise from '@/views/workForm/dialogContent/userChoise.vue';
     import {
         getAddOrDeleteMultiInstance,
         removeExecution,

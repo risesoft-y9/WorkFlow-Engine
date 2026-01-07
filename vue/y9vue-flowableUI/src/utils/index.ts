@@ -100,7 +100,7 @@ export const debounce__ = (fun: Function, wait: Number): Function => {
  * @returns {String}
  * @author Yehaifeng
  */
-export const debounce = (fun: Function, wait: number): Function => {
+export const debounce = (fun: Function, wait: Number): Function => {
     var timer; //维护全局纯净，借助闭包来实现
     return function () {
         if (timer) {
@@ -112,6 +112,111 @@ export const debounce = (fun: Function, wait: number): Function => {
         }, wait);
     };
 };
+
+/**
+ * 异步防抖函数
+ * 用于包装异步函数，避免频繁调用导致的性能问题
+ * 使用示例: debounce(fun, wait)
+ *   fun: 事件处理函数
+ *   wait: 延迟时间(毫秒)
+ *
+ * @param {Function} fun - 需要防抖处理的函数
+ * @param {number} wait - 延迟执行的毫秒数
+ * @returns {Function} 返回一个防抖包装后的函数，该函数返回Promise
+ *
+ * @example
+ * const debouncedSave = asyncDebounce(saveFunction, 500);
+ * debouncedSave().then(result => {
+ *   // 处理结果
+ * }).catch(error => {
+ *   // 处理错误
+ * });
+ *
+ * @author qinman
+ */
+export const asyncDebounce = (fun: Function, wait: number): Function => {
+    let timeout;
+    return function (...args) {
+        return new Promise((resolve, reject) => {
+            if (timeout) {
+                clearTimeout(timeout);
+            }
+            timeout = setTimeout(() => {
+                Promise.resolve(fun.apply(this, args)).then(resolve).catch(reject);
+            }, wait);
+        });
+    };
+};
+
+/**
+ * 获取url中对应参数的值
+ * @param  url        链接
+ * @param  queryName  参数名
+ * @returns String
+ * @author Y9
+ */
+export function getQueryValue(url, queryName) {
+    if (url.indexOf('?') === -1) {
+        return null;
+    }
+    let reg = new RegExp('(^|&)' + queryName + '=([^&]*)(&|$)', 'i');
+    let r = url.split('?')[1].match(reg);
+    if (r != null) {
+        return decodeURI(r[2]);
+    } else {
+        return null;
+    }
+}
+
+/**
+ * 节流函数
+ * 使用示例 throttle(fn, threshhold)  fn:事件处理函数， threshhold:时间阀值
+ */
+export function throttle(fn: Function, threshhold: Number, scope) {
+    threshhold || (threshhold = 250); // 默认阈值为250毫秒
+    var last, timer;
+    return function () {
+        var context = scope || this;
+
+        var now = +new Date(),
+            args = arguments;
+        if (last && now < last + threshhold) {
+            // 如果距离上次执行的时间小于设定的阈值，则利用setTimeout延迟执行
+            clearTimeout(timer);
+            timer = setTimeout(function () {
+                last = now;
+                fn.apply(context, args);
+            }, threshhold);
+        } else {
+            last = now;
+            fn.apply(context, args);
+        }
+    };
+}
+
+/**
+ * 防抖函数&节流函数 使用示例
+ */
+// function updateScreen() {
+//     console.log('更新屏幕');
+// }
+
+// var throttledUpdateScreen = throttle(updateScreen, 1000);
+/**
+ * 生成guid函数
+ * 使用示例 uuid("xxxx-yyyy-xx-yy")
+ * @params guidFormat 传入guid字符串的输出模版 传入 xx-yy 输出 e0-6k
+ * @returns {String}
+ * @author Yehaifeng
+ */
+export function uuid(guidFormat = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx') {
+    let guid = guidFormat.replace(/[xy]/g, function (c) {
+        var r = (Math.random() * 16) | 0,
+            v = c == 'x' ? r : (r & 0x3) | 0x8;
+        return v.toString(16);
+    });
+    return guid;
+}
 
 /**字体像素设置函数 */
 export function getConcreteSize(fontSize: string, actualValue: number) {

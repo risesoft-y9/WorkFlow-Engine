@@ -1,16 +1,22 @@
+<!-- 
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2024-04-23 15:08:38
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 09:47:09
+ * @Descripttion: 表单信息
+ * @FilePath: \vue\y9vue-flowableUI\src\views\workForm\y9Form.vue
+-->
 <template>
     <el-container
         v-loading="loading"
         :element-loading-text="$t('正在保存中')"
         :style="style"
-        class="newForm-container"
+        class="y9Form-container"
         element-loading-background="rgba(0, 0, 0, 0.8)"
         element-loading-spinner="el-icon-loading"
     >
-        <el-aside
-            class="formaside"
-            style="width: 80%; height: auto; overflow: auto; padding: 1% 0% 2% 0%; margin-left: 10%"
-        >
+        <el-aside class="formaside">
             <fm-generate-form
                 id="printTest"
                 ref="generateForm"
@@ -25,26 +31,23 @@
 </template>
 
 <script lang="ts" setup>
-    import { defineProps, inject, nextTick, onBeforeUnmount, onMounted, reactive } from 'vue';
-    import { ElMessage } from 'element-plus';
+    import { inject, nextTick, onBeforeUnmount, onMounted, reactive, ref, toRefs } from 'vue';
     import { EventBus } from '@/components/formMaking/util/event-bus';
     import { saveProcessParam } from '@/api/flowableUI/processParam';
     import { saveDraft } from '@/api/flowableUI/draft';
     import { getBindOpinionFrame } from '@/api/flowableUI/opinion';
+    import { findByCustomNumber, getTempNumber, saveNumberString } from '@/api/flowableUI/organWord';
     import {
-        delChildTableRow,
         getAllFieldPerm,
-        getChildTableData,
+        getCommonDayOrHour,
         getDayOrHour,
         getFormData,
-        getFormInitData,
-        getFormJson,
+        getFormFieldByFormId,
         getOptionValueList,
-        saveChildTableData,
         saveFormData
     } from '@/api/flowableUI/form';
+    import { formJsonDataList, initFormJsonData } from '../data';
     import { useFlowableStore } from '@/store/modules/flowableStore';
-    import y9_storage from '@/utils/storage';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
 
@@ -55,28 +58,41 @@
         style = 'height:calc(100vh - 260px) !important; width: 100%;';
     }
     const props = defineProps({
-        basicData: Object,
-        processInstanceId: String
+        basicData: {
+            type: Object,
+            default() {
+                return {};
+            }
+        },
+        processInstanceId: String,
+        initFormData: {
+            type: Object,
+            default() {
+                return {};
+            }
+        }
     });
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo') || {};
 
-    const emits = defineEmits(['refreshCount']);
+    const emits = defineEmits(['refreshCount', 'fromBindValue', 'oneClickSet']);
     const flowableStore = useFlowableStore();
+
+    let generateForm = ref();
+
     const data = reactive({
-        generateForm: '',
         basicData: props.basicData,
         loading: false,
-        formJson: { list: [], config: {} },
+        formJson: { list: [], config: { size: 'medium' } },
         formId: '',
         edit: true, //表单是否可编辑
         initDataUrl: '', //表单初始化数据路径
         msgType: false, //是否提示保存成功
-        bindOpinionFrameList: [], //绑定意见框列表
+        bindOpinionFrameList: [] as any, //绑定意见框列表
         remoteFuncs: {
             getOptionData(resolve, optionInfo) {
                 //动态获取数据字典
-                if (optionInfo.indexOf('(') > -1) {
+                if (optionInfo != undefined && optionInfo.indexOf('(') > -1) {
                     let str = optionInfo.split('(')[1];
                     let type = str.slice(0, str.length - 1); //数据字典类型标识
                     getOptionValueList(type).then((res) => {
@@ -101,11 +117,11 @@
         },
         fileRequired: false, //附件必传
         fileRequired_change: false, //附件必传是否修改
-        fileMessage: '' //附件必传提醒内容
+        fileMessage: '', //附件必传提醒内容
+        formFieldUsed: [] as any //表单字段内容使用
     });
 
     let {
-        generateForm,
         basicData,
         loading,
         formJson,
@@ -117,10 +133,21 @@
         remoteFuncs,
         fileRequired,
         fileMessage,
-        fileRequired_change
+        fileRequired_change,
+        formFieldUsed
     } = toRefs(data);
 
     onMounted(() => {
+        EventBus.$on('opinion_Click', (data) => {
+            //监听意见框点击事件
+            nextTick(() => {
+                console.log('clickType', data.clickType);
+                if (data.clickType != 'noAction') {
+                    emits('oneClickSet', data);
+                }
+            });
+        });
+
         EventBus.$on('update_number', (data) => {
             //监听编号修改,设置表单编号
             nextTick(() => {
@@ -130,24 +157,6 @@
                 setTimeout(() => {
                     saveY9Form(false); //shoutongzhicheng-gongxiaoshe使用，更新编号，保存表单
                 }, 100);
-            });
-        });
-        EventBus.$on('table_removeRow', (data) => {
-            //监听子表删除行事件
-            nextTick(() => {
-                if (data.guid != '') {
-                    delChildTableRow(formId.value, data.tableId, data.guid).then((res) => {
-                        if (!res.success) {
-                            ElMessage({
-                                type: 'error',
-                                message: t('删除子表数据失败'),
-                                offset: 65,
-                                appendTo: '.newForm-container'
-                            });
-                            initChildTable(data.tableName);
-                        }
-                    });
-                }
             });
         });
         EventBus.$on('y9_changeDate', (data) => {
@@ -161,6 +170,23 @@
                     getDayOrHour(data).then((res) => {
                         if (res.success) {
                             generateForm.value.setData({ leaveDuration: res.data });
+                        }
+                    });
+                }
+            });
+        });
+        EventBus.$on('y9_changeCommonDate', (data) => {
+            //有生云，请休假监听日期变化
+            nextTick(() => {
+                if (
+                    basicData.value.itembox == 'add' ||
+                    basicData.value.itembox == 'draft' ||
+                    basicData.value.taskDefKey == 'faqiren' ||
+                    basicData.value.taskDefKey == 'shenqingren'
+                ) {
+                    getCommonDayOrHour(data).then((res) => {
+                        if (res.success) {
+                            generateForm.value.setData({ shichang: res.data });
                         }
                     });
                 }
@@ -193,22 +219,56 @@
                 fileRequired_change.value = true;
             });
         });
+        EventBus.$on('number_DblClick', (data) => {
+            //监听编号框点击事件
+            nextTick(() => {
+                findByCustomNumber(
+                    basicData.value.itemId,
+                    basicData.value.processDefinitionId,
+                    basicData.value.taskDefKey
+                ).then((res) => {
+                    if (res.success) {
+                        if (res.data.length > 0) {
+                            if (res.data[0].hasPermission) {
+                                getTempNumber(basicData.value.itemId, res.data[0].custom).then((res) => {
+                                    if (res.data.success) {
+                                        let obj = '{"' + data.tableField + '":"' + res.data.tempNumber + '"}';
+                                        let resdata = JSON.parse(obj);
+                                        generateForm.value.setData(resdata);
+                                        //generateForm.value.setData({ 'bianhao' : res.data.tempNumber});
+                                    } else {
+                                        ElMessage({
+                                            type: 'error',
+                                            message: t(res.data.msg),
+                                            appendTo: '.y9Form-container'
+                                        });
+                                    }
+                                });
+                            } else {
+                                console.log('当前事项流程任务节点未绑定编号配置或者当前人没有权限编号');
+                            }
+                        }
+                    }
+                });
+            });
+        });
     });
 
     onBeforeUnmount(() => {
+        EventBus.$off('opinion_Click');
         EventBus.$off('file_required');
         EventBus.$off('table_removeRow');
         EventBus.$off('update_number');
         EventBus.$off('y9_changeDate');
+        EventBus.$off('y9_changeCommonDate');
         EventBus.$off('update_personName');
+        EventBus.$off('number_DblClick');
     });
 
     defineExpose({
         show,
         signOpinion,
-        saveChangeOpinion,
         saveY9Form,
-        saveChildTable,
         saveY9ProcessParam,
         saveY9Draft,
         saveForm,
@@ -216,145 +276,125 @@
         setNumber
     });
 
-    function show(fId) {
+    async function show(fId, oldFormId) {
         edit.value = true;
         formId.value = fId;
-        getFormJson(fId).then((res) => {
-            //表单显示
-            if (res.success) {
-                if (res.data != null) {
-                    formJson.value = JSON.parse(res.data);
+        basicData.value.formId = fId;
+        let formJsonData = formJsonDataList.value.find((item) => item.formId === formId.value);
+        if (formJsonData == undefined) {
+            await initFormJsonData(formId.value);
+        }
+        formJsonData = formJsonDataList.value.find((item) => item.formId === formId.value);
+        formJson.value = formJsonData.formJson;
+        // initDataUrl.value = formJson.value?.config.initDataUrl != undefined ? formJson.value.config.initDataUrl : '';
+        nextTick(() => {
+            generateForm.value.refresh();
+            let Promise = generateForm.value.getData(false);
+            Promise.then(async function (value) {
+                let getFormDataRes = await getFormData(fId, basicData.value.processSerialNumber);
+                let formData = getFormDataRes.data;
+                let initData = props.initFormData;
+                if (Object.keys(formData).length > 0) {
+                    //数据库有数据
+                    for (let key of Object.keys(value)) {
+                        if (value[key] != undefined && value[key].toString().indexOf('$_') > -1) {
+                            let key0 = value[key].toString().slice(2);
+                            if (formData[key] == undefined || formData[key] == '') {
+                                //表单数据为空,设置初始化数据
+                                formData[key] = initData[key0] == undefined ? '' : initData[key0];
+                            }
+                        }
+                        if (value[key] != undefined && value[key].toString() == '2000-01-01') {
+                            //日期初始化数据
+                            let Options = generateForm.value.getOptions(key);
+                            if (Options != null) {
+                                let defaultValueField = Options.defaultValueField;
+                                if (defaultValueField != undefined && defaultValueField.indexOf('$_') > -1) {
+                                    let key0 = defaultValueField.slice(2);
+                                    if (formData[key] == undefined || formData[key] == '') {
+                                        //表单数据为空,设置初始化数据
+                                        formData[key] = initData[key0] == undefined ? '' : initData[key0];
+                                    }
+                                }
+                            }
+                        }
+                        // value[key] = formData[key] != '' ? formData[key] : value[key]; //设置前置表单数据
+                    }
+                    generateForm.value.setData(formData); //设置数据
+                } else {
+                    //数据库没有数据
+                    for (let key of Object.keys(value)) {
+                        if (value[key] != undefined && value[key].toString().indexOf('$_') > -1) {
+                            let key0 = value[key].toString().slice(2);
+                            value[key] = initData[key0] == undefined ? '' : initData[key0];
+                        }
+                        if (value[key] != undefined && value[key].toString() == '2000-01-01') {
+                            //日期初始化数据
+                            let Options = generateForm.value.getOptions(key);
+                            if (Options != null) {
+                                let defaultValueField = Options.defaultValueField;
+                                if (defaultValueField != undefined && defaultValueField.indexOf('$_') > -1) {
+                                    let key0 = defaultValueField.slice(2);
+                                    value[key] = initData[key0] == undefined ? '' : initData[key0];
+                                }
+                            }
+                        }
+                    }
+                    value.guid = basicData.value.processSerialNumber;
+                    value.processInstanceId = basicData.value.processSerialNumber;
+                    await generateForm.value.setData(value);
                 }
-                initDataUrl.value =
-                    formJson.value?.config.initDataUrl != undefined ? formJson.value.config.initDataUrl : '';
+            }).catch(() => {});
+            setTimeout(() => {
+                //加载意见框,附件列表
+                generateForm.value.disabledAll(true); //默认禁用表单所有字段
+                if (!formJson.value.config.permissionForm) {
+                    //非权限表单
+                    let positionId = sessionStorage.getItem('positionId');
+                    if (basicData.value.itembox == 'draft' || basicData.value.itembox == 'add') {
+                        //草稿启用表单所有字段
+                        generateForm.value.disabledAll(false);
+                    }
+                    if (
+                        basicData.value.itembox == 'todo' &&
+                        basicData.value.startTaskDefKey.indexOf(basicData.value.taskDefKey) > -1 &&
+                        basicData.value.startor == positionId
+                    ) {
+                        //起草节点可编辑
+                        generateForm.value.disabledAll(false); //启用表单所有字段
+                    }
+                } else {
+                    //权限表单
+                    if (
+                        basicData.value.itembox == 'draft' ||
+                        basicData.value.itembox == 'todo' ||
+                        basicData.value.itembox == 'add'
+                    ) {
+                        initFieldPerm(); //字段填写权限
+                    }
+                }
+                initOpinion();
+                // initNumber(res1.data);
+                initFileList();
+                // initAttachmentFileList();
                 nextTick(() => {
-                    generateForm.value.refresh();
-                    if (basicData.value.itembox == 'add' && basicData.value.formType == undefined) {
-                        generateForm.value.setData({
-                            guid: basicData.value.processSerialNumber,
-                            processInstanceId: basicData.value.processSerialNumber
-                        });
-                        let Promise = generateForm.value.getData(false);
-                        Promise.then(function (value) {
-                            getFormInitData(initDataUrl.value, basicData.value.processSerialNumber).then((res) => {
-                                //表单初始化数据：1.在这里初始化数据，2.在表单设计里通过表单数据源初始化数据
-                                let initData = res.data;
-                                for (let key of Object.keys(value)) {
-                                    if (value[key] != undefined && value[key].toString().indexOf('$_') > -1) {
-                                        let key0 = value[key].toString().slice(2);
-                                        value[key] = initData[key0] == undefined ? '' : initData[key0];
-                                    }
-                                }
-                                value.guid = basicData.value.processSerialNumber;
-                                value.processInstanceId = basicData.value.processSerialNumber;
-                                generateForm.value.setData(value);
-                            });
-                        }).catch(() => {});
-                        setTimeout(() => {
-                            //加载意见框,附件列表
-                            if (formJson.value.config.permissionForm) {
-                                //权限表单，默认开始禁用所有字段
-                                generateForm.value.disabledAll(true);
+                    initPersonTree();
+                });
+
+                // initPicture(res1.data);
+
+                //获取表单字段，获取字段内容使用情况
+                getFormFieldByFormId(basicData.value.formId).then((res) => {
+                    if (res.success && res.data) {
+                        formFieldUsed.value = [];
+                        for (let item of res.data) {
+                            if (item.contentUsedFor != '' && item.contentUsedFor != null) {
+                                formFieldUsed.value.push(item);
                             }
-                            initFieldPerm(); //字段填写权限
-                            initOpinion();
-                            initFileList();
-                            initWord();
-                            initPersonTree();
-                            // initNumber();
-                            // initChildTable();
-                        }, 500);
-                    } else {
-                        getFormData(fId, basicData.value.processSerialNumber).then((res1) => {
-                            //表单数据
-                            let formData = res1.data;
-                            if (basicData.value.itembox == 'add') {
-                                //前置表单事项走此方法
-                                let Promise = generateForm.value.getData(false);
-                                Promise.then(function (value) {
-                                    getFormInitData(initDataUrl.value, basicData.value.processSerialNumber).then(
-                                        (res) => {
-                                            let initData = res.data;
-                                            for (let key of Object.keys(value)) {
-                                                if (
-                                                    value[key] != undefined &&
-                                                    value[key].toString().indexOf('$_') > -1
-                                                ) {
-                                                    let key0 = value[key].toString().slice(2);
-                                                    value[key] = initData[key0] == undefined ? '' : initData[key0];
-                                                }
-                                                value[key] = formData[key] != '' ? formData[key] : value[key]; //设置前置表单数据
-                                            }
-                                            value.guid = basicData.value.processSerialNumber;
-                                            value.processInstanceId = basicData.value.processSerialNumber;
-                                            generateForm.value.setData(value); //初始化数据
-                                        }
-                                    );
-                                }).catch(() => {});
-                            } else {
-                                let data = res1.data;
-                                for (let key of Object.keys(data)) {
-                                    //处理多选框
-                                    if (
-                                        data[key] != undefined &&
-                                        data[key] != '' &&
-                                        data[key].startsWith('[') &&
-                                        data[key].endsWith(']')
-                                    ) {
-                                        if (data[key] == '[]') {
-                                            data[key] = [];
-                                        } else {
-                                            let str = data[key].split('[')[1].split(']')[0];
-                                            data[key] = str.split(', ');
-                                        }
-                                    }
-                                }
-                                generateForm.value.setData(data);
-                            }
-                            setTimeout(() => {
-                                //加载意见框,附件列表
-                                generateForm.value.disabledAll(true); //默认禁用表单所有字段
-                                if (!formJson.value.config.permissionForm) {
-                                    //非权限表单
-                                    let positionId = y9_storage.getObjectItem('positionId');
-                                    if (basicData.value.itembox == 'draft') {
-                                        //草稿启用表单所有字段
-                                        generateForm.value.disabledAll(false);
-                                    }
-                                    if (
-                                        basicData.value.itembox == 'todo' &&
-                                        basicData.value.startTaskDefKey.indexOf(basicData.value.taskDefKey) > -1 &&
-                                        basicData.value.startor == positionId
-                                    ) {
-                                        //起草节点可编辑
-                                        generateForm.value.disabledAll(false); //启用表单所有字段
-                                    }
-                                }
-                                if (basicData.value.itembox == 'add') {
-                                    //前置表单事项走此方法
-                                    if (formJson.value.config.permissionForm) {
-                                        //权限表单，默认开始禁用所有字段
-                                        generateForm.value.disabledAll(true);
-                                    } else {
-                                        generateForm.value.disabledAll(false);
-                                    }
-                                    initFieldPerm(); //字段填写权限
-                                }
-                                if (basicData.value.itembox == 'draft' || basicData.value.itembox == 'todo') {
-                                    initFieldPerm(); //字段填写权限
-                                }
-                                initOpinion();
-                                // initNumber(res1.data);
-                                initFileList();
-                                initWord();
-                                initPersonTree();
-                                initChildTable();
-                                initPicture(res1.data);
-                            }, 500);
-                        });
+                        }
                     }
                 });
-            }
+            }, 500);
         });
     }
 
@@ -366,7 +406,6 @@
             processDefinitionKey: basicData.value.processDefinitionKey,
             processSerialNumber: basicData.value.processSerialNumber,
             taskDefKey: basicData.value.taskDefKey,
-            activitiUser: basicData.value.activitiUser,
             processInstanceId: basicData.value.processInstanceId,
             taskId: basicData.value.taskId
         };
@@ -374,28 +413,15 @@
             if (res.success) {
                 bindOpinionFrameList.value = res.data;
                 for (let item of bindOpinionFrameList.value) {
-                    let customOpinions = generateForm.value.getComponent('custom_opinion@' + item.opinionFrameMark);
+                    let customOpinions = generateForm.value.getComponent(
+                        'custom_opinion@' + (item.opinionFrameMark != undefined ? item.opinionFrameMark : item)
+                    );
                     if (customOpinions != null) {
                         customOpinions.initOpinion(data);
                     }
                 }
             }
         });
-    }
-
-    function initWord() {
-        //加载正文
-        let data = {
-            itemId: basicData.value.itemId,
-            itembox: basicData.value.itembox,
-            processSerialNumber: basicData.value.processSerialNumber,
-            processInstanceId: basicData.value.processInstanceId,
-            taskId: basicData.value.taskId
-        };
-        let customWord = generateForm.value.getComponent('custom_word');
-        if (customWord != null) {
-            customWord.initWord(data);
-        }
     }
 
     function initPicture(formData) {
@@ -492,6 +518,34 @@
         }
     }
 
+    function initAttachmentFileList() {
+        //加载附件框
+        let data = {
+            itembox: basicData.value.itembox,
+            processSerialNumber: basicData.value.processSerialNumber,
+            processInstanceId: basicData.value.processInstanceId,
+            taskId: basicData.value.taskId
+        };
+        let customFile = generateForm.value.getComponent('custom_attachmentFile');
+        if (customFile != null) {
+            if (!fileRequired_change.value) {
+                //附件必填验证没有修改过
+                for (let item of formJson.value.list) {
+                    if ('custom-attachmentFile' == item.el) {
+                        if (item.rules[0]?.required) {
+                            //附件是否必填
+                            fileRequired.value = true;
+                            fileMessage.value = item.rules[0].message;
+                        }
+                    }
+                }
+            }
+            console.log('custom_attachmentFile', customFile);
+
+            customFile.initAttachmentFileList(data);
+        }
+    }
+
     function initPersonTree() {
         //加载人员选择树
         let data = {
@@ -500,101 +554,54 @@
             processInstanceId: basicData.value.processInstanceId,
             taskId: basicData.value.taskId
         };
-        for (let i = 1; i < 6; i++) {
-            let customPersonTree = generateForm.value.getComponent('custom_personTree' + i.toString());
-            if (customPersonTree != null) {
+        let customPersonTree = generateForm.value.getComponent('custom_personTree');
+        if (customPersonTree instanceof Array) {
+            customPersonTree.map((item) => {
+                item.initPersonTree(data);
+            });
+        } else {
+            if (null != customPersonTree) {
                 customPersonTree.initPersonTree(data);
             }
         }
     }
 
-    function initChildTable(tableName) {
-        //加载子表数据
-        if (tableName == undefined) {
-            let formJsonStr = JSON.stringify(formJson.value).toString();
-            if (formJsonStr.indexOf('childTable@') > -1) {
-                let str = formJsonStr.split('childTable@');
-                for (let i = 1; i < str.length; i++) {
-                    //多个子表
-                    tableName = str[i].split('"')[0];
-                    let childTable = generateForm.value.getComponent('childTable@' + tableName);
-                    if (childTable != null) {
-                        let childTableInfo = childTable.widget.childTableInfo;
-                        let tableId = childTableInfo.split('@')[1];
-                        if (basicData.value.itembox != 'add' && basicData.value.itembox != 'draft') {
-                            generateForm.value.disabled(['childTable@' + tableName], true); //disabled子表单
-                        }
-                        //generateForm.value.disabled(['childTable@y9_form_baoxiao_zibiao'], true);//disabled子表单
-                        getChildTableData(formId.value, tableId, basicData.value.processSerialNumber).then((res) => {
-                            if (res.success) {
-                                let tableData = [];
-                                for (let item of res.data) {
-                                    tableData.push(item);
-                                }
-                                childTable.tableData = tableData;
-                            }
-                        });
-                    }
-                }
-            }
-        } else {
-            //加载单个子表
-            let childTable = generateForm.value.getComponent('childTable@' + tableName);
-            if (childTable != null) {
-                let childTableInfo = childTable.widget.childTableInfo;
-                let tableId = childTableInfo.split('@')[1];
-                if (basicData.value.itembox != 'add' && basicData.value.itembox != 'draft') {
-                    generateForm.value.disabled(['childTable@' + tableName], true); //disabled子表单
-                }
-                //generateForm.value.disabled(['childTable@y9_form_baoxiao_zibiao'], true);//disabled子表单
-                getChildTableData(formId.value, tableId, basicData.value.processSerialNumber).then((res) => {
-                    if (res.success) {
-                        let tableData = [];
-                        for (let item of res.data) {
-                            tableData.push(item);
-                        }
-                        childTable.tableData = tableData;
-                    }
-                });
-            }
-        }
-    }
-
-    function saveChildTable() {
-        //保存子表数据
-        let formJsonStr = JSON.stringify(formJson.value).toString();
-        if (formJsonStr.indexOf('childTable@') > -1) {
-            let str = formJsonStr.split('childTable@');
-            for (let i = 1; i < str.length; i++) {
-                //多个子表
-                let tableName = str[i].split('"')[0];
-                let childTable = generateForm.value.getComponent('childTable@' + tableName);
-                if (childTable != null) {
-                    let childTableInfo = childTable.widget.childTableInfo;
-                    let tableId = childTableInfo.split('@')[1];
-                    let tableData = childTable.tableData;
-                    if (tableData.length > 0) {
-                        for (let item of tableData) {
-                            item.parentProcessSerialNumber = basicData.value.processSerialNumber;
-                        }
-                        let jsonData = JSON.stringify(tableData).toString();
-                        saveChildTableData(formId.value, tableId, basicData.value.processSerialNumber, jsonData).then(
-                            (res0) => {
-                                if (!res0.success) {
-                                    ElMessage({
-                                        type: 'error',
-                                        message: t('保存子表数据失败'),
-                                        appendTo: '.newForm-container'
-                                    });
+    async function checkNumberOccupy() {
+        //验证编号是否被占用,用于保存和发送前验证
+        let checkStr = '';
+        let numberString = generateForm.value.getValue('bianhao');
+        console.log('numberString', numberString);
+        if (numberString != undefined && numberString[0] == '0') {
+            checkStr = await findByCustomNumber(
+                basicData.value.itemId,
+                basicData.value.processDefinitionId,
+                basicData.value.taskDefKey
+            ).then(async (res) => {
+                if (res.success) {
+                    if (res.data.length > 0) {
+                        if (res.data[0].hasPermission) {
+                            return await saveNumberString(
+                                res.data[0].custom,
+                                basicData.value.itemId,
+                                numberString,
+                                basicData.value.processSerialNumber
+                            ).then((res) => {
+                                if (res.data.success) {
+                                    console.log(res.data.msg);
+                                    return '';
                                 } else {
-                                    initChildTable(tableName);
+                                    return '当前编号已经被占用，请重新双击编号框生成新编号';
                                 }
-                            }
-                        );
+                            });
+                        } else {
+                            console.log('当前事项流程任务节点未绑定编号配置');
+                        }
                     }
                 }
-            }
+            });
         }
+        let test = checkStr;
+        return test;
     }
 
     function saveForm(type) {
@@ -623,7 +630,7 @@
                             let customFile = generateForm.value.getComponent('custom_file');
                             let message = fileMessage.value == '' ? '请上传附件' : fileMessage.value;
                             if (customFile != null && customFile.fileTableConfig.tableData.length == 0) {
-                                ElMessage({ type: 'error', message: t(message), appendTo: '.newForm-container' });
+                                ElMessage({ type: 'error', message: t(message), appendTo: '.y9Form-container' });
                                 return reject(new Error(t(message)).message);
                             }
                         }
@@ -641,16 +648,14 @@
                                         ElMessage({
                                             type: 'success',
                                             message: t('保存表单成功'),
-                                            appendTo: '.newForm-container'
+                                            appendTo: '.y9Form-container'
                                         });
                                     }
-
-                                    saveChildTable(); //保存子表数据
                                 } else {
                                     ElMessage({
                                         type: 'error',
                                         message: t('保存表单失败'),
-                                        appendTo: '.newForm-container'
+                                        appendTo: '.y9Form-container'
                                     });
                                     reject();
                                 }
@@ -665,7 +670,7 @@
                     }
                 })
                 .catch(() => {
-                    ElMessage({ type: 'error', message: t('表单验证不通过'), appendTo: '.newForm-container' });
+                    ElMessage({ type: 'error', message: t('表单验证不通过'), appendTo: '.y9Form-container' });
                     reject(new Error(t('表单验证不通过')).message);
                 });
         });
@@ -678,29 +683,27 @@
                 basicData.value.itembox == 'add' ||
                 basicData.value.itembox == 'draft'
             ) {
-                let title = generateForm.value.getValue('title');
-                let number = generateForm.value.getValue('number');
-                let level = generateForm.value.getValue('level');
+                let obj = getTileAndNumberAndLevel();
                 let customItem = flowableStore.getCustomItem == undefined ? false : flowableStore.getCustomItem;
                 saveProcessParam(
                     basicData.value.itemId,
                     basicData.value.processSerialNumber,
                     basicData.value.processInstanceId,
-                    title,
-                    number,
-                    level,
+                    obj.title,
+                    obj.number,
+                    obj.level,
                     customItem
                 )
                     .then((res0) => {
                         //保存流程变量
                         if (!res0.success) {
-                            ElMessage({ type: 'error', message: t('保存变量失败'), appendTo: '.newForm-container' });
+                            ElMessage({ type: 'error', message: t('保存变量失败'), appendTo: '.y9Form-container' });
                             reject();
                         }
                         resolve();
                     })
                     .catch(() => {
-                        ElMessage({ type: 'error', message: t('保存变量发生异常'), appendTo: '.newForm-container' });
+                        ElMessage({ type: 'error', message: t('保存变量发生异常'), appendTo: '.y9Form-container' });
                         reject(new Error(t('保存变量发生异常')).message);
                     });
             } else {
@@ -712,20 +715,18 @@
     function saveY9Draft() {
         return new Promise((resolve, reject) => {
             if (basicData.value.itembox == 'add' || basicData.value.itembox == 'draft') {
-                let title = generateForm.value.getValue('title');
-                let number = generateForm.value.getValue('number');
-                let level = generateForm.value.getValue('level');
+                let obj = getTileAndNumberAndLevel();
                 saveDraft(
                     basicData.value.processSerialNumber,
                     basicData.value.itemId,
                     basicData.value.processDefinitionKey,
-                    number,
-                    level,
-                    title
+                    obj.number,
+                    obj.level,
+                    obj.title
                 )
                     .then((res1) => {
                         if (!res1.success) {
-                            ElMessage({ type: 'error', message: t('保存草稿失败'), appendTo: '.newForm-container' });
+                            ElMessage({ type: 'error', message: t('保存草稿失败'), appendTo: '.y9Form-container' });
                             reject();
                         } else {
                             emits('refreshCount');
@@ -733,7 +734,7 @@
                         resolve();
                     })
                     .catch(() => {
-                        ElMessage({ type: 'error', message: t('保存草稿发生异常'), appendTo: '.newForm-container' });
+                        ElMessage({ type: 'error', message: t('保存草稿发生异常'), appendTo: '.y9Form-container' });
                         reject(new Error(t('保存草稿发生异常')).message);
                     });
             } else {
@@ -742,29 +743,50 @@
         });
     }
 
-    function initFieldPerm() {
+    //获取标题，编号，紧急程度
+    function getTileAndNumberAndLevel() {
+        let title = generateForm.value.getValue('title');
+        let number = generateForm.value.getValue('number');
+        let level = generateForm.value.getValue('level');
+        for (let item of formFieldUsed.value) {
+            switch (item.contentUsedFor) {
+                case 'title':
+                    title = generateForm.value.getValue(item.columnName);
+                    break;
+                case 'number':
+                    number = generateForm.value.getValue(item.columnName);
+                    break;
+                case 'level':
+                    level = generateForm.value.getValue(item.columnName);
+            }
+        }
+        return { title: title, number: number, level: level };
+    }
+
+    async function initFieldPerm() {
         //字段权限控制
-        getAllFieldPerm(basicData.value.formId, basicData.value.taskDefKey, basicData.value.processDefinitionId).then(
-            (res) => {
-                if (res.success) {
-                    let writeField = [];
-                    for (let item of res.data) {
-                        writeField.push(item.fieldName);
-                    }
-                    if (writeField.length > 0) {
-                        generateForm.value.clearValidate(writeField); //移除其他字段必填项验证
-                        generateForm.value.disabled(writeField, false); //开启字段填写
-                    } else {
-                        if (formJson.value.config.permissionForm) {
-                            //权限表单，当前任务没有配置写权限，则移除所有字段必填验证
-                            generateForm.value.clearAllValidate(); //移除所有字段必填项验证
-                        }
-                    }
-                } else {
-                    ElMessage({ type: 'error', message: res.msg, appendTo: '.newForm-container' });
+        let res = await getAllFieldPerm(
+            basicData.value.formId,
+            basicData.value.taskDefKey,
+            basicData.value.processDefinitionId
+        );
+        if (res.success) {
+            let writeField = [];
+            for (let item of res.data) {
+                writeField.push(item.fieldName);
+            }
+            if (writeField.length > 0) {
+                generateForm.value.clearValidate(writeField); //移除其他字段必填项验证
+                generateForm.value.disabled(writeField, false); //开启字段填写
+            } else {
+                if (formJson.value.config.permissionForm) {
+                    //权限表单，当前任务没有配置写权限，则移除所有字段必填验证
+                    generateForm.value.clearAllValidate(); //移除所有字段必填项验证
                 }
             }
-        );
+        } else {
+            ElMessage({ type: 'error', message: res.msg, appendTo: '.y9Form-container' });
+        }
     }
 
     function signOpinion() {
@@ -793,16 +815,14 @@
         }
         return msg;
     }
-
-    function saveChangeOpinion() {
-        //保存未保存的意见内容
-        //opinionRef.value.saveChange();
-    }
 </script>
 
 <style lang="scss" scoped>
     .formaside {
-        /* background-color: #e7e8ec; */
+        width: 100%;
+        height: auto;
+        overflow: auto;
+        padding: 1% 0% 2% 0%;
     }
 
     .ul {
@@ -837,35 +857,19 @@
     }
 
     /*  .number{
-margin-right: 10px;
-width: 10px;
-text-align: center;
-}
-.el-timeline-item__timestamp{
-margin-left: 17px;
-} */
+        margin-right: 10px;
+        width: 10px;
+        text-align: center;
+        }
+        .el-timeline-item__timestamp{
+        margin-left: 17px;
+        } */
 
     /*message */
-    .newForm-container {
+    .y9Form-container {
         :global(.el-message .el-message__content) {
             font-size: v-bind('fontSizeObj.baseFontSize');
         }
-    }
-
-    :deep(.el-form-item__content) {
-        font-size: v-bind('fontSizeObj.smallFontSize');
-    }
-
-    :deep(.el-input__wrapper) {
-        font-size: v-bind('fontSizeObj.smallFontSize');
-    }
-
-    :deep(.el-form-item__error) {
-        font-size: v-bind('fontSizeObj.smallFontSize');
-    }
-
-    :deep(.el-form-item__error) {
-        font-size: v-bind('fontSizeObj.smallFontSize');
     }
 
     /* 设置一些级别样式，可根据具体需求修改 */
@@ -900,6 +904,7 @@ margin-left: 17px;
 
         :deep(.suggest) {
             border: #e4e7ed solid 1px;
+            padding: 5px 10px;
         }
     }
 </style>

@@ -1,3 +1,10 @@
+<!--
+ * @Author: zhangchongjie
+ * @Date: 2022-01-10 18:09:52
+ * @LastEditTime: 2026-01-06 16:25:51
+ * @LastEditors: mengjuhua
+ * @Description:  沟通交流
+-->
 <template>
     <el-card
         v-loading="loading"
@@ -116,7 +123,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { defineProps, inject, nextTick, onMounted, reactive, watch } from 'vue';
+    import { inject, nextTick, onMounted, reactive, watch } from 'vue';
     import { delSpeakInfo, saveSpeakInfo, speakInfoList } from '@/api/flowableUI/speakInfo';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';

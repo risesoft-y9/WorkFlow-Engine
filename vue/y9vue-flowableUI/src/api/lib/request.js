@@ -1,18 +1,18 @@
 /*
  * @Author: your name
  * @Date: 2021-04-15 10:16:53
- * @LastEditTime: 2023-11-21 11:36:14
- * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-01-07 10:19:55
+ * @LastEditors: mengjuhua
  * @Description: In User Settings Edit
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-flowableUI\src\api\lib\request.js
+ * @FilePath: \vue\y9vue-flowableUI\src\api\lib\request.js
  */
 import settings from '@/settings';
 import y9_storage from '@/utils/storage';
 import axios from 'axios'; // 考虑CDN
-import { ElMessage } from 'element-plus';
 import { isExternal } from '@/utils/validate.ts';
 import i18n from '@/language/index';
 import { $y9_SSO } from '@/main';
+
 const { t } = i18n.global;
 // 创建一个axios实例
 function y9Request(baseUrl = '') {
@@ -21,7 +21,7 @@ function y9Request(baseUrl = '') {
     const service = axios.create({
         baseURL: import.meta.env.VUE_APP_CONTEXT,
         withCredentials: true,
-        timeout: 0,
+        timeout: 0
     });
     // 请求拦截器
     service.interceptors.request.use(
@@ -90,7 +90,7 @@ function y9Request(baseUrl = '') {
                                 $y9_SSO.clearCurrentSessionStorage();
                                 window.location.reload();
                             }
-                        },
+                        }
                     });
                 } else if (error.response.status === 400) {
                     // 参数、业务上的错误统一返回 http 状态 400，返回原始 body 到请求处自行处理
@@ -101,7 +101,7 @@ function y9Request(baseUrl = '') {
             ElMessage({
                 message: error.message,
                 type: 'error',
-                duration: 5 * 1000,
+                duration: 5 * 1000
             });
 
             return Promise.reject(error);

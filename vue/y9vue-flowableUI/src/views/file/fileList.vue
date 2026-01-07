@@ -1,7 +1,7 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2025-09-30 10:53:09
+ * @LastEditTime: 2026-01-07 10:50:13
  * @LastEditors: mengjuhua
  * @Description:  附件列表
 -->
@@ -145,8 +145,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, defineProps, inject, onMounted, reactive, ref, toRefs } from 'vue';
-    import { ElMessage, ElMessageBox } from 'element-plus';
+    import { computed, inject, onMounted, reactive, ref, toRefs } from 'vue';
     import { delAttachment, getAttachmentList, saveOrder } from '@/api/flowableUI/attachment';
     import settings from '@/settings';
     import y9_storage from '@/utils/storage';
@@ -351,7 +350,7 @@
         if (multipleSelection.value.length === 0) {
             ElMessage({ type: 'error', message: t('请选择附件'), offset: 65, appendTo: '.filecontainer' });
         } else {
-            let ids: any = [];
+            let ids = [];
             for (let item of multipleSelection.value) {
                 ids.push(item.id);
                 if (y9UserInfo.value.personId != item.personId) {

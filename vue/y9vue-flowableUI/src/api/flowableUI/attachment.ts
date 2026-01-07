@@ -3,8 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2021-05-27 16:33:29
- * @LastEditors: yihong Yh599598!@#
- * @LastEditTime: 2025-08-28 14:28:26 
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 10:14:21
+ * @FilePath: \vue\y9vue-flowableUI\src\api\flowableUI\attachment.ts
  */
 import Request from '@/api/lib/request';
 import qs from "qs";

@@ -1,8 +1,8 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2023-10-18 17:58:38
- * @LastEditors: mengjuhua
+ * @LastEditTime: 2024-06-14 11:10:41
+ * @LastEditors: zhangchongjie
  * @Description:  监控阅件
 -->
 <template>
@@ -147,7 +147,7 @@
                     type: 'search',
                     key: 'name',
                     props: {
-                        placeholder: computed(() => t('请输入标题或者文号搜索'))
+                        placeholder: computed(() => t('请输入标题搜索'))
                     },
                     span: settingStore.device === 'mobile' ? 6 : 4
                 },
@@ -230,7 +230,8 @@
         },
         historyListRef: '',
         processInstanceId: '',
-        multipleSelection: []
+        multipleSelection: [],
+        backList: false //是否是返回列表
     });
 
     let {
@@ -242,20 +243,32 @@
         dialogConfig,
         historyListRef,
         processInstanceId,
-        multipleSelection
+        multipleSelection,
+        backList
     } = toRefs(data);
 
-    onMounted(() => {
+    onMounted(async () => {
+        await getItemList();
         if (flowableStore.currentPage.indexOf('_back') > -1) {
             //返回列表获取当前页
             tableConfig.value.pageConfig.currentPage = flowableStore.currentPage.split('_')[0];
+            backList.value = true;
+            if (flowableStore.searchContent != '') {
+                //搜索内容不为空
+                await filterConfig.value.itemList.forEach((items) => {
+                    //设置搜索内容
+                    if (items.key != undefined && flowableStore.searchContent[items.key] != undefined) {
+                        items.value = flowableStore.searchContent[items.key];
+                    }
+                });
+                currFilters.value = flowableStore.searchContent;
+            }
         }
         flowableStore.$patch({
             //重新设置
             currentPage: tableConfig.value.pageConfig.currentPage.toString()
         });
         reloadTable();
-        getItemList();
     });
 
     //监听过滤条件改变时，获取列表数据
@@ -273,17 +286,20 @@
     );
 
     function selectchange(val) {
-        reloadTable();
+        if (!backList.value) {
+            //不是返回列表才执行
+            reloadTable();
+        }
     }
 
     async function getItemList() {
         let res = await getAllItemList();
         if (res.success) {
             itemList.value = res.data;
-            filterConfig.value.itemList.forEach((items) => {
+            await filterConfig.value.itemList.forEach(async (items) => {
                 if (items.type == 'select' && items.key == 'itemId') {
                     items.props.options.push({ label: computed(() => t('全部')), value: '' });
-                    itemList.value.forEach((element) => {
+                    await itemList.value.forEach((element) => {
                         items.props.options.push({ label: element.name, value: element.id });
                     });
                     items.value = items.props.options[0].value; //默认选择第一项
@@ -293,8 +309,13 @@
         }
     }
 
-    function refreshTable() {
-        filterRef.value.elTableFilterRef.onReset();
+    async function refreshTable() {
+        await filterConfig.value.itemList.forEach((items) => {
+            //设置搜索内容
+            items.value = '';
+            currFilters.value[items.key] = '';
+        });
+        await filterRef.value.elTableFilterRef.onReset();
         tableConfig.value.pageConfig.currentPage = 1;
         tableConfig.value.pageConfig.pageSize = 20;
         setTimeout(() => {
@@ -303,6 +324,8 @@
     }
 
     async function reloadTable() {
+        backList.value = false;
+        flowableStore.searchContent = '';
         tableConfig.value.loading = true;
         let page = tableConfig.value.pageConfig.currentPage;
         let rows = tableConfig.value.pageConfig.pageSize;
@@ -335,20 +358,23 @@
     }
 
     async function openDoc(row) {
+        if (JSON.stringify(currFilters.value) != '{}') {
+            flowableStore.searchContent = currFilters.value;
+        }
         let link = currentrRute.matched[0].path;
         let query = {
+            id: row.id,
             itemId: row.itemId,
             processSerialNumber: row.processSerialNumber,
-            itembox: 'monitorDone',
+            itembox: 'monitorChaoSong',
             processInstanceId: row.processInstanceId,
-            taskId: '',
             listType: 'monitorChaosong'
         };
         flowableStore.$patch({
             //设置打开当前页
             currentPage: tableConfig.value.pageConfig.currentPage.toString()
         });
-        router.push({ path: '/workIndex/edit', query: query });
+        router.push({ path: '/workIndex/csEdit', query: query });
     }
 
     //当前页改变时触发

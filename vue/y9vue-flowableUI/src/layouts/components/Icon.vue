@@ -1,3 +1,10 @@
+<!--
+ * @Author: your name
+ * @Date: 2022-01-12 17:06:29
+ * @LastEditTime: 2023-08-03 09:47:21
+ * @LastEditors: mengjuhua
+ * @Description: 菜单图标  
+-->
 <template>
     <Icons :type="type" />
 </template>
