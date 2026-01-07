@@ -1,3 +1,10 @@
+<!--
+ * @Author: zhangchongjie
+ * @Date: 2022-01-10 18:09:52
+ * @LastEditTime: 2026-01-06 16:06:41
+ * @LastEditors: mengjuhua
+ * @Description:  关联流程
+-->
 <template>
     <el-container :style="style" class="associat-file">
         <el-aside style="width: 100%; height: auto; overflow: auto; padding: 1% 0% 2% 0%">
@@ -9,14 +16,16 @@
                         plain
                         type="primary"
                         @click="addAssociated"
-                        ><i class="ri-file-add-line"></i>{{ $t('添加') }}
+                    >
+                        <i class="ri-file-add-line"></i>{{ $t('添加') }}
                     </el-button>
                     <el-button
                         :size="fontSizeObj.buttonSize"
                         :style="{ fontSize: fontSizeObj.baseFontSize }"
                         type="primary"
                         @click="delAssociated"
-                        ><i class="ri-delete-bin-line"></i>{{ $t('删除') }}
+                    >
+                        <i class="ri-delete-bin-line"></i>{{ $t('删除') }}
                     </el-button>
                 </div>
                 <y9Table :config="fileTableConfig" @select="handleSelectionChange" @select-all="handleSelectionChange">
@@ -62,7 +71,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, defineProps, inject, onMounted, reactive } from 'vue';
+    import { computed, inject, onMounted, reactive, toRefs } from 'vue';
     import historyList from '@/views/process/historyList.vue';
     import { delAssociatedFile, getAssociatedFileList } from '@/api/flowableUI/associatedFile';
     import addAssociatedFile from '@/views/associatedFile/addAssociatedFile.vue';
@@ -94,6 +103,7 @@
         itemId: '',
         multipleSelection: [],
         fileTableConfig: {
+            rowKey: 'processInstanceId',
             columns: [
                 { title: computed(() => t('序号')), type: 'index', width: '60' },
                 { title: computed(() => t('文件编号')), key: 'number', width: '180' },
@@ -117,6 +127,7 @@
         dialogConfig: {
             show: false,
             title: '',
+            type: '',
             onOkLoading: true,
             onOk: (newConfig) => {
                 return new Promise(async (resolve, reject) => {});
@@ -225,16 +236,16 @@
     }
 </script>
 
-<style>
-    .el-main-table {
+<style lang="scss" scoped>
+    :deep(.el-main-table) {
         padding: 0px;
     }
 
-    .el-table__header-wrapper {
+    :deep(.el-table__header-wrapper) {
         border-top: 1px solid #ebeef5;
     }
 
-    .assFile .el-button--primary.is-plain {
+    .assFile :deep(.el-button--primary.is-plain) {
         --el-button-bg-color: white;
     }
 </style>

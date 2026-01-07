@@ -1,9 +1,17 @@
+<!--
+ * @Author: mengjuhua
+ * @Date: 2026-01-05 16:44:53
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 10:53:42
+ * @FilePath: \vue\y9vue-flowableUI\src\views\customPicture\index.vue
+ * @Description: 自定义图片显示组件
+-->
 <template>
     <img :src="imgsrc" style="width: 150px; height: 150px" @click="imgClick" />
 </template>
 
 <script lang="ts" setup>
-    import { inject } from 'vue';
+    import { inject, reactive, toRefs } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     const { t } = useI18n();

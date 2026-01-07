@@ -1,10 +1,10 @@
 <!--
  * @Author: your name
  * @Date: 2021-04-13 10:34:31
- * @LastEditTime: 2024-02-05 16:59:24
- * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-01-07 09:43:44
+ * @LastEditors: mengjuhua
  * @Description: In User Settings Edit
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-flowableUI\src\views\print\printIndex.vue
+ * @FilePath: \vue\y9vue-flowableUI\src\views\print\printIndex.vue
 -->
 <template>
     <el-container style="height: 100%; width: 100%; display: block">
@@ -44,8 +44,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { inject, nextTick, onMounted, reactive, ref } from 'vue';
-    import { getChildTableData, getFormData, getFormJson } from '@/api/flowableUI/form';
+    import { computed, inject, nextTick, onMounted, reactive, ref } from 'vue';
+    import { getFormData, getFormJson } from '@/api/flowableUI/form';
     import { getBindOpinionFrame } from '@/api/flowableUI/opinion';
     import { useRoute } from 'vue-router';
     import y9_storage from '@/utils/storage';
@@ -232,29 +232,11 @@
             nextTick(async () => {
                 generateFormRef.value.refresh();
                 let res1 = await getFormData(formId.value, processSerialNumber.value);
-                let data = res1.data;
-                for (let key of Object.keys(data)) {
-                    //处理多选框
-                    if (
-                        data[key] != undefined &&
-                        data[key] != '' &&
-                        data[key].startsWith('[') &&
-                        data[key].endsWith(']')
-                    ) {
-                        if (data[key] == '[]') {
-                            data[key] = [];
-                        } else {
-                            let str = data[key].split('[')[1].split(']')[0];
-                            data[key] = str.split(', ');
-                        }
-                    }
-                }
-                generateFormRef.value.setData(data);
+                generateFormRef.value.setData(res1.data);
                 setTimeout(() => {
                     //加载意见框
                     initOpinion();
                     initFileList();
-                    initChildTable();
                 }, 500);
             });
         }
@@ -274,7 +256,9 @@
         let res = await getBindOpinionFrame(itemId.value, processDefinitionId.value);
         if (res.success) {
             for (let item of res.data) {
-                let customOpinion = generateFormRef.value.getComponent('custom_opinion@' + item);
+                let customOpinion = generateFormRef.value.getComponent(
+                    'custom_opinion@' + (item.opinionFrameMark != undefined ? item.opinionFrameMark : item)
+                );
                 if (customOpinion != null) {
                     customOpinion.initOpinion(data);
                 }
@@ -293,21 +277,6 @@
         let customFile = generateFormRef.value.getComponent('custom_file');
         if (customFile != null) {
             customFile.initFileList(data);
-        }
-    }
-
-    async function initChildTable() {
-        //加载子表数据
-        let childTable = generateFormRef.value.getComponent('childTable');
-        if (childTable != null) {
-            let tableId = childTable.tableId;
-            let res = await getChildTableData(formId.value, tableId, processSerialNumber.value);
-            if (res.success) {
-                childTable.tableData.length = 0;
-                for (let item of res.data) {
-                    childTable.tableData.push(item);
-                }
-            }
         }
     }
 </script>

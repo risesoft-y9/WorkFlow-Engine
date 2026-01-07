@@ -1,7 +1,7 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-05-13 14:51:16
+ * @LastEditTime: 2024-06-14 09:21:21
  * @LastEditors: zhangchongjie
  * @Description:  在办件
 -->
@@ -47,6 +47,18 @@
             >
                 {{ row.title == '' ? $t('未定义标题') : row.title }}
             </el-link>
+        </template>
+        <template #other="{ row, column, index }">
+            <a
+                :style="{
+                    fontSize: fontSizeObj.baseFontSize,
+                    cursor: 'pointer',
+                    textDecoration: 'none'
+                }"
+                @click="openDoc(row)"
+            >
+                {{ row[column.property] }}
+            </a>
         </template>
         <template #follow="{ row, column, index }">
             <i
@@ -118,7 +130,7 @@
     import TaskList from '@/views/reminder/taskList.vue';
     import RemindInstance from '@/views/reminder/remindInstance.vue';
     import flowChart from '@/views/flowchart/index4List.vue';
-    import { doingViewConf, getDoingList } from '@/api/flowableUI/workList';
+    import { getDoingList, viewConf } from '@/api/flowableUI/workList';
     import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
     import { useRoute, useRouter } from 'vue-router';
     import y9_storage from '@/utils/storage';
@@ -145,7 +157,6 @@
         viewConfig: [],
         itemId: '',
         processInstanceId: '',
-        taskId: '',
         y9UserInfo: {},
         tableConfig: {
             //表格配置
@@ -195,7 +206,8 @@
             }
         },
         tableName: '', //表名
-        processDefinitionId: ''
+        processDefinitionId: '',
+        backList: false //是否是返回列表
     });
     let {
         filterRef,
@@ -208,7 +220,8 @@
         tableConfig,
         dialogConfig,
         filterConfig,
-        tableName
+        tableName,
+        backList
     } = toRefs(data);
 
     onMounted(() => {
@@ -217,6 +230,16 @@
         if (flowableStore.currentPage.indexOf('_back') > -1) {
             //返回列表获取当前页
             tableConfig.value.pageConfig.currentPage = flowableStore.currentPage.split('_')[0];
+            backList.value = true;
+            if (flowableStore.searchContent != '') {
+                //搜索内容不为空
+                filterConfig.value.itemList.forEach((items) => {
+                    //设置搜索内容
+                    if (items.key == 'name') {
+                        items.value = flowableStore.searchContent.name;
+                    }
+                });
+            }
         }
         flowableStore.$patch({
             //重新设置
@@ -256,7 +279,7 @@
     }
 
     async function getViewConfig() {
-        let res = await doingViewConf(itemId.value);
+        let res = await viewConf(itemId.value, 'doing');
         if (res.success) {
             viewConfig.value = res.data;
             let searchArr = [];
@@ -292,7 +315,8 @@
                         title: computed(() => t(element.disPlayName)),
                         key: element.columnName,
                         width: element.disPlayWidth,
-                        align: element.disPlayAlign
+                        align: element.disPlayAlign,
+                        slot: 'other'
                     });
                 }
                 if (element.openSearch == 1) {
@@ -340,12 +364,21 @@
                     // filterConfig.value.itemList.unshift(obj);
                 }
             }
-            reloadTable();
+            if (!backList.value || flowableStore.searchContent == '') {
+                //不是返回列表，或者搜索内容为空才执行
+                reloadTable();
+            } else {
+                backList.value = false;
+            }
         }
     }
 
     function refreshTable() {
-        currFilters.value.name = '';
+        currFilters.value.name = undefined;
+        filterConfig.value.itemList.forEach((items) => {
+            //设置搜索内容
+            items.value = '';
+        });
         filterRef.value.elTableFilterRef.onReset();
         tableConfig.value.pageConfig.currentPage = 1;
         tableConfig.value.pageConfig.pageSize = 20;
@@ -355,6 +388,7 @@
     }
 
     async function reloadTable() {
+        flowableStore.searchContent = '';
         let page = tableConfig.value.pageConfig.currentPage;
         let rows = tableConfig.value.pageConfig.pageSize;
         tableConfig.value.loading = true;
@@ -362,7 +396,6 @@
         if (JSON.stringify(currFilters.value) != '{}') {
             searchMapStr = JSON.stringify(currFilters.value);
         }
-        // let res = await searchDoingList(itemId.value,tableName.value, searchMapStr, page, rows);
         let res = await getDoingList(itemId.value, currFilters.value.name, page, rows);
         tableConfig.value.loading = false;
         if (res.success) {
@@ -372,12 +405,14 @@
     }
 
     function openDoc(row) {
+        if (JSON.stringify(currFilters.value) != '{}') {
+            flowableStore.searchContent = currFilters.value;
+        }
         let link = currentrRute.matched[0].path;
         let query = {
             itemId: itemId.value,
             processSerialNumber: row.processSerialNumber,
             itembox: 'doing',
-            taskId: row.taskId,
             processInstanceId: row.processInstanceId,
             listType: 'doing'
         };

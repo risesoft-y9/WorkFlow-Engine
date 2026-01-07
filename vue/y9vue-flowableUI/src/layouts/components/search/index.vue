@@ -1,7 +1,14 @@
+<!--
+ * @Author: your name
+ * @Date: 2022-01-13 17:31:19
+ * @LastEditTime: 2026-01-07 09:50:08
+ * @LastEditors: mengjuhua
+ * @Description:   搜索 
+-->
 <script lang="ts" setup>
-    import { Search } from '@element-plus/icons';
+    import { Search } from '@element-plus/icons-vue';
     import { useSettingStore } from '@/store/modules/settingStore';
-    import { onMounted } from 'vue-demi';
+    import { onMounted, ref } from 'vue';
 
     const settingStore = useSettingStore();
     const searchVisible = ref(false);
@@ -15,19 +22,20 @@
 
     // 添加点击搜索按钮事件
     onMounted(() => {
-        // setTimeout( ()=> {
-        //     document.getElementsByClassName('search')[0].addEventListener('click', () => {
-        //     if (!searchVisible.value) {
-        //         searchVisible.value = true
-        //     }
-        // })
-        // }, 500)
+        setTimeout(() => {
+            document.getElementsByClassName('search')[0]?.addEventListener('click', () => {
+                if (!searchVisible.value) {
+                    searchVisible.value = true;
+                }
+            });
+        }, 500);
     });
 </script>
 
 <template>
     <el-drawer v-model="searchVisible" :show-close="false" :z-index="9000" direction="ttb">
         <div :class="{ search: true, 'is-pc': settingStore.getDevice === 'pc' }">
+            <input autocomplete="new-password" hidden type="password" />
             <el-input
                 v-model="searchKey"
                 class="input"

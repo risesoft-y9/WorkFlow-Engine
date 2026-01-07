@@ -40,8 +40,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, defineProps, inject, reactive } from 'vue';
-    import type { ElMessage, ElMessageBox } from 'element-plus';
+    import { computed, inject, reactive } from 'vue';
     import {
         commonSentencesList,
         delCommonSentences,
@@ -172,8 +171,8 @@
 
 <style>
     /* .y9-table-div[data-v-105c0824] .el-table__body .cell .commonManage i{
-color: #586cb1; 
-cursor: pointer;
+  color: #586cb1; 
+  cursor: pointer;
 } */
     .el-tabs__content {
         overflow: auto;

@@ -1,8 +1,7 @@
 <script lang="ts" setup>
-    import { inject, onMounted, reactive, ref } from 'vue';
+    import { onMounted, reactive, ref } from 'vue';
     import { useSettingStore } from '@/store/modules/settingStore';
-    // 注入 字体对象
-    const fontSizeObj: any = inject('sizeObjInfo');
+
     // 数据响应
     const settingStore = useSettingStore();
     let webSettingVisible = ref(false);
@@ -55,7 +54,7 @@
 
 <template>
     <!-- Form -->
-    <el-dialog v-model="webSettingVisible" class="ddd" title="网站设置" width="65%">
+    <el-dialog v-model="webSettingVisible" class="index-layout-setting-list" class="ddd" title="网站设置" width="65%">
         <el-form :model="form">
             <el-form-item
                 :label-width="formLabelWidth"
@@ -74,7 +73,7 @@
                     </template>
                 </el-input>
             </el-form-item>
-            <div class="Tip"><i class="ri-question-line"></i>&nbsp;网站名称</div>
+            <div class="Tip"> <i class="ri-question-line"></i>&nbsp;网站名称 </div>
             <el-form-item
                 :label-width="formLabelWidth"
                 :rules="[
@@ -92,7 +91,7 @@
                     </template>
                 </el-input>
             </el-form-item>
-            <div class="Tip"><i class="ri-question-line"></i>&nbsp;logo设置</div>
+            <div class="Tip"> <i class="ri-question-line"></i>&nbsp;logo设置 </div>
             <el-form-item
                 :label-width="formLabelWidth"
                 :rules="[
@@ -136,19 +135,8 @@
         </el-form>
         <template #footer>
             <span class="dialog-footer">
-                <el-button
-                    :size="fontSizeObj.buttonSize"
-                    :style="{ fontSize: fontSizeObj.baseFontSize }"
-                    @click="resetFunc()"
-                >
-                    <i class="ri-refresh-line"></i> &nbsp;Reset
-                </el-button>
-                <el-button
-                    :size="fontSizeObj.buttonSize"
-                    :style="{ fontSize: fontSizeObj.baseFontSize }"
-                    type="primary"
-                    @click="(webSettingVisible = false), submitFunc()"
-                >
+                <el-button @click="resetFunc()"> <i class="ri-refresh-line"></i> &nbsp;Reset </el-button>
+                <el-button type="primary" @click="(webSettingVisible = false), submitFunc()">
                     <i class="ri-save-line"></i> &nbsp;Confirm
                 </el-button>
             </span>

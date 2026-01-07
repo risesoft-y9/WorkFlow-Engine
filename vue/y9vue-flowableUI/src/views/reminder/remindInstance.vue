@@ -55,7 +55,7 @@
 
 <script lang="ts" setup>
     import type { CSSProperties } from 'vue';
-    import { computed, inject, onMounted, reactive, ref, toRefs, watch } from 'vue';
+    import { computed, inject, nextTick, onMounted, reactive, ref, toRefs, watch } from 'vue';
     import { getBpmList, remindTaskList, saveRemindInstance } from '@/api/flowableUI/reminder';
     import { useI18n } from 'vue-i18n';
 
@@ -100,6 +100,7 @@
         remindType: '',
         multipleSelection: [],
         reminderTableConfig: {
+            rowKey: 'taskId',
             columns: [
                 { title: '', type: 'selection', width: 50, fixed: 'left' },
                 { title: computed(() => t('序号')), type: 'index', width: '60' },
@@ -172,11 +173,14 @@
                 }
 
                 setTimeout(() => {
-                    reminderTableConfig.value.tableData.forEach((item) => {
-                        if (taskIds.value.indexOf(item.taskId) != -1) {
-                            reminderTableRef.value.elTableRef.toggleRowSelection(item, true);
-                            task.value = true;
-                        }
+                    reminderTableRef.value.elTableRef.clearSelection();
+                    nextTick(() => {
+                        reminderTableRef.value.elTableRef.data.forEach((item) => {
+                            if (taskIds.value.indexOf(item.taskId) != -1) {
+                                reminderTableRef.value.elTableRef.toggleRowSelection(item, true);
+                                task.value = true;
+                            }
+                        });
                     });
                 }, 500);
             }

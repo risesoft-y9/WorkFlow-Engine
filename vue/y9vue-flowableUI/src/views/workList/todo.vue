@@ -1,7 +1,7 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-05-13 14:46:44
+ * @LastEditTime: 2024-06-14 09:20:47
  * @LastEditors: zhangchongjie
  * @Description:  待办件
 -->
@@ -46,9 +46,9 @@
                 class="ri-loader-2-line"
                 style="color: red"
             ></i>
-            <font v-if="row.rollBack" :title="$t('退回件')" color="#FF4500">[{{ $t('退') }}]</font>
-            <font v-if="row.isZhuBan == 'true'" color="#FF4500">[{{ $t('主') }}]</font>
-            <font v-else-if="row.isZhuBan == 'false'" color="#A1402D">[{{ $t('协') }}]</font>
+            <span v-if="row.rollBack" :title="$t('退回件')" style="color: red">[{{ $t('退') }}]</span>
+            <span v-if="row.isZhuBan == 'true'" style="color: red">[{{ $t('主') }}]</span>
+            <span v-else-if="row.isZhuBan == 'false'" style="color: #a1402d">[{{ $t('协') }}]</span>
             <i
                 v-if="row.speakInfoNum != 0"
                 :title="$t('沟通交流消息提醒')"
@@ -62,6 +62,18 @@
             >
                 {{ row.title == '' ? $t('未定义标题') : row.title }}
             </el-link>
+        </template>
+        <template #other="{ row, column, index }">
+            <a
+                :style="{
+                    fontSize: fontSizeObj.baseFontSize,
+                    cursor: 'pointer',
+                    textDecoration: 'none'
+                }"
+                @click="openDoc(row)"
+            >
+                {{ row[column.property] }}
+            </a>
         </template>
         <template #follow="{ row, column, index }">
             <i
@@ -133,7 +145,7 @@
     import remindMeList from '@/views/reminder/remindMeList.vue';
     import remindInstance from '@/views/reminder/remindInstance.vue';
     import flowChart from '@/views/flowchart/index4List.vue';
-    import { getTodoList, todoViewConf } from '@/api/flowableUI/workList';
+    import { getTodoList, viewConf } from '@/api/flowableUI/workList';
     import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
     import { useRoute, useRouter } from 'vue-router';
     import y9_storage from '@/utils/storage';
@@ -209,7 +221,8 @@
             }
         },
         tableName: '', //表名
-        processDefinitionId: ''
+        processDefinitionId: '',
+        backList: false //是否是返回列表
     });
 
     let {
@@ -224,7 +237,8 @@
         tableConfig,
         dialogConfig,
         filterConfig,
-        tableName
+        tableName,
+        backList
     } = toRefs(data);
 
     onMounted(() => {
@@ -248,8 +262,19 @@
             }
         }
         if (flowableStore.currentPage.indexOf('_back') > -1) {
+            //返回列表
             //返回列表获取当前页
             tableConfig.value.pageConfig.currentPage = flowableStore.currentPage.split('_')[0];
+            backList.value = true;
+            if (flowableStore.searchContent != '') {
+                //搜索内容不为空
+                filterConfig.value.itemList.forEach((items) => {
+                    //设置搜索内容
+                    if (items.key == 'name') {
+                        items.value = flowableStore.searchContent.name;
+                    }
+                });
+            }
         }
         flowableStore.$patch({
             //重新设置
@@ -302,7 +327,7 @@
     }
 
     async function getViewConfig() {
-        let res = await todoViewConf(flowableStore.getItemId);
+        let res = await viewConf(flowableStore.getItemId, 'todo');
         if (res.success) {
             viewConfig.value = res.data;
             let searchArr = [];
@@ -338,7 +363,8 @@
                         title: computed(() => t(element.disPlayName)),
                         key: element.columnName,
                         width: element.disPlayWidth,
-                        align: element.disPlayAlign
+                        align: element.disPlayAlign,
+                        slot: 'other'
                     });
                 }
                 if (element.openSearch == 1) {
@@ -386,12 +412,21 @@
                     // filterConfig.value.itemList.unshift(obj);
                 }
             }
-            reloadTable();
+            if (!backList.value || flowableStore.searchContent == '') {
+                //不是返回列表，或者搜索内容为空才执行
+                reloadTable();
+            } else {
+                backList.value = false;
+            }
         }
     }
 
     function refreshTable() {
-        currFilters.value.name = '';
+        currFilters.value.name = undefined;
+        filterConfig.value.itemList.forEach((items) => {
+            //设置搜索内容
+            items.value = '';
+        });
         filterRef.value.elTableFilterRef.onReset();
         tableConfig.value.pageConfig.currentPage = 1;
         tableConfig.value.pageConfig.pageSize = 20;
@@ -401,6 +436,7 @@
     }
 
     async function reloadTable() {
+        flowableStore.searchContent = '';
         let page = tableConfig.value.pageConfig.currentPage;
         let rows = tableConfig.value.pageConfig.pageSize;
         if (flowableStore.getItemId != '') {
@@ -409,7 +445,6 @@
             if (JSON.stringify(currFilters.value) != '{}') {
                 searchMapStr = JSON.stringify(currFilters.value);
             }
-            // let res = await searchTodoList(flowableStore.getItemId,tableName.value, searchMapStr, page, rows);
             let res = await getTodoList(flowableStore.getItemId, currFilters.value.name, page, rows);
             tableConfig.value.loading = false;
             if (res.success) {
@@ -420,6 +455,9 @@
     }
 
     function openDoc(row) {
+        if (JSON.stringify(currFilters.value) != '{}') {
+            flowableStore.searchContent = currFilters.value;
+        }
         let link = currentrRute.matched[0].path;
         let query = {
             itemId: itemId.value,

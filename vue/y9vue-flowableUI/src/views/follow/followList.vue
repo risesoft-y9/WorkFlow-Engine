@@ -1,8 +1,8 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2023-10-18 17:59:13
- * @LastEditors: mengjuhua
+ * @LastEditTime: 2024-06-14 09:55:36
+ * @LastEditors: zhangchongjie
  * @Description:  我的关注
 -->
 <template>
@@ -66,7 +66,6 @@
 
 <script lang="ts" setup>
     import { computed, inject, onMounted, reactive, watch } from 'vue';
-    import type { ElMessage } from 'element-plus';
     import HistoryList from '@/views/process/historyList.vue';
     import { delOfficeFollow, followList } from '@/api/flowableUI/follow';
     import { useRoute, useRouter } from 'vue-router';
@@ -153,14 +152,42 @@
                 //过滤值回调
                 currFilters.value = filters;
             }
-        }
+        },
+        backList: false //是否是返回列表
     });
 
-    let { filterRef, currFilters, filterConfig, processInstanceId, tableConfig, dialogConfig, multipleSelection } =
-        toRefs(data);
+    let {
+        filterRef,
+        currFilters,
+        filterConfig,
+        processInstanceId,
+        tableConfig,
+        dialogConfig,
+        multipleSelection,
+        backList
+    } = toRefs(data);
 
     onMounted(() => {
-        reloadTable();
+        if (flowableStore.currentPage.indexOf('_back') > -1) {
+            //返回列表获取当前页
+            tableConfig.value.pageConfig.currentPage = flowableStore.currentPage.split('_')[0];
+            backList.value = true;
+            if (flowableStore.searchContent != '') {
+                //搜索内容不为空
+                filterConfig.value.itemList.forEach((items) => {
+                    //设置搜索内容
+                    if (items.key == 'name') {
+                        items.value = flowableStore.searchContent.name;
+                    }
+                });
+            }
+        }
+        if (!backList.value || flowableStore.searchContent == '') {
+            //不是返回列表，或者搜索内容为空才执行
+            reloadTable();
+        } else {
+            backList.value = false;
+        }
     });
 
     //监听过滤条件改变时，获取列表数据
@@ -190,7 +217,11 @@
     }
 
     function refreshTable() {
-        currFilters.value.name = '';
+        currFilters.value.name = undefined;
+        filterConfig.value.itemList.forEach((items) => {
+            //设置搜索内容
+            items.value = '';
+        });
         filterRef.value.elTableFilterRef.onReset();
         tableConfig.value.pageConfig.currentPage = 1;
         tableConfig.value.pageConfig.pageSize = 20;
@@ -200,6 +231,7 @@
     }
 
     async function reloadTable() {
+        flowableStore.searchContent = '';
         let page = tableConfig.value.pageConfig.currentPage;
         let rows = tableConfig.value.pageConfig.pageSize;
         tableConfig.value.loading = true;
@@ -212,6 +244,9 @@
     }
 
     function openDoc(row) {
+        if (JSON.stringify(currFilters.value) != '{}') {
+            flowableStore.searchContent = currFilters.value;
+        }
         let query = {
             itemId: row.itemId,
             processSerialNumber: row.processSerialNumber,

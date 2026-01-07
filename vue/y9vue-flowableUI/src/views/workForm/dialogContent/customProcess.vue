@@ -118,7 +118,7 @@
 
 <script lang="ts" setup>
     import { inject } from 'vue';
-    import userChoise from '@/views/workForm/userChoise4Custom.vue';
+    import userChoise from '@/views/workForm/dialogContent/userChoise4Custom.vue';
     import { useRouter } from 'vue-router';
     import { getContainEndEvent4UserTask, getTargetNodes, saveCustomProcess } from '@/api/flowableUI/buttonOpt';
     import y9_storage from '@/utils/storage';

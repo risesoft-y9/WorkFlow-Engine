@@ -101,7 +101,7 @@ const flowableIndexRouter = [
             },
             {
                 path: '/index/edit',
-                component: () => import('@/views/workForm/newDocument.vue'),
+                component: () => import('@/views/workForm/y9Document.vue'),
                 hidden: true,
                 props: (route) => ({
                     itemId: route.query.itemId,
@@ -264,7 +264,7 @@ const flowableIndexRouter = [
             },
             {
                 path: '/workIndex/edit',
-                component: () => import('@/views/workForm/newDocument.vue'),
+                component: () => import('@/views/workForm/y9Document.vue'),
                 hidden: true,
                 props: (route) => ({
                     itemId: route.query.itemId,

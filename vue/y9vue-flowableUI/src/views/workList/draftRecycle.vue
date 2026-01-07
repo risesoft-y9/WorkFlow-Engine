@@ -16,6 +16,18 @@
                 {{ row.title == '' ? $t('未定义标题') : row.title }}
             </el-link>
         </template>
+        <template #other="{ row, column, index }">
+            <a
+                :style="{
+                    fontSize: fontSizeObj.baseFontSize,
+                    cursor: 'pointer',
+                    textDecoration: 'none'
+                }"
+                @click="openDoc(row)"
+            >
+                {{ row[column.property] }}
+            </a>
+        </template>
         <template #optButton="{ row, column, index }">
             <el-button
                 :style="{ fontSize: fontSizeObj.smallFontSize }"
@@ -31,7 +43,7 @@
     </y9Table>
 </template>
 <script lang="ts" setup>
-    import { computed, inject, onMounted, reactive } from 'vue';
+    import { computed, inject, onMounted, reactive, toRefs } from 'vue';
     import { deleteDraft, draftViewConf, getDraftRecycleList, reduction } from '@/api/flowableUI/draft';
     import { useRoute, useRouter } from 'vue-router';
     import { useFlowableStore } from '@/store/modules/flowableStore';
@@ -120,7 +132,8 @@
                         title: computed(() => t(element.disPlayName)),
                         key: element.columnName,
                         width: element.disPlayWidth,
-                        align: element.disPlayAlign
+                        align: element.disPlayAlign,
+                        slot: 'other'
                     });
                 }
             });

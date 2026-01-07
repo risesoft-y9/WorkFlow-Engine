@@ -13,7 +13,7 @@ export const useSettingStore = defineStore('settingStore', {
             isDark: false, // 是否暗黑主题
             menuAnimation: 'rtl', // 菜单动画方向——仅mobile
             menuStyle: 'Light', // 菜单样式
-            menuWidth: '100%', // 菜单宽度（高度）
+            menuWidth: '25%', // 菜单宽度（高度）
             menuBg: '', // 菜单背景 new URL('../../assets/images/menu-bg1.png', import.meta.url).href
             showLabel: false, // 显示标签
             showLabelIcon: false, // 显示标签icon
@@ -97,6 +97,10 @@ export const useSettingStore = defineStore('settingStore', {
                 : state.fontSize == 'large'
                 ? 180
                 : 160;
+        },
+        // 根据字号 获取对应的icon宽度大小
+        getLogoWidth: (state) => {
+            return state.fontSize == 'small' ? '30px' : state.fontSize === 'default' ? '36px' : '45px';
         },
         getThemeName: (state) => {
             return state.themeName;
@@ -224,7 +228,7 @@ export const useSettingStore = defineStore('settingStore', {
             if (isMobile()) {
                 this.device = 'mobile';
                 this.layout = 'Y9Mobile';
-                this.settingWidth = '100%';
+                this.settingWidth = '68%';
             } else {
                 this.device = 'pc';
                 this.layout = this.pcLayout;

@@ -31,11 +31,7 @@
     };
 
     const backHomeMethod = () => {
-        if (userInfo.tenantId == '1563572018593402880') {
-            window.location.href = import.meta.env.VUE_APP_CONTEXT_Y9HOME;
-        } else {
-            window.location.href = import.meta.env.VUE_APP_HOMEURL;
-        }
+        window.location = import.meta.env.VUE_APP_HOME_INDEX;
     };
 
     // 搜索
@@ -52,16 +48,10 @@
 
     const logout = () => {
         try {
-            const params = {
-                redirect_uri: import.meta.env.VUE_APP_HOST_INDEX
-            };
-            $y9_SSO.ssoLogout(params);
+            // const loginOut = await this.$store.dispatch("user/logout");
+            $y9_SSO.ssoLogout({});
         } catch (error) {
-            ElMessage({
-                message: error.message || 'Has Error',
-                type: 'error',
-                duration: 5 * 1000
-            });
+            ElMessage.error(error.message || 'Has Error');
         }
     };
 </script>
@@ -72,7 +62,7 @@
             <span>{{ currentrRute.path.indexOf('/workIndex') > -1 ? $t('工作台') : flowableStore.itemName }}</span>
         </div>
         <!-- <div class="center">
-    
+           
         </div> -->
         <div class="right">
             <div class="item full-screen" @click="toggleFullScreen">
@@ -111,10 +101,10 @@
                 <!-- <img src="@/assets/images/app-icon.png"> -->
                 <el-avatar :src="userInfo.avator ? userInfo.avator : ''"> {{ userInfo.loginName }}</el-avatar>
             </div>
-            <!--            <div class="item" @click="backHomeMethod">-->
-            <!--                <i class="ri-arrow-go-back-line"></i>-->
-            <!--                <span>{{ $t('首页') }}</span>-->
-            <!--            </div>-->
+            <!-- <div class="item" @click="backHomeMethod">
+                <i class="ri-arrow-go-back-line"></i>
+                <span>{{ $t('首页') }}</span>
+            </div> -->
             <div class="item" @click="logout">
                 <i class="ri-logout-box-r-line"></i>
                 <span>{{ $t('退出') }}</span>

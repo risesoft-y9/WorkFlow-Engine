@@ -67,23 +67,23 @@
         ).then(async (res) => {
             if (res.success) {
                 if (res.data.length > 0) {
-                    if (res.data[0].hasPermission) {
-                        organWordList.value = res.data;
-                        if (organWordList.value.length > 0) {
-                            let nowDate = new Date();
-                            year.value = nowDate.getFullYear();
-                            characterValue.value = organWordList.value[0].name;
-                            if (formData != undefined) {
-                                if (formData[props.tableField] == '' || formData[props.tableField] == undefined) {
-                                    await getY9Number();
-                                } else {
-                                    currentNumber.value = formData[props.tableField];
-                                }
-                            } else {
+                    // if(res.data[0].hasPermission){
+                    organWordList.value = res.data;
+                    if (organWordList.value.length > 0) {
+                        let nowDate = new Date();
+                        year.value = nowDate.getFullYear();
+                        characterValue.value = organWordList.value[0].name;
+                        if (formData != undefined) {
+                            if (formData[props.tableField] == '' || formData[props.tableField] == undefined) {
                                 await getY9Number();
+                            } else {
+                                currentNumber.value = formData[props.tableField];
                             }
+                        } else {
+                            await getY9Number();
                         }
                     }
+                    // }
                 }
             }
         });

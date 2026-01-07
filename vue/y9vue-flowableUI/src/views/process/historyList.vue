@@ -1,3 +1,11 @@
+<!--
+ * @Author: mengjuhua
+ * @Date: 2026-01-05 16:44:53
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 10:42:14
+ * @FilePath: \vue\y9vue-flowableUI\src\views\process\historyList.vue
+ * @Description: 
+-->
 <template>
     <y9Table :config="processTableConfig">
         <template #status="{ row, column, index }">
@@ -36,7 +44,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject } from 'vue';
+    import { computed, inject, onMounted, reactive, toRefs, watch } from 'vue';
     import { historyList } from '@/api/flowableUI/process';
     import { useI18n } from 'vue-i18n';
 

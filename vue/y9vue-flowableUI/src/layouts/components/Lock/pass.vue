@@ -1,13 +1,18 @@
+<!--
+ * @Author: your name
+ * @Date: 2022-01-13 17:31:19
+ * @LastEditTime: 2023-08-03 09:44:01
+ * @LastEditors: mengjuhua
+ * @Description:   屏幕锁定
+-->
 <script lang="ts" setup>
-    import { inject } from 'vue';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { computed, ref, watch } from 'vue-demi';
     import y9_storage from '@/utils/storage';
-    // 注入 字体对象
-    const fontSizeObj: any = inject('sizeObjInfo');
 
     const settingStore = useSettingStore();
     const unlockScreenPwd = computed(() => settingStore.getUnlockScreenPwd);
+
     const lockStatus = computed(() => settingStore.getLockScreen);
     // 绑定输入数据
     const inputPwd = ref('');
@@ -80,26 +85,18 @@
     <div class="content">
         <img :src="avatar" alt="头像" />
         <!-- <i class="ri-lock-2-fill"></i> -->
-        <span :style="{ fontSize: fontSizeObj.baseFontSize }"> {{ $t('屏幕已锁定') }}</span>
+        <span> {{ $t('屏幕已锁定') }}</span>
         <div class="form">
             <span :class="{ showErrorText: showError }">{{ $t('密码错误') }}</span>
             <el-input
                 v-model="inputPwd"
-                :size="fontSizeObj.buttonSize"
-                :style="{ fontSize: fontSizeObj.baseFontSize }"
                 placeholder="Please input password"
                 show-password
                 type="password"
                 @change="checkPwdFunc"
                 @focus="showError = false"
             />
-            <el-button
-                :size="fontSizeObj.buttonSize"
-                :style="{ fontSize: fontSizeObj.baseFontSize }"
-                type="primary"
-                @click="checkPwdFunc"
-                @mousemove="toopTipsVisible = false"
-            >
+            <el-button type="primary" @click="checkPwdFunc" @mousemove="toopTipsVisible = false">
                 <i class="ri-lock-unlock-line"></i>{{ $t('解锁') }}
             </el-button>
         </div>
@@ -167,7 +164,7 @@
 
             & > span {
                 display: none;
-                font-size: v-bind('fontSizeObj.baseFontSize');
+                font-size: 14px;
                 letter-spacing: 1px;
                 color: #f40;
                 position: absolute;
@@ -182,7 +179,7 @@
         & > a {
             margin-top: 30px;
             line-height: 30px;
-            font-size: v-bind('fontSizeObj.smallFontSize');
+            font-size: 12px;
             letter-spacing: 1px;
             color: var(--el-color-primary-light-3);
             text-decoration: underline;

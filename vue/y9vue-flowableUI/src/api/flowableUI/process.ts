@@ -1,26 +1,34 @@
+/*
+ * @Author: mengjuhua
+ * @Date: 2026-01-05 17:10:30
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 10:16:53
+ * @FilePath: \vue\y9vue-flowableUI\src\api\flowableUI\process.ts
+ * @Description: 
+ */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
 //获取简易历程
-export function processList(processInstanceId){
-  const params = {
-    processInstanceId:processInstanceId
-  };
-  return flowableRequest({
-    url:'/vue/processTrack/processList',
-    method: 'get',
-    params: params
-  });
+export function processList(processInstanceId) {
+    const params = {
+        processInstanceId: processInstanceId
+    };
+    return flowableRequest({
+        url: '/vue/processTrack/processList',
+        method: 'get',
+        params: params
+    });
 }
 
 //获取历程信息
-export function historyList(processInstanceId){
-  const params = {
-    processInstanceId:processInstanceId
-  };
-  return flowableRequest({
-    url:'/vue/processTrack/historyList',
-    method: 'get',
-    params: params
-  });
+export function historyList(processInstanceId) {
+    const params = {
+        processInstanceId: processInstanceId
+    };
+    return flowableRequest({
+        url: '/vue/processTrack/historyList',
+        method: 'get',
+        params: params
+    });
 }

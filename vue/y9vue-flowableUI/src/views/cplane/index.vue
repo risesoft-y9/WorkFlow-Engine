@@ -1,11 +1,11 @@
 <!--
- * @Descripttion: 
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2021-07-05 15:02:36
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2021-10-27 10:36:21
- * @FilePath: \workspace-y9boot-9.5-vue\y9vue-cplane\src\views\cplane\list.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 10:54:30
+ * @Descripttion: 我的协作
+ * @FilePath: \vue\y9vue-flowableUI\src\views\cplane\index.vue
 -->
 <template>
     <el-input

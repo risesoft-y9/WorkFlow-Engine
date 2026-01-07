@@ -14,20 +14,10 @@
         "resolveJsonModule": true,
         "esModuleInterop": true,
         "noImplicitAny": false,
-        "lib": [
-            "esnext",
-            "dom",
-            "dom.iterable",
-            "scripthost"
-        ],
-        "types": [
-            "vite/client",
-            "element-plus/global"
-        ],
+        "lib": ["esnext", "dom", "dom.iterable", "scripthost"],
+        "types": ["vite/client", "element-plus/global"],
         "paths": {
-            "@/*": [
-                "src/*"
-            ]
+            "@/*": ["src/*"]
         }
     },
     "include": [
@@ -36,11 +26,8 @@
         "src/**/*.tsx",
         "src/**/*.vue",
         "tests/**/*.ts",
-        "tests/**/*.tsx"
+        "tests/**/*.tsx",
+        "element-puls.d.ts"
     ],
-    "exclude": [
-        "node_modules",
-        "dist",
-        "**/*.js"
-    ]
+    "exclude": ["node_modules", "dist", "**/*.js"]
 }

@@ -41,16 +41,28 @@
                 >{{ row.title == '' ? $t('未定义标题') : row.title }}
             </el-link>
         </template>
+        <template #other="{ row, column, index }">
+            <a
+                :style="{
+                    fontSize: fontSizeObj.baseFontSize,
+                    cursor: 'pointer',
+                    textDecoration: 'none'
+                }"
+                @click="openDoc(row)"
+            >
+                {{ row[column.property] }}
+            </a>
+        </template>
         <template #itembox="{ row, column, index }">
-            <font v-if="row.itembox == 'done'" :style="{ color: '#d81e06', fontSize: fontSizeObj.baseFontSize }">{{
-                $t('办结')
-            }}</font>
-            <font v-else-if="row.itembox == 'doing'" :style="{ fontSize: fontSizeObj.baseFontSize }">{{
-                $t('在办')
-            }}</font>
-            <font v-else-if="row.itembox == 'todo'" :style="{ color: '#228b22', fontSize: fontSizeObj.baseFontSize }">{{
-                $t('待办')
-            }}</font>
+            <font v-if="row.itembox == 'done'" :style="{ color: '#d81e06', fontSize: fontSizeObj.baseFontSize }"
+                >{{ $t('办结') }}
+            </font>
+            <font v-else-if="row.itembox == 'doing'" :style="{ fontSize: fontSizeObj.baseFontSize }"
+                >{{ $t('在办') }}
+            </font>
+            <font v-else-if="row.itembox == 'todo'" :style="{ color: '#228b22', fontSize: fontSizeObj.baseFontSize }"
+                >{{ $t('待办') }}
+            </font>
             <font v-else></font>
         </template>
         <template #optButton="{ row, column, index }">
@@ -345,7 +357,8 @@
                         title: computed(() => t(element.disPlayName)),
                         key: element.columnName,
                         width: element.disPlayWidth,
-                        align: element.disPlayAlign
+                        align: element.disPlayAlign,
+                        slot: 'other'
                     });
                 }
             }

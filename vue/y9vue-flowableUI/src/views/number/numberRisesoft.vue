@@ -215,10 +215,10 @@
         ).then((res) => {
             if (res.success) {
                 if (res.data.length > 0) {
-                    if (res.data[0].hasPermission) {
-                        showButton.value = true;
-                        organWord.value = res.data[0].name;
-                    }
+                    // if(res.data[0].hasPermission){
+                    showButton.value = true;
+                    organWord.value = res.data[0].name;
+                    // }
                 }
                 organWordList.value = res.data;
             }

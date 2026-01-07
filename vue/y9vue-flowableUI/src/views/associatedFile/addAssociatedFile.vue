@@ -1,3 +1,10 @@
+<!--
+ * @Author: zhangchongjie
+ * @Date: 2022-01-10 18:09:52
+ * @LastEditTime: 2026-01-06 16:02:54
+ * @LastEditors: mengjuhua
+ * @Description:  添加关联流程
+-->
 <template>
     <y9Table
         :config="fileTableConfig"
@@ -41,7 +48,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, defineProps, inject, onMounted, reactive } from 'vue';
+    import { computed, inject, onMounted, reactive, toRefs } from 'vue';
     import { getAssociatedDoneList, saveAssociatedFile } from '@/api/flowableUI/associatedFile';
     import { useI18n } from 'vue-i18n';
 
@@ -64,6 +71,7 @@
         title: '',
         multipleSelection: [],
         fileTableConfig: {
+            rowKey: 'processInstanceId',
             columns: [
                 { title: '', type: 'selection', width: '50', fixed: 'left' },
                 { title: computed(() => t('序号')), type: 'index', width: '60' },
@@ -147,19 +155,17 @@
     }
 </script>
 
-<style>
-    .el-main-table {
+<style lang="scss">
+    .el-main-tabl {
         padding: 0px;
     }
 
     .el-dialog__body {
         padding: 0 20px 10px 20px;
     }
-
     .el-table__header-wrapper {
         border-top: 1px solid #ebeef5;
     }
-
     .el-table-column--selection .cell {
         padding-left: 10px;
         padding-right: 10px;

@@ -1,3 +1,10 @@
+<!--
+ * @Author: zhangchongjie
+ * @Date: 2022-01-10 18:09:52
+ * @LastEditTime: 2026-01-06 16:09:28
+ * @LastEditors: mengjuhua
+ * @Description:  抄送列表
+-->
 <template>
     <div class="margin-bottom-20">
         <el-input
@@ -37,7 +44,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject, reactive } from 'vue';
+    import { computed, inject, onMounted, reactive, toRefs } from 'vue';
     import { deleteList, getChaoSongList } from '@/api/flowableUI/chaoSong';
     import { useI18n } from 'vue-i18n';
 

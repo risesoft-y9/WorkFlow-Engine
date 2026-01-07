@@ -2,28 +2,14 @@
     <el-container
         v-loading="loading"
         :element-loading-text="$t('正在发送中')"
-        class="userChoise"
+        class="userChoise4Custom"
         element-loading-background="rgba(0, 0, 0, 0.8)"
         element-loading-spinner="el-icon-loading"
         style="height: 600px"
     >
         <el-header style="height: 30px; padding: 0; margin-bottom: 15px">
             <el-tooltip :content="$t(remindContent)" effect="dark" placement="top">
-                <!-- <span style="display: inline-block;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;width: 100%;color:red;" >{{remindContent}}</span> -->
-                <el-tag
-                    :style="{ fontSize: fontSizeObj.baseFontSize }"
-                    size="large"
-                    style="
-                        background-color: #cdd3e8;
-                        display: block;
-                        white-space: nowrap;
-                        overflow: hidden;
-                        text-overflow: ellipsis;
-                        width: 100%;
-                        line-height: 3vh;
-                        text-indent: 0.5vw;
-                    "
-                >
+                <el-tag class="top_notice" :style="{ fontSize: fontSizeObj.baseFontSize }" size="large">
                     <i
                         :style="{ fontSize: fontSizeObj.mediumFontSize, verticalAlign: 'middle' }"
                         class="ri-information-line"
@@ -33,58 +19,27 @@
             </el-tooltip>
         </el-header>
         <el-container>
-            <el-aside style="height: 480px; border: 0" width="50%">
-                <personTree
-                    ref="personTreeRef"
-                    :basicData="basicData"
-                    :fromType="fromType"
-                    :reposition="repositionSign"
-                    @onTreeDbClick="selectedNode"
-                />
+            <el-aside class="context_div" width="50%">
+                <personTree ref="personTreeRef" :basicData="basicData" @org-click="selectedNode" />
             </el-aside>
-            <div
-                style="
-                    height: 480px;
-                    padding-top: 0px;
-                    text-align: center;
-                    background-color: fff;
-                    width: 11.8%;
-                    display: flex;
-                    align-items: center;
-                    flex-direction: column;
-                    fontsizeobjjustify-content: center;
-                "
-            >
-                <!-- <el-button type="primary" size="small" @click="selectedToRight" style="width:80%;height:35px;">右移<i class="el-icon-d-arrow-right"></i></el-button> -->
+            <div class="move_center_div context_div" style="">
                 <el-divider direction="vertical" />
-                <el-checkbox v-model="zhuxieban" :checked="false" :class="ishide" @change="zhuxiebanChange">
+                <el-checkbox v-model="zhuxieban" :checked="true" :class="ishide" @change="zhuxiebanChange">
                     {{ $t('主协办') }}
                 </el-checkbox>
                 <div class="moveRight" @click="selectedToRight">{{ $t('右移') }}</div>
                 <el-divider direction="vertical" />
             </div>
-            <el-main style="height: 480px" width="38.2%">
-                <div
-                    style="
-                        color: #586cb1;
-                        width: 120px;
-                        float: right;
-                        position: relative;
-                        height: 35px;
-                        line-height: 35px;
-                        text-align: right;
-                        margin-right: 5px;
-                    "
-                >
-                    <el-link :style="{ fontSize: fontSizeObj.baseFontSize }" :underline="false" @click="moveTop"
-                        ><i class="ri-arrow-up-line" style="zindex: 1"></i>{{ $t('上移') }}
-                    </el-link>
-                    <el-link
-                        :style="{ marginLeft: '5px', fontSize: fontSizeObj.baseFontSize }"
-                        :underline="false"
-                        @click="moveBottom"
-                        ><i class="ri-arrow-down-line"></i>{{ $t('下移') }}
-                    </el-link>
+            <el-main class="context_div" width="38.2%">
+                <div v-if="moveShow" class="tab_toolbar_div">
+                    <el-button-group>
+                        <el-button link :underline="false" @click="moveTop"
+                            ><i class="ri-arrow-up-line"></i>{{ $t('上移') }}
+                        </el-button>
+                        <el-button link :underline="false" style="margin-left: 5px" @click="moveBottom"
+                            ><i class="ri-arrow-down-line"></i>{{ $t('下移') }}
+                        </el-button>
+                    </el-button-group>
                 </div>
                 <el-tabs v-model="activeName" class="usertab" @tab-click="tabclick">
                     <el-tab-pane :label="$t('收件人')" name="addressee" style="height: 360px">
@@ -104,27 +59,22 @@
                                             v-if="name_cell.row.type == 'Person' && name_cell.row.sex == '0'"
                                             class="ri-women-line"
                                             style="vertical-align: middle"
-                                        />
+                                        ></i>
                                         <i
                                             v-else-if="name_cell.row.type == 'Person' && name_cell.row.sex == '1'"
                                             class="ri-men-line"
                                             style="vertical-align: middle"
-                                        />
-                                        <i
-                                            v-else-if="name_cell.row.type == 'Position'"
-                                            class="ri-shield-user-line"
-                                            style="vertical-align: middle"
-                                        />
+                                        ></i>
                                         <i
                                             v-else-if="name_cell.row.type == 'customGroup'"
                                             class="ri-shield-star-line"
                                             style="vertical-align: middle"
-                                        />
+                                        ></i>
                                         <i
                                             v-else-if="name_cell.row.type == 'Department'"
                                             class="ri-slack-line"
                                             style="vertical-align: middle"
-                                        />
+                                        ></i>
                                         {{ name_cell.row.name }}
                                     </template>
                                 </el-table-column>
@@ -161,12 +111,9 @@
                                 <el-table-column :label="$t('操作')" align="center" prop="opt" width="85">
                                     <template #default="opt_cell">
                                         <i
-                                            :style="{
-                                                fontSize: fontSizeObj.mediumFontSize,
-                                                color: '#586cb1',
-                                                cursor: 'pointer'
-                                            }"
+                                            :style="{ fontSize: fontSizeObj.largeFontSize }"
                                             class="ri-close-line"
+                                            style="color: #586cb1; cursor: pointer"
                                             @click="delPerson(opt_cell.row)"
                                         ></i>
                                     </template>
@@ -178,54 +125,45 @@
                         <el-checkbox v-model="awoke">{{ $t('短信提醒') }}</el-checkbox>
                         <el-checkbox v-model="awokeShuMing" @change="addShuMing">{{ $t('是否添加署名') }}</el-checkbox>
                         <table class="table-input" style="width: 100%; border-spacing: 0">
-                            <tr>
-                                <td style="border: 1px solid rgb(220, 223, 230)">
-                                    <el-input
-                                        v-model="awokeText"
-                                        :placeholder="$t('请输入内容')"
-                                        :rows="17"
-                                        maxlength="100"
-                                        resize="none"
-                                        type="textarea"
-                                    ></el-input>
-                                </td>
-                            </tr>
-                            <tr>
-                                <td style="border: 1px solid rgb(220, 223, 230); border-top-width: 0px">
-                                    <el-input
-                                        v-model="lastfixSmsContext"
-                                        :placeholder="$t('是否署名')"
-                                        :readonly="true"
-                                        style="
-                                            box-shadow: 0 0 0 0px var(--el-input-border-color, var(--el-border-color))
-                                                inset;
-                                        "
-                                    ></el-input>
-                                </td>
-                            </tr>
+                            <tbody>
+                                <tr>
+                                    <td style="border: 1px solid rgb(220, 223, 230)">
+                                        <el-input
+                                            v-model="awokeText"
+                                            :placeholder="$t('请输入内容')"
+                                            :rows="16"
+                                            maxlength="100"
+                                            resize="none"
+                                            type="textarea"
+                                        ></el-input>
+                                    </td>
+                                </tr>
+                                <tr>
+                                    <td style="border: 1px solid rgb(220, 223, 230); border-top-width: 0px">
+                                        <el-input
+                                            v-model="lastfixSmsContext"
+                                            :placeholder="$t('是否署名')"
+                                            :readonly="true"
+                                            style="
+                                                box-shadow: 0 0 0 0px
+                                                    var(--el-input-border-color, var(--el-border-color)) inset;
+                                            "
+                                        ></el-input>
+                                    </td>
+                                </tr>
+                            </tbody>
                         </table>
                     </el-tab-pane>
-                    <!-- <el-button size="small" class="send_button" @click="send()" style="width:100%;height:35px;">发送</el-button>
-                    <el-button size="small" class="reset_button" @click="resetUser()" style="width:100%;height:35px;">清空</el-button> -->
                 </el-tabs>
             </el-main>
         </el-container>
-        <el-footer style="text-align: right; padding: 10px 0px">
+        <el-footer style="text-align: center; padding: 10px 0px">
             <el-button
                 :size="fontSizeObj.buttonSize"
                 :style="{ fontSize: fontSizeObj.baseFontSize }"
                 type="primary"
                 @click="send()"
                 ><i :style="{ fontSize: fontSizeObj.mediumFontSize }" class="ri-share-forward-line"></i>{{ $t('发送') }}
-            </el-button>
-            <el-button
-                :size="fontSizeObj.buttonSize"
-                :style="{ fontSize: fontSizeObj.baseFontSize }"
-                class="global-btn-third"
-                type="primary"
-                @click="saveQuickSend()"
-                ><i :style="{ fontSize: fontSizeObj.mediumFontSize }" class="ri-user-star-line"></i
-                >{{ $t('存为快捷发送人') }}
             </el-button>
             <el-button
                 :size="fontSizeObj.buttonSize"
@@ -240,51 +178,30 @@
 </template>
 
 <script lang="ts" setup>
-    import { inject } from 'vue';
-    import personTree from '@/views/workForm/personTree.vue';
+    import { inject, reactive } from 'vue';
+    import personTree from '@/views/workForm/dialogContent/personTree.vue';
     import { getUserChoiseData, getUserCount } from '@/api/flowableUI/userChoise';
-    import { forwarding, reposition } from '@/api/flowableUI/buttonOpt';
-    import { addExecutionId } from '@/api/flowableUI/multiInstance';
-    import { getAssignee, saveOrUpdate } from '@/api/flowableUI/quickSend';
-    import { useRoute, useRouter } from 'vue-router';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { useI18n } from 'vue-i18n';
 
     const { t } = useI18n();
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo') || {};
-    const currentrRute = useRoute();
     const props = defineProps({
-        dialogConfig: {
-            type: Object,
-            default: () => {
-                return {};
-            }
-        },
         basicData: {
             type: Object,
             default: () => {
                 return {};
             }
-        },
-        instanceData: {
-            type: Object,
-            default: () => {
-                return {};
-            }
-        },
-        routeToTask: String,
-        reposition: String,
-        fromType: String //加减签选人
+        }
     });
 
-    const emits = defineEmits(['refreshData', 'reloadTable']);
+    const emits = defineEmits(['set-UserChoise']);
     const flowableStore = useFlowableStore();
-    const router = useRouter();
     const data = reactive({
         personTreeRef: '',
         loading: false,
-        zhuxieban: false,
+        zhuxieban: true,
         processSerialNumber: '',
         processInstanceId: '',
         taskId: '',
@@ -299,7 +216,6 @@
         userChoice: [],
         ishide: 'ishide',
         optlabel: '',
-        repositionSign: '', //重定位选人
         moveShow: false, //上下移动显示
         currentRow: null
     });
@@ -322,7 +238,6 @@
         userChoice,
         ishide,
         optlabel,
-        repositionSign,
         moveShow,
         currentRow
     } = toRefs(data);
@@ -335,16 +250,12 @@
         awokeText.value = '您已收到一份标题为【' + flowableStore!.getDocumentTitle! + '】的办件，请及时办理。';
     }
 
-    show();
-
-    async function show() {
-        repositionSign.value = props.reposition;
-        routeToTask.value = props.routeToTask;
+    function show(routeToTaskKey, orgList) {
+        routeToTask.value = routeToTaskKey;
         userChoice.value = [];
         currentRow.value = null;
         moveShow.value = false;
-
-        await getUserChoiseData(
+        getUserChoiseData(
             props.basicData.itemId,
             routeToTask.value,
             props.basicData.processDefinitionId,
@@ -373,34 +284,21 @@
                 remindContent.value =
                     '办理说明：当前办理方式为单人办理，下一任务的收件人若为多人，这些收件人可以进行抢占签收办理。';
             }
+
+            if (orgList != null && orgList != undefined && orgList.length > 0) {
+                //选人回显
+                orgList.forEach(function (element, index) {
+                    let item = JSON.parse(JSON.stringify(element));
+                    item.id = element.id.split(':')[1];
+                    if (userChoiseData.value.multiInstance == 'sequential') {
+                        item.zxbSign = index + 1;
+                    }
+                    userChoice.value.push(item);
+                });
+            }
+
             personTreeRef.value.findPermUser(userChoiseData);
         });
-        getAssignee(props.basicData.itemId, routeToTask.value).then((res) => {
-            if (res.success) {
-                for (let checkNode of res.data) {
-                    selectedNode(checkNode);
-                }
-            }
-        });
-    }
-
-    async function saveQuickSend() {
-        let userChoiceId = [];
-        for (let item of userChoice.value) {
-            let id = '';
-            if (item.type == 'Person') {
-                id = '3:' + item.id;
-            } else if (item.type == 'Department') {
-                id = '2:' + item.id;
-            } else if (item.type == 'customGroup') {
-                id = '7:' + item.id;
-            } else if (item.type == 'Position') {
-                id = '6:' + item.id;
-            }
-            userChoiceId.push(id);
-        }
-        let res = await saveOrUpdate(props.basicData.itemId, routeToTask.value, userChoiceId.join(','));
-        ElMessage({ type: res.success ? 'success' : 'error', message: res.msg, offset: 65, appendTo: '.userChoise' });
     }
 
     function zhuxiebanChange(val) {
@@ -424,10 +322,10 @@
 
     function selectedToRight() {
         //右移
-        //let checkNode = personTreeRef.value.checkNodes;
-        let checkNode = personTreeRef.value?.y9TreeRef?.getCheckedNodes();
+        let checkNode = personTreeRef.value.checkNodes;
+
         if (checkNode.length === 0) {
-            ElMessage({ type: 'error', message: t('请勾选科室或收件人'), offset: 65, appendTo: '.userChoise' });
+            ElMessage({ type: 'error', message: t('请勾选科室或收件人'), offset: 65, appendTo: '.userChoise4Custom' });
             return;
         }
         if (userChoiseData.value.multiInstance == 'common') {
@@ -436,7 +334,7 @@
                     type: 'error',
                     message: t('当前办理方式为单人办理，只能选择一个办理人！'),
                     offset: 65,
-                    appendTo: '.userChoise'
+                    appendTo: '.userChoise4Custom'
                 });
                 return;
             }
@@ -454,15 +352,9 @@
         user.type = checkNode.orgType;
         user.sex = checkNode.sex;
         user.zxbSign = '';
-        user.index = userChoice.value.length + 1;
         let ischeck = true;
-        //单人节点,报销业务负责人审核,重定位选人，加减签不能选择部门,用户组
-        if (
-            userChoiseData.value.multiInstance == 'common' ||
-            'yewufuzerenshenhe' == routeToTask.value ||
-            repositionSign.value == 'reposition' ||
-            props.fromType == '加减签'
-        ) {
+        //单人节点,报销业务负责人审核,重定位选人不能选择部门,用户组
+        if (userChoiseData.value.multiInstance == 'common' || 'yewufuzerenshenhe' == routeToTask.value) {
             if (user.type == 'Department' || user.type == 'customGroup') {
                 return;
             }
@@ -471,6 +363,7 @@
                 userChoice.value = [];
             }
         }
+
         if (userChoice.value.length === 0) {
             if (optlabel.value == '主协办') {
                 user.zxbSign = t('主办');
@@ -493,7 +386,6 @@
                 userChoice.value.push(user);
             }
         }
-        emits('refreshData', personTreeRef.value.checkNodes);
     }
 
     function setSponsor(row) {
@@ -533,7 +425,6 @@
                         item.zxbSign = t('主办');
                     }
                 }
-                item.index = newuserChoice.length + 1;
                 newuserChoice.push(item);
             }
         }
@@ -543,128 +434,40 @@
     function send() {
         //发送
         if (userChoice.value.length == 0) {
-            ElMessage({ type: 'error', message: t('请选择收件人'), offset: 65, appendTo: '.userChoise' });
+            ElMessage({ type: 'error', message: t('请选择办理人'), offset: 65, appendTo: '.userChoise4Custom' });
             return;
         }
         let userChoiceId = [];
+        let userChoices = [];
         let sponsorGuid = '';
-        if (props.fromType == '加减签') {
-            for (let j = 0; j < userChoice.value.length; j++) {
-                let id = userChoice.value[j].id;
-                userChoiceId.push(id);
+        for (let item of userChoice.value) {
+            let id = '';
+            if (item.type == 'Person') {
+                id = '3:' + item.id;
+            } else if (item.type == 'Department') {
+                id = '2:' + item.id;
+            } else if (item.type == 'customGroup') {
+                id = '7:' + item.id;
             }
-            loading.value = true;
-            addExecutionId(
-                props.basicData.processInstanceId,
-                props.instanceData.executionId,
-                props.basicData.taskId,
-                userChoiceId.join(';'),
-                props.instanceData.assigneeId,
-                props.instanceData.num,
-                awoke.value,
-                awokeShuMing.value,
-                awokeText.value
-            ).then((res) => {
-                loading.value = false;
-                if (res.success) {
-                    ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.userChoise' });
-                    emits('reloadTable');
-                    props.dialogConfig.show = false;
-                } else {
-                    ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.userChoise' });
-                }
-            });
-        } else {
-            for (let item of userChoice.value) {
-                let id = '';
-                if (item.type == 'Person') {
-                    id = '3:' + item.id;
-                } else if (item.type == 'Department') {
-                    id = '2:' + item.id;
-                } else if (item.type == 'customGroup') {
-                    id = '7:' + item.id;
-                } else if (item.type == 'Position') {
-                    id = '6:' + item.id;
-                }
-                userChoiceId.push(id);
-                if (item.zxbSign == '主办') {
-                    sponsorGuid = id;
-                }
+            userChoiceId.push(id);
+            userChoices.push({ id: id, name: item.name, type: item.type, zxbSign: item.zxbSign, sex: item.sex });
+            if (item.zxbSign == '主办') {
+                sponsorGuid = id;
             }
-            if (repositionSign.value == 'reposition') {
-                //重定位发送
-                repositionSend(userChoiceId, sponsorGuid);
-                return;
-            }
-            getUserCount(userChoiceId.join(';')).then((res) => {
-                if (res.success) {
-                    if (res.data > 100) {
-                        ElMessage({
-                            type: 'error',
-                            message: t('发送人数不能超过100人'),
-                            offset: 65,
-                            appendTo: '.userChoise'
-                        });
-                        return;
-                    }
-                    let link = currentrRute.matched[0].path;
-                    loading.value = true;
-                    forwarding(
-                        props.basicData.itemId,
-                        props.basicData.processInstanceId,
-                        props.basicData.taskId,
-                        props.basicData.processDefinitionKey,
-                        props.basicData.processSerialNumber,
-                        props.basicData.sponsorHandle,
-                        userChoiceId.join(';'),
-                        sponsorGuid,
-                        routeToTask.value,
-                        awoke.value,
-                        awokeShuMing.value,
-                        awokeText.value
-                    ).then((res) => {
-                        loading.value = false;
-                        if (res.success) {
-                            ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.userChoise' });
-                            let query = {
-                                itemId: props.basicData.itemId,
-                                refreshCount: true
-                            };
-
-                            router.push({ path: link + '/todo', query: query });
-                        } else {
-                            ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.userChoise' });
-                        }
-                    });
-                }
-            });
         }
-    }
-
-    function repositionSend(userChoiceId, sponsorGuid) {
-        //重定位
-        loading.value = true;
-        reposition(
-            props.basicData.taskId,
-            routeToTask.value,
-            userChoiceId.join(';'),
-            props.basicData.processSerialNumber,
-            sponsorGuid.split(':')[1],
-            awoke.value,
-            awokeShuMing.value,
-            awokeText.value
-        ).then((res) => {
-            loading.value = false;
+        getUserCount(userChoiceId.join(';')).then((res) => {
             if (res.success) {
-                ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.userChoise' });
-                let query = {
-                    itemId: props.basicData.itemId,
-                    refreshCount: true
-                };
-
-                router.push({ path: '/index/monitorDoing', query: query });
-            } else {
-                ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.userChoise' });
+                if (res.data > 100) {
+                    ElMessage({
+                        type: 'error',
+                        message: t('办理人数不能超过100人'),
+                        offset: 65,
+                        appendTo: '.userChoise4Custom'
+                    });
+                    return;
+                }
+                //this.$parent.$parent.$parent.setUser(userChoice);
+                emits('set-UserChoise', userChoices);
             }
         });
     }
@@ -672,14 +475,10 @@
     function moveBottom() {
         //下移
         if (currentRow.value != null) {
-            let num = parseInt(currentRow.value.index);
+            let num = parseInt(currentRow.value.zxbSign);
             if (num != userChoice.value.length) {
-                if (optlabel.value == '办理顺序') {
-                    userChoice.value[num].zxbSign = num;
-                    currentRow.value.zxbSign = num + 1;
-                }
-                userChoice.value[num].index = num;
-                currentRow.value.index = num + 1;
+                userChoice.value[num].zxbSign = num;
+                currentRow.value.zxbSign = num + 1;
                 userChoice.value[num - 1] = userChoice.value.splice(num, 1, userChoice.value[num - 1])[0];
             }
         }
@@ -688,155 +487,124 @@
     function moveTop() {
         //上移
         if (currentRow.value != null) {
-            let num = parseInt(currentRow.value.index);
+            let num = parseInt(currentRow.value.zxbSign);
             if (num != 1) {
-                if (optlabel.value == '办理顺序') {
-                    userChoice.value[num - 2].zxbSign = num;
-                    currentRow.value.zxbSign = num - 1;
-                }
-                userChoice.value[num - 2].index = num;
-                currentRow.value.index = num - 1;
+                userChoice.value[num - 2].zxbSign = num;
+                currentRow.value.zxbSign = num - 1;
                 userChoice.value[num - 2] = userChoice.value.splice(num - 1, 1, userChoice.value[num - 2])[0];
             }
         }
     }
+
+    defineExpose({
+        show
+    });
 </script>
 
-<style>
-    .userChoise .el-tabs__header {
+<style lang="scss" scoped>
+    :deep(.el-tabs__header) {
         width: 60%;
         background-color: #fff;
         margin: 0px;
     }
 
-    .userChoise .moveRight {
-        width: 50px;
-        height: 50px;
-        background: url('@/assets/youyi.png') center center no-repeat;
-        background-size: 60px auto;
-        line-height: 45px;
-        font-size: v-bind('fontSizeObj.baseFontSize');
-        color: #586cb1;
-        margin-left: -0.5vw;
-    }
-
-    .userChoise .el-divider--vertical {
+    :deep(.el-divider--vertical) {
         height: 190px;
     }
 
-    .userChoise .el-checkbox {
+    :deep(.el-checkbox) {
         height: 40px;
     }
 
-    .userChoise .el-textarea__inner {
+    :deep(.el-textarea__inner) {
         box-shadow: 0 0 0 0px var(--el-input-border-color, var(--el-border-color)) inset;
         padding: 0px 11px;
     }
 
-    .table-input .el-input__wrapper {
+    :deep(.table-input .el-input__wrapper) {
         box-shadow: 0 0 0 0px var(--el-input-border-color, var(--el-border-color)) inset;
     }
 
-    .userChoise .table-header .el-table__cell {
+    :deep(.table-header .el-table__cell) {
         background-color: #ebeef5;
         color: #9ba7d0;
     }
 
-    .userChoise .el-table__cell {
-        font-size: v-bind('fontSizeObj.baseFontSize');
-
-        .el-link {
-            font-size: v-bind('fontSizeObj.baseFontSize');
-        }
-    }
-
-    .userChoise .el-main {
+    :deep(.el-main) {
         background-color: #fff;
         border: 0px solid #ccc;
         padding: 0;
         overflow: hidden;
     }
 
-    .userChoise .el-link [class*='el-icon-'] + span {
+    :deep(.el-link [class*='el-icon-'] + span) {
         margin-left: 0px;
     }
 
-    .userChoise .el-aside {
+    :deep(.el-aside) {
         background-color: #fff;
         border: 1px solid #ccc;
         padding: 0;
     }
 
-    .userChoise .el-tabs__nav-scroll {
+    :deep(.el-tabs__nav-scroll) {
         padding-left: 5px;
     }
 
-    .userChoise .el-input__wrapper {
+    :deep(.el-input__wrapper) {
         /* box-shadow: 0 0 0 0px var(--el-input-border-color,var(--el-border-color)) inset; */
         width: 100%;
         height: 30px;
         border-radius: 50px;
-        font-size: v-bind('fontSizeObj.baseFontSize');
     }
 
-    .userChoise .el-menu--horizontal > .el-menu-item {
-        height: 40px;
-        line-height: 40px;
-        font-size: v-bind('fontSizeObj.baseFontSize');
-    }
-
-    .userChoise .el-tabs__item {
+    :deep(.el-tabs__item) {
         padding: 0 10px;
-        font-size: v-bind('fontSizeObj.baseFontSize');
+        /* color: #c0c4cc; */
     }
 
-    .el-tabs__item {
-        color: #c0c4cc;
-    }
-
-    .userChoise .el-button--small,
-    .el-button--small.is-round {
+    :deep(.el-button--small),
+    :deep(.el-button--small.is-round) {
         padding: 0px;
     }
 
-    .userChoise .el-tabs__nav-wrap::after {
+    :deep(.el-tabs__nav-wrap::after) {
         height: 0px;
         background-color: #ccc;
     }
 
-    .userChoise .el-button--primary.is-plain {
+    :deep(.el-button--primary.is-plain) {
         --el-button-bg-color: white;
     }
 
-    .userChoise .el-table td,
-    .el-table th {
+    :deep(.el-button) {
+        min-width: 62px;
+        font-size: v-bind('fontSizeObj.smallFontSize');
+        height: 30px;
+        line-height: 30px;
+        box-shadow: 2px 2px 2px 1px rgb(0 0 0 / 6%);
+        padding: 10px;
+    }
+
+    :deep(.el-table td),
+    :deep(.el-table th) {
         padding: 6px 0;
     }
 
-    .userChoise .el-input {
+    :deep(.el-input) {
         display: block;
         width: 100%;
     }
 
-    .userChoise .el-textarea {
+    :deep(.el-textarea) {
         display: block;
     }
 
-    .userChoise .el-table::before {
+    :deep(.el-table::before) {
         height: 0;
     }
 
-    .send_button:hover {
-        background-color: #409eff;
-        color: #fff;
-    }
-
-    .reset_button:hover {
-        background-color: #e6a23c;
-        color: #fff;
-    }
-
-    .el-checkbox__label {
+    :deep(.el-checkbox__label) {
         padding-left: 2px;
     }
 
@@ -844,8 +612,8 @@
         display: none;
     }
 
-    .userChoise .el-aside {
-        /* line-height: 40px; */
+    :deep(.el-aside) {
+        line-height: 40px;
         overflow: hidden;
     }
 
@@ -855,12 +623,65 @@
 </style>
 
 <style lang="scss" scoped>
-    :deep(.el-table__empty-text) {
-        font-size: v-bind('fontSizeObj.baseFontSize');
-    }
-
     /*message */
     :global(.el-message .el-message__content) {
         font-size: v-bind('fontSizeObj.baseFontSize');
+    }
+
+    .userChoise4Custom {
+        .context_div {
+            height: 490px !important;
+            border: 0px;
+        }
+
+        .personTree {
+            height: 485px !important;
+            border: 0px;
+        }
+
+        .top_notice {
+            /* background-color: #cdd3e8;  */
+            display: block;
+            white-space: nowrap;
+            overflow: hidden;
+            text-overflow: ellipsis;
+            width: 100%;
+            text-indent: 0.5vw;
+        }
+
+        .move_center_div {
+            padding-top: 0px;
+            text-align: center;
+            background-color: fff;
+            width: 11.8%;
+            display: flex;
+            align-items: center;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .moveRight {
+            width: 50px;
+            height: 50px;
+            background: url('@/assets/youyi.png') center center no-repeat;
+            background-size: 60px auto;
+            line-height: 45px;
+            font-size: v-bind('fontSizeObj.baseFontSize');
+            color: #586cb1;
+            margin-left: -0.5vw;
+        }
+
+        .tab_toolbar_div {
+            color: rgb(88, 108, 177);
+            position: absolute;
+            height: 35px;
+            line-height: 35px;
+            text-align: right;
+            margin-right: 16px;
+            right: 0px;
+            /* width: 120px; */
+            /* float: right; */
+            z-index: 999;
+        }
     }
 </style>

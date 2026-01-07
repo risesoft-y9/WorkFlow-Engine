@@ -11,20 +11,7 @@ export function getAllCountItems(itemId) {
         url: '/vue/main/getCount4Item',
         method: 'get',
         params
-    });
-}
-
-//获取待办列表视图配置
-export function todoViewConf(itemId) {
-    const params = {
-        itemId: itemId,
-        viewType: 'todo'
-    };
-    return flowableRequest({
-        url: '/vue/viewConf/list',
-        method: 'get',
-        params: params
-    });
+    })
 }
 
 //获取待办列表
@@ -36,36 +23,7 @@ export function getTodoList(itemId, searchTerm, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: '/vue/workList/todoList',
-        method: 'get',
-        params: params
-    });
-}
-
-//获取待办列表
-export function searchTodoList(itemId, tableName, searchMapStr, page, rows) {
-    const params = {
-        itemId: itemId,
-        tableName: tableName,
-        searchMapStr: searchMapStr,
-        page: page,
-        rows: rows
-    };
-    return flowableRequest({
-        url: '/vue/workList/searchTodoList',
-        method: 'get',
-        params: params
-    });
-}
-
-//获取在办列表视图配置
-export function doingViewConf(itemId) {
-    const params = {
-        itemId: itemId,
-        viewType: 'doing'
-    };
-    return flowableRequest({
-        url: '/vue/viewConf/list',
+        url: "/vue/workList/todoList",
         method: 'get',
         params: params
     });
@@ -80,36 +38,7 @@ export function getDoingList(itemId, searchTerm, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: '/vue/workList/doingList',
-        method: 'get',
-        params: params
-    });
-}
-
-//获取在办列表
-export function searchDoingList(itemId, tableName, searchMapStr, page, rows) {
-    const params = {
-        itemId: itemId,
-        tableName: tableName,
-        searchMapStr: searchMapStr,
-        page: page,
-        rows: rows
-    };
-    return flowableRequest({
-        url: '/vue/workList/searchDoingList',
-        method: 'get',
-        params: params
-    });
-}
-
-//获取办结列表视图配置
-export function doneViewConf(itemId) {
-    const params = {
-        itemId: itemId,
-        viewType: 'done'
-    };
-    return flowableRequest({
-        url: '/vue/viewConf/list',
+        url: "/vue/workList/doingList",
         method: 'get',
         params: params
     });
@@ -124,23 +53,7 @@ export function getDoneList(itemId, searchTerm, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: '/vue/workList/doneList',
-        method: 'get',
-        params: params
-    });
-}
-
-//获取办结列表
-export function searchDoneList(itemId, tableName, searchMapStr, page, rows) {
-    const params = {
-        itemId: itemId,
-        tableName: tableName,
-        searchMapStr: searchMapStr,
-        page: page,
-        rows: rows
-    };
-    return flowableRequest({
-        url: '/vue/workList/searchDoneList',
+        url: "/vue/workList/doneList",
         method: 'get',
         params: params
     });
@@ -148,8 +61,9 @@ export function searchDoneList(itemId, tableName, searchMapStr, page, rows) {
 
 /**
  *
- * @param itemId 获取视图
- * @param viewType
+ * 获取视图
+ * @param itemId 事项id
+ * @param viewType 视图类型
  * @returns
  */
 export function viewConf(itemId, viewType) {
@@ -158,14 +72,11 @@ export function viewConf(itemId, viewType) {
         viewType
     };
     return flowableRequest({
-        url: '/vue/viewConf/list',
+        url: "/vue/viewConf/list",
         method: 'get',
         params: params
     });
 }
-
-
-
 
 /**
  *
@@ -206,4 +117,4 @@ export function getQueryList(itemId, state, createDate, tableName, searchMapStr,
         },
         data: formData
     });
-}
+} 

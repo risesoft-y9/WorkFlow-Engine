@@ -1,7 +1,7 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2023-10-18 17:53:31
+ * @LastEditTime: 2026-01-07 10:39:00
  * @LastEditors: mengjuhua
  * @Description:  监控办结件
 -->
@@ -72,14 +72,6 @@
     const currentrRute = useRoute();
     const flowableStore = useFlowableStore();
     const emits = defineEmits(['refreshCount']);
-
-    // const tableHeight = ref(useSettingStore().getWindowHeight - 280 - 20);
-
-    // window.onresize = () => {
-    //     return (() => {
-    //         tableHeight.value = useSettingStore().getWindowHeight - 280 - 20;
-    //     })();
-    // };
 
     const data = reactive({
         filterRef: '',

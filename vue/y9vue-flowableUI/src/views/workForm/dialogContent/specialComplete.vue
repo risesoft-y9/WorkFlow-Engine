@@ -1,11 +1,11 @@
 <!--
- * @Descripttion: 
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2024-01-26 17:36:06
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-01-30 09:53:23
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-flowableUI\src\views\workForm\specialComplete.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-26 15:36:21
+ * @Descripttion: 特殊办结
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\views\workForm\dialogContent\specialComplete.vue
 -->
 <template>
     <div

@@ -47,11 +47,7 @@
     };
 
     const backHomeMethod = () => {
-        if (userInfo.tenantId == '1563572018593402880') {
-            window.location.href = import.meta.env.VUE_APP_CONTEXT_Y9HOME;
-        } else {
-            window.location.href = import.meta.env.VUE_APP_HOMEURL;
-        }
+        window.location = import.meta.env.VUE_APP_HOME_INDEX;
     };
 
     // 搜索
@@ -67,16 +63,10 @@
     let currentCount = sessionStorage.getItem('currentCount') ? sessionStorage.getItem('currentCount') : 0;
     const logout = () => {
         try {
-            const params = {
-                redirect_uri: import.meta.env.VUE_APP_HOST_INDEX
-            };
-            $y9_SSO.ssoLogout(params);
+            // const loginOut = await this.$store.dispatch("user/logout");
+            $y9_SSO.ssoLogout({});
         } catch (error) {
-            ElMessage({
-                message: error.message || 'Has Error',
-                type: 'error',
-                duration: 5 * 1000
-            });
+            ElMessage.error(error.message || 'Has Error');
         }
     };
 </script>
@@ -127,10 +117,10 @@
                 <!-- 头像测试链接地址：https://www.youshengyun.com/fileManager/files/e6b5d41fd2bd4cdda538139f9b7848c7.jpg -->
                 <el-avatar :src="userInfo.avator ? userInfo.avator : ''"> {{ userInfo.loginName }}</el-avatar>
             </div>
-            <!--            <div class="item" @click="backHomeMethod">-->
-            <!--                <i class="ri-arrow-go-back-line"></i>-->
-            <!--                <span>{{ $t('首页') }}</span>-->
-            <!--            </div>-->
+            <!-- <div class="item" @click="backHomeMethod">
+                <i class="ri-arrow-go-back-line"></i>
+                <span>{{ $t('首页') }}</span>
+            </div> -->
             <div class="item" @click="logout">
                 <i class="ri-logout-box-r-line"></i>
                 <span>{{ '退出' }}</span>

@@ -1,3 +1,10 @@
+<!--
+ * @Author: zhangchongjie
+ * @Date: 2022-01-10 18:09:52
+ * @LastEditTime: 2025-12-25 09:54:21
+ * @LastEditors: mengjuhua
+ * @Description:  历程
+-->
 <template>
     <el-container :style="style">
         <el-aside style="width: 100%; height: auto; overflow: auto; padding: 1% 0% 2% 0%">
@@ -62,7 +69,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, defineProps, inject, onMounted, reactive, watch } from 'vue';
+    import { computed, inject, onMounted, reactive, toRefs, watch } from 'vue';
     import chaoSongList from '@/views/chaoSong/chaoSongList.vue';
     import { historyList } from '@/api/flowableUI/process';
     import { useSettingStore } from '@/store/modules/settingStore';

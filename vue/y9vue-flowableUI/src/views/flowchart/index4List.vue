@@ -1,11 +1,11 @@
 <!--
- * @Descripttion: 
+ * @Descripttion: 流程图
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-06-10 16:34:51
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-05-22 10:34:28
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-flowableUI\src\views\flowchart\index4List.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 10:30:45
+ * @FilePath: \vue\y9vue-flowableUI\src\views\flowchart\index4List.vue
 -->
 
 <template>
@@ -63,18 +63,18 @@
     import moment from 'moment';
     import BpmnViewer from 'bpmn-js/lib/Viewer';
     import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
-    import { defineProps, onMounted, reactive } from 'vue';
+    import { onMounted, reactive, ref, toRefs } from 'vue';
     import { getFlowChart, getTaskList } from '@/api/flowableUI/flowchart';
 
+    let bpmnViewer = ref();
     const data = reactive({
-        bpmnViewer: null,
         canvas: null,
         xmlStr: '',
         taskList: [],
         scale: 0.9
     });
 
-    let { bpmnViewer, canvas, xmlStr, taskList, scale } = toRefs(data);
+    let { canvas, xmlStr, taskList, scale } = toRefs(data);
 
     const props = defineProps({
         processDefinitionId: String,

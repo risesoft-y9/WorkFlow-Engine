@@ -1,3 +1,10 @@
+<!--
+ * @Author: zhangchongjie
+ * @Date: 2022-01-10 18:09:52
+ * @LastEditTime: 2026-01-07 10:46:32
+ * @LastEditors: mengjuhua
+ * @Description:  自定义人员树组件
+-->
 <template>
     <el-button
         v-if="showButton"
@@ -18,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject } from 'vue';
+    import { computed, inject, reactive, ref, toRefs } from 'vue';
     import { getOrgList, getOrgTree, treeSearch } from '@/api/flowableUI/entrustManage';
     import { useI18n } from 'vue-i18n';
 
@@ -30,10 +37,11 @@
     });
 
     const emits = defineEmits(['update_person']);
-    const ruleForm = ref<FormInstance>();
+    //人员树
+    let selectTreeRef = ref();
+
     const data = reactive({
         showButton: false,
-        selectTreeRef: '',
         treeApiObj: {
             //tree接口对象
             topLevel: getOrgList,
@@ -74,11 +82,11 @@
                         reject();
                         return;
                     }
-                    let name = [];
+                    let name: any = [];
                     for (let item of treeSelectedData.value) {
                         name.push(item.name);
                     }
-                    let data = {};
+                    let data: any = {};
                     data.tableField = props.tableField;
                     data.value = name;
                     emits('update_personName', data); //向父组件GenerateElementItem传值
@@ -90,7 +98,7 @@
         treeSelectedData: []
     });
 
-    let { showButton, dialogConfig, selectTreeRef, treeApiObj, selectField, treeSelectedData } = toRefs(data);
+    let { showButton, dialogConfig, treeApiObj, selectField, treeSelectedData } = toRefs(data);
 
     defineExpose({
         initPersonTree
