@@ -1,5 +1,17 @@
+<!--
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-13 09:49:46
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 10:28:44
+ * @Descripttion: 视图配置
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\viewConfig\viewConfig.vue
+-->
 <template>
     <y9Card :title="`视图配置${currInfo.name ? ' - ' + currInfo.name : ''}`">
+        <div class="tab_toolbar_div">
+            <jsonComps :paramObject="paramObject" :reloadData="getViewConfigList"></jsonComps>
+        </div>
         <el-tabs v-model="activeName" style="height: 40px" @tab-click="tabclick">
             <el-tab-pane label="草稿箱" mark="11111" name="draft"></el-tab-pane>
             <el-tab-pane label="待办件" name="todo"></el-tab-pane>
@@ -12,32 +24,31 @@
                 :name="viewType.mark"
             ></el-tab-pane>
         </el-tabs>
-        <div style="margin: 8px 0">
+        <div style="margin: 15px 0px 15px 0px">
             <el-row :gutter="40">
-                <el-col :span="19">
+                <el-col :span="18">
                     <el-button-group>
-                        <el-button size="small" type="primary" @click="addView('table')"
-                            ><i class="ri-add-line"></i>新增
-                        </el-button>
-                        <el-button size="small" type="primary" @click="delView"
-                            ><i class="ri-delete-bin-line"></i>删除
-                        </el-button>
-                        <el-button size="small" type="primary" @click="addView('custom')"
-                            ><i class="ri-quill-pen-fill"></i>自定义列
-                        </el-button>
-                        <el-button size="small" type="primary" @click="copyViewData"
+                        <el-button type="primary" @click="addView('table')"><i class="ri-add-line"></i>新增 </el-button>
+                        <el-button type="primary" @click="delView"><i class="ri-delete-bin-line"></i>删除 </el-button>
+                        <el-tooltip
+                            class="box-item"
+                            content="自定义列字段是需要在接口方法里面定义的，如有特殊显示字段，需联系开发人员添加，自定义列里面也提供了固定的字段，可以选择配置"
+                            effect="customized"
+                        >
+                            <el-button type="primary" @click="addView('custom')">
+                                <i class="ri-quill-pen-fill"></i>
+                                自定义列
+                            </el-button>
+                        </el-tooltip>
+                        <el-button type="primary" @click="copyViewData"
                             ><i class="ri-copyright-line"></i>复制
                         </el-button>
                     </el-button-group>
                 </el-col>
-                <el-col :span="5">
+                <el-col :span="6">
                     <el-button-group>
-                        <el-button size="small" type="primary" @click="moveUp"
-                            ><i class="ri-arrow-up-line"></i>上移
-                        </el-button>
-                        <el-button size="small" type="primary" @click="moveDown"
-                            ><i class="ri-arrow-down-line"></i>下移
-                        </el-button>
+                        <el-button type="primary" @click="moveUp"><i class="ri-arrow-up-line"></i>上移 </el-button>
+                        <el-button type="primary" @click="moveDown"><i class="ri-arrow-down-line"></i>下移 </el-button>
                         <el-button type="primary" @click="saveViewOrder"><span>保存</span></el-button>
                     </el-button-group>
                 </el-col>
@@ -51,7 +62,7 @@
             @select-all="handlerSelectData"
         >
             <template #opt_button="{ row, column, index }">
-                <span @click="editView(row)"><i class="ri-edit-line"></i>编辑</span>
+                <span style="font-weight: 600" @click="editView(row)"><i class="ri-edit-line"></i>编辑</span>
             </template>
         </y9Table>
 
@@ -76,7 +87,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { reactive, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import addOrEdit from './addOrEdit.vue';
     import copyView from './copyView.vue';
     import { getViewList, getViewTypeList, removeView, saveOrder, saveView } from '@/api/itemAdmin/item/viewConfig';
@@ -94,7 +106,7 @@
     const data = reactive({
         userSelectedData: '',
         currentRow: [],
-        viewTypeList: [],
+        viewTypeList: [] as any,
         viewId: '',
         optType: '',
         activeName: 'todo',
@@ -115,8 +127,7 @@
                 },
                 {
                     title: '字段名',
-                    key: 'columnName',
-                    width: '130'
+                    key: 'columnName'
                 },
                 {
                     title: '显示名称',
@@ -175,6 +186,7 @@
         vcDialogConfig: {
             show: false,
             title: '',
+            type: '',
             onOkLoading: true,
             onOk: (newConfig) => {
                 return new Promise(async (resolve, reject) => {
@@ -211,7 +223,12 @@
             }
         },
         addOrEditRef: '',
-        viewIdArr: []
+        viewIdArr: [] as any,
+        paramObject: {
+            id: '',
+            type: 'itemViewConfig',
+            jsonBtn: 'all'
+        }
     });
 
     let {
@@ -225,7 +242,8 @@
         viewIdArr,
         currentRow,
         viewTypeList,
-        userSelectedData
+        userSelectedData,
+        paramObject
     } = toRefs(data);
 
     watch(
@@ -233,6 +251,7 @@
         (newVal) => {
             currInfo.value = $deepAssignObject(currInfo.value, newVal);
             getViewConfigList();
+            paramObject.value = { id: newVal.id, type: 'itemViewConfig', jsonBtn: 'all' };
         }
     );
 
@@ -247,6 +266,7 @@
         if (result.success) {
             viewTypeList.value = result.data;
         }
+        paramObject.value = { id: props.currTreeNodeInfo.id, type: 'itemViewConfig', jsonBtn: 'all' };
     }
 
     getViewConfigList();
@@ -287,7 +307,7 @@
     function copyViewData() {
         Object.assign(vcDialogConfig.value, {
             show: true,
-            width: '40%',
+            width: '50%',
             title: '复制视图',
             type: 'copyView',
             showFooter: false
@@ -320,7 +340,7 @@
         })
             .then(async () => {
                 let result = { success: false, msg: '' };
-                let ids = [];
+                let ids: any = [];
                 for (let obj of viewIdArr.value) {
                     ids.push(obj.id);
                 }
@@ -435,11 +455,7 @@
     }
 </script>
 
-<style>
-    .permconfig .el-dialog__body {
-        padding: 5px 10px;
-    }
-
+<style lang="scss">
     .el-popper.is-customized {
         /* Set padding to ensure the height is 32px */
         padding: 6px 12px;
@@ -449,5 +465,14 @@
     .el-popper.is-customized .el-popper__arrow::before {
         background: linear-gradient(45deg, #b2e68d, #bce689);
         right: 0;
+    }
+</style>
+<style lang="scss" scoped>
+    .tab_toolbar_div {
+        position: relative;
+        margin-right: 16px;
+        display: flex;
+        justify-content: end;
+        height: 0px;
     }
 </style>

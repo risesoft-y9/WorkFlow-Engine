@@ -10,6 +10,7 @@
                 <el-button class="global-btn-main" type="primary" @click="addOpinionFrame"
                     ><i class="ri-add-line"></i>新增
                 </el-button>
+                <jsonComps :paramObject="paramObject" :reloadData="getList"></jsonComps>
             </template>
             <template #name="{ row, column, index }">
                 <el-form-item v-if="editIndex === index" prop="name">
@@ -39,7 +40,7 @@
                     <el-button class="global-btn-second" size="small" @click="editOpinionFrame(row, index)"
                         ><i class="ri-edit-line"></i>修改
                     </el-button>
-                    <el-button class="global-btn-danger" size="small" type="danger" @click="delOpinionFrame(row)"
+                    <el-button class="global-btn-second" size="small" @click="delOpinionFrame(row)"
                         ><i class="ri-delete-bin-line"></i>删除
                     </el-button>
                 </div>
@@ -52,7 +53,7 @@
 </template>
 <script lang="ts" setup>
     import { reactive, ref } from 'vue';
-    import type { ElLoading, ElMessage } from 'element-plus';
+    import type { FormInstance, FormRules } from 'element-plus';
     import { opinionFrameList, removeOpinionFrame, saveOrUpdate } from '@/api/itemAdmin/opinionFrame';
     import AuthorizeDetail from '@/views/opinionFrame/authorizeDetail.vue';
 
@@ -81,8 +82,9 @@
             tableData: [],
             pageConfig: {
                 // 分页配置，false隐藏分页
+                pageSizeOpts: [10, 20, 30, 50, 100],
                 currentPage: 1, //当前页数，支持 v-model 双向绑定
-                pageSize: 15, //每页显示条目个数，支持 v-model 双向绑定
+                pageSize: 20, //每页显示条目个数，支持 v-model 双向绑定
                 total: 0 //总条目数
             }
         },
@@ -106,10 +108,12 @@
             },
             visibleChange: (visible) => {}
         },
-        row: ''
+        row: '',
+        paramObject: { id: '', type: 'opinionFrame', display: 'flex', jsonBtn: 'all' }
     });
 
-    let { editIndex, isEmptyData, formData, isEdit, filterConfig, tableConfig, dialogConfig, row } = toRefs(data);
+    let { editIndex, isEmptyData, formData, isEdit, filterConfig, tableConfig, dialogConfig, row, paramObject } =
+        toRefs(data);
 
     async function getList() {
         let page = tableConfig.value.pageConfig.currentPage;
@@ -207,7 +211,7 @@
     };
 
     const delOpinionFrame = (rows) => {
-        ElMessageBox.confirm('您确定要删除编号吗?', '提示', {
+        ElMessageBox.confirm('您确定要删除意见框吗?', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'warning'

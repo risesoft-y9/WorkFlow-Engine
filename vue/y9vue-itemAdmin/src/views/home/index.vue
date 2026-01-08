@@ -1,8 +1,8 @@
 <!--
  * @Author: hongzhew
  * @Date: 2022-04-01 13:23:20
- * @LastEditors: hongzhew
- * @LastEditTime: 2022-04-13 22:15:18
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 15:54:51
  * @Description:
 -->
 <!--  -->
@@ -515,7 +515,7 @@
 </style>
 <script lang="ts" setup>
     import { reactive, ref } from 'vue';
-    import { MoreFilled, Right, Switch } from '@element-plus/icons';
+    import { MoreFilled, Right, Switch } from '@element-plus/icons-vue';
     import { ElConfigProvider } from 'element-plus';
     import zhCn from 'element-plus/dist/locale/zh-cn.mjs';
 

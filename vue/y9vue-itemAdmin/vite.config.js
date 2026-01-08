@@ -17,7 +17,16 @@ export default (serve) => {
         base: ENV.VUE_APP_PUBLIC_PATH,
         build: {
             outDir: ENV.VUE_APP_NAME,
-            chunkSizeWarningLimit: 6500
+            chunkSizeWarningLimit: 1500,
+            rollupOptions: {
+                output: {
+                    manualChunks(id) {
+                        if (id.includes('node_modules')) {
+                            return id.toString().split('node_modules/')[1].split('/')[0].toString();
+                        }
+                    }
+                }
+            }
         },
         envPrefix: prefix,
         resolve: {
@@ -83,6 +92,10 @@ export default (serve) => {
                         {
                             scopeName: 'theme-dark',
                             path: path.resolve('src/theme/dark/dark.scss')
+                        },
+                        {
+                            scopeName: 'theme-red',
+                            path: path.resolve('src/theme/red/red.scss')
                         }
                     ],
                     // css中不是由主题色变量生成的颜色，也让它抽取到主题css内，可以提高权重
@@ -113,6 +126,12 @@ export default (serve) => {
             themePreprocessorHmrPlugin()
         ],
         css: {
+            preprocessorOptions: {
+                scss: {
+                    api: 'modern-compiler',
+                    silenceDeprecations: ['legacy-js-api', 'import']
+                }
+            },
             //流程设计引入
             // css sass  charset 报错
             postcss: {

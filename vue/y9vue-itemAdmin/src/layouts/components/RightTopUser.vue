@@ -102,10 +102,7 @@
                     case 'logout':
                         try {
                             // const loginOut = await this.$store.dispatch("user/logout");
-                            const params = {
-                                redirect_uri: import.meta.env.VUE_APP_HOST_INDEX
-                            };
-                            $y9_SSO.ssoLogout(params);
+                            $y9_SSO.ssoLogout({});
                         } catch (error) {
                             this.$message.error(error.message || 'Has Error');
                         }

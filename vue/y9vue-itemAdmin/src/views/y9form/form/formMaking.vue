@@ -2,10 +2,9 @@
  * @Descripttion: 
  * @version: 
  * @Author: zhangchongjie
- * @Date: 2022-06-14 10:06:24
- * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-06 17:11:16
- * @FilePath: \vue\y9vue-itemAdmin\src\views\y9form\form\formMaking.vue
+ * @Date: 2024-07-18 14:51:00
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2025-08-07 15:22:35
 -->
 <template>
     <fm-making-form
@@ -35,26 +34,36 @@
             </el-button>
         </template>
     </fm-making-form>
-    <y9Dialog v-model:config="dialogConfig">
+    <y9Dialog v-model:config="dialogConfig" class="fieldDialog">
+        <el-button class="global-btn-second" @click="delFieldByFormId()">
+            <i class="ri-delete-bin-line"></i>
+            <span>清空所有绑定</span>
+        </el-button>
         <y9Table :config="tableConfig" @on-curr-page-change="onCurrPageChange" @on-page-size-change="onPageSizeChange">
             <template #opt_button="{ row, column, index }">
-                <el-button class="global-btn-danger" size="small" type="danger" @click="delField(row)"
+                <el-button class="global-btn-second" size="small" @click="delField(row)"
                     ><i class="ri-delete-bin-line"></i>删除
                 </el-button>
             </template>
+            <template #contentUsedFor="{ row, column, index }">
+                <font v-if="row.contentUsedFor == 'title'">文件标题</font>
+                <font v-else-if="row.contentUsedFor == 'number'">文件编号</font>
+                <font v-else-if="row.contentUsedFor == 'level'">紧急程度</font>
+            </template>
         </y9Table>
+        <selectTableAndField ref="selectTableAndFieldRef" :bindField="saveCopyField" :bindType="bindType" />
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { defineProps, reactive } from 'vue';
-    import type { ElMessage, ElMessageBox } from 'element-plus';
+    import { reactive } from 'vue';
     import {
+        deleteByFormId,
         deleteFormFieldBind,
         getForm,
         getFormBindFieldList,
         saveFormField,
         saveFormJson
-    } from '@/api/itemAdmin/y9form.ts';
+    } from '@/api/itemAdmin/y9form';
 
     const props = defineProps({
         formInfo: {
@@ -66,6 +75,8 @@
         }
     });
     const data = reactive({
+        bindType: 'appendBind',
+        selectTableAndFieldRef: '',
         makingform: '',
         loading: false,
         customFields: [
@@ -111,6 +122,7 @@
                     hidden: false,
                     dataBind: true,
                     required: false,
+                    isTableField: true, //是否关联数据库字段
                     tableField: '', //关联数据库字段
                     pattern: ''
                 }
@@ -126,6 +138,7 @@
                     hidden: false,
                     dataBind: true,
                     required: false,
+                    isTableField: true, //是否关联数据库字段
                     tableField: '', //关联数据库字段
                     pattern: ''
                 }
@@ -168,6 +181,7 @@
                 { title: '字段名称', key: 'fieldName', width: 'auto' },
                 { title: '字段中文名称', key: 'fieldCnName', width: 'auto' },
                 { title: '字段类型', key: 'fieldType', width: 'auto' },
+                { title: '字段内容作为', key: 'contentUsedFor', width: '130', slot: 'contentUsedFor' },
                 { title: '操作', width: '80', slot: 'opt_button' }
             ],
             border: false,
@@ -175,13 +189,23 @@
             pageConfig: {
                 // 分页配置，false隐藏分页
                 currentPage: 1, //当前页数，支持 v-model 双向绑定
-                pageSize: 15, //每页显示条目个数，支持 v-model 双向绑定
-                total: 0 //总条目数
+                pageSize: 10, //每页显示条目个数，支持 v-model 双向绑定
+                total: 0, //总条目数
+                pageSizeOpts: [10, 20, 30, 50]
             }
         }
     });
 
-    let { makingform, customFields, loading, jsonTemplates, dialogConfig, tableConfig } = toRefs(data);
+    let {
+        bindType,
+        selectTableAndFieldRef,
+        makingform,
+        customFields,
+        loading,
+        jsonTemplates,
+        dialogConfig,
+        tableConfig
+    } = toRefs(data);
 
     // initForm();
 
@@ -202,10 +226,10 @@
     async function saveForm() {
         let json = makingform.value.getJSON(); //表单json数据
         let fieldBind = makingform.value.getFieldBind(); //表单字段绑定数据
-        let formJson = JSON.stringify(json).toString();
+        // let formJson = JSON.stringify(json).toString();
         let fieldBindJson = JSON.stringify(fieldBind).toString();
         loading.value = true;
-        let res = await saveFormJson(props.formInfo.id, formJson);
+        let res = await saveFormJson(props.formInfo.id, json);
         loading.value = false;
         ElNotification({
             title: res.success ? '成功' : '失败',
@@ -285,6 +309,31 @@
                 });
             });
     }
+
+    async function delFieldByFormId() {
+        ElMessageBox.confirm('您确定【清空所有绑定】吗?', '提示', {
+            confirmButtonText: '确定',
+            cancelButtonText: '取消',
+            type: 'warning'
+        })
+            .then(async () => {
+                let res = await deleteByFormId(props.formInfo.id);
+                if (res.success) {
+                    ElMessage({ type: 'success', message: res.msg, offset: 65 });
+                    makingform.value.removeAllFormField();
+                    reloadTable();
+                } else {
+                    ElMessage({ message: res.msg, type: 'error', offset: 65 });
+                }
+            })
+            .catch(() => {
+                ElMessage({
+                    type: 'info',
+                    message: '已取消清空所有绑定',
+                    offset: 65
+                });
+            });
+    }
 </script>
 
 <style lang="scss">
@@ -297,7 +346,11 @@
     :deep(.components-list .form-edit-widget-label) {
         border-radius: 4px 4px !important;
         border: none;
-        background-color: var(--el-color-primary-light-5);
+        // background-color: var(--el-color-primary-light-5);
+    }
+
+    :deep(.components-list .form-edit-widget-label a:hover) {
+        color: var(--el-color-primary);
     }
 
     :deep(.el-button) {
@@ -343,5 +396,10 @@
         border-bottom: 1px;
         border-top: 1px;
         border-right: 1px;
+    }
+</style>
+<style>
+    .fieldDialog .el-pagination__sizes {
+        width: 120px !important;
     }
 </style>

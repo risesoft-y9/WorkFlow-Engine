@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2022-07-06 15:47:01
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-01-16 15:47:54
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\api\itemAdmin\y9form.ts
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:09:43
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\y9form.ts
  */
 import Request from '@/api/lib/request';
 import qs from 'qs';
@@ -277,6 +277,22 @@ export function deleteFormFieldBind(id) {
     };
     return itemAdminRequest({
         url: '/vue/y9form/deleteFormFieldBind',
+        method: 'post',
+        params: params
+    });
+}
+
+/**
+ * 清空绑定字段
+ * @param formId
+ * @returns
+ */
+export function deleteByFormId(formId) {
+    const params = {
+        formId
+    };
+    return itemAdminRequest({
+        url: '/vue/y9form/deleteByFormId',
         method: 'post',
         params: params
     });

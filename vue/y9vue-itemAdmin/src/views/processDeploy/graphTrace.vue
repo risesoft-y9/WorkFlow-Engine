@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-06-10 16:34:51
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-05-11 16:08:32
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\processDeploy\graphTrace.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 17:33:24
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\processDeploy\graphTrace.vue
 -->
 
 <template>
@@ -25,8 +25,9 @@
 </template>
 
 <script lang="ts" setup>
+    import x2js from 'x2js';
     import BpmnModeler from 'bpmn-js/lib/Modeler.js';
-    import { defineProps, onMounted, ref } from 'vue';
+    import { onMounted, ref } from 'vue';
     import { getProcessXml } from '@/api/processAdmin/processDeploy';
 
     const bpmnCanvas = ref(null);
@@ -54,6 +55,31 @@
         let res = await getProcessXml(params);
         if (res.success) {
             xmlString.value = res.data;
+
+            //处理子流程展开问题
+            let x2jsObj = new x2js();
+            const newdata = x2jsObj.xml2js(xmlString.value);
+            let subProcess = newdata.definitions.process.subProcess;
+            if (subProcess != undefined) {
+                if (Array.isArray(subProcess)) {
+                    await subProcess.forEach(async (element) => {
+                        await newdata.definitions.BPMNDiagram?.BPMNPlane?.BPMNShape?.forEach((item) => {
+                            if (element._id == item._bpmnElement) {
+                                item._isExpanded = true;
+                            }
+                        });
+                    });
+                } else {
+                    await newdata.definitions.BPMNDiagram?.BPMNPlane?.BPMNShape?.forEach((item) => {
+                        if (subProcess._id == item._bpmnElement) {
+                            item._isExpanded = true;
+                        }
+                    });
+                }
+            }
+            xmlString.value = x2jsObj.js2xml(newdata);
+            //处理子流程展开问题
+
             let { warnings } = await bpmnModeler.value.importXML(xmlString.value);
             if (warnings && warnings.length) {
                 warnings.forEach((warn) => console.warn(warn));

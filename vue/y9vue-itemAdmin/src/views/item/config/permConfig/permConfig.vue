@@ -1,11 +1,11 @@
 <!--
- * @Descripttion: 
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2021-05-24 17:05:04
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-09-07 15:20:49
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\item\config\permConfig\permConfig.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 10:26:36
+ * @Descripttion: 权限配置
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\permConfig\permConfig.vue
 -->
 <template>
     <y9Card :title="`权限配置${currInfo.name ? ' - ' + currInfo.name : ''}`">
@@ -13,10 +13,6 @@
             v-if="Object.keys(currTreeNodeInfo).length > 0 && currTreeNodeInfo.systemName != ''"
             class="margin-bottom-20"
         >
-            <el-button v-if="maxVersion != 1" class="global-btn-main" type="primary" @click="formCopy">
-                <i class="ri-file-copy-2-line"></i>
-                <span>复制</span>
-            </el-button>
             <el-button class="global-btn-main" type="primary" @click="deleteConfig">
                 <i class="ri-delete-bin-line"></i>
                 <span>清空</span>
@@ -28,19 +24,20 @@
             </template> -->
         </y9Table>
 
-        <y9Dialog v-model:config="pcDialogConfig">
-            <permBind
-                ref="permBindRef"
-                :currTreeNodeInfo="currTreeNodeInfo"
-                :processDefinitionId="currTreeNodeInfo.processDefinitionId"
-                :taskDefKey="taskDefKey"
-            />
-        </y9Dialog>
+        <y9Dialog v-model:config="pcDialogConfig"> </y9Dialog>
+        <permBind
+            ref="permBindRef"
+            :currTreeNodeInfo="currTreeNodeInfo"
+            :processDefinitionId="currTreeNodeInfo.processDefinitionId"
+            :taskDefKey="taskDefKey"
+            @reloadTable="getPermConfig"
+        />
     </y9Card>
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { h, onMounted, reactive, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import permBind from './permBind.vue';
     import { copyPerm, getBpmList, removePerm } from '@/api/itemAdmin/item/permConfig';
 
@@ -82,7 +79,8 @@
                             'span',
                             {
                                 style: {
-                                    marginRight: '15px'
+                                    marginRight: '15px',
+                                    fontWeight: 600
                                 },
                                 onClick: () => {
                                     taskPermBind(row);
@@ -120,10 +118,11 @@
                 }
             }
         },
-        taskDefKey: ''
+        taskDefKey: '',
+        permBindRef: ''
     });
 
-    let { currInfo, permListTableConfig, pcDialogConfig, taskDefKey } = toRefs(data);
+    let { currInfo, permListTableConfig, pcDialogConfig, taskDefKey, permBindRef } = toRefs(data);
 
     watch(
         () => props.currTreeNodeInfo,
@@ -149,12 +148,18 @@
 
     async function taskPermBind(row) {
         taskDefKey.value = row.taskDefKey;
-        Object.assign(pcDialogConfig.value, {
-            show: true,
-            width: '30%',
-            title: '权限管理【' + row.taskDefName + '】',
-            showFooter: false
-        });
+        permBindRef.value.openDrawer(
+            currInfo.value,
+            props.currTreeNodeInfo.processDefinitionId,
+            taskDefKey.value,
+            row.taskDefName
+        );
+        // Object.assign(pcDialogConfig.value, {
+        //     show: true,
+        //     width: '40%',
+        //     title: '权限管理【' + row.taskDefName + '】',
+        //     showFooter: false
+        // });
     }
 
     async function formCopy() {
@@ -220,4 +225,4 @@
     }
 </script>
 
-<style></style>
+<style lang="scss" scoped></style>

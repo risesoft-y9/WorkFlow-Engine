@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2021-06-17 16:44:27
- * @FilePath: \workspace-y9boot-9.5.x-vue\y9vue-itemAdmin\src\api\itemAdmin\item\viewConfig.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:07:39
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\item\viewConfig.ts
  */
 
 import Request from '@/api/lib/request';

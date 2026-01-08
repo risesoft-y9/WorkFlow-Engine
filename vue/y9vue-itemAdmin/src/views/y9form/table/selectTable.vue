@@ -4,7 +4,7 @@
  * @Author: zhangchongjie
  * @Date: 2022-07-06 16:57:01
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-06-16 11:28:46
+ * @LastEditTime: 2024-10-22 11:15:30
  * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\views\y9form\table\selectTable.vue
 -->
 <template>
@@ -52,8 +52,8 @@
                 }
             ],
             tableData: [],
-            pageConfig: false, //取消分页
-            height: 'auto'
+            height: 500,
+            pageConfig: false //取消分页
         },
         currentRow: null,
         tableName: '', //搜索表名

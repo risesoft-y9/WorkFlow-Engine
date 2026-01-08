@@ -1,11 +1,11 @@
 <!--
- * @Descripttion: 
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-06 16:32:39
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-06-04 17:55:27
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-itemAdmin\src\views\y9form\table\tableManage.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-04 17:20:46
+ * @Descripttion: 业务表管理
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\y9form\table\tableManage.vue
 -->
 <template>
     <y9Card :title="`业务表管理${currTreeNodeInfo.name ? ' - ' + currTreeNodeInfo.name : ''}`" class="y9tablecard">
@@ -31,7 +31,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { h, onMounted, reactive, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import selectTable from '@/views/y9form/table/selectTable.vue';
     import newOrModifyTable from '@/views/y9form/table/newOrModifyTable.vue';
     import { addDataBaseTable, getTables, removeTable } from '@/api/itemAdmin/y9form';
@@ -51,6 +52,8 @@
         currInfo: props.currTreeNodeInfo,
         tableListConfig: {
             //人员列表表格配置
+            height: 'auto',
+            maxHeight: 'none',
             columns: [
                 {
                     title: '序号',
@@ -63,9 +66,28 @@
                     width: 'auto'
                 },
                 {
+                    title: '表别名',
+                    key: 'tableAlias',
+                    width: 'auto'
+                },
+                {
                     title: '中文名称',
                     key: 'tableCnName',
                     width: 'auto'
+                },
+                {
+                    title: '表类型',
+                    key: 'tableType',
+                    width: '80',
+                    render: (row) => {
+                        if (row.tableType == 1) {
+                            return '主表';
+                        } else if (row.tableType == 2) {
+                            return '子表';
+                        } else if (row.tableType == 3) {
+                            return '字典';
+                        }
+                    }
                 },
                 {
                     title: '系统英文名称',
@@ -91,7 +113,8 @@
                                 class: 'ri-edit-line',
                                 style: {
                                     marginRight: '10px',
-                                    fontSize: '18px'
+                                    fontSize: '18px',
+                                    fontWeight: 600
                                 },
                                 title: '编辑',
                                 onClick: () => {
@@ -102,7 +125,8 @@
                                 title: '删除',
                                 class: 'ri-delete-bin-line',
                                 style: {
-                                    fontSize: '18px'
+                                    fontSize: '18px',
+                                    fontWeight: 600
                                 },
                                 onClick: () => {
                                     ElMessageBox.confirm(`是否删除【${row.tableName}】?`, '提示', {
@@ -143,8 +167,7 @@
                 }
             ],
             tableData: [],
-            pageConfig: false, //取消分页
-            height: 'auto'
+            pageConfig: false //取消分页
         },
         //弹窗配置
         dialogConfig: {
@@ -244,8 +267,4 @@
     }
 </script>
 
-<style lang="scss">
-    .y9tablecard .y9-table-div {
-        // height: calc( 100% - 50px ) !important;
-    }
-</style>
+<style lang="scss" scoped></style>

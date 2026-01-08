@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-09-08 11:14:05
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-06-16 11:27:55
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\views\opinionFrame\authorizeDetail.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 15:58:26
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\opinionFrame\authorizeDetail.vue
 -->
 <template>
     <y9Table :config="tableConfig">
@@ -17,8 +17,7 @@
     </y9Table>
 </template>
 <script lang="ts" setup>
-    import { defineProps, onMounted, reactive } from 'vue';
-    import type { ElMessage } from 'element-plus';
+    import { onMounted, reactive } from 'vue';
     import { deleteBind, getBindListByMark } from '@/api/itemAdmin/opinionFrame';
 
     const props = defineProps({
@@ -41,7 +40,7 @@
             ],
             tableData: [],
             pageConfig: false,
-            height: 'auto'
+            height: '600'
         }
     });
 

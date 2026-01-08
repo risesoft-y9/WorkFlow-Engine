@@ -47,8 +47,7 @@
 </template>
 
 <script lang="ts" setup>
-
-const props = defineProps({
+    const props = defineProps({
         currInfo: {
             type: Object,
             default: () => {

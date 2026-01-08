@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2021-06-18 11:32:37
- * @FilePath: \workspace-y9boot-9.5.x-vue\y9vue-itemAdmin\src\api\itemAdmin\opinionFrame.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:09:25
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\viewType.ts
  */
 
 import Request from '@/api/lib/request';

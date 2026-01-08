@@ -1,176 +1,94 @@
+<!--
+
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-12 09:42:08
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 13:51:03
+ * @Descripttion: 表单配置
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\formConfig\formConfig.vue
+-->
 <template>
     <y9Card :title="`表单配置${currInfo.name ? ' - ' + currInfo.name : ''}`">
-        <div
-            v-if="Object.keys(currTreeNodeInfo).length > 0 && currTreeNodeInfo.systemName != ''"
-            class="margin-bottom-20"
-        >
-            流程定义版本
-            <el-select
-                v-model="pVersion"
-                style="width: 70px; margin-right: 15px; margin-left: 15px"
-                @change="pIdchange"
-            >
-                <el-option v-for="pd in processDefinitionList" :key="pd.id" :label="pd.version" :value="pd.version">
-                </el-option>
-            </el-select>
-            <el-button v-if="maxVersion != 1" class="global-btn-main" type="primary" @click="formCopy">
-                <i class="ri-file-copy-2-line"></i>
-                <span>复制</span>
-            </el-button>
-        </div>
-        <y9Table :config="formListTableConfig">
+        <y9Table :config="formListTableConfig" @expand-change="expandChange">
+            <template #childContent="props">
+                <el-tabs v-model="activeName" type="card" class="demo-tabs">
+                    <el-tab-pane :label="formBindType == 'PC' ? 'PC端绑定' : '手机端绑定'" name="first">
+                        <div v-if="formListShow" style="padding: 0 50px">
+                            <el-row :gutter="40">
+                                <el-col :span="18">
+                                    <el-button style="margin-bottom: 5px" type="primary" @click="addForm"
+                                        ><i class="ri-add-line"></i>表单（{{ props.row.taskDefName }}）
+                                    </el-button>
+                                </el-col>
+                                <el-col :span="6">
+                                    <el-button-group v-if="formBindType == 'PC'">
+                                        <el-button type="primary" @click="moveUp"
+                                            ><i class="ri-arrow-up-line"></i>上移
+                                        </el-button>
+                                        <el-button type="primary" @click="moveDown"
+                                            ><i class="ri-arrow-down-line"></i>下移
+                                        </el-button>
+                                        <el-button type="primary" @click="saveFormOrder"><span>保存</span></el-button>
+                                    </el-button-group>
+                                </el-col>
+                            </el-row>
+                            <y9Table :config="formBindTableConfig" @on-current-change="handleCurrentChange">
+                                <template #opt_bind="{ row, column, index }">
+                                    <span style="margin-right: 15px; font-weight: 600" @click="deleteForm(row)"
+                                        ><i class="ri-delete-bin-line"></i>删除</span
+                                    >
+                                </template>
+                            </y9Table>
+                        </div>
+                    </el-tab-pane>
+                    <el-tab-pane v-if="formBindType == 'PC'" label="页签设置" name="secord">
+                        <div style="text-align: center; padding: 10px">
+                            <el-checkbox v-model="bindForm.showFileTab" style="margin-left: 8px">附件</el-checkbox>
+                            <el-checkbox v-model="bindForm.showHistoryTab">关联文件</el-checkbox>
+                        </div>
+                        <div style="text-align: center; margin: 15px 5px 0px">
+                            <span slot="footer" class="dialog-footer">
+                                <el-button type="primary" @click="saveSetting">保存设置</el-button>
+                                <!-- <el-button @click="cancelBind">取消</el-button> -->
+                            </span>
+                        </div>
+                    </el-tab-pane>
+                </el-tabs>
+            </template>
             <template #mobileCell="{ row, column, index }">
                 {{ row.mobileFormName }}
-                <i v-if="row.mobileFormName != ''" class="ri-delete-bin-line" @click="delMobileBind(row)"></i>
             </template>
             <template #opt_button="{ row, column, index }">
-                <span style="margin-right: 15px" @click="formBind(row, 'PC')"
-                    ><i class="ri-computer-line"></i>PC端绑定</span
-                >
-                <span @click="formBind(row, 'mobile')"><i class="ri-cellphone-line"></i>手机端绑定</span>
+                <span style="margin-right: 15px; font-weight: 600" @click="formBind(row, 'PC')">
+                    <i class="ri-computer-line"></i>PC端绑定
+                </span>
+                <span style="font-weight: 600" @click="formBind(row, 'mobile')">
+                    <i class="ri-cellphone-line"></i>手机端绑定
+                </span>
             </template>
         </y9Table>
-
         <y9Dialog v-model:config="formDialogConfig">
-            <div v-if="formDialogConfig.type == 'PC'">
-                <el-button style="margin-bottom: 16px" type="primary" @click="addForm"
-                    ><i class="ri-add-line"></i>表单
-                </el-button>
-                <el-table :data="bindList" border height="450px" style="width: 100%">
-                    <el-table-column align="center" label="表单名称" prop="formName" width="auto"></el-table-column>
-                    <el-table-column align="center" label="操作" prop="opt" width="200">
-                        <template #default="opt_cell">
-                            <i
-                                class="ri-edit-line"
-                                style="margin-right: 15px; font-size: 18px"
-                                title="编辑"
-                                @click="editForm(opt_cell.row)"
-                            ></i>
-                            <i
-                                class="ri-delete-bin-line"
-                                style="font-size: 18px"
-                                title="删除"
-                                @click="deleteForm(opt_cell.row)"
-                            ></i>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </div>
-            <div v-else-if="formDialogConfig.type == 'mobile'" class="mobileDiv">
-                <el-form ref="bindFormRef" :inline-message="true" :model="bindForm" :rules="rules" :status-icon="true">
-                    <table border="0" cellpadding="0" cellspacing="1" class="layui-table" lay-skin="line row">
-                        <tbody>
-                            <tr>
-                                <td class="lefttd" style="width: 20%">表单名称</td>
-                                <td class="rigthtd">
-                                    <el-form-item prop="formName">
-                                        <el-select
-                                            v-model="bindForm.formName"
-                                            placeholder="请选择"
-                                            @change="formchange"
-                                        >
-                                            <el-option
-                                                v-for="item in formList"
-                                                :key="item.formId"
-                                                :label="item.formName"
-                                                :value="item.formId"
-                                            >
-                                            </el-option>
-                                        </el-select>
-                                    </el-form-item>
-                                </td>
-                            </tr>
-                        </tbody>
-                    </table>
-                </el-form>
-            </div>
-
-            <el-dialog
-                v-if="formDialogConfig.type == 'PC'"
-                v-model="innerVisible"
-                :close-on-click-modal="false"
-                :close-on-press-escape="false"
-                :title="title"
-                append-to-body
-                custom-class="bindFormdialog"
-                width="25%"
-            >
-                <el-form
-                    ref="pcBindFormRef"
-                    :inline-message="true"
-                    :model="bindForm"
-                    :rules="rules"
-                    :status-icon="true"
-                >
-                    <table class="layui-table">
-                        <tr>
-                            <td class="lefttd" style="width: 25%">当前事项</td>
-                            <td class="rigthtd">
-                                <span>{{ bindForm.itemName }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="lefttd">当前流程</td>
-                            <td class="rigthtd">
-                                <span>{{ bindForm.procDefName }}</span>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="lefttd">表单名称</td>
-                            <td class="rigthtd">
-                                <el-form-item prop="formName">
-                                    <el-select v-model="bindForm.formName" placeholder="请选择" @change="formchange">
-                                        <el-option
-                                            v-for="item in formList"
-                                            :key="item.formId"
-                                            :label="item.formName"
-                                            :value="item.formId"
-                                        >
-                                        </el-option>
-                                    </el-select>
-                                </el-form-item>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="lefttd">显示顺序</td>
-                            <td class="rigthtd">
-                                <el-input v-model="bindForm.tabIndex"></el-input>
-                            </td>
-                        </tr>
-                        <tr>
-                            <td class="lefttd">选择其它</td>
-                            <td class="rigthtd">
-                                <el-checkbox v-model="bindForm.showFileTab" style="margin-left: 8px">附件</el-checkbox>
-                                <el-checkbox v-model="bindForm.showHistoryTab">关联流程</el-checkbox>
-                            </td>
-                        </tr>
-                    </table>
-                </el-form>
-                <div style="text-align: right; margin: 15px 5px 0px">
-                    <span slot="footer" class="dialog-footer">
-                        <el-button type="primary" @click="saveBind">保存</el-button>
-                        <el-button @click="innerVisible = false">取消</el-button>
-                    </span>
-                </div>
-            </el-dialog>
+            <y9Table v-model:selectedVal="selectedCheck" :config="y9FormTableConfig"></y9Table>
         </y9Dialog>
     </y9Card>
 </template>
 
 <script lang="ts" setup>
-    import { onMounted } from 'vue';
+    import { onMounted, reactive, toRefs, watch } from 'vue';
     import { $deepAssignObject } from '@/utils/object';
     import {
         copyForm,
         deleteBind,
         deleteMobileBind,
-        getBindForm,
         getBindList,
         getBpmList,
         getFormList,
+        getMobileBindList,
         getY9FormList,
-        saveBindForm,
-        saveMobileBind
+        saveFormBind,
+        saveOrder,
+        saveTabSetting
     } from '@/api/itemAdmin/item/formConfig';
 
     const props = defineProps({
@@ -207,7 +125,14 @@
         currInfo: props.currTreeNodeInfo,
         formListTableConfig: {
             //人员列表表格配置
+            height: 'auto',
+            maxHeight: 'none',
             columns: [
+                {
+                    type: 'expand',
+                    slot: 'childContent',
+                    width: 60
+                },
                 {
                     title: '序号',
                     type: 'index',
@@ -231,9 +156,47 @@
                     slot: 'opt_button'
                 }
             ],
+            rowKey: 'taskDefKey',
             tableData: [],
             pageConfig: false, //取消分页
-            height: 'auto'
+
+            expandRowKeys: [] as any
+        },
+        y9FormTableConfig: {
+            //y9表单列表表格配置
+            rowKey: 'formId',
+            height: 'auto',
+            maxHeight: 'none',
+            columns: [
+                {
+                    type: 'selection',
+                    width: '60'
+                },
+                {
+                    title: '表单名称',
+                    key: 'formName'
+                }
+            ],
+            tableData: [],
+            pageConfig: false //取消分页
+        },
+        formBindTableConfig: {
+            //y9表单列表表格配置
+            height: 'auto',
+            maxHeight: 'none',
+            columns: [
+                {
+                    title: '表单名称',
+                    key: 'formName'
+                },
+                {
+                    title: '操作',
+                    key: 'opt',
+                    slot: 'opt_bind'
+                }
+            ],
+            tableData: [],
+            pageConfig: false //取消分页
         },
         //弹窗配置
         formDialogConfig: {
@@ -243,26 +206,43 @@
             onOkLoading: true,
             onOk: (newConfig) => {
                 return new Promise(async (resolve, reject) => {
-                    if (newConfig.value.type == 'mobile') {
-                        await bindFormRef.value.validate(async (valid) => {
-                            if (valid) {
-                                let res = await saveMobileBind(bindForm.value);
-                                ElNotification({
-                                    title: res.success ? '成功' : '失败',
-                                    message: res.msg,
-                                    type: res.success ? 'success' : 'error',
-                                    duration: 2000,
-                                    offset: 80
-                                });
-                                if (res.success) {
-                                    await getFormConfig();
-                                }
-                                resolve();
-                            } else {
-                                reject();
-                                return;
-                            }
+                    if (selectedCheck.value.length == 0) {
+                        ElNotification({
+                            title: '提示',
+                            message: '请选择表单',
+                            type: 'error',
+                            duration: 2000,
+                            offset: 80
                         });
+                        reject();
+                        return;
+                    }
+                    let formInfos = [];
+                    selectedCheck.value.forEach((element) => {
+                        formInfos.push(element.formId + ':' + element.formName);
+                    });
+                    let res = await saveFormBind(
+                        formBindType.value,
+                        formInfos.toString(),
+                        props.currTreeNodeInfo.id,
+                        props.currTreeNodeInfo.processDefinitionId,
+                        taskDefKey.value
+                    );
+                    if (res.success) {
+                        if (formBindType.value == 'mobile') {
+                            reloadMobileBindList();
+                        } else {
+                            reloadBindList();
+                        }
+                        ElNotification({
+                            title: '提示',
+                            message: '绑定成功',
+                            type: 'success',
+                            duration: 2000,
+                            offset: 80
+                        });
+                        getFormConfig();
+                        resolve();
                     }
                 });
             },
@@ -271,23 +251,36 @@
             }
         },
         rules: {
-            formName: { required: true, trigger: 'blur', message: '请选择表单' }
+            //formName: { required: true, trigger: 'blur', message: '请选择表单' }
         },
         bindFormRef: '',
         pcBindFormRef: '',
         taskDefKey: '',
         formList: [],
-        bindForm: {},
+        bindForm: {
+            showFileTab: true,
+            showDocumentTab: false,
+            showHistoryTab: true
+        },
         title: '',
         bindList: [],
         innerVisible: false,
-        pVersion: ''
+        pVersion: '',
+        formListShow: true,
+        formBindType: '',
+        activeName: 'first',
+        formNames: [],
+        selectedCheck: [],
+        currentRow: [],
+        isExpand: false
     });
 
     let {
         currInfo,
         formListTableConfig,
+        y9FormTableConfig,
         formDialogConfig,
+        formBindTableConfig,
         rules,
         bindFormRef,
         pcBindFormRef,
@@ -297,7 +290,14 @@
         title,
         bindForm,
         innerVisible,
-        pVersion
+        pVersion,
+        formListShow,
+        formBindType,
+        activeName,
+        formNames,
+        selectedCheck,
+        currentRow,
+        isExpand
     } = toRefs(data);
 
     watch(
@@ -305,6 +305,7 @@
         (newVal) => {
             currInfo.value = $deepAssignObject(currInfo.value, newVal);
             getFormConfig();
+            formListTableConfig.value.expandRowKeys = [];
         },
         { deep: true }
     );
@@ -322,8 +323,8 @@
         getFormConfig();
     });
 
-    async function delMobileBind(row) {
-        let res = await deleteMobileBind(row.mobileBindId);
+    async function delMobileBind(id) {
+        let res = await deleteMobileBind(id);
         ElNotification({
             title: res.success ? '成功' : '失败',
             message: res.msg,
@@ -332,6 +333,7 @@
             offset: 80
         });
         if (res.success) {
+            await reloadMobileBindList();
             await getFormConfig();
         }
     }
@@ -345,34 +347,94 @@
     }
 
     async function formBind(row, type) {
-        bindForm.value = {};
-        Object.assign(formDialogConfig.value, {
-            show: true,
-            width: '30%',
-            title: 'Y9表单绑定【' + row.taskDefName + '】',
-            type: type,
-            showFooter: type == 'PC' ? false : true
-        });
+        formListTableConfig.value.expandRowKeys = [row.taskDefKey];
+        formBindType.value = type;
+        formListShow.value = true;
+        bindForm.value = {
+            showFileTab: true,
+            showDocumentTab: false,
+            showHistoryTab: true
+        };
         formList.value = [];
+        bindList.value = [];
+        taskDefKey.value = row.taskDefKey;
         if (type == 'mobile') {
-            bindForm.value.itemName = props.currTreeNodeInfo.name;
-            bindForm.value.itemId = props.currTreeNodeInfo.id;
-            bindForm.value.taskDefKey = row.taskDefKey;
-            bindForm.value.processDefinitionId = props.currTreeNodeInfo.processDefinitionId;
-            bindForm.value.formName = row.mobileFormName;
-            bindForm.value.formId = row.mobileFormId;
-            bindForm.value.id = row.mobileBindId;
-            let res = await getY9FormList(props.currTreeNodeInfo.systemName);
-            if (res.success) {
-                formList.value = res.data;
-            }
+            activeName.value = 'first';
+            await reloadMobileBindList();
         } else {
-            bindList.value = [];
-            taskDefKey.value = row.taskDefKey;
             await reloadBindList();
         }
+
         return;
     }
+
+    function cancelBind() {
+        formListShow.value = true;
+    }
+
+    function expandChange(row, expandedRows) {
+        formBindType.value = 'PC';
+
+        // if (!expanded) {
+        //     isExpand.value = false;
+        // }
+
+        if (row.taskDefKey) {
+            taskDefKey.value = row.taskDefKey;
+        } else {
+            taskDefKey.value = '';
+        }
+
+        let expandKeyId = '';
+        isExpand.value = true;
+        if (expandedRows.length == 1) {
+            if (!expandKeyId) {
+                expandKeyId = row.taskDefKey;
+            }
+        } else if (expandedRows.length >= 2) {
+            //已经展开一行
+            expandKeyId = expandedRows[expandedRows.length - 1].taskDefKey; //获取最后一个点开的rowID
+        } else {
+            //关闭
+            isExpand.value = false;
+        }
+        if (isExpand.value) {
+            formListTableConfig.value.expandRowKeys = [expandKeyId];
+        } else {
+            formListTableConfig.value.expandRowKeys = [];
+        }
+
+        console.log('expandKeyId', expandKeyId);
+
+        reloadBindList();
+    }
+
+    async function saveSetting() {
+        bindForm.value.itemId = props.currTreeNodeInfo.id;
+        bindForm.value.processDefinitionId = props.currTreeNodeInfo.processDefinitionId;
+        bindForm.value.taskDefKey = taskDefKey.value;
+        let res = await saveTabSetting(bindForm.value);
+        if (res.success) {
+            ElNotification({
+                title: '提示',
+                message: '保存成功',
+                type: 'success',
+                duration: 2000,
+                offset: 80
+            });
+            closeExpand();
+            activeName.value = 'first';
+            getFormConfig();
+        }
+    }
+
+    function closeExpand() {
+        formListTableConfig.value.expandRowKeys = [];
+    }
+
+    defineExpose({
+        closeExpand
+    });
 
     async function reloadBindList() {
         //获取表单绑定列表
@@ -382,7 +444,22 @@
             taskDefKey.value
         );
         if (res.success) {
-            bindList.value = res.data;
+            formBindTableConfig.value.tableData = res.data;
+            if (res.data.length > 0) {
+                bindForm.value = res.data[0];
+            }
+        }
+    }
+
+    async function reloadMobileBindList() {
+        //获取表单绑定列表
+        let res = await getMobileBindList(
+            props.currTreeNodeInfo.id,
+            props.currTreeNodeInfo.processDefinitionId,
+            taskDefKey.value
+        );
+        if (res.success) {
+            formBindTableConfig.value.tableData = res.data;
         }
     }
 
@@ -397,92 +474,62 @@
         props.selVersion(pId, val);
     }
 
-    async function formchange(val) {
-        //表单选择
-        bindForm.value.formId = val;
-        for (let item of formList.value) {
-            if (item.formId == val) {
-                bindForm.value.formName = item.formName;
-                bindFormRef.value.clearValidate();
-                break;
-            }
-        }
-    }
-
     async function bindFormInfo(id) {
-        //获取表单绑定信息
-        setTimeout(() => {
-            pcBindFormRef.value.clearValidate();
-        }, 200);
-        bindForm.value.itemName = props.currTreeNodeInfo.name;
-        bindForm.value.itemId = props.currTreeNodeInfo.id;
-        let res = await getBindForm(id, props.currTreeNodeInfo.processDefinitionId);
-        if (res.success) {
-            bindForm.value.formName = '';
-            bindForm.value = res.data;
-            bindForm.value.itemName = props.currTreeNodeInfo.name;
-            bindForm.value.itemId = props.currTreeNodeInfo.id;
-            bindForm.value.taskDefKey = taskDefKey.value;
-            let res1 = await getFormList(
-                props.currTreeNodeInfo.id,
-                props.currTreeNodeInfo.processDefinitionId,
-                taskDefKey.value,
-                props.currTreeNodeInfo.systemName
-            );
-            if (res1.success) {
-                formList.value = res1.data;
-            }
+        let res1 = await getFormList(
+            props.currTreeNodeInfo.id,
+            props.currTreeNodeInfo.processDefinitionId,
+            taskDefKey.value,
+            props.currTreeNodeInfo.systemName
+        );
+        if (res1.success) {
+            y9FormTableConfig.value.tableData = res1.data;
         }
     }
 
     async function addForm() {
-        bindForm.value = {};
-        innerVisible.value = true;
-        bindFormInfo('');
-        title.value = '添加表单';
-    }
-
-    async function editForm(row) {
-        bindForm.value = {};
-        innerVisible.value = true;
-        bindFormInfo(row.id);
-        title.value = '编辑表单';
-    }
-
-    async function deleteForm(row) {
-        let res = await deleteBind(row.id);
-        ElNotification({
-            title: res.success ? '成功' : '失败',
-            message: res.msg,
-            type: res.success ? 'success' : 'error',
-            duration: 2000,
-            offset: 80
+        Object.assign(formDialogConfig.value, {
+            show: true,
+            width: '30%',
+            title: '表单选择',
+            okText: '绑定',
+            showFooter: true
         });
-        if (res.success) {
-            reloadBindList();
-            innerVisible.value = false;
+        if (formBindType.value == 'mobile') {
+            let res = await getY9FormList(props.currTreeNodeInfo.systemName);
+            if (res.success) {
+                y9FormTableConfig.value.tableData = res.data;
+            }
+        } else {
+            bindForm.value = {};
+            bindFormInfo('');
         }
     }
 
-    async function saveBind() {
-        //保存表单绑定
-        await pcBindFormRef.value.validate(async (valid) => {
-            if (valid) {
-                let res = await saveBindForm(bindForm.value);
-                ElNotification({
-                    title: res.success ? '成功' : '失败',
-                    message: res.msg,
-                    type: res.success ? 'success' : 'error',
-                    duration: 2000,
-                    offset: 80
-                });
-                if (res.success) {
-                    reloadBindList();
-                    innerVisible.value = false;
-                    getFormConfig();
-                }
+    async function editForm(row) {
+        title.value = '编辑表单';
+        formListShow.value = false;
+        bindForm.value = {};
+        bindFormInfo(row.id);
+    }
+
+    async function deleteForm(row) {
+        if (formBindType.value == 'mobile') {
+            delMobileBind(row.id);
+        } else {
+            let res = await deleteBind(row.id);
+            ElNotification({
+                title: res.success ? '成功' : '失败',
+                message: res.msg,
+                type: res.success ? 'success' : 'error',
+                duration: 2000,
+                offset: 80
+            });
+            if (res.success) {
+                reloadBindList();
+                innerVisible.value = false;
+                await getFormConfig();
             }
-        });
+        }
     }
 
     async function formCopy() {
@@ -517,52 +564,103 @@
                 });
             });
     }
+
+    function handleCurrentChange(val) {
+        currentRow.value = val;
+    }
+
+    const moveUp = () => {
+        //上移
+        if (currentRow.value.length == 0) {
+            ElNotification({
+                title: '操作提示',
+                message: '请点击选中一条数据',
+                type: 'error',
+                duration: 2000,
+                offset: 80
+            });
+            return;
+        }
+
+        let index = 0;
+        for (let i = 0; i < formBindTableConfig.value.tableData.length; i++) {
+            if (currentRow.value.id == formBindTableConfig.value.tableData[i].id) {
+                index = i;
+                break;
+            }
+        }
+        if (index > 0) {
+            let upRow = formBindTableConfig.value.tableData[index - 1];
+            let currRow = formBindTableConfig.value.tableData[index];
+            let tabIndex = upRow.tabIndex;
+            upRow.tabIndex = currRow.tabIndex;
+            currRow.tabIndex = tabIndex;
+            formBindTableConfig.value.tableData.splice(index - 1, 1);
+            formBindTableConfig.value.tableData.splice(index, 0, upRow);
+        } else {
+            ElNotification({
+                title: '操作提示',
+                message: '已经是第一条，不可上移',
+                type: 'error',
+                duration: 2000,
+                offset: 80
+            });
+        }
+    };
+
+    const moveDown = () => {
+        //下移
+        if (currentRow.value.length == 0) {
+            ElNotification({ title: '操作提示', message: '请选择数据', type: 'error', duration: 2000, offset: 80 });
+            return;
+        }
+
+        let index = 0;
+        for (let i = 0; i < formBindTableConfig.value.tableData.length; i++) {
+            if (currentRow.value.id == formBindTableConfig.value.tableData[i].id) {
+                index = i;
+                break;
+            }
+        }
+        if (index + 1 == formBindTableConfig.value.tableData.length) {
+            ElNotification({
+                title: '操作提示',
+                message: '已经是最后一条，不可下移',
+                type: 'error',
+                duration: 2000,
+                offset: 80
+            });
+        } else {
+            let downRow = formBindTableConfig.value.tableData[index + 1];
+            let currRow = formBindTableConfig.value.tableData[index];
+            let tabIndex = downRow.tabIndex;
+            downRow.tabIndex = currRow.tabIndex;
+            currRow.tabIndex = tabIndex;
+            formBindTableConfig.value.tableData.splice(index + 1, 1);
+            formBindTableConfig.value.tableData.splice(index, 0, downRow);
+        }
+    };
+
+    function saveFormOrder() {
+        let ids = [];
+        for (let item of formBindTableConfig.value.tableData) {
+            ids.push(item.id + ':' + item.tabIndex);
+        }
+        const loading = ElLoading.service({ lock: true, text: '正在处理中', background: 'rgba(0, 0, 0, 0.3)' });
+        saveOrder(ids.toString()).then((res) => {
+            loading.close();
+            if (res.success) {
+                ElNotification({ title: '操作提示', message: res.msg, type: 'success', duration: 2000, offset: 80 });
+                reloadBindList();
+            } else {
+                ElNotification({ title: '操作提示', message: res.msg, type: 'error', duration: 2000, offset: 80 });
+            }
+        });
+    }
 </script>
-<style>
-    .mobileDiv .el-form-item {
-        margin-bottom: 0;
-    }
-
-    .bindFormdialog .el-form-item {
-        margin-bottom: 0;
-    }
-
-    .bindFormdialog .el-dialog__body {
-        padding: 16px;
-        border-top: 1px solid #eee;
-    }
-</style>
 <style lang="scss" scoped>
-    .layui-table {
-        width: 100%;
-        border-collapse: collapse;
-        border-spacing: 0;
-
-        td {
-            position: revert;
-            padding: 5px 10px;
-            min-height: 32px;
-            line-height: 32px;
-            font-size: 14px;
-            border-width: 1px;
-            border-style: solid;
-            border-color: #e6e6e6;
-            display: table-cell;
-            vertical-align: inherit;
-        }
-
-        .lefttd {
-            background: #f5f7fa;
-            text-align: center;
-            // margin-right: 4px;
-            width: 14%;
-        }
-
-        .rightd {
-            display: flex;
-            flex-wrap: wrap;
-            word-break: break-all;
-            white-space: pre-wrap;
-        }
+    :deep(.tablenameclass) {
+        margin-bottom: 0 !important;
     }
 </style>
+<style lang="scss" scoped></style>

@@ -1,5 +1,5 @@
 <template>
-    <el-select v-model="seltableId" style="margin-bottom: 10px; width: 50%" @change="tableChange">
+    <el-select v-model="seltableId" filterable style="margin-bottom: 10px; width: 50%" @change="tableChange">
         <template v-for="item in tableList">
             <el-option
                 v-if="item.id != tableId"
@@ -10,14 +10,14 @@
             </el-option>
         </template>
     </el-select>
-    <y9Table :config="tableConfig" @select="handlerSelectData" @select-all="handlerSelectData"> </y9Table>
+    <y9Table :config="tableConfig" @select="handlerSelectData" @select-all="handlerSelectData"></y9Table>
 </template>
 
 <script lang="ts" setup>
-    import { getTableFieldList } from '@/api/itemAdmin/y9form';
+    import { getTableFieldList, getTables } from '@/api/itemAdmin/y9form';
+    import { onMounted, reactive, toRefs } from 'vue';
 
     const props = defineProps({
-        tableList: Array,
         tableId: String
     });
 
@@ -58,12 +58,21 @@
                 }
             ],
             tableData: [],
+            height: 500,
             pageConfig: false //取消分页
         },
+        tableList: [] as any,
         fieldArr: []
     });
 
-    let { seltableId, tableConfig, fieldArr } = toRefs(data);
+    let { seltableId, tableConfig, fieldArr, tableList } = toRefs(data);
+
+    onMounted(async () => {
+        let res = await getTables('', 1, 100);
+        if (res.success) {
+            tableList.value = res.rows;
+        }
+    });
 
     async function tableChange(val) {
         let result = await getTableFieldList(val);

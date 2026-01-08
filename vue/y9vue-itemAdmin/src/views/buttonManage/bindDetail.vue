@@ -1,15 +1,14 @@
 <template>
     <y9Table :config="tableConfig">
         <template #opt="{ row, column, index }">
-            <el-button class="global-btn-danger" size="small" type="danger" @click="deleteBindData(row)"
+            <el-button class="global-btn-second" size="small" @click="deleteBindData(row)"
                 ><i class="ri-delete-bin-line" link></i>删除
             </el-button>
         </template>
     </y9Table>
 </template>
 <script lang="ts" setup>
-    import { defineProps, onMounted, reactive } from 'vue';
-    import type { ElMessage } from 'element-plus';
+    import { onMounted, reactive, toRefs } from 'vue';
     import { deleteBind, getBindListByButtonId } from '@/api/itemAdmin/commonButton';
 
     const props = defineProps({
@@ -34,7 +33,7 @@
             tableData: [],
             pageConfig: false, //取消分页
             loading: false,
-            height: 'auto'
+            height: '600'
         }
     });
 

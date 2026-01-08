@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2021-08-12 10:21:55
- * @FilePath: \workspace-y9boot-9.5.x-vue\y9vue-itemAdmin\src\api\itemAdmin\optionClass.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:08:43
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\optionClass.ts
  */
 
 import Request from '@/api/lib/request';

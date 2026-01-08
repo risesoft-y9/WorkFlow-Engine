@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2022-07-13 10:09:45
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2022-07-13 11:32:04
- * @FilePath: \workspace-y9boot-9.5-vue\y9vue-itemAdmin\src\api\itemAdmin\item\mappingConfig.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:06:06
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\item\mappingConfig.ts
  */
 
 import Request from '@/api/lib/request';

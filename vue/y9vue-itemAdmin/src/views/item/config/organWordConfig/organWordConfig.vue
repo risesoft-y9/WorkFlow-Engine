@@ -1,14 +1,15 @@
+<!--
+
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-12 09:42:08
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 10:26:14
+ * @Descripttion: 编号配置
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\organWordConfig\organWordConfig.vue
+-->
 <template>
     <y9Card :title="`编号配置${currInfo.name ? ' - ' + currInfo.name : ''}`">
-        <div
-            v-if="Object.keys(currTreeNodeInfo).length > 0 && currTreeNodeInfo.systemName != ''"
-            class="margin-bottom-20"
-        >
-            <el-button v-if="maxVersion != 1" class="global-btn-main" type="primary" @click="formCopy">
-                <i class="ri-file-copy-2-line"></i>
-                <span>复制</span>
-            </el-button>
-        </div>
         <y9Table :config="organWordListTableConfig"></y9Table>
 
         <y9Dialog v-model:config="owDialogConfig">
@@ -23,7 +24,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { h, onMounted, reactive, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import organWordBind from './organWordBind.vue';
     import { copyBind, getBpmList } from '@/api/itemAdmin/item/organWordConfig';
 
@@ -66,7 +68,8 @@
                                 'span',
                                 {
                                     style: {
-                                        marginRight: '15px'
+                                        marginRight: '15px',
+                                        fontWeight: 600
                                     },
                                     onClick: () => {
                                         openOrganWordBind(row);
@@ -78,9 +81,9 @@
                                         style: {
                                             marginRight: '4px'
                                         }
-                                    })
-                                ],
-                                '编号配置'
+                                    }),
+                                    '编号配置'
+                                ]
                             )
                         ];
                         return button;
@@ -177,8 +180,4 @@
     }
 </script>
 
-<style>
-    .permconfig .el-dialog__body {
-        padding: 5px 10px;
-    }
-</style>
+<style lang="scss" scoped></style>

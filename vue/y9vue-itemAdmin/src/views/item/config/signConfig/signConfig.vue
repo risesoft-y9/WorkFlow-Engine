@@ -1,26 +1,25 @@
+<!--
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-13 09:49:46
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 10:29:17
+ * @Descripttion: 签收配置
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\signConfig\signConfig.vue
+-->
 <template>
-    <y9Card :title="`签收配置${currInfo.name ? ' - ' + currInfo.name : ''}`" class="wordConfig">
+    <y9Card :title="`签收配置${currInfo.name ? ' - ' + currInfo.name : ''}`" class="signConfig">
         <div
             v-if="Object.keys(currTreeNodeInfo).length > 0 && currTreeNodeInfo.systemName != ''"
             class="margin-bottom-20"
         >
-            <el-button
-                v-if="maxVersion != 1"
-                class="global-btn-main"
-                style="margin-right: 10px"
-                type="primary"
-                @click="formCopy"
-            >
-                <i class="ri-file-copy-2-line"></i>
-                <span>复制</span>
-            </el-button>
             <el-tooltip
                 content="单人节点如果配置抢占式办理，则选择岗位时可以选择多个岗位，多个岗位谁签收谁办理；并行节点配置抢占式时，多个岗位都可以发送，第一个人发送后，其他人被强制办结。"
                 effect="customized"
                 placement="right"
                 style="margin-left: 0px"
             >
-                <el-button size="small"><i class="ri-questionnaire-line"></i>抢占式办理说明</el-button>
+                <el-button><i class="ri-questionnaire-line"></i>抢占式办理说明</el-button>
             </el-tooltip>
         </div>
         <y9Table :config="signTableConfig">
@@ -38,7 +37,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { onMounted, reactive, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import { copyBind, getBpmList, saveBind } from '@/api/itemAdmin/item/signConfig';
 
     const props = defineProps({
@@ -145,7 +145,7 @@
                     offset: 80
                 });
                 if (result.success) {
-                    getOpinionFrameConfig();
+                    getProcessList();
                 }
             })
             .catch(() => {
@@ -158,10 +158,16 @@
     }
 </script>
 
-<style>
-    .wordConfig .el-form-item {
-        display: flex;
-        --font-size: 14px;
-        margin-bottom: 0px;
+<style lang="scss" scoped>
+    .signConfig {
+        :deep(.el-form-item) {
+            display: flex;
+            --font-size: 14px;
+            margin-bottom: 0px;
+        }
+
+        :deep(.el-switch__label *) {
+            font-weight: 600;
+        }
     }
 </style>

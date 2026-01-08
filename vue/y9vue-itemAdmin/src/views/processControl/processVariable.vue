@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2023-06-15 15:14:53
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-08-15 11:22:57
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\processControl\processVariable.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 17:32:45
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\processControl\processVariable.vue
 -->
 <template>
     <el-form ref="pVariableForm" :model="formData" :rules="rules" class="pVariable">
@@ -64,7 +64,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { defineProps, onMounted, reactive, ref } from 'vue';
+    import { onMounted, reactive, ref } from 'vue';
+    import { FormInstance, FormRules } from 'element-plus';
     import { deleteProcessVar, processVarList, saveProcessVariable } from '@/api/processAdmin/processControl';
 
     const props = defineProps({
@@ -99,7 +100,7 @@
             ],
             tableData: [],
             pageConfig: false, //取消分页
-            height: 'auto'
+            height: '500'
         },
         filterConfig: {
             //过滤配置

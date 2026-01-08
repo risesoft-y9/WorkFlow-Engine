@@ -37,7 +37,7 @@
                         <el-button class="global-btn-second" size="small" @click="editData(row, index)"
                             ><i class="ri-edit-line"></i>修改
                         </el-button>
-                        <el-button class="global-btn-danger" size="small" type="danger" @click="delData(row)"
+                        <el-button class="global-btn-second" size="small" @click="delData(row)"
                             ><i class="ri-delete-bin-line"></i>删除
                         </el-button>
                     </div>
@@ -48,7 +48,7 @@
 </template>
 <script lang="ts" setup>
     import { reactive, ref } from 'vue';
-    import type { ElLoading, ElMessage } from 'element-plus';
+    import type { FormInstance, FormRules } from 'element-plus';
     import { removeViewType, saveOrUpdate, viewTypeList } from '@/api/itemAdmin/viewType';
 
     // const editIndex = ref('');
@@ -79,8 +79,9 @@
             tableData: [],
             pageConfig: {
                 // 分页配置，false隐藏分页
+                pageSizeOpts: [10, 20, 30, 50, 100],
                 currentPage: 1, //当前页数，支持 v-model 双向绑定
-                pageSize: 15, //每页显示条目个数，支持 v-model 双向绑定
+                pageSize: 20, //每页显示条目个数，支持 v-model 双向绑定
                 total: 0 //总条目数
             }
         },

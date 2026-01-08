@@ -34,7 +34,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { defineProps, onMounted, reactive } from 'vue';
+    import { onMounted, reactive } from 'vue';
     // 自定义渲染（隐藏了 label 标签）
     // 自定义元素选中时的弹出菜单（修改 默认任务 为 用户任务）
     import CustomContentPadProvider from '@/components/bpmnModel/package/designer/plugins/content-pad';

@@ -25,6 +25,7 @@
 </template>
 
 <script lang="ts" setup>
+    import { reactive, toRefs } from 'vue';
     import { copyView, getViewList, getViewTypeList, saveView } from '@/api/itemAdmin/item/viewConfig';
 
     const props = defineProps({
@@ -42,7 +43,7 @@
     });
 
     const data = reactive({
-        viewTypeList: [],
+        viewTypeList: [] as any,
         viewTypes: ['draft', 'todo', 'doing', 'done'],
         activeName: '',
         //当前节点信息
@@ -50,7 +51,7 @@
         viewTableConfig: {
             //人员列表表格配置
             columns: [
-                { title: '', type: 'selection', fixed: 'left' },
+                { title: '', type: 'selection', fixed: 'left', width: '60' },
                 {
                     title: '序号',
                     type: 'index',
@@ -62,8 +63,7 @@
                 },
                 {
                     title: '字段名',
-                    key: 'columnName',
-                    width: '130'
+                    key: 'columnName'
                 },
                 {
                     title: '显示名称',
@@ -226,21 +226,10 @@
     function closePage() {
         props.vcDialogConfig.show = false;
     }
+
+    function editView(row) {
+        console.log('编辑');
+    }
 </script>
 
-<style>
-    .permconfig .el-dialog__body {
-        padding: 5px 10px;
-    }
-
-    .el-popper.is-customized {
-        /* Set padding to ensure the height is 32px */
-        padding: 6px 12px;
-        background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
-    }
-
-    .el-popper.is-customized .el-popper__arrow::before {
-        background: linear-gradient(45deg, #b2e68d, #bce689);
-        right: 0;
-    }
-</style>
+<style lang="scss" scoped></style>

@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2022-05-05 11:38:27
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2022-06-10 17:07:18
- * @FilePath: \workspace-y9boot-9.5-vuee:\workspace-y9boot-9.6-vue\y9vue-processAdmin\src\views\processDeploy\index.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 15:51:15
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\processDeploy\index.vue
 -->
 <template>
     <y9Table :config="deployTableConfig" :filterConfig="filterConfig">
@@ -23,6 +23,13 @@
                     >(文件格式xml/zip/bpmn)</font
                 >
             </el-upload>
+            <el-input
+                v-model="searchName"
+                style="margin-left: 10px; width: 200px"
+                placeholder="输入名称或流程定义key按回车键搜索"
+                clearable
+                @keyup.enter.native="search()"
+            ></el-input>
         </template>
         <template #pStatus="{ row, column, index }">
             <font v-if="row.suspended" style="color: red">挂起</font>
@@ -48,11 +55,11 @@
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { onMounted, reactive } from 'vue';
-    import type { ElLoading, ElMessage, ElMessageBox, UploadProps } from 'element-plus';
-    import GraphTrace from '@/views/processDeploy/graphTrace.vue';
+    import { onMounted, reactive, toRefs } from 'vue';
+    import { UploadProps } from 'element-plus';
     import y9_storage from '@/utils/storage';
-    import settings from '@/settings.ts';
+    import settings from '@/settings';
+    import GraphTrace from '@/views/processDeploy/graphTrace.vue';
     import { deleteDeploy, deploy, getDeployList, switchSuspendOrActive } from '@/api/processAdmin/processDeploy';
 
     const data = reactive({
@@ -69,6 +76,7 @@
                 { title: '流程定义key', key: 'key', width: '200' },
                 { title: '版本', key: 'version', width: '100' },
                 { title: '部署时间', key: 'deploymentTime', width: '180' },
+                { title: '绑定事项', key: 'itemName', width: '180' },
                 { title: '状态', key: 'suspended', width: '180', slot: 'pStatus' },
                 { title: '操作', width: '280', slot: 'opt_button' }
             ],
@@ -82,7 +90,7 @@
             itemList: [
                 {
                     type: 'slot',
-                    span: 24,
+                    span: 10,
                     slotName: 'deployProcess'
                 }
             ]
@@ -96,10 +104,13 @@
                 return new Promise(async (resolve, reject) => {});
             },
             visibleChange: (visible) => {}
-        }
+        },
+        searchName: '',
+        oldDataList: []
     });
 
-    let { actionUrl, processDefinitionId, filterConfig, deployTableConfig, dialogConfig } = toRefs(data);
+    let { actionUrl, processDefinitionId, filterConfig, deployTableConfig, dialogConfig, searchName, oldDataList } =
+        toRefs(data);
 
     onMounted(() => {
         getTableList();
@@ -109,6 +120,7 @@
         getDeployList().then((res) => {
             if (res.success) {
                 deployTableConfig.value.tableData = res.data;
+                oldDataList.value = res.data;
             }
         });
     }
@@ -120,6 +132,16 @@
             width: '50%',
             title: '流程图【' + row.name + '】',
             showFooter: false
+        });
+    }
+
+    function search() {
+        if (searchName.value == '') {
+            deployTableConfig.value.tableData = oldDataList.value;
+            return;
+        }
+        deployTableConfig.value.tableData = oldDataList.value.filter((item) => {
+            return item.name.indexOf(searchName.value) > -1 || item.key.indexOf(searchName.value) > -1;
         });
     }
 

@@ -1,3 +1,12 @@
+<!--
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-13 09:49:46
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 14:33:37
+ * @Descripttion: 编号绑定
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\item\config\organWordConfig\organWordBind.vue
+-->
 <template>
     <div class="organWordBindDiv">
         <div style="margin-bottom: 16px">
@@ -24,10 +33,12 @@
                 :treeApiObj="treeApiObj"
                 @onCheckChange="onCheckChange"
             />
-            <div slot="footer" class="dialog-footer" style="text-align: center; margin-top: 15px">
-                <el-button type="primary" @click="saveRoleBind"><span>保存</span></el-button>
-                <el-button @click="treeDrawer = false"><span>取消</span></el-button>
-            </div>
+            <template #footer>
+                <div slot="footer" class="dialog-footer" style="text-align: center; margin-top: 15px">
+                    <el-button type="primary" @click="saveRoleBind"><span>保存</span></el-button>
+                    <el-button @click="treeDrawer = false"><span>取消</span></el-button>
+                </div>
+            </template>
         </el-drawer>
         <el-drawer v-model="roleDrawer" :title="title" direction="rtl" @close="closeRoleTable">
             <y9Table :config="roleTableConfig" @select="handlerData" @select-all="handlerData"></y9Table>
@@ -40,6 +51,7 @@
 </template>
 
 <script lang="ts" setup>
+    import { reactive, ref } from 'vue';
     import {
         bindRole,
         getBindList,
@@ -472,32 +484,34 @@
     }
 </script>
 
-<style>
-    .organWordBindDiv .el-drawer__header {
-        margin-bottom: 0;
-        padding-bottom: 16px;
-        border-bottom: 1px solid #eee;
-    }
+<style lang="scss" scoped>
+    .organWordBindDiv {
+        :deep(.el-drawer__header) {
+            margin-bottom: 0;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
 
-    .organWordBindDiv .y9-card {
-        box-shadow: none;
-    }
+        :deep(.y9-card) {
+            box-shadow: none;
+        }
 
-    .organWordBindDiv .optBtn {
-        border-radius: 50%;
-        background: #586cb1;
-        border-color: #586cb1;
-        color: #fff;
-        border: 1px solid #dcdfe6;
-        padding: 9px;
-    }
+        :deep(.optBtn) {
+            border-radius: 50%;
+            background: #586cb1;
+            border-color: #586cb1;
+            color: #fff;
+            border: 1px solid #dcdfe6;
+            padding: 9px;
+        }
 
-    .organWordBindDiv .optBtnFalse {
-        border-radius: 50%;
-        background: #a6a9ad;
-        border-color: #a6a9ad;
-        color: #fff;
-        border: 1px solid #dcdfe6;
-        padding: 9px;
+        :deep(.optBtnFalse) {
+            border-radius: 50%;
+            background: #a6a9ad;
+            border-color: #a6a9ad;
+            color: #fff;
+            border: 1px solid #dcdfe6;
+            padding: 9px;
+        }
     }
 </style>

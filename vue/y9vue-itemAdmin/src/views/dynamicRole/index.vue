@@ -4,17 +4,28 @@
             <el-button class="global-btn-main" type="primary" @click="addDynamicRole"
                 ><i class="ri-add-line"></i>新增
             </el-button>
+            <jsonComps :paramObject="paramObject" :reloadData="getDynamicRoleList"></jsonComps>
         </template>
-        <template #process="{ row, column, index }">
-            <font v-if="row.useProcessInstanceId">是</font>
-            <font v-if="!row.useProcessInstanceId">否</font>
+        <template #kinds="{ row, column, index }">
+            <span v-if="row.kinds == 0 || row.kinds == null">无</span>
+            <span v-if="row.kinds == 1">部门配置分类</span>
+            <span v-if="row.kinds == 2">角色</span>
+        </template>
+        <template #ranges="{ row, column, index }">
+            <span v-if="row.ranges == 0 || row.ranges == null">无限制</span>
+            <span v-if="row.ranges == 1">科室</span>
+            <span v-if="row.ranges == 2">委办局</span>
+        </template>
+        <template #useProcessInstanceId="{ row, column, index }">
+            <span v-if="row.useProcessInstanceId">流程启动人</span>
+            <span v-if="!row.useProcessInstanceId">当前人</span>
         </template>
         <template #opt="{ row, column, index }">
             <el-button class="global-btn-second" size="small" @click="editDynamicRole(row)"
-                ><i class="ri-edit-line" link></i>修改
+                ><i class="ri-edit-line" link></i>
             </el-button>
-            <el-button class="global-btn-danger" size="small" type="danger" @click="delDynamicRole(row)"
-                ><i class="ri-delete-bin-line" link></i>删除
+            <el-button class="global-btn-second" size="small" @click="delDynamicRole(row)"
+                ><i class="ri-delete-bin-line" link></i>
             </el-button>
         </template>
     </y9Table>
@@ -23,21 +34,24 @@
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { reactive } from 'vue';
-    import type { ElMessage } from 'element-plus';
+    import { onMounted, reactive } from 'vue';
     import { dynamicRoleList, removeDynamicRole, saveOrUpdate } from '@/api/itemAdmin/dynamicRole';
     import NewOrModify from '@/views/dynamicRole/newOrEdit.vue';
+    import JsonComps from '@/components/common/jsonComps.vue';
 
     const data = reactive({
         tableConfig: {
             //人员列表表格配置
             columns: [
                 { title: '序号', type: 'index', width: '60' },
-                { title: '角色名称', key: 'name' },
-                { title: '类全路径', key: 'classPath' },
-                { title: '是否与流程相关', key: 'useProcessInstanceId', width: '150', slot: 'process' },
-                { title: '描述', key: 'description', width: '180' },
-                { title: '操作', slot: 'opt', width: '240' }
+                { title: '角色名称', key: 'name', width: '200' },
+                { title: '种类', key: 'kinds', width: '160', slot: 'kinds' },
+                { title: '用户属性', key: 'useProcessInstanceId', width: '150', slot: 'useProcessInstanceId' },
+                { title: '类全路径', key: 'classPath', align: 'left' },
+                { title: '部门属性', key: 'deptPropCategoryName', width: '100' },
+                { title: '角色', key: 'roleName', width: '200' },
+                { title: '权限范围', key: 'ranges', width: '100', slot: 'ranges' },
+                { title: '操作', slot: 'opt', width: '120' }
             ],
             border: false,
             headerBackground: true,
@@ -89,17 +103,20 @@
             visibleChange: (visible) => {}
         },
         row: '',
-        newOrModifyRef: ''
+        newOrModifyRef: '',
+        paramObject: { id: '', type: 'dynamicRoleConfig', display: 'flex', jsonBtn: 'all' }
     });
 
-    let { tableConfig, filterConfig, dialogConfig, row, newOrModifyRef } = toRefs(data);
+    let { tableConfig, filterConfig, dialogConfig, row, newOrModifyRef, paramObject } = toRefs(data);
 
     async function getDynamicRoleList() {
         let res = await dynamicRoleList();
         tableConfig.value.tableData = res.data;
     }
 
-    getDynamicRoleList();
+    onMounted(() => {
+        getDynamicRoleList();
+    });
 
     const addDynamicRole = () => {
         row.value = {};

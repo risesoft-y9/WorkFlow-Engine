@@ -1,3 +1,13 @@
+<!--
+
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-12 09:42:08
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 14:03:37
+ * @Descripttion: 前置表单配置
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\item\config\preFormConfig\index.vue
+-->
 <template>
     <y9Card :title="`前置表单配置${currInfo.name ? ' - ' + currInfo.name : ''}`">
         <div
@@ -18,19 +28,22 @@
                     placeholder="模板名称"
                     style="width: 200px; margin-right: 5px"
                 ></el-input>
-                <el-button size="small" type="primary" @click="search"><i class="ri-search-2-line"></i>搜索</el-button>
+                <el-button type="primary" @click="search"><i class="ri-search-2-line"></i>搜索</el-button>
             </div>
             <y9Table :config="formTableConfig" @select="handlerGetData" @select-all="handlerGetData"></y9Table>
-            <div slot="footer" class="dialog-footer" style="text-align: center; margin-top: 15px">
-                <el-button type="primary" @click="saveBind"><span>保存</span></el-button>
-                <el-button @click="tableDrawer = false"><span>取消</span></el-button>
-            </div>
+            <template #footer>
+                <div slot="footer" class="dialog-footer" style="text-align: center; margin-top: 15px">
+                    <el-button type="primary" @click="saveBind"><span>保存</span></el-button>
+                    <el-button @click="tableDrawer = false"><span>取消</span></el-button>
+                </div>
+            </template>
         </el-drawer>
     </y9Card>
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { h, onMounted, reactive, ref, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import { deleteBindForm, getBindList, getY9FormList, saveBindForm } from '@/api/itemAdmin/item/preFormConfig';
 
     const props = defineProps({
@@ -68,7 +81,8 @@
                                 'span',
                                 {
                                     style: {
-                                        marginRight: '15px'
+                                        marginRight: '15px',
+                                        fontWeight: 600
                                     },
                                     onClick: () => {
                                         deleteBind(row);
@@ -94,6 +108,7 @@
             height: 'auto'
         },
         formTableConfig: {
+            rowKey: 'formId',
             columns: [
                 { title: '', type: 'selection', fixed: 'left', width: '60' },
                 {
@@ -150,7 +165,7 @@
         searchName.value = '';
     }
 
-    const selectData = ref([]);
+    const selectData: any = ref([]);
 
     // 表格 选择框 选择后获取数据
     function handlerGetData(id, data) {
@@ -234,12 +249,8 @@
     }
 </script>
 
-<style>
-    .permconfig .el-dialog__body {
-        padding: 5px 10px;
-    }
-
-    .eldrawer .el-drawer__header {
+<style lang="scss" scoped>
+    :deep(.eldrawer .el-drawer__header) {
         margin-bottom: 0;
         padding-bottom: 16px;
         border-bottom: 1px solid #eee;

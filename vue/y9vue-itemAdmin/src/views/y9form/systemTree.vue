@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-06 15:21:52
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-06-16 10:16:24
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\views\y9form\systemTree.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-31 11:16:39
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\y9form\systemTree.vue
 -->
 <template>
     <div id="fixedDiv1" class="fixed">
@@ -251,7 +251,7 @@
 
         :deep(.y9-card) {
             margin-bottom: 35px;
-            height: calc(50% - 17.5px);
+            height: calc(50% - 20px);
         }
 
         :deep(.y9-card:last-child) {

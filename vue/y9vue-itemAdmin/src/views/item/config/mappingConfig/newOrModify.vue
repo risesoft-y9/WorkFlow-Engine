@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-13 09:56:19
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2022-07-13 14:11:52
- * @FilePath: \workspace-y9boot-9.5-vue\y9vue-itemAdmin\src\views\itemAdmin\item\mappingConfig\newOrModify.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 10:24:44
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\mappingConfig\newOrModify.vue
 -->
 <template>
     <el-form
@@ -28,7 +28,7 @@
             </el-select>
         </el-form-item>
         <el-form-item label="数据库字段" prop="columnName">
-            <el-select v-model="mappingConf.columnName" placeholder="请选择">
+            <el-select v-model="mappingConf.columnName" filterable placeholder="请选择">
                 <el-option
                     v-for="column in columnList"
                     :key="column.id"
@@ -72,9 +72,8 @@
 </template>
 
 <script lang="ts" setup>
+    import { onMounted, reactive, ref, toRefs, watch } from 'vue';
     import { getColumns, getConfInfo } from '@/api/itemAdmin/item/mappingConfig';
-    import { onMounted, watch } from 'vue';
-    import { ref } from 'vue-demi';
 
     const props = defineProps({
         currTreeNodeInfo: {
@@ -93,8 +92,8 @@
     const data = reactive({
         //当前节点信息
         currInfo: props.currTreeNodeInfo,
-        tableList: [],
-        columnList: [],
+        tableList: [] as any,
+        columnList: [] as any,
         rules: {
             tableName: { required: true, message: '请选择业务表', trigger: 'blur' },
             columnName: { required: true, message: '请选择字段名称', trigger: 'blur' },
@@ -102,9 +101,9 @@
             mappingName: { required: true, message: '请输入映射字段', trigger: 'blur' }
         },
         mappingItemId: '',
-        mappingConf: {},
-        mappingTableList: [],
-        mappingColumnList: [],
+        mappingConf: {} as any,
+        mappingTableList: [] as any,
+        mappingColumnList: [] as any,
         mappingForm: ''
     });
 
@@ -158,7 +157,7 @@
 
     function tableChange(val) {
         getColumns(val).then((res) => {
-            columnList.value = res.data;
+            columnList.value = res.data.filter((item) => item.fieldName !== 'guid' && item.fieldName !== 'GUID');
         });
     }
 
@@ -169,4 +168,4 @@
     }
 </script>
 
-<style></style>
+<style lang="scss" scoped></style>
