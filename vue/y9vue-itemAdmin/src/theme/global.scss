@@ -1,7 +1,16 @@
 //全局样式
-html{
+html {
 	background-color: #eff1f7;
 }
+
+.box-dialog-settings {
+	padding: 0 !important;
+
+	.el-dialog__body {
+		padding: 0 !important;
+	}
+}
+
 @mixin textEllipsis {
 	//文本超出一行略号
 	overflow: hidden;
@@ -11,25 +20,10 @@ html{
 
 //webkit内核浏览器 滚动条大小
 ::-webkit-scrollbar {
-	width: 00px;
-	height: 0px;
-	background-color: transparent;
-}
-
-::-moz-scrollbar {
-	width: 0px;
-	height: 0px;
-	background-color: red;
-}
-
-::-ms-scrollbar {
 	width: 0px;
 	height: 0px;
 	background-color: transparent;
 }
-
-
-
 
 //webkit内核浏览器 滚动条上的滚动滑块 边框圆角
 ::-webkit-scrollbar-thumb {
@@ -46,8 +40,6 @@ html{
 :hover::-webkit-scrollbar-track {
 	background-color: hsla(0, 0%, 53%, 0.1);
 }
-
-
 
 //暂无数据-样式
 .y9-no-data {
@@ -113,12 +105,32 @@ html{
 .flex-start {
 	display: flex;
 }
-.index-layout-setting-list{
-	.el-drawer__header{
-		margin-bottom: 18px!important;
+
+.index-layout-setting-list {
+	.el-drawer__header {
+		margin-bottom: 18px !important;
 	}
 }
 
+.index-layout-setting-list-preview {
+	height: calc(100% + 64px) !important;
+
+	.el-dialog__header {
+		//padding:0!important;
+		padding: 0 0 2px 0;
+		margin: 0 !important;
+		width: 100%;
+		box-shadow: 2px 2px 2px 2px rgba(0, 0, 0, 0.06) !important;
+	}
+
+	.el-dialog__close {
+		color: #000 !important;
+	}
+}
+
+.modal-class-box-dialog {
+	height: calc(100% + 64px) !important;
+}
 
 .margin-bottom-20 {
 	margin-bottom: 20px;
@@ -153,12 +165,12 @@ $hoverBgColor: rgb(231, 236, 237);
 
 //全局按钮
 :deep(.el-button) {
-	min-width: 62px;
-	font-size: 12px;
-	height: $btnHeight;
-	line-height: $btnHeight;
+	// min-width: 62px;
+	// font-size: 12px;
+	// height: $btnHeight;
+	// line-height: $btnHeight;
 	box-shadow: $boxShadow;
-	padding: 10px;
+	// padding: 10px;
 
 	i {
 		margin-right: 4px;
@@ -167,13 +179,13 @@ $hoverBgColor: rgb(231, 236, 237);
 
 //主按钮
 .global-btn-main {
-	background-color: var(--el-color-primary) !important;
+	background-color: var(--el-color-primary);
 	color: var(--el-color-white) !important;
 	border: none !important;
 }
 
 .global-btn-main:hover {
-	background-color: var(--el-button-hover-bg-color) !important;
+	background-color: var(--el-button-hover-bg-color);
 }
 
 //次要按钮
@@ -193,14 +205,6 @@ $hoverBgColor: rgb(231, 236, 237);
 	background-color: transparent !important;
 	color: var(--el-color-primary) !important;
 	border: solid 1px var(--el-color-primary) !important;
-}
-
-.global-btn-danger span{
-	color: #fff !important;
-}
-
-.global-btn-danger i{
-	color: #fff !important;
 }
 
 :deep(.el-message) {
@@ -250,21 +254,28 @@ $hoverBgColor: rgb(231, 236, 237);
 
 	.el-descriptions__cell {
 		min-width: 100px !important;
+		font-size: v-bind('fontSizeObj.baseFontSize') !important;
+
+		div {
+			font-size: v-bind('fontSizeObj.baseFontSize');
+		}
+
+		.el-form-item__error {
+			font-size: 14px;
+		}
+
+		.el-radio__label {
+			font-size: v-bind('fontSizeObj.baseFontSize');
+		}
 	}
 
 	.el-descriptions__content {
 		min-width: 100px;
 		width: 35% !important;
 
-		.el-select{
+		.el-select,
+		.el-date-editor {
 			width: 100%;
-		}
-		.el-date-editor{
-			width: 100%;
-			.el-input__wrapper{
-				width: calc(100% - 22px);
-			}
-
 		}
 
 	}
@@ -279,20 +290,84 @@ $hoverBgColor: rgb(231, 236, 237);
 
 /*描述列表 end*/
 
-
-
-/* 表格多选框 */
-:deep(.el-table__body-wrapper) {
-	.el-table-column--selection > .cell {
-		justify-content: center;
+/* empty**/
+:deep(.el-empty) {
+	.el-empty__description {
+		p {
+			font-size: v-bind('fontSizeObj.baseFontSize');
+		}
 	}
-
 }
-/* 表格多选框 end */
 
-/* 选择框 */
-:deep(.el-date-editor){
-	.el-range__icon {
-		margin-left: 10px;
+/**empty结束**/
+
+
+/**el-form表单样式**/
+:deep(.el-form) {
+	.el-form-item__label {
+		font-size: v-bind('fontSizeObj.baseFontSize');
 	}
+
+	.el-form-item__content {
+		.el-input__wrapper {
+			font-size: v-bind('fontSizeObj.baseFontSize');
+		}
+	}
+}
+
+
+/**el-form表单样式 end**/
+
+
+/**el-tabs**/
+:deep(.el-tabs) {
+
+	.el-tabs__item,
+	.el-table__row {
+		font-size: v-bind('fontSizeObj.baseFontSize');
+	}
+
+	.table-header,
+	.el-table__empty-text {
+		font-size: v-bind('fontSizeObj.baseFontSize');
+	}
+}
+
+/**el-tabs end**/
+
+
+/**提示信息 font-size**/
+:global(.el-notification__title) {
+	font-size: v-bind('fontSizeObj.mediumFontSize');
+}
+
+:global(.el-notification__content) {
+	font-size: v-bind('fontSizeObj.baseFontSize');
+}
+
+:global(.el-message .el-message__content) {
+	font-size: v-bind('fontSizeObj.baseFontSize');
+}
+
+:global(.el-message-box .el-message-box__content) {
+	font-size: v-bind('fontSizeObj.baseFontSize');
+}
+
+:global(.el-message-box .el-message-box__title) {
+	font-size: v-bind('fontSizeObj.largeFontSize');
+}
+
+:global(.el-message-box .el-message-box__headerbtn) {
+	font-size: v-bind('fontSizeObj.largeFontSize');
+}
+
+:global(.el-message-box .el-message-box__btns .el-button) {
+	font-size: v-bind('fontSizeObj.baseFontSize');
+}
+
+/**提示信息 end**/
+
+//处理底部莫名出现滚动条的问题
+:deep(.y9-card) {
+	scrollbar-width: none;
 }

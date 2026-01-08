@@ -1,10 +1,9 @@
 <!--
  * @Author: your name
  * @Date: 2022-01-12 17:06:29
- * @LastEditTime: 2022-01-12 17:08:57
- * @LastEditors: your name
- * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- * @FilePath: /sz- team-frontend-9.6.x/y9vue-home/src/layouts/components/Icon.vue
+ * @LastEditTime: 2023-08-03 09:47:21
+ * @LastEditors: mengjuhua
+ * @Description: 菜单图标  
 -->
 <template>
     <Icons :type="type" />

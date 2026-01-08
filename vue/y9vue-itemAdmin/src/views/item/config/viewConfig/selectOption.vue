@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2021-05-24 17:05:04
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2021-08-12 17:47:26
- * @FilePath: \workspace-y9boot-9.5.x-vue\y9vue-itemAdmin\src\components\formMaking\views\SecondDev\selectOption.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 15:32:19
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\item\config\viewConfig\selectOption.vue
 -->
 <template>
     <div
@@ -55,15 +55,17 @@
 </template>
 
 <script lang="ts" setup>
+    import { onMounted, reactive, toRefs } from 'vue';
     import { getOptionClassList, getOptionValueList } from '@/api/itemAdmin/optionClass';
 
     const data = reactive({
         loading: false,
         dataList: [],
         optionValueList: [],
-        currentOptionRow: null
+        currentOptionRow: null,
+        innerVisible: false
     });
-    let { loading, dataList, optionValueList, currentOptionRow } = toRefs(data);
+    let { loading, dataList, optionValueList, currentOptionRow, innerVisible } = toRefs(data);
 
     onMounted(() => {
         setTimeout(async () => {
@@ -87,6 +89,7 @@
         let res = await getOptionValueList(row.type);
         if (res.success) {
             optionValueList.value = res.data;
+            innerVisible.value = true;
         }
     }
 
@@ -95,7 +98,7 @@
     });
 </script>
 
-<style>
+<style lang="scss" scoped>
     .selectOption_class {
         box-shadow: none !important;
     }

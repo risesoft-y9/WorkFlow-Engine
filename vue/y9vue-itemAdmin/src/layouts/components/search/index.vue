@@ -1,7 +1,14 @@
+<!--
+ * @Author: your name
+ * @Date: 2022-01-13 17:31:19
+ * @LastEditTime: 2025-12-04 14:13:02
+ * @LastEditors: mengjuhua
+ * @Description:   搜索 
+-->
 <script lang="ts" setup>
-    import { Search } from '@element-plus/icons';
+    import { Search } from '@element-plus/icons-vue';
     import { useSettingStore } from '@/store/modules/settingStore';
-    import { onMounted } from 'vue-demi';
+    import { onMounted, ref } from 'vue';
 
     const settingStore = useSettingStore();
     const searchVisible = ref(false);
@@ -16,7 +23,7 @@
     // 添加点击搜索按钮事件
     onMounted(() => {
         setTimeout(() => {
-            document.getElementsByClassName('search')[0].addEventListener('click', () => {
+            document.getElementsByClassName('search')[0]?.addEventListener('click', () => {
                 if (!searchVisible.value) {
                     searchVisible.value = true;
                 }

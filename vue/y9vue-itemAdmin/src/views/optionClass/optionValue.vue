@@ -59,8 +59,8 @@
     </el-form>
 </template>
 <script lang="ts" setup>
-    import { defineProps, onMounted, reactive, ref } from 'vue';
-    import type { ElLoading, ElMessage, FormInstance } from 'element-plus';
+    import { onMounted, reactive, ref } from 'vue';
+    import type { FormInstance, FormRules } from 'element-plus';
     import {
         delOptionValue,
         getOptionValueList,
@@ -71,8 +71,8 @@
 
     const optionValueForm = ref<FormInstance>();
     const rules = reactive<FormRules>({
-        name: { required: true, message: '请输入数据名称', trigger: 'blur' },
-        code: { required: true, message: '请输入数据代码', trigger: 'blur' }
+        name: { required: true, message: '请输入数据名称', trigger: 'blur' } /*,
+        code: { required: true, message: '请输入数据代码', trigger: 'blur' }*/
     });
 
     const props = defineProps({
@@ -97,7 +97,7 @@
             ],
             tableData: [],
             pageConfig: false,
-            height: 'auto'
+            height: '500'
         }
     });
 

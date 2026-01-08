@@ -5,7 +5,7 @@ $leftSideBarWidth: 260px;
 // 头部高度
 $headerHeight: 60px;
 // 头部下方面包屑高度
-$headerBreadcrumbHeight: 80px;
+$headerBreadcrumbHeight: 60px;
 // 头部下方面包屑宽度
 $headerBreadcrumbWidth: 1000px;
 // 头部面包屑下tab导航高度
@@ -15,12 +15,12 @@ $menu-collapsed-width: 54px;
 // menu separate后的边界宽度
 $sidebar-separate-margin-left: 20px;
 //pc main-padding
-$main-padding: 35px;
+$main-padding: 30px;
 //mobile main-padding
 $mobile-main-padding: 15px;
 // 固定背景色
 $background-color: #eff1f7;
-
+$boxShadow: 2px 2px 2px 1px rgba(0, 0, 0, 0.06); //阴影
 // 滚轴适应性和样式
 @mixin scrollbar {
     ::-webkit-scrollbar {

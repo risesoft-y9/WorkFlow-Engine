@@ -1,19 +1,30 @@
+<!--
+
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-12 09:42:08
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 14:29:18
+ * @Descripttion: 数据迁移
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\item\config\dataTransfer\dataTransfer.vue
+-->
 <template>
-    <y9Card :title="`实例迁移${currInfo.name ? ' - ' + currInfo.name : ''}`">
+    <y9Card :title="`流程数据迁移${currInfo.name ? ' - ' + currInfo.name : ''}`">
         <y9Table
             :config="dataTableConfig"
             @on-curr-page-change="onCurrPageChange"
             @on-page-size-change="onPageSizeChange"
         >
             <template v-if="maxVersion != selectVersion" #opt_button="{ row, column, index }">
-                <span @click="dataMove(row)"><i class="ri-add-line"></i>迁移</span>
+                <span style="font-weight: 600" @click="dataMove(row)"><i class="ri-add-line"></i>迁移</span>
             </template>
         </y9Table>
     </y9Card>
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { onMounted, reactive, ref, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import { dataTransfer, getProcessInstanceList } from '@/api/itemAdmin/item/dataTransfer';
 
     const props = defineProps({
@@ -52,7 +63,7 @@
                 {
                     title: '拟稿人',
                     key: 'startorName',
-                    width: '120'
+                    width: '160'
                 },
                 {
                     title: '开始时间',
@@ -62,7 +73,7 @@
                 {
                     title: '当前办理人',
                     key: 'assigneeNames',
-                    width: '120'
+                    width: '160'
                 },
                 {
                     title: '操作',
@@ -73,6 +84,7 @@
             tableData: [],
             pageConfig: {
                 // 分页配置，false隐藏分页
+                pageSizeOpts: [10, 20, 30, 50, 100],
                 currentPage: 1, //当前页数，支持 v-model 双向绑定
                 pageSize: 10, //每页显示条目个数，支持 v-model 双向绑定
                 total: total.value //总条目数
@@ -168,19 +180,4 @@
     }
 </script>
 
-<style>
-    .permconfig .el-dialog__body {
-        padding: 5px 10px;
-    }
-
-    .el-popper.is-customized {
-        /* Set padding to ensure the height is 32px */
-        padding: 6px 12px;
-        background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
-    }
-
-    .el-popper.is-customized .el-popper__arrow::before {
-        background: linear-gradient(45deg, #b2e68d, #bce689);
-        right: 0;
-    }
-</style>
+<style lang="scss" scoped></style>

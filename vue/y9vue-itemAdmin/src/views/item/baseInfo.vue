@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-05 16:21:46
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2022-07-11 18:19:18
- * @FilePath: \workspace-y9boot-9.5-vuee:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\views\item\baseInfo.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 14:53:37
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\item\baseInfo.vue
 -->
 <template>
     <y9Card :headerPadding="false">
@@ -47,7 +47,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { reactive, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import itemForm from './itemForm.vue';
     import { saveItem } from '@/api/itemAdmin/item/item';
 
@@ -214,6 +215,10 @@
 
         :deep(.el-button) {
             margin-bottom: 10px;
+        }
+
+        i {
+            font-size: medium;
         }
     }
 

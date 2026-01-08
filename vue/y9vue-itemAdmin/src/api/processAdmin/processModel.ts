@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-06-15 15:51:25
- * @FilePath: \workspace-y9boot-9.5.x-vue\y9vue-processAdmin\src\api\processAdmin\processModel.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:19:08
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\processAdmin\processModel.ts
  */
 
 import Request from '@/api/lib/request4Process';
@@ -13,65 +13,79 @@ import Request from '@/api/lib/request4Process';
 var processAdminRequest = new Request();
 
 //获取部署列表
-export function getModelList() {
+export const getModelList = async () => {
     const params = {
         resourceId: ''
     };
-    return processAdminRequest({
+    return await processAdminRequest({
         url: '/vue/processModel/getModelList',
         method: 'get',
         params: params
     });
-}
+};
 
 /**
  * 获取流程设计XML
  */
-export function getModelXml(modelId) {
+export const getModelXml = async (modelId) => {
     const params = {
         modelId
     };
-    return processAdminRequest({
+    return await processAdminRequest({
         url: '/vue/processModel/getModelXml',
         method: 'get',
         params: params
     });
-}
+};
 
 //删除流程定义
-export function deleteModel(modelId) {
+export const deleteModel = async (modelId) => {
     const params = {
         modelId: modelId
     };
-    return processAdminRequest({
+    return await processAdminRequest({
         url: '/vue/processModel/deleteModel',
         method: 'post',
         params: params
     });
-}
+};
 
 //创建流程设计
-export function createModel(name, key, description) {
+export const createModel = async (name, key, description) => {
     const params = {
         name: name,
         key: key,
         description: description
     };
-    return processAdminRequest({
+    return await processAdminRequest({
         url: '/vue/processModel/create',
         method: 'post',
         params: params
     });
-}
+};
 
 //部署流程设计
-export function deployModel(modelId) {
+export const deployModel = async (modelId) => {
     const params = {
         modelId: modelId
     };
-    return processAdminRequest({
+    return await processAdminRequest({
         url: '/vue/processModel/deployModel',
         method: 'post',
         params: params
     });
-}
+};
+
+export const importModel = async (params) => {
+    var data = new FormData();
+    data.append('file', params.file);
+    return await processAdminRequest({
+        url: '/vue/processModel/import',
+        method: 'POST',
+        headers: {
+            'Content-Type': 'multipart/form-data'
+        },
+        cType: false,
+        data: data
+    });
+};

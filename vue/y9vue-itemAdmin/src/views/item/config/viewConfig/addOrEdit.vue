@@ -25,7 +25,7 @@
             </el-select>
         </el-form-item>
         <el-form-item v-if="optType != 'custom'" label="数据库字段" prop="columnName">
-            <el-select v-model="viewFormData.columnName" placeholder="请选择" @change="columnChange">
+            <el-select v-model="viewFormData.columnName" filterable placeholder="请选择" @change="columnChange">
                 <el-option
                     v-for="column in columnList"
                     :key="column.id"
@@ -36,7 +36,20 @@
             </el-select>
         </el-form-item>
         <el-form-item v-if="optType == 'custom'" label="字段名称" prop="columnName">
-            <el-input v-model="viewFormData.columnName"></el-input>
+            <el-input
+                v-model="viewFormData.columnName"
+                placeholder="请输入或者选择固定字段"
+                style="width: 60%"
+            ></el-input>
+            <el-select v-model="selectValue" placeholder="请选择固定字段" style="width: 40%" @change="selectField">
+                <el-option
+                    v-for="item in optionData"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value + '-' + item.label"
+                >
+                </el-option>
+            </el-select>
         </el-form-item>
         <el-form-item label="显示名称" prop="disPlayName">
             <el-input v-model="viewFormData.disPlayName"></el-input>
@@ -100,6 +113,7 @@
 </template>
 
 <script lang="ts" setup>
+    import { onMounted, reactive, toRefs, watch } from 'vue';
     import { getViewInfo } from '@/api/itemAdmin/item/viewConfig';
     import selectOptionDialog from './selectOption.vue';
 
@@ -126,17 +140,17 @@
             tableName: '',
             columnName: '',
             disPlayName: '',
-            disPlayWidth: '',
-            disPlayAlign: '',
+            disPlayWidth: '120',
+            disPlayAlign: 'center',
             openSearch: '0',
             inputBoxType: '',
             spanWidth: '',
             labelName: '',
             optionClass: ''
         },
-        tableList: [],
-        columnList: [],
-        tablefield: [],
+        tableList: [] as any,
+        columnList: [] as any,
+        tablefield: [] as any,
         rules: {
             tableName: { required: true, message: '请选择业务表' },
             columnName: { required: true, message: '请输入或者选择字段名称' },
@@ -144,6 +158,45 @@
             disPlayWidth: { required: true, message: '请输入显示宽度' },
             disPlayAlign: { required: true, message: '请选择显示位置' }
         },
+        selectValue: '',
+        optionData: [
+            {
+                label: '序号',
+                value: 'serialNumber'
+            },
+            {
+                label: '操作',
+                value: 'opt'
+            },
+            {
+                label: '发起人',
+                value: 'creatUserName'
+            },
+            {
+                label: '办理环节',
+                value: 'taskName'
+            },
+            {
+                label: '发送人',
+                value: 'taskSender'
+            },
+            {
+                label: '发送时间',
+                value: 'taskCreateTime'
+            },
+            {
+                label: '办理人',
+                value: 'taskAssignee'
+            },
+            {
+                label: '任务创建时间',
+                value: 'taskCreateTime'
+            },
+            {
+                label: '事项名称',
+                value: 'itemName'
+            }
+        ],
         //弹窗配置
         dialogConfig: {
             show: false,
@@ -176,7 +229,9 @@
         tableList,
         columnList,
         rules,
-        tablefield
+        tablefield,
+        selectValue,
+        optionData
     } = toRefs(data);
 
     watch(
@@ -188,17 +243,32 @@
 
     onMounted(() => {
         getViewInfoDetail();
+        if (viewFormData.value.viewType == 'done') {
+            optionData.value.push(
+                {
+                    label: '办结人',
+                    value: 'user4Complete'
+                },
+                {
+                    label: '办结时间',
+                    value: 'endTime'
+                }
+            );
+        }
     });
 
     function getViewInfoDetail() {
         getViewInfo(props.id, props.currTreeNodeInfo.id).then((res) => {
             tableList.value = res.data.tableList;
             tablefield.value = res.data.tablefield;
+            console.log('AAAAA' + props.id);
             if (props.id != '') {
                 viewFormData.value = res.data.itemViewConf;
                 if (viewFormData.value.tableName != null) {
                     tableChange(viewFormData.value.tableName);
                 }
+            } else {
+                //viewFormData.value.tableName = tableList.value.length > 0 ? tableList.value[0].tableName : "";
             }
         });
     }
@@ -220,6 +290,11 @@
             return item.fieldName === val;
         });
         viewFormData.value.disPlayName = obj.fieldCnName;
+    }
+
+    function selectField(val) {
+        viewFormData.value.columnName = val.split('-')[0];
+        viewFormData.value.disPlayName = val.split('-')[1];
     }
 
     function switchchange(val) {
@@ -245,4 +320,4 @@
     });
 </script>
 
-<style></style>
+<style lang="scss" scoped></style>

@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2022-07-12 11:46:00
- * @FilePath: \workspace-y9boot-9.5-vuee:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\api\itemAdmin\item\formConfig.ts
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:04:51
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\item\formConfig.ts
  */
 
 import Request from '@/api/lib/request';
@@ -35,6 +35,20 @@ export function getBindList(itemId, procDefId, taskDefKey) {
     };
     return itemAdminRequest({
         url: '/vue/y9form/item/bindList',
+        method: 'get',
+        params: params
+    });
+}
+
+//获取绑定的手机端表单列表
+export function getMobileBindList(itemId, procDefId, taskDefKey) {
+    const params = {
+        itemId: itemId,
+        procDefId: procDefId,
+        taskDefKey: taskDefKey
+    };
+    return itemAdminRequest({
+        url: '/vue/y9form/item/mobileBindList',
         method: 'get',
         params: params
     });
@@ -90,6 +104,35 @@ export function saveBindForm(bind) {
     });
 }
 
+//保存PC/移动端表单绑定信息,用bindType区分
+export function saveFormBind(bindType, formInfos, itemId, processDefinitionId, taskDefKey) {
+    const params = {
+        bindType: bindType,
+        formInfos: formInfos,
+        itemId: itemId,
+        processDefinitionId: processDefinitionId,
+        taskDefKey: taskDefKey
+    };
+    return itemAdminRequest({
+        url: '/vue/y9form/item/saveFormBind',
+        method: 'post',
+        params: params
+    });
+}
+
+//保存排序
+export function saveOrder(idAndTabIndexs) {
+    const params = {
+        idAndTabIndexs: idAndTabIndexs
+    };
+    const data = qs.stringify(params);
+    return itemAdminRequest({
+        url: '/vue/y9form/item/saveOrder',
+        method: 'post',
+        data: data
+    });
+}
+
 //保存表单绑定信息
 export function saveMobileBind(bind) {
     const data = qs.stringify(bind);
@@ -134,5 +177,19 @@ export function copyForm(itemId, processDefinitionId) {
         url: '/vue/y9form/item/copyForm',
         method: 'post',
         params: params
+    });
+}
+
+/**
+ * 保存标签页设置
+ * @param bind
+ * @returns
+ */
+export function saveTabSetting(bind) {
+    const data = qs.stringify(bind);
+    return itemAdminRequest({
+        url: '/vue/y9form/item/saveTabSetting',
+        method: 'post',
+        data: data
     });
 }

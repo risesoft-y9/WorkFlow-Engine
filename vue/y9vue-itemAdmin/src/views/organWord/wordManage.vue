@@ -40,8 +40,8 @@
     </el-form>
 </template>
 <script lang="ts" setup>
-    import { defineProps, onMounted, reactive, ref } from 'vue';
-    import type { ElLoading, ElMessage, FormInstance } from 'element-plus';
+    import { onMounted, reactive, ref } from 'vue';
+    import type { FormInstance, FormRules } from 'element-plus';
     import { organWordApi } from '@/api/itemAdmin/organWord';
 
     const wordManagerForm = ref<FormInstance>();

@@ -1,20 +1,22 @@
+<!--
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-13 09:49:46
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 10:36:51
+ * @Descripttion: 按钮配置
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\buttonConfig\buttonConfig.vue
+-->
 <template>
     <y9Card :title="`按钮配置${currInfo.name ? ' - ' + currInfo.name : ''}`">
-        <div
-            v-if="Object.keys(currTreeNodeInfo).length > 0 && currTreeNodeInfo.systemName != ''"
-            class="margin-bottom-20"
-        >
-            <el-button v-if="maxVersion != 1" class="global-btn-main" type="primary" @click="formCopy">
-                <i class="ri-file-copy-2-line"></i>
-                <span>复制</span>
-            </el-button>
-        </div>
         <y9Table v-model:selectedVal="userSelectedData" :config="buttonTableConfig">
             <template #opt_button="{ row, column, index }">
-                <span style="margin-right: 15px" @click="buttonBindManage(row, 1)"
-                    ><i class="ri-add-line"></i>普通按钮</span
-                >
-                <span @click="buttonBindManage(row, 2)"><i class="ri-add-line"></i>发送按钮</span>
+                <span style="margin-right: 15px; font-weight: 600" @click="buttonBindManage(row, 1)">
+                    <i class="ri-add-line"></i>普通按钮
+                </span>
+                <span style="font-weight: 600" @click="buttonBindManage(row, 2)">
+                    <i class="ri-add-line"></i>发送按钮
+                </span>
             </template>
         </y9Table>
 
@@ -31,7 +33,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { onMounted, reactive, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import buttonBind from './buttonBind.vue';
     import { copyBind, getBpmList } from '@/api/itemAdmin/item/buttonConfig';
 
@@ -177,19 +180,8 @@
     }
 </script>
 
-<style>
-    .permconfig .el-dialog__body {
-        padding: 5px 10px;
-    }
-
-    .el-popper.is-customized {
-        /* Set padding to ensure the height is 32px */
-        padding: 6px 12px;
-        background: linear-gradient(90deg, rgb(159, 229, 151), rgb(204, 229, 129));
-    }
-
-    .el-popper.is-customized .el-popper__arrow::before {
-        background: linear-gradient(45deg, #b2e68d, #bce689);
-        right: 0;
+<style lang="scss" scoped>
+    :deep(.y9-card) {
+        scrollbar-width: none;
     }
 </style>

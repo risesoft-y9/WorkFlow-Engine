@@ -1,24 +1,22 @@
 <!--
- * @Descripttion: 
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-13 09:49:46
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-05-22 09:08:50
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\item\config\mappingConfig\mappingConfig.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 14:27:54
+ * @Descripttion: 系统对接
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\item\config\mappingConfig\mappingConfig.vue
 -->
 <template>
-    <y9Card :title="`表单字段映射${currInfo.name ? ' - ' + currInfo.name : ''}`">
+    <y9Card :title="`系统对接映射${currInfo.name ? ' - ' + currInfo.name : ''}`">
         <el-tabs v-if="dockingItemId || dockingSystem" v-model="activeName" style="height: 40px" @tab-click="tabclick">
             <el-tab-pane v-if="dockingSystem" label="系统字段映射" name="system"></el-tab-pane>
             <el-tab-pane v-if="dockingItemId" label="事项字段映射" name="item"></el-tab-pane>
         </el-tabs>
-        <div v-if="dockingItemId || dockingSystem" style="margin: 8px 0">
+        <div v-if="dockingItemId || dockingSystem" style="margin: 15px 0">
             <el-button-group>
-                <el-button size="small" type="primary" @click="newMapping()"><i class="ri-add-line"></i>新增</el-button>
-                <el-button size="small" type="primary" @click="delMapping"
-                    ><i class="ri-delete-bin-line"></i>删除
-                </el-button>
+                <el-button type="primary" @click="newMapping()"><i class="ri-add-line"></i>新增</el-button>
+                <el-button type="primary" @click="delMapping"><i class="ri-delete-bin-line"></i>删除 </el-button>
             </el-button-group>
         </div>
         <div v-else style="color: red; margin: 10px 0">暂无对接系统或事项</div>
@@ -29,7 +27,7 @@
             @select-all="handlerSelectData"
         >
             <template #opt_button="{ row, column, index }">
-                <span @click="editMapping(row)"><i class="ri-edit-line"></i>编辑</span>
+                <span style="font-weight: 600" @click="editMapping(row)"><i class="ri-edit-line"></i>编辑</span>
             </template>
         </y9Table>
         <y9Dialog v-model:config="mappingDialogConfig">
@@ -45,10 +43,10 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { onMounted, reactive, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import newOrModify from '@/views/item/config/mappingConfig/newOrModify.vue';
     import { getList, remove, saveOrUpdate } from '@/api/itemAdmin/item/mappingConfig';
-    import { onMounted } from 'vue';
 
     const props = defineProps({
         currTreeNodeInfo: {
@@ -302,8 +300,4 @@
     }
 </script>
 
-<style>
-    .mappingConfig .el-dialog__body {
-        padding: 5px 10px;
-    }
-</style>
+<style lang="scss" scoped></style>

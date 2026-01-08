@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2022-05-05 11:38:27
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-08-08 15:21:30
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\processModelNew\index.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 15:51:51
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\processModelNew\index.vue
 -->
 <template>
     <y9Table :config="modelTableConfig" :filterConfig="filterConfig">
@@ -26,6 +26,13 @@
                     >(文件格式.bpmn20.xml)</font
                 >
             </el-upload>
+            <el-input
+                v-model="searchName"
+                style="margin-left: 10px; width: 200px"
+                placeholder="输入名称或流程定义key按回车键搜索"
+                clearable
+                @keyup.enter.native="search()"
+            ></el-input>
         </template>
         <template #opt_button="{ row, column, index }">
             <el-button class="global-btn-second" size="small" @click="editModel(row)"
@@ -52,12 +59,11 @@
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { onMounted, reactive, ref } from 'vue';
-    import type { ElLoading, ElMessage, ElMessageBox, FormInstance, UploadProps } from 'element-plus';
+    import { onMounted, reactive, ref, toRefs } from 'vue';
+    import { FormInstance, UploadProps } from 'element-plus';
     import y9_storage from '@/utils/storage';
-    import settings from '@/settings.ts';
-    import axios from 'axios';
-    import { deleteModel, deployModel, getModelList } from '@/api/processAdmin/processModel';
+    import settings from '@/settings';
+    import { deleteModel, deployModel, getModelList, importModel } from '@/api/processAdmin/processModel';
     import Y9BpmnModel from '@/views/processModelNew/bpmnModel.vue';
 
     const tableData = ref([]);
@@ -90,7 +96,7 @@
             itemList: [
                 {
                     type: 'slot',
-                    span: 24,
+                    span: 10,
                     slotName: 'processModel'
                 }
             ]
@@ -105,10 +111,12 @@
             },
             visibleChange: (visible) => {}
         },
-        editId: ''
+        editId: '',
+        searchName: '',
+        oldDataList: []
     });
 
-    let { model, filterConfig, modelTableConfig, dialogConfig, editId } = toRefs(data);
+    let { model, filterConfig, modelTableConfig, dialogConfig, editId, searchName, oldDataList } = toRefs(data);
 
     onMounted(() => {
         getTableList();
@@ -118,7 +126,18 @@
         getModelList().then((res) => {
             if (res.success) {
                 modelTableConfig.value.tableData = res.data;
+                oldDataList.value = res.data;
             }
+        });
+    }
+
+    function search() {
+        if (searchName.value == '') {
+            modelTableConfig.value.tableData = oldDataList.value;
+            return;
+        }
+        modelTableConfig.value.tableData = oldDataList.value.filter((item) => {
+            return item.name.indexOf(searchName.value) > -1 || item.key.indexOf(searchName.value) > -1;
         });
     }
 
@@ -143,32 +162,16 @@
         return true;
     };
 
-    function uploadSectionFile(params) {
-        let formData = new FormData();
-        formData.append('file', params.file);
-        let config = {
-            headers: {
-                'Content-Type': 'multipart/form-data'
-            }
-        };
+    async function uploadSectionFile(params) {
         const loading = ElLoading.service({ lock: true, text: '正在处理中', background: 'rgba(0, 0, 0, 0.3)' });
-        let url =
-            import.meta.env.VUE_APP_PROCESS_CONTEXT +
-            'vue/processModel/import?access_token=' +
-            y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');
-        axios
-            .post(url, formData, config)
-            .then((res) => {
-                loading.close();
-                ElMessage({ type: res.data.success ? 'success' : 'error', message: res.data.msg, offset: 65 });
-                if (res.data.success) {
-                    getTableList();
-                }
-            })
-            .catch((err) => {
-                loading.close();
-                ElMessage({ type: 'error', message: '发生异常', offset: 65 });
-            });
+        let res = await importModel(params);
+        loading.close();
+        ElMessage({ type: res.success ? 'success' : 'error', message: res.msg, offset: 65 });
+        if (res.success) {
+            getTableList();
+        } else {
+            ElMessage({ type: 'error', message: '发生异常', offset: 65 });
+        }
     }
 
     function deploy(row) {
@@ -178,15 +181,14 @@
             cancelButtonText: '取消',
             type: 'warning'
         })
-            .then(() => {
+            .then(async () => {
                 const loading = ElLoading.service({ lock: true, text: '正在处理中', background: 'rgba(0, 0, 0, 0.3)' });
-                deployModel(row.id).then((res) => {
-                    ElMessage({ type: res.success ? 'success' : 'error', message: res.msg, offset: 65 });
-                    loading.close();
-                    if (res.success) {
-                        getTableList();
-                    }
-                });
+                let res = await deployModel(row.id);
+                ElMessage({ type: res.success ? 'success' : 'error', message: res.msg, offset: 65 });
+                loading.close();
+                if (res.success) {
+                    getTableList();
+                }
             })
             .catch(() => {
                 ElMessage({ type: 'info', message: '已取消删除', offset: 65 });
@@ -199,15 +201,14 @@
             cancelButtonText: '取消',
             type: 'warning'
         })
-            .then(() => {
+            .then(async () => {
                 const loading = ElLoading.service({ lock: true, text: '正在处理中', background: 'rgba(0, 0, 0, 0.3)' });
-                deleteModel(row.id).then((res) => {
-                    ElMessage({ type: res.success ? 'success' : 'error', message: res.msg, offset: 65 });
-                    loading.close();
-                    if (res.success) {
-                        getTableList();
-                    }
-                });
+                let res = await deleteModel(row.id);
+                ElMessage({ type: res.success ? 'success' : 'error', message: res.msg, offset: 65 });
+                loading.close();
+                if (res.success) {
+                    getTableList();
+                }
             })
             .catch(() => {
                 ElMessage({ type: 'info', message: '已取消删除', offset: 65 });

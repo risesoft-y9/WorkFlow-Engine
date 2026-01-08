@@ -5,7 +5,7 @@
     import { $y9_SSO } from '@/main';
     // const bgUrl = 'https://v3.cn.vuejs.org/logo.png'
     const settingStore = useSettingStore();
-    // const bgUrl = computed(() => settingStore.getLockScreenImage)
+    const bgUrl = computed(() => settingStore.getLockScreenImage);
     // console.log(bgUrl.value);
 
     // 监听F12手动移除锁屏元素
@@ -40,7 +40,7 @@
                 const lockDivClassName = document.getElementsByClassName('lock-div')[0]?.className;
                 if (lockStatus.value && lockDivClassName !== 'lock-div') {
                     const params = {
-                        redirect_uri: import.meta.env.VUE_APP_HOST_INDEX
+                        redirect_uri: window.location.origin + import.meta.env.VUE_APP_PUBLIC_PATH
                     };
                     $y9_SSO.ssoLogout(params);
                 }

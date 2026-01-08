@@ -3,9 +3,19 @@
         <el-form ref="optionClassForm" :model="formData" :rules="rules">
             <y9Table :config="tableConfig" :filterConfig="filterConfig">
                 <template #addBtn>
+                    <el-input
+                        v-model="searchName"
+                        style="margin-right: 10px; width: 200px"
+                        placeholder="输入字典名称或字典标识搜索"
+                        clearable
+                    ></el-input>
+                    <el-button class="global-btn-main" type="primary" @click="search"
+                        ><i class="ri-search-line"></i>搜索
+                    </el-button>
                     <el-button class="global-btn-main" type="primary" @click="addData"
                         ><i class="ri-add-line"></i>新增
                     </el-button>
+                    <jsonComps :paramObject="paramObject" :reloadData="getList"></jsonComps>
                 </template>
                 <template #name="{ row, column, index }">
                     <el-form-item v-if="editIndex === index" prop="name">
@@ -35,9 +45,19 @@
                         <el-button class="global-btn-second" size="small" @click="editData(row, index)"
                             ><i class="ri-edit-line"></i>修改
                         </el-button>
-                        <el-button class="global-btn-danger" size="small" type="danger" @click="delData(row)"
+                        <el-button class="global-btn-second" size="small" @click="delData(row)"
                             ><i class="ri-delete-bin-line"></i>删除
                         </el-button>
+                        <jsonComps
+                            :paramObject="{
+                                id: row.type,
+                                type: 'optionClass',
+                                display: 'inline-block',
+                                jsonBtn: 'export',
+                                btnSize: 'small'
+                            }"
+                            :reloadData="getList"
+                        ></jsonComps>
                     </div>
                 </template>
             </y9Table>
@@ -48,8 +68,8 @@
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { reactive, ref } from 'vue';
-    import type { ElLoading, ElMessage } from 'element-plus';
+    import { reactive, ref, toRefs } from 'vue';
+    import { FormInstance, FormRules } from 'element-plus';
     import { delOptionClass, getOptionClassList, saveOptionClass } from '@/api/itemAdmin/optionClass';
     import OptionValue from '@/views/optionClass/optionValue.vue';
 
@@ -67,7 +87,7 @@
                 { title: '序号', type: 'index', width: '60' },
                 { title: '字典名称', key: 'name', slot: 'name' },
                 { title: '字典标识', key: 'type', slot: 'type' },
-                { title: '操作', slot: 'opt', width: '280' }
+                { title: '操作', slot: 'opt', width: '360' }
             ],
             border: false,
             headerBackground: true,
@@ -79,7 +99,7 @@
             itemList: [
                 {
                     type: 'slot',
-                    span: 24,
+                    span: 7,
                     slotName: 'addBtn'
                 }
             ]
@@ -96,10 +116,38 @@
         },
         row: '',
         isEmptyData: false,
-        isEdit: false
+        isEdit: false,
+        searchName: '',
+        oldDataList: [],
+        paramObject: {
+            id: '',
+            type: 'optionClassAll',
+            display: 'flex',
+            jsonBtn: 'all'
+        },
+        paramObjectExport: {
+            id: '',
+            type: 'optionClass',
+            display: 'inline-block',
+            jsonBtn: 'export',
+            btnSize: 'small'
+        }
     });
 
-    let { editIndex, tableConfig, filterConfig, dialogConfig, row, isEmptyData, isEdit, formData } = toRefs(data);
+    let {
+        editIndex,
+        tableConfig,
+        filterConfig,
+        dialogConfig,
+        row,
+        isEmptyData,
+        isEdit,
+        formData,
+        searchName,
+        oldDataList,
+        paramObject,
+        paramObjectExport
+    } = toRefs(data);
 
     async function getList() {
         let res = await getOptionClassList();
@@ -107,9 +155,20 @@
             item.id = item.type;
         }
         tableConfig.value.tableData = res.data;
+        oldDataList.value = res.data;
     }
 
     getList();
+
+    function search() {
+        if (searchName.value == '') {
+            tableConfig.value.tableData = oldDataList.value;
+            return;
+        }
+        tableConfig.value.tableData = oldDataList.value.filter((item) => {
+            return item.name.indexOf(searchName.value) > -1 || item.type.indexOf(searchName.value) > -1;
+        });
+    }
 
     const addData = () => {
         for (let i = 0; i < tableConfig.value.tableData.length; i++) {

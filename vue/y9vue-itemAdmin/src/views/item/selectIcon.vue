@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-12 09:42:08
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2022-07-14 16:06:14
- * @FilePath: \workspace-y9boot-9.5-vuee:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\views\item\selectIcon.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-30 15:41:09
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\item\selectIcon.vue
 -->
 
 <template>
@@ -30,6 +30,7 @@
     </div>
 </template>
 <script lang="ts" setup>
+    import { onMounted, reactive, toRefs } from 'vue';
     import { readAppIconFile, searchIcon } from '@/api/itemAdmin/item/item';
 
     const props = defineProps({

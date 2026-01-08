@@ -3,17 +3,8 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2024-04-23 15:08:39
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-07-16 16:07:14
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-flowable\vue\y9vue-itemAdmin\src\views\y9form\table\newOrModifyTable.vue
--->
-<!--
- * @Descripttion: 
- * @version: 
- * @Author: zhangchongjie
- * @Date: 2022-07-07 14:26:45
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-05-09 18:02:11
+ * @LastEditors: yihong yihong@risesoft.net
+ * @LastEditTime: 2025-06-13 10:13:44
  * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\y9form\table\newOrModifyTable.vue
 -->
 <template>
@@ -35,23 +26,33 @@
             <table border="0" cellpadding="0" cellspacing="1" class="layui-table" lay-skin="line row">
                 <tbody>
                     <tr>
-                        <td class="lefttd" style="width: 15%">表英文名称<font style="color: red">*</font></td>
+                        <td class="lefttd" style="width: 15%">表英文名称<span style="color: red">*</span></td>
                         <td class="rigthtd">
-                            <font style="margin-left: 10px; color: red">{{ prefix }}</font>
+                            <span style="margin-left: 10px; color: red">{{ prefix }}</span>
                             <el-input v-model="table.tableName" style="width: 82%"></el-input>
                         </td>
-                        <td class="lefttd" style="width: 15%">表中文名称<font style="color: red">*</font></td>
+                        <td class="lefttd" style="width: 15%">表中文名称<span style="color: red">*</span></td>
                         <td class="rigthtd">
                             <el-input v-model="table.tableCnName"></el-input>
                         </td>
                     </tr>
                     <tr>
+                        <td class="lefttd">表别名<span style="color: red">*</span></td>
+                        <td class="rigthtd">
+                            <el-input v-model="table.tableAlias"></el-input>
+                        </td>
                         <td class="lefttd">表类型</td>
                         <td class="rigthtd">
-                            <span>主表</span>
+                            <el-select v-model="table.tableType" @change="tableTypeChange">
+                                <el-option :key="1" :value="1" label="主表"></el-option>
+                                <el-option :key="2" :value="2" label="子表"></el-option>
+                                <!-- <el-option :key="3" label="字典" :value="3"></el-option> -->
+                            </el-select>
                         </td>
+                    </tr>
+                    <tr>
                         <td class="lefttd">所属系统</td>
-                        <td class="rigthtd">
+                        <td class="rigthtd" colspan="3">
                             <span>{{ table.systemCnName }}</span>
                         </td>
                     </tr>
@@ -77,7 +78,7 @@
             </div>
             <el-table :data="fieldList" border height="300" style="width: 100%">
                 <el-table-column align="center" label="序号" type="index" width="60"></el-table-column>
-                <el-table-column align="center" label="中文名称" prop="fieldCnName" width="130">
+                <el-table-column align="center" label="中文名称" prop="fieldCnName">
                     <template #default="fieldCnName_cell">
                         <span>
                             <font v-if="fieldCnName_cell.row.state == 0" color="red" title="数据库表中不存在此字段"
@@ -87,13 +88,7 @@
                         </span>
                     </template>
                 </el-table-column>
-                <el-table-column
-                    align="center"
-                    label="字段名称"
-                    min-width="180px"
-                    prop="fieldName"
-                    width="auto"
-                ></el-table-column>
+                <el-table-column align="center" label="字段名称" prop="fieldName" width="auto"></el-table-column>
                 <el-table-column align="center" label="字段类型" prop="fieldType" width="150"></el-table-column>
                 <el-table-column align="center" label="是否允许为空" prop="isMayNull" width="130">
                     <template #default="isMayNull_cell">
@@ -101,7 +96,7 @@
                         <font v-if="isMayNull_cell.row.isMayNull == 1">空</font>
                     </template>
                 </el-table-column>
-                <el-table-column align="center" label="操作" prop="optcell" width="180">
+                <el-table-column align="center" label="操作" prop="optcell" width="100">
                     <template #default="scope">
                         <template
                             v-if="
@@ -109,6 +104,8 @@
                                     scope.row.opt == 'false' ||
                                     scope.row.fieldName == 'guid' ||
                                     scope.row.fieldName == 'GUID' ||
+                                    scope.row.fieldName == 'y9_userId' ||
+                                    scope.row.fieldName == 'Y9_USERID' ||
                                     scope.row.fieldName == 'parentProcessSerialNumber' ||
                                     scope.row.fieldName == 'PARENTPROCESSSERIALNUMBER'
                                 )
@@ -183,10 +180,12 @@
         dialogVisible: false,
         loading: false,
         title: '',
-        table: { tableType: 1 },
+        table: {},
         tableOldName: '',
+        tableOldAlias: '',
         prefix: 'y9_form_',
         tableNames: '',
+        tableAlias: '',
         databaseName: '',
         fieldList: [],
         newOrModifyFieldRef: '',
@@ -221,6 +220,7 @@
                                 item.tableId = table.value.id;
                                 item.tableName = table.value.tableName;
                                 item.state = 0;
+                                item.oldFieldName = '';
                                 fieldList.value.push(item);
                             }
                         }
@@ -266,8 +266,10 @@
         title,
         table,
         tableOldName,
+        tableOldAlias,
         prefix,
         tableNames,
+        tableAlias,
         databaseName,
         fieldList,
         newOrModifyFieldRef,
@@ -284,6 +286,7 @@
         dialogVisible.value = true;
         fieldList.value = [];
         tableOldName.value = '';
+        tableOldAlias.value = '';
         table.value.tableName = '';
         loading.value = true;
         if (y9table == null) {
@@ -293,6 +296,7 @@
             title.value = '编辑业务表【' + y9table.tableCnName + '】';
             table.value = y9table;
             tableOldName.value = y9table.tableName;
+            tableOldAlias.value = y9table.tableAlias;
             let res = await getTableFieldList(table.value.id);
             fieldList.value = res.data;
         }
@@ -308,6 +312,7 @@
             }
             databaseName.value = res.data.databaseName;
             tableNames.value = res.data.tableNames;
+            tableAlias.value = res.data.tableAlias;
         }
         if (y9table == null) {
             let type = 'varchar';
@@ -331,7 +336,7 @@
         }
     }
 
-    function tableTypeChange(val) {
+    async function tableTypeChange(val) {
         if (val == 2) {
             //子表
             let has = false;
@@ -358,11 +363,30 @@
                     oldFieldName: '',
                     opt: 'false'
                 };
+                let field0 = {
+                    id: '',
+                    state: 0,
+                    tableId: '',
+                    fieldCnName: '人员id',
+                    fieldName: 'y9_userId',
+                    fieldLength: 64,
+                    fieldType: type + '(' + 64 + ')',
+                    isMayNull: 1,
+                    isSystemField: 0,
+                    oldFieldName: '',
+                    opt: 'false'
+                };
+                fieldList.value.splice(1, 0, field0);
                 fieldList.value.splice(1, 0, field);
             }
         } else if (val == 1) {
-            fieldList.value.forEach((element, index) => {
+            await fieldList.value.forEach((element, index) => {
                 if (element.fieldName.toUpperCase() == 'parentProcessSerialNumber'.toUpperCase()) {
+                    fieldList.value.splice(index, 1);
+                }
+            });
+            await fieldList.value.forEach((element, index) => {
+                if (element.fieldName.toUpperCase() == 'y9_userId'.toUpperCase()) {
                     fieldList.value.splice(index, 1);
                 }
             });
@@ -372,12 +396,17 @@
     async function validForm() {
         let tableName = table.value.tableName;
         let tableName0 = prefix.value + table.value.tableName;
+        let alias = table.value.tableAlias;
         if (!table.value.tableName) {
-            ElNotification({ title: '失败', message: '表单验证不通过', type: 'error', duration: 2000, offset: 80 });
+            ElNotification({ title: '失败', message: '表英文名称不能为空', type: 'error', duration: 2000, offset: 80 });
             return false;
         }
         if (!table.value.tableCnName) {
-            ElNotification({ title: '失败', message: '表单验证不通过', type: 'error', duration: 2000, offset: 80 });
+            ElNotification({ title: '失败', message: '表中文名称不能为空', type: 'error', duration: 2000, offset: 80 });
+            return false;
+        }
+        if (!alias) {
+            ElNotification({ title: '失败', message: '表别名不能为空', type: 'error', duration: 2000, offset: 80 });
             return false;
         }
 
@@ -430,6 +459,7 @@
             return false;
         }
         let y9TableName = tableNames.value.split(',');
+        let y9TableAlias = tableAlias.value.split(',');
         if (table.value.id == '') {
             //新增时需要验证表名称是否已存在
             for (let i = 0; i < y9TableName.length; i++) {
@@ -437,6 +467,19 @@
                     ElNotification({
                         title: '失败',
                         message: '表英文名称已存在记录，请修改',
+                        type: 'error',
+                        duration: 2000,
+                        offset: 80
+                    });
+                    return false;
+                }
+            }
+            //新增时需要验证表别名是否已存在
+            for (let i = 0; i < y9TableAlias.length; i++) {
+                if (alias == y9TableAlias[i]) {
+                    ElNotification({
+                        title: '失败',
+                        message: '表别名已存在记录，请修改',
                         type: 'error',
                         duration: 2000,
                         offset: 80
@@ -452,6 +495,21 @@
                         ElNotification({
                             title: '失败',
                             message: '表英文名称已存在记录，请修改',
+                            type: 'error',
+                            duration: 2000,
+                            offset: 80
+                        });
+                        return false;
+                    }
+                }
+            }
+            //修改时，如果修改的名称与旧名称一样则不验证,不一样则需验证表名称是否已存在
+            if (null == tableOldAlias.value || '' == tableOldAlias.value || alias != tableOldAlias.value) {
+                for (let i = 0; i < y9TableAlias.length; i++) {
+                    if (alias == y9TableAlias[i]) {
+                        ElNotification({
+                            title: '失败',
+                            message: '表别名已存在记录，请修改',
                             type: 'error',
                             duration: 2000,
                             offset: 80

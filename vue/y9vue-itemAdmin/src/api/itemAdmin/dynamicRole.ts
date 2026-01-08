@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2021-06-18 11:16:33
- * @FilePath: \workspace-y9boot-9.5.x-vue\y9vue-itemAdmin\src\api\itemAdmin\dynamicRole.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:08:25
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\dynamicRole.ts
  */
 
 import Request from '@/api/lib/request';
@@ -53,6 +53,44 @@ export function removeDynamicRole(dynamicRoleIds) {
     return itemAdminRequest({
         url: '/vue/dynamicRole/remove',
         method: 'post',
+        params: params
+    });
+}
+
+/**
+ *获取数字底座部门属性分类
+ */
+export function deptPropCategory() {
+    const params = {};
+    return itemAdminRequest({
+        url: '/vue/dynamicRole/deptPropCategory',
+        method: 'get',
+        params: params
+    });
+}
+
+/**
+ * 获取数字底座公共角色
+ */
+export function publicRole() {
+    const params = {};
+    return itemAdminRequest({
+        url: '/vue/dynamicRole/publicRole',
+        method: 'get',
+        params: params
+    });
+}
+
+/**
+ * 获取所有动态角色类路径
+ */
+export function getClasses() {
+    const params = {
+        packageName: 'net.risesoft.service.dynamicrole.impl'
+    };
+    return itemAdminRequest({
+        url: '/vue/dynamicRole/getClasses',
+        method: 'get',
         params: params
     });
 }

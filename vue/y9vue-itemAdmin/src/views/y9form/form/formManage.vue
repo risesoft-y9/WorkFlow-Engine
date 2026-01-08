@@ -1,11 +1,11 @@
 <!--
- * @Descripttion: 
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-06 16:35:20
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-05-09 17:15:39
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\y9form\form\formManage.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2025-12-31 14:37:05
+ * @Descripttion: 表单管理 
+ * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\y9form\form\formManage.vue
 -->
 <template>
     <y9Card :title="`表单管理${currInfo.name ? ' - ' + currInfo.name : ''}`" class="y9formcard">
@@ -32,7 +32,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { h, onMounted, reactive, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import newOrModify from './newOrModify.vue';
     import formMaking from './formMaking.vue';
     import { getFormList, newOrModifyForm, removeForm } from '@/api/itemAdmin/y9form';
@@ -89,13 +90,15 @@
                 },
                 {
                     title: '操作',
+                    width: '150',
                     render: (row) => {
                         let button = [
                             h('i', {
                                 class: 'ri-file-code-line',
                                 style: {
                                     marginRight: '10px',
-                                    fontSize: '18px'
+                                    fontSize: '18px',
+                                    fontWeight: 600
                                 },
                                 title: '表单设计',
                                 onClick: () => {
@@ -106,7 +109,8 @@
                                 class: 'ri-edit-line',
                                 style: {
                                     marginRight: '10px',
-                                    fontSize: '18px'
+                                    fontSize: '18px',
+                                    fontWeight: 600
                                 },
                                 title: '编辑',
                                 onClick: () => {
@@ -117,7 +121,8 @@
                                 title: '删除',
                                 class: 'ri-delete-bin-line',
                                 style: {
-                                    fontSize: '18px'
+                                    fontSize: '18px',
+                                    fontWeight: 600
                                 },
                                 onClick: () => {
                                     ElMessageBox.confirm(`是否删除【${row.formName}】?`, '提示', {
@@ -166,6 +171,7 @@
         dialogConfig: {
             show: false,
             title: '',
+            type: '',
             onOkLoading: true,
             onOk: (newConfig) => {
                 return new Promise(async (resolve, reject) => {
@@ -261,11 +267,12 @@
 </script>
 
 <style lang="scss">
-    .formMakingDialog .y9-dialog-content {
-        padding: 0px 0px !important;
-    }
-
-    .formMakingDialog .y9-dialog-content .y9-dialog-content {
-        padding: 26px 26px !important;
+    .formMakingDialog {
+        .y9-dialog-content {
+            padding: 0px 0px !important;
+        }
+        .y9-dialog-content .y9-dialog-content {
+            padding: 26px 26px !important;
+        }
     }
 </style>

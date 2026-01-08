@@ -8,11 +8,12 @@ export const useSettingStore = defineStore('settingStore', {
             webName: '有生软件', // 网站名称
             logoSvgName: '', // 网站logo
             webLanguage: 'zh', // 语言
+            fontSize: 'default', // 字号大小
             themeName: 'theme-default', // 主题
             isDark: false, // 是否暗黑主题
             menuAnimation: 'rtl', // 菜单动画方向——仅mobile
             menuStyle: 'Light', // 菜单样式
-            menuWidth: '100%', // 菜单宽度（高度）
+            menuWidth: '25%', // 菜单宽度（高度）
             menuBg: '', // 菜单背景 new URL('../../assets/images/menu-bg1.png', import.meta.url).href
             showLabel: false, // 显示标签
             showLabelIcon: false, // 显示标签icon
@@ -52,6 +53,54 @@ export const useSettingStore = defineStore('settingStore', {
         },
         getWebLanguage: (state) => {
             return state.webLanguage;
+        },
+        //返回组件字号大小
+        getFontSize: (state) => {
+            return state.fontSize;
+        },
+        //根据字号大小获取分页高度
+        getLineHeight: (state) => {
+            return state.fontSize == 'small'
+                ? '24px'
+                : state.fontSize == 'default'
+                ? '28px'
+                : state.fontSize == 'large'
+                ? '32px'
+                : '28px';
+        },
+        //根据字号获取表格操作列3个按钮宽度（每个按钮2个汉字）
+        getThreeBtnWidth: (state) => {
+            return state.fontSize == 'small'
+                ? 180
+                : state.fontSize == 'default'
+                ? 200
+                : state.fontSize == 'large'
+                ? 210
+                : 180;
+        },
+        //根据字号获取表格操作列2个按钮宽度（每个按钮2个汉字）
+        getTwoBtnWidth: (state) => {
+            return state.fontSize == 'small'
+                ? 130
+                : state.fontSize == 'default'
+                ? 140
+                : state.fontSize == 'large'
+                ? 150
+                : 160;
+        },
+        //根据字号获取表格数据列时间戳显示宽度
+        getDatetimeSpan: (state) => {
+            return state.fontSize == 'small'
+                ? 140
+                : state.fontSize == 'default'
+                ? 170
+                : state.fontSize == 'large'
+                ? 180
+                : 160;
+        },
+        // 根据字号 获取对应的icon宽度大小
+        getLogoWidth: (state) => {
+            return state.fontSize == 'small' ? '30px' : state.fontSize === 'default' ? '36px' : '45px';
         },
         getThemeName: (state) => {
             return state.themeName;
@@ -179,7 +228,7 @@ export const useSettingStore = defineStore('settingStore', {
             if (isMobile()) {
                 this.device = 'mobile';
                 this.layout = 'Y9Mobile';
-                this.settingWidth = '100%';
+                this.settingWidth = '68%';
             } else {
                 this.device = 'pc';
                 this.layout = this.pcLayout;

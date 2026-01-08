@@ -1,3 +1,12 @@
+<!--
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-13 09:49:46
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 10:27:14
+ * @Descripttion: 路由配置
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\startNodeConfig\startNodeConfig.vue
+-->
 <template>
     <y9Card :title="`启动路由配置${currInfo.name ? ' - ' + currInfo.name : ''}`">
         <div
@@ -5,34 +14,19 @@
             class="margin-bottom-20"
         >
             <el-row :gutter="40">
-                <el-col :span="2">
-                    <el-button v-if="maxVersion != 1" class="global-btn-main" type="primary" @click="formCopy">
-                        <i class="ri-file-copy-2-line"></i>
-                        <span>复制</span>
-                    </el-button>
-                    <!-- <el-button @click="nodeOrder"
-                        class="global-btn-main">
-                        <i class="ri-file-copy-2-line"></i>
-                        <span>排序</span>
-                    </el-button> -->
-                </el-col>
-                <el-col :span="17" style="padding-left: 0">
+                <el-col :span="18" style="padding-left: 20px">
                     <el-tooltip
                         content="优先级越高，用户启动流程的时候就会优先判断是否有从该节点启动流程的权限。如果所有节点都没有权限，则以优先级最低的节点启动流程"
                         effect="customized"
                         placement="right"
                     >
-                        <el-button size="small"><i class="ri-questionnaire-line"></i>优先级说明</el-button>
+                        <el-button><i class="ri-questionnaire-line"></i>优先级说明</el-button>
                     </el-tooltip>
                 </el-col>
-                <el-col :span="5">
+                <el-col :span="6">
                     <el-button-group>
-                        <el-button size="small" type="primary" @click="moveUp"
-                            ><i class="ri-arrow-up-line"></i>上移
-                        </el-button>
-                        <el-button size="small" type="primary" @click="moveDown"
-                            ><i class="ri-arrow-down-line"></i>下移
-                        </el-button>
+                        <el-button type="primary" @click="moveUp"><i class="ri-arrow-up-line"></i>上移 </el-button>
+                        <el-button type="primary" @click="moveDown"><i class="ri-arrow-down-line"></i>下移 </el-button>
                         <el-button type="primary" @click="saveNodeOrder"><span>保存</span></el-button>
                     </el-button-group>
                 </el-col>
@@ -40,8 +34,10 @@
         </div>
         <y9Table :config="startNodeTableConfig" @on-current-change="handleCurrentChange">
             <template #opt_button="{ row, column, index }">
-                <span style="margin-right: 15px" @click="addRole(row)"><i class="ri-add-line"></i>绑定角色</span>
-                <span v-if="row.roleIds.length > 0" @click="delRole(row)"
+                <span style="margin-right: 15px; font-weight: 600" @click="addRole(row)"
+                    ><i class="ri-add-line"></i>绑定角色</span
+                >
+                <span v-if="row.roleIds.length > 0" style="font-weight: 600" @click="delRole(row)"
                     ><i class="ri-delete-bin-line"></i>删除角色</span
                 >
             </template>
@@ -54,10 +50,12 @@
                 :treeApiObj="treeApiObj"
                 @onCheckChange="onCheckChange"
             />
-            <div slot="footer" class="dialog-footer" style="text-align: center; margin-top: 15px">
-                <el-button type="primary" @click="saveRoleBind"><span>保存</span></el-button>
-                <el-button @click="treeDrawer = false"><span>取消</span></el-button>
-            </div>
+            <template #footer>
+                <div slot="footer" class="dialog-footer" style="text-align: center; margin-top: 15px">
+                    <el-button type="primary" @click="saveRoleBind"><span>保存</span></el-button>
+                    <el-button @click="treeDrawer = false"><span>取消</span></el-button>
+                </div>
+            </template>
         </el-drawer>
         <el-drawer v-model="roleDrawer" :title="title" class="eldrawer" direction="rtl" @close="closeRoleTable">
             <y9Table :config="roleTableConfig" @select="handlerData" @select-all="handlerData"></y9Table>
@@ -70,7 +68,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { onMounted, reactive, ref, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import {
         bindRole,
         copyBind,
@@ -375,7 +374,7 @@
 
     function delRole(row) {
         taskDefKey.value = row.taskDefKey;
-        if (row.roleIds.length == 1) {
+        if (row.roleIds.indexOf(';') == -1) {
             ElMessageBox.confirm('你确定要删除绑定的角色吗？', '提示', {
                 confirmButtonText: '确定',
                 cancelButtonText: '取消',
@@ -488,11 +487,7 @@
     }
 </script>
 
-<style>
-    .permconfig .el-dialog__body {
-        padding: 5px 10px;
-    }
-
+<style lang="scss">
     .el-popper.is-customized {
         /* Set padding to ensure the height is 32px */
         padding: 6px 12px;

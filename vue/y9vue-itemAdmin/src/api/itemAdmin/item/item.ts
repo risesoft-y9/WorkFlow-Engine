@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2022-07-05 17:11:02
- * @FilePath: \workspace-y9boot-9.5-vuee:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\api\itemAdmin\item\item.ts
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:05:15
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\item\item.ts
  */
 
 import Request from '@/api/lib/request';
@@ -79,6 +79,31 @@ export function deleteItem(id) {
         url: '/vue/item/delete',
         method: 'post',
         params: params
+    });
+}
+
+//复制事项
+export function copyItem(id) {
+    const params = {
+        id: id
+    };
+    return itemAdminRequest({
+        url: '/vue/item/copyItem',
+        method: 'post',
+        params: params
+    });
+}
+
+//保存排序
+export function saveOrder(idAndTabIndexs) {
+    const params = {
+        idAndTabIndexs: idAndTabIndexs
+    };
+    const data = qs.stringify(params);
+    return itemAdminRequest({
+        url: '/vue/item/saveOrder',
+        method: 'post',
+        data: data
     });
 }
 

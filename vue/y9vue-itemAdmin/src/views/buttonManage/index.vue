@@ -7,6 +7,7 @@
                         <el-button class="global-btn-main" type="primary" @click="addButton('common')"
                             ><i class="ri-add-line"></i>普通按钮
                         </el-button>
+                        <jsonComps :paramObject="paramObjectCommon" :reloadData="getCommonList"></jsonComps>
                     </template>
                     <template #cname="{ row, column, index }">
                         <el-form-item v-if="editIndex_common === index" prop="name">
@@ -41,11 +42,7 @@
                             <el-button class="global-btn-second" size="small" @click="editButton('common', row, index)"
                                 ><i class="ri-edit-line"></i>修改
                             </el-button>
-                            <el-button
-                                class="global-btn-danger"
-                                size="small"
-                                type="danger"
-                                @click="delButton('common', row)"
+                            <el-button class="global-btn-second" size="small" @click="delButton('common', row)"
                                 ><i class="ri-delete-bin-line"></i>删除
                             </el-button>
                         </div>
@@ -61,6 +58,7 @@
                             <el-button class="global-btn-main" type="primary" @click="addButton('send')"
                                 ><i class="ri-add-line"></i>发送按钮
                             </el-button>
+                            <jsonComps :paramObject="paramObjectSend" :reloadData="getSendList"></jsonComps>
                         </template>
                         <template #sname="{ row, column, index }">
                             <el-form-item v-if="editIndex_send === index" prop="name">
@@ -99,11 +97,7 @@
                                 >
                                     <i class="ri-edit-line"></i>修改
                                 </el-button>
-                                <el-button
-                                    class="global-btn-danger"
-                                    size="small"
-                                    type="danger"
-                                    @click="delButton('send', row)"
+                                <el-button class="global-btn-second" size="small" @click="delButton('send', row)"
                                     ><i class="ri-delete-bin-line"></i>删除
                                 </el-button>
                             </div>
@@ -118,8 +112,8 @@
     </div>
 </template>
 <script lang="ts" setup>
-    import { reactive, ref } from 'vue';
-    import type { ElLoading, ElMessage } from 'element-plus';
+    import { reactive, ref, toRefs } from 'vue';
+    import type { FormInstance, FormRules } from 'element-plus';
     import { checkCustomId, getCommonButtonList, removeCommonButton, saveOrUpdate } from '@/api/itemAdmin/commonButton';
     import { checkSendCustomId, getSendButtonList, removeSendButton, saveSendButton } from '@/api/itemAdmin/sendButton';
     import BindDetailRef from '@/views/buttonManage/bindDetail.vue';
@@ -202,10 +196,21 @@
             },
             visibleChange: (visible) => {}
         },
-        row: ''
+        row: '',
+        paramObjectCommon: { id: '', type: 'commonButton', display: 'flex', jsonBtn: 'all' },
+        paramObjectSend: { id: '', type: 'sendButton', display: 'flex', jsonBtn: 'all' }
     });
 
-    let { commonTableConfig, commonFilterConfig, sendTableConfig, sendFilterConfig, dialogConfig, row } = toRefs(data);
+    let {
+        commonTableConfig,
+        commonFilterConfig,
+        sendTableConfig,
+        sendFilterConfig,
+        dialogConfig,
+        row,
+        paramObjectCommon,
+        paramObjectSend
+    } = toRefs(data);
 
     async function getCommonList() {
         let res = await getCommonButtonList();
@@ -416,58 +421,62 @@
     };
 </script>
 
-<style lang="scss">
-    .buttonTable .el-form-item--default {
+<style lang="scss" scoped>
+    :deep(.el-form-item--default) {
         margin-bottom: 0px;
     }
 
-    .buttonTable .el-form-item {
-        margin-bottom: 0px;
-    }
+    .buttonTable {
+        :deep(.el-form-item) {
+            margin-bottom: 0px;
+        }
 
-    .buttonTable .el-form-item__error {
-        color: var(--el-color-danger);
-        font-size: 12px;
-        line-height: 1;
-        padding-top: 2px;
-        position: relative;
-        top: 0%;
-        left: 0;
-    }
-
-    .buttonManage .el-card__body {
-        padding-top: 10px;
+        :deep(.el-form-item__error) {
+            color: var(--el-color-danger);
+            font-size: 12px;
+            line-height: 1;
+            padding-top: 2px;
+            position: relative;
+            top: 0%;
+            left: 0;
+        }
     }
 
     .buttonManage {
         height: 100%;
-    }
 
-    .buttonManage .y9-card {
-        height: 50% !important;
-        box-shadow: none !important;
-    }
+        :deep(.el-card__body) {
+            padding-top: 10px;
+        }
 
-    .buttonManage .y9-table-div {
-        height: calc(100% - 52px) !important;
-    }
+        :deep(.y9-card) {
+            height: 50% !important;
+            box-shadow: none !important;
+            scrollbar-width: none;
+        }
 
-    .buttonManage .el-table--fit {
-        height: 100% !important;
-    }
+        :deep(.y9-table-div) {
+            height: calc(100% - 52px) !important;
+        }
 
-    .buttonManage .el-form-item {
-        margin-bottom: 0px !important;
-    }
+        :deep(.el-table--fit) {
+            height: 100% !important;
+        }
 
-    .buttonManage .y9-card-content {
-        padding: 0 !important;
-        background-color: #eef0f7;
-        height: 100% !important;
-    }
+        :deep(.el-form-item) {
+            margin-bottom: 0px !important;
+        }
 
-    .buttonManage .sendList {
-        margin-top: 30px;
-        height: calc(100% - 30px) !important;
+        :deep(.y9-card-content) {
+            padding: 0 !important;
+            background-color: #eef0f7;
+            height: 100% !important;
+            scrollbar-width: none;
+        }
+
+        :deep(.sendList) {
+            margin-top: 30px;
+            height: calc(100% - 30px) !important;
+        }
     }
 </style>

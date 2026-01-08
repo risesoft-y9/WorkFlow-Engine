@@ -1,14 +1,15 @@
+<!--
+
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-12 09:42:08
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 10:25:51
+ * @Descripttion: 意见框配置
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\opinionFrameConfig\opinionFrameConfig.vue
+-->
 <template>
     <y9Card :title="`意见框配置${currInfo.name ? ' - ' + currInfo.name : ''}`">
-        <div
-            v-if="Object.keys(currTreeNodeInfo).length > 0 && currTreeNodeInfo.systemName != ''"
-            class="margin-bottom-20"
-        >
-            <el-button v-if="maxVersion != 1" class="global-btn-main" type="primary" @click="formCopy">
-                <i class="ri-file-copy-2-line"></i>
-                <span>复制</span>
-            </el-button>
-        </div>
         <y9Table :config="opinionFrameListTableConfig"></y9Table>
 
         <y9Dialog v-model:config="ofDialogConfig">
@@ -23,7 +24,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { h, onMounted, reactive, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import opinionFrameBind from './opinionFrameBind.vue';
     import { copyBind, getBpmList } from '@/api/itemAdmin/item/opinionFrameConfig';
 
@@ -66,7 +68,8 @@
                                 'span',
                                 {
                                     style: {
-                                        marginRight: '15px'
+                                        marginRight: '15px',
+                                        fontWeight: 600
                                     },
                                     onClick: () => {
                                         opinionBind(row);
@@ -137,7 +140,7 @@
         taskDefKey.value = row.taskDefKey;
         Object.assign(ofDialogConfig.value, {
             show: true,
-            width: '50%',
+            width: '70%',
             title: '意见框权限管理【' + row.taskDefName + '】',
             showFooter: false
         });
@@ -177,8 +180,4 @@
     }
 </script>
 
-<style>
-    .permconfig .el-dialog__body {
-        padding: 5px 10px;
-    }
-</style>
+<style lang="scss" scoped></style>

@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2021-12-14 11:51:40
- * @FilePath: \workspace-y9boot-9.5-vue\y9vue-itemAdmin\src\api\itemAdmin\item\signConfig.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:07:21
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\item\signConfig.ts
  */
 
 import Request from '@/api/lib/request';

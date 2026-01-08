@@ -3,42 +3,51 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-14 16:47:40
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-06-16 11:20:14
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\views\item\config\permConfig\permBind.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 10:26:25
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\permConfig\permBind.vue
 -->
 <template>
     <div class="permBindDiv">
-        <div style="margin-bottom: 16px">
-            <el-button-group>
-                <el-button type="primary" @click="addRole(1)"><i class="ri-group-line"></i>角色</el-button>
-                <el-button type="primary" @click="addRole(4)"><i class="ri-contacts-line"></i>动态角色</el-button>
-                <el-button type="primary" @click="addRole(6)"><i class="ri-user-add-line"></i>岗位</el-button>
-                <el-button type="primary" @click="addRole(2)"><i class="ri-team-line"></i>部门</el-button>
-            </el-button-group>
-        </div>
-        <y9Table :config="permBindListTableConfig">
-            <template #opt="{ row, column, index }">
-                <span type="danger" @click="delPermBind(row)"><i class="ri-delete-bin-line"></i>删除</span>
-            </template>
-        </y9Table>
-        <el-drawer v-model="treeDrawer" :title="title" direction="rtl">
+        <el-drawer v-model="treeDrawer" :title="title" direction="rtl" @closed="closeDrawer">
+            <div v-if="drawerShow" style="margin-bottom: 16px">
+                <el-button-group>
+                    <el-button type="primary" @click="addRole(1)"><i class="ri-group-line"></i>角色</el-button>
+                    <el-button type="primary" @click="addRole(4)"><i class="ri-contacts-line"></i>动态角色</el-button>
+                    <el-button type="primary" @click="addRole(6)"><i class="ri-user-add-line"></i>岗位</el-button>
+                    <el-button type="primary" @click="addRole(2)"><i class="ri-team-line"></i>部门</el-button>
+                </el-button-group>
+                <y9Table :config="permBindListTableConfig">
+                    <template #opt="{ row, column, index }">
+                        <span @click="delPermBind(row)"><i class="ri-delete-bin-line"></i>删除</span>
+                    </template>
+                </y9Table>
+            </div>
             <permTree
+                v-else
                 ref="permTreeRef"
                 :selectField="selectField"
                 :showHeader="showHeader"
                 :treeApiObj="treeApiObj"
                 @onCheckChange="onCheckChange"
             />
-            <div slot="footer" class="dialog-footer" style="text-align: center; margin-top: 15px">
+            <template #footer>
+                <div class="drawer-footer">
+                    <el-button v-if="!drawerShow" type="primary" @click="savePermBind"><span>保存</span></el-button>
+                    <el-button v-if="!drawerShow" @click="closeRoleForm"><span>取消</span></el-button>
+                    <el-button v-if="drawerShow" @click="treeDrawer = false"><span>关闭</span></el-button>
+                </div>
+            </template>
+            <!-- <div slot="footer" class="dialog-footer" style="text-align: center; margin-top: 15px">
                 <el-button type="primary" @click="savePermBind"><span>保存</span></el-button>
                 <el-button @click="treeDrawer = false"><span>取消</span></el-button>
-            </div>
+            </div> -->
         </el-drawer>
     </div>
 </template>
 
 <script lang="ts" setup>
+    import { reactive, toRefs } from 'vue';
     import {
         deleteBind,
         dynamicRole,
@@ -131,7 +140,7 @@
                 },
                 {
                     title: '操作',
-                    width: '100',
+                    width: '150',
                     slot: 'opt'
                 }
             ],
@@ -154,7 +163,10 @@
         bindList: [],
         treeDrawer: false,
         roleType: '',
-        title: ''
+        title: '',
+        drawerShow: true,
+        taskDefKey: '',
+        taskDefName: ''
     });
 
     let {
@@ -169,22 +181,47 @@
         showHeader,
         roleType,
         treeSelectedData,
-        selectField
+        selectField,
+        drawerShow,
+        taskDefKey,
+        taskDefName
     } = toRefs(data);
 
-    onMounted(() => {
+    function openDrawer(currTreeNodeInfo, processDefinitionId, taskDefKeyVal, taskDefNameVal) {
+        console.log('openDrawer-currTreeNodeInfo', props.currTreeNodeInfo, props.processDefinitionId, taskDefKey.value);
+        console.log('openDrawer-taskDefKey', taskDefKeyVal);
+        taskDefKey.value = taskDefKeyVal;
+        taskDefName.value = taskDefNameVal;
+        title.value = '权限管理【' + taskDefNameVal + '】';
+        treeDrawer.value = true;
+        drawerShow.value = true;
         reloadBindList();
+    }
+
+    defineExpose({
+        openDrawer
     });
 
+    function closeRoleForm() {
+        drawerShow.value = true;
+        title.value = taskDefName.value;
+    }
+
+    const emits = defineEmits(['reloadTable']);
+    function closeDrawer() {
+        treeDrawer.value = false;
+        emits('reloadTable');
+    }
     async function reloadBindList() {
         //获取权限列表
-        let res = await getBindList(props.currTreeNodeInfo.id, props.processDefinitionId, props.taskDefKey);
+        let res = await getBindList(props.currTreeNodeInfo.id, props.processDefinitionId, taskDefKey.value);
         if (res.success) {
             permBindListTableConfig.value.tableData = res.data;
         }
     }
 
     function addRole(type) {
+        drawerShow.value = false;
         treeSelectedData.value = [];
         if (type == 1) {
             treeApiObj.value.topLevel = getRole;
@@ -196,7 +233,7 @@
         } else if (type == 2) {
             treeApiObj.value.topLevel = getOrgList;
             treeApiObj.value.childLevel.api = getOrgTree;
-            treeApiObj.value.childLevel.params.treeType = 'Department';
+            treeApiObj.value.childLevel.params.treeType = 'tree_type_dept';
             treeApiObj.value.search.api = treeSearch;
             treeApiObj.value.search.params.treeType = 'tree_type_dept';
             title.value = '添加部门';
@@ -251,7 +288,7 @@
         let res = await saveBind(
             props.currTreeNodeInfo.id,
             props.processDefinitionId,
-            props.taskDefKey,
+            taskDefKey.value,
             roleIds.join(';'),
             roleType.value
         );
@@ -262,8 +299,10 @@
             duration: 2000,
             offset: 80
         });
-        treeDrawer.value = false;
+        //treeDrawer.value = false;
+        drawerShow.value = true;
         reloadBindList();
+        emits('reloadTable');
     }
 
     function delPermBind(row) {
@@ -284,6 +323,7 @@
                 });
                 if (result.success) {
                     reloadBindList();
+                    emits('reloadTable');
                 }
             })
             .catch(() => {
@@ -296,18 +336,33 @@
     }
 </script>
 
-<style>
-    .permconfig .el-dialog__body {
-        padding: 5px 10px;
-    }
+<style lang="scss" scoped>
+    .permBindDiv {
+        :deep(.el-dialog__body) {
+            padding: 5px 10px;
+        }
 
-    .permBindDiv .el-drawer__header {
-        margin-bottom: 0;
-        padding-bottom: 16px;
-        border-bottom: 1px solid #eee;
-    }
+        :deep(.el-drawer__header) {
+            margin-bottom: 0;
+            padding-bottom: 16px;
+            border-bottom: 1px solid #eee;
+        }
 
-    .permBindDiv .y9-card {
-        box-shadow: none;
+        :deep(.y9-card) {
+            box-shadow: none;
+        }
+        :deep(.el-drawer__body) {
+            margin-bottom: 15px;
+        }
+        :deep(.drawer-footer) {
+            position: fixed;
+            width: 30%;
+            bottom: 0;
+            right: 0;
+            padding: 15px;
+            text-align: center;
+            background: white;
+            box-shadow: 0 -2px 12px rgba(0, 0, 0, 0.1);
+        }
     }
 </style>

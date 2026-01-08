@@ -4,16 +4,15 @@
  * @Author: zhangchongjie
  * @Date: 2023-06-15 15:19:15
  * @LastEditors: mengjuhua
- * @LastEditTime: 2023-07-10 14:28:17
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\api\lib\request4Process.js
+ * @LastEditTime: 2026-01-08 14:10:19
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\lib\request4Process.js
  */
 
 import settings from '@/settings';
 import y9_storage from '@/utils/storage';
 import axios from 'axios'; // 考虑CDN
-import {ElMessage} from 'element-plus';
-import {isExternal} from '@/utils/validate.ts';
-import {$y9_SSO} from '@/main';
+import { isExternal } from '@/utils/validate.ts';
+import { $y9_SSO } from '@/main';
 
 // 创建一个axios实例
 function y9Request(baseUrl = '') {

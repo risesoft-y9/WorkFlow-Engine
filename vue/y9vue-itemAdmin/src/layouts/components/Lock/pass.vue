@@ -1,3 +1,10 @@
+<!--
+ * @Author: your name
+ * @Date: 2022-01-13 17:31:19
+ * @LastEditTime: 2023-08-03 09:44:01
+ * @LastEditors: mengjuhua
+ * @Description:   屏幕锁定
+-->
 <script lang="ts" setup>
     import { useSettingStore } from '@/store/modules/settingStore';
     import { computed, ref, watch } from 'vue-demi';
@@ -5,6 +12,7 @@
 
     const settingStore = useSettingStore();
     const unlockScreenPwd = computed(() => settingStore.getUnlockScreenPwd);
+
     const lockStatus = computed(() => settingStore.getLockScreen);
     // 绑定输入数据
     const inputPwd = ref('');

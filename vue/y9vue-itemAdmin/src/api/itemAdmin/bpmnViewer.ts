@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-02-27 17:08:10
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\api\itemAdmin\bpmnViewer.ts
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:07:52
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\bpmnViewer.ts
  */
 
 import Request from '@/api/lib/request';

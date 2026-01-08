@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2021-10-18 10:18:49
- * @FilePath: \workspace-y9boot-9.5-vue\y9vue-itemAdmin\src\api\itemAdmin\sendButton.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:09:18
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\sendButton.ts
  */
 
 import Request from '@/api/lib/request';

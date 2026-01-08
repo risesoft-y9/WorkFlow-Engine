@@ -4,7 +4,7 @@
  * @Author: zhangchongjie
  * @Date: 2022-06-10 16:34:51
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-05-22 14:53:41
+ * @LastEditTime: 2024-09-19 11:43:02
  * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\processControl\graphTrace.vue
 -->
 
@@ -60,10 +60,11 @@
 </template>
 
 <script lang="ts" setup>
+    import { onMounted, reactive, toRefs } from 'vue';
+    import x2js from 'x2js';
     import moment from 'moment';
     import BpmnViewer from 'bpmn-js/lib/Viewer';
     import MoveCanvasModule from 'diagram-js/lib/navigation/movecanvas';
-    import { defineProps, onMounted, reactive } from 'vue';
     import { getProcessXml } from '@/api/processAdmin/processDeploy';
     import { getTaskList } from '@/api/itemAdmin/bpmnViewer';
 
@@ -106,6 +107,31 @@
             let res = await getProcessXml(params);
             if (res.success) {
                 xmlStr.value = res.data;
+
+                //处理子流程展开问题
+                let x2jsObj = new x2js();
+                const newdata = x2jsObj.xml2js(xmlStr.value);
+                let subProcess = newdata.definitions.process.subProcess;
+                if (subProcess != undefined) {
+                    if (Array.isArray(subProcess)) {
+                        await subProcess.forEach(async (element) => {
+                            await newdata.definitions.BPMNDiagram?.BPMNPlane?.BPMNShape?.forEach((item) => {
+                                if (element._id == item._bpmnElement) {
+                                    item._isExpanded = true;
+                                }
+                            });
+                        });
+                    } else {
+                        await newdata.definitions.BPMNDiagram?.BPMNPlane?.BPMNShape?.forEach((item) => {
+                            if (subProcess._id == item._bpmnElement) {
+                                item._isExpanded = true;
+                            }
+                        });
+                    }
+                }
+                xmlStr.value = x2jsObj.js2xml(newdata);
+                //处理子流程展开问题
+
                 const result = await bpmnViewer.value.importXML(xmlStr.value);
 
                 const canvas1 = bpmnViewer.value.get('canvas');
@@ -115,6 +141,8 @@
                 const res2 = await getTaskList(props.processInstanceId);
                 if (res2.success) {
                     taskList.value = res2.data;
+                    console.log(7777, canvas1._activePlane.rootElement);
+
                     canvas1._activePlane.rootElement.children.forEach((item) => {
                         //处理UserTask
                         if (item.type == 'bpmn:UserTask') {
@@ -132,6 +160,40 @@
                             if (highlight) {
                                 canvas1.addMarker(item.id, 'highlight');
                             }
+                        } else if (item.type == 'bpmn:SubProcess') {
+                            //处理子流程
+                            let highlight = true;
+                            res2.data.forEach((element) => {
+                                if (element.activityId == item.id) {
+                                    highlight = false;
+                                    if (element.endTime) {
+                                        canvas1.addMarker(element.activityId, 'history');
+                                    } else {
+                                        canvas1.addMarker(element.activityId, 'current');
+                                    }
+                                }
+                            });
+                            if (highlight) {
+                                canvas1.addMarker(item.id, 'highlight');
+                            }
+
+                            //处理子流程内的节点信息
+                            item.children.forEach((children) => {
+                                let highlight = true;
+                                res2.data.forEach((element) => {
+                                    if (element.activityId == children.id) {
+                                        highlight = false;
+                                        if (element.endTime) {
+                                            canvas1.addMarker(element.activityId, 'history');
+                                        } else {
+                                            canvas1.addMarker(element.activityId, 'current');
+                                        }
+                                    }
+                                });
+                                if (highlight) {
+                                    canvas1.addMarker(children.id, 'highlight');
+                                }
+                            });
                         }
                     });
                     //处理其他，路线

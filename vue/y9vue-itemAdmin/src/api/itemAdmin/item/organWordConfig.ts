@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2021-06-18 09:19:07
- * @FilePath: \workspace-y9boot-9.5.x-vue\y9vue-itemAdmin\src\api\itemAdmin\item\organWordConfig.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:06:29
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\item\organWordConfig.ts
  */
 
 import Request from '@/api/lib/request';

@@ -1,6 +1,18 @@
+<!--
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-07-13 09:49:46
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-07 16:56:56
+ * @Descripttion: 打印配置
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\printConfig\printConfig.vue
+-->
 <template>
-    <y9Card :title="`打印表单配置${currInfo.name ? ' - ' + currInfo.name : ''}`">
-        <div class="margin-bottom-20">
+    <y9Card :title="`打印模板配置${currInfo.name ? ' - ' + currInfo.name : ''}`">
+        <div
+            v-if="Object.keys(currTreeNodeInfo).length > 0 && currTreeNodeInfo.systemName != ''"
+            class="margin-bottom-20"
+        >
             <el-button class="global-btn-main" type="primary" @click="bindTemplate('form')">
                 <i class="ri-table-line"></i>
                 <span>表单模板</span>
@@ -12,12 +24,23 @@
                 <el-input
                     v-model="searchName"
                     clearable
-                    placeholder="表单名称"
+                    placeholder="模板名称"
                     style="width: 200px; margin-right: 5px"
                 ></el-input>
-                <el-button size="small" type="primary" @click="search"><i class="ri-search-2-line"></i>搜索</el-button>
+                <el-button type="primary" @click="search"><i class="ri-search-2-line"></i>搜索</el-button>
             </div>
-            <y9Table :config="formTableConfig" @select="handlerGetData" @select-all="handlerGetData"></y9Table>
+            <y9Table
+                v-if="wordShow"
+                :config="wordTableConfig"
+                @select="handlerGetData"
+                @select-all="handlerGetData"
+            ></y9Table>
+            <y9Table
+                v-if="formShow"
+                :config="formTableConfig"
+                @select="handlerGetData"
+                @select-all="handlerGetData"
+            ></y9Table>
             <div slot="footer" class="dialog-footer" style="text-align: center; margin-top: 15px">
                 <el-button type="primary" @click="saveBind"><span>保存</span></el-button>
                 <el-button @click="tableDrawer = false"><span>取消</span></el-button>
@@ -27,13 +50,15 @@
 </template>
 
 <script lang="ts" setup>
-    import { $deepAssignObject } from '@/utils/object.ts';
+    import { h, onMounted, reactive, ref, toRefs, watch } from 'vue';
+    import { $deepAssignObject } from '@/utils/object';
     import {
         deleteBindPrintTemplate,
         getBindTemplateList,
         getPrintFormList,
         saveBindTemplate
     } from '@/api/itemAdmin/item/printConfig';
+    import { getPrintTemplateList } from '@/api/itemAdmin/printTemplate';
 
     const props = defineProps({
         currTreeNodeInfo: {
@@ -49,6 +74,8 @@
         //当前节点信息
         searchName: '',
         title: '',
+        wordShow: false,
+        formShow: false,
         currInfo: props.currTreeNodeInfo,
         tableDrawer: false,
         printBindTableConfig: {
@@ -60,8 +87,26 @@
                     width: '60'
                 },
                 {
-                    title: '表单名称',
+                    title: '模板名称',
                     key: 'templateName'
+                },
+                {
+                    title: '模板类型',
+                    key: 'templateType',
+                    render: (row) => {
+                        var str = '';
+                        switch (row.templateType) {
+                            case '1':
+                                str = 'Word模板';
+                                break;
+                            case '2':
+                                str = '表单模板';
+                                break;
+                            default:
+                                break;
+                        }
+                        return str;
+                    }
                 },
                 {
                     title: '操作',
@@ -71,7 +116,8 @@
                                 'span',
                                 {
                                     style: {
-                                        marginRight: '15px'
+                                        marginRight: '15px',
+                                        fontWeight: 600
                                     },
                                     onClick: () => {
                                         deleteBind(row);
@@ -83,9 +129,9 @@
                                         style: {
                                             marginRight: '4px'
                                         }
-                                    })
-                                ],
-                                '删除'
+                                    }),
+                                    '删除'
+                                ]
                             )
                         ];
                         return button;
@@ -94,6 +140,23 @@
             ],
             tableData: [],
             pageConfig: false, //取消分页
+            height: 'auto'
+        },
+        wordTableConfig: {
+            columns: [
+                { title: '', type: 'selection', fixed: 'left', width: '60' },
+                {
+                    title: '序号',
+                    type: 'index',
+                    width: '60'
+                },
+                {
+                    title: '模板名称',
+                    key: 'fileName'
+                }
+            ],
+            tableData: [],
+            pageConfig: false,
             height: 'auto'
         },
         formTableConfig: {
@@ -131,7 +194,19 @@
         taskDefKey: ''
     });
 
-    let { searchName, title, tableDrawer, currInfo, printBindTableConfig, formTableConfig } = toRefs(data);
+    let {
+        searchName,
+        title,
+        wordShow,
+        formShow,
+        tableDrawer,
+        currInfo,
+        printBindTableConfig,
+        wordTableConfig,
+        formTableConfig,
+        dialogConfig,
+        taskDefKey
+    } = toRefs(data);
 
     watch(
         () => props.currTreeNodeInfo,
@@ -154,15 +229,29 @@
         }
     }
 
-    async function bindTemplate() {
-        title.value = '绑定表单模板';
-        formTableConfig.value.tableData = [];
-        getFormList();
+    async function bindTemplate(type) {
+        if (type == 'word') {
+            title.value = '绑定Word模板';
+            wordShow.value = true;
+            formShow.value = false;
+            wordTableConfig.value.tableData = [];
+            getWordList();
+        } else {
+            title.value = '绑定表单模板';
+            wordShow.value = false;
+            formShow.value = true;
+            formTableConfig.value.tableData = [];
+            getFormList();
+        }
         tableDrawer.value = true;
     }
 
     function search() {
-        getFormList();
+        if (wordShow.value) {
+            getWordList();
+        } else {
+            getFormList();
+        }
     }
 
     function closeDrawer() {
@@ -181,6 +270,13 @@
         let res = await getPrintFormList(props.currTreeNodeInfo.id, searchName.value);
         if (res.success) {
             formTableConfig.value.tableData = res.data;
+        }
+    }
+
+    async function getWordList() {
+        let res = await getPrintTemplateList(searchName.value);
+        if (res.success) {
+            wordTableConfig.value.tableData = res.data;
         }
     }
 
@@ -209,9 +305,16 @@
             });
             return;
         }
-        templateId = selectData.value[0].formId;
-        templateName = selectData.value[0].formName;
-        templateType = '2';
+        if (wordShow.value) {
+            templateId = selectData.value[0].id;
+            templateName = selectData.value[0].fileName;
+            templateUrl = selectData.value[0].fileUrl;
+            templateType = '1';
+        } else {
+            templateId = selectData.value[0].formId;
+            templateName = selectData.value[0].formName;
+            templateType = '2';
+        }
         let result = { success: false, msg: '' };
         result = await saveBindTemplate(props.currTreeNodeInfo.id, templateId, templateName, templateType, templateUrl);
         ElNotification({
@@ -228,7 +331,7 @@
     }
 
     function deleteBind(row) {
-        ElMessageBox.confirm('你确定要删除绑定的表单吗？', '提示', {
+        ElMessageBox.confirm('你确定要删除绑定的模板吗？', '提示', {
             confirmButtonText: '确定',
             cancelButtonText: '取消',
             type: 'info'
@@ -257,12 +360,8 @@
     }
 </script>
 
-<style>
-    .permconfig .el-dialog__body {
-        padding: 5px 10px;
-    }
-
-    .eldrawer .el-drawer__header {
+<style lang="scss" scoped>
+    :deep(.eldrawer .el-drawer__header) {
         margin-bottom: 0;
         padding-bottom: 16px;
         border-bottom: 1px solid #eee;

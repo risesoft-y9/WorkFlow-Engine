@@ -3,9 +3,9 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2021-05-19 15:07:15
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2024-02-28 11:05:06
- * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-itemAdmin\src\views\processControl\index.vue
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:41:49
+ * @FilePath: \vue\y9vue-itemAdmin\src\views\processControl\index.vue
 -->
 
 <template>
@@ -68,8 +68,7 @@
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-    import { onMounted, reactive, ref } from 'vue';
-    import type { ElLoading, ElMessage, ElMessageBox } from 'element-plus';
+    import { onMounted, reactive, ref, toRefs } from 'vue';
     import { deleteProcessInstance, runningList, switchSuspendOrActive } from '@/api/processAdmin/processControl';
     import GraphTrace from '@/views/processDeploy/graphTrace.vue';
     import GraphTraceNew from '@/views/processControl/graphTrace.vue';
@@ -99,8 +98,9 @@
             headerBackground: true,
             pageConfig: {
                 // 分页配置，false隐藏分页
+                pageSizeOpts: [10, 20, 30, 50, 100],
                 currentPage: 1, //当前页数，支持 v-model 双向绑定
-                pageSize: 15, //每页显示条目个数，支持 v-model 双向绑定
+                pageSize: 20, //每页显示条目个数，支持 v-model 双向绑定
                 total: total.value //总条目数
             }
         },
@@ -157,7 +157,7 @@
     function refreshTable() {
         processInstanceId.value = '';
         controlTableConfig.value.pageConfig.currentPage = 1;
-        controlTableConfig.value.pageConfig.pageSize = 15;
+        controlTableConfig.value.pageConfig.pageSize = 20;
         reloadTable();
     }
 

@@ -1,10 +1,9 @@
 <!--
  * @Author: your name
  * @Date: 2022-01-12 17:06:57
- * @LastEditTime: 2022-01-20 15:33:29
- * @LastEditors: your name
- * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- * @FilePath: /sz- team-frontend-9.6.x/y9vue-home/src/layouts/components/IconSvg/index.vue
+ * @LastEditTime: 2025-12-04 14:06:18
+ * @LastEditors: mengjuhua
+ * @Description: 自定义 svg icon 
 -->
 <template>
     <svg aria-hidden="true" class="svg-icon">

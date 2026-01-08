@@ -3,9 +3,9 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2022-07-15 11:52:27
- * @FilePath: \workspace-y9boot-9.5-vuee:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\api\itemAdmin\item\permConfig.ts
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:06:46
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\item\permConfig.ts
  */
 
 import Request from '@/api/lib/request';
@@ -77,6 +77,20 @@ export function getRoleById(param) {
     };
     return itemAdminRequest({
         url: '/vue/role/findRole',
+        method: 'get',
+        params: params
+    });
+}
+
+//获取角色成员
+export function findRoleMember(param) {
+    const params = {
+        roleId: param.roleId,
+        id: param.parentId,
+        treeType: param.treeType
+    };
+    return itemAdminRequest({
+        url: '/vue/role/findRoleMember',
         method: 'get',
         params: params
     });

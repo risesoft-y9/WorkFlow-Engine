@@ -19,6 +19,26 @@
                     </el-form-item>
                     <span v-else>{{ row.custom }}</span>
                 </template>
+                <template #numberType="{ row, column, index }">
+                    <el-form-item v-if="editIndex === index" prop="numberType">
+                        <el-select v-model="formData.numberType" placeholder="请选择编号类型">
+                            <el-option
+                                v-for="item in options"
+                                :key="item.value"
+                                :label="item.label"
+                                :value="item.value"
+                            >
+                            </el-option>
+                        </el-select>
+                    </el-form-item>
+                    <span v-else>{{ typeConvert(row.numberType) }}</span>
+                </template>
+                <template #numberLength="{ row, column, index }">
+                    <el-form-item v-if="editIndex === index && formData.numberType == 'pureNumber'" prop="numberLength">
+                        <el-input v-model="formData.numberLength" clearable />
+                    </el-form-item>
+                    <span v-else>{{ row.numberLength }}</span>
+                </template>
                 <template #opt="{ row, column, index }">
                     <div v-if="editIndex === index">
                         <el-button class="global-btn-second" size="small" @click="saveData(orgWordForm)"
@@ -29,13 +49,17 @@
                         </el-button>
                     </div>
                     <div v-else>
-                        <el-button class="global-btn-second" size="small" @click="property(row)"
+                        <el-button
+                            v-if="row.numberType == 'orgWordNumber'"
+                            class="global-btn-second"
+                            size="small"
+                            @click="property(row)"
                             ><i class="ri-book-3-line"></i>机关代字
                         </el-button>
                         <el-button class="global-btn-second" size="small" @click="editOrganWord(row, index)"
                             ><i class="ri-edit-line"></i>修改
                         </el-button>
-                        <el-button class="global-btn-danger" size="small" type="danger" @click="delOrganWord(row)"
+                        <el-button class="global-btn-second" size="small" @click="delOrganWord(row)"
                             ><i class="ri-delete-bin-line"></i>删除
                         </el-button>
                     </div>
@@ -49,27 +73,30 @@
 </template>
 <script lang="ts" setup>
     import { reactive, ref } from 'vue';
-    import type { ElLoading, ElMessage } from 'element-plus';
+    import type { FormInstance, FormRules } from 'element-plus';
     import { organWordApi } from '@/api/itemAdmin/organWord';
     import WordManage from '@/views/organWord/wordManage.vue';
 
     const orgWordForm = ref<FormInstance>();
     const rules = reactive<FormRules>({
         name: { required: true, message: '请输入编号名称', trigger: 'blur' },
-        custom: { required: true, message: '请输入编号标识', trigger: 'blur' }
+        custom: { required: true, message: '请输入编号标识', trigger: 'blur' },
+        numberType: { required: true, message: '请选择编号类型', trigger: 'select' }
     });
     const data = reactive({
         editIndex: '',
         tableData: [],
-        formData: { id: '', name: '', custom: '' },
+        formData: { id: '', name: '', custom: '', numberType: '' },
         isEmptyData: false,
         tableConfig: {
             //人员列表表格配置
             columns: [
                 { title: '序号', type: 'index', width: '60' },
-                { title: '编号名称', key: 'name', width: '400', slot: 'name' },
+                { title: '编号名称', key: 'name', width: '300', slot: 'name' },
                 { title: '编号标识', key: 'custom', width: 'auto', slot: 'custom' },
-                { title: '操作人', key: 'userName', width: '150' },
+                { title: '编号类型', key: 'numberType', width: '180', slot: 'numberType' },
+                { title: '编号长度', key: 'numberLength', width: '100', slot: 'numberLength' },
+                { title: '操作人', key: 'userName', width: '120' },
                 { title: '添加时间', key: 'createTime', width: '180' },
                 { title: '操作', slot: 'opt', width: '260' }
             ],
@@ -102,10 +129,28 @@
             },
             visibleChange: (visible) => {}
         },
-        row: ''
+        row: '',
+        options: [
+            {
+                label: '机关代字编号',
+                value: 'orgWordNumber'
+            },
+            // {
+            //     label: '委办局区域代码编号',
+            //     value: 'bureauAreaNumber'
+            // },
+            // {
+            //     label: '部门简称编号',
+            //     value: 'deptAliasNameNumber'
+            // },
+            {
+                label: '纯数字编号',
+                value: 'pureNumber'
+            }
+        ]
     });
 
-    let { tableConfig, filterConfig, editIndex, formData, isEmptyData, dialogConfig, row } = toRefs(data);
+    let { tableConfig, filterConfig, editIndex, formData, isEmptyData, dialogConfig, row, options } = toRefs(data);
 
     async function getOrganWordList() {
         let res = await organWordApi.organWordList();
@@ -113,6 +158,27 @@
     }
 
     getOrganWordList();
+
+    function typeConvert(type) {
+        let str = '';
+        switch (type) {
+            case 'orgWordNumber':
+                str = '机关代字';
+                break;
+            case 'bureauAreaNumber':
+                str = '委办局区域代码';
+                break;
+            case 'deptAliasNameNumber':
+                str = '部门简称';
+                break;
+            case 'pureNumber':
+                str = '纯数字';
+                break;
+            default:
+                break;
+        }
+        return str;
+    }
 
     const addOrganWord = () => {
         for (let i = 0; i < tableConfig.value.tableData.length; i++) {
@@ -122,18 +188,14 @@
         }
         if (!isEmptyData.value) {
             editIndex.value = tableConfig.value.tableData.length;
-            tableConfig.value.tableData.push({ id: '', name: '', custom: '' });
-            formData.value.id = '';
-            formData.value.name = '';
-            formData.value.custom = '';
+            tableConfig.value.tableData.push({ id: '', name: '', custom: '', numberType: '' });
+            formData.value = {};
         }
     };
 
     const editOrganWord = (rows, index) => {
         editIndex.value = index;
-        formData.value.id = rows.id;
-        formData.value.name = rows.name;
-        formData.value.custom = rows.custom;
+        formData.value = rows;
         for (let i = 0; i < tableConfig.value.tableData.length; i++) {
             if (tableConfig.value.tableData[i].id == '') {
                 tableConfig.value.tableData.splice(i, 1);
@@ -159,6 +221,13 @@
             if (valid) {
                 organWordApi.checkCustom(formData.value.id, formData.value.custom).then((res) => {
                     if (res.data) {
+                        if (
+                            formData.value.numberType == 'pureNumber' &&
+                            (formData.value.numberLength == '' || formData.value.numberLength == null)
+                        ) {
+                            ElMessage({ type: 'error', message: '当前编号类型为纯数字，请输入编号位数！' });
+                            return;
+                        }
                         const loading = ElLoading.service({
                             lock: true,
                             text: '正在处理中',
@@ -187,8 +256,7 @@
 
     const cancalData = (refForm) => {
         editIndex.value = '';
-        formData.value.name = '';
-        formData.value.custom = '';
+        formData.value = {};
         refForm.resetFields();
         for (let i = 0; i < tableConfig.value.tableData.length; i++) {
             if (tableConfig.value.tableData[i].id == '') {

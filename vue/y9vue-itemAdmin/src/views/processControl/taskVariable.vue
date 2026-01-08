@@ -4,7 +4,7 @@
  * @Author: zhangchongjie
  * @Date: 2023-06-15 15:14:53
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2023-06-16 11:19:01
+ * @LastEditTime: 2024-10-22 11:50:14
  * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9boot-9.6-vue\y9vue-itemAdmin\src\views\processVariable\taskVariable.vue
 -->
 <template>
@@ -12,7 +12,7 @@
         <y9Table :config="varTableConfig" :filterConfig="filterConfig">
             <template #processModel>
                 <label style="line-height: 32px">选择任务</label>
-                <el-select v-model="taskId" style="margin-left: 8px" @change="taskChange">
+                <el-select v-model="taskId" style="margin-left: 8px; width: 300px" @change="taskChange">
                     <el-option v-for="item in taskList" :key="item.taskId" :label="item.userName" :value="item.taskId">
                     </el-option>
                 </el-select>
@@ -69,7 +69,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { defineProps, onMounted, reactive, ref } from 'vue';
+    import { onMounted, reactive, ref } from 'vue';
     import { deleteTaskVar, getTaskList, saveTaskVariable, taskVarList } from '@/api/processAdmin/processControl';
 
     const props = defineProps({
@@ -106,7 +106,7 @@
             ],
             tableData: [],
             pageConfig: false, //取消分页
-            height: 'auto'
+            height: '500'
         },
         filterConfig: {
             //过滤配置

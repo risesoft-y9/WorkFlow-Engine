@@ -3,12 +3,13 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 10:54:43
- * @LastEditors: zhangchongjie
- * @LastEditTime: 2021-09-23 17:39:27
- * @FilePath: \workspace-y9boot-9.5.x-vue\y9vue-itemAdmin\src\api\itemAdmin\item\opinionFrameConfig.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-01-08 14:06:19
+ * @FilePath: \vue\y9vue-itemAdmin\src\api\itemAdmin\item\opinionFrameConfig.ts
  */
 
 import Request from '@/api/lib/request';
+import qs from 'qs';
 
 var itemAdminRequest = new Request();
 
@@ -170,6 +171,40 @@ export function changeSignOpinion(id, signOpinion) {
     };
     return itemAdminRequest({
         url: '/vue/itemOpinionFrameBind/changeSignOpinion',
+        method: 'post',
+        params: params
+    });
+}
+
+//获取意见框绑定的一键设置列表
+export function getOneClickSetBindList(bindId) {
+    const params = {
+        bindId: bindId
+    };
+    return itemAdminRequest({
+        url: '/vue/itemOpinionFrameBind/getOneClickSetBindList',
+        method: 'get',
+        params: params
+    });
+}
+
+//保存一键设置
+export function saveOneClickSet(itemOpinionFrame) {
+    const data = qs.stringify(itemOpinionFrame);
+    return itemAdminRequest({
+        url: '/vue/itemOpinionFrameBind/saveOneClickSet',
+        method: 'post',
+        data: data
+    });
+}
+
+//删除一键设置
+export function delOneClickSet(id) {
+    const params = {
+        id: id
+    };
+    return itemAdminRequest({
+        url: '/vue/itemOpinionFrameBind/delOneClickSet',
         method: 'post',
         params: params
     });
