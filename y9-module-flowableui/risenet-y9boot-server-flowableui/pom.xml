@@ -10,6 +10,8 @@
     </parent>
     <artifactId>risenet-y9boot-server-flowableui</artifactId>
     <packaging>war</packaging>
+    <name>risenet-y9boot-server-flowableui</name>
+    <description>RiseSoft/WorkFlow Engine flowableui server</description>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>

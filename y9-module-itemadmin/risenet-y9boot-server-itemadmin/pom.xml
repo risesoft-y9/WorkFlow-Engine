@@ -11,6 +11,8 @@
     <artifactId>risenet-y9boot-server-itemadmin</artifactId>
     <!-- <version>${revision}</version> -->
     <packaging>war</packaging>
+    <name>risenet-y9boot-server-itemadmin</name>
+    <description>RiseSoft/WorkFlow Engine itemadmin server</description>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
@@ -54,7 +56,7 @@
             <artifactId>risenet-y9boot-starter-web</artifactId>
             <version>${project.version}</version>
         </dependency>
-        
+
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-pool2</artifactId>
