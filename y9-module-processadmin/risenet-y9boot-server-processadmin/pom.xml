@@ -10,6 +10,8 @@
     <artifactId>risenet-y9boot-server-processadmin</artifactId>
     <!-- <version>${revision}</version> -->
     <packaging>war</packaging>
+    <name>risenet-y9boot-server-processadmin</name>
+    <description>RiseSoft/WorkFlow Engine processadmin server</description>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>

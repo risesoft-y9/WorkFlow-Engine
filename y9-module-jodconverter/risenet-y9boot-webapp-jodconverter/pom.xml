@@ -13,6 +13,8 @@
     <version>${revision}</version>
     <artifactId>risenet-y9boot-webapp-jodconverter</artifactId>
     <packaging>war</packaging>
+    <name>risenet-y9boot-webapp-jodconverter</name>
+    <description>RiseSoft/WorkFlow Engine jodconverter webapp</description>
 
     <properties>
         <logging.path>${basedir}/target/classes/logs</logging.path>

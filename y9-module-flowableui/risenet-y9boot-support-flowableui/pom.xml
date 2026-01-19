@@ -10,6 +10,8 @@
     </parent>
     <artifactId>risenet-y9boot-support-flowableui</artifactId>
     <packaging>jar</packaging>
+    <name>risenet-y9boot-support-flowableui</name>
+    <description>RiseSoft/WorkFlow Engine flowableui support</description>
 
     <properties>
         <maven.deploy.skip>true</maven.deploy.skip>
