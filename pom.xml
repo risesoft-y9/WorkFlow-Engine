@@ -290,7 +290,7 @@
                             <excludeArtifacts>
                                 <artifact>risenet-y9boot-server-flowableui</artifact>
                                 <artifact>y9-module-jodconverter</artifact>
-                                <artifact>risenet-y9boot-server-jodconverter</artifact>
+                                <artifact>risenet-y9boot-webapp-jodconverter</artifact>
                                 <artifact>risenet-y9boot-server-processadmin</artifact>
                                 <artifact>risenet-y9boot-server-itemadmin</artifact>
                             </excludeArtifacts>
