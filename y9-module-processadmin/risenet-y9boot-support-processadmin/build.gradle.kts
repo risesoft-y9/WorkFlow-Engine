@@ -16,6 +16,7 @@ dependencies {
     api("net.risesoft:risenet-y9boot-common-sqlddl")
     api("net.risesoft:risenet-y9boot-api-feignclient-platform")
     api("net.risesoft:risenet-y9boot-starter-multi-tenant")
+    api("net.risesoft:risenet-y9boot-starter-liquibase")
     api(libs.flowable.spring.boot.starter.process)
     api(project(":y9-module-itemadmin:risenet-y9boot-api-feignclient-itemadmin"))
     api(project(":y9-module-processadmin:risenet-y9boot-api-interface-processadmin"))

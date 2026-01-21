@@ -9,8 +9,8 @@ dependencies {
     api(platform(libs.y9.digitalbase.bom))
     api(platform(libs.y9.digitalbase.dependencies))
 
-    api(project(":y9-module-itemadmin:risenet-y9boot-api-interface-itemadmin"))
     api(project(":y9-module-itemadmin:risenet-y9boot-support-itemadmin-jpa-repository"))
+    api(project(":y9-module-itemadmin:risenet-y9boot-api-interface-itemadmin"))
     api(project(":y9-module-processadmin:risenet-y9boot-api-feignclient-processadmin"))
     api("net.risesoft:risenet-y9boot-properties")
     api("net.risesoft:risenet-y9boot-common-model")
@@ -18,7 +18,7 @@ dependencies {
     api("net.risesoft:risenet-y9boot-common-sqlddl")
     api("net.risesoft:risenet-y9boot-starter-log")
     api("net.risesoft:risenet-y9boot-starter-jpa-public")
-    api("net.risesoft:risenet-y9boot-starter-jpa-tenant")
+    api("net.risesoft:risenet-y9boot-starter-multi-tenant")
     api("net.risesoft:risenet-y9boot-starter-cache-redis")
     api("net.risesoft:risenet-y9boot-starter-listener-kafka")
     api("net.risesoft:risenet-y9boot-support-file-service-ftp")
@@ -29,6 +29,7 @@ dependencies {
     api(libs.jodd.mail)
     // api(libs.fluent)
     // api(libs.jxl)
+    api("org.hibernate.validator:hibernate-validator")
 
     compileOnly("jakarta.servlet:jakarta.servlet-api")
 }
