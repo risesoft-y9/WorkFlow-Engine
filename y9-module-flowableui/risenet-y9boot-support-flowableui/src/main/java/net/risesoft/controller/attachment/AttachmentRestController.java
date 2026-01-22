@@ -245,7 +245,7 @@ public class AttachmentRestController {
             String fileName = FilenameUtils.getName(originalFilename);
             String fullPath =
                 String.format("/%s/%s/attachmentFile/%s", Y9Context.getSystemName(), tenantId, processSerialNumber);
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
+            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file.getInputStream(), fullPath, fileName);
             String storeId = y9FileStore.getId();
             String fileSize =
                 Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
@@ -296,7 +296,7 @@ public class AttachmentRestController {
             String fileName = FilenameUtils.getName(originalFilename);
             String fullPath =
                 "/" + Y9Context.getSystemName() + "/" + tenantId + "/attachmentFile" + "/" + processSerialNumber;
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
+            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file.getInputStream(), fullPath, fileName);
             String storeId = y9FileStore.getId();
             String fileSize =
                 Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);

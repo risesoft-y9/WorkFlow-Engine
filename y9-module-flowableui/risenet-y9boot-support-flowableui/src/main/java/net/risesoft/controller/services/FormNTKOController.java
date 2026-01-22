@@ -607,7 +607,7 @@ public class FormNTKOController {
     private Y9FileStore uploadPDFFile(MultipartFile file, String tenantId, String processSerialNumber, String title,
         String fileType) throws Exception {
         String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
-        return y9FileStoreService.uploadFile(file, fullPath, title + fileType);
+        return y9FileStoreService.uploadFile(file.getInputStream(), fullPath, title + fileType);
     }
 
     /**
@@ -761,7 +761,7 @@ public class FormNTKOController {
     private Y9FileStore uploadFile(MultipartFile file, String tenantId, String processSerialNumber, String title,
         String fileType) throws Exception {
         String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
-        return y9FileStoreService.uploadFile(file, fullPath, title + fileType);
+        return y9FileStoreService.uploadFile(file.getInputStream(), fullPath, title + fileType);
     }
 
     /**

@@ -371,7 +371,8 @@ public class Y9WordController {
         try {
             String title = getDocumentTitle(tenantId, processSerialNumber);
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
+            Y9FileStore y9FileStore =
+                y9FileStoreService.uploadFile(multipartFile.getInputStream(), fullPath, title + fileType);
             Boolean result2 =
                 y9WordApi
                     .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
@@ -510,7 +511,8 @@ public class Y9WordController {
             }
             title = documentTitle != null ? documentTitle : "正文";
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(multipartFile, fullPath, title + fileType);
+            Y9FileStore y9FileStore =
+                y9FileStoreService.uploadFile(multipartFile.getInputStream(), fullPath, title + fileType);
             Boolean result2 =
                 y9WordApi
                     .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, docCategory, taskId,
@@ -556,7 +558,7 @@ public class Y9WordController {
     private Y9FileStore uploadFile(MultipartFile file, String tenantId, String processSerialNumber, String title,
         String fileType) throws Exception {
         String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
-        return y9FileStoreService.uploadFile(file, fullPath, title + fileType);
+        return y9FileStoreService.uploadFile(file.getInputStream(), fullPath, title + fileType);
     }
 
     /**
