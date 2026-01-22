@@ -213,7 +213,7 @@ public class WordTemplateServiceImpl implements WordTemplateService {
             wordTemplate.setFileName(fileName);
             String fullPath =
                 Y9FileStore.buildPath(Y9Context.getSystemName(), "wordTemplate", Y9DateTimeUtils.formatCurrentDate());
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
+            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file.getInputStream(), fullPath, fileName);
             wordTemplate.setPersonId(person.getPersonId());
             wordTemplate.setPersonName(person.getName());
             wordTemplate.setBureauId(orgUnitApi.getBureau(tenantId, personId).getData().getId());

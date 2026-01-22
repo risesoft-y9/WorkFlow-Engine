@@ -244,7 +244,7 @@ public class PrintTemplateServiceImpl implements PrintTemplateService {
             printTemplate.setFileName(fileName);
             String fullPath =
                 Y9FileStore.buildPath(Y9Context.getSystemName(), "printTemplate", Y9DateTimeUtils.formatCurrentDate());
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
+            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file.getInputStream(), fullPath, fileName);
             printTemplate.setPersonId(person.getPersonId());
             printTemplate.setPersonName(person.getName());
             printTemplate.setTenantId(Y9LoginUserHolder.getTenantId());

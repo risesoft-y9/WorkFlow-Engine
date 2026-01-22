@@ -158,7 +158,7 @@ public class DocumentWordRestController {
             String fileName = FilenameUtils.getName(originalFilename);
             String fullPath =
                 Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", oldModel.getProcessSerialNumber());
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file, fullPath, fileName);
+            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file.getInputStream(), fullPath, fileName);
             DocumentWordModel model = new DocumentWordModel();
             model.setId(Y9IdGenerator.genId());
             model.setFileType(oldModel.getFileType());
