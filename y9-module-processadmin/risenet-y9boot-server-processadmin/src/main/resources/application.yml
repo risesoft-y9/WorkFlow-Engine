@@ -18,7 +18,11 @@ management:
     endpoints:
         web:
             exposure:
-                include: health,info
+                include: health
+    endpoint:
+        health:
+            probes:
+                enabled: true
 mybatis:
     mapper-locations: classpath:/META-INF/modeler-mybatis-mappings/*.xml
 logging:
