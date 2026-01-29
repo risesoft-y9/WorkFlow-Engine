@@ -13,19 +13,21 @@
         let processInstanceId = currentrRute.query.processInstanceId ? currentrRute.query.processInstanceId : '';
         let itemId = currentrRute.query.itemId ? currentrRute.query.itemId : '';
         let id = currentrRute.query.type ? currentrRute.query.id : '';
+        let itembox = currentrRute.query.itembox ? currentrRute.query.itembox : 'todoChaoSong';
         flowableStore.$patch({
             itemName: '阅件'
         });
-        openDoc(id, itemId, processInstanceId);
+        openDoc(id, itemId, processInstanceId, itembox);
     });
 
-    function openDoc(id, itemId, processInstanceId) {
+    function openDoc(id, itemId, processInstanceId, itembox) {
         let query = {
             itemId: itemId,
             processInstanceId: processInstanceId,
             status: 0,
             id: id,
-            listType: 'csTodo'
+            listType: 'csTodo',
+            itembox: itembox
         };
         let path = '/workIndex/csEdit';
         router.push({ path: path, query: query });
