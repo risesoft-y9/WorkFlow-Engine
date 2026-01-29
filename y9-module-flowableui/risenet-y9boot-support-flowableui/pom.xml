@@ -115,32 +115,27 @@
         <dependency>
             <groupId>com.belerweb</groupId>
             <artifactId>pinyin4j</artifactId>
-            <version>2.5.1</version>
         </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-scratchpad</artifactId>
-            <version>5.4.1</version>
         </dependency>
 
         <dependency>
             <groupId>com.deepoove</groupId>
             <artifactId>poi-tl</artifactId>
-            <version>1.12.2</version>
             <scope>compile</scope>
         </dependency>
 
         <dependency>
             <groupId>org.apache.poi</groupId>
             <artifactId>poi-ooxml</artifactId>
-            <version>5.4.1</version>
         </dependency>
 
         <dependency>
             <groupId>cn.wps.yun</groupId>
             <artifactId>graph-java-client</artifactId>
-            <version>1.0.11</version>
             <scope>compile</scope>
         </dependency>
 
