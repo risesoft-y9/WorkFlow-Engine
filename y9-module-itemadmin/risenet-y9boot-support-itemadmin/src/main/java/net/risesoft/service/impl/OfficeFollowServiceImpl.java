@@ -101,7 +101,8 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
                 resultList.add(model);
             } catch (Exception e) {
                 // 记录具体异常信息，便于问题排查
-                LOGGER.error("处理关注事项失败，流程实例ID: {}", officeFollow.getProcessInstanceId(), e);
+                LOGGER.error("处理关注事项失败，流程实例ID: {}", officeFollow.getProcessInstanceId());
+                LOGGER.error("处理关注事项失败原因", e);
             }
         }
 
