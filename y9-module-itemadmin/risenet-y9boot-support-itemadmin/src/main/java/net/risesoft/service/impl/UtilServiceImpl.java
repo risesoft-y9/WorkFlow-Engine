@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.IdentityApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
@@ -146,7 +147,7 @@ public class UtilServiceImpl implements UtilService {
 
     @Override
     public List<String> getItemBoxAndTaskId(List<TaskModel> taskList) {
-        String userId = Y9LoginUserHolder.getPersonId();
+        String userId = Y9FlowableHolder.getOrgUnitId();
         String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
         List<String> list = new ArrayList<>();
         for (TaskModel task : taskList) {
