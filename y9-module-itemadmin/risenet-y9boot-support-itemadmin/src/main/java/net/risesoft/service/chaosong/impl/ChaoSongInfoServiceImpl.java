@@ -299,7 +299,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     public Y9Page<ChaoSongModel> pageByProcessInstanceIdAndUserName(String processInstanceId, String userName, int rows,
         int page) {
         Page<ChaoSongInfo> pageList = searchChaoSongInfo(processInstanceId, userName, rows, page);
-        List<ChaoSongModel> list = buildChaoSongModelList(pageList.getContent(), processInstanceId, page, rows);
+        List<ChaoSongModel> list = buildChaoSongModelList(pageList.getContent(), page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
 
@@ -345,7 +345,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
         List<ChaoSongInfo> csList = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(csList, pageable, searchHits.getTotalHits());
-        List<ChaoSongModel> list = buildChaoSongModelList(pageList.getContent(), processInstanceId, page, rows);
+        List<ChaoSongModel> list = buildChaoSongModelList(pageList.getContent(), page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
 
@@ -665,15 +665,16 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         return csList;
     }
 
-    private List<ChaoSongModel> buildChaoSongModelList(List<ChaoSongInfo> csList, String processInstanceId, int page,
-        int rows) {
+    private List<ChaoSongModel> buildChaoSongModelList(List<ChaoSongInfo> csList, int page, int rows) {
         AtomicInteger num = new AtomicInteger((page - 1) * rows);
         return csList.stream().map(chaoSongInfo -> {
             ChaoSongModel chaoSongModel = new ChaoSongModel();
             Y9BeanUtil.copyProperties(chaoSongInfo, chaoSongModel);
             chaoSongModel.setSerialNumber(num.incrementAndGet());
             chaoSongModel.setId(chaoSongInfo.getId());
-            chaoSongModel.setProcessInstanceId(processInstanceId);
+            chaoSongModel.setTenantId(chaoSongInfo.getTenantId());
+            chaoSongModel.setProcessSerialNumber(chaoSongInfo.getProcessSerialNumber());
+            chaoSongModel.setProcessInstanceId(chaoSongInfo.getProcessInstanceId());
             chaoSongModel.setSenderName(chaoSongInfo.getSenderName());
             chaoSongModel.setSendDeptName(chaoSongInfo.getSendDeptName());
             chaoSongModel.setUserName(chaoSongInfo.getUserName());
@@ -799,7 +800,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         Page<ChaoSongInfo> pageList =
             searchChaoSongInfoByUser(tenantId, userId, searchName, itemId, userName, state, year, page, rows);
         // 构建返回列表
-        List<ChaoSongModel> list = buildChaoSongModelList(pageList.getContent(), tenantId, page, rows);
+        List<ChaoSongModel> list = buildChaoSongModelList(pageList.getContent(), page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
 
@@ -834,8 +835,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     public Y9Page<ChaoSongModel> searchAllList(String searchName, String itemId, String senderName, String userName,
         String state, String year, Integer page, Integer rows) {
 
-        String tenantId = Y9LoginUserHolder.getTenantId();
-
         if (page < 1) {
             page = 1;
         }
@@ -845,7 +844,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             searchChaoSongInfo(searchName, itemId, senderName, userName, state, year, page, rows);
 
         // 构建返回列表
-        List<ChaoSongModel> list = buildChaoSongModelList(pageList.getContent(), tenantId, page, rows);
+        List<ChaoSongModel> list = buildChaoSongModelList(pageList.getContent(), page, rows);
 
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
     }
