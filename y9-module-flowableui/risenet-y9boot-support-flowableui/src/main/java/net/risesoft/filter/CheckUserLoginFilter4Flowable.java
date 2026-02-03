@@ -16,12 +16,12 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 public class CheckUserLoginFilter4Flowable implements Filter {
@@ -45,10 +45,12 @@ public class CheckUserLoginFilter4Flowable implements Filter {
                 if (StringUtils.isNotBlank(positionId) && !positionId.contains("null")) {
                     session.setAttribute("positionId", positionId);
                     Y9FlowableHolder.setPositionId(positionId);
+                    Y9FlowableHolder.setOrgUnitId(positionId);
                     PositionApi positionApi = Y9Context.getBean(PositionApi.class);
                     Position position = positionApi.get(loginPerson.getTenantId(), positionId).getData();
                     if (position != null) {
                         Y9FlowableHolder.setPosition(position);
+                        Y9FlowableHolder.setOrgUnit(position);
                     }
                 } else {
                     PersonApi personApi = Y9Context.getBean(PersonApi.class);
@@ -56,7 +58,11 @@ public class CheckUserLoginFilter4Flowable implements Filter {
                         personApi.listPositionsByPersonId(loginPerson.getTenantId(), loginPerson.getPersonId())
                             .getData();
                     if (!list.isEmpty()) {
-                        Y9FlowableHolder.setPosition(list.get(0));
+                        Position position = list.get(0);
+                        Y9FlowableHolder.setPosition(position);
+                        Y9FlowableHolder.setPositionId(position.getId());
+                        Y9FlowableHolder.setOrgUnitId(position.getId());
+                        Y9FlowableHolder.setOrgUnit(position);
                     }
                 }
             }

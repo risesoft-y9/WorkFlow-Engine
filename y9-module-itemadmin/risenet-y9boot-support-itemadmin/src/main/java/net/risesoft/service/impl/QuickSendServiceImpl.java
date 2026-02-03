@@ -4,12 +4,12 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.Y9FlowableHolder;
 import net.risesoft.entity.QuickSend;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.QuickSendRepository;
 import net.risesoft.service.QuickSendService;
+import net.risesoft.y9.Y9FlowableHolder;
 
 /**
  *

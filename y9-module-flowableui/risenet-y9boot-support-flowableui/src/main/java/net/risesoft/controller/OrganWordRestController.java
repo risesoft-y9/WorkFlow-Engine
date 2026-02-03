@@ -23,6 +23,7 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -98,7 +99,7 @@ public class OrganWordRestController {
         @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return organWordApi.findByCustom(tenantId, Y9LoginUserHolder.getPositionId(), custom, itemId,
+        return organWordApi.findByCustom(tenantId, Y9FlowableHolder.getPositionId(), custom, itemId,
             processDefinitionId, taskDefKey);
     }
 
@@ -113,7 +114,7 @@ public class OrganWordRestController {
     @GetMapping(value = "/findByCustomNumber")
     public Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam String itemId,
         @RequestParam String processDefinitionId, @RequestParam String taskDefKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         return organWordApi.findByCustomNumber(tenantId, positionId, itemId, processDefinitionId, taskDefKey);
     }
 

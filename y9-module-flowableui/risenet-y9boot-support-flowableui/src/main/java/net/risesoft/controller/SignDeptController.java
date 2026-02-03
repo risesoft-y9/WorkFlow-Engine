@@ -19,6 +19,7 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.platform.org.Department;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -45,7 +46,7 @@ public class SignDeptController {
     @FlowableLog(operationName = "删除会签信息", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteById")
     public Y9Result<Object> deleteById(@RequestParam String id) {
-        return signDeptInfoApi.deleteById(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id);
+        return signDeptInfoApi.deleteById(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), id);
     }
 
     /**
@@ -87,7 +88,7 @@ public class SignDeptController {
     @PostMapping(value = "/saveSignDept")
     public Y9Result<Object> saveSignDept(@RequestParam String processSerialNumber, @RequestParam String deptType,
         @RequestParam String deptIds, @RequestParam(required = false) String tzsDeptId) {
-        return signDeptInfoApi.saveSignDept(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), deptIds,
+        return signDeptInfoApi.saveSignDept(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), deptIds,
             deptType, processSerialNumber, tzsDeptId);
     }
 
@@ -116,7 +117,7 @@ public class SignDeptController {
     @PostMapping(value = "/updateSignDept")
     public Y9Result<Object> updateSignDept(@RequestParam String processSerialNumber, @RequestParam String type,
         @RequestParam String tzsDeptId) {
-        return signDeptInfoApi.updateSignDept(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+        return signDeptInfoApi.updateSignDept(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(),
             processSerialNumber, type, tzsDeptId);
     }
 }

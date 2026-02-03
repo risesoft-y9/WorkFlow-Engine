@@ -51,6 +51,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9FileUtil;
 import net.risesoft.y9public.entity.Y9FileStore;
@@ -249,7 +250,7 @@ public class AttachmentRestController {
             String storeId = y9FileStore.getId();
             String fileSize =
                 Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
-            return attachmentApi.upload(tenantId, userId, Y9LoginUserHolder.getPositionId(), fileName, fileSize,
+            return attachmentApi.upload(tenantId, userId, Y9FlowableHolder.getPositionId(), fileName, fileSize,
                 processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
         } catch (Exception e) {
             LOGGER.error("上传失败", e);
@@ -281,7 +282,7 @@ public class AttachmentRestController {
         @ModelAttribute AttachmentModel attachmentModel) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId(),
-            positionId = Y9LoginUserHolder.getPositionId();
+            positionId = Y9FlowableHolder.getPositionId();
         try {
             String processSerialNumber = attachmentModel.getProcessSerialNumber();
             if (StringUtils.isBlank(processSerialNumber)) {

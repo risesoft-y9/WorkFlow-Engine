@@ -19,7 +19,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.OptionClassApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.form.FormDataApi;
@@ -51,6 +50,7 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -136,7 +136,7 @@ public class Y9FormRestController {
     public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam @NotBlank String formId,
         @RequestParam(required = false) String taskDefKey, @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPositionId();
+        String userId = Y9FlowableHolder.getPositionId();
         return formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
     }
 
@@ -174,7 +174,7 @@ public class Y9FormRestController {
         @RequestParam @NotBlank String parentProcessSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            return formDataApi.getChildFormData(tenantId, Y9LoginUserHolder.getPositionId(), formId,
+            return formDataApi.getChildFormData(tenantId, Y9FlowableHolder.getPositionId(), formId,
                 parentProcessSerialNumber);
         } catch (Exception e) {
             LOGGER.error("获取子表单数据失败", e);
@@ -216,7 +216,7 @@ public class Y9FormRestController {
         @RequestParam @NotBlank String fieldName, @RequestParam(required = false) String taskDefKey,
         @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPositionId();
+        String userId = Y9FlowableHolder.getPositionId();
         return formDataApi.getFieldPerm(tenantId, userId, formId, fieldName, taskDefKey, processDefinitionId);
     }
 
@@ -318,7 +318,7 @@ public class Y9FormRestController {
         String itemNumber = "〔" + year + "〕" + second + "号";
         OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), position.getParentId()).getData();
         OrgUnit bureau =
-            orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
+            orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData();
         Tenant tenant = tenantApi.getById(Y9LoginUserHolder.getTenantId()).getData();
         /* 办件表单数据初始化 **/
         map.put("deptId", dept.getId());

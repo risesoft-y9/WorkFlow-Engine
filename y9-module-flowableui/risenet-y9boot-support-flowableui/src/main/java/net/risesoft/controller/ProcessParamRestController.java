@@ -24,6 +24,7 @@ import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -75,7 +76,7 @@ public class ProcessParamRestController {
             Map<String, Object> vars = new HashMap<>();
             vars.put("val", actionName);
             variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId,
-                SysVariables.ACTION_NAME + ":" + Y9LoginUserHolder.getPositionId(), vars);
+                SysVariables.ACTION_NAME + ":" + Y9FlowableHolder.getPositionId(), vars);
         }
         return Y9Result.success(null);
     }

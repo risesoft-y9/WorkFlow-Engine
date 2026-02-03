@@ -28,6 +28,7 @@ import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -185,7 +186,7 @@ public class OpinionRestController {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = person.getTenantId();
             OpinionModel opinion = Y9JsonUtil.readValue(jsonData, OpinionModel.class);
-            String positionId = Y9LoginUserHolder.getPositionId();
+            String positionId = Y9FlowableHolder.getPositionId();
             OpinionModel opinionModel = opinionApi.saveOrUpdate(tenantId, userId, positionId, opinion).getData();
             return Y9Result.success(opinionModel, "保存成功");
         } catch (Exception e) {

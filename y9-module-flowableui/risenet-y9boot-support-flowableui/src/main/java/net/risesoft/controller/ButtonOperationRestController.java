@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.CustomProcessInfoApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
@@ -58,6 +57,7 @@ import net.risesoft.service.ButtonOperationService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9Util;
@@ -240,7 +240,7 @@ public class ButtonOperationRestController {
         String processDefinitionKey, String processInstanceId, String taskId,
         CustomProcessInfoModel customProcessInfo) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
 
         Map<String, Object> variables = new HashMap<>(16);
         String userChoice = customProcessInfo.getOrgId();
@@ -301,7 +301,7 @@ public class ButtonOperationRestController {
      */
     private Y9Result<String> handleSequentialTask(String processInstanceId, String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         Position position = Y9FlowableHolder.getPosition();
 
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
@@ -335,7 +335,7 @@ public class ButtonOperationRestController {
     public Y9Result<String> directSend(@RequestParam @NotBlank String processInstanceId,
         @RequestParam @NotBlank String taskId, @RequestParam @NotBlank String routeToTask) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         try {
             Y9Result<Object> y9Result =
                 buttonOperationApi.directSend(tenantId, positionId, taskId, routeToTask, processInstanceId);
@@ -755,7 +755,7 @@ public class ButtonOperationRestController {
             String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
-            taskApi.completeWithVariables(tenantId, taskId, Y9LoginUserHolder.getPositionId(), vars);
+            taskApi.completeWithVariables(tenantId, taskId, Y9FlowableHolder.getPositionId(), vars);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {
@@ -877,7 +877,7 @@ public class ButtonOperationRestController {
             }
             SmsDetailModel smsDetailModel = SmsDetailModel.builder()
                 .processSerialNumber(processSerialNumber)
-                .positionId(Y9LoginUserHolder.getPositionId())
+                .positionId(Y9FlowableHolder.getPositionId())
                 .positionName(Y9LoginUserHolder.getUserInfo().getName())
                 .send(!StringUtils.isBlank(isSendSms) && Boolean.parseBoolean(isSendSms))
                 .sign(!StringUtils.isBlank(isShuMing) && Boolean.parseBoolean(isShuMing))
@@ -1127,7 +1127,7 @@ public class ButtonOperationRestController {
      */
     private BatchOperationResult executeBatchRollback(String tenantId, String actionName, List<TaskModel> taskList) {
         BatchOperationResult result = new BatchOperationResult();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
 
         for (TaskModel task : taskList) {
             try {
@@ -1172,7 +1172,7 @@ public class ButtonOperationRestController {
         @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
         @RequestParam @NotBlank String jsonData) {
         try {
-            String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<Map<String, Object>> list = Y9JsonUtil.readValue(jsonData, List.class);
             boolean msg = customProcessInfoApi.saveOrUpdate(tenantId, itemId, processSerialNumber, list).isSuccess();
             if (!msg) {
@@ -1212,7 +1212,7 @@ public class ButtonOperationRestController {
     @FlowableLog(operationName = "返回任务发送人", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/sendToSender")
     public Y9Result<String> sendToSender(@RequestParam @NotBlank String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         try {
             buttonOperationApi.rollbackToSender(tenantId, positionId, taskId);
             return Y9Result.successMsg("返回发送人成功");
@@ -1231,7 +1231,7 @@ public class ButtonOperationRestController {
     @FlowableLog(operationName = "返回拟稿人", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/sendToStartor")
     public Y9Result<String> sendToStartor(@RequestParam @NotBlank String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         try {
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             String routeToTaskId = taskModel.getTaskDefinitionKey();

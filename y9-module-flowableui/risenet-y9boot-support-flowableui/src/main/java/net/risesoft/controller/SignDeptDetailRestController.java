@@ -18,7 +18,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
 import net.risesoft.api.itemadmin.TaskRelatedApi;
@@ -34,6 +33,7 @@ import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -116,7 +116,7 @@ public class SignDeptDetailRestController {
             List<SignDeptModel> sdmList = signDeptInfoApi.getSignDeptList(tenantId, "0", processSerialNumber).getData();
             sdmList.stream()
                 .filter(sdm -> sdm.getDeptId().equals(signDeptDetail.getDeptId()))
-                .forEach(sdm -> signDeptInfoApi.deleteById(tenantId, Y9LoginUserHolder.getPositionId(), sdm.getId()));
+                .forEach(sdm -> signDeptInfoApi.deleteById(tenantId, Y9FlowableHolder.getPositionId(), sdm.getId()));
         }
         return Y9Result.success();
     }
@@ -134,7 +134,7 @@ public class SignDeptDetailRestController {
         @RequestParam(required = false) String signDeptDetailId) {
         String bureauId;
         if (StringUtils.isBlank(signDeptDetailId)) {
-            bureauId = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId())
+            bureauId = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId())
                 .getData()
                 .getId();
         } else {
@@ -249,7 +249,7 @@ public class SignDeptDetailRestController {
     @PostMapping(value = "/saveOrUpdate")
     Y9Result<Object> saveOrUpdate(@RequestParam @NotBlank String jsonData) {
         SignDeptDetailModel signDeptDetailModel = Y9JsonUtil.readValue(jsonData, SignDeptDetailModel.class);
-        return signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+        return signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(),
             signDeptDetailModel);
     }
 }

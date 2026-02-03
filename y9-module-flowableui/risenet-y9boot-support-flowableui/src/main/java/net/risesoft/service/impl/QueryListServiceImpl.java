@@ -32,6 +32,7 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.QueryListService;
 import net.risesoft.service.UtilService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -58,7 +59,7 @@ public class QueryListServiceImpl implements QueryListService {
     public Y9Page<Map<String, Object>> pageQueryList(String itemId, String state, String createDate, String tableName,
         String searchMapStr, Integer page, Integer rows) {
         Y9Page<ActRuDetailModel> itemPage;
-        String userId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             itemPage = queryListApi.getQueryList(tenantId, userId, item.getSystemName(), state, createDate, tableName,

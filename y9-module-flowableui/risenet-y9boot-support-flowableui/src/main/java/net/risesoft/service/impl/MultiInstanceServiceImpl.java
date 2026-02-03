@@ -29,6 +29,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -67,7 +68,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         try {
             SmsDetailModel smsDetailModel = SmsDetailModel.builder()
                 .processSerialNumber(processParamModel.getProcessSerialNumber())
-                .positionId(Y9LoginUserHolder.getPositionId())
+                .positionId(Y9FlowableHolder.getPositionId())
                 .positionName(Y9LoginUserHolder.getUserInfo().getName())
                 .send(!StringUtils.isBlank(isSendSms) && Boolean.parseBoolean(isSendSms))
                 .sign(!StringUtils.isBlank(isShuMing) && Boolean.parseBoolean(isShuMing))
@@ -90,7 +91,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     public void addExecutionId(ProcessParamModel processParamModel, String activityId, String userChoice) {
         String tenantId = Y9LoginUserHolder.getTenantId(), processInstanceId = processParamModel.getProcessInstanceId(),
             processSerialNumber = processParamModel.getProcessSerialNumber(),
-            positionId = Y9LoginUserHolder.getPositionId();
+            positionId = Y9FlowableHolder.getPositionId();
         String[] users = userChoice.split(";");
         for (String user : users) {
             buttonOperationApi.addMultiInstanceExecutionByActivityId(tenantId, activityId, processInstanceId, user);

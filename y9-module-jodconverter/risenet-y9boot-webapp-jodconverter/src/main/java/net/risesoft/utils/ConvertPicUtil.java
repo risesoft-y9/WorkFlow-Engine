@@ -104,7 +104,7 @@ public class ConvertPicUtil {
         Document document = new Document();
         RandomAccessFileOrArray rafa = null;
         try (FileOutputStream outputStream = new FileOutputStream(strPdfFile);
-            RandomAccessFile aFile = new RandomAccessFile(strJpgFile, "r");) {
+            RandomAccessFile aFile = new RandomAccessFile(strJpgFile, "r")) {
 
             FileChannel inChannel = aFile.getChannel();
             FileChannelRandomAccessSource fcra = new FileChannelRandomAccessSource(inChannel);

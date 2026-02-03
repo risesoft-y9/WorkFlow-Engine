@@ -26,6 +26,7 @@ import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -100,7 +101,7 @@ public class OpinionSignRestController {
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String opinionFrameMark) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId(), tenantId = person.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         return opinionSignApi.personCommentList(tenantId, userId, positionId, processSerialNumber, signDeptDetailId,
             itembox, taskId, opinionFrameMark);
     }
@@ -137,7 +138,7 @@ public class OpinionSignRestController {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             String userId = person.getPersonId(), tenantId = person.getTenantId();
             OpinionSignModel opinion = Y9JsonUtil.readValue(jsonData, OpinionSignModel.class);
-            String positionId = Y9LoginUserHolder.getPositionId();
+            String positionId = Y9FlowableHolder.getPositionId();
             OpinionSignModel opinionModel =
                 opinionSignApi.saveOrUpdate(tenantId, userId, positionId, opinion).getData();
             return Y9Result.success(opinionModel, "保存成功");

@@ -14,7 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
@@ -33,6 +32,7 @@ import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -70,7 +70,7 @@ public class OfficeFollowRestController {
         try {
             Y9Result<Object> y9Result;
             String tenantId = Y9LoginUserHolder.getTenantId();
-            y9Result = officeFollowApi.delOfficeFollow(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceIds);
+            y9Result = officeFollowApi.delOfficeFollow(tenantId, Y9FlowableHolder.getPositionId(), processInstanceIds);
             if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("取消关注成功");
             }
@@ -92,7 +92,7 @@ public class OfficeFollowRestController {
     public Y9Page<OfficeFollowModel> followList(@RequestParam Integer page, @RequestParam Integer rows,
         @RequestParam(required = false) String searchName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return officeFollowApi.getOfficeFollowList(tenantId, Y9LoginUserHolder.getPositionId(), searchName, page, rows);
+        return officeFollowApi.getOfficeFollowList(tenantId, Y9FlowableHolder.getPositionId(), searchName, page, rows);
     }
 
     /**
@@ -103,7 +103,7 @@ public class OfficeFollowRestController {
     @GetMapping(value = "/getFollowCount")
     public Y9Result<Integer> getFollowCount() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        int followCount = officeFollowApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId()).getData();
+        int followCount = officeFollowApi.getFollowCount(tenantId, Y9FlowableHolder.getPositionId()).getData();
         return Y9Result.success(followCount, "获取成功");
     }
 

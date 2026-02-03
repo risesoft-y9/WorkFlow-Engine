@@ -18,54 +18,45 @@ public class ItemRoleOrgUnitModel implements Serializable, Comparable<ItemRoleOr
 
     private static final long serialVersionUID = 8518359792106513369L;
     /**
+     * 排序序号
+     */
+    protected Integer tabIndex;
+    /**
      * 唯一标识
      */
     private String id;
-
     /**
      * 父节点ID
      */
     private String parentId;
-
     /**
      * 名称
      */
     private String name;
-
     /**
      * 节点类型
      */
     private String orgType;
-
     /**
      * 是否父节点
      */
     private Boolean isParent;
-
     /**
      * 选项类型
      */
     private ItemPermissionEnum principalType;
-
     /**
      * 选项id
      */
     private String person;
-
     /**
      * 排序
      */
     private String orderedPath;
-
     /**
-     * 
+     *
      */
     private String guidPath;
-
-    /**
-     * 排序序号
-     */
-    protected Integer tabIndex;
 
     @Override
     public int compareTo(ItemRoleOrgUnitModel o) {

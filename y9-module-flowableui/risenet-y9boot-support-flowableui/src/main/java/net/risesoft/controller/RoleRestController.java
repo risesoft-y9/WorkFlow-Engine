@@ -29,6 +29,7 @@ import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.org.Department;
 import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -68,7 +69,7 @@ public class RoleRestController {
     @GetMapping(value = "/getOrgTree")
     public Y9Result<List<ItemRoleOrgUnitModel>> findAll(@RequestParam(required = false) String id,
         @RequestParam OrgTreeTypeEnum treeType, @RequestParam(required = false) String name) {
-        return itemRoleApi.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), id, treeType,
+        return itemRoleApi.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), id, treeType,
             name);
     }
 
@@ -84,7 +85,7 @@ public class RoleRestController {
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam(required = false) String id,
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId) {
         return itemRoleApi.findCsUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), id, principalType, processInstanceId);
+            Y9FlowableHolder.getPositionId(), id, principalType, processInstanceId);
     }
 
     /**
@@ -99,7 +100,7 @@ public class RoleRestController {
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(@RequestParam(required = false) String name,
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId) {
         return itemRoleApi.findCsUserSearch(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), name, principalType, processInstanceId);
+            Y9FlowableHolder.getPositionId(), name, principalType, processInstanceId);
     }
 
     /**
@@ -122,7 +123,7 @@ public class RoleRestController {
             id = "";
         }
         return itemRoleApi.findPermUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId, taskDefKey, principalType, id,
+            Y9FlowableHolder.getPositionId(), itemId, processDefinitionId, taskDefKey, principalType, id,
             processInstanceId);
     }
 
@@ -144,7 +145,7 @@ public class RoleRestController {
         @RequestParam(required = false) String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return itemRoleApi.findPermUserByName(tenantId, Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), name, principalType, itemId, processDefinitionId, taskDefKey,
+            Y9FlowableHolder.getPositionId(), name, principalType, itemId, processDefinitionId, taskDefKey,
             processInstanceId);
     }
 
@@ -169,7 +170,7 @@ public class RoleRestController {
             id = "";
         }
         return itemRoleApi.findByRoleId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), roleId, principalType, id);
+            Y9FlowableHolder.getPositionId(), roleId, principalType, id);
     }
 
     /**
@@ -271,7 +272,7 @@ public class RoleRestController {
             id = "";
         }
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId(),
-            positionId = Y9LoginUserHolder.getPositionId();
+            positionId = Y9FlowableHolder.getPositionId();
         // 正在会签和减签的部门
         List<SignDeptDetailModel> sddList =
             signDeptDetailApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber)

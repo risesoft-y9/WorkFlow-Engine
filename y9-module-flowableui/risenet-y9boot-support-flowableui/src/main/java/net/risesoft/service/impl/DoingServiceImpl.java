@@ -28,6 +28,7 @@ import net.risesoft.service.DoingService;
 import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.UtilService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -187,7 +188,7 @@ public class DoingServiceImpl implements DoingService {
     @Override
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
         try {
-            String positionId = Y9LoginUserHolder.getPositionId();
+            String positionId = Y9FlowableHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();

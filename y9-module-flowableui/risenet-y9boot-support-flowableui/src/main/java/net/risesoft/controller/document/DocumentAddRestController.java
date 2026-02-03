@@ -15,6 +15,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.core.DocumentApi;
 import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -40,7 +41,7 @@ public class DocumentAddRestController {
      */
     @GetMapping(value = "")
     public Y9Result<DocumentDetailModel> add(@RequestParam @NotBlank String itemId) {
-        return documentApi.add(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId);
+        return documentApi.add(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), itemId);
     }
 
     /**
@@ -53,7 +54,7 @@ public class DocumentAddRestController {
     @GetMapping(value = "/startTaskDefKey")
     public Y9Result<DocumentDetailModel> startTaskDefKey(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String startTaskDefKey) {
-        return documentApi.addWithStartTaskDefKey(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+        return documentApi.addWithStartTaskDefKey(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(),
             itemId, startTaskDefKey, false);
     }
 }

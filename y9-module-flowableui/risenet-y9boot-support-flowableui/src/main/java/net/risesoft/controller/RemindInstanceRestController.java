@@ -37,6 +37,7 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -73,7 +74,7 @@ public class RemindInstanceRestController {
         HistoricProcessInstanceModel his = historicProcessApi.getById(tenantId, processInstanceId).getData();
         List<TargetModel> list0 = processDefinitionApi.getNodes(tenantId, his.getProcessDefinitionId()).getData();
         RemindInstanceModel remindInstance =
-            remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId)
+            remindInstanceApi.getRemindInstance(tenantId, Y9FlowableHolder.getPositionId(), processInstanceId)
                 .getData();
         retMap.put(REMINDTYPE_KEY, "");
         retMap.put("completeTaskKey", "");
@@ -123,7 +124,7 @@ public class RemindInstanceRestController {
     public Y9Result<String> saveRemindInstance(@RequestParam @NotBlank String processInstanceId,
         @RequestParam(required = false) String taskIds, @RequestParam Boolean process,
         @RequestParam(required = false) String arriveTaskKey, @RequestParam(required = false) String completeTaskKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9FlowableHolder.getPositionId();
         return remindInstanceApi.saveRemindInstance(tenantId, userId, processInstanceId, taskIds, process,
             arriveTaskKey, completeTaskKey);
 
@@ -150,7 +151,7 @@ public class RemindInstanceRestController {
             Map<String, Object> mapTemp;
             Date currentTime = new Date();
             RemindInstanceModel remindInstance =
-                remindInstanceApi.getRemindInstance(tenantId, Y9LoginUserHolder.getPositionId(), processInstanceId)
+                remindInstanceApi.getRemindInstance(tenantId, Y9FlowableHolder.getPositionId(), processInstanceId)
                     .getData();
             retMap.put(REMINDTYPE_KEY, "");
             retMap.put("taskIds", "");

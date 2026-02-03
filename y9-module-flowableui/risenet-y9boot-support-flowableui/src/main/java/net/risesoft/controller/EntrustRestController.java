@@ -23,6 +23,7 @@ import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Organization;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -72,7 +73,7 @@ public class EntrustRestController {
     @GetMapping(value = "/getEntrustList")
     public Y9Result<List<EntrustModel>> getEntrustList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return entrustApi.getEntrustList(tenantId, Y9LoginUserHolder.getPositionId());
+        return entrustApi.getEntrustList(tenantId, Y9FlowableHolder.getPositionId());
     }
 
     /**
@@ -124,7 +125,7 @@ public class EntrustRestController {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             EntrustModel model = Y9JsonUtil.readValue(jsonData, EntrustModel.class);
-            entrustApi.saveOrUpdate(tenantId, Y9LoginUserHolder.getPositionId(), model);
+            entrustApi.saveOrUpdate(tenantId, Y9FlowableHolder.getPositionId(), model);
             return Y9Result.success("保存成功");
         } catch (Exception e) {
             LOGGER.error("保存委托数据出错", e);

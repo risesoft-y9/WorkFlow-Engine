@@ -22,6 +22,7 @@ import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -53,7 +54,7 @@ public class DocumentEditRestController {
     @GetMapping("/draft")
     public Y9Result<DocumentDetailModel> draft(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         DocumentDetailModel model =
             documentApi.editDraft(tenantId, positionId, itemId, processSerialNumber, false).getData();
         return Y9Result.success(model, "获取成功");
@@ -72,7 +73,7 @@ public class DocumentEditRestController {
         @RequestParam @NotBlank String processInstanceId) {
         try {
             DocumentDetailModel model = documentApi
-                .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                .editDoing(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), processInstanceId,
                     documentId, false, ItemBoxTypeEnum.DOING, false)
                 .getData();
             return Y9Result.success(model, "获取成功");
@@ -94,7 +95,7 @@ public class DocumentEditRestController {
         @RequestParam @NotBlank String processInstanceId) {
         try {
             DocumentDetailModel model = documentApi
-                .editDoing(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                .editDoing(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), processInstanceId,
                     documentId, true, ItemBoxTypeEnum.MONITOR_DOING, false)
                 .getData();
             return Y9Result.success(model, "获取成功");
@@ -116,7 +117,7 @@ public class DocumentEditRestController {
         @RequestParam @NotBlank String processInstanceId) {
         try {
             DocumentDetailModel model = documentApi
-                .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                .editDone(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), processInstanceId,
                     documentId, false, ItemBoxTypeEnum.DONE, false)
                 .getData();
             return Y9Result.success(model, "获取成功");
@@ -138,7 +139,7 @@ public class DocumentEditRestController {
         @RequestParam @NotBlank String processInstanceId) {
         try {
             DocumentDetailModel model = documentApi
-                .editDone(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                .editDone(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), processInstanceId,
                     documentId, true, ItemBoxTypeEnum.MONITOR_DONE, false)
                 .getData();
             return Y9Result.success(model, "获取成功");
@@ -160,7 +161,7 @@ public class DocumentEditRestController {
         try {
             DocumentDetailModel model =
                 documentApi
-                    .editRecycle(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), processInstanceId,
+                    .editRecycle(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), processInstanceId,
                         false)
                     .getData();
             return Y9Result.success(model, "获取成功");
@@ -187,7 +188,7 @@ public class DocumentEditRestController {
             DocumentDetailModel model =
                 documentApi
                     .editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-                        Y9LoginUserHolder.getPositionId(), taskId, false)
+                        Y9FlowableHolder.getPositionId(), taskId, false)
                     .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
@@ -207,7 +208,7 @@ public class DocumentEditRestController {
     public Y9Result<DocumentDetailModel> chaoSong(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String itembox) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         try {
             DocumentDetailModel model =
                 documentApi.editChaoSong(person.getTenantId(), positionId, id, processInstanceId, false, itembox)
@@ -230,7 +231,7 @@ public class DocumentEditRestController {
     public Y9Result<DocumentDetailModel> chaoSongAdmin(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         try {
             DocumentDetailModel model =
                 documentApi

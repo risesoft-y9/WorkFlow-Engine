@@ -30,6 +30,7 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.ItemMonitorService;
 import net.risesoft.service.UtilService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -73,7 +74,7 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
     public Y9Page<Map<String, Object>> pageAllList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9LoginUserHolder.getPositionId();
+            String positionId = Y9FlowableHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemMonitorApi.findBySystemName(tenantId, positionId, item.getSystemName(), page, rows);

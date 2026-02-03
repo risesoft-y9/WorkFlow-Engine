@@ -21,6 +21,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ProcessParamService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -117,7 +118,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
                 pp.setHostDeptName(oldProcessParam.getHostDeptName());
             } else {
                 pp.setCustomItem(customItem);
-                OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getPositionId()).getData();
+                OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9FlowableHolder.getPositionId()).getData();
                 pp.setHostDeptId(bureau.getId());
                 if (bureau instanceof Department) {
                     Department department = (Department)bureau;
@@ -130,7 +131,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             processParamApi.saveOrUpdate(tenantId, pp);
 
             if (StringUtils.isBlank(processInstanceId)) {
-                return documentApi.startProcessByTheTaskKey(tenantId, Y9LoginUserHolder.getPositionId(), itemId,
+                return documentApi.startProcessByTheTaskKey(tenantId, Y9FlowableHolder.getPositionId(), itemId,
                     processSerialNumber, item.getWorkflowGuid(), startTaskDefKey, List.of());
             }
             return Y9Result.successMsg("保存成功");
