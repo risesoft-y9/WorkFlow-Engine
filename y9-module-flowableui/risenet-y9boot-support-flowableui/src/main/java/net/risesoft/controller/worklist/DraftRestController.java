@@ -24,6 +24,7 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -67,7 +68,7 @@ public class DraftRestController {
     @GetMapping(value = "/draftList")
     public Y9Page<Map<String, Object>> draftList(@RequestParam int page, @RequestParam int rows,
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         return draftApi.getDraftList(tenantId, positionId, page, rows, title, itemId, false);
     }
 
@@ -84,7 +85,7 @@ public class DraftRestController {
     public Y9Page<Map<String, Object>> draftRecycleList(@RequestParam int page, @RequestParam int rows,
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return draftApi.getDraftList(tenantId, Y9LoginUserHolder.getPositionId(), page, rows, title, itemId, true);
+        return draftApi.getDraftList(tenantId, Y9FlowableHolder.getPositionId(), page, rows, title, itemId, true);
     }
 
     /**
@@ -144,7 +145,7 @@ public class DraftRestController {
         @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
         @RequestParam(required = false) String number, @RequestParam(required = false) String level,
         @RequestParam(required = false) String title) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         if (StringUtils.isBlank(title)) {
             title = "未定义标题";
         }

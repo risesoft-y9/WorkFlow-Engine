@@ -22,7 +22,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
@@ -68,6 +67,7 @@ import net.risesoft.service.ButtonOperationService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
 
@@ -419,7 +419,7 @@ public class DocumentRestController {
         try {
             SmsDetailModel smsDetailModel = SmsDetailModel.builder()
                 .processSerialNumber(processSerialNumber)
-                .positionId(Y9LoginUserHolder.getPositionId())
+                .positionId(Y9FlowableHolder.getPositionId())
                 .positionName(Y9LoginUserHolder.getUserInfo().getName())
                 .send(!StringUtils.isBlank(isSendSms) && Boolean.parseBoolean(isSendSms))
                 .sign(!StringUtils.isBlank(isShuMing) && Boolean.parseBoolean(isShuMing))
@@ -431,8 +431,8 @@ public class DocumentRestController {
                 return Y9Result.failure("保存短信详情失败！");
             }
             Y9Result<String> y9Result = documentApi.saveAndForwarding(Y9LoginUserHolder.getTenantId(),
-                Y9LoginUserHolder.getPositionId(), processInstanceId, taskId, sponsorHandle, itemId,
-                processSerialNumber, processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
+                Y9FlowableHolder.getPositionId(), processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber,
+                processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
             if (y9Result.isSuccess()) {
                 map.put("processInstanceId", y9Result.getData());
                 return Y9Result.success(map, y9Result.getMsg());
@@ -476,7 +476,7 @@ public class DocumentRestController {
                 processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
 
                 Y9Result<String> y9Result = documentApi.forwarding(Y9LoginUserHolder.getTenantId(),
-                    Y9LoginUserHolder.getPositionId(), tpArr[0], userChoice, routeToTaskId, sponsorHandle, sponsorGuid);
+                    Y9FlowableHolder.getPositionId(), tpArr[0], userChoice, routeToTaskId, sponsorHandle, sponsorGuid);
                 if (y9Result.isSuccess()) {
                     success.getAndIncrement();
                 } else {
@@ -497,7 +497,7 @@ public class DocumentRestController {
      */
     @GetMapping(value = "/getAllStartTaskDefKey")
     public Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam @NotBlank String itemId) {
-        return documentApi.getAllStartTaskDefKey(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+        return documentApi.getAllStartTaskDefKey(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(),
             itemId);
     }
 
@@ -515,7 +515,7 @@ public class DocumentRestController {
                 return Y9Result.failure("当前待办已处理！");
             }
             List<ItemButtonModel> buttonList =
-                documentApi.getButtons(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId)
+                documentApi.getButtons(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), taskId)
                     .getData();
             return Y9Result.success(buttonList, "获取成功");
         } catch (Exception e) {
@@ -535,23 +535,23 @@ public class DocumentRestController {
         Map<String, Object> map = new HashMap<>(16);
         try {
             List<ItemListModel> listMap =
-                itemApi.getItemList(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData();
+                itemApi.getItemList(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData();
             map.put("itemMap", listMap);
             map.put("notReadCount",
-                chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
-            int followCount = officeFollowApi.getFollowCount(tenantId, Y9LoginUserHolder.getPositionId()).getData();
+                chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData());
+            int followCount = officeFollowApi.getFollowCount(tenantId, Y9FlowableHolder.getPositionId()).getData();
             map.put("followCount", followCount);
             // 公共角色
             boolean b =
                 positionRoleApi
                     .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(),
-                        Y9LoginUserHolder.getPositionId())
+                        Y9FlowableHolder.getPositionId())
                     .getData();
             map.put("monitorManage", b);
             boolean b1 =
                 positionRoleApi
                     .hasRole(tenantId, Y9Context.getSystemName(), "", y9FlowableProperties.getLeaveManageRoleName(),
-                        Y9LoginUserHolder.getPositionId())
+                        Y9FlowableHolder.getPositionId())
                     .getData();
             map.put("leaveManage", b1);
             return Y9Result.success(map, "获取成功");
@@ -571,7 +571,7 @@ public class DocumentRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
         try {
-            String positionId = Y9LoginUserHolder.getPositionId();
+            String positionId = Y9FlowableHolder.getPositionId();
             List<Map<String, Object>> list = new ArrayList<>();
             List<ItemModel> listMap = itemApi.getAllItem(Y9LoginUserHolder.getTenantId()).getData();
             for (ItemModel itemModel : listMap) {
@@ -600,12 +600,12 @@ public class DocumentRestController {
 
             map.put("systemList", list);
             map.put("notReadCount",
-                chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId()).getData());
+                chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData());
             // 公共角色
             boolean b =
                 positionRoleApi
                     .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(),
-                        Y9LoginUserHolder.getPositionId())
+                        Y9FlowableHolder.getPositionId())
                     .getData();
             map.put("monitorManage", b);
 
@@ -627,7 +627,7 @@ public class DocumentRestController {
     @GetMapping(value = "/getParallelNames")
     public Y9Result<Map<String, Object>> getParallelNames(@RequestParam @NotBlank String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         try {
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             if (taskModel == null) {
@@ -761,7 +761,7 @@ public class DocumentRestController {
     @PostMapping(value = "/sign4Batch")
     public Y9Result<String> sign4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         try {
             // 收集任务信息
             BatchSignResult batchSignResult = collectBatchSignInfo(tenantId, taskIdAndProcessSerialNumbers);
@@ -879,7 +879,7 @@ public class DocumentRestController {
         @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String taskDefinitionKey,
         @RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        return documentApi.signTaskConfig(tenantId, Y9LoginUserHolder.getPositionId(), itemId, processDefinitionId,
+        return documentApi.signTaskConfig(tenantId, Y9FlowableHolder.getPositionId(), itemId, processDefinitionId,
             taskDefinitionKey, processSerialNumber);
     }
 
@@ -894,7 +894,7 @@ public class DocumentRestController {
     @PostMapping(value = "/submitTo")
     public Y9Result<Object> submitTo(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
-        return documentApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), taskId,
+        return documentApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), taskId,
             itemId, processSerialNumber);
     }
 
@@ -913,7 +913,7 @@ public class DocumentRestController {
         @RequestParam @NotBlank String routeToTask, @RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
         return documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9LoginUserHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
+            Y9FlowableHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
     }
 
     /**

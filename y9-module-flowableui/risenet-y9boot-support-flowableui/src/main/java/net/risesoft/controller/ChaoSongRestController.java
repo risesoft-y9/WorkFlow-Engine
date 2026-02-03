@@ -27,6 +27,7 @@ import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -117,7 +118,7 @@ public class ChaoSongRestController {
     public Y9Page<ChaoSongModel> list(@RequestParam @NotBlank String type,
         @RequestParam(required = false) String userName, @RequestParam @NotBlank String processInstanceId,
         @RequestParam int rows, @RequestParam int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         try {
             if (type.equals("my")) {
                 return chaoSongApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId,
@@ -160,7 +161,7 @@ public class ChaoSongRestController {
             Map<String, Object> resMap = new HashMap<>(16);
             if (StringUtils.isBlank(processInstanceId)) {
                 Y9Result<StartProcessResultModel> y9Result = documentApi.startProcess(Y9LoginUserHolder.getTenantId(),
-                    Y9LoginUserHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
+                    Y9FlowableHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
                 if (y9Result.isSuccess()) {
                     processInstanceId = y9Result.getData().getProcessInstanceId();
                     String taskId = y9Result.getData().getTaskId();
@@ -170,9 +171,8 @@ public class ChaoSongRestController {
                     return Y9Result.failure("抄送失败，流程启动失败");
                 }
             }
-            Y9Result<Object> y9Result =
-                chaoSongApi.save(person.getTenantId(), userId, Y9LoginUserHolder.getPositionId(), processInstanceId,
-                    users, isSendSms, isShuMing, smsContent, smsPersonId);
+            Y9Result<Object> y9Result = chaoSongApi.save(person.getTenantId(), userId, Y9FlowableHolder.getPositionId(),
+                processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
             if (y9Result.isSuccess()) {
                 return Y9Result.success(resMap, "抄送成功");
             }
@@ -195,7 +195,7 @@ public class ChaoSongRestController {
     @GetMapping(value = "/search")
     public Y9Page<ChaoSongModel> search(@RequestParam(required = false) String documentTitle,
         @RequestParam Integer status, @RequestParam int rows, @RequestParam int page) {
-        String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             if (status == 0) {
                 return chaoSongApi.getTodoList(tenantId, positionId, documentTitle, rows, page);

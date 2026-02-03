@@ -23,6 +23,7 @@ import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SearchService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -76,7 +77,7 @@ public class AssociatedFileRestController {
     public Y9Result<List<AssociatedFileModel>>
         getAssociatedFileList(@RequestParam @NotBlank String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         return associatedFileApi.getAssociatedFileAllList(tenantId, positionId, processSerialNumber);
     }
 
@@ -106,7 +107,7 @@ public class AssociatedFileRestController {
     @PostMapping(value = "/saveAssociatedFile")
     public Y9Result<String> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String processInstanceIds) {
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Y9Result<Object> y9Result =

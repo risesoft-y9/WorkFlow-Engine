@@ -29,6 +29,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -116,7 +117,7 @@ public class DocumentWordRestController {
     public Y9Result<Boolean> getPermissionWord(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey,
         @RequestParam @NotBlank String wordType) {
-        return documentWordApi.getPermissionWord(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(),
+        return documentWordApi.getPermissionWord(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(),
             itemId, processDefinitionId, taskDefKey, wordType);
     }
 

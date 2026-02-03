@@ -24,6 +24,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FlowableUrgeInfoService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -55,7 +56,7 @@ public class FlowableUrgeInfoServiceImpl implements FlowableUrgeInfoService {
 
     @Override
     public List<UrgeInfoModel> findByProcessSerialNumber(String processSerialNumber) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         List<UrgeInfoModel> urgeList =
             urgeInfoApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
         List<SignDeptDetailModel> signDeptDetailList =

@@ -21,6 +21,7 @@ import net.risesoft.model.itemadmin.ReminderModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FlowableReminderService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -81,7 +82,7 @@ public class ReminderRestController {
     public Y9Page<ReminderModel> myReminder(@RequestParam @NotBlank String type,
         @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPositionId();
+        String userId = Y9FlowableHolder.getPositionId();
         Y9Page<ReminderModel> map;
         if ("my".equals(type)) {
             map = reminderApi.findBySenderIdAndProcessInstanceIdAndActive(tenantId, userId, processInstanceId, page,
@@ -105,7 +106,7 @@ public class ReminderRestController {
     public Y9Result<String> saveReminder(@RequestParam @NotBlank String processInstanceId,
         @RequestParam String[] taskIds, @RequestParam @NotBlank String msgContent) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPositionId();
+        String userId = Y9FlowableHolder.getPositionId();
         return reminderApi.saveReminder(tenantId, userId, processInstanceId, taskIds, msgContent);
     }
 

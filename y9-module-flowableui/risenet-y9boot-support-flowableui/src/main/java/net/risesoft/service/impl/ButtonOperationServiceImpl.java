@@ -15,7 +15,6 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.Y9FlowableHolder;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
@@ -38,6 +37,7 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -62,7 +62,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     @Override
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         String userName = Y9FlowableHolder.getPosition().getName();
         Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotBlank(infoOvert)) {
@@ -113,7 +113,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     @Override
     public Y9Result<String> complete4Sub(String taskId, String taskDefName, String desc) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         String mainSenderId =
             variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAIN_SENDER_ID).getData();
         if (StringUtils.isBlank(mainSenderId)) {
@@ -166,7 +166,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public void resumeToDo(String processInstanceId, String desc) throws Exception {
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         String userName = Y9FlowableHolder.getPosition().getName();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -229,7 +229,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public Y9Result<String> resumeToDoAndReposition(String processInstanceId, String desc) {
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             // 1、恢复待办

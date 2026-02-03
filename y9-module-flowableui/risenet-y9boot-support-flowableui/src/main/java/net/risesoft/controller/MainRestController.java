@@ -42,6 +42,7 @@ import net.risesoft.model.processadmin.Y9FlowableCountModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
 
@@ -100,7 +101,7 @@ public class MainRestController {
     @GetMapping(value = "/getCount4Item")
     public Y9Result<Map<String, Object>> getCount4Item(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         Map<String, Object> map = new HashMap<>(16);
         int draftCount = 0;
@@ -173,7 +174,7 @@ public class MainRestController {
     @GetMapping(value = "/getCount4SystemName")
     public Y9Result<Map<String, Object>> getCount4SystemName(@RequestParam @NotBlank String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         Map<String, Object> map = new HashMap<>(16);
         int draftCount = 0;
         long todoCount = 0;
@@ -232,7 +233,7 @@ public class MainRestController {
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
         boolean b = positionRoleApi
-            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9FlowableHolder.getPositionId())
             .getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);
@@ -240,7 +241,7 @@ public class MainRestController {
         boolean b1 =
             positionRoleApi
                 .hasPublicRole(tenantId, y9FlowableProperties.getRepositionManagerRoleName(),
-                    Y9LoginUserHolder.getPositionId())
+                    Y9FlowableHolder.getPositionId())
                 .getData();
         map.put("repositionManager", b1);
         return Y9Result.success(map, "获取成功");
@@ -258,21 +259,21 @@ public class MainRestController {
         List<ItemModel> itemList = itemApi.findAll(tenantId, systemName).getData();
         Map<String, Object> map = new HashMap<>(16);
         boolean b = positionRoleApi
-            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9FlowableHolder.getPositionId())
             .getData();
         map.put(MONITOR_MANAGE_KEY, b);
         boolean b1 =
             positionRoleApi
                 .hasPublicRole(tenantId, y9FlowableProperties.getRepositionManagerRoleName(),
-                    Y9LoginUserHolder.getPositionId())
+                    Y9FlowableHolder.getPositionId())
                 .getData();
         map.put("repositionManager", b1);
         boolean b2 = positionRoleApi
-            .hasPublicRole(tenantId, y9FlowableProperties.getFaWenManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .hasPublicRole(tenantId, y9FlowableProperties.getFaWenManageRoleName(), Y9FlowableHolder.getPositionId())
             .getData();
         map.put("faWenManage", b2);
         boolean b3 = positionRoleApi
-            .hasPublicRole(tenantId, y9FlowableProperties.getShouWenManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .hasPublicRole(tenantId, y9FlowableProperties.getShouWenManageRoleName(), Y9FlowableHolder.getPositionId())
             .getData();
         map.put("shouWenManage", b3);
         map.put("itemList", itemList);
@@ -288,7 +289,7 @@ public class MainRestController {
     public Y9Result<Map<String, Object>> getMyCount() {
         Map<String, Object> map = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         int todoCount;
         long doingCount;
         int doneCount;
@@ -424,7 +425,7 @@ public class MainRestController {
      */
     @GetMapping(value = "/getReadCount")
     public Y9Result<Map<String, Object>> getReadCount() {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9LoginUserHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         Map<String, Object> map = new HashMap<>(16);
         map.put("notReadCount", chaoSongApi.getTodoCount(tenantId, positionId).getData());
         map.put("hasReadCount", chaoSongApi.getDoneCount(tenantId, positionId).getData());
@@ -444,7 +445,7 @@ public class MainRestController {
         Map<String, Object> map = new HashMap<>(16);
         map.put("tenantManager", person.isGlobalManager());
         boolean b = positionRoleApi
-            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9LoginUserHolder.getPositionId())
+            .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9FlowableHolder.getPositionId())
             .getData();
         boolean deptManage = false;
         map.put("deptManage", deptManage);

@@ -25,6 +25,7 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.SearchService;
 import net.risesoft.service.UtilService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -46,7 +47,7 @@ public class SearchServiceImpl implements SearchService {
     public Y9Page<Map<String, Object>> pageSearchList(String searchTerm, String itemId, String userName, String state,
         String year, String startDate, String endDate, Integer page, Integer rows) {
         try {
-            String positionId = Y9LoginUserHolder.getPositionId();
+            String positionId = Y9FlowableHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
             Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserId(tenantId, positionId, searchTerm,
                 itemId, userName, state, year, startDate, endDate, page, rows);
@@ -118,7 +119,7 @@ public class SearchServiceImpl implements SearchService {
     public Y9Page<ChaoSongModel> pageYuejianList(String searchName, String itemId, String userName, String state,
         String year, Integer page, Integer rows) {
         try {
-            String positionId = Y9LoginUserHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             return chaoSongApi.searchAllByUserId(tenantId, positionId, searchName, itemId, userName, state, year, page,
                 rows);
         } catch (Exception e) {

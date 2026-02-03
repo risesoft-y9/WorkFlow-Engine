@@ -24,6 +24,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.UtilService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -47,7 +48,7 @@ public class UtilServiceImpl implements UtilService {
     public void setPublicData(Map<String, Object> mapTemp, String processInstanceId, List<TaskModel> taskList,
         ItemBoxTypeEnum itemBoxTypeEnum) {
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId(),
-            positionId = Y9LoginUserHolder.getPositionId();
+            positionId = Y9FlowableHolder.getPositionId();
         int chaosongNum = 0, speakInfoNum = 0, countFollow = 0;
         boolean isReminder = false;
         RemindInstanceModel remindInstanceModel = null;
@@ -205,7 +206,7 @@ public class UtilServiceImpl implements UtilService {
 
     @Override
     public ItemBoxAndTaskIdModel getItemBoxAndTaskId(List<TaskModel> taskList) {
-        String userId = Y9LoginUserHolder.getPositionId();
+        String userId = Y9FlowableHolder.getPositionId();
         String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
         for (TaskModel task : taskList) {
             String assignee = task.getAssignee();

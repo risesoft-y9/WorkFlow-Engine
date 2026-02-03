@@ -30,6 +30,7 @@ import net.risesoft.model.platform.org.CustomGroup;
 import net.risesoft.model.platform.org.Department;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -63,7 +64,7 @@ public class QuickSendRestController {
         List<Map<String, Object>> list = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String assignee =
-            quickSendApi.getAssignee(tenantId, Y9LoginUserHolder.getPositionId(), itemId, taskKey).getData();
+            quickSendApi.getAssignee(tenantId, Y9FlowableHolder.getPositionId(), itemId, taskKey).getData();
         if (StringUtils.isNotBlank(assignee)) {
             String[] ids = assignee.split(",");
             for (String id : ids) {
@@ -108,7 +109,7 @@ public class QuickSendRestController {
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey,
         @RequestParam(required = false) String assignee) {
-        quickSendApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPositionId(), itemId, taskKey,
+        quickSendApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), itemId, taskKey,
             assignee);
         return Y9Result.successMsg("保存成功");
     }
