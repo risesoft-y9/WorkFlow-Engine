@@ -1,6 +1,6 @@
 {
     "name": "y9vue-flowableUI",
-    "version": "9.6.8",
+    "version": "9.6.9",
     "scripts": {
         "serve": "vite  --mode development",
         "serve-local": "vite  --mode localEnv",
