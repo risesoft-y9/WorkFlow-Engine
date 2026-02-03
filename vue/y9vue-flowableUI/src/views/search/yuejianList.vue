@@ -1,8 +1,8 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-06-14 11:46:28
- * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-02-03 11:10:43
+ * @LastEditors: mengjuhua
  * @Description:  阅件
 -->
 <template>
@@ -83,7 +83,7 @@
 <script lang="ts" setup>
     import HistoryList from '@/views/process/historyList.vue';
     import flowChart from '@/views/flowchart/index4List.vue';
-    import { computed, inject, onMounted, reactive, watch } from 'vue';
+    import { computed, inject, onMounted, reactive, ref, toRefs, watch } from 'vue';
     import { useRoute, useRouter } from 'vue-router';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { getYuejianList } from '@/api/flowableUI/search';
@@ -99,14 +99,18 @@
     const currentrRute = useRoute();
     // const tableHeight = ref(useSettingStore().getWindowHeight - 280 - 20);
 
+    let filterRef = ref();
     const data = reactive({
-        filterRef: '',
-        currFilters: {}, //当前选择的过滤数据
-        itemList: [],
+        currFilters: {} as any, //当前选择的过滤数据
+        itemList: [] as any,
         tableConfig: {
             //表格配置
             border: false,
             headerBackground: true,
+            loading: false,
+            //height: tableHeight,
+            openAutoComputedHeight: true,
+            highlightCurrentRow: false,
             columns: [
                 { title: computed(() => t('序号')), type: 'index', width: '55' },
                 { title: computed(() => t('类别')), key: 'itemName', width: '90' },
@@ -126,9 +130,6 @@
                 { title: computed(() => t('操作')), width: '180', slot: 'optButton' }
             ],
             tableData: [],
-            //height: tableHeight,
-            openAutoComputedHeight: true,
-            highlightCurrentRow: false,
             pageConfig: {
                 currentPage: 1,
                 pageSize: 20,
@@ -233,7 +234,6 @@
     });
 
     let {
-        filterRef,
         currFilters,
         filterConfig,
         tableConfig,
@@ -347,13 +347,18 @@
         if (JSON.stringify(currFilters.value) != '{}') {
             flowableStore.searchContent = currFilters.value;
         }
+        let itembox = 'doneChaoSong';
+        if (row.status == 2) {
+            itembox = 'todoChaoSong';
+        }
         let link = currentrRute.matched[0].path;
         let query = {
             itemId: row.itemId,
             processInstanceId: row.processInstanceId,
             status: row.status,
             id: row.id,
-            listType: 'yuejianList'
+            listType: 'yuejianList',
+            itembox: itembox
         };
         flowableStore.$patch({
             //设置打开当前页

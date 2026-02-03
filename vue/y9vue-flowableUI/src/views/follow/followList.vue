@@ -1,8 +1,8 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-06-14 09:55:36
- * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-02-03 11:25:02
+ * @LastEditors: mengjuhua
  * @Description:  我的关注
 -->
 <template>
@@ -93,6 +93,7 @@
             //表格配置
             border: false,
             headerBackground: true,
+            rowKey: 'processInstanceId',
             columns: [
                 { title: '', type: 'selection', width: '50', align: 'center' },
                 { title: computed(() => t('序号')), type: 'index', width: '55' },
