@@ -6,7 +6,7 @@
     <parent>
         <groupId>net.risesoft</groupId>
         <artifactId>y9-digitalbase-parent</artifactId>
-        <version>v9.6.9</version>
+        <version>9.6.10-SNAPSHOT</version>
         <relativePath/>
     </parent>
     <artifactId>y9-flowable</artifactId>
@@ -58,7 +58,7 @@
         <gitee.connection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.connection>
         <gitee.developerConnection>scm:git:https://gitee.com/risesoft-y9/y9-flowable.git</gitee.developerConnection>
 
-        <revision>v9.6.9</revision>
+        <revision>9.6.10-SNAPSHOT</revision>
 
         <poi-tl.version>1.12.2</poi-tl.version>
         <belerweb-pinyin4j.version>2.5.1</belerweb-pinyin4j.version>
