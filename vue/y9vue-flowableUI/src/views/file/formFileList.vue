@@ -1,30 +1,30 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2026-01-07 10:47:07
+ * @LastEditTime: 2026-02-05 10:46:12
  * @LastEditors: mengjuhua
  * @Description:  自定义附件列表组件
 -->
 <template>
     <div class="from-file" style="width: 670px; height: 97.7%; margin: 15px auto">
         <div style="padding-bottom: 15px; vertical-align: middle">
-            <div class="att-files">{{ $t('附件：') }}</div>
+            <div class="att-files">{{ $t('附件：') }} </div>
             <el-button-group class="ml-4" style="margin-left: 10px" text>
-                <el-button v-if="optShow" :title="$t('添加附件')" @click="addFiles" size="mini" text
-                    ><i class="ri-file-add-line"></i
-                ></el-button>
-                <el-button v-if="downloadZipShow" :title="$t('下载附件zip')" size="mini" text>
+                <el-button v-if="optShow" :title="$t('添加附件')" @click="addFiles" size="small" text>
+                    <i class="ri-file-add-line"></i>
+                </el-button>
+                <el-button v-if="downloadZipShow" :title="$t('下载附件zip')" size="small" text>
                     <a
                         :href="downloadZipUrl + '&processSerialNumber=' + basicData.processSerialNumber"
                         style="text-decoration: none; color: inherit"
                     >
-                        <i class="ri-file-download-line" @click="downloaFiles"></i>
+                        <i class="ri-file-download-line"></i>
                     </a>
                 </el-button>
-                <el-button v-if="optShow" :title="$t('上移文件')" size="mini" @click="moveUp" text>
+                <el-button v-if="optShow" :title="$t('上移文件')" size="small" @click="moveUp" text>
                     <i class="ri-upload-line"></i>
                 </el-button>
-                <el-button v-if="optShow" :title="$t('下移文件')" size="mini" @click="moveDown" text>
+                <el-button v-if="optShow" :title="$t('下移文件')" size="small" @click="moveDown" text>
                     <i class="ri-download-line"></i>
                 </el-button>
             </el-button-group>
@@ -42,13 +42,13 @@
                 </el-link>
             </template>
             <template #opt="{ row, column, index }">
-                <a :href="downloadUrl + '&id=' + row.id" style="text-decoration: none"
-                    ><i
+                <a :href="downloadUrl + '&id=' + row.id" style="text-decoration: none">
+                    <i
                         :style="{ fontSize: fontSizeObj.mediumFontSize }"
                         :title="$t('点击下载')"
                         class="ri-download-cloud-2-line"
-                    ></i
-                ></a>
+                    ></i>
+                </a>
                 <i
                     v-if="y9UserInfo.personId == row.personId && optShow"
                     :style="{ fontSize: fontSizeObj.mediumFontSize, marginLeft: '5px', color: '#586cb1' }"
@@ -206,9 +206,14 @@
         downloadZipShow.value = false;
         getAttachmentList(basicData.value.processSerialNumber, 1, 50).then((res) => {
             let fileList = res.rows;
+
+            let serverUrl = import.meta.env.VUE_APP_CONTEXT;
+            if (serverUrl.indexOf('http') == -1) {
+                serverUrl = window.location.origin + import.meta.env.VUE_APP_CONTEXT;
+            }
+            console.log('serverUrl', serverUrl, import.meta.env.VUE_APP_CONTEXT);
             for (let i in fileList) {
-                fileList[i].downloadUrl =
-                    import.meta.env.VUE_APP_CONTEXT + 's/' + fileList[i].fileStoreId + '.' + fileList[i].fileType;
+                fileList[i].downloadUrl = serverUrl + 's/' + fileList[i].fileStoreId + '.' + fileList[i].fileType;
                 fileList[i].jodconverterURL = import.meta.env.VUE_APP_JODCONVERTERURL + fileList[i].downloadUrl;
                 fileList[i].uploadTime = fileList[i].uploadTime.substring(0, 16);
             }
@@ -558,9 +563,11 @@
             font-size: v-bind('fontSizeObj.baseFontSize');
         }
 
-        .el-button {
+        :deep(.el-button) {
             padding: 8px 8px !important;
-            box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.06);
+            box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.06) !important;
+            min-width: 22px !important;
+
             i {
                 margin-right: 0px;
                 font-size: v-bind('fontSizeObj.extraLargeFont');
