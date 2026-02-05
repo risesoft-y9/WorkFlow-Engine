@@ -1,7 +1,7 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2026-01-07 10:50:13
+ * @LastEditTime: 2026-02-05 10:36:47
  * @LastEditors: mengjuhua
  * @Description:  附件列表
 -->
@@ -302,9 +302,12 @@
         let rows = fileTableConfig.value.pageConfig.pageSize;
         getAttachmentList(props.basicData.processSerialNumber, page, rows).then((res) => {
             let fileList = res.rows;
+            let serverUrl = import.meta.env.VUE_APP_CONTEXT;
+            if (serverUrl.indexOf('http') == -1) {
+                serverUrl = window.location.origin + import.meta.env.VUE_APP_CONTEXT;
+            }
             for (let i in fileList) {
-                fileList[i].downloadUrl =
-                    import.meta.env.VUE_APP_CONTEXT + 's/' + fileList[i].fileStoreId + '.' + fileList[i].fileType;
+                fileList[i].downloadUrl = serverUrl + 's/' + fileList[i].fileStoreId + '.' + fileList[i].fileType;
                 fileList[i].jodconverterURL = import.meta.env.VUE_APP_JODCONVERTERURL + fileList[i].downloadUrl;
                 fileList[i].uploadTime = fileList[i].uploadTime.substring(0, 16);
             }
@@ -350,7 +353,7 @@
         if (multipleSelection.value.length === 0) {
             ElMessage({ type: 'error', message: t('请选择附件'), offset: 65, appendTo: '.filecontainer' });
         } else {
-            let ids = [];
+            let ids: any = [];
             for (let item of multipleSelection.value) {
                 ids.push(item.id);
                 if (y9UserInfo.value.personId != item.personId) {
@@ -609,6 +612,11 @@
         :global(.el-message .el-message__content) {
             font-size: v-bind('fontSizeObj.baseFontSize');
         }
+    }
+
+    :deep(.el-button) {
+        box-shadow: 0px 0px 0px 0px rgba(0, 0, 0, 0.06) !important;
+        min-width: 22px !important;
     }
 </style>
 <style lang="scss">
