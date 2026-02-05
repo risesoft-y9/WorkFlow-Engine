@@ -11,7 +11,7 @@
         <div class="form">
             <h1 class="title"> 401 Error </h1>
             <p class="msg">抱歉，该用户不是管理员人员，没有权限！！！</p>
-            <el-button size="mini" type="primary" @click="logout">退出重新登录</el-button>
+            <el-button size="small" type="primary" @click="logout">退出重新登录</el-button>
         </div>
     </div>
 </template>
