@@ -3,7 +3,7 @@
  * @Author: zhangchongjie
  * @Date: 2022-07-13 09:49:46
  * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-07 16:56:56
+ * @LastEditTime: 2026-02-09 14:27:00
  * @Descripttion: 打印配置
  * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\printConfig\printConfig.vue
 -->
@@ -29,12 +29,6 @@
                 ></el-input>
                 <el-button type="primary" @click="search"><i class="ri-search-2-line"></i>搜索</el-button>
             </div>
-            <y9Table
-                v-if="wordShow"
-                :config="wordTableConfig"
-                @select="handlerGetData"
-                @select-all="handlerGetData"
-            ></y9Table>
             <y9Table
                 v-if="formShow"
                 :config="formTableConfig"
@@ -74,7 +68,6 @@
         //当前节点信息
         searchName: '',
         title: '',
-        wordShow: false,
         formShow: false,
         currInfo: props.currTreeNodeInfo,
         tableDrawer: false,
@@ -142,24 +135,8 @@
             pageConfig: false, //取消分页
             height: 'auto'
         },
-        wordTableConfig: {
-            columns: [
-                { title: '', type: 'selection', fixed: 'left', width: '60' },
-                {
-                    title: '序号',
-                    type: 'index',
-                    width: '60'
-                },
-                {
-                    title: '模板名称',
-                    key: 'fileName'
-                }
-            ],
-            tableData: [],
-            pageConfig: false,
-            height: 'auto'
-        },
         formTableConfig: {
+            rowKey: 'formId',
             columns: [
                 { title: '', type: 'selection', fixed: 'left', width: '60' },
                 {
@@ -197,12 +174,10 @@
     let {
         searchName,
         title,
-        wordShow,
         formShow,
         tableDrawer,
         currInfo,
         printBindTableConfig,
-        wordTableConfig,
         formTableConfig,
         dialogConfig,
         taskDefKey
@@ -230,28 +205,15 @@
     }
 
     async function bindTemplate(type) {
-        if (type == 'word') {
-            title.value = '绑定Word模板';
-            wordShow.value = true;
-            formShow.value = false;
-            wordTableConfig.value.tableData = [];
-            getWordList();
-        } else {
-            title.value = '绑定表单模板';
-            wordShow.value = false;
-            formShow.value = true;
-            formTableConfig.value.tableData = [];
-            getFormList();
-        }
+        title.value = '绑定表单模板';
+        formShow.value = true;
+        formTableConfig.value.tableData = [];
+        getFormList();
         tableDrawer.value = true;
     }
 
     function search() {
-        if (wordShow.value) {
-            getWordList();
-        } else {
-            getFormList();
-        }
+        getFormList();
     }
 
     function closeDrawer() {
@@ -270,13 +232,6 @@
         let res = await getPrintFormList(props.currTreeNodeInfo.id, searchName.value);
         if (res.success) {
             formTableConfig.value.tableData = res.data;
-        }
-    }
-
-    async function getWordList() {
-        let res = await getPrintTemplateList(searchName.value);
-        if (res.success) {
-            wordTableConfig.value.tableData = res.data;
         }
     }
 
@@ -305,16 +260,9 @@
             });
             return;
         }
-        if (wordShow.value) {
-            templateId = selectData.value[0].id;
-            templateName = selectData.value[0].fileName;
-            templateUrl = selectData.value[0].fileUrl;
-            templateType = '1';
-        } else {
-            templateId = selectData.value[0].formId;
-            templateName = selectData.value[0].formName;
-            templateType = '2';
-        }
+        templateId = selectData.value[0].formId;
+        templateName = selectData.value[0].formName;
+        templateType = '2';
         let result = { success: false, msg: '' };
         result = await saveBindTemplate(props.currTreeNodeInfo.id, templateId, templateName, templateType, templateUrl);
         ElNotification({
