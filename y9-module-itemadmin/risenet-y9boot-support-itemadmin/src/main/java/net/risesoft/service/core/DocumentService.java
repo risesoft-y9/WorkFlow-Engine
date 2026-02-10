@@ -185,25 +185,12 @@ public interface DocumentService {
      * @param processDefinitionKey 流程定义key
      * @param processDefinitionId 流程定义id
      * @param taskDefinitionKey 任务节点key
-     * @param model
-     * @return
-     */
-    DocumentDetailModel genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId,
-        String taskDefinitionKey, DocumentDetailModel model);
-
-    /**
-     * Description: 获取绑定表单
-     *
-     * @param itemId 事项id
-     * @param processDefinitionKey 流程定义key
-     * @param processDefinitionId 流程定义id
-     * @param taskDefinitionKey 任务节点key
      * @param isAdmin 是否是管理员
      * @param model
      * @return
      */
-    DocumentDetailModel genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
-        String taskDefinitionKey, boolean isAdmin, DocumentDetailModel model);
+    void genTabModel(String itemId, String processDefinitionKey, String processDefinitionId, String taskDefinitionKey,
+        boolean isAdmin, DocumentDetailModel model);
 
     /**
      * Description: 获取首个事项id
