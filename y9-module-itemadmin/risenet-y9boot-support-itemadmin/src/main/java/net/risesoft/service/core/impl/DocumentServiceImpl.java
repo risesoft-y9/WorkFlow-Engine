@@ -221,8 +221,8 @@ public class DocumentServiceImpl implements DocumentService {
         model.setProcessInstanceId("");
         model.setTaskId("");
 
-        model = genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, model);
-        model = menuControl4Add(model);
+        this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, false, model);
+        this.menuControl4Add(model);
         return model;
     }
 
@@ -634,7 +634,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setMobile(mobile);
 
         this.setNum(model);
-        this.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey,
+        this.genTabModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey, false,
             model);
         this.menuControl4ChaoSong(model);
         return model;
@@ -751,6 +751,7 @@ public class DocumentServiceImpl implements DocumentService {
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getOrgUnitId();
         DocumentDetailModel model = new DocumentDetailModel();
         Item item = itemService.findById(itemId);
+        model.setMobile(mobile);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
@@ -769,7 +770,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setItembox(ItemBoxTypeEnum.DRAFT.getValue());
 
         this.setNum(model);
-        this.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, model);
+        this.genTabModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, false, model);
         this.menuControl4Draft(model);
         return model;
     }
@@ -1006,45 +1007,14 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId,
-        String taskDefinitionKey, DocumentDetailModel model) {
-        List<Y9FormItemBind> y9FormTaskBinds =
-            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, taskDefinitionKey);
-        String showOtherFlag = "";
-        List<ItemFormModel> list = new ArrayList<>();
-        if (!y9FormTaskBinds.isEmpty()) {
-            ItemFormModel itemFormModel;
-            for (Y9FormItemBind fib : y9FormTaskBinds) {
-                itemFormModel = new ItemFormModel();
-                String formName = fib.getFormName();
-                if (formName.contains("(")) {
-                    formName = formName.substring(0, formName.indexOf("("));
-                }
-                itemFormModel.setFormId(fib.getFormId());
-                itemFormModel.setFormName(formName);
-                list.add(itemFormModel);
-            }
-            showOtherFlag = y9FormItemBindService.getShowOther(y9FormTaskBinds);
-        }
-        model.setFormList(list);
-        model.setShowOtherFlag(showOtherFlag);
-        // 打印表单
-        ItemPrintTemplateBind bind = itemPrintTemplateBindRepository.findByItemId(itemId);
-        if (bind != null) {
-            model.setPrintFormId(bind.getTemplateId());
-            model.setPrintFormType(bind.getTemplateType());
-        }
-        return model;
-    }
-
-    @Override
-    public DocumentDetailModel genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
+    public void genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
         String taskDefinitionKey, boolean isAdmin, DocumentDetailModel model) {
         // 处理表单列表
         handleFormList(itemId, processDefinitionId, taskDefinitionKey, model);
         // 处理签注意见状态
-        handleSignStatus(model, isAdmin);
-        return model;
+        if (!model.isMobile()) {
+            handleSignStatus(model, isAdmin);
+        }
     }
 
     private void getAllPosition(List<Position> list, String deptId) {
