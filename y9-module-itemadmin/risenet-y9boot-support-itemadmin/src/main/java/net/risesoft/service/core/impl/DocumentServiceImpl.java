@@ -634,8 +634,10 @@ public class DocumentServiceImpl implements DocumentService {
         model.setMobile(mobile);
 
         this.setNum(model);
-        this.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey,
+        this.genTabModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey, false,
             model);
+        // this.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey,
+        // model);
         this.menuControl4ChaoSong(model);
         return model;
     }
@@ -767,9 +769,10 @@ public class DocumentServiceImpl implements DocumentService {
         model.setActivitiUser(orgUnitId);
         model.setCurrentUser(Y9FlowableHolder.getOrgUnit().getName());
         model.setItembox(ItemBoxTypeEnum.DRAFT.getValue());
-
+        model.setMobile(mobile);
         this.setNum(model);
-        this.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, model);
+        this.genTabModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefKey, false, model);
+        // this.genDocumentModel(itemId, processDefinitionKey, processDefinitionId, taskDefKey, model);
         this.menuControl4Draft(model);
         return model;
     }
