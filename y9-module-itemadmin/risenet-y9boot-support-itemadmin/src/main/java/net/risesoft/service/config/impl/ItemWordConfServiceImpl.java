@@ -1,6 +1,9 @@
 package net.risesoft.service.config.impl;
 
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -175,18 +178,17 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
         if (StringUtils.isBlank(roleIds)) {
             return "";
         }
-        StringBuilder roleNamesBuilder = new StringBuilder();
         String[] roleIdArray = roleIds.split(",");
-        for (int i = 0; i < roleIdArray.length; i++) {
-            Role role = roleApi.getRole(roleIdArray[i]).getData();
-            String roleName = (role == null) ? "角色不存在" : role.getName();
-            if (i == 0) {
-                roleNamesBuilder.append(roleName);
-            } else {
-                roleNamesBuilder.append("、").append(roleName);
-            }
-        }
-        return roleNamesBuilder.toString();
+        List<String> roleIdList = Arrays.asList(roleIdArray);
+        Map<String, Role> idRoleMap =
+                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
+
+        return Arrays.stream(roleIdArray)
+                .map(id -> {
+                    Role role = idRoleMap.get(id);
+                    return (role == null) ? "角色不存在" : role.getName();
+                })
+                .collect(Collectors.joining("、"));
     }
 
     @Override

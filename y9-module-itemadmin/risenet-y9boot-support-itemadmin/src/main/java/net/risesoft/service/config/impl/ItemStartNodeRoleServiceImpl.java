@@ -1,7 +1,10 @@
 package net.risesoft.service.config.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
@@ -365,11 +368,15 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         if (null != itemStartNodeRole && StringUtils.isNotEmpty(itemStartNodeRole.getRoleIds())) {
             String roleIds = itemStartNodeRole.getRoleIds();
+            
             String[] roleIdArr = roleIds.split(";");
-            Role role;
+            List<String> roleIdList = Arrays.asList(roleIdArr);
+            Map<String, Role> idRoleMap =
+                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
+
             for (String roleId : roleIdArr) {
-                role = roleApi.getRole(roleId).getData();
-                if (null != role) {
+                Role role = idRoleMap.get(roleId);
+                if (role != null) {
                     list.add(role);
                 } else {
                     self.removeRole(itemId, processDefinitionId, taskDefKey, roleId);
