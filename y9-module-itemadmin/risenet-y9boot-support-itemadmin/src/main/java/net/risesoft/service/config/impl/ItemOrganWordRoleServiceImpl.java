@@ -1,6 +1,8 @@
 package net.risesoft.service.config.impl;
 
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -42,8 +44,11 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     @Override
     public List<ItemOrganWordRole> listByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId) {
         List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
+        List<String> roleIdList = roleList.stream().map(ItemOrganWordRole::getRoleId).collect(Collectors.toList());
+        Map<String, Role> idRoleMap =
+                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
         for (ItemOrganWordRole role : roleList) {
-            Role r = roleApi.getRole(role.getRoleId()).getData();
+            Role r = idRoleMap.get(role.getRoleId());
             role.setRoleName(r == null ? "角色已删除" : r.getName());
         }
         return roleList;

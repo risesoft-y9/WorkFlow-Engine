@@ -2,6 +2,8 @@ package net.risesoft.service.config.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -349,20 +351,15 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     private RoleInfo getRoleInfo(String itemOpinionFrameBindId) {
         List<ItemOpinionFrameRole> roleList =
             itemOpinionFrameRoleService.listByItemOpinionFrameId(itemOpinionFrameBindId);
-        List<String> roleIds = new ArrayList<>();
-        StringBuilder roleNamesBuilder = new StringBuilder();
-        for (int i = 0; i < roleList.size(); i++) {
-            ItemOpinionFrameRole role = roleList.get(i);
-            roleIds.add(role.getId());
-            Role r = roleApi.getRole(role.getRoleId()).getData();
-            String roleName = (r == null) ? "角色不存在" : r.getName();
-            if (i == 0) {
-                roleNamesBuilder.append(roleName);
-            } else {
-                roleNamesBuilder.append("、").append(roleName);
-            }
-        }
-        return new RoleInfo(roleIds, roleNamesBuilder.toString());
+        List<String> roleIdList = roleList.stream().map(ItemOpinionFrameRole::getRoleId).collect(Collectors.toList());
+        Map<String, Role> idRoleMap =
+            roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
+
+        String roleNames = roleList.stream().map(role -> {
+            Role r = idRoleMap.get(role.getRoleId());
+            return (r == null) ? "角色不存在" : r.getName();
+        }).collect(Collectors.joining("、"));
+        return new RoleInfo(roleIdList, roleNames);
     }
 
     @Override
