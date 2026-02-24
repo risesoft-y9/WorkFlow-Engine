@@ -1041,13 +1041,12 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public DocumentDetailModel genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
+    public void genTabModel(String itemId, String processDefinitionKey, String processDefinitionId,
         String taskDefinitionKey, boolean isAdmin, DocumentDetailModel model) {
         // 处理表单列表
         handleFormList(itemId, processDefinitionId, taskDefinitionKey, model);
         // 处理签注意见状态
         handleSignStatus(model, isAdmin);
-        return model;
     }
 
     private void getAllPosition(List<Position> list, String deptId) {

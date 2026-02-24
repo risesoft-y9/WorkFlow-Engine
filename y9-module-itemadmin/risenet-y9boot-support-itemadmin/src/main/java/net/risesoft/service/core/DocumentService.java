@@ -178,6 +178,9 @@ public interface DocumentService {
     OpenDataModel genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId,
         String taskDefinitionKey, boolean mobile, OpenDataModel model);
 
+    DocumentDetailModel genDocumentModel(String itemId, String processDefinitionKey, String processDefinitionId,
+        String taskDefinitionKey, DocumentDetailModel model);
+
     /**
      * Description: 获取绑定表单
      *
