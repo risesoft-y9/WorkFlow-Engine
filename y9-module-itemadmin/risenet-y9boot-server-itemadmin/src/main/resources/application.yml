@@ -99,6 +99,7 @@ spring:
     jpa:
         generate-ddl: true
         hibernate:
+            ddl-auto: none
             naming:
                 implicit-strategy: org.hibernate.boot.model.naming.ImplicitNamingStrategyLegacyHbmImpl
                 physical-strategy: org.hibernate.boot.model.naming.PhysicalNamingStrategyStandardImpl
@@ -109,9 +110,6 @@ spring:
                     use_query_cache: false
                     use_second_level_cache: false
                 dialect: org.hibernate.dialect.MySQL8Dialect
-                hbm2ddl:
-                    # 正式环境务必设置为none
-                    auto: none
                 jdbc:
                     batch_size: 100
                 show_sql: false
