@@ -108,7 +108,7 @@ public class SendReceiveRestController {
             nodeTreeVO.setParentId(orgUnit.getParentId());
             nodeTreeVO.setIsParent(true);
             if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
-                Person per = personApi.get(Y9LoginUserHolder.getTenantId(), orgUnit.getId()).getData();
+                Person per = (Person) orgUnit;
                 nodeTreeVO.setIsParent(false);
                 nodeTreeVO.setSex(per.getSex().getValue());
             }
@@ -153,7 +153,7 @@ public class SendReceiveRestController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     nodeTreeVO.setIsParent(true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = personApi.get(tenantId, orgunit.getId()).getData();
+                    Person person = (Person) orgunit;
                     nodeTreeVO.setIsParent(false);
                     nodeTreeVO.setSex(person.getSex().getValue());
                 } else {
@@ -199,7 +199,7 @@ public class SendReceiveRestController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     nodeTreeVO.setIsParent(true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = personApi.get(tenantId, orgunit.getId()).getData();
+                    Person person = (Person) orgunit;
                     nodeTreeVO.setIsParent(false);
                     nodeTreeVO.setSex(person.getSex().getValue());
                 } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {

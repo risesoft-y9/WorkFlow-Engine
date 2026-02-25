@@ -135,7 +135,7 @@ public class EntrustController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.setIsParent(true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = personApi.get(tenantId, orgunit.getId()).getData();
+                    Person person = (Person) orgunit;
                     map.setSex(person.getSex().getValue());
                     map.setIsParent(false);
                 } else {
