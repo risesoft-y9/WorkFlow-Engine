@@ -167,7 +167,7 @@ public class ProcessModelApiImpl implements ProcessModelApi {
         MultipartFile file) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
             XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
             InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);

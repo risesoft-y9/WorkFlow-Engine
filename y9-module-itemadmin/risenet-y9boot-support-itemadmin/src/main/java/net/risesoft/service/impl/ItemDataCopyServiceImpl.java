@@ -324,7 +324,8 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
 
         RoleInfo roleInfo = new RoleInfo();
         roleInfo.parentId = tenantSystemRole.getId();
-        roleInfo.organization = orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
+        roleInfo.organization =
+            orgUnitApi.getOrgUnitOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
 
         return roleInfo;
     }
@@ -1265,7 +1266,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
          */
         Y9LoginUserHolder.setTenantId(targetTenantId);
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        OrgUnit orgUnit = orgUnitApi.getBureau(targetTenantId, person.getPersonId()).getData();
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(targetTenantId, person.getPersonId()).getData();
         String bureauId = orgUnit.getId(), bureauName = orgUnit.getName();
         for (TaoHongTemplate tt : sourcettList) {
             tt.setBureauGuid(bureauId);
@@ -1315,7 +1316,7 @@ public class ItemDataCopyServiceImpl implements ItemDataCopyService {
         Role oldRole, newRoleTemp;
         String newRoleId;
         Organization organization =
-            orgUnitApi.getOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
+            orgUnitApi.getOrgUnitOrganization(targetTenantId, Y9LoginUserHolder.getPersonId()).getData();
         for (String roleId : roleIdList) {
             oldRole = roleApi.getRole(roleId).getData();
             if (null != oldRole && null != oldRole.getId()) {

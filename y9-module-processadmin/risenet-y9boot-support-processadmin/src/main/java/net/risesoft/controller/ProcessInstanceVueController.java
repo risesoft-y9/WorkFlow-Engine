@@ -138,9 +138,8 @@ public class ProcessInstanceVueController {
                 map.put(SysVariables.SUSPENDED_KEY, processInstance.isSuspended());
                 map.put("startUserName", "无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
-                    orgUnit =
-                        orgUnitApi.getOrgUnitPersonOrPosition(tenantId, processInstance.getStartUserId()).getData();
-                    parent = orgUnitApi.getParent(tenantId, orgUnit.getId()).getData();
+                    orgUnit = orgUnitApi.getPersonOrPosition(tenantId, processInstance.getStartUserId()).getData();
+                    parent = orgUnitApi.getOrgUnitParent(tenantId, orgUnit.getId()).getData();
                     map.put("startUserName", orgUnit.getName() + "(" + parent.getName() + ")");
                 }
             } catch (Exception e) {

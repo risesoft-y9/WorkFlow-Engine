@@ -626,7 +626,7 @@ public class FormNTKOController {
         @RequestParam(required = false) String positionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         if (StringUtils.isBlank(currentBureauGuid) && StringUtils.isNotBlank(positionId)) {
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, positionId).getData();
             currentBureauGuid = orgUnit.getParentId();
         }
         return y9WordApi.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();

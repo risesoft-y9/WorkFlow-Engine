@@ -61,7 +61,7 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
             String title = processParamModel.getTitle();
             String itemName = processParamModel.getItemName();
             List<String> list = new ArrayList<>();
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
             if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
                 List<Person> plist = positionApi.listPersonsByPositionId(tenantId, assignee).getData();
                 for (Person p : plist) {

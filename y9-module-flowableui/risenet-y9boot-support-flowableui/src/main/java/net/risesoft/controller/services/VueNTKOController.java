@@ -144,8 +144,8 @@ public class VueNTKOController {
             wordInfo.setTenantId(tenantId);
             wordInfo.setUserId(userId);
             wordInfo.setPositionId(positionId);
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
-            OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, orgUnit.getParentId()).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, positionId).getData();
+            OrgUnit currentBureau = orgUnitApi.getOrgUnitBureau(tenantId, orgUnit.getParentId()).getData();
             wordInfo.setCurrentBureauGuid(currentBureau != null ? currentBureau.getId() : "");
             return Y9Result.success(wordInfo, "获取信息成功");
         } catch (Exception e) {

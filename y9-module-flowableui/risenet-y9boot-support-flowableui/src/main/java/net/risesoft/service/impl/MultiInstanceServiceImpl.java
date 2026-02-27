@@ -102,7 +102,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         SignDeptDetailModel ssd = signDeptDetailModels.get(0);
         taskList.forEach(task -> {
             if (signDeptDetailModels.stream().noneMatch(sdd -> sdd.getExecutionId().equals(task.getExecutionId()))) {
-                OrgUnit bureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
+                OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, task.getAssignee()).getData();
                 SignDeptDetailModel signDeptDetail = new SignDeptDetailModel();
                 signDeptDetail.setProcessSerialNumber(processSerialNumber);
                 signDeptDetail.setProcessInstanceId(processInstanceId);
@@ -178,7 +178,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             mapTemp.put("taskId", tm.getId());
             mapTemp.put("executionId", tm.getExecutionId());
             mapTemp.put("assigneeId", tm.getAssignee());
-            personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, tm.getAssignee()).getData();
+            personTemp = orgUnitApi.getPersonOrPosition(tenantId, tm.getAssignee()).getData();
             mapTemp.put("assigneeName", personTemp == null ? "" : personTemp.getName());
             mapTemp.put("name", tm.getName());
             mapTemp.put("isZhuBan", "否");
@@ -208,7 +208,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         if (users != null) {
             for (Object obj : users) {
                 String user = obj.toString();
-                personTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
+                personTemp = orgUnitApi.getPersonOrPosition(tenantId, user).getData();
                 mapTemp = new HashMap<>(16);
                 mapTemp.put("num", num + 1);
                 mapTemp.put("taskId", taskId);

@@ -116,7 +116,8 @@ public class TaoHongTemplateRestController {
             list = taoHongTemplateService.listByTenantId(Y9LoginUserHolder.getTenantId(),
                 StringUtils.isBlank(name) ? "%%" : "%" + name + "%");
         } else {
-            OrgUnit orgUnit = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getPersonId()).getData();
+            OrgUnit orgUnit =
+                orgUnitApi.getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), person.getPersonId()).getData();
             list = taoHongTemplateService.listByBureauGuid(orgUnit.getId());
         }
         for (TaoHongTemplate taoHongTemplate : list) {
@@ -143,7 +144,7 @@ public class TaoHongTemplateRestController {
         if (person.isGlobalManager()) {
             typeList = taoHongTemplateTypeService.listAll();
         } else {
-            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, personId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, personId).getData();
             map.put("bureauGuid", orgUnit.getId());
             map.put("bureauName", orgUnit.getName());
             typeList = taoHongTemplateTypeService.listByBureauId(orgUnit.getId());

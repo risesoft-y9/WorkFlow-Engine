@@ -643,7 +643,8 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         actRuDetail.setSub(SUB_NODE_MAP.get(actRuDetail.getProcessDefinitionId())
             .stream()
             .anyMatch(taskDefKey -> taskDefKey.equals(actRuDetail.getTaskDefKey())));
-        OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
+        OrgUnit bureau =
+            orgUnitApi.getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), actRuDetail.getDeptId()).getData();
         actRuDetail.setBureauId(bureau.getId());
         actRuDetail.setBureauName(bureau.getName());
         actRuDetail.setSignStatus(

@@ -118,7 +118,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
                 pp.setHostDeptName(oldProcessParam.getHostDeptName());
             } else {
                 pp.setCustomItem(customItem);
-                OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9FlowableHolder.getPositionId()).getData();
+                OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, Y9FlowableHolder.getPositionId()).getData();
                 pp.setHostDeptId(bureau.getId());
                 if (bureau instanceof Department) {
                     Department department = (Department)bureau;

@@ -84,7 +84,7 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         OpinionCopy opinionCopy = new OpinionCopy();
         Y9BeanUtil.copyProperties(opinionCopyModel, opinionCopy);

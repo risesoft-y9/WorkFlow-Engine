@@ -96,7 +96,7 @@ public class EntrustApiImpl implements EntrustApi {
     public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestBody EntrustModel entrustModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         Entrust entrust = new Entrust();
         Y9BeanUtil.copyProperties(entrustModel, entrust);

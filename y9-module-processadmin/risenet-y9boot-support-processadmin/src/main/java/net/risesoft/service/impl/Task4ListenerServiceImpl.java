@@ -73,7 +73,7 @@ public class Task4ListenerServiceImpl implements Task4ListenerService {
         String orgUnitName = "";
         try {
             if (StringUtils.isNotBlank(task.getAssignee())) {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, task.getAssignee()).getData();
+                OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, task.getAssignee()).getData();
                 orgUnitName = orgUnit != null ? orgUnit.getName() : "";
                 updateTaskInstScopeType(task.getId(), orgUnitName);
                 updateActInstTenantId(task.getId(), orgUnitName);

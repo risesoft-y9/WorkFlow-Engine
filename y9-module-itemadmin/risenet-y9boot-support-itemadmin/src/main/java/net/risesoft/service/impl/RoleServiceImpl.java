@@ -631,7 +631,7 @@ public class RoleServiceImpl implements RoleService {
      */
     private void handleDepartmentTypeForEmptyId(String tenantId, String userId, List<ItemRoleOrgUnitModel> items) {
         try {
-            Organization organization = orgUnitApi.getOrganization(tenantId, userId).getData();
+            Organization organization = orgUnitApi.getOrgUnitOrganization(tenantId, userId).getData();
             List<OrgUnit> orgUnitList =
                 orgUnitApi.getSubTree(tenantId, organization.getId(), OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
 
@@ -703,8 +703,7 @@ public class RoleServiceImpl implements RoleService {
 
             if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
                 for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                    OrgUnit user =
-                        orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                    OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
 
                     if (user != null && !user.getDisabled()) {
                         ItemRoleOrgUnitModel model = createCustomGroupMemberModel(user, customGroupMember, id);
@@ -725,7 +724,7 @@ public class RoleServiceImpl implements RoleService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             if (StringUtils.isBlank(id) || UtilConsts.NULL.equals(id)) {
-                id = orgUnitApi.getBureau(tenantId, Y9FlowableHolder.getOrgUnit().getId()).getData().getId();
+                id = orgUnitApi.getOrgUnitBureau(tenantId, Y9FlowableHolder.getOrgUnit().getId()).getData().getId();
             }
             List<OrgUnit> orgUnitList =
                 orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();
@@ -776,7 +775,7 @@ public class RoleServiceImpl implements RoleService {
         List<ItemRoleOrgUnitModel> items = new ArrayList<>();
 
         try {
-            Organization organization = orgUnitApi.getOrganization(tenantId, userId).getData();
+            Organization organization = orgUnitApi.getOrgUnitOrganization(tenantId, userId).getData();
             List<Department> deptList = departmentApi.listByParentId(tenantId, organization.getId()).getData();
 
             List<OrgUnit> orgUnitListTemp = new ArrayList<>();
@@ -838,8 +837,7 @@ public class RoleServiceImpl implements RoleService {
 
             if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
                 for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                    OrgUnit user =
-                        orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                    OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
 
                     if (user != null && user.getName().contains(name) && !user.getDisabled()) {
                         ItemRoleOrgUnitModel memberModel =
@@ -1195,8 +1193,7 @@ public class RoleServiceImpl implements RoleService {
                 .getData();
         if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
             for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                OrgUnit user =
-                    orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
 
                 if (user != null && !user.getDisabled()) {
                     ItemRoleOrgUnitModel model = createCustomGroupMemberModel(user, customGroupMember, id);
@@ -1581,8 +1578,7 @@ public class RoleServiceImpl implements RoleService {
 
             if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
                 for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                    OrgUnit user =
-                        orgUnitApi.getOrgUnitPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                    OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
 
                     if (user != null && user.getName().contains(name) && !user.getDisabled()) {
                         ItemRoleOrgUnitModel memberModel =

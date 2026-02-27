@@ -120,7 +120,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         StringBuffer deptNames = new StringBuffer();
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         String starter = null == processParam ? Y9FlowableHolder.getOrgUnit().getId() : processParam.getStartor();
-        Department bureau = (Department)orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), starter).getData();
+        Department bureau = (Department)orgUnitApi.getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), starter).getData();
         deptNames.append(StringUtils.isNotBlank(bureau.getAliasName()) ? bureau.getAliasName() : bureau.getName());
         List<SignDeptInfo> signDeptList = this.getSignDeptList(processSerialNumber, "0");
         signDeptList.forEach(signDeptInfo -> deptNames.append(",").append(signDeptInfo.getDeptName()));
@@ -252,9 +252,9 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
      */
     private void updateTzsDisplayInfo(SignDeptInfo signDeptInfo) {
         try {
-            Department bureau =
-                (Department)orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getOrgUnitId())
-                    .getData();
+            Department bureau = (Department)orgUnitApi
+                .getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getOrgUnitId())
+                .getData();
             if (bureau != null) {
                 signDeptInfo.setDisplayDeptId(bureau.getId());
                 signDeptInfo.setDisplayDeptName(
@@ -356,7 +356,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
         try {
             Department bureau =
-                (Department)orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), actualPositionId).getData();
+                (Department)orgUnitApi.getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), actualPositionId).getData();
 
             SignDeptInfo updatedSignDeptInfo = signDeptInfo;
             if (signDeptInfo == null) {

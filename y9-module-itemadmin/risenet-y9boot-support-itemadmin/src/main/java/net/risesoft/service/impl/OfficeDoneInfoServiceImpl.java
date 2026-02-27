@@ -674,7 +674,8 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         if (info != null) {
             info.setMeeting("1");
             info.setMeetingType(meetingType);
-            OrgUnit dept = orgUnitApi.getParent(Y9LoginUserHolder.getTenantId(), info.getCreatUserId()).getData();
+            OrgUnit dept =
+                orgUnitApi.getOrgUnitParent(Y9LoginUserHolder.getTenantId(), info.getCreatUserId()).getData();
             info.setDeptName(dept != null ? dept.getName() : "");
             officeDoneInfoRepository.save(info);
         }

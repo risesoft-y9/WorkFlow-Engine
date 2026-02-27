@@ -755,7 +755,7 @@ public class OpinionServiceImpl implements OpinionService {
         OpinionModel opinionModel = new OpinionModel();
         Y9BeanUtil.copyProperties(opinion, opinionModel);
         if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
-            OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, opinion.getPositionId()).getData();
+            OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, opinion.getPositionId()).getData();
             opinionModel.setPositionName(user != null ? user.getName() : "");
         }
         PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();
@@ -767,7 +767,7 @@ public class OpinionServiceImpl implements OpinionService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Y9BeanUtil.copyProperties(opinion, opinionModel);
         if (StringUtils.isNotBlank(opinion.getPositionId()) && StringUtils.isBlank(opinion.getPositionName())) {
-            OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, opinion.getPositionId()).getData();
+            OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, opinion.getPositionId()).getData();
             opinionModel.setPositionName(user != null ? user.getName() : "");
         }
         PersonExt personExt = personApi.getPersonExtByPersonId(tenantId, opinionModel.getUserId()).getData();

@@ -69,7 +69,7 @@ public class EntrustController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<NodeTreeVO> item = new ArrayList<>();
         List<OrgUnit> orgUnitList = new ArrayList<>();
-        OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
         if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
             List<Person> personList =
                 personApi.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
@@ -109,7 +109,7 @@ public class EntrustController {
         List<NodeTreeVO> item = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(id)) {
-            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
             if (orgUnit != null && orgUnit.getId() != null) {
                 NodeTreeVO map = new NodeTreeVO();
                 id = orgUnit.getId();
@@ -135,7 +135,7 @@ public class EntrustController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     map.setIsParent(true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = (Person) orgunit;
+                    Person person = (Person)orgunit;
                     map.setSex(person.getSex().getValue());
                     map.setIsParent(false);
                 } else {

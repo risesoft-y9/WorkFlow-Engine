@@ -714,7 +714,7 @@ public class DocumentRestController {
      */
     private OrgUnit getEmployeeInfo(String tenantId, String assigneeId) {
         try {
-            return orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assigneeId).getData();
+            return orgUnitApi.getPersonOrPosition(tenantId, assigneeId).getData();
         } catch (Exception e) {
             LOGGER.warn("获取员工信息失败: assigneeId={}", assigneeId, e);
             return null;

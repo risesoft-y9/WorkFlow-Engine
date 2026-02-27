@@ -81,7 +81,7 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
 
     private ActRuDetailModel getModel(String tenantId, String processSerialNumber, DelegateTask taskEntity,
         String assignee) {
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
         ActRuDetailModel model = new ActRuDetailModel();
         model.setCreateTime(taskEntity.getCreateTime());
         model.setAssignee(assignee);
@@ -104,7 +104,7 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
         model.setSignStatus(ActRuDetailSignStatusEnum.NONE);
 
         String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASK_SENDER_ID);
-        OrgUnit sendUser = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskSenderId).getData();
+        OrgUnit sendUser = orgUnitApi.getPersonOrPosition(tenantId, taskSenderId).getData();
         model.setSendUserId(taskSenderId);
         model.setSendUserName(sendUser.getName());
         model.setSendDeptId(sendUser.getParentId());
@@ -178,7 +178,7 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
                 StringBuffer names = new StringBuffer();
                 taskEntity.getCandidates().forEach(link -> {
-                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, link.getUserId()).getData();
+                    OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, link.getUserId()).getData();
                     if (StringUtils.isBlank(names)) {
                         names.append(orgUnit.getName());
                     } else {

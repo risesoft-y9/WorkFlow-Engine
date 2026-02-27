@@ -2115,7 +2115,7 @@ public class DocumentServiceImpl implements DocumentService {
             customGroupApi.listCustomGroupMember(tenantId, new CustomGroupMemberQuery(groupId, OrgTypeEnum.POSITION))
                 .getData();
         for (CustomGroupMember member : members) {
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, member.getMemberId()).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, member.getMemberId()).getData();
             if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
                 users = addUserId(users, orgUnit.getId());
             }
@@ -2165,7 +2165,7 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理岗位类型用户
      */
     private String processPositionUser(String users, String tenantId, String userId) {
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
         if (orgUnit != null) {
             users = addUserId(users, userId);
         }
