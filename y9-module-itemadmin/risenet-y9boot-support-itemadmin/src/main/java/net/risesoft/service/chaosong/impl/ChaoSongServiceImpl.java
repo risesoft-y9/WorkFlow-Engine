@@ -645,7 +645,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                         .listCustomGroupMember(tenantId, new CustomGroupMemberQuery(orgUnitId, OrgTypeEnum.POSITION))
                         .getData();
                     for (CustomGroupMember member : members) {
-                        OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, member.getMemberId()).getData();
+                        OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, member.getMemberId()).getData();
                         if (user != null && StringUtils.isNotBlank(user.getId())) {
                             userIdListAdd.add(user.getId());
                         }
@@ -666,7 +666,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         List<ChaoSong> chaoSongList = new ArrayList<>();
         OrgUnit dept = getDepartment(tenantId, currentOrgUnit);
         for (String userId : userIdList) {
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
             if (orgUnit != null) {
                 ChaoSong chaoSong = createChaoSong(tenantId, currentUserId, currentOrgUnit, dept, processInstanceId,
                     title, itemId, itemName, orgUnit);
@@ -680,11 +680,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
      * 获取部门信息
      */
     private OrgUnit getDepartment(String tenantId, OrgUnit currentOrgUnit) {
-        OrgUnit dept = orgUnitApi.getOrgUnit(tenantId, currentOrgUnit.getParentId()).getData();
-        if (null == dept || null == dept.getId()) {
-            dept = organizationApi.get(tenantId, currentOrgUnit.getParentId()).getData();
-        }
-        return dept;
+        return orgUnitApi.getOrgUnit(tenantId, currentOrgUnit.getParentId()).getData();
     }
 
     /**

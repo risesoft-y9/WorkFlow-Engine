@@ -109,7 +109,7 @@ public class Process4SearchServiceImpl implements Process4SearchService {
                 if (!allUserId.contains(userId)) {
                     allUserId = Y9Util.genCustomStr(allUserId, userId);
                 }
-                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
                 if (orgUnit != null && !deptIds.contains(orgUnit.getParentId())) {
                     deptIds = Y9Util.genCustomStr(deptIds, orgUnit.getParentId());
                 }

@@ -167,7 +167,7 @@ public class WordTemplateRestController {
             list = wordTemplateService.listAll();
         } else {
             list = wordTemplateService
-                .listByBureauIdOrderByUploadTimeDesc(orgUnitApi.getBureau(tenantId, personId).getData().getId());
+                .listByBureauIdOrderByUploadTimeDesc(orgUnitApi.getOrgUnitBureau(tenantId, personId).getData().getId());
         }
         List<WordTemplateVO> items = new ArrayList<>();
         for (WordTemplate wordTemplate : list) {

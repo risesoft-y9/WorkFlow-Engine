@@ -53,8 +53,8 @@ public class SetDeptIdUtilServiceImpl implements SetDeptIdUtilService {
     private void processDepartmentInfo(DelegateTask taskEntity, String assignee, String processSerialNumber,
         String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
-        OrgUnit bureau = orgUnitApi.getBureau(tenantId, orgUnit.getParentId()).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
+        OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, orgUnit.getParentId()).getData();
         OrgUnit parent = orgUnitApi.getOrgUnit(tenantId, orgUnit.getParentId()).getData();
         ProcessParamModel processParamModel =
             processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();

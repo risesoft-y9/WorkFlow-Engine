@@ -138,7 +138,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public Y9Result<Object> directSend(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String taskId, @RequestParam String routeToTask, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
         String startUserId = "6" + SysVariables.COLON + processInstance.getStartUserId();
@@ -171,7 +171,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             // 前一任务的受让人，标题
             String assignee = hti.getAssignee();
             userAndDeptIdList.add(assignee);
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
             Y9FlowableHolder.setOrgUnit(orgUnit);
             FlowElementModel flowElementModel =
                 processDefinitionApi.getNode(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())

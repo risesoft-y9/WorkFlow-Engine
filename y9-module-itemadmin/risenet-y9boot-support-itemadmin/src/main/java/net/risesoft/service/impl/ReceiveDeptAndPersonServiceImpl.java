@@ -118,7 +118,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
         String tenantId = Y9LoginUserHolder.getTenantId();
         for (ReceivePerson receivePerson : personList) {
             Map<String, Object> m = new HashMap<>(16);
-            OrgUnit person = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, receivePerson.getPersonId()).getData();
+            OrgUnit person = orgUnitApi.getPersonOrPosition(tenantId, receivePerson.getPersonId()).getData();
             if (person == null || person.getId() == null || Boolean.TRUE.equals(person.getDisabled())) {
                 receivePersonRepository.delete(receivePerson);
                 continue;
@@ -154,7 +154,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
             }
             String tenantId = Y9LoginUserHolder.getTenantId();
             Department dept = departmentApi.get(tenantId, id).getData();
-            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, id).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, id).getData();
             receiveDeptAndPerson.setBureauId(orgUnit.getId());
             receiveDeptAndPerson.setDeptName(dept.getName());
             receiveDeptAndPerson.setDeptId(id);
@@ -235,7 +235,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
         for (String userId : userIds) {
             try {
-                OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
                 if (user == null) {
                     continue;
                 }
@@ -271,14 +271,14 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
         boolean canAdd = true;
         for (ReceivePerson receivePerson : existingPersons) {
             try {
-                OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, receivePerson.getDeptId()).getData();
-                OrgUnit orgUnit1 = orgUnitApi.getBureau(tenantId, deptId).getData();
+                OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, receivePerson.getDeptId()).getData();
+                OrgUnit orgUnit1 = orgUnitApi.getOrgUnitBureau(tenantId, deptId).getData();
 
                 // 委办局相同，且部门不相同则，不可添加该收文员
                 if (orgUnit.getId().equals(orgUnit1.getId()) && !receivePerson.getDeptId().equals(deptId)) {
                     canAdd = false;
                     // 同一个委办局，不能设置一个人为两个单位的收文员
-                    OrgUnit person = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                    OrgUnit person = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
                     msg.append("[")
                         .append(person != null ? person.getName() : userId)
                         .append("已是")
@@ -341,7 +341,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
      */
     private ReceiveDepartment createNewReceiveDepartment(String deptId, Department dept, String tenantId) {
         try {
-            OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, deptId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, deptId).getData();
             ReceiveDepartment receiveDepartment = new ReceiveDepartment();
             receiveDepartment.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             receiveDepartment.setDeptName(dept.getName());

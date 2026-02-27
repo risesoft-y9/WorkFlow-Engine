@@ -200,7 +200,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     public Y9Result<Object> saveAttachment(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String attachjson, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         Map<String, Object> attachmentJson = Y9JsonUtil.readValue(attachjson, Map.class);
         assert attachmentJson != null;
@@ -245,7 +245,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         String processInstanceId, String processSerialNumber, String taskId, @RequestParam String y9FileStoreId) {
         String msg;
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         try {
             Attachment attachment = attachmentService.getFileInfoByFileName(fileName, processSerialNumber);
@@ -300,7 +300,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         @RequestParam String fileId, String fileSize, String taskId, @RequestParam String y9FileStoreId) {
         String msg;
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         try {
             Attachment attachment = attachmentRepository.findById(fileId).orElse(null);
@@ -341,7 +341,7 @@ public class AttachmentApiImpl implements AttachmentApi {
         String taskId, String describes, String processSerialNumber, String fileSource,
         @RequestParam String y9FileStoreId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
@@ -363,7 +363,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     public Y9Result<Object> uploadModel(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestBody AttachmentModel attachmentModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         Attachment file = new Attachment();
         Y9BeanUtil.copyProperties(attachmentModel, file);

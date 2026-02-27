@@ -73,7 +73,7 @@ public class QuickSendRestController {
                 String orgId = id.split(":")[1];
                 int principalType = Integer.parseInt(type);
                 if (principalType == ItemPermissionEnum.POSITION.getValue()) {
-                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgId).getData();
+                    OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgId).getData();
                     map.put("id", orgUnit.getId());
                     map.put("name", orgUnit.getName());
                     map.put(ORGTYPE_KEY, OrgTypeEnum.POSITION.getEnName());

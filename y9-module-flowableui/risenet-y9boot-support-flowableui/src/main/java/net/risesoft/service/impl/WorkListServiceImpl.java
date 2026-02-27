@@ -298,7 +298,7 @@ public class WorkListServiceImpl implements WorkListService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9FlowableHolder.getPositionId();
             Position position = Y9FlowableHolder.getPosition();
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String deptId = isBureau ? bureau.getId() : position.getParentId();
             Y9Page<ActRuDetailModel> itemPage;
@@ -544,7 +544,7 @@ public class WorkListServiceImpl implements WorkListService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9FlowableHolder.getPositionId();
             Position position = Y9FlowableHolder.getPosition();
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String deptId = isBureau ? bureau.getId() : position.getParentId();
             Y9Page<ActRuDetailModel> itemPage;
@@ -1134,7 +1134,7 @@ public class WorkListServiceImpl implements WorkListService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9FlowableHolder.getPositionId();
             Position position = Y9FlowableHolder.getPosition();
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+            OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, positionId).getData();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String deptId = isBureau ? bureau.getId() : position.getParentId();
             Y9Page<ActRuDetailModel> itemPage;

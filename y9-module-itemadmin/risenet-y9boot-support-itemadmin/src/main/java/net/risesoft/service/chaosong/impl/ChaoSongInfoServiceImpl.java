@@ -598,7 +598,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                         .listCustomGroupMember(tenantId, new CustomGroupMemberQuery(orgUnitId, OrgTypeEnum.POSITION))
                         .getData();
                     for (CustomGroupMember member : members) {
-                        OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, member.getMemberId()).getData();
+                        OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, member.getMemberId()).getData();
                         if (user != null && StringUtils.isNotBlank(user.getId())) {
                             userIdListAdd.add(user.getId());
                         }
@@ -655,7 +655,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         OrgUnit dept = getDepartment(tenantId, currOrgUnit);
         List<ChaoSongInfo> csList = new ArrayList<>();
         for (String userId : userIdListAdd) {
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
             if (orgUnit != null) {
                 ChaoSongInfo cs = createChaoSongInfo(tenantId, currUserId, currOrgUnit, dept, processInstanceId, title,
                     itemId, itemName, orgUnit);
@@ -735,11 +735,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     private OrgUnit getDepartment(String tenantId, OrgUnit currOrgUnit) {
-        OrgUnit dept = orgUnitApi.getOrgUnit(tenantId, currOrgUnit.getParentId()).getData();
-        if (null == dept || null == dept.getId()) {
-            dept = organizationApi.get(tenantId, currOrgUnit.getParentId()).getData();
-        }
-        return dept;
+        return orgUnitApi.getOrgUnit(tenantId, currOrgUnit.getParentId()).getData();
     }
 
     private ChaoSongInfo createChaoSongInfo(String tenantId, String currUserId, OrgUnit currOrgUnit, OrgUnit dept,

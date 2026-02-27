@@ -101,7 +101,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     public Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         List<AssociatedFileModel> list = associatedFileService.listAssociatedFileAll(processSerialNumber);
         return Y9Result.success(list, "获取成功");
@@ -121,7 +121,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     public Y9Result<Object> saveAssociatedFile(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processSerialNumber, @RequestParam String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         associatedFileService.saveAssociatedFile(processSerialNumber, processInstanceIds);
         return Y9Result.success();

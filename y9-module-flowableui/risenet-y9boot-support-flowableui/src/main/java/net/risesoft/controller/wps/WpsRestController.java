@@ -132,7 +132,7 @@ public class WpsRestController {
     @GetMapping(value = "/taoHongTemplateList")
     public List<TaoHongTemplateModel> taoHongTemplateList(@RequestParam String tenantId, @RequestParam String userId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, userId).getData();
+        OrgUnit currentBureau = orgUnitApi.getOrgUnitBureau(tenantId, userId).getData();
         String currentBureauGuid = currentBureau != null ? currentBureau.getId() : "";
         if (StringUtils.isBlank(currentBureauGuid)) {
             currentBureauGuid = person.getParentId();

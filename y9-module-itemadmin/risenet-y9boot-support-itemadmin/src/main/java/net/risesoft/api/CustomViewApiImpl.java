@@ -49,7 +49,7 @@ public class CustomViewApiImpl implements CustomViewApi {
     public Y9Result<Object> delCustomView(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String viewType) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         customViewService.delCustomView(viewType);
         return Y9Result.success();
@@ -68,7 +68,7 @@ public class CustomViewApiImpl implements CustomViewApi {
     public Y9Result<List<CustomViewModel>> listCustomView(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String viewType) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         return customViewService.listCustomView(viewType);
     }
@@ -86,7 +86,7 @@ public class CustomViewApiImpl implements CustomViewApi {
     public Y9Result<Object> saveCustomView(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String jsonData) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         customViewService.saveCustomView(jsonData);
         return Y9Result.success();

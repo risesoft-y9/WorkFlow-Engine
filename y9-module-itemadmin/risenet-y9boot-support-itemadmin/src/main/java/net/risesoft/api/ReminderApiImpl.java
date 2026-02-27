@@ -156,7 +156,7 @@ public class ReminderApiImpl implements ReminderApi {
     public Y9Result<String> saveReminder(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processInstanceId, @RequestBody String[] taskIds, @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         try {
             Reminder reminder;
@@ -198,7 +198,7 @@ public class ReminderApiImpl implements ReminderApi {
         @RequestParam String remType, @RequestParam String procInstId, @RequestParam String processInstanceId,
         @RequestParam String documentTitle, @RequestParam String taskId, @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         try {
             // 催办信息处理

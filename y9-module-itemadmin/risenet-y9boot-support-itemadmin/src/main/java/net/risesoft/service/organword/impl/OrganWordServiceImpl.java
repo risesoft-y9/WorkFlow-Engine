@@ -191,7 +191,8 @@ public class OrganWordServiceImpl implements OrganWordService {
         Integer common, String processSerialNumber) {
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
+            OrgUnit bureau =
+                orgUnitApi.getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
             String deptName = bureau.getName();
             if (1 == common) {
                 itemId = ItemConsts.COMMON_KEY;
@@ -514,7 +515,8 @@ public class OrganWordServiceImpl implements OrganWordService {
         int numberTemp;
         try {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            OrgUnit bureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
+            OrgUnit bureau =
+                orgUnitApi.getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), person.getParentId()).getData();
             String deptName = bureau.getName();
             if (1 == common) {
                 itemId = ItemConsts.COMMON_KEY;

@@ -387,7 +387,7 @@ public class ButtonOperationRestController {
             if (users != null) {
                 for (Object obj : users) {// 获取下一任务的所有办理人，办理顺序为list的顺序
                     String userId = obj.toString();
-                    OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                    OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
                     if (userId.equals(taskModel.getAssignee())) {
                         userNames = new StringBuilder("<font color='red'>" + employee.getName() + "</font>");
                     } else {
@@ -516,7 +516,7 @@ public class ButtonOperationRestController {
         for (String user : taskInfo.users) {
             Map<String, Object> map = new HashMap<>(16);
             try {
-                OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
+                OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, user).getData();
                 map.put("user", employee != null ? employee.getName() : "未知用户");
             } catch (Exception e) {
                 LOGGER.warn("处理普通单实例任务时，获取用户信息失败,异常用户: {}", user, e);
@@ -555,7 +555,7 @@ public class ButtonOperationRestController {
         for (int i = 0; i < taskInfo.users.size(); i++) {
             Map<String, Object> map = new HashMap<>(16);
             try {
-                OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskInfo.users.get(i)).getData();
+                OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, taskInfo.users.get(i)).getData();
                 map.put("user", employee != null ? employee.getName() : "未知用户");
             } catch (Exception e) {
                 LOGGER.warn("处理串行实例任务时，获取用户信息失败: {}", taskInfo.users.get(i), e);
@@ -629,7 +629,7 @@ public class ButtonOperationRestController {
      */
     private void fillParallelTaskUserInfo(Map<String, Object> map, HistoricTaskInstanceModel hai, String tenantId) {
         try {
-            OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, hai.getAssignee()).getData();
+            OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, hai.getAssignee()).getData();
             map.put("user", employee != null ? employee.getName() : "岗位不存在");
 
             if (StringUtils.isNotBlank(hai.getScopeType())) {
@@ -680,7 +680,7 @@ public class ButtonOperationRestController {
     private void setParallelSponsorInfo(Map<String, Object> map, HistoricTaskInstanceModel hai,
         String parallelSponsorObj, String tenantId) {
         try {
-            OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, hai.getAssignee()).getData();
+            OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, hai.getAssignee()).getData();
             if (parallelSponsorObj != null && employee != null) {
                 if (parallelSponsorObj.equals(employee.getId())) {
                     map.put(FlowableUiConsts.PARALLELSPONSOR, "主办");

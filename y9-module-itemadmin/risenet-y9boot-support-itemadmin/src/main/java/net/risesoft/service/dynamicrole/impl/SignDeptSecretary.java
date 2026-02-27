@@ -52,7 +52,7 @@ public class SignDeptSecretary extends AbstractDynamicRoleMember {
             // List<OrgUnit> orgUnitList = roleApi.listOrgUnitsById(tenantId, roleId, OrgTypeEnum.POSITION).getData();
             List<Position> orgUnitList =
                 positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, Y9FlowableHolder.getOrgUnitId()).getData();
+            OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, Y9FlowableHolder.getOrgUnitId()).getData();
             // 排除本司局
             List<Position> orgUnitListFilter = orgUnitList.stream()
                 .filter(orgUnit -> !orgUnit.getGuidPath().contains(bureau.getId()))

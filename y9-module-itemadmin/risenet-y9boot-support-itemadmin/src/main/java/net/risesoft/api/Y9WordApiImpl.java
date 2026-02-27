@@ -532,7 +532,7 @@ public class Y9WordApiImpl implements Y9WordApi {
         Y9LoginUserHolder.setUserInfo(userInfo);
         LOGGER.debug("call /ntko/openTaoHong");
         // 当前人员的委办局GUID
-        OrgUnit currentBureau = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), activitiUser).getData();
+        OrgUnit currentBureau = orgUnitApi.getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), activitiUser).getData();
         return Y9Result.success(currentBureau.getId());
     }
 

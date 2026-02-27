@@ -175,7 +175,7 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
     public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestBody SignDeptDetailModel signDeptDetailModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, positionId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         SignDeptDetail signDeptDetail = new SignDeptDetail();
         Y9BeanUtil.copyProperties(signDeptDetailModel, signDeptDetail);

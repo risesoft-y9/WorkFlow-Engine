@@ -37,8 +37,8 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9FlowableHolder.getOrgUnitId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
-        OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, user.getParentId()).getData();
+        OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, user.getParentId()).getData();
         orgUnitList.add(orgUnit);
         return orgUnitList;
     }
@@ -48,8 +48,8 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9FlowableHolder.getOrgUnitId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
-        OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
-        OrgUnit orgUnit = orgUnitApi.getBureau(tenantId, user.getParentId()).getData();
+        OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, user.getParentId()).getData();
         if (StringUtils.isNotBlank(processInstanceId)) {
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             if (null != processParam && StringUtils.isNotBlank(processParam.getBureauIds())) {

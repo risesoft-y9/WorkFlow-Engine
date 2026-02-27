@@ -33,7 +33,7 @@ public class CurrentDeptManagersExtend extends AbstractDynamicRoleMember {
     public List<OrgUnit> getOrgUnitList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9FlowableHolder.getOrgUnitId();
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         List<OrgUnit> managers =
             departmentApi
                 .listDepartmentPropOrgUnits(tenantId, orgUnit.getParentId(),

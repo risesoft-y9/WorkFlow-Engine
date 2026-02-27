@@ -137,7 +137,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         orgUnit.setName(department.getName());
         // 根据条件决定是否添加 bureau 信息
         if (withBureau) {
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, department.getId()).getData();
+            OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, department.getId()).getData();
             if (bureau != null && bureau.getId() != null && !bureau.getId().equals(department.getId())) {
                 orgUnit.setNameWithBureau(department.getName() + "(" + bureau.getName() + ")");
             }
@@ -165,7 +165,7 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         List<ReceivePerson> list = receivePersonRepository.findByDeptId(deptId);
         List<OrgUnit> users = new ArrayList<>();
         for (ReceivePerson receivePerson : list) {
-            OrgUnit person = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, receivePerson.getPersonId()).getData();
+            OrgUnit person = orgUnitApi.getPersonOrPosition(tenantId, receivePerson.getPersonId()).getData();
             if (person != null && StringUtils.isNotBlank(person.getId())
                 && !Boolean.TRUE.equals(person.getDisabled())) {
                 users.add(person);

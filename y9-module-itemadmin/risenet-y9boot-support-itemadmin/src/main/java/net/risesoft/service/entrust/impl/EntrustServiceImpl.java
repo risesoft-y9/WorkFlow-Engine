@@ -156,10 +156,10 @@ public class EntrustServiceImpl implements EntrustService {
         String tenantId = Y9LoginUserHolder.getTenantId();
 
         // 设置委托人和所有者名称
-        OrgUnit pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
+        OrgUnit pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
         entrust.setAssigneeName(pTemp.getName());
 
-        pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
+        pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
         entrust.setOwnerName(pTemp.getName());
 
         // 设置事项名称
@@ -213,9 +213,9 @@ public class EntrustServiceImpl implements EntrustService {
         OrgUnit pTemp;
         Item itemTemp;
         for (Entrust entrust : entrustList) {
-            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
+            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
             String itemId = entrust.getItemId();
             if ("ALL".equals(itemId)) {
@@ -263,9 +263,9 @@ public class EntrustServiceImpl implements EntrustService {
         OrgUnit pTemp;
         Item itemTemp;
         for (Entrust entrust : entrustList) {
-            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
+            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
             String itemId = entrust.getItemId();
             if ("ALL".equals(itemId)) {
@@ -313,9 +313,9 @@ public class EntrustServiceImpl implements EntrustService {
         OrgUnit pTemp;
         Item itemTemp;
         for (Entrust entrust : entrustList) {
-            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
+            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
             String itemId = entrust.getItemId();
             if ("ALL".equals(itemId)) {
@@ -363,9 +363,9 @@ public class EntrustServiceImpl implements EntrustService {
         List<EntrustModel> list = new ArrayList<>();
         OrgUnit pTemp;
         for (Entrust entrust : entrustList) {
-            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
+            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
             entrust.setOwnerName(pTemp.getName());
             entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();

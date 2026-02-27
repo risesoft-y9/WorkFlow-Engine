@@ -318,7 +318,7 @@ public class Y9FormRestController {
         String itemNumber = "〔" + year + "〕" + second + "号";
         OrgUnit dept = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), position.getParentId()).getData();
         OrgUnit bureau =
-            orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData();
+            orgUnitApi.getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData();
         Tenant tenant = tenantApi.getById(Y9LoginUserHolder.getTenantId()).getData();
         /* 办件表单数据初始化 **/
         map.put("deptId", dept.getId());

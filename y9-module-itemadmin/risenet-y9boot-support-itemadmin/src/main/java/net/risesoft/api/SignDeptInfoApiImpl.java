@@ -68,7 +68,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     public Y9Result<Object> addSignDept(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, positionId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         signDeptInfoService.addSignDept(processSerialNumber, deptType, deptIds);
         return Y9Result.success();
@@ -86,7 +86,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     public Y9Result<Object> deleteById(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, positionId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         signDeptInfoService.deleteById(id);
         return Y9Result.success();
@@ -209,7 +209,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
         @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber,
         String tzsDeptId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, positionId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         signDeptInfoService.saveSignDept(processSerialNumber, deptType, deptIds, tzsDeptId);
         return Y9Result.success();
@@ -246,7 +246,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     public Y9Result<Object> updateSignDept(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestParam String processSerialNumber, @RequestParam String type, @RequestParam String tzsDeptId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, positionId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         signDeptInfoService.updateSignDept(processSerialNumber, positionId, type, tzsDeptId);
         return Y9Result.success();

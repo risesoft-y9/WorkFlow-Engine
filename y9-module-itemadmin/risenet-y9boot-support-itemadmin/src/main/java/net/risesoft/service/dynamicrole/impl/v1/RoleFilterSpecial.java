@@ -46,8 +46,8 @@ public class RoleFilterSpecial extends AbstractDynamicRoleMember {
             ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
             userId = processInstance.getStartUserId();
         }
-        OrgUnit personOrPosition = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-        OrgUnit bureau = orgUnitApi.getBureau(tenantId, userId).getData();
+        OrgUnit personOrPosition = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
+        OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, userId).getData();
         String roleId = dynamicRole.getRoleId();
         List<Position> orgUnitList =
             positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();

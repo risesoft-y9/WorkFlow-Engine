@@ -73,7 +73,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         @RequestParam(required = false) String id, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
@@ -86,7 +86,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     public Y9Result<List<ItemRoleOrgUnitModel>> findByRoleId(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String orgUnitId, @RequestParam String roleId, @RequestParam Integer principalType, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
@@ -110,7 +110,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String orgUnitId, String id, @RequestParam Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
@@ -132,7 +132,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser4Bureau(@RequestParam String tenantId,
         @RequestParam String userId, @RequestParam String orgUnitId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
@@ -154,10 +154,10 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         @RequestParam String orgUnitId, @RequestParam Integer principalType) {
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         if (Objects.equals(principalType, ItemPrincipalTypeEnum.DEPT.getValue())) {
-            OrgUnit orgunit = orgUnitApi.getBureau(tenantId, orgUnit.getParentId()).getData();
+            OrgUnit orgunit = orgUnitApi.getOrgUnitBureau(tenantId, orgUnit.getParentId()).getData();
             ItemRoleOrgUnitModel model = new ItemRoleOrgUnitModel();
             model.setId(orgunit.getId());
             model.setName(orgunit.getName());
@@ -185,7 +185,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         @RequestParam String userId, @RequestParam String orgUnitId, @RequestParam String name,
         @RequestParam Integer principalType, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
@@ -213,7 +213,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         @RequestParam String orgUnitId, @RequestParam String itemId, @RequestParam String processDefinitionId,
         @RequestParam String taskDefKey, @RequestParam Integer principalType, String id, String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
@@ -243,7 +243,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         @RequestParam String itemId, @RequestParam String processDefinitionId, @RequestParam String taskDefKey,
         String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
@@ -265,7 +265,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
     public Y9Result<List<ItemRoleOrgUnitModel>> findPermUserSendReceive(@RequestParam String tenantId,
         @RequestParam String orgUnitId, String id) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         List<ItemRoleOrgUnitModel> list = roleService.listPermUserSendReceive(id);
         return Y9Result.success(list);

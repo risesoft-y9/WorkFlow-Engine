@@ -214,7 +214,7 @@ public class ItemRestController {
             if (StringUtils.isNotBlank(item.getNature())) {// 事项管理员
                 String idStr = item.getNature();
                 for (String userId : idStr.split(";")) {
-                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+                    OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
                     if (orgUnit != null) {
                         manager.add(orgUnit);
                     }

@@ -121,7 +121,7 @@ public class VariableVueController {
             mapTemp.put("userName", "无");
             String personId = task.getAssignee();
             if (StringUtils.isNotBlank(personId)) {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, personId).getData();
+                OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, personId).getData();
                 if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
                     mapTemp.put("userName", orgUnit.getName());
                 }
@@ -242,7 +242,7 @@ public class VariableVueController {
             if (StringUtils.isBlank(user)) {
                 continue;
             }
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, user).getData();
             if (orgUnit != null && orgUnit.getId() != null) {
                 userList.add(user);
             } else {
@@ -269,7 +269,7 @@ public class VariableVueController {
             return Y9Result.successMsg("保存成功");
         }
 
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, value).getData();
         if (orgUnit != null && orgUnit.getId() != null) {
             runtimeService.setVariable(processInstanceId, key, value);
             return Y9Result.successMsg("保存成功");
@@ -341,7 +341,7 @@ public class VariableVueController {
             if (StringUtils.isBlank(user)) {
                 continue;
             }
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, user).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, user).getData();
             if (orgUnit != null && orgUnit.getId() != null) {
                 userList.add(user);
             } else {
@@ -368,7 +368,7 @@ public class VariableVueController {
             return Y9Result.successMsg("保存成功");
         }
 
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, value).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, value).getData();
         if (orgUnit != null && orgUnit.getId() != null) {
             customVariableService.setVariableLocal(taskId, key, value);
             return Y9Result.successMsg("保存成功");

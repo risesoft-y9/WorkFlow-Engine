@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
+import com.fasterxml.jackson.databind.node.ObjectNode;
+
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
@@ -141,55 +143,55 @@ public class ProcessModelApiImpl implements ProcessModelApi {
         MultipartFile file) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-            // XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
-            // InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
-            // XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
-            //
-            // BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
-            // BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
-            // // 模板验证
-            // ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
-            // List<ValidationError> errors = validator.validate(bpmnModel);
-            // if (!errors.isEmpty()) {
-            // StringBuffer es = new StringBuffer();
-            // errors.forEach(ve -> es.append(ve.toString()).append("/n"));
-            // return Y9Result.failure("保存失败：模板验证失败，原因: " + es);
-            // }
-            // if (bpmnModel.getProcesses().isEmpty()) {
-            // return Y9Result.failure("保存失败： 文件中不存在流程的信息");
-            // }
-            // if (bpmnModel.getLocationMap().isEmpty()) {
-            // BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
-            // bpmnLayout.execute();
-            // }
-            // BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
-            // ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
-            // org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
-            // String name = process.getId();
-            // if (StringUtils.isNotEmpty(process.getName())) {
-            // name = process.getName();
-            // }
-            // String description = process.getDocumentation();
-            // // 查询是否已经存在流程模板
-            // Model newModel = new Model();
-            // List<Model> models = modelRepository.findByKeyAndType(process.getId(), AbstractModel.MODEL_TYPE_BPMN);
-            // if (!models.isEmpty()) {
-            // Model updateModel = models.get(0);
-            // newModel.setId(updateModel.getId());
-            // }
-            // newModel.setName(name);
-            // newModel.setKey(process.getId());
-            // newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
-            // newModel.setCreated(Calendar.getInstance().getTime());
-            // newModel.setCreatedBy(orgUnit.getName());
-            // newModel.setDescription(description);
-            // newModel.setModelEditorJson(modelNode.toString());
-            // newModel.setLastUpdated(Calendar.getInstance().getTime());
-            // newModel.setLastUpdatedBy(orgUnit.getName());
-            // newModel.setTenantId(tenantId);
-            // String createdBy = SecurityUtils.getCurrentUserId();
-            // modelService.createModel(newModel, createdBy);
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
+            /*XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
+            InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
+            XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
+
+            BpmnXMLConverter bpmnXmlConverter = new BpmnXMLConverter();
+            BpmnModel bpmnModel = bpmnXmlConverter.convertToBpmnModel(xtr);
+            // 模板验证
+            ProcessValidator validator = new ProcessValidatorFactory().createDefaultProcessValidator();
+            List<ValidationError> errors = validator.validate(bpmnModel);
+            if (!errors.isEmpty()) {
+                StringBuffer es = new StringBuffer();
+                errors.forEach(ve -> es.append(ve.toString()).append("/n"));
+                return Y9Result.failure("保存失败：模板验证失败，原因: " + es);
+            }
+            if (bpmnModel.getProcesses().isEmpty()) {
+                return Y9Result.failure("保存失败： 文件中不存在流程的信息");
+            }
+            if (bpmnModel.getLocationMap().isEmpty()) {
+                BpmnAutoLayout bpmnLayout = new BpmnAutoLayout(bpmnModel);
+                bpmnLayout.execute();
+            }
+            BpmnJsonConverter bpmnJsonConverter = new BpmnJsonConverter();
+            ObjectNode modelNode = bpmnJsonConverter.convertToJson(bpmnModel);
+            org.flowable.bpmn.model.Process process = bpmnModel.getMainProcess();
+            String name = process.getId();
+            if (StringUtils.isNotEmpty(process.getName())) {
+                name = process.getName();
+            }
+            String description = process.getDocumentation();
+            // 查询是否已经存在流程模板
+            Model newModel = new Model();
+            List<Model> models = modelRepository.findByKeyAndType(process.getId(), AbstractModel.MODEL_TYPE_BPMN);
+            if (!models.isEmpty()) {
+                Model updateModel = models.get(0);
+                newModel.setId(updateModel.getId());
+            }
+            newModel.setName(name);
+            newModel.setKey(process.getId());
+            newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
+            newModel.setCreated(Calendar.getInstance().getTime());
+            newModel.setCreatedBy(orgUnit.getName());
+            newModel.setDescription(description);
+            newModel.setModelEditorJson(modelNode.toString());
+            newModel.setLastUpdated(Calendar.getInstance().getTime());
+            newModel.setLastUpdatedBy(orgUnit.getName());
+            newModel.setTenantId(tenantId);
+            String createdBy = SecurityUtils.getCurrentUserId();
+            modelService.createModel(newModel, createdBy);*/
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("导入模型文件失败", e);
