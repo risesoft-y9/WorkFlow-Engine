@@ -4,11 +4,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import jakarta.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.identitylink.api.IdentityLinkInfo;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -176,19 +178,17 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
-                StringBuffer names = new StringBuffer();
-                taskEntity.getCandidates().forEach(link -> {
-                    OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, link.getUserId()).getData();
-                    if (StringUtils.isBlank(names)) {
-                        names.append(orgUnit.getName());
-                    } else {
-                        names.append("、").append(orgUnit.getName());
-                    }
-                });
+                List<String> userIdList =
+                    taskEntity.getCandidates().stream().map(IdentityLinkInfo::getUserId).collect(Collectors.toList());
+                String names = orgUnitApi.listPersonOrPositionByIds(tenantId, userIdList)
+                    .getData()
+                    .stream()
+                    .map(OrgUnit::getName)
+                    .collect(Collectors.joining("、"));
                 taskEntity.getCandidates().forEach(link -> {
                     ActRuDetailModel model = getModel(tenantId, processSerialNumber, taskEntity, link.getUserId());
                     model.setSignStatus(ActRuDetailSignStatusEnum.TODO);
-                    model.setAssigneeName(names.toString());
+                    model.setAssigneeName(names);
                     actRuDetailApi.saveOrUpdate(tenantId, model);
                 });
             }

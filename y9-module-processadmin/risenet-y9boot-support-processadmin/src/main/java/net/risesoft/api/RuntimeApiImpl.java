@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.RuntimeService;
@@ -302,11 +303,20 @@ public class RuntimeApiImpl implements RuntimeApi {
                 .desc()
                 .listPage((page - 1) * rows, rows);
         }
-        OrgUnit orgUnit;
-        ProcessInstanceModel piModel;
+
+        List<String> startUserIdList = processInstanceList.stream()
+            .map(ProcessInstance::getStartUserId)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, startUserIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
         for (ProcessInstance processInstance : processInstanceList) {
             processInstanceId = processInstance.getId();
-            piModel = new ProcessInstanceModel();
+            ProcessInstanceModel piModel = new ProcessInstanceModel();
             piModel.setId(processInstanceId);
             piModel.setProcessDefinitionId(processInstance.getProcessDefinitionId());
             piModel.setProcessDefinitionName(processInstance.getProcessDefinitionName());
@@ -322,8 +332,8 @@ public class RuntimeApiImpl implements RuntimeApi {
                 piModel.setSuspended(processInstance.isSuspended());
                 piModel.setStartUserName("无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
-                    orgUnit = orgUnitApi.getPersonOrPosition(tenantId, processInstance.getStartUserId()).getData();
-                    OrgUnit parent = orgUnitApi.getOrgUnitParent(tenantId, orgUnit.getId()).getData();
+                    OrgUnit orgUnit = idOrgUnitMap.get(processInstance.getStartUserId());
+                    OrgUnit parent = orgUnitApi.getOrgUnitAsParent(tenantId, orgUnit.getParentId()).getData();
                     piModel.setStartUserName(orgUnit.getName() + "(" + parent.getName() + ")");
                 }
             } catch (Exception e) {

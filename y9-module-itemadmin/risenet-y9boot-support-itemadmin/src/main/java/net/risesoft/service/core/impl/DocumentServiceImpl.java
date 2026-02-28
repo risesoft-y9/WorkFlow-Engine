@@ -13,6 +13,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -2114,8 +2115,14 @@ public class DocumentServiceImpl implements DocumentService {
         List<CustomGroupMember> members =
             customGroupApi.listCustomGroupMember(tenantId, new CustomGroupMemberQuery(groupId, OrgTypeEnum.POSITION))
                 .getData();
+        List<String> memberIdList = members.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
         for (CustomGroupMember member : members) {
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, member.getMemberId()).getData();
+            OrgUnit orgUnit = idOrgUnitMap.get(member.getMemberId());
             if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
                 users = addUserId(users, orgUnit.getId());
             }

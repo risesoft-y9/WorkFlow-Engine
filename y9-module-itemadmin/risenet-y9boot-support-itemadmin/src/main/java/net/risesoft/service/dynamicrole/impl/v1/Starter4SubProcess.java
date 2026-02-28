@@ -8,7 +8,7 @@ import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -29,7 +29,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @RequiredArgsConstructor
 public class Starter4SubProcess extends AbstractDynamicRoleMember {
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     private final HistoricTaskApi historicTaskApi;
 
@@ -54,7 +54,7 @@ public class Starter4SubProcess extends AbstractDynamicRoleMember {
                 }
             }
             if (StringUtils.isNotBlank(assignee)) {
-                Position position = (Position)orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
+                Position position = positionApi.get(tenantId, assignee).getData();
                 if (null != position) {
                     orgUnitList.add(position);
                 }

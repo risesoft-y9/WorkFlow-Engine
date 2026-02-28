@@ -5,6 +5,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -166,19 +167,23 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         List<Map<String, Object>> listMap = new ArrayList<>();
-        Map<String, Object> mapTemp;
-        OrgUnit personTemp;
         int num = 0;
         ProcessParamModel processParamModel =
             processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         String parallelSponsor = processParamModel == null ? "" : processParamModel.getSponsorGuid();
+        List<String> assigneeIdList = taskList.stream().map(TaskModel::getAssignee).collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, assigneeIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
         for (TaskModel tm : taskList) {
-            mapTemp = new HashMap<>(16);
+            Map<String, Object> mapTemp = new HashMap<>(16);
             mapTemp.put("num", num + 1);
             mapTemp.put("taskId", tm.getId());
             mapTemp.put("executionId", tm.getExecutionId());
             mapTemp.put("assigneeId", tm.getAssignee());
-            personTemp = orgUnitApi.getPersonOrPosition(tenantId, tm.getAssignee()).getData();
+            OrgUnit personTemp = idOrgUnitMap.get(tm.getAssignee());
             mapTemp.put("assigneeName", personTemp == null ? "" : personTemp.getName());
             mapTemp.put("name", tm.getName());
             mapTemp.put("isZhuBan", "否");
@@ -199,17 +204,19 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
         String currentAssignee = taskModel.getAssignee();
         String usersObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
-        List<String> users = Y9JsonUtil.readValue(usersObj, List.class);
+        List<String> users = Y9JsonUtil.readList(usersObj, String.class);
         List<Map<String, Object>> listMap = new ArrayList<>();
-        Map<String, Object> mapTemp;
-        OrgUnit personTemp;
         boolean notStart = false;
         int num = 0;
         if (users != null) {
-            for (Object obj : users) {
-                String user = obj.toString();
-                personTemp = orgUnitApi.getPersonOrPosition(tenantId, user).getData();
-                mapTemp = new HashMap<>(16);
+            Map<String,
+                OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, users)
+                    .getData()
+                    .stream()
+                    .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+            for (String user : users) {
+                OrgUnit personTemp = idOrgUnitMap.get(user);
+                Map<String, Object> mapTemp = new HashMap<>(16);
                 mapTemp.put("num", num + 1);
                 mapTemp.put("taskId", taskId);
                 mapTemp.put("name", taskModel.getName());
