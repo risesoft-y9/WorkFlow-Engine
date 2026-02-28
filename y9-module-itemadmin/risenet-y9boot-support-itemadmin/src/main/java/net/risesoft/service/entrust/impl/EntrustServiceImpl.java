@@ -3,6 +3,9 @@ package net.risesoft.service.entrust.impl;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
@@ -210,12 +213,22 @@ public class EntrustServiceImpl implements EntrustService {
     public List<Entrust> list(String ownerId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll(ownerId);
+
+        List<String> orgUnitIdList = entrustList.stream()
+            .flatMap(entrust -> Stream.of(entrust.getAssigneeId(), entrust.getOwnerId()))
+            .collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, orgUnitIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
         OrgUnit pTemp;
         Item itemTemp;
         for (Entrust entrust : entrustList) {
-            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = idOrgUnitMap.get(entrust.getAssigneeId());
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
+            pTemp = idOrgUnitMap.get(entrust.getOwnerId());
             entrust.setOwnerName(pTemp.getName());
             String itemId = entrust.getItemId();
             if ("ALL".equals(itemId)) {
@@ -260,18 +273,26 @@ public class EntrustServiceImpl implements EntrustService {
     public List<Entrust> listAll() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll();
-        OrgUnit pTemp;
-        Item itemTemp;
+
+        List<String> orgUnitIdList = entrustList.stream()
+            .flatMap(entrust -> Stream.of(entrust.getAssigneeId(), entrust.getOwnerId()))
+            .collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, orgUnitIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
         for (Entrust entrust : entrustList) {
-            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
+            OrgUnit pTemp = idOrgUnitMap.get(entrust.getAssigneeId());
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
+            pTemp = idOrgUnitMap.get(entrust.getOwnerId());
             entrust.setOwnerName(pTemp.getName());
             String itemId = entrust.getItemId();
             if ("ALL".equals(itemId)) {
                 entrust.setItemName("所有事项");
             } else {
-                itemTemp = itemService.findById(entrust.getItemId());
+                Item itemTemp = itemService.findById(entrust.getItemId());
                 if (null != itemTemp) {
                     entrust.setItemName(itemTemp.getName());
                 } else {
@@ -310,12 +331,22 @@ public class EntrustServiceImpl implements EntrustService {
     public List<Entrust> listByAssigneeId(String assigneeId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findByAssigneeIdOrderByStartTimeDesc(assigneeId);
+
+        List<String> orgUnitIdList = entrustList.stream()
+            .flatMap(entrust -> Stream.of(entrust.getAssigneeId(), entrust.getOwnerId()))
+            .collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, orgUnitIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
         OrgUnit pTemp;
         Item itemTemp;
         for (Entrust entrust : entrustList) {
-            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = idOrgUnitMap.get(entrust.getAssigneeId());
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
+            pTemp = idOrgUnitMap.get(entrust.getOwnerId());
             entrust.setOwnerName(pTemp.getName());
             String itemId = entrust.getItemId();
             if ("ALL".equals(itemId)) {
@@ -360,12 +391,22 @@ public class EntrustServiceImpl implements EntrustService {
     public List<EntrustModel> listEntrustByUserId(String orgUnitId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Entrust> entrustList = entrustRepository.findAll(orgUnitId);
+
+        List<String> orgUnitIdList = entrustList.stream()
+            .flatMap(entrust -> Stream.of(entrust.getAssigneeId(), entrust.getOwnerId()))
+            .collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, orgUnitIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
         List<EntrustModel> list = new ArrayList<>();
         OrgUnit pTemp;
         for (Entrust entrust : entrustList) {
-            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getAssigneeId()).getData();
+            pTemp = idOrgUnitMap.get(entrust.getAssigneeId());
             entrust.setAssigneeName(pTemp.getName());
-            pTemp = orgUnitApi.getPersonOrPosition(tenantId, entrust.getOwnerId()).getData();
+            pTemp = idOrgUnitMap.get(entrust.getOwnerId());
             entrust.setOwnerName(pTemp.getName());
             entrust.setUsed(EntrustUseEnum.TODO.getValue());
             String startTime = entrust.getStartTime();

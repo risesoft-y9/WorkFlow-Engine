@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
@@ -702,8 +703,17 @@ public class RoleServiceImpl implements RoleService {
                     .getData();
 
             if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
+
+                List<String> memberIdList =
+                        customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+                Map<String,
+                        OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
+                        .getData()
+                        .stream()
+                        .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+                
                 for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                    OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                    OrgUnit user = idOrgUnitMap.get(customGroupMember.getMemberId());
 
                     if (user != null && !user.getDisabled()) {
                         ItemRoleOrgUnitModel model = createCustomGroupMemberModel(user, customGroupMember, id);
@@ -836,8 +846,17 @@ public class RoleServiceImpl implements RoleService {
                 .getData();
 
             if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
+
+                List<String> memberIdList =
+                        customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+                Map<String,
+                        OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
+                        .getData()
+                        .stream()
+                        .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+                
                 for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                    OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                    OrgUnit user = idOrgUnitMap.get(customGroupMember.getMemberId());
 
                     if (user != null && user.getName().contains(name) && !user.getDisabled()) {
                         ItemRoleOrgUnitModel memberModel =
@@ -1192,8 +1211,17 @@ public class RoleServiceImpl implements RoleService {
             customGroupApi.listCustomGroupMember(tenantId, new CustomGroupMemberQuery(id, OrgTypeEnum.POSITION))
                 .getData();
         if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
+
+            List<String> memberIdList =
+                    customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+            Map<String,
+                    OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
+                    .getData()
+                    .stream()
+                    .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+            
             for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                OrgUnit user = idOrgUnitMap.get(customGroupMember.getMemberId());
 
                 if (user != null && !user.getDisabled()) {
                     ItemRoleOrgUnitModel model = createCustomGroupMemberModel(user, customGroupMember, id);
@@ -1577,8 +1605,17 @@ public class RoleServiceImpl implements RoleService {
                 .getData();
 
             if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
+
+                List<String> memberIdList =
+                        customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+                Map<String,
+                        OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
+                        .getData()
+                        .stream()
+                        .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+                
                 for (CustomGroupMember customGroupMember : customGroupMemberList) {
-                    OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, customGroupMember.getMemberId()).getData();
+                    OrgUnit user = idOrgUnitMap.get(customGroupMember.getMemberId());
 
                     if (user != null && user.getName().contains(name) && !user.getDisabled()) {
                         ItemRoleOrgUnitModel memberModel =

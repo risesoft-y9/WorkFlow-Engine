@@ -382,12 +382,18 @@ public class ButtonOperationRestController {
             String str = variableApi
                 .getVariableByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), SysVariables.USERS)
                 .getData();
-            List<String> users = Y9JsonUtil.readValue(str, List.class);
+            List<String> userIdList = Y9JsonUtil.readList(str, String.class);
+
+            Map<String,
+                OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, userIdList)
+                    .getData()
+                    .stream()
+                    .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
             StringBuilder userNames = new StringBuilder();
-            if (users != null) {
-                for (Object obj : users) {// 获取下一任务的所有办理人，办理顺序为list的顺序
-                    String userId = obj.toString();
-                    OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
+            if (userIdList != null) {
+                for (String userId : userIdList) {// 获取下一任务的所有办理人，办理顺序为list的顺序
+                    OrgUnit employee = idOrgUnitMap.get(userId);
                     if (userId.equals(taskModel.getAssignee())) {
                         userNames = new StringBuilder("<font color='red'>" + employee.getName() + "</font>");
                     } else {
@@ -513,10 +519,16 @@ public class ButtonOperationRestController {
         if (taskInfo.users == null)
             return;
 
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, taskInfo.users)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+        
         for (String user : taskInfo.users) {
             Map<String, Object> map = new HashMap<>(16);
             try {
-                OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, user).getData();
+                OrgUnit employee = idOrgUnitMap.get(user);
                 map.put("user", employee != null ? employee.getName() : "未知用户");
             } catch (Exception e) {
                 LOGGER.warn("处理普通单实例任务时，获取用户信息失败,异常用户: {}", user, e);
@@ -552,10 +564,16 @@ public class ButtonOperationRestController {
             LOGGER.warn("获取历史任务实例失败", e);
         }
 
+        Map<String,
+                OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, taskInfo.users)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
         for (int i = 0; i < taskInfo.users.size(); i++) {
             Map<String, Object> map = new HashMap<>(16);
             try {
-                OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, taskInfo.users.get(i)).getData();
+                OrgUnit employee = idOrgUnitMap.get(taskInfo.users.get(i));
                 map.put("user", employee != null ? employee.getName() : "未知用户");
             } catch (Exception e) {
                 LOGGER.warn("处理串行实例任务时，获取用户信息失败: {}", taskInfo.users.get(i), e);

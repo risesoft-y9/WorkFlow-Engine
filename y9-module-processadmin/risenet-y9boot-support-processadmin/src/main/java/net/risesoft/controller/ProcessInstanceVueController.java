@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
@@ -115,12 +116,20 @@ public class ProcessInstanceVueController {
                 .desc()
                 .listPage((page - 1) * rows, rows);
         }
-        OrgUnit orgUnit;
-        OrgUnit parent;
-        Map<String, Object> map;
+
+        List<String> startUserIdList = processInstanceList.stream()
+            .map(ProcessInstance::getStartUserId)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, startUserIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
         for (ProcessInstance processInstance : processInstanceList) {
             processInstanceId = processInstance.getId();
-            map = new HashMap<>(16);
+            Map<String, Object> map = new HashMap<>(16);
             map.put("processInstanceId", processInstanceId);
             map.put("processDefinitionId", processInstance.getProcessDefinitionId());
             map.put("processDefinitionName", processInstance.getProcessDefinitionName());
@@ -138,8 +147,8 @@ public class ProcessInstanceVueController {
                 map.put(SysVariables.SUSPENDED_KEY, processInstance.isSuspended());
                 map.put("startUserName", "无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {
-                    orgUnit = orgUnitApi.getPersonOrPosition(tenantId, processInstance.getStartUserId()).getData();
-                    parent = orgUnitApi.getOrgUnitParent(tenantId, orgUnit.getId()).getData();
+                    OrgUnit orgUnit = idOrgUnitMap.get(processInstance.getStartUserId());
+                    OrgUnit parent = orgUnitApi.getOrgUnitAsParent(tenantId, orgUnit.getParentId()).getData();
                     map.put("startUserName", orgUnit.getName() + "(" + parent.getName() + ")");
                 }
             } catch (Exception e) {

@@ -4,12 +4,15 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.RuntimeService;
 import org.flowable.task.api.Task;
+import org.flowable.task.api.TaskInfo;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -113,6 +116,17 @@ public class VariableVueController {
     public Y9Result<List<Map<String, Object>>> getTaskList(@RequestParam @NotBlank String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Task> taskListTemp = customTaskService.listByProcessInstanceId(processInstanceId);
+
+        List<String> personIdList = taskListTemp.stream()
+            .map(TaskInfo::getAssignee)
+            .filter(StringUtils::isNotBlank)
+            .collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, personIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
         List<Map<String, Object>> taskList = new ArrayList<>();
         Map<String, Object> mapTemp;
         for (Task task : taskListTemp) {
@@ -121,7 +135,7 @@ public class VariableVueController {
             mapTemp.put("userName", "无");
             String personId = task.getAssignee();
             if (StringUtils.isNotBlank(personId)) {
-                OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, personId).getData();
+                OrgUnit orgUnit = idOrgUnitMap.get(personId);
                 if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
                     mapTemp.put("userName", orgUnit.getName());
                 }
@@ -237,12 +251,18 @@ public class VariableVueController {
         String invalidUsers = "";
         List<String> userList = new ArrayList<>();
         String[] users = value.split(",");
+        List<String> userIdList = Stream.of(users).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, userIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
 
         for (String user : users) {
             if (StringUtils.isBlank(user)) {
                 continue;
             }
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, user).getData();
+            OrgUnit orgUnit = idOrgUnitMap.get(user);
             if (orgUnit != null && orgUnit.getId() != null) {
                 userList.add(user);
             } else {
@@ -337,11 +357,19 @@ public class VariableVueController {
         String invalidUsers = "";
         List<String> userList = new ArrayList<>();
         String[] users = value.split(",");
+        
+        List<String> userIdList = Stream.of(users).filter(StringUtils::isNotBlank).collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, userIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+        
         for (String user : users) {
             if (StringUtils.isBlank(user)) {
                 continue;
             }
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, user).getData();
+            OrgUnit orgUnit = idOrgUnitMap.get(user);
             if (orgUnit != null && orgUnit.getId() != null) {
                 userList.add(user);
             } else {

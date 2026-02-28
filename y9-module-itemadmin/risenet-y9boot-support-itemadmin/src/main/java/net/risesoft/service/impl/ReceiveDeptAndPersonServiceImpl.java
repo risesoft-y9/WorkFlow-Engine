@@ -1,11 +1,13 @@
 package net.risesoft.service.impl;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -113,12 +115,21 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
     @Override
     public List<Map<String, Object>> personList(String deptId) {
-        List<Map<String, Object>> list = new ArrayList<>();
-        List<ReceivePerson> personList = receivePersonRepository.findByDeptId(deptId);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        for (ReceivePerson receivePerson : personList) {
+        List<Map<String, Object>> list = new ArrayList<>();
+        List<ReceivePerson> receivePersonList = receivePersonRepository.findByDeptId(deptId);
+
+        List<String> personIdList =
+            receivePersonList.stream().map(ReceivePerson::getPersonId).collect(Collectors.toList());
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, personIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
+        for (ReceivePerson receivePerson : receivePersonList) {
             Map<String, Object> m = new HashMap<>(16);
-            OrgUnit person = orgUnitApi.getPersonOrPosition(tenantId, receivePerson.getPersonId()).getData();
+            OrgUnit person = idOrgUnitMap.get(receivePerson.getPersonId());
             if (person == null || person.getId() == null || Boolean.TRUE.equals(person.getDisabled())) {
                 receivePersonRepository.delete(receivePerson);
                 continue;
@@ -231,11 +242,18 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
      */
     private String processUserPositions(String[] userIds, String deptId, Department dept, String tenantId,
         StringBuilder msg) {
-        StringBuilder validUserIds = new StringBuilder();
 
+        List<String> userIdList = Arrays.asList(userIds);
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, userIdList)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
+        StringBuilder validUserIds = new StringBuilder();
         for (String userId : userIds) {
             try {
-                OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
+                OrgUnit user = idOrgUnitMap.get(userId);
                 if (user == null) {
                     continue;
                 }
@@ -269,10 +287,11 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
         }
 
         boolean canAdd = true;
+        OrgUnit orgUnit1 = orgUnitApi.getOrgUnitBureau(tenantId, deptId).getData();
+        
         for (ReceivePerson receivePerson : existingPersons) {
             try {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, receivePerson.getDeptId()).getData();
-                OrgUnit orgUnit1 = orgUnitApi.getOrgUnitBureau(tenantId, deptId).getData();
 
                 // 委办局相同，且部门不相同则，不可添加该收文员
                 if (orgUnit.getId().equals(orgUnit1.getId()) && !receivePerson.getDeptId().equals(deptId)) {
