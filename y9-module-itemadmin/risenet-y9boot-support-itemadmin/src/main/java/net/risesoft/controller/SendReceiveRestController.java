@@ -270,8 +270,7 @@ public class SendReceiveRestController {
     }
 
     public OrgUnit getParent(String tenantId, String parentId) {
-        Organization parent = organizationApi.get(tenantId, parentId).getData();
-        return parent.getId() != null ? parent : departmentApi.get(tenantId, parentId).getData();
+        return orgUnitApi.getOrgUnitAsParent(tenantId, parentId).getData();
     }
 
     @GetMapping(value = "/orderDeptList")
