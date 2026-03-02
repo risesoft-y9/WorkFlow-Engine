@@ -4,11 +4,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.identitylink.api.IdentityLink;
+import org.flowable.identitylink.api.IdentityLinkInfo;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -81,7 +83,7 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
 
     private ActRuDetailModel getModel(String tenantId, String processSerialNumber, DelegateTask taskEntity,
         String assignee) {
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
         ActRuDetailModel model = new ActRuDetailModel();
         model.setCreateTime(taskEntity.getCreateTime());
         model.setAssignee(assignee);
@@ -104,7 +106,7 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
         model.setSignStatus(ActRuDetailSignStatusEnum.NONE);
 
         String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASK_SENDER_ID);
-        OrgUnit sendUser = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskSenderId).getData();
+        OrgUnit sendUser = orgUnitApi.getPersonOrPosition(tenantId, taskSenderId).getData();
         model.setSendUserId(taskSenderId);
         model.setSendUserName(sendUser.getName());
         model.setSendDeptId(sendUser.getParentId());
@@ -176,19 +178,17 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
-                StringBuffer names = new StringBuffer();
-                taskEntity.getCandidates().forEach(link -> {
-                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, link.getUserId()).getData();
-                    if (StringUtils.isBlank(names)) {
-                        names.append(orgUnit.getName());
-                    } else {
-                        names.append("、").append(orgUnit.getName());
-                    }
-                });
+                List<String> userIdList =
+                    taskEntity.getCandidates().stream().map(IdentityLinkInfo::getUserId).collect(Collectors.toList());
+                String names = orgUnitApi.listPersonOrPositionByIds(tenantId, userIdList)
+                    .getData()
+                    .stream()
+                    .map(OrgUnit::getName)
+                    .collect(Collectors.joining("、"));
                 taskEntity.getCandidates().forEach(link -> {
                     ActRuDetailModel model = getModel(tenantId, processSerialNumber, taskEntity, link.getUserId());
                     model.setSignStatus(ActRuDetailSignStatusEnum.TODO);
-                    model.setAssigneeName(names.toString());
+                    model.setAssigneeName(names);
                     actRuDetailApi.saveOrUpdate(tenantId, model);
                 });
             }

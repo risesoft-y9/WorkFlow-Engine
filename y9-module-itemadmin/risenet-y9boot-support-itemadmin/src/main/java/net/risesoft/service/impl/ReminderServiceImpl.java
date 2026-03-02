@@ -175,7 +175,7 @@ public class ReminderServiceImpl implements ReminderService {
     private void setAssigneeInfo(ReminderModel model, String assignee, String tenantId) {
         if (StringUtils.isNotBlank(assignee)) {
             try {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
                 if (orgUnit != null) {
                     String userName = orgUnit.getName();
                     if (Boolean.TRUE.equals(orgUnit.getDisabled())) {
@@ -273,7 +273,7 @@ public class ReminderServiceImpl implements ReminderService {
         int num = (page - 1) * rows;
         List<ReminderModel> listMap = new ArrayList<>();
         TaskModel taskTemp = taskApi.findById(tenantId, taskId).getData();
-        OrgUnit pTemp = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, taskTemp.getAssignee()).getData();
+        OrgUnit pTemp = orgUnitApi.getPersonOrPosition(tenantId, taskTemp.getAssignee()).getData();
         for (Reminder reminder : reminderList) {
             ReminderModel model = new ReminderModel();
             model.setId(reminder.getId());

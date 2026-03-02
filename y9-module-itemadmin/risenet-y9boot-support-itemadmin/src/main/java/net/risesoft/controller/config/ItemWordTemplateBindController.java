@@ -165,7 +165,7 @@ public class ItemWordTemplateBindController {
             List<Map<String, Object>> items = new ArrayList<>();
             String personId = Y9LoginUserHolder.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<WordTemplate> list = null;
-            String bureauId = orgUnitApi.getBureau(tenantId, personId).getData().getId();
+            String bureauId = orgUnitApi.getOrgUnitBureau(tenantId, personId).getData().getId();
             if (StringUtils.isNotBlank(fileName)) {
                 list = wordTemplateService.listByBureauIdAndFileNameContainingOrderByUploadTimeDesc(bureauId, fileName);
             } else {

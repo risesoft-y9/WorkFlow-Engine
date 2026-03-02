@@ -309,7 +309,7 @@ public class AttachmentRestController {
             String[] types = fileName.split("\\.");
             String type = types[types.length - 1].toLowerCase();
             attachmentModel.setFileType(type);
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, positionId).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, positionId).getData();
             OrgUnit department =
                 orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), orgUnit.getParentId()).getData();
             attachmentModel.setDeptId(department != null ? department.getId() : "");

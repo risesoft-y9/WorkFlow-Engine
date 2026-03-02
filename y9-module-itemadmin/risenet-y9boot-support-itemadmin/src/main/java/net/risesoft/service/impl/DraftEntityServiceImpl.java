@@ -280,8 +280,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         draft.setCreaterId(Y9FlowableHolder.getOrgUnitId());
 
         OrgUnit orgUnit =
-            orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getOrgUnitId())
-                .getData();
+            orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getOrgUnitId()).getData();
         draft.setCreater(orgUnit.getName());
         draft.setDelFlag(false);
         draft.setUrgency(urgency);

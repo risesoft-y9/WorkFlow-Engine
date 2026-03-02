@@ -61,7 +61,7 @@ public class FlowableUrgeInfoServiceImpl implements FlowableUrgeInfoService {
             urgeInfoApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
         List<SignDeptDetailModel> signDeptDetailList =
             signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-        OrgUnit bureau = orgUnitApi.getBureau(tenantId, positionId).getData();
+        OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, positionId).getData();
         boolean isSub = signDeptDetailList.stream().anyMatch(sdd -> sdd.getDeptId().equals(bureau.getId()));
         /*
          * 会签只看自己会签的催办信息

@@ -1070,8 +1070,8 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private void handleSubProcessTakeBack(List<ItemButtonModel> buttonModelList, String tenantId, String orgUnitId,
         TaskModel task) {
-        OrgUnit sendBureau = orgUnitApi.getBureau(tenantId, orgUnitId).getData();
-        OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, task.getAssignee()).getData();
+        OrgUnit sendBureau = orgUnitApi.getOrgUnitBureau(tenantId, orgUnitId).getData();
+        OrgUnit currentBureau = orgUnitApi.getOrgUnitBureau(tenantId, task.getAssignee()).getData();
 
         if (currentBureau.getId().equals(sendBureau.getId())) {
             buttonModelList.add(ItemButton.shouHui);
@@ -1591,8 +1591,8 @@ public class ButtonServiceImpl implements ButtonService {
      * 处理子流程退回
      */
     private void handleSubProcessReturn(List<ItemButtonModel> buttonList, TodoTaskContext context, String tenantId) {
-        OrgUnit currentBureau = orgUnitApi.getBureau(tenantId, context.orgUnitId).getData();
-        OrgUnit sendBureau = orgUnitApi.getBureau(tenantId, context.taskSenderId).getData();
+        OrgUnit currentBureau = orgUnitApi.getOrgUnitBureau(tenantId, context.orgUnitId).getData();
+        OrgUnit sendBureau = orgUnitApi.getOrgUnitBureau(tenantId, context.taskSenderId).getData();
 
         if (currentBureau.getId().equals(sendBureau.getId())) {
             buttonList.add(ItemButton.tuiHui);

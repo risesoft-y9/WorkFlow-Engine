@@ -74,7 +74,7 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
         final String sponsorGuid, final ProcessParam processParam, List<String> userList) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
             Y9FlowableHolder.setOrgUnit(orgUnit);
             // 更新自定义历程结束时间
             updateProcessTrackEndTime(task);
@@ -134,7 +134,7 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
     private SignDeptDetail buildSignDeptDetail(String tenantId, OrgUnit orgUnit, TaskModel task, TaskModel taskNext,
         ProcessParam processParam) {
         try {
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, taskNext.getAssignee()).getData();
+            OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, taskNext.getAssignee()).getData();
             if (bureau == null) {
                 return null;
             }

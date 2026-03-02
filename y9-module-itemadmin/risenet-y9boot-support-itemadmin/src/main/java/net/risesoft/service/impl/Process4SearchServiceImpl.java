@@ -184,7 +184,7 @@ public class Process4SearchServiceImpl implements Process4SearchService {
      */
     private void setOrganizationInfo(OfficeDoneInfo officeDoneInfo, String tenantId, OrgUnit orgUnit) {
         try {
-            OrgUnit bureau = orgUnitApi.getBureau(tenantId, orgUnit.getParentId()).getData();
+            OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, orgUnit.getParentId()).getData();
             officeDoneInfo.setBureauId(bureau != null ? bureau.getId() : "");
             officeDoneInfo.setDeptId(orgUnit.getParentId());
 
@@ -316,7 +316,7 @@ public class Process4SearchServiceImpl implements Process4SearchService {
         }
 
         // 处理部门信息
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
         if (orgUnit != null && orgUnit.getId() != null) {
             if (!participantInfo.deptIds.contains(orgUnit.getParentId())) {
                 participantInfo.deptIds = Y9Util.genCustomStr(participantInfo.deptIds, orgUnit.getParentId());

@@ -166,7 +166,7 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
             try {
                 String startor = processParam.getStartor();
                 if (StringUtils.isNotBlank(startor)) {
-                    mapTemp.put("bureauName", orgUnitApi.getBureau(tenantId, startor).getData().getName());
+                    mapTemp.put("bureauName", orgUnitApi.getOrgUnitBureau(tenantId, startor).getData().getName());
                 }
             } catch (Exception e) {
                 LOGGER.warn("获取发起单位信息失败, startor: {}", processParam.getStartor(), e);

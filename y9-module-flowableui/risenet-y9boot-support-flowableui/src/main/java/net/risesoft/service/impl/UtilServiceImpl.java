@@ -164,7 +164,7 @@ public class UtilServiceImpl implements UtilService {
     private String getAssignedTaskAssigneeName(TaskModel task, String tenantId) {
         String assignee = task.getAssignee();
         if (StringUtils.isNotBlank(assignee)) {
-            OrgUnit personTemp = this.orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+            OrgUnit personTemp = this.orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
             if (personTemp != null) {
                 return personTemp.getName();
             }
@@ -190,7 +190,7 @@ public class UtilServiceImpl implements UtilService {
                 IdentityLinkModel identityLink = identityLinks.get(j);
                 String assigneeId = identityLink.getUserId();
                 OrgUnit ownerUser =
-                    this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                    this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                 if (assigneeNames.length() > 0) {
                     assigneeNames.append("、");
                 }

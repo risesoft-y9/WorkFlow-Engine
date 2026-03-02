@@ -3,6 +3,7 @@ package net.risesoft.controller;
 import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -213,12 +214,8 @@ public class ItemRestController {
             item = itemService.findById(id);
             if (StringUtils.isNotBlank(item.getNature())) {// 事项管理员
                 String idStr = item.getNature();
-                for (String userId : idStr.split(";")) {
-                    OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
-                    if (orgUnit != null) {
-                        manager.add(orgUnit);
-                    }
-                }
+                List<String> idList = Arrays.asList(idStr.split(";"));
+                manager = orgUnitApi.listPersonOrPositionByIds(tenantId, idList).getData();
             }
         }
         map.put("item", item);

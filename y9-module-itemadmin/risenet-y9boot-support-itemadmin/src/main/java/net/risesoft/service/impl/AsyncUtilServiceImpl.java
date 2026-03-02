@@ -122,7 +122,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
      */
     private void setupUserContext(String tenantId, String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
     }
 

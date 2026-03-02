@@ -135,7 +135,7 @@ public class FormDataApiImpl implements FormDataApi {
     public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String formId, @RequestParam String taskDefKey, @RequestParam String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         List<FieldPermModel> list = formDataService.listAllFieldPerm(formId, taskDefKey, processDefinitionId);
         return Y9Result.success(list);
@@ -243,7 +243,7 @@ public class FormDataApiImpl implements FormDataApi {
         @RequestParam String formId, @RequestParam String fieldName, @RequestParam String taskDefKey,
         @RequestParam String processDefinitionId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         FieldPermModel model = formDataService.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
         return Y9Result.success(model);

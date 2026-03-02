@@ -34,7 +34,7 @@ public class CurrentDept extends AbstractDynamicRoleMember {
     public Department getDepartment() {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9FlowableHolder.getOrgUnitId();
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         return departmentApi.get(tenantId, orgUnit.getParentId()).getData();
     }
 

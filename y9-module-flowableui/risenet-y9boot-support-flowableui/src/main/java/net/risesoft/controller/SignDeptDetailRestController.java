@@ -134,7 +134,7 @@ public class SignDeptDetailRestController {
         @RequestParam(required = false) String signDeptDetailId) {
         String bureauId;
         if (StringUtils.isBlank(signDeptDetailId)) {
-            bureauId = orgUnitApi.getBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId())
+            bureauId = orgUnitApi.getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId())
                 .getData()
                 .getId();
         } else {

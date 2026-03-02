@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
+import java.util.Map;
 import java.util.Optional;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
@@ -597,12 +598,9 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                     List<CustomGroupMember> members = customGroupApi
                         .listCustomGroupMember(tenantId, new CustomGroupMemberQuery(orgUnitId, OrgTypeEnum.POSITION))
                         .getData();
-                    for (CustomGroupMember member : members) {
-                        OrgUnit user = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, member.getMemberId()).getData();
-                        if (user != null && StringUtils.isNotBlank(user.getId())) {
-                            userIdListAdd.add(user.getId());
-                        }
-                    }
+                    List<String> positionIdList =
+                        members.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+                    userIdListAdd.addAll(positionIdList);
                     break;
                 default:
                     LOGGER.error("不支持的权限类型：{}", type);
@@ -653,9 +651,16 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     private List<ChaoSongInfo> buildChaoSongInfoList(String tenantId, String currUserId, OrgUnit currOrgUnit,
         String processInstanceId, String title, String itemId, String itemName, List<String> userIdListAdd) {
         OrgUnit dept = getDepartment(tenantId, currOrgUnit);
+
+        Map<String,
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, userIdListAdd)
+                .getData()
+                .stream()
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
         List<ChaoSongInfo> csList = new ArrayList<>();
         for (String userId : userIdListAdd) {
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, userId).getData();
+            OrgUnit orgUnit = idOrgUnitMap.get(userId);
             if (orgUnit != null) {
                 ChaoSongInfo cs = createChaoSongInfo(tenantId, currUserId, currOrgUnit, dept, processInstanceId, title,
                     itemId, itemName, orgUnit);
@@ -735,11 +740,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     private OrgUnit getDepartment(String tenantId, OrgUnit currOrgUnit) {
-        OrgUnit dept = orgUnitApi.getOrgUnit(tenantId, currOrgUnit.getParentId()).getData();
-        if (null == dept || null == dept.getId()) {
-            dept = organizationApi.get(tenantId, currOrgUnit.getParentId()).getData();
-        }
-        return dept;
+        return orgUnitApi.getOrgUnit(tenantId, currOrgUnit.getParentId()).getData();
     }
 
     private ChaoSongInfo createChaoSongInfo(String tenantId, String currUserId, OrgUnit currOrgUnit, OrgUnit dept,

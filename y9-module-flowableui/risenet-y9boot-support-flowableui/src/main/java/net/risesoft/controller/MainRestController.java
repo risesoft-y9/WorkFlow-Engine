@@ -376,7 +376,7 @@ public class MainRestController {
         String systemName) {
         try {
             String ownerId = model.getOwnerId();
-            OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, ownerId).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, ownerId).getData();
             if (orgUnit != null) {
                 Map<String, Object> positionMap = new HashMap<>(16);
                 positionMap.put("id", orgUnit.getId());

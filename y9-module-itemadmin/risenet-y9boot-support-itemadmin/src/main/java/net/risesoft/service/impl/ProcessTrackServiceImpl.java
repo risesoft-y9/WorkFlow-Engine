@@ -216,8 +216,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      */
     private void setAssignedInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String tenantId,
         String taskId, String assignee) {
-        OrgUnit employee =
-            this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
+        OrgUnit employee = this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
         model.setAssigneeId(assignee);
         model.setAssignee(null == employee ? "" : employee.getName());
         // 处理系统自动办结情况
@@ -486,8 +485,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         String employeeName = "";
 
         try {
-            OrgUnit employee =
-                this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
+            OrgUnit employee = this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
             if (employee != null) {
                 employeeName = employee.getName();
             }
@@ -676,8 +674,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     private void setAssignedUserInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String tenantId,
         String year, String assignee) {
         try {
-            OrgUnit employee =
-                this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
+            OrgUnit employee = this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
             model.setAssigneeId(assignee);
             // 承办人id,用于数据中心保存
             model.setUndertakerId(assignee);
@@ -720,7 +717,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         if (StringUtils.isNotBlank(ownerId)) {
             try {
                 OrgUnit ownerUser =
-                    this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), ownerId).getData();
+                    this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), ownerId).getData();
                 if (ownerUser != null) {
                     employeeName = ownerUser.getName();
                     // 更新承办人ID
@@ -750,8 +747,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 for (IdentityLinkModel identityLink : iList) {
                     String assigneeId = identityLink.getUserId();
                     OrgUnit ownerUser =
-                        this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
-                            .getData();
+                        this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                     if (j < 5) {
                         Y9Util.genCustomStr(assignees, ownerUser == null ? "办理人对应的岗位不存在" : ownerUser.getName(), "、");
                     } else {
@@ -1065,8 +1061,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      */
     private void addSequentialProcessModel(List<HistoryProcessModel> items, String user) {
         try {
-            OrgUnit employee =
-                this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), user).getData();
+            OrgUnit employee = this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), user).getData();
             HistoryProcessModel history = new HistoryProcessModel();
             history.setAssignee(employee != null ? employee.getName() : "不存在办理人岗位数据");
             history.setName("串行办理");
@@ -1175,8 +1170,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         String year, String assignee) {
         try {
             String employeeName = "";
-            OrgUnit employee =
-                this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
+            OrgUnit employee = this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
 
             if (employee != null) {
                 String ownerId = hai.getOwner();
@@ -1184,7 +1178,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 // 恢复待办，如不是办结人恢复，Owner有值，需显示Owner
                 if (StringUtils.isNotBlank(ownerId)) {
                     OrgUnit ownerUser =
-                        this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), ownerId).getData();
+                        this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), ownerId).getData();
                     employeeName = ownerUser != null ? ownerUser.getName() : employeeName;
                 }
             }
@@ -1220,8 +1214,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 for (IdentityLinkModel identityLink : iList) {
                     String assigneeId = identityLink.getUserId();
                     OrgUnit ownerUser =
-                        this.orgUnitApi.getOrgUnitPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId)
-                            .getData();
+                        this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
                     if (j < 5) {
                         Y9Util.genCustomStr(assignees, ownerUser != null ? ownerUser.getName() : "岗位数据不存在", "、");
                     } else {

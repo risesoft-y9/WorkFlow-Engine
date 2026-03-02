@@ -112,7 +112,7 @@ public class TaskApiImpl implements TaskApi {
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         customTaskService.completeTaskWithoutAssignee(processInstanceId);
         return Y9Result.success();
@@ -133,7 +133,7 @@ public class TaskApiImpl implements TaskApi {
         @RequestParam String orgUnitId, @RequestBody Map<String, Object> vars) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         customTaskService.completeWithVariables(taskId, vars);
         return Y9Result.success();
@@ -156,7 +156,7 @@ public class TaskApiImpl implements TaskApi {
         @RequestBody List<String> orgUnitIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, orgUnitId).getData();
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         customTaskService.createWithVariables(orgUnitId, vars, routeToTaskId, orgUnitIdList);
         return Y9Result.success();

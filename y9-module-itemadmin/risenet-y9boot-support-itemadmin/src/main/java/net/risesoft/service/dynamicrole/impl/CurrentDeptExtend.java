@@ -44,7 +44,7 @@ public class CurrentDeptExtend extends AbstractDynamicRoleMember {
             ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
             orgUnitId = processInstance.getStartUserId();
         }
-        OrgUnit bureau = orgUnitApi.getBureau(tenantId, orgUnitId).getData();
+        OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, orgUnitId).getData();
         for (Department datum : departmentApi.listRecursivelyByParentId(tenantId, bureau.getId()).getData()) {
             if (StringUtils.isNotBlank(datum.getAliasName()) && "综合部".equals(datum.getAliasName())) {
                 department = datum;

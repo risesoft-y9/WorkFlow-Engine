@@ -91,7 +91,7 @@ public class BpmnViewerRestController {
                 List<Opinion> opinion = opinionRepository.findByTaskIdAndPositionIdAndProcessTrackIdIsNull(
                     task.getTaskId(), StringUtils.defaultString(assignee));
                 // 获取办理人信息
-                OrgUnit employee = orgUnitApi.getOrgUnitPersonOrPosition(tenantId, assignee).getData();
+                OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
                 // 获取主办人信息
                 HistoricVariableInstanceModel zhuBan = getZhuBanInfo(tenantId, task, year);
                 // 设置办理人名称

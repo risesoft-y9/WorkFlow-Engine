@@ -61,7 +61,7 @@ public class RoleFilterSpecial4SubProcessNotRemove extends AbstractDynamicRoleMe
                     orgUnitList.stream().anyMatch(orgUnit -> orgUnit.getId().equals(currentOrgUnit.getId()));
                 if (match) {
                     // 和[当前人]同委办局
-                    OrgUnit bureau = orgUnitApi.getBureau(tenantId, currentOrgUnitId).getData();
+                    OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, currentOrgUnitId).getData();
                     orgUnitList = orgUnitList.stream()
                         .filter(orgUnit -> orgUnit.getGuidPath().contains(bureau.getId()))
                         .collect(Collectors.toList());
@@ -83,7 +83,7 @@ public class RoleFilterSpecial4SubProcessNotRemove extends AbstractDynamicRoleMe
                         break;
                     }
                 }
-                OrgUnit subStartBureau = orgUnitApi.getBureau(tenantId, subStartUserId).getData();
+                OrgUnit subStartBureau = orgUnitApi.getOrgUnitBureau(tenantId, subStartUserId).getData();
                 orgUnitList = orgUnitList.stream()
                     .filter(orgUnit -> orgUnit.getGuidPath().contains(subStartBureau.getId()))
                     .collect(Collectors.toList());
