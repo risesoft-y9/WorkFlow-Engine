@@ -91,6 +91,12 @@
         </dependency>
 
         <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-common-poi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.springframework.boot</groupId>
             <artifactId>spring-boot-starter-validation</artifactId>
         </dependency>
@@ -118,21 +124,11 @@
         </dependency>
 
         <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-scratchpad</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>com.deepoove</groupId>
             <artifactId>poi-tl</artifactId>
             <scope>compile</scope>
         </dependency>
-
-        <dependency>
-            <groupId>org.apache.poi</groupId>
-            <artifactId>poi-ooxml</artifactId>
-        </dependency>
-
+ 
         <dependency>
             <groupId>cn.wps.yun</groupId>
             <artifactId>graph-java-client</artifactId>
