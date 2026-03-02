@@ -23,6 +23,14 @@ management:
         health:
             probes:
                 enabled: true
+            show-details: always
+    metrics:
+        tags:
+            application: ${spring.application.name}
+    prometheus:
+        metrics:
+            export:
+                enabled: true
 mybatis:
     mapper-locations: classpath:/META-INF/modeler-mybatis-mappings/*.xml
 logging:
