@@ -16,6 +16,7 @@ dependencies {
     api("net.risesoft:risenet-y9boot-support-file-service-local")
     api("net.risesoft:risenet-y9boot-common-sqlddl")
     api("net.risesoft:risenet-y9boot-api-feignclient-platform")
+    api("net.risesoft:risenet-y9boot-common-poi")
     api(project(":y9-module-flowableui:risenet-y9boot-starter-log-flowable"))
     api(project(":y9-module-itemadmin:risenet-y9boot-api-feignclient-itemadmin"))
     api(project(":y9-module-processadmin:risenet-y9boot-api-feignclient-processadmin"))
@@ -24,11 +25,9 @@ dependencies {
     api("org.apache.commons:commons-pool2")
     api(y9libs.google.guava)
     api(libs.pinyin4j)
-    api(libs.poi.scratchpad)
     api(libs.poi.tl) {
         exclude(group = "xml-apis", module = "xml-apis")
     }
-    api(libs.poi.ooxml)
     api(libs.fastexcel)
     api(libs.graph.java.client)
 
