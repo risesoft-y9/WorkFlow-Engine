@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
-import com.fasterxml.jackson.databind.ObjectMapper;
+//import tools.jackson.databind.ObjectMapper;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -391,8 +391,8 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
      */
     private void processGetResponse(String response, String processInstanceId, String processSerialNumber,
         Y9Result<List<InterfaceParamsModel>> y9Result, InterfaceModel info, Integer loopCounter) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Y9Result<Map<String, Object>> result = objectMapper.readValue(response, Y9Result.class);
+        //ObjectMapper objectMapper = new ObjectMapper();
+        Y9Result<Map<String, Object>> result = 	Y9JsonUtil.readY9Result(response);
 
         if (!result.isSuccess()) {
             handleFailedGetResponse(response, processInstanceId, info);
@@ -866,8 +866,8 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
      */
     private void processResponse(String resp, String processInstanceId, String processSerialNumber,
         Y9Result<List<InterfaceParamsModel>> y9Result, InterfaceModel info, Integer loopCounter) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Y9Result<Map<String, Object>> result = objectMapper.readValue(resp, Y9Result.class);
+        //ObjectMapper objectMapper = new ObjectMapper();
+        Y9Result<Map<String, Object>> result = Y9JsonUtil.readY9Result(resp);
 
         if (!result.isSuccess()) {
             handleFailedResponse(resp, processInstanceId, info);
