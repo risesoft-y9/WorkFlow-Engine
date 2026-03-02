@@ -111,6 +111,12 @@
         </dependency>
 
         <dependency>
+            <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-common-poi</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>com.google.guava</groupId>
             <artifactId>guava</artifactId>
         </dependency>
