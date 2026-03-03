@@ -1,8 +1,8 @@
 /*
  * @Author: your name
  * @Date: 2021-05-19 09:41:06
- * @LastEditTime: 2026-01-07 10:31:47
- * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-03-03 13:47:50
+ * @LastEditors: zhangchongjie
  * @Description: In User Settings Edit
  * @FilePath: \vue\y9vue-flowableUI\src\api\flowableUI\processParam.ts
  */
@@ -20,9 +20,17 @@ export function saveProcessParam(itemId, processSerialNumber, processInstanceId,
         level: level,
         customItem: customItem
     };
+    let formData = new FormData();
+    formData.append('processSerialNumber', processSerialNumber);
+    formData.append('itemId', itemId);
+    formData.append('processInstanceId', processInstanceId);
+    formData.append('documentTitle', documentTitle);
+    formData.append('number', number);
+    formData.append('level', level);
+    formData.append('customItem', customItem);
     return flowableRequest({
         url: '/vue/processParam/saveOrUpdate',
         method: 'POST',
-        params: params
+        data: formData
     });
 }
