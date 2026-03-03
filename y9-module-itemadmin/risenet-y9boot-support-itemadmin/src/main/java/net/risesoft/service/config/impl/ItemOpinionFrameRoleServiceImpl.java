@@ -47,11 +47,13 @@ public class ItemOpinionFrameRoleServiceImpl implements ItemOpinionFrameRoleServ
         List<ItemOpinionFrameRole> roleList =
             itemOpinionFrameRoleRepository.findByItemOpinionFrameId(itemOpinionFrameId);
         List<String> roleIdList = roleList.stream().map(ItemOpinionFrameRole::getRoleId).collect(Collectors.toList());
-        Map<String, Role> idRoleMap =
+        if (!roleIdList.isEmpty()) {
+            Map<String, Role> idRoleMap =
                 roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
-        for (ItemOpinionFrameRole role : roleList) {
-            Role r = idRoleMap.get(role.getRoleId());
-            role.setRoleName(r == null ? "角色已删除" : r.getName());
+            for (ItemOpinionFrameRole role : roleList) {
+                Role r = idRoleMap.get(role.getRoleId());
+                role.setRoleName(r == null ? "角色已删除" : r.getName());
+            }
         }
         return roleList;
     }

@@ -46,12 +46,14 @@ public class ItemButtonRoleServiceImpl implements ItemButtonRoleService {
     @Override
     public List<ItemButtonRole> listByItemButtonIdContainRoleName(String itemButtonId) {
         List<ItemButtonRole> roleList = itemButtonRoleRepository.findByItemButtonId(itemButtonId);
-        List<String> roleIdList = roleList.stream().map(ItemButtonRole::getRoleId).collect(Collectors.toList());
-        Map<String, Role> idRoleMap =
-            roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
-        for (ItemButtonRole role : roleList) {
-            Role r = idRoleMap.get(role.getRoleId());
-            role.setRoleName(r == null ? "角色已删除" : r.getName());
+        if (!roleList.isEmpty()) {
+            List<String> roleIdList = roleList.stream().map(ItemButtonRole::getRoleId).collect(Collectors.toList());
+            Map<String, Role> idRoleMap =
+                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
+            for (ItemButtonRole role : roleList) {
+                Role r = idRoleMap.get(role.getRoleId());
+                role.setRoleName(r == null ? "角色已删除" : r.getName());
+            }
         }
         return roleList;
     }
