@@ -104,10 +104,17 @@ export function saveDraft(processSerialNumber, itemId, processDefinitionKey, num
         level: level,
         title: title
     };
+    let formData = new FormData();
+    formData.append('processSerialNumber', processSerialNumber);
+    formData.append('itemId', itemId);
+    formData.append('processDefinitionKey', processDefinitionKey);
+    formData.append('number', number);
+    formData.append('level', level);
+    formData.append('title', title);
     return flowableRequest({
         url: '/vue/draft/saveDraft',
         method: 'post',
-        params: params
+        data: formData
     });
 }
 
