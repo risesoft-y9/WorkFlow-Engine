@@ -368,18 +368,22 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);
         if (null != itemStartNodeRole && StringUtils.isNotEmpty(itemStartNodeRole.getRoleIds())) {
             String roleIds = itemStartNodeRole.getRoleIds();
-            
-            String[] roleIdArr = roleIds.split(";");
-            List<String> roleIdList = Arrays.asList(roleIdArr);
-            Map<String, Role> idRoleMap =
-                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
+            if (StringUtils.isNoneBlank(roleIds)) {
+                String[] roleIdArr = roleIds.split(";");
+                List<String> roleIdList = Arrays.asList(roleIdArr);
+                Map<String,
+                    Role> idRoleMap = roleApi.listByIds(roleIdList)
+                        .getData()
+                        .stream()
+                        .collect(Collectors.toMap(Role::getId, role -> role));
 
-            for (String roleId : roleIdArr) {
-                Role role = idRoleMap.get(roleId);
-                if (role != null) {
-                    list.add(role);
-                } else {
-                    self.removeRole(itemId, processDefinitionId, taskDefKey, roleId);
+                for (String roleId : roleIdArr) {
+                    Role role = idRoleMap.get(roleId);
+                    if (role != null) {
+                        list.add(role);
+                    } else {
+                        self.removeRole(itemId, processDefinitionId, taskDefKey, roleId);
+                    }
                 }
             }
         }

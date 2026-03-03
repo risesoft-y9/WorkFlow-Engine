@@ -284,16 +284,16 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     private RoleInfo getRoleInfo(String itemOrganWordBindId) {
         List<ItemOrganWordRole> roleList = itemOrganWordRoleService.listByItemOrganWordBindId(itemOrganWordBindId);
         List<String> roleIdList = roleList.stream().map(ItemOrganWordRole::getRoleId).collect(Collectors.toList());
-        Map<String, Role> idRoleMap =
-            roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
+        String roleNames = "";
+        if (!roleIdList.isEmpty()) {
+            Map<String, Role> idRoleMap =
+                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
 
-        String roleNames = roleList.stream()
-            .map(role -> {
+            roleNames = roleList.stream().map(role -> {
                 Role r = idRoleMap.get(role.getRoleId());
                 return (r == null) ? "角色不存在" : r.getName();
-            })
-            .collect(Collectors.joining("、"));
-
+            }).collect(Collectors.joining("、"));
+        }
         return new RoleInfo(roleIdList, roleNames);
     }
 

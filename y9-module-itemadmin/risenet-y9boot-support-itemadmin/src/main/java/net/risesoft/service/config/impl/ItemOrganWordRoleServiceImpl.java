@@ -44,12 +44,14 @@ public class ItemOrganWordRoleServiceImpl implements ItemOrganWordRoleService {
     @Override
     public List<ItemOrganWordRole> listByItemOrganWordBindIdContainRoleName(String itemOrganWordBindId) {
         List<ItemOrganWordRole> roleList = itemOrganWordRoleRepository.findByItemOrganWordBindId(itemOrganWordBindId);
-        List<String> roleIdList = roleList.stream().map(ItemOrganWordRole::getRoleId).collect(Collectors.toList());
-        Map<String, Role> idRoleMap =
+        if (!roleList.isEmpty()) {
+            List<String> roleIdList = roleList.stream().map(ItemOrganWordRole::getRoleId).collect(Collectors.toList());
+            Map<String, Role> idRoleMap =
                 roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
-        for (ItemOrganWordRole role : roleList) {
-            Role r = idRoleMap.get(role.getRoleId());
-            role.setRoleName(r == null ? "角色已删除" : r.getName());
+            for (ItemOrganWordRole role : roleList) {
+                Role r = idRoleMap.get(role.getRoleId());
+                role.setRoleName(r == null ? "角色已删除" : r.getName());
+            }
         }
         return roleList;
     }
