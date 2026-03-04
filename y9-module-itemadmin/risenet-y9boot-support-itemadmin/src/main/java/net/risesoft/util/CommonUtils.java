@@ -5,11 +5,14 @@ import java.util.List;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.model.itemadmin.QueryParamModel;
 
 @Slf4j
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonUtils {
     public static boolean checkObjAllFieldsIsNull(Object object) {
         if (null == object) {

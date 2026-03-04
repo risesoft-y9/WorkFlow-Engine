@@ -6,6 +6,9 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.model.processadmin.FlowElementModel;
 
@@ -14,6 +17,7 @@ import net.risesoft.model.processadmin.FlowElementModel;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommonOpt {
 
     /**

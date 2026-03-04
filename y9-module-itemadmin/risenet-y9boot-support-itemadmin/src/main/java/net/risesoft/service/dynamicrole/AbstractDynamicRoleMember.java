@@ -1,5 +1,6 @@
 package net.risesoft.service.dynamicrole;
 
+import java.util.Collections;
 import java.util.List;
 
 import net.risesoft.entity.DynamicRole;
@@ -25,15 +26,15 @@ public abstract class AbstractDynamicRoleMember {
     }
 
     public List<OrgUnit> getDepartmentList() {
-        return null;
+        return Collections.emptyList();
     }
 
     public List<Department> getDeptList() {
-        return null;
+        return Collections.emptyList();
     }
 
     public List<Group> getGroupList() {
-        return null;
+        return Collections.emptyList();
     }
 
     public Organization getOrg() {
@@ -41,15 +42,15 @@ public abstract class AbstractDynamicRoleMember {
     }
 
     public List<OrgUnit> getOrgUnitList() {
-        return null;
+        return Collections.emptyList();
     }
 
     public List<OrgUnit> getOrgUnitList(String param) {
-        return null;
+        return Collections.emptyList();
     }
 
     public List<OrgUnit> getOrgUnitList(String param, DynamicRole dynamicRole) {
-        return null;
+        return Collections.emptyList();
     }
 
     public Person getPerson() {
@@ -73,6 +74,6 @@ public abstract class AbstractDynamicRoleMember {
     }
 
     public List<Position> getPositionList() {
-        return null;
+        return Collections.emptyList();
     }
 }
