@@ -277,8 +277,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
      * @param id 组织架构id
-     * @param treeType 树的类型:tree_type_org(组织机构)，tree_type_dept（部门） tree_type_group（用户组）, tree_type_position（岗位）
-     *            tree_type_person（人员）, tree_type_bureau（委办局）
+     * @param treeType 树的类型
      * @param name 人员名称
      * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      * @since 9.6.6
@@ -288,6 +287,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         @RequestParam String orgUnitId, String id, @RequestParam OrgTreeTypeEnum treeType, String name) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9FlowableHolder.setOrgUnitId(orgUnitId);
+
         List<ItemRoleOrgUnitModel> item = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
             List<Organization> org = organizationApi.list(tenantId).getData();
@@ -297,7 +297,7 @@ public class ItemRoleApiImpl implements ItemRoleApi {
         }
         List<OrgUnit> orgUnitList;
         if (StringUtils.isNotBlank(name)) {
-            orgUnitList = orgUnitApi.treeSearch(tenantId, name, treeType).getData();
+            orgUnitList = orgUnitApi.treeSearch(tenantId, null, name, treeType).getData();
         } else {
             orgUnitList = orgUnitApi.getSubTree(tenantId, id, treeType).getData();
         }

@@ -67,6 +67,7 @@ public class RoleRestController {
      * @return Y9Result<List<ItemRoleOrgUnitModel>>
      */
     @GetMapping(value = "/getOrgTree")
+    @Deprecated
     public Y9Result<List<ItemRoleOrgUnitModel>> findAll(@RequestParam(required = false) String id,
         @RequestParam OrgTreeTypeEnum treeType, @RequestParam(required = false) String name) {
         return itemRoleApi.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), id, treeType,
