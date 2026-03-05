@@ -10,11 +10,15 @@ import java.util.regex.Pattern;
 
 import org.hibernate.annotations.Comment;
 
+import lombok.AccessLevel;
+import lombok.NoArgsConstructor;
+
 /**
  * @author qinman
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@NoArgsConstructor(access = AccessLevel.PRIVATE)
 public class CommentUtil {
     private static final Pattern pattern = Pattern.compile("\r\n|\r|\n|\n\r");
 
@@ -51,7 +55,7 @@ public class CommentUtil {
     }
 
     public static List<Map<String, Object>> getEntityFieldList(Class<?> entityClass) {
-        List<Map<String, Object>> list_map = new ArrayList<>();
+        List<Map<String, Object>> listMap = new ArrayList<>();
 
         Field[] fields = entityClass.getDeclaredFields();
 
@@ -66,13 +70,13 @@ public class CommentUtil {
                 map.put("fieldName", field.getName());
                 map.put("fieldType", fieldType);
                 map.put("comment", comment.value());
-                list_map.add(map);
+                listMap.add(map);
             } else {
                 System.out.println("没有注解");
             }
             // 获取字段值
             field.setAccessible(true); // 允许访问 private 字段
         }
-        return list_map;
+        return listMap;
     }
 }
