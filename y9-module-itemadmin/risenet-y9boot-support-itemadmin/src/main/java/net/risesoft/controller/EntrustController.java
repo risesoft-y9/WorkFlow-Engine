@@ -27,7 +27,6 @@ import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Organization;
 import net.risesoft.model.platform.org.Person;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -68,19 +67,9 @@ public class EntrustController {
     public Y9Result<List<NodeTreeVO>> deptTreeSearch(@RequestParam String name) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<NodeTreeVO> item = new ArrayList<>();
-        List<OrgUnit> orgUnitList = new ArrayList<>();
-        OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
-        if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
-            List<Person> personList =
-                personApi.listRecursivelyByParentIdAndName(tenantId, orgUnit.getId(), name).getData();
-            for (Person person : personList) {
-                orgUnitList.add(person);
-                Person p = personApi.get(tenantId, person.getId()).getData();
-                this.recursionUpToOrg(tenantId, orgUnit.getId(), p.getParentId(), orgUnitList, false);
-            }
-        } else {
-            orgUnitList = orgUnitApi.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
-        }
+        OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, Y9LoginUserHolder.getPersonId()).getData();
+        List<OrgUnit> orgUnitList =
+            orgUnitApi.treeSearch(tenantId, bureau.getId(), name, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
         for (OrgUnit orgUnit0 : orgUnitList) {
             NodeTreeVO map = new NodeTreeVO();
             map.setId(orgUnit0.getId());
@@ -200,34 +189,6 @@ public class EntrustController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         List<Entrust> entrustList = entrustService.list(person.getPersonId());
         return Y9Result.success(entrustList, "获取成功");
-    }
-
-    public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList,
-        boolean isParent) {
-        OrgUnit parent = getParent(tenantId, parentId);
-        if (isParent) {
-            parent.setDescription("parent");
-        }
-        if (orgUnitList.isEmpty()) {
-            orgUnitList.add(parent);
-        } else {
-            boolean add = true;
-            for (OrgUnit orgUnit : orgUnitList) {
-                if (orgUnit.getId().equals(parent.getId())) {
-                    add = false;
-                    break;
-                }
-            }
-            if (add) {
-                orgUnitList.add(parent);
-            }
-        }
-        if (parent.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-            if (parent.getId().equals(nodeId)) {
-                return;
-            }
-            recursionUpToOrg(tenantId, nodeId, parent.getParentId(), orgUnitList, true);
-        }
     }
 
     /**

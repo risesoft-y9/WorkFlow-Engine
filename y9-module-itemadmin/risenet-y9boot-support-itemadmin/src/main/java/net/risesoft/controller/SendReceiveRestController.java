@@ -93,13 +93,8 @@ public class SendReceiveRestController {
         @RequestParam String deptId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<NodeTreeVO> item = new ArrayList<>();
-        List<Person> personList = personApi.listRecursivelyByParentIdAndName(tenantId, deptId, name).getData();
-        List<OrgUnit> orgUnitList = new ArrayList<>();
-        for (Person person : personList) {
-            orgUnitList.add(person);
-            Person p = personApi.get(tenantId, person.getId()).getData();
-            this.recursionUpToOrg(tenantId, deptId, p.getParentId(), orgUnitList, false);
-        }
+        List<OrgUnit> orgUnitList =
+            orgUnitApi.treeSearch(tenantId, deptId, name, OrgTreeTypeEnum.TREE_TYPE_PERSON).getData();
         for (OrgUnit orgUnit : orgUnitList) {
             NodeTreeVO nodeTreeVO = new NodeTreeVO();
             nodeTreeVO.setId(orgUnit.getId());
@@ -108,7 +103,7 @@ public class SendReceiveRestController {
             nodeTreeVO.setParentId(orgUnit.getParentId());
             nodeTreeVO.setIsParent(true);
             if (OrgTypeEnum.PERSON.equals(orgUnit.getOrgType())) {
-                Person per = (Person) orgUnit;
+                Person per = (Person)orgUnit;
                 nodeTreeVO.setIsParent(false);
                 nodeTreeVO.setSex(per.getSex().getValue());
             }
@@ -153,7 +148,7 @@ public class SendReceiveRestController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     nodeTreeVO.setIsParent(true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = (Person) orgunit;
+                    Person person = (Person)orgunit;
                     nodeTreeVO.setIsParent(false);
                     nodeTreeVO.setSex(person.getSex().getValue());
                 } else {
@@ -199,7 +194,7 @@ public class SendReceiveRestController {
                 if (OrgTypeEnum.DEPARTMENT.equals(orgunit.getOrgType())) {
                     nodeTreeVO.setIsParent(true);
                 } else if (OrgTypeEnum.PERSON.equals(orgunit.getOrgType())) {
-                    Person person = (Person) orgunit;
+                    Person person = (Person)orgunit;
                     nodeTreeVO.setIsParent(false);
                     nodeTreeVO.setSex(person.getSex().getValue());
                 } else if (OrgTypeEnum.POSITION.equals(orgunit.getOrgType())) {
@@ -295,7 +290,7 @@ public class SendReceiveRestController {
     public Y9Result<List<OrgUnit>> orgTreeSearch(@RequestParam OrgTreeTypeEnum treeType, @RequestParam String name) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<OrgUnit> orgUnitList = orgUnitApi.treeSearch(tenantId, name, treeType).getData();
+            List<OrgUnit> orgUnitList = orgUnitApi.treeSearch(tenantId, null, name, treeType).getData();
             List<OrgUnit> processedOrgUnits = new ArrayList<>();
             orgUnitList.stream()
                 .filter(orgUnit -> OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType()))
@@ -324,34 +319,6 @@ public class SendReceiveRestController {
     public Y9Result<List<Map<String, Object>>> personList(@RequestParam String deptId) {
         List<Map<String, Object>> personList = receiveDeptAndPersonService.personList(deptId);
         return Y9Result.success(personList, "获取成功");
-    }
-
-    public void recursionUpToOrg(String tenantId, String nodeId, String parentId, List<OrgUnit> orgUnitList,
-        boolean isParent) {
-        OrgUnit parent = getParent(tenantId, parentId);
-        if (isParent) {
-            parent.setDescription("parent");
-        }
-        if (orgUnitList.isEmpty()) {
-            orgUnitList.add(parent);
-        } else {
-            boolean add = true;
-            for (OrgUnit orgUnit : orgUnitList) {
-                if (orgUnit.getId().equals(parent.getId())) {
-                    add = false;
-                    break;
-                }
-            }
-            if (add) {
-                orgUnitList.add(parent);
-            }
-        }
-        if (parent.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
-            if (parent.getId().equals(nodeId)) {
-                return;
-            }
-            recursionUpToOrg(tenantId, nodeId, parent.getParentId(), orgUnitList, true);
-        }
     }
 
     /**
@@ -403,7 +370,8 @@ public class SendReceiveRestController {
      */
     @GetMapping(value = "/searchOrgTree")
     public Y9Result<List<OrgUnit>> searchOrgTree(@RequestParam OrgTreeTypeEnum treeType, @RequestParam String name) {
-        List<OrgUnit> orgUnitList = orgUnitApi.treeSearch(Y9LoginUserHolder.getTenantId(), name, treeType).getData();
+        List<OrgUnit> orgUnitList =
+            orgUnitApi.treeSearch(Y9LoginUserHolder.getTenantId(), null, name, treeType).getData();
         return Y9Result.success(orgUnitList, "获取成功");
     }
 

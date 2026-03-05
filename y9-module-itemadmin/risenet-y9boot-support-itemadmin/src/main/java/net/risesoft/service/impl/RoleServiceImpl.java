@@ -705,13 +705,13 @@ public class RoleServiceImpl implements RoleService {
             if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
 
                 List<String> memberIdList =
-                        customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+                    customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
                 Map<String,
-                        OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
+                    OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
                         .getData()
                         .stream()
                         .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
-                
+
                 for (CustomGroupMember customGroupMember : customGroupMemberList) {
                     OrgUnit user = idOrgUnitMap.get(customGroupMember.getMemberId());
 
@@ -786,14 +786,11 @@ public class RoleServiceImpl implements RoleService {
 
         try {
             Organization organization = orgUnitApi.getOrgUnitOrganization(tenantId, userId).getData();
-            List<Department> deptList = departmentApi.listByParentId(tenantId, organization.getId()).getData();
 
             List<OrgUnit> orgUnitListTemp = new ArrayList<>();
-            for (OrgUnit orgUnitTemp : deptList) {
-                orgUnitListTemp.addAll(orgUnitApi
-                    .treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION, orgUnitTemp.getDn())
+            orgUnitListTemp.addAll(
+                orgUnitApi.treeSearch(tenantId, organization.getId(), name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION)
                     .getData());
-            }
 
             for (OrgUnit orgUnitTemp : orgUnitListTemp) {
                 ItemRoleOrgUnitModel model = createDepartmentSearchModel(orgUnitTemp);
@@ -848,13 +845,13 @@ public class RoleServiceImpl implements RoleService {
             if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
 
                 List<String> memberIdList =
-                        customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+                    customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
                 Map<String,
-                        OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
+                    OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
                         .getData()
                         .stream()
                         .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
-                
+
                 for (CustomGroupMember customGroupMember : customGroupMemberList) {
                     OrgUnit user = idOrgUnitMap.get(customGroupMember.getMemberId());
 
@@ -1213,13 +1210,13 @@ public class RoleServiceImpl implements RoleService {
         if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
 
             List<String> memberIdList =
-                    customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+                customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
             Map<String,
-                    OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
+                OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
                     .getData()
                     .stream()
                     .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
-            
+
             for (CustomGroupMember customGroupMember : customGroupMemberList) {
                 OrgUnit user = idOrgUnitMap.get(customGroupMember.getMemberId());
 
@@ -1549,7 +1546,7 @@ public class RoleServiceImpl implements RoleService {
         for (OrgUnit org : deptList) {
             try {
                 List<OrgUnit> orgUnitList =
-                    orgUnitApi.treeSearchByDn(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION, org.getDn())
+                    orgUnitApi.treeSearch(tenantId, org.getId(), name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION)
                         .getData();
 
                 for (OrgUnit orgUnitTemp : orgUnitList) {
@@ -1607,13 +1604,13 @@ public class RoleServiceImpl implements RoleService {
             if (customGroupMemberList != null && !customGroupMemberList.isEmpty()) {
 
                 List<String> memberIdList =
-                        customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+                    customGroupMemberList.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
                 Map<String,
-                        OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
+                    OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, memberIdList)
                         .getData()
                         .stream()
                         .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
-                
+
                 for (CustomGroupMember customGroupMember : customGroupMemberList) {
                     OrgUnit user = idOrgUnitMap.get(customGroupMember.getMemberId());
 

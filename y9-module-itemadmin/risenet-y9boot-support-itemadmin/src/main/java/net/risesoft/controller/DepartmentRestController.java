@@ -153,7 +153,7 @@ public class DepartmentRestController {
     public Y9Result<List<NodeTreeVO>> searchDept(@RequestParam(required = false) String name) {
         List<NodeTreeVO> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> employees = orgUnitApi.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_DEPT).getData();
+        List<OrgUnit> employees = orgUnitApi.treeSearch(tenantId, null, name, OrgTreeTypeEnum.TREE_TYPE_DEPT).getData();
         for (OrgUnit employee : employees) {
             NodeTreeVO node = new NodeTreeVO();
             node.setId(employee.getId());
@@ -172,7 +172,7 @@ public class DepartmentRestController {
         List<NodeTreeVO> items = new ArrayList<>();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OrgUnit> employees =
-            orgUnitApi.treeSearch(tenantId, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION).getData();
+            orgUnitApi.treeSearch(tenantId, null, name, OrgTreeTypeEnum.TREE_TYPE_ORG_POSITION).getData();
         for (OrgUnit employee : employees) {
             NodeTreeVO node = new NodeTreeVO();
             node.setId(employee.getId());
@@ -189,7 +189,7 @@ public class DepartmentRestController {
     @GetMapping(value = "/treeSearch")
     public Y9Result<List<OrgUnit>> treeSearch(String name, OrgTreeTypeEnum treeType) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<OrgUnit> list = orgUnitApi.treeSearch(tenantId, name, treeType).getData();
+        List<OrgUnit> list = orgUnitApi.treeSearch(tenantId, null, name, treeType).getData();
         return Y9Result.success(list, "获取成功");
     }
 }

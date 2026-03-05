@@ -178,8 +178,7 @@ public interface ItemRoleApi {
      * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
      * @param id 组织架构id
-     * @param treeType 树的类型:tree_type_org(组织机构)，tree_type_dept（部门） tree_type_group（用户组）, tree_type_position（岗位）
-     *            tree_type_person（人员）, tree_type_bureau（委办局）
+     * @param treeType 树的类型
      * @param name 人员名称
      * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      * @since 9.6.6

@@ -145,7 +145,7 @@ public class EntrustRestController {
     public Y9Result<List<OrgUnit>> treeSearch(@RequestParam(required = false) String name, OrgTreeTypeEnum treeType) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<OrgUnit> list = orgUnitApi.treeSearch(tenantId, name, treeType).getData();
+            List<OrgUnit> list = orgUnitApi.treeSearch(tenantId, null, name, treeType).getData();
             return Y9Result.success(list, "获取成功");
         } catch (Exception e) {
             LOGGER.error("组织架构树搜索出错", e);
