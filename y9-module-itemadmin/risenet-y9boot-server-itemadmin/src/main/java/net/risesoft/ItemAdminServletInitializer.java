@@ -12,6 +12,8 @@ import org.springframework.boot.web.servlet.support.SpringBootServletInitializer
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.WebApplicationContext;
 
+import net.risesoft.y9.spring.boot.Y9Banner;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -21,7 +23,7 @@ public class ItemAdminServletInitializer extends SpringBootServletInitializer {
 
     @Override
     protected SpringApplicationBuilder configure(final SpringApplicationBuilder builder) {
-        return builder.sources(ItemAdminApplication.class);
+        return builder.sources(ItemAdminApplication.class).banner(new Y9Banner());
     }
 
     @Override
