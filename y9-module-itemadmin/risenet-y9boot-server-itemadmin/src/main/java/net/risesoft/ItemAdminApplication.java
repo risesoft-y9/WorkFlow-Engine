@@ -4,6 +4,8 @@ import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.scheduling.annotation.EnableAsync;
 
+import net.risesoft.y9.spring.boot.Y9Banner;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -13,6 +15,8 @@ import org.springframework.scheduling.annotation.EnableAsync;
 @EnableAsync
 public class ItemAdminApplication {
     public static void main(String[] args) {
-        SpringApplication.run(ItemAdminApplication.class, args);
+        SpringApplication springApplication = new SpringApplication(ItemAdminApplication.class);
+        springApplication.setBanner(new Y9Banner());
+        springApplication.run(args);
     }
 }

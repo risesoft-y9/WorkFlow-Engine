@@ -29,6 +29,8 @@ server:
         # 压缩格式
         mime-types: application/javascript,text/css,application/json,application/xml,text/html,text/xml,text/plain,font/woff,application/font-woff,font/eot,image/svg+xml,image/x-icon
 spring:
+    application:
+        name: jodconverter
     servlet:
         multipart:
             # 文件上传限制前端
