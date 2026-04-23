@@ -8,7 +8,7 @@
     <changeSet id="1702001405829-1-1" author="shidaobang" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <not>
-                <columnExists tableName="ff_item_wordtemplate_bind" columnName="JOB_NAME"/>
+                <columnExists tableName="ff_item_wordtemplate_bind" columnName="BINDVALUE"/>
             </not>
         </preConditions>
 
