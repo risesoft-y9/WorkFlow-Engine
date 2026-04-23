@@ -244,7 +244,7 @@
             <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
         </createTable>
     </changeSet>
-    <changeSet id="1702001405829-1-13" author="zhangchongjie" runOnChange="true">
+    <changeSet id="1704700543333-13" author="zhangchongjie" runOnChange="true">
         <preConditions onFail="MARK_RAN">
             <columnExists tableName="FF_SIGN_OUT_DEPT" columnName="DEPTID"/>
         </preConditions>
