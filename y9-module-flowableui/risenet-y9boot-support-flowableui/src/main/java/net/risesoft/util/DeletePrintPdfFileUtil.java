@@ -6,13 +6,13 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import jakarta.annotation.Resource;
-
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.EnableScheduling;
 import org.springframework.scheduling.annotation.Scheduled;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.y9.Y9Context;
@@ -21,12 +21,11 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Configuration
 @EnableScheduling
 @Slf4j
+@RequiredArgsConstructor
 public class DeletePrintPdfFileUtil {
 
-    Calendar calendar = Calendar.getInstance();
-
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("jdbcTemplate4Tenant")
+    private final JdbcTemplate jdbcTemplate;
 
     /**
      * 定时任务，定时删除打印转换生成的pdf文件

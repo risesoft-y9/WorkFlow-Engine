@@ -288,7 +288,7 @@ public class ReceiveDeptAndPersonServiceImpl implements ReceiveDeptAndPersonServ
 
         boolean canAdd = true;
         OrgUnit orgUnit1 = orgUnitApi.getOrgUnitBureau(tenantId, deptId).getData();
-        
+
         for (ReceivePerson receivePerson : existingPersons) {
             try {
                 OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, receivePerson.getDeptId()).getData();

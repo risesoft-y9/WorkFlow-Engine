@@ -15,21 +15,21 @@ import java.util.concurrent.BlockingQueue;
 
 import org.rocksdb.RocksDB;
 import org.rocksdb.RocksDBException;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnExpression;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.service.cache.CacheService;
 import net.risesoft.utils.ConfigUtils;
 
 @ConditionalOnExpression("'${cache.type:default}'.equals('default')")
 @Service
+@Slf4j
 public class CacheServiceRocksDBImpl implements CacheService {
 
     private static final String DB_PATH = ConfigUtils.getHomePath() + File.separator + "cache";
     private static final int QUEUE_SIZE = 500000;
-    private static final Logger LOGGER = LoggerFactory.getLogger(CacheServiceRocksDBImpl.class);
 
     static {
         RocksDB.loadLibrary();

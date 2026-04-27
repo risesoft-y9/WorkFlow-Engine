@@ -3,11 +3,10 @@ package net.risesoft.service.impl;
 import java.util.ArrayList;
 import java.util.List;
 
-import jakarta.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.task.api.history.HistoricTaskInstance;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.BeanPropertyRowMapper;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
@@ -36,8 +35,8 @@ public class CustomHistoricTaskServiceImpl implements CustomHistoricTaskService 
 
     private final CustomProcessDefinitionService customProcessDefinitionService;
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("jdbcTemplate4Tenant")
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public HistoricTaskInstance getById(String taskId) {

@@ -357,14 +357,14 @@ public class VariableVueController {
         String invalidUsers = "";
         List<String> userList = new ArrayList<>();
         String[] users = value.split(",");
-        
+
         List<String> userIdList = Stream.of(users).filter(StringUtils::isNotBlank).collect(Collectors.toList());
         Map<String,
             OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, userIdList)
                 .getData()
                 .stream()
                 .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
-        
+
         for (String user : users) {
             if (StringUtils.isBlank(user)) {
                 continue;

@@ -1,10 +1,11 @@
 package net.risesoft.service.impl;
 
-import org.slf4j.Logger;
 import org.springframework.stereotype.Service;
 import org.springframework.ui.Model;
 import org.springframework.util.ObjectUtils;
 import org.springframework.util.StringUtils;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.config.ConfigConstants;
 import net.risesoft.model.FileAttribute;
@@ -19,10 +20,10 @@ import net.risesoft.utils.KkFileUtils;
  * Content :处理压缩包文件
  */
 @Service
+@Slf4j
 public class CompressFilePreviewImpl implements FilePreview {
 
     private static final String RAR_PASSWORD_MSG = "password";
-    private static final Logger logger = org.slf4j.LoggerFactory.getLogger(CompressFilePreviewImpl.class);
     private final FileHandlerService fileHandlerService;
     private final CompressFileReader compressFileReader;
     private final OtherFilePreviewImpl otherFilePreview;
@@ -119,7 +120,7 @@ public class CompressFilePreviewImpl implements FilePreview {
             model.addAttribute("needFilePassword", true);
             return EXEL_FILE_PREVIEW_PAGE;
         } else {
-            logger.error("Error processing RAR file: {}", e.getMessage(), e);
+            LOGGER.error("Error processing RAR file: {}", e.getMessage(), e);
             return null;
         }
     }
