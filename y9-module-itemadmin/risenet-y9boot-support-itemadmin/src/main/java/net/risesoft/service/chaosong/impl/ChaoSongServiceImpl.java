@@ -646,7 +646,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                         .listCustomGroupMember(tenantId, new CustomGroupMemberQuery(orgUnitId, OrgTypeEnum.POSITION))
                         .getData();
                     List<String> positionIdList =
-                            members.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
+                        members.stream().map(CustomGroupMember::getMemberId).collect(Collectors.toList());
                     userIdListAdd.addAll(positionIdList);
                     break;
                 default:
@@ -664,7 +664,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         OrgUnit dept = getDepartment(tenantId, currentOrgUnit);
 
         Map<String,
-                OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, userIdList)
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, userIdList)
                 .getData()
                 .stream()
                 .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));

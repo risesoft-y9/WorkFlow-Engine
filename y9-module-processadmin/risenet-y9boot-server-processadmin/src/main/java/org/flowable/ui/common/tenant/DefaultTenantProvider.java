@@ -2,9 +2,9 @@ package org.flowable.ui.common.tenant;
 
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.common.engine.impl.AbstractEngineConfiguration;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.y9.FlowableTenantInfoHolder;
 
@@ -14,9 +14,8 @@ import net.risesoft.y9.FlowableTenantInfoHolder;
  * @date 2023/01/03
  */
 @Service
+@Slf4j
 public class DefaultTenantProvider implements TenantProvider {
-
-    private static final Logger LOGGER = LoggerFactory.getLogger(DefaultTenantProvider.class);
 
     private String tenantId;
 

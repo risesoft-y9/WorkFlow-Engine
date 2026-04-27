@@ -6,9 +6,8 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -46,8 +45,8 @@ public class Process4SearchServiceImpl implements Process4SearchService {
     private final OrgUnitApi orgUnitApi;
     private final ErrorLogApi errorLogApi;
     private final ProcessParamApi processParamApi;
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("jdbcTemplate4Tenant")
+    private final JdbcTemplate jdbcTemplate;
 
     @Async
     @Override

@@ -6,8 +6,7 @@ import java.sql.SQLException;
 
 import javax.sql.DataSource;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.enums.DialectEnum;
 
@@ -16,9 +15,8 @@ import net.risesoft.enums.DialectEnum;
  * @author zhangchongjie
  * @date 2022/12/30
  */
+@Slf4j
 public class Y9SqlPaginationUtil {
-
-    private static final Logger log = LoggerFactory.getLogger(Y9SqlPaginationUtil.class);
 
     private static String dbType;
     private static int dbVersion;
@@ -46,7 +44,7 @@ public class Y9SqlPaginationUtil {
                 }
                 dbVersion = dmd.getDatabaseMajorVersion();
             } catch (SQLException e) {
-                log.error(e.getMessage());
+                LOGGER.error(e.getMessage());
             }
         }
         rSql = generatePagedSql(dbType, dbVersion, sql, start, limit);

@@ -13,8 +13,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpSession;
 
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
@@ -24,9 +24,8 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
+@Slf4j
 public class CheckUserLoginFilter4Flowable implements Filter {
-
-    protected final Logger log = LoggerFactory.getLogger(CheckUserLoginFilter4Flowable.class);
 
     @Override
     public void destroy() {
@@ -74,6 +73,6 @@ public class CheckUserLoginFilter4Flowable implements Filter {
 
     @Override
     public void init(final FilterConfig filterConfig) {
-        log.debug("......................................init Y9SkipSSOFilter ...");
+        LOGGER.debug("......................................init Y9SkipSSOFilter ...");
     }
 }

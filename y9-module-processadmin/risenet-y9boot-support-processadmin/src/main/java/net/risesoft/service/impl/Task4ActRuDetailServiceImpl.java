@@ -6,15 +6,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import javax.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.identitylink.api.IdentityLink;
 import org.flowable.identitylink.api.IdentityLinkInfo;
 import org.flowable.task.service.delegate.DelegateTask;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
 
+import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.core.ActRuDetailApi;
@@ -35,17 +35,13 @@ import net.risesoft.y9.Y9LoginUserHolder;
  */
 @Slf4j
 @Service
+@RequiredArgsConstructor
 public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
 
     private final ActRuDetailApi actRuDetailApi;
     private final OrgUnitApi orgUnitApi;
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
-
-    public Task4ActRuDetailServiceImpl(ActRuDetailApi actRuDetailApi, OrgUnitApi orgUnitApi) {
-        this.actRuDetailApi = actRuDetailApi;
-        this.orgUnitApi = orgUnitApi;
-    }
+    @Qualifier("jdbcTemplate4Tenant")
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void todo2doing(DelegateTask taskEntity) {

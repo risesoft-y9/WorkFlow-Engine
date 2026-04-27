@@ -524,7 +524,7 @@ public class ButtonOperationRestController {
                 .getData()
                 .stream()
                 .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
-        
+
         for (String user : taskInfo.users) {
             Map<String, Object> map = new HashMap<>(16);
             try {
@@ -565,7 +565,7 @@ public class ButtonOperationRestController {
         }
 
         Map<String,
-                OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, taskInfo.users)
+            OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, taskInfo.users)
                 .getData()
                 .stream()
                 .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));

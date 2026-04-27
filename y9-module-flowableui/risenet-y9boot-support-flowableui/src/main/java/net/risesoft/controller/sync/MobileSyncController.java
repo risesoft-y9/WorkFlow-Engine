@@ -4,11 +4,11 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.validation.annotation.Validated;
@@ -48,8 +48,8 @@ public class MobileSyncController {
         List.of("ACT_HI_TASKINST", "ACT_HI_VARINST", "ACT_HI_IDENTITYLINK", "ACT_HI_ACTINST", "ACT_HI_PROCINST");
     private final OfficeDoneInfoApi officeDoneInfoApi;
     private final ProcessParamApi processParamApi;
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("jdbcTemplate4Tenant")
+    private final JdbcTemplate jdbcTemplate;
 
     /**
      * 删除历史数据

@@ -6,10 +6,10 @@ import java.io.Writer;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.Resource;
 import javax.sql.DataSource;
 
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -50,8 +50,8 @@ public class Process4SearchServiceImpl implements Process4SearchService {
 
     private final ErrorLogService errorLogService;
 
-    @Resource(name = "jdbcTemplate4Tenant")
-    private JdbcTemplate jdbcTemplate;
+    @Qualifier("jdbcTemplate4Tenant")
+    private final JdbcTemplate jdbcTemplate;
 
     @Override
     public void saveToDataCenter(final String tenantId, final ProcessParam processParam, final OrgUnit orgUnit) {

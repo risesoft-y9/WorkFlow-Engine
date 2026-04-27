@@ -181,14 +181,12 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
         String[] roleIdArray = roleIds.split(",");
         List<String> roleIdList = Arrays.asList(roleIdArray);
         Map<String, Role> idRoleMap =
-                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
+            roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
 
-        return Arrays.stream(roleIdArray)
-                .map(id -> {
-                    Role role = idRoleMap.get(id);
-                    return (role == null) ? "角色不存在" : role.getName();
-                })
-                .collect(Collectors.joining("、"));
+        return Arrays.stream(roleIdArray).map(id -> {
+            Role role = idRoleMap.get(id);
+            return (role == null) ? "角色不存在" : role.getName();
+        }).collect(Collectors.joining("、"));
     }
 
     @Override
