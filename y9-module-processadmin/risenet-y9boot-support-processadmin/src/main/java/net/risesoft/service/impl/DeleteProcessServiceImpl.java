@@ -36,15 +36,15 @@ import net.risesoft.y9.Y9LoginUserHolder;
 @Service(value = "deleteProcessService")
 public class DeleteProcessServiceImpl implements DeleteProcessService {
 
-    private final ChaoSongApi chaoSongApi;
+    protected final ChaoSongApi chaoSongApi;
 
-    private final ProcessParamApi processParamApi;
+    protected final ProcessParamApi processParamApi;
 
-    private final OfficeFollowApi officeFollowApi;
+    protected final OfficeFollowApi officeFollowApi;
 
-    private final ErrorLogApi errorLogApi;
+    protected final ErrorLogApi errorLogApi;
 
-    private final ActRuDetailApi actRuDetailApi;
+    protected final ActRuDetailApi actRuDetailApi;
 
     @Qualifier("jdbcTemplate4Tenant")
     private final JdbcTemplate jdbcTemplate;
