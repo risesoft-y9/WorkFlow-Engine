@@ -27,6 +27,11 @@ dependencies {
     // api(libs.jxl)
 
     compileOnly("jakarta.servlet:jakarta.servlet-api")
+
+    api(libs.flowable.idm.spring)
+    api(libs.flowable.idm.spring.configurator)
+    api(libs.flowable.groovy.script.static.engine)
+    api(libs.groovy.jsr223)
 }
 
 description = "risenet-y9boot-support-processadmin"

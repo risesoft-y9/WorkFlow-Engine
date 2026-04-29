@@ -54,6 +54,10 @@ y9-digitalbase-dependencies = { module = "net.risesoft:y9-digitalbase-dependenci
 jbarcode = { module = "net.risesoft:jbarcode", version.ref = "jbarcode" }
 pdf417 = { module = "net.risesoft:pdf417", version.ref = "pdf417" }
 flowable-spring-boot-starter-process = { module = "org.flowable:flowable-spring-boot-starter-process", version.ref = "flowable-spring-boot" }
+flowable-idm-spring = { module = "org.flowable:flowable-idm-spring", version.ref = "flowable-spring-boot" }
+flowable-idm-spring-configurator = { module = "org.flowable:flowable-idm-spring-configurator", version.ref = "flowable-spring-boot" }
+flowable-groovy-script-static-engine = { module = "org.flowable:flowable-groovy-script-static-engine", version.ref = "flowable-spring-boot" }
+groovy-jsr223 = { module = "org.apache.groovy:groovy-jsr223" }
 
 # database
 com-oracle-database-jdbc-ojdbc11 = { module = "com.oracle.database.jdbc:ojdbc11", version.ref = "com-oracle-database-jdbc-ojdbc11" }

@@ -1,4 +1,4 @@
-plugins {
+﻿plugins {
     alias(libs.plugins.y9.conventions.war)
     alias(libs.plugins.y9.lombok)
     alias(libs.plugins.y9.docker)

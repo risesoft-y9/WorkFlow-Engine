@@ -1,4 +1,4 @@
-plugins {
+﻿plugins {
     alias(libs.plugins.y9.conventions.java)
     alias(libs.plugins.y9.lombok)
 }
@@ -9,6 +9,7 @@ dependencies {
 
     api(project(":y9-module-itemadmin:risenet-y9boot-model-itemadmin"))
     api("net.risesoft:risenet-y9boot-starter-jpa-public")
+    api("net.risesoft:risenet-y9boot-starter-jpa-tenant")
     api("net.risesoft:risenet-y9boot-starter-elasticsearch")
     api("net.risesoft:risenet-y9boot-starter-liquibase")
     api("net.risesoft:risenet-y9boot-support-history")
