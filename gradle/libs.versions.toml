@@ -11,7 +11,7 @@ kingbase-hibernate-jpa-api = "2.1.0.Final"
 kingbase-kingbase8 = "8.6.1"
 
 cn-wps-yun-graph-java-client = "1.0.11"
-com-alibaba-fastjson = "2.0.53"
+com-alibaba-fastjson = "2.0.61"
 com-belerweb-pinyin4j = "2.5.1"
 com-deepoove-poi-tl = "1.12.1"
 org-jodd-jodd-mail = "7.1.0"

@@ -22,7 +22,7 @@
         <maven.deploy.skip>true</maven.deploy.skip>
 
         <jodconverter.version>4.4.8</jodconverter.version>
-        <poi.version>5.4.1</poi.version>
+        <poi.version>5.5.1</poi.version>
         <xdocreport.version>1.0.6</xdocreport.version>
         <xstream.version>1.4.20</xstream.version>
         <junrar.version>7.5.5</junrar.version>
