@@ -120,6 +120,7 @@ public class ProcessInstanceVueController {
         List<String> startUserIdList = processInstanceList.stream()
             .map(ProcessInstance::getStartUserId)
             .filter(StringUtils::isNotBlank)
+            .distinct()
             .collect(Collectors.toList());
         Map<String,
             OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, startUserIdList)
