@@ -3,7 +3,7 @@
     alias(libs.plugins.y9.lombok)
     alias(libs.plugins.y9.docker)
 }
-  
+
 dependencies {
     api(platform(libs.y9.digitalbase.bom))
     api(platform(libs.y9.digitalbase.dependencies))
@@ -79,4 +79,9 @@ y9Docker {
 
 y9War {
     archiveBaseName = finalName
+}
+
+// 跳过 Maven 发布（类似 Maven 的 <maven.deploy.skip>true</maven.deploy.skip>）
+tasks.withType<PublishToMavenRepository> {
+    enabled = false
 }
