@@ -64,8 +64,8 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteAllAssociatedFile(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber, @RequestParam String delIds) {
+    public Y9Result<Object> deleteAllAssociatedFile(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam String delIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         associatedFileService.deleteAllAssociatedFile(processSerialNumber, delIds);
         return Y9Result.success();
@@ -81,8 +81,8 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteAssociatedFile(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber, @RequestParam String delId) {
+    public Y9Result<Object> deleteAssociatedFile(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam String delId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         associatedFileService.deleteAssociatedFile(processSerialNumber, delId);
         return Y9Result.success();
@@ -98,8 +98,8 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam String tenantId,
-        @RequestParam String orgUnitId, @RequestParam String processSerialNumber) {
+    public Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String orgUnitId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
@@ -118,8 +118,9 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveAssociatedFile(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String processSerialNumber, @RequestParam String processInstanceIds) {
+    public Y9Result<Object> saveAssociatedFile(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String orgUnitId, @RequestParam String processSerialNumber,
+        @RequestParam String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);

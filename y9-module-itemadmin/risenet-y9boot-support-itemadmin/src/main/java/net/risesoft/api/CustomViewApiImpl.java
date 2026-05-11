@@ -2,6 +2,8 @@ package net.risesoft.api;
 
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -46,8 +48,8 @@ public class CustomViewApiImpl implements CustomViewApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delCustomView(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String viewType) {
+    public Y9Result<Object> delCustomView(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String userId, @RequestParam String viewType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
@@ -65,8 +67,8 @@ public class CustomViewApiImpl implements CustomViewApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<CustomViewModel>> listCustomView(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String viewType) {
+    public Y9Result<List<CustomViewModel>> listCustomView(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String userId, @RequestParam @NotBlank String viewType) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
@@ -83,8 +85,8 @@ public class CustomViewApiImpl implements CustomViewApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveCustomView(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String jsonData) {
+    public Y9Result<Object> saveCustomView(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String orgUnitId, @RequestParam String jsonData) {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);

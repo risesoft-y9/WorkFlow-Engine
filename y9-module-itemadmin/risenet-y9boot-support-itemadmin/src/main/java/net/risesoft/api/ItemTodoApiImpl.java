@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -83,7 +85,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      */
     @Override
     public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String systemName) {
+        @RequestParam @NotBlank String systemName) {
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(this.actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId,
             ActRuDetailStatusEnum.TODO));
@@ -116,7 +118,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
+        @RequestParam String userId, @RequestParam @NotBlank String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
@@ -140,7 +142,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> findByUserIdAndSystemNameAndTaskDefKey(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestParam String taskDefKey,
+        @RequestParam String userId, @RequestParam @NotBlank String systemName, @RequestParam String taskDefKey,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
@@ -211,7 +213,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr,
+        @RequestParam String userId, @RequestParam @NotBlank String systemName, @RequestBody String searchMapStr,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
@@ -241,8 +243,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     @Override
     @SuppressWarnings({"deprecation", "java:S2077"})
     public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemNameAndTaskDefKey(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestParam(required = false) String taskDefKey,
-        @RequestBody(required = false) String searchMapStr) {
+        @RequestParam String userId, @RequestParam @NotBlank String systemName,
+        @RequestParam(required = false) String taskDefKey, @RequestBody(required = false) String searchMapStr) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String innerSql = "", whereSql = "";
         StringBuilder assigneeNameSql = new StringBuilder();
@@ -300,7 +302,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
 
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName4Other(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName,
+        @RequestParam String userId, @RequestParam @NotBlank String systemName,
         @RequestBody(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String innerSql = "", whereSql = "";
@@ -362,7 +364,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName4Other(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName,
+        @RequestParam String userId, @RequestParam @NotBlank String systemName,
         @RequestBody(required = false) String searchMapStr) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<Object> params = new ArrayList<>();
@@ -407,8 +409,9 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemNameAndTaskDefKey(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestParam(required = false) String taskDefKey,
-        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam String userId, @RequestParam @NotBlank String systemName,
+        @RequestParam(required = false) String taskDefKey, @RequestBody String searchMapStr, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;

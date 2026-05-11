@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.constraints.NotBlank;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -95,7 +97,7 @@ public class ItemAllApiImpl implements ItemAllApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
+        @RequestParam String userId, @RequestParam @NotBlank String systemName, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
@@ -106,7 +108,7 @@ public class ItemAllApiImpl implements ItemAllApi {
 
     @Override
     public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam @NotBlank String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemName(systemName, rows, page, sort);
@@ -181,8 +183,8 @@ public class ItemAllApiImpl implements ItemAllApi {
      */
     @Override
     public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
+        @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
@@ -204,7 +206,7 @@ public class ItemAllApiImpl implements ItemAllApi {
 
     @Override
     public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String systemName, @RequestBody String searchMapStr, @RequestParam Integer page,
+        @RequestParam @NotBlank String systemName, @RequestBody String searchMapStr, @RequestParam Integer page,
         @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
@@ -230,7 +232,7 @@ public class ItemAllApiImpl implements ItemAllApi {
     @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr) {
+        @RequestParam String userId, @RequestParam @NotBlank String systemName, @RequestBody String searchMapStr) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
@@ -250,7 +252,7 @@ public class ItemAllApiImpl implements ItemAllApi {
     @SuppressWarnings("java:S2077")
     @Override
     public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName,
+        @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName,
         @RequestBody(required = false) String searchMapStr) {
         Y9LoginUserHolder.setTenantId(tenantId);
         String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";

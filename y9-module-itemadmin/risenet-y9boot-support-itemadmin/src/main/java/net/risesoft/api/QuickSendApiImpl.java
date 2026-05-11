@@ -1,5 +1,7 @@
 package net.risesoft.api;
 
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -39,8 +41,9 @@ public class QuickSendApiImpl implements QuickSendApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> getAssignee(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId, @RequestParam String taskKey) {
+    public Y9Result<String> getAssignee(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String orgUnitId, @RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9FlowableHolder.setOrgUnitId(orgUnitId);
         return Y9Result.success(quickSendService.getAssignee(itemId, taskKey));
@@ -58,8 +61,9 @@ public class QuickSendApiImpl implements QuickSendApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveOrUpdate(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId, @RequestParam String taskKey, @RequestParam String assignee) {
+    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String orgUnitId, @RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String taskKey, @RequestParam String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
         Y9FlowableHolder.setOrgUnitId(orgUnitId);
         quickSendService.saveOrUpdate(itemId, taskKey, assignee);

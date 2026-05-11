@@ -3,6 +3,8 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.validation.constraints.NotBlank;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -143,8 +145,8 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam String tenantId,
-        @RequestParam String itemId, @RequestParam String interfaceId) {
+    public Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String interfaceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         List<ItemInterfaceParamsBind> list =
             itemInterfaceParamsBindRepository.findByItemIdAndInterfaceIdOrderByCreateTimeDesc(itemId, interfaceId);
@@ -182,8 +184,8 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<TaskTimeConfModel> getTaskTimeConf(@RequestParam String tenantId,
-        @RequestParam String processDefinitionId, @RequestParam String itemId, String taskKey) {
+    public Y9Result<TaskTimeConfModel> getTaskTimeConf(@RequestParam @NotBlank String tenantId,
+        @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String itemId, String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         TaskTimeConf conf = taskTimeConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
             processDefinitionId, taskKey);
