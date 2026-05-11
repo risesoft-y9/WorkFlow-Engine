@@ -86,8 +86,8 @@ public interface ProcessTodoApi {
      * @since 9.6.6
      */
     @GetMapping("/getListByUserIdAndSystemName")
-    Y9Page<TaskModel> getListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+    Y9Page<TaskModel> getListByUserIdAndSystemName(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
@@ -180,8 +180,8 @@ public interface ProcessTodoApi {
      * @since 9.6.6
      */
     @GetMapping("/searchListByUserIdAndSystemName")
-    Y9Page<TaskModel> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+    Y9Page<TaskModel> searchListByUserIdAndSystemName(@RequestParam("tenantId") @NotBlank String tenantId,
+        @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName,
         @RequestParam(value = "searchTerm", required = false) String searchTerm, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 
