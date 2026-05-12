@@ -232,7 +232,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
             List<DepartmentProp> leaders =
                 departmentApi
                     .listDepartmentPropByOrgUnitIdAndCategory(tenantId, person.getParentId(),
-                        DepartmentPropCategoryEnum.LEADER)
+                        DepartmentPropCategoryEnum.LEADER.getCategory())
                     .getData();
             boolean isLeader =
                 leaders.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9FlowableHolder.getOrgUnitId()));
@@ -249,7 +249,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
             List<DepartmentProp> managers =
                 departmentApi
                     .listDepartmentPropByOrgUnitIdAndCategory(tenantId, person.getParentId(),
-                        DepartmentPropCategoryEnum.MANAGER)
+                        DepartmentPropCategoryEnum.MANAGER.getCategory())
                     .getData();
             boolean isManager =
                 managers.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9FlowableHolder.getOrgUnitId()));
