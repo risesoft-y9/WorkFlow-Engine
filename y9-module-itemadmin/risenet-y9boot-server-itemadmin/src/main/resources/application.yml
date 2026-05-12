@@ -102,6 +102,8 @@ spring:
         uris: localhost:9200
         username: elastic
         password: 'risesoft'
+        connection-timeout: 30s
+        socket-timeout: 60s
     jmx:
         default-domain: itemAdmin
     jpa:
