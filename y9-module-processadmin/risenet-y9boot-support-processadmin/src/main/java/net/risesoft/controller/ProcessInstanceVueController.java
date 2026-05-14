@@ -126,7 +126,8 @@ public class ProcessInstanceVueController {
             OrgUnit> idOrgUnitMap = orgUnitApi.listPersonOrPositionByIds(tenantId, startUserIdList)
                 .getData()
                 .stream()
-                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit, (existing, replacement) -> existing));
+                .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+
         for (ProcessInstance processInstance : processInstanceList) {
             processInstanceId = processInstance.getId();
             Map<String, Object> map = new HashMap<>(16);
