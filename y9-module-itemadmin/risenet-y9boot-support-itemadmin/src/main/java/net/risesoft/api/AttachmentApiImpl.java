@@ -20,22 +20,26 @@ import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.entity.attachment.AttachmentConf;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.AttachmentConfModel;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.attachment.AttachmentConfRepository;
 import net.risesoft.repository.attachment.AttachmentRepository;
 import net.risesoft.service.attachment.AttachmentService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
+import net.risesoft.y9.util.Y9StringUtil;
 
 /**
  * 附件接口
@@ -219,6 +223,15 @@ public class AttachmentApiImpl implements AttachmentApi {
             file.setProcessSerialNumber(processSerialNumber);
             file.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
             attachmentRepository.save(file);
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.ATTACHMENT_SAVEINFO.getAction())
+                .description(
+                    Y9StringUtil.format(ItemAdminAuditLogEnum.ATTACHMENT_SAVEINFO.getDescription(), file.getName()))
+                .objectId(file.getId())
+                .oldObject(file)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         }
         return Y9Result.success();
     }
@@ -258,6 +271,15 @@ public class AttachmentApiImpl implements AttachmentApi {
                 attachment.setPersonName(orgUnit.getName());
                 attachment.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
                 attachmentRepository.save(attachment);
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD_INFO_UPDATE.getAction())
+                    .description(Y9StringUtil.format(
+                        ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD_INFO_UPDATE.getDescription(), attachment.getName()))
+                    .objectId(attachment.getId())
+                    .oldObject(attachment)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
             } else {
                 Attachment fileAttachment = new Attachment();
                 fileAttachment.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -274,7 +296,17 @@ public class AttachmentApiImpl implements AttachmentApi {
                 fileAttachment.setFileSource(fileSource);
                 fileAttachment.setTabIndex(attachmentService.fileCounts(processSerialNumber) + 1);
                 attachmentRepository.save(fileAttachment);
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD.getDescription(),
+                        fileAttachment.getName()))
+                    .objectId(fileAttachment.getId())
+                    .oldObject(fileAttachment)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
             }
+
             msg = "success:true";
         } catch (Exception e) {
             LOGGER.error("saveOrUpdateUploadInfo error", e);
@@ -309,6 +341,15 @@ public class AttachmentApiImpl implements AttachmentApi {
                 attachment.setFileSize(fileSize);
                 attachment.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
                 attachmentRepository.save(attachment);
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD_INFO_UPDATE.getAction())
+                    .description(Y9StringUtil.format(
+                        ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD_INFO_UPDATE.getDescription(), attachment.getName()))
+                    .objectId(attachment.getId())
+                    .oldObject(attachment)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
             }
             msg = "success:true";
         } catch (Exception e) {

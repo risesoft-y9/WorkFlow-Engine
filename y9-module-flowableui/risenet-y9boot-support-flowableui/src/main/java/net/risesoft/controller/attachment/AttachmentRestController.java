@@ -1,23 +1,12 @@
 package net.risesoft.controller.attachment;
 
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayInputStream;
-import java.io.DataInputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.nio.file.Files;
-import java.util.Date;
 import java.util.List;
-import java.util.zip.ZipEntry;
-import java.util.zip.ZipOutputStream;
 
+import javax.servlet.ServletContext;
+import javax.servlet.ServletOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.constraints.NotBlank;
@@ -39,7 +28,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.log.FlowableOperationTypeEnum;
@@ -47,13 +35,15 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.AttachmentConfModel;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.AttachmentService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9FileUtil;
+import net.risesoft.y9.util.mime.ContentDispositionUtil;
+import net.risesoft.y9.util.mime.MediaTypeUtil;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
@@ -76,6 +66,10 @@ public class AttachmentRestController {
 
     private final OrgUnitApi orgUnitApi;
 
+    private final AttachmentService attachmentService;
+
+    private final ServletContext servletContext;
+
     /**
      * 附件下载
      *
@@ -85,25 +79,17 @@ public class AttachmentRestController {
     @GetMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
+
+        try (ServletOutputStream out = response.getOutputStream()) {
             AttachmentModel model = attachmentApi.findById(tenantId, id).getData();
             String filename = model.getName();
-            String filePath = model.getFileStoreId();
-            if (request.getHeader("User-Agent").toLowerCase().contains("firefox")) {
-                filename = new String(filename.getBytes(StandardCharsets.UTF_8), "ISO8859-1");// 火狐浏览器
-            } else {
-                filename = URLEncoder.encode(filename, StandardCharsets.UTF_8);
-            }
-            OutputStream out = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=\"" + filename + "\"");
-            response.setHeader("Content-type", "text/html;charset=UTF-8");
-            response.setContentType("application/octet-stream");
-            y9FileStoreService.downloadFileToOutputStream(filePath, out);
+            String fileStoreId = model.getFileStoreId();
+            response.setHeader("Content-disposition", ContentDispositionUtil.standardizeAttachment(filename));
+            response.setContentType(MediaTypeUtil.getMediaTypeForFileName(servletContext, filename).toString());
+            attachmentService.download(fileStoreId, filename, out);
             out.flush();
-            out.close();
-        } catch (Exception e) {
-            LOGGER.error("附件下载失败", e);
+        } catch (IOException e) {
+            LOGGER.warn(e.getMessage(), e);
         }
     }
 
@@ -116,9 +102,7 @@ public class AttachmentRestController {
     @FlowableLog(operationName = "删除附件", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delFile")
     public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        attachmentApi.delFile(tenantId, ids);
-        return Y9Result.successMsg("删除成功");
+        return attachmentService.delFile(ids);
     }
 
     /**
@@ -147,76 +131,7 @@ public class AttachmentRestController {
     @GetMapping(value = "/packDownload")
     public void packDownload(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String fileSource, HttpServletResponse response, HttpServletRequest request) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            Y9Page<AttachmentModel> y9Page =
-                attachmentApi.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
-            List<AttachmentModel> list = y9Page.getRows();
-            // 拼接zip文件,之后下载下来的压缩文件的名字
-            String base_name = "附件" + new Date().getTime();
-            String fileZip = base_name + ".zip";
-            String packDownloadPath = Y9Context.getWebRootRealPath() + "static" + File.separator + "packDownload";
-            File folder = new File(packDownloadPath);
-            if (!folder.exists() && !folder.isDirectory() && !folder.mkdirs()) {
-                LOGGER.error("创建目录失败：{}", packDownloadPath);
-            }
-            String zipPath = packDownloadPath + File.separator + fileZip;
-            BufferedOutputStream bos = new BufferedOutputStream(new FileOutputStream(zipPath));
-            ZipOutputStream zos = new ZipOutputStream(bos);
-            ZipEntry ze;
-            for (AttachmentModel file : list) {
-                String filename = file.getName();
-                String fileStoreId = file.getFileStoreId();
-                byte[] fileByte = y9FileStoreService.downloadFileToBytes(fileStoreId);
-                InputStream bis = new ByteArrayInputStream(fileByte);
-                ze = new ZipEntry(filename);
-                zos.putNextEntry(ze);
-                int s;
-                while ((s = bis.read()) != -1) {
-                    zos.write(s);
-                }
-                bis.close();
-            }
-            zos.flush();
-            zos.close();
-            boolean b = request.getHeader("User-Agent").toLowerCase().contains(BrowserTypeEnum.FIREFOX.getValue());
-            if (b) {
-                fileZip = new String(fileZip.getBytes(StandardCharsets.UTF_8), "ISO8859-1");
-            } else {
-                fileZip = URLEncoder.encode(fileZip, StandardCharsets.UTF_8);
-            }
-            OutputStream out = response.getOutputStream();
-            response.reset();
-            response.setHeader("Content-disposition", "attachment; filename=\"" + fileZip + "\"");
-            response.setHeader("Content-type", "text/html;charset=UTF-8");
-            response.setContentType("application/octet-stream");
-            // 浏览器下载临时文件的路径
-            DataInputStream in = new DataInputStream(new FileInputStream(zipPath));
-            byte[] byte1 = new byte[2048];
-            // 之后用来删除临时压缩文件
-            File reportZip = new File(zipPath);
-            try {
-                while ((in.read(byte1)) != -1) {
-                    out.write(byte1);
-                }
-                out.flush();
-            } catch (Exception e) {
-                LOGGER.error("下载失败", e);
-            } finally {
-                if (out != null) {
-                    out.close();
-                }
-                in.close();
-                // 删除服务器本地产生的临时压缩文件
-                try {
-                    Files.delete(reportZip.toPath());
-                } catch (IOException e) {
-                    LOGGER.warn("删除服务器本地产生的临时压缩文件失败！{}", reportZip.getAbsolutePath(), e);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("下载失败", e);
-        }
+        attachmentService.packDownload(processSerialNumber, fileSource, response, request);
     }
 
     /**
@@ -235,27 +150,7 @@ public class AttachmentRestController {
     public Y9Result<String> upload(MultipartFile file, @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String describes,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String fileSource) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            if (StringUtils.isNotBlank(describes)) {
-                describes = URLDecoder.decode(describes, StandardCharsets.UTF_8);
-            }
-            String originalFilename = file.getOriginalFilename();
-            String fileName = FilenameUtils.getName(originalFilename);
-            String fullPath =
-                String.format("/%s/%s/attachmentFile/%s", Y9Context.getSystemName(), tenantId, processSerialNumber);
-            Y9FileStore y9FileStore = y9FileStoreService.uploadFile(file.getInputStream(), fullPath, fileName);
-            String storeId = y9FileStore.getId();
-            String fileSize =
-                Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
-            return attachmentApi.upload(tenantId, userId, Y9FlowableHolder.getPositionId(), fileName, fileSize,
-                processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
-        } catch (Exception e) {
-            LOGGER.error("上传失败", e);
-        }
-        return Y9Result.failure("上传失败");
+        return attachmentService.upload(file, processInstanceId, taskId, describes, processSerialNumber, fileSource);
     }
 
     /**
@@ -280,9 +175,10 @@ public class AttachmentRestController {
     @PostMapping(value = "/uploadForm")
     public Y9Result<Object> uploadForm(@RequestParam("file") MultipartFile file,
         @ModelAttribute AttachmentModel attachmentModel) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), userName = person.getName(), tenantId = Y9LoginUserHolder.getTenantId(),
-            positionId = Y9FlowableHolder.getPositionId();
+        String userId = Y9LoginUserHolder.getUserInfo().getPersonId();
+        String userName = Y9LoginUserHolder.getUserInfo().getName();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9FlowableHolder.getPositionId();
         try {
             String processSerialNumber = attachmentModel.getProcessSerialNumber();
             if (StringUtils.isBlank(processSerialNumber)) {
@@ -332,8 +228,8 @@ public class AttachmentRestController {
     @FlowableLog(operationName = "保存附件排序", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrder")
     public Y9Result<Object> saveOrder(@RequestParam String[] idAndTabIndexs) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getUserInfo().getPersonId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         attachmentApi.saveOrder(tenantId, userId, idAndTabIndexs);
         return Y9Result.successMsg("保存附件排序成功！");
     }
