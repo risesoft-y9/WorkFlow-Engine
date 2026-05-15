@@ -15,17 +15,21 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.entity.attachment.Attachment;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.exception.GlobalErrorCodeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.attachment.AttachmentRepository;
 import net.risesoft.service.attachment.AttachmentService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import net.risesoft.y9.util.Y9StringUtil;
 import net.risesoft.y9public.service.Y9FileStoreService;
 
 /**
@@ -53,6 +57,15 @@ public class AttachmentServiceImpl implements AttachmentService {
             try {
                 attachmentRepository.delete(file);
                 y9FileStoreService.deleteFile(file.getFileStoreId());
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.ATTACHMENT_DELETE.getAction())
+                    .description(
+                        Y9StringUtil.format(ItemAdminAuditLogEnum.ATTACHMENT_DELETE.getDescription(), file.getName()))
+                    .objectId(file.getId())
+                    .oldObject(file)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
             } catch (Exception e) {
                 LOGGER.error("删除文件失败", e);
             }
@@ -68,6 +81,15 @@ public class AttachmentServiceImpl implements AttachmentService {
             attachmentRepository.deleteById(str);
             assert file != null;
             y9FileStoreService.deleteFile(file.getFileStoreId());
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.ATTACHMENT_DELETE.getAction())
+                .description(
+                    Y9StringUtil.format(ItemAdminAuditLogEnum.ATTACHMENT_DELETE.getDescription(), file.getName()))
+                .objectId(file.getId())
+                .oldObject(file)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         }
     }
 
@@ -155,6 +177,15 @@ public class AttachmentServiceImpl implements AttachmentService {
         Integer index = attachmentRepository.getMaxTabIndex(processSerialNumber);
         attachment.setTabIndex(index == null ? 1 : index + 1);
         attachmentRepository.save(attachment);
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD.getAction())
+            .description(
+                Y9StringUtil.format(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD.getDescription(), attachment.getName()))
+            .objectId(attachment.getId())
+            .oldObject(attachment)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
     }
 
     @Transactional
@@ -164,5 +195,14 @@ public class AttachmentServiceImpl implements AttachmentService {
         Integer index = attachmentRepository.getMaxTabIndex(attachment.getProcessSerialNumber());
         attachment.setTabIndex(index == null ? 1 : index + 1);
         attachmentRepository.save(attachment);
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD_INFO_UPDATE.getAction())
+            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD_INFO_UPDATE.getDescription(),
+                attachment.getName()))
+            .objectId(attachment.getId())
+            .oldObject(attachment)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
     }
 }
