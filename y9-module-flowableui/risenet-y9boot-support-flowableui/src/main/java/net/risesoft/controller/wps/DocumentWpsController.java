@@ -39,6 +39,7 @@ import net.risesoft.model.itemadmin.DocumentWpsModel;
 import net.risesoft.model.itemadmin.DraftModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.service.AuditLogSaveService;
 import net.risesoft.service.impl.TaoHongServiceImpl;
 import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -129,6 +130,7 @@ public class DocumentWpsController {
     private final DocumentWpsApi documentWpsApi;
     private final Y9FileStoreService y9FileStoreService;
     private final Y9WordApi y9WordApi;
+    private final AuditLogSaveService auditLogSaveService;
 
     public static void main(String[] args) throws Exception {
         String destDocx = "C:\\Users\\10858\\Desktop\\套红.docx";
@@ -179,6 +181,7 @@ public class DocumentWpsController {
                 IOUtils.copy(conn.getInputStream(), out);
                 out.flush();
                 out.close();
+                auditLogSaveService.downloadWpsLog(documentWps);
             } catch (Exception e) {
                 LOGGER.error("下载正文异常", e);
             }

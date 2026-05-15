@@ -19,6 +19,7 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 import net.risesoft.entity.opinion.OpinionSign;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.platform.org.DepartmentPropCategoryEnum;
 import net.risesoft.id.Y9IdGenerator;
@@ -29,6 +30,7 @@ import net.risesoft.model.platform.org.DepartmentProp;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.repository.opinion.OpinionSignRepository;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
@@ -36,9 +38,11 @@ import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
 import net.risesoft.service.opinion.OpinionSignService;
 import net.risesoft.util.CommentUtil;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import net.risesoft.y9.util.Y9StringUtil;
 
 /**
  * @author : qinman
@@ -75,7 +79,17 @@ public class OpinionSignServiceImpl implements OpinionSignService {
         if (StringUtils.isNotBlank(id)) {
             OpinionSign old = this.findById(id);
             old.setContent(opinionSign.getContent());
-            return opinionSignRepository.save(old);
+            old = opinionSignRepository.save(old);
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.OPINION_SIGN_UPDATE.getAction())
+                .description(
+                    Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_SIGN_UPDATE.getDescription(), old.getContent()))
+                .objectId(old.getId())
+                .oldObject(old)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
+            return old;
         }
         OpinionSign newOs = new OpinionSign();
         newOs.setId(Y9IdGenerator.genId());
@@ -88,7 +102,17 @@ public class OpinionSignServiceImpl implements OpinionSignService {
         SignDeptDetail signDeptDetail = signDeptDetailService.findById(opinionSign.getSignDeptDetailId());
         newOs.setDeptId(signDeptDetail.getDeptId());
         newOs.setDeptName(signDeptDetail.getDeptName());
-        return opinionSignRepository.save(newOs);
+        newOs = opinionSignRepository.save(newOs);
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.OPINION_SIGN_ADD.getAction())
+            .description(
+                Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_SIGN_ADD.getDescription(), newOs.getContent()))
+            .objectId(newOs.getId())
+            .oldObject(newOs)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
+        return newOs;
     }
 
     @Override
@@ -281,6 +305,18 @@ public class OpinionSignServiceImpl implements OpinionSignService {
     @Override
     @Transactional
     public void deleteById(String id) {
-        opinionSignRepository.deleteById(id);
+        OpinionSign opinionSign = this.findById(id);
+        if (null != opinionSign) {
+            opinionSignRepository.delete(opinionSign);
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.OPINION_SIGN_DELETE.getAction())
+                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_SIGN_DELETE.getDescription(),
+                    opinionSign.getContent()))
+                .objectId(opinionSign.getId())
+                .oldObject(opinionSign)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
+        }
     }
 }

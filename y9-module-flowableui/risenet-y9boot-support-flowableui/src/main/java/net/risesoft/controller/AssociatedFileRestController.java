@@ -22,6 +22,7 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.AuditLogSaveService;
 import net.risesoft.service.SearchService;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -42,6 +43,8 @@ public class AssociatedFileRestController {
     private final SearchService searchService;
 
     private final AssociatedFileApi associatedFileApi;
+
+    private final AuditLogSaveService auditLogSaveService;
 
     /**
      * 删除关联流程

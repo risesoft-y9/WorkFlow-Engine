@@ -421,6 +421,9 @@ public class DocumentApiImpl implements DocumentApi {
         }
         if (y9Result.isSuccess()) {// 异步自动循环发送
             asyncUtilService.loopSending(tenantId, orgUnitId, itemId, y9Result.getData());
+            // 保存发送审计日志
+            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
+            asyncUtilService.sendAuditLog(tenantId, processParam.getTitle(), userChoice);
         }
         return y9Result;
     }

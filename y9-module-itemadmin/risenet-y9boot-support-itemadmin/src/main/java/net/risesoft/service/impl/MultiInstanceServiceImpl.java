@@ -10,9 +10,11 @@ import org.springframework.stereotype.Service;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.RuntimeApi;
+import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -29,6 +31,10 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     private final VariableApi variableApi;
 
     private final RuntimeApi runtimeApi;
+
+    private final TaskApi taskApi;
+
+    private final AsyncUtilService asyncUtilService;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -58,6 +64,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         // variableApi.setVariable(tenantId, taskId,
         // SysVariables.NR_OF_ACTIVE_INSTANCES, (int)nrOfActiveInstances + 1);
         // }
+        asyncUtilService.addMultiInstanceAuditLog(tenantId, taskId, elementUser);
     }
 
     @Override
@@ -68,7 +75,10 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
          */
         Map<String, Object> map = new HashMap<>(16);
         map.put("elementUser", elementUser);
-        return runtimeApi.addMultiInstanceExecution(tenantId, activityId, parentExecutionId, map);
+        Y9Result<Object> objectY9Result =
+            runtimeApi.addMultiInstanceExecution(tenantId, activityId, parentExecutionId, map);
+
+        return objectY9Result;
     }
 
     @SuppressWarnings("unchecked")

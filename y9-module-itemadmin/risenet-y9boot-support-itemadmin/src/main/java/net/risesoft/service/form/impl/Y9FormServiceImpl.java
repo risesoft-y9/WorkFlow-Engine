@@ -28,9 +28,11 @@ import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.enums.DialectEnum;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.enums.ItemTableTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormFieldRepository;
@@ -40,10 +42,12 @@ import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.form.Y9FormService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.sqlddl.DbMetaDataUtil;
+import net.risesoft.y9.util.Y9StringUtil;
 
 /**
  * @author qinman
@@ -95,6 +99,15 @@ public class Y9FormServiceImpl implements Y9FormService {
                 sqlStr = new StringBuilder("delete FROM " + tableName + " where guid = '" + guid + "'");
             }
             jdbcTemplate4Tenant.execute(sqlStr.toString());
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.FORM_SUB_DATA_DELETE.getAction())
+                .description(
+                    Y9StringUtil.format(ItemAdminAuditLogEnum.FORM_SUB_DATA_DELETE.getDescription(), tableName, guid))
+                .objectId(guid)
+                .oldObject(tableName)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         } catch (Exception e) {
             LOGGER.error("删除失败：", e);
             return Y9Result.failure("删除失败");
@@ -117,6 +130,15 @@ public class Y9FormServiceImpl implements Y9FormService {
                     sqlStr = new StringBuilder("delete FROM " + tableName + " where guid = '" + guid + "'");
                 }
                 jdbcTemplate4Tenant.execute(sqlStr.toString());
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.FORM_PRE_DATA_DELETE.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.FORM_PRE_DATA_DELETE.getDescription(),
+                        tableName, guid))
+                    .objectId(guid)
+                    .oldObject(tableName)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
             }
             return Y9Result.success(true, "删除成功");
         } catch (Exception e) {

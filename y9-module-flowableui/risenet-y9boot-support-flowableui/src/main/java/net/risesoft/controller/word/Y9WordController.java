@@ -42,6 +42,7 @@ import net.risesoft.model.itemadmin.Y9WordHistoryModel;
 import net.risesoft.model.itemadmin.Y9WordModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.service.AuditLogSaveService;
 import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -66,6 +67,7 @@ public class Y9WordController {
     private final Y9WordApi y9WordApi;
     private final DraftApi draftApi;
     private final ProcessParamApi processParamApi;
+    private final AuditLogSaveService auditLogSaveService;
 
     /**
      * 删除指定类型的正文
@@ -97,12 +99,13 @@ public class Y9WordController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Y9WordHistoryModel map = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
-        String fileStoreId = map.getFileStoreId();
+        Y9WordHistoryModel y9WordHistoryModel = y9WordApi.findHistoryVersionDoc(tenantId, userId, taskId).getData();
+        String fileStoreId = y9WordHistoryModel.getFileStoreId();
         try (ServletOutputStream out = response.getOutputStream()) {
             Y9DownloadUtil.setDownloadResponseHeaders(response, request,
                 getDocumentTitle(tenantId, processSerialNumber) + fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
+            auditLogSaveService.downLoadWordLog(fileStoreId, y9WordHistoryModel.getTitle(), "downloadHis");
         } catch (Exception e) {
             LOGGER.error("下载历史版本正文文件异常，异常：", e);
         }
@@ -119,9 +122,11 @@ public class Y9WordController {
         @RequestParam(required = false) String processSerialNumber, HttpServletResponse response,
         HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
-            Y9DownloadUtil.setDownloadResponseHeaders(response, request,
-                getDocumentTitle(Y9LoginUserHolder.getTenantId(), processSerialNumber) + fileType);
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String title = getDocumentTitle(tenantId, processSerialNumber);
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request, title + fileType);
             y9FileStoreService.downloadFileToOutputStream(id, out);
+            auditLogSaveService.downLoadWordLog(id, title, "downloadWord");
         } catch (Exception e) {
             LOGGER.error("下载正文文件异常，异常：", e);
         }
@@ -140,11 +145,12 @@ public class Y9WordController {
         HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Y9WordModel map = y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            String fileStoreId = map.getFileStoreId();
+            Y9WordModel y9WordModel = y9WordApi.findWordByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            String fileStoreId = y9WordModel.getFileStoreId();
             Y9DownloadUtil.setDownloadResponseHeaders(response, request,
                 getDocumentTitle(tenantId, processSerialNumber) + fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
+            auditLogSaveService.downLoadWordLog(fileStoreId, y9WordModel.getTitle(), "downloadCs");
         } catch (Exception e) {
             LOGGER.error("下载正文（抄送件）异常，异常：", e);
         }
@@ -380,6 +386,7 @@ public class Y9WordController {
                     .getData();
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
+                auditLogSaveService.wordUploadLog(title, processSerialNumber, y9FileStore);
             }
         } catch (Exception e) {
             LOGGER.error("保存正文异常", e);
@@ -451,6 +458,7 @@ public class Y9WordController {
                 if (StringUtils.equals(fileType, ".pdf") || StringUtils.equals(fileType, ".tif")) {
                     result.put("isPdf", true);
                 }
+                auditLogSaveService.wordUploadLog(title, processSerialNumber, y9FileStore);
             } else {
                 result.put("msg", "保存正文信息失败");
             }
@@ -520,6 +528,7 @@ public class Y9WordController {
                     .getData();
             if (Boolean.TRUE.equals(result2)) {
                 result = "success:true";
+                auditLogSaveService.wordUploadLog(title, processSerialNumber, y9FileStore);
             }
         } catch (Exception e) {
             LOGGER.error("上传正文失败", e);

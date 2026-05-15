@@ -53,6 +53,7 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
@@ -95,6 +96,7 @@ public class ButtonOperationRestController {
     private final ButtonOperationService buttonOperationService;
     private final ActRuDetailApi actRuDetailApi;
     private final SmsDetailApi smsDetailApi;
+    private final AsyncUtilService asyncUtilService;
 
     /**
      * 任务签收
@@ -117,6 +119,7 @@ public class ButtonOperationRestController {
                 }
             }
             taskApi.claim(tenantId, positionId, taskId);
+            asyncUtilService.claimAuditLog(tenantId, positionId, taskId);
             return Y9Result.successMsg("签收成功");
         } catch (Exception e) {
             LOGGER.error("签收失败", e);
@@ -340,6 +343,7 @@ public class ButtonOperationRestController {
             Y9Result<Object> y9Result =
                 buttonOperationApi.directSend(tenantId, positionId, taskId, routeToTask, processInstanceId);
             if (y9Result.isSuccess()) {
+                asyncUtilService.sendStarterAuditLog(tenantId, positionId, taskId);
                 return Y9Result.successMsg("发送成功");
             }
         } catch (Exception e) {

@@ -47,6 +47,7 @@ import net.risesoft.model.itemadmin.Y9WordModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.service.AuditLogSaveService;
 import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -83,6 +84,7 @@ public class FormNTKOController {
     private final DraftApi draftApi;
     private final Y9WordApi y9WordApi;
     private final UserApi userApi;
+    private final AuditLogSaveService auditLogSaveService;
 
     /**
      * 删除指定类型的正文
@@ -124,6 +126,7 @@ public class FormNTKOController {
         try (ServletOutputStream out = response.getOutputStream()) {
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber) + fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
+            auditLogSaveService.downLoadWordLog(fileStoreId, model.getTitle(), "downloadHis");
         } catch (Exception e) {
             LOGGER.error("下载历史正文失败", e);
         }
@@ -148,6 +151,7 @@ public class FormNTKOController {
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber) + fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(id, out);
+            auditLogSaveService.downLoadWordLog(id, getTitle(processSerialNumber), "downloadWord");
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -187,6 +191,7 @@ public class FormNTKOController {
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber) + fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
+            auditLogSaveService.downLoadWordLog(fileStoreId, getTitle(processSerialNumber), "downloadCs");
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -215,6 +220,7 @@ public class FormNTKOController {
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber) + fileType);
             OutputStream out = response.getOutputStream();
             y9FileStoreService.downloadFileToOutputStream(id, out);
+            auditLogSaveService.downLoadWordLog(id, getTitle(processSerialNumber), "downloadWord");
             out.flush();
             out.close();
         } catch (Exception e) {
@@ -583,7 +589,12 @@ public class FormNTKOController {
             // 保存正文信息
             boolean saveSuccess =
                 saveWordInfo(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore);
-            return saveSuccess ? "success:true" : SUCCESS_FALSE;
+            if (saveSuccess) {
+                auditLogSaveService.wordUploadLog(title, processSerialNumber, y9FileStore);
+                return "success:true";
+            } else {
+                return SUCCESS_FALSE;
+            }
         } catch (Exception e) {
             LOGGER.error("保存word转PDF的正文失败", e);
             return SUCCESS_FALSE;
@@ -673,6 +684,7 @@ public class FormNTKOController {
                 saveWordInfo(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, taskId, y9FileStore);
             if (uploadSuccess) {
                 updateSuccessResult(result, fileType);
+                auditLogSaveService.wordUploadLog(title, processSerialNumber, y9FileStore);
             } else {
                 return createErrorResult(SAVE_ERROR);
             }
@@ -833,7 +845,12 @@ public class FormNTKOController {
             // 保存正文信息
             boolean saveSuccess = saveWordInfo(tenantId, userId, title, fileType, processSerialNumber, isTaoHong,
                 docCategory, taskId, y9FileStore);
-            return saveSuccess ? "success:true" : SUCCESS_FALSE;
+            if (saveSuccess) {
+                auditLogSaveService.wordUploadLog(title, processSerialNumber, y9FileStore);
+                return "success:true";
+            } else {
+                return SUCCESS_FALSE;
+            }
         } catch (Exception e) {
             LOGGER.error("上传正文失败", e);
             return SUCCESS_FALSE;
