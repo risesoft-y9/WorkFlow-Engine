@@ -50,6 +50,12 @@
 
         <dependency>
             <groupId>net.risesoft</groupId>
+            <artifactId>risenet-y9boot-support-audit</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-support-file-service-local</artifactId>
             <version>${project.version}</version>
         </dependency>
@@ -128,7 +134,7 @@
             <artifactId>poi-tl</artifactId>
             <scope>compile</scope>
         </dependency>
- 
+
         <dependency>
             <groupId>cn.wps.yun</groupId>
             <artifactId>graph-java-client</artifactId>
