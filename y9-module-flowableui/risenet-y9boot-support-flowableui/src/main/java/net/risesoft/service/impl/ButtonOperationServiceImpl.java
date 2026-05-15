@@ -11,6 +11,7 @@ import java.util.concurrent.atomic.AtomicInteger;
 
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
@@ -28,18 +29,23 @@ import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.enums.FlowableUiAuditLogEnum;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
+import net.risesoft.y9.util.Y9StringUtil;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -58,8 +64,10 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     private final ActRuDetailApi actRuDetailApi;
     private final HistoricProcessApi historicProcessApi;
     private final ButtonOperationApi buttonOperationApi;
+    private final AsyncUtilService asyncUtilService;
 
     @Override
+    @Transactional
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9FlowableHolder.getPositionId();
@@ -106,8 +114,20 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         ptModel.setTaskDefName(taskDefName);
         ptModel.setTaskId(taskId);
         ptModel.setId("");
-
         processTrackApi.saveOrUpdate(tenantId, ptModel);
+
+        /**
+         * 记录审计日志
+         */
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(FlowableUiAuditLogEnum.DOCUMENT_COMPLETE.getAction())
+            .description(
+                Y9StringUtil.format(FlowableUiAuditLogEnum.DOCUMENT_COMPLETE.getDescription(), taskModel.getName()))
+            .objectId(taskId)
+            .oldObject(taskModel)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
     }
 
     @Override
@@ -169,6 +189,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         String positionId = Y9FlowableHolder.getPositionId();
         String userName = Y9FlowableHolder.getPosition().getName();
         String tenantId = Y9LoginUserHolder.getTenantId();
+        String title = "";
         try {
             /*
               1、恢复待办
@@ -178,10 +199,12 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
+                title = officeDoneInfoModel.getTitle();
             } else {
                 ProcessParamModel processParamModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 year = getYear(processParamModel.getCreateTime());
+                title = processParamModel.getTitle();
             }
             HistoricTaskInstanceModel hisTaskModelTemp =
                 historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
@@ -215,6 +238,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             ptm.setTaskDefName(hisTaskModelTemp.getName());
             ptm.setTaskId(hisTaskModelTemp.getId());
             processTrackApi.saveOrUpdate(tenantId, ptm);
+            asyncUtilService.resumeToDoAuditLog(tenantId, processInstanceId, title);
         } catch (Exception e) {
             LOGGER.error("runtimeApi resumeToDo error", e);
             throw new Exception("runtimeApi resumeToDo error");

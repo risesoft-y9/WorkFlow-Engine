@@ -657,6 +657,7 @@ public class FormDataServiceImpl implements FormDataService {
             if (!y9Result.isSuccess()) {
                 throw new Exception("FormDataService saveChildTableData error0");
             }
+
         } catch (Exception e) {
             LOGGER.error("****************************formData:{}", formData);
             final Writer result = new StringWriter();

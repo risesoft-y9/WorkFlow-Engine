@@ -14,18 +14,22 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.AssociatedFile;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.repository.jpa.AssociatedFileRepository;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.UtilService;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9StringUtil;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -70,6 +74,15 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             String newAssociatedId = getAssociatedId(delIds, associatedFile);
             associatedFile.setAssociatedId(newAssociatedId);
             associatedFileRepository.save(associatedFile);
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getAction())
+                .description(
+                    Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getDescription(), "ids:" + delIds))
+                .objectId(delIds)
+                .oldObject(associatedFile)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         }
     }
 
@@ -88,6 +101,15 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             }
             associatedFile.setAssociatedId(newAssociatedId);
             associatedFileRepository.save(associatedFile);
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getAction())
+                .description(
+                    Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getDescription(), "id:" + delId))
+                .objectId(delId)
+                .oldObject(associatedFile)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         }
     }
 
@@ -237,6 +259,15 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             associatedFile.setAssociatedId(newAssociatedId);
         }
         associatedFileRepository.save(associatedFile);
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getAction())
+            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getDescription(),
+                "processInstanceIds:" + processInstanceIds))
+            .objectId(processInstanceIds)
+            .oldObject(associatedFile)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
     }
 
 }

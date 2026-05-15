@@ -31,6 +31,7 @@ import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.service.AuditLogSaveService;
 import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -49,6 +50,7 @@ public class WpsRestController {
     private final ProcessParamApi processParamApi;
     private final Y9FileStoreService y9FileStoreService;
     private final Y9WordApi y9WordApi;
+    private final AuditLogSaveService auditLogSaveService;
 
     /**
      * 下载正文
@@ -60,9 +62,11 @@ public class WpsRestController {
     public void download(@RequestParam String tenantId, @RequestParam String processSerialNumber,
         HttpServletResponse response, HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
-            Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber));
+            String title = getTitle(processSerialNumber);
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request, title);
             String y9FileStoreId = y9WordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber).getData();
             y9FileStoreService.downloadFileToOutputStream(y9FileStoreId, out);
+            auditLogSaveService.downloadWpsLog(y9FileStoreId, title, "mobile");
         } catch (Exception e) {
             LOGGER.error("下载正文异常", e);
         }
@@ -113,10 +117,12 @@ public class WpsRestController {
     public void revokeRedHeader(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, HttpServletResponse response, HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
-            Y9DownloadUtil.setDownloadResponseHeaders(response, request, getTitle(processSerialNumber));
+            String title = getTitle(processSerialNumber);
+            Y9DownloadUtil.setDownloadResponseHeaders(response, request, title);
             y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "1");
             String y9FileStoreId = y9WordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber).getData();
             y9FileStoreService.downloadFileToOutputStream(y9FileStoreId, out);
+            auditLogSaveService.revokeRedHeaderLog(y9FileStoreId, title, "mobile");
         } catch (Exception e) {
             LOGGER.error("撤销红头异常", e);
         }
@@ -181,6 +187,7 @@ public class WpsRestController {
                 if (fileType.equals(".pdf") || fileType.equals(".tif")) {
                     map.put("isPdf", true);
                 }
+                auditLogSaveService.wpsUploadLog(title, processSerialNumber, y9FileStore, "mobile");
             } else {
                 map.put("msg", "保存正文信息失败");
             }

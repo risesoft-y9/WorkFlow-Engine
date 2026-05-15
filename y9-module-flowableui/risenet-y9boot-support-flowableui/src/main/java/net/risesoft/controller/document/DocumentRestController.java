@@ -64,6 +64,7 @@ import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ButtonOperationService;
+import net.risesoft.service.DocumentHandleService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
@@ -103,6 +104,7 @@ public class DocumentRestController {
     private final Y9FlowableProperties y9FlowableProperties;
     private final SmsDetailApi smsDetailApi;
     private final OfficeFollowApi officeFollowApi;
+    private final DocumentHandleService documentHandleService;
 
     /**
      * 检查是否可以批量发送
@@ -760,109 +762,7 @@ public class DocumentRestController {
     @FlowableLog(operationName = "批量签收", operationType = FlowableOperationTypeEnum.CLAIM)
     @PostMapping(value = "/sign4Batch")
     public Y9Result<String> sign4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9FlowableHolder.getPositionId();
-        try {
-            // 收集任务信息
-            BatchSignResult batchSignResult = collectBatchSignInfo(tenantId, taskIdAndProcessSerialNumbers);
-            // 验证任务状态
-            Y9Result<String> validationResult = validateBatchSignTasks(batchSignResult);
-            if (validationResult != null) {
-                return validationResult;
-            }
-            // 执行批量签收
-            BatchOperationResult operationResult =
-                executeBatchSign(tenantId, positionId, taskIdAndProcessSerialNumbers);
-            return Y9Result
-                .successMsg("签收成功" + operationResult.successCount + "条，签收失败" + operationResult.failCount + "条");
-        } catch (Exception e) {
-            LOGGER.error("批量签收失败", e);
-            return Y9Result.failure("校验是否批量签收失败，发生异常");
-        }
-    }
-
-    /**
-     * 收集批量签收信息
-     */
-    private BatchSignResult collectBatchSignInfo(String tenantId, String[] taskIdAndProcessSerialNumbers) {
-        BatchSignResult result = new BatchSignResult();
-        for (String taskIdAndProcessSerialNumber : taskIdAndProcessSerialNumbers) {
-            String[] tpArr = taskIdAndProcessSerialNumber.split(":");
-            processTaskInfo(tenantId, tpArr, result);
-        }
-        return result;
-    }
-
-    /**
-     * 处理单个任务信息
-     */
-    private void processTaskInfo(String tenantId, String[] tpArr, BatchSignResult result) {
-        try {
-            TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
-            ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
-            if (task == null) {
-                appendTaskTitle(result.processedTaskMsg, ppModel.getTitle());
-            } else if (StringUtils.isNotBlank(task.getAssignee())) {
-                appendTaskTitle(result.signedTaskMsg, ppModel.getTitle());
-            }
-        } catch (Exception e) {
-            LOGGER.warn("处理任务信息失败: taskId={}, processSerialNumber={}", tpArr[0], tpArr[1], e);
-        }
-    }
-
-    /**
-     * 添加任务标题到消息中
-     */
-    private void appendTaskTitle(StringBuilder msg, String title) {
-        if (StringUtils.isBlank(msg.toString())) {
-            msg.append(title);
-        } else {
-            msg.append(",").append(title);
-        }
-    }
-
-    /**
-     * 验证批量签收任务
-     */
-    private Y9Result<String> validateBatchSignTasks(BatchSignResult batchSignResult) {
-        if (StringUtils.isNotBlank(batchSignResult.signedTaskMsg.toString())) {
-            return Y9Result.failure("不能批量签收，以下待办已签收：" + batchSignResult.signedTaskMsg);
-        }
-        if (StringUtils.isNotBlank(batchSignResult.processedTaskMsg.toString())) {
-            return Y9Result.failure("不能批量签收，以下待办已处理：" + batchSignResult.processedTaskMsg);
-        }
-        return null; // 验证通过
-    }
-
-    /**
-     * 执行批量签收操作
-     */
-    private BatchOperationResult executeBatchSign(String tenantId, String positionId,
-        String[] taskIdAndProcessSerialNumbers) {
-        BatchOperationResult result = new BatchOperationResult();
-        for (String taskIdAndProcessSerialNumber : taskIdAndProcessSerialNumbers) {
-            String[] tpArr = taskIdAndProcessSerialNumber.split(":");
-            executeSingleSign(tenantId, positionId, tpArr[0], result);
-        }
-        return result;
-    }
-
-    /**
-     * 执行单个任务签收
-     */
-    private void executeSingleSign(String tenantId, String positionId, String taskId, BatchOperationResult result) {
-        try {
-            Y9Result<Object> y9Result = taskApi.claim(tenantId, positionId, taskId);
-            if (y9Result.isSuccess()) {
-                result.successCount++;
-            } else {
-                result.failCount++;
-                LOGGER.warn("任务签收失败: taskId={}", taskId);
-            }
-        } catch (Exception e) {
-            result.failCount++;
-            LOGGER.error("任务签收异常: taskId={}", taskId, e);
-        }
+        return documentHandleService.sign4Batch(taskIdAndProcessSerialNumbers);
     }
 
     /**
@@ -914,22 +814,6 @@ public class DocumentRestController {
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
         return documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
             Y9FlowableHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
-    }
-
-    /**
-     * 批量签收结果封装类
-     */
-    private static class BatchSignResult {
-        final StringBuilder processedTaskMsg = new StringBuilder();
-        final StringBuilder signedTaskMsg = new StringBuilder();
-    }
-
-    /**
-     * 批量操作结果封装类
-     */
-    private static class BatchOperationResult {
-        int successCount = 0;
-        int failCount = 0;
     }
 
     /**

@@ -20,20 +20,24 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.TaskTimeConf;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.config.TaskTimeConfService;
 import net.risesoft.service.core.DocumentService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9StringUtil;
 
 /**
  * @author qinman
@@ -114,6 +118,96 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
             handleInterruptedException(processInstanceId, taskDefinitionKey, taskId);
         } catch (Exception e) {
             handleGeneralException(e, processInstanceId, taskDefinitionKey, taskId);
+        }
+    }
+
+    @Async
+    @Override
+    public void addMultiInstanceAuditLog(String tenantId, String taskId, String userId) {
+        try {
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.MULTI_INSTANCE_ADD.getAction())
+                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.MULTI_INSTANCE_ADD.getDescription(),
+                    taskModel.getName(), orgUnit.getName()))
+                .objectId(userId)
+                .oldObject(taskModel)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
+        } catch (Exception e) {
+            LOGGER.error("addMultiInstanceAuditLog error", e);
+        }
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void sendAuditLog(String tenantId, String title, String userChoice) {
+        try {
+            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
+            for (String choice : userChoices) {
+                String[] parts = choice.split(SysVariables.COLON);
+                String userId = choice;
+                if (parts.length == 2) {
+                    userId = parts[1];
+                }
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.DOCUMENT_SEND.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SEND.getDescription(), title,
+                        orgUnit.getName()))
+                    .objectId(userId)
+                    .oldObject(orgUnit)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
+            }
+        } catch (Exception e) {
+            LOGGER.error("sendAuditLog error", e);
+        }
+    }
+
+    @Async
+    @Transactional
+    @Override
+    public void sendAuditLog(String tenantId, String title, List<String> userIdList) {
+        try {
+            for (String userId : userIdList) {
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.DOCUMENT_SEND.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SEND.getDescription(), title,
+                        orgUnit.getName()))
+                    .objectId(userId)
+                    .oldObject(orgUnit)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
+            }
+        } catch (Exception e) {
+            LOGGER.error("sendAuditLog-userIdList error", e);
+        }
+    }
+
+    @Override
+    public void submitSendAuditLog(String tenantId, String title, List<String> userIdList) {
+        try {
+            for (String userId : userIdList) {
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.DOCUMENT_SUBMIT_SEND.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SUBMIT_SEND.getDescription(), title,
+                        orgUnit.getName()))
+                    .objectId(userId)
+                    .oldObject(orgUnit)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
+            }
+        } catch (Exception e) {
+            LOGGER.error("submitSendAuditLog-userIdList error", e);
         }
     }
 

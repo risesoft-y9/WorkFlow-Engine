@@ -29,6 +29,7 @@ import net.risesoft.entity.ProcessTrack;
 import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.entity.opinion.OpinionHistory;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -45,6 +46,7 @@ import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.repository.opinion.OpinionHistoryRepository;
 import net.risesoft.repository.opinion.OpinionRepository;
 import net.risesoft.service.AsyncHandleService;
@@ -56,9 +58,11 @@ import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
 import net.risesoft.service.opinion.OpinionService;
 import net.risesoft.service.setting.ItemSettingService;
 import net.risesoft.util.CommentUtil;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import net.risesoft.y9.util.Y9StringUtil;
 
 /**
  * @author qinman
@@ -138,6 +142,15 @@ public class OpinionServiceImpl implements OpinionService {
         if (oldOpinion.isPresent()) {
             opinionRepository.delete(oldOpinion.get());
             asyncHandleService.saveOpinionHistory(Y9LoginUserHolder.getTenantId(), oldOpinion.get(), "2");
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.OPINION_DELETE.getAction())
+                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_DELETE.getDescription(),
+                    oldOpinion.get().getContent()))
+                .objectId(id)
+                .oldObject(oldOpinion.get())
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         }
     }
 
@@ -984,7 +997,14 @@ public class OpinionServiceImpl implements OpinionService {
 
         opinionRepository.save(opinion);
         asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
-
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.OPINION_ADD.getAction())
+            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_ADD.getDescription(), opinion.getContent()))
+            .objectId(opinion.getId())
+            .oldObject(opinion)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
         return opinion;
     }
 
@@ -1012,6 +1032,15 @@ public class OpinionServiceImpl implements OpinionService {
         asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
         // 修改意见保存历史记录
         asyncHandleService.saveOpinionHistory(Y9LoginUserHolder.getTenantId(), oldOpinion, "1");
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.OPINION_UPDATE.getAction())
+            .description(
+                Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_UPDATE.getDescription(), opinion.getContent()))
+            .objectId(opinion.getId())
+            .oldObject(opinion)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
         return opinion;
     }
 
@@ -1049,6 +1078,15 @@ public class OpinionServiceImpl implements OpinionService {
         if (opinion != null) {
             opinion.setContent(content);
             opinionRepository.save(opinion);
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.OPINION_UPDATE.getAction())
+                .description(
+                    Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_UPDATE.getDescription(), opinion.getContent()))
+                .objectId(opinion.getId())
+                .oldObject(opinion)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         }
     }
 

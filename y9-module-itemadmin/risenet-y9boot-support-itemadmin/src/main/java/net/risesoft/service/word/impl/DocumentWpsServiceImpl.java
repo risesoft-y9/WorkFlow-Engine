@@ -7,8 +7,12 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.entity.documentword.DocumentWps;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.repository.documentword.DocumentWpsRepository;
 import net.risesoft.service.word.DocumentWpsService;
+import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.util.Y9StringUtil;
 
 /**
  * @author qinman
@@ -51,6 +55,15 @@ public class DocumentWpsServiceImpl implements DocumentWpsService {
         } else {
             documentWpsRepository.save(documentWps);
         }
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.WPS_SAVE.getAction())
+            .description(
+                Y9StringUtil.format(ItemAdminAuditLogEnum.WPS_SAVE.getDescription(), documentWps.getFileName()))
+            .objectId(documentWps.getFileId())
+            .oldObject(documentWps)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
     }
 
     @Override
