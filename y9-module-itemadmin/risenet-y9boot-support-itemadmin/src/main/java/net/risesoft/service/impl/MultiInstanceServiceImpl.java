@@ -14,7 +14,7 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.AsyncUtilService;
+import net.risesoft.service.AsyncPublishEventService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -34,7 +34,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     private final TaskApi taskApi;
 
-    private final AsyncUtilService asyncUtilService;
+    private final AsyncPublishEventService asyncPublishEventService;
 
     @SuppressWarnings("unchecked")
     @Override
@@ -64,7 +64,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         // variableApi.setVariable(tenantId, taskId,
         // SysVariables.NR_OF_ACTIVE_INSTANCES, (int)nrOfActiveInstances + 1);
         // }
-        asyncUtilService.addMultiInstanceAuditLog(tenantId, taskId, elementUser);
+        asyncPublishEventService.addMultiInstanceAuditLog(tenantId, taskId, elementUser);
     }
 
     @Override
