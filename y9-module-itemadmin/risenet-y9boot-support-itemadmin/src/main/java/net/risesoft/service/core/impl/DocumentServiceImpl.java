@@ -108,7 +108,7 @@ import net.risesoft.repository.jpa.TaskVariableRepository;
 import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.service.AsyncHandleService;
-import net.risesoft.service.AsyncUtilService;
+import net.risesoft.service.AsyncPublishEventService;
 import net.risesoft.service.ButtonService;
 import net.risesoft.service.DynamicRoleMemberService;
 import net.risesoft.service.DynamicRoleService;
@@ -180,7 +180,7 @@ public class DocumentServiceImpl implements DocumentService {
     private final OfficeDoneInfoService officeDoneInfoService;
     private final TaskVariableRepository taskVariableRepository;
     private final AsyncHandleService asyncHandleService;
-    private final AsyncUtilService asyncUtilService;
+    private final AsyncPublishEventService asyncPublishEventService;
     private final Y9FormRepository y9FormRepository;
     private final Process4SearchService process4SearchService;
     private final ErrorLogService errorLogService;
@@ -945,7 +945,7 @@ public class DocumentServiceImpl implements DocumentService {
                         taskId, flowElementModel, variables, userList);
                 }
             }
-            asyncUtilService.sendAuditLog(tenantId, processParam.getTitle(), userChoice);
+            asyncPublishEventService.sendAuditLog(tenantId, processParam.getTitle(), userChoice);
             return Y9Result.success(processInstanceId, "发送成功!");
         } catch (Exception e) {
             LOGGER.error("发送失败！", e);
@@ -2290,7 +2290,7 @@ public class DocumentServiceImpl implements DocumentService {
                 CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
             asyncHandleService.forwarding4Task(processInstanceId, processParam, "", "", taskId, flowElementModel,
                 variables, userList);
-            asyncUtilService.submitSendAuditLog(tenantId, processParam.getTitle(), userList);
+            asyncPublishEventService.submitSendAuditLog(tenantId, processParam.getTitle(), userList);
             return Y9Result.successMsg("提交成功");
         } catch (Exception e) {
             LOGGER.error("提交失败！异常：", e);
@@ -2448,7 +2448,7 @@ public class DocumentServiceImpl implements DocumentService {
                 asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", sponsorGuid, taskId,
                     flowElementModel, variables, userList);
             }
-            asyncUtilService.sendAuditLog(tenantId, processParam.getTitle(), userList);
+            asyncPublishEventService.sendAuditLog(tenantId, processParam.getTitle(), userList);
             return Y9Result.success(processInstanceId, "发送成功!");
         } catch (Exception e) {
             LOGGER.error("公文发送失败！", e);
@@ -2726,7 +2726,7 @@ public class DocumentServiceImpl implements DocumentService {
             variables.put(SysVariables.USERS, userList);
             asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", "", taskId, flowElementModel,
                 variables, userList);
-            asyncUtilService.submitSendAuditLog(tenantId, processParam.getTitle(), userList);
+            asyncPublishEventService.submitSendAuditLog(tenantId, processParam.getTitle(), userList);
             return Y9Result.successMsg("提交成功");
         } catch (Exception e) {
             LOGGER.error("启动流程并提交失败！", e);
