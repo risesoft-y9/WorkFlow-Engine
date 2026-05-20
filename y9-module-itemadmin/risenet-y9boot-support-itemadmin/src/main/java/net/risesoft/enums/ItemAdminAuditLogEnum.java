@@ -27,6 +27,9 @@ public enum ItemAdminAuditLogEnum {
     FORM_DATA_DELETE("FORM_DATA_DELETE", "表单数据删除,业务表 [{}],guid [{}]"),
     FORM_PRE_DATA_DELETE("FORM_PRE_DATA_DELETE", "前置表单数据删除,业务表 [{}],guid [{}]"),
 
+    // 流程操作
+    BUTTON_TAKEBACK_TASK_DEF_KEY("BUTTON_TAKEBACK_TASK_DEF_KEY", "办理人 [{}] 在任务节点 [{}] 收回办件 [{}] 至指定任务节点 [{}] "),
+
     // 待办操作
     TODO_CLAIM("TODO_CLAIM", "待办 [{}] 签收"),
     TODO_UNCLAIM("TODO_UNCLAIM", "待办 [{}] 取消签收"),
