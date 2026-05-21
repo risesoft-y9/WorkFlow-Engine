@@ -26,6 +26,7 @@ import org.springframework.data.elasticsearch.core.query.Criteria;
 import org.springframework.data.elasticsearch.core.query.CriteriaQuery;
 import org.springframework.data.elasticsearch.core.query.Query;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
@@ -43,6 +44,7 @@ import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ChaoSongStatusEnum;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
@@ -59,6 +61,7 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.nosql.elastic.repository.ChaoSongInfoRepository;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.query.platform.CustomGroupMemberQuery;
@@ -77,6 +80,7 @@ import net.risesoft.y9.pubsub.event.Y9EntityCreatedEvent;
 import net.risesoft.y9.pubsub.event.Y9EntityDeletedEvent;
 import net.risesoft.y9.pubsub.event.Y9EntityUpdatedEvent;
 import net.risesoft.y9.util.Y9BeanUtil;
+import net.risesoft.y9.util.Y9StringUtil;
 
 /**
  * @author qinman
@@ -368,11 +372,21 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
+    @Transactional
     public void deleteById(String id) {
         Optional<ChaoSongInfo> chaoSongInfo = chaoSongInfoRepository.findById(id);
         if (chaoSongInfo.isPresent()) {
             chaoSongInfoRepository.delete(chaoSongInfo.get());
             Y9Context.publishEvent(new Y9EntityDeletedEvent<>(chaoSongInfo.get()));
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.CHAOSONG_DELETE.getAction())
+                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.CHAOSONG_DELETE.getDescription(),
+                    chaoSongInfo.get().getTitle()))
+                .objectId(chaoSongInfo.get().getId())
+                .oldObject(chaoSongInfo.get())
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         }
     }
 
@@ -679,9 +693,19 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
+    @Transactional
     public ChaoSongInfo save(ChaoSongInfo chaoSong) {
         chaoSong = chaoSongInfoRepository.save(chaoSong);
         Y9Context.publishEvent(new Y9EntityCreatedEvent<>(chaoSong));
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.CHAOSONG_SEND.getAction())
+            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.CHAOSONG_SEND.getDescription(), chaoSong.getTitle(),
+                chaoSong.getUserName()))
+            .objectId(chaoSong.getId())
+            .oldObject(chaoSong)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
         return chaoSong;
     }
 
@@ -864,6 +888,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     @Override
+    @Transactional
     public void setRead(String id) {
         ChaoSongInfo chaoSong = chaoSongInfoRepository.findById(id).orElse(null);
         if (chaoSong != null && !ChaoSongStatusEnum.READ.getValue().equals(chaoSong.getStatus())) {
@@ -873,6 +898,15 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             chaoSong.setReadTime(Y9DateTimeUtils.formatCurrentDateTime());
             chaoSongInfoRepository.save(chaoSong);
             Y9Context.publishEvent(new Y9EntityUpdatedEvent<>(origin, chaoSong));
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.CHAOSONG_READ.getAction())
+                .description(
+                    Y9StringUtil.format(ItemAdminAuditLogEnum.CHAOSONG_READ.getDescription(), chaoSong.getTitle()))
+                .objectId(chaoSong.getId())
+                .oldObject(chaoSong)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         }
     }
 
