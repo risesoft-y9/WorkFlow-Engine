@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.http.MediaType;
+import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -29,6 +30,7 @@ import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.core.ActRuDetailService;
 import net.risesoft.service.core.DocumentService;
@@ -68,6 +70,8 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     private final SpecialOperationApi specialOperationApi;
 
     private final ActRuDetailService actRuDetailService;
+
+    private final AsyncUtilService asyncUtilService;
 
     /**
      * 加签
@@ -343,14 +347,17 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
      * @since 9.6.6
      */
     @Override
+    @Transactional
     public Y9Result<Object> takeBack2TaskDefKey(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String taskId, String reason) {
         Y9LoginUserHolder.setTenantId(tenantId);
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         ActRuDetail actRuDetail = actRuDetailService
             .findByProcessInstanceIdAndAssigneeAndStatusEquals1(task.getProcessInstanceId(), orgUnitId);
-        return Y9Result.success(
+        boolean isSuccess =
             specialOperationApi.takeBack2TaskDefKey(tenantId, orgUnitId, taskId, actRuDetail.getTaskDefKey(), reason)
-                .isSuccess());
+                .isSuccess();
+        asyncUtilService.takeBackTwoTaskDefKeyAuditLog(tenantId, orgUnitId, taskId, actRuDetail.getTaskDefKey());
+        return Y9Result.success(isSuccess);
     }
 }

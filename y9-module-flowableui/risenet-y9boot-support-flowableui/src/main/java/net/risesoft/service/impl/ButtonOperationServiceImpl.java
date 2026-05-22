@@ -33,6 +33,7 @@ import net.risesoft.enums.FlowableUiAuditLogEnum;
 import net.risesoft.model.itemadmin.OfficeDoneInfoModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
@@ -289,6 +290,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public Y9Result<String> deleteTodos(String[] taskIdAndProcessSerialNumbers) {
+        Position position = Y9FlowableHolder.getPosition();
+        String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         int total = taskIdAndProcessSerialNumbers.length;
         AtomicInteger success = new AtomicInteger();
@@ -313,6 +316,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                     nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
                 if (canDelete) {
                     actRuDetailApi.deleteByProcessSerialNumber(tenantId, tpArr[1]);
+                    asyncUtilService.deleteToDoAuditLog(tenantId, positionId, tpArr[1]);
                     success.getAndIncrement();
                 } else {
                     error.getAndIncrement();
@@ -327,6 +331,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public Y9Result<String> deleteByProcessSerialNumbers(String[] processSerialNumbers) {
+        Position position = Y9FlowableHolder.getPosition();
+        String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         int total = processSerialNumbers.length;
         AtomicInteger success = new AtomicInteger();
@@ -334,6 +340,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         for (String processSerialNumber : processSerialNumbers) {
             try {
                 if (actRuDetailApi.deleteByProcessSerialNumber(tenantId, processSerialNumber).isSuccess()) {
+                    asyncUtilService.deleteToDoAuditLog(tenantId, positionId, processSerialNumber);
                     success.getAndIncrement();
                 } else {
                     error.getAndIncrement();
@@ -348,15 +355,20 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public Y9Result<String> recovers(String[] processSerialNumbers) {
+        Position position = Y9FlowableHolder.getPosition();
+        String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         for (String processSerialNumber : processSerialNumbers) {
             actRuDetailApi.recoveryByProcessSerialNumber(tenantId, processSerialNumber);
+            asyncUtilService.recoveryToDoAuditLog(tenantId, positionId, processSerialNumber);
         }
         return Y9Result.successMsg("成功恢复" + processSerialNumbers.length + "条待办");
     }
 
     @Override
     public Y9Result<String> removes(String[] processSerialNumbers) {
+        Position position = Y9FlowableHolder.getPosition();
+        String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParamModel processParamModel;
         for (String processSerialNumber : processSerialNumbers) {
@@ -364,6 +376,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             // 删除流程实例
             historicProcessApi.deleteProcessInstance(tenantId, processParamModel.getProcessInstanceId());
+            asyncUtilService.removeToDoAuditLog(tenantId, positionId, processParamModel.getProcessSerialNumber(),
+                processParamModel.getTitle());
         }
         return Y9Result.successMsg("成功删除" + processSerialNumbers.length + "条待办");
     }
