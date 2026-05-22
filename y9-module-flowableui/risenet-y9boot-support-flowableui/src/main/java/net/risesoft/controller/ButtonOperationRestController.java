@@ -1,5 +1,7 @@
 package net.risesoft.controller;
 
+import java.net.URLDecoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -757,6 +759,7 @@ public class ButtonOperationRestController {
                 LOGGER.error("handleParallel error", e);
             }
             taskApi.complete(tenantId, taskId);
+            asyncUtilService.handleParallelAuditLog(tenantId, task.getName(), task.getProcessInstanceId());
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {
             LOGGER.error("handleParallel error", e);
@@ -779,6 +782,7 @@ public class ButtonOperationRestController {
             Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
             taskApi.completeWithVariables(tenantId, taskId, Y9FlowableHolder.getPositionId(), vars);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
+            asyncUtilService.handleSerialAuditLog(tenantId, task.getName(), task.getProcessInstanceId());
             return Y9Result.successMsg("办理成功");
         } catch (Exception e) {
             LOGGER.error("handleSerial error", e);
@@ -799,6 +803,7 @@ public class ButtonOperationRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             taskApi.setAssignee(tenantId, taskId, userChoice);
+            asyncUtilService.reAssignAuditLog(tenantId, taskId, URLDecoder.decode(userChoice, StandardCharsets.UTF_8));
             return Y9Result.successMsg("委托成功");
         } catch (Exception e) {
             LOGGER.error("reAssign error", e);
@@ -838,6 +843,7 @@ public class ButtonOperationRestController {
             }
             taskApi.deleteCandidateUser(tenantId, taskId, activitiUser);
             actRuDetailApi.refuseClaim(tenantId, taskId, positionId);
+            asyncUtilService.refuseClaimAuditLog(tenantId, taskId, positionId);
             return Y9Result.successMsg("拒签成功");
         } catch (Exception e) {
             LOGGER.error("refuseClaim error", e);
@@ -859,6 +865,7 @@ public class ButtonOperationRestController {
         try {
             Y9Result<Object> y9Result = buttonOperationApi.refuseClaimRollback(tenantId, positionId, taskId);
             if (y9Result.isSuccess()) {
+                asyncUtilService.refuseClaimRollbackAuditLog(tenantId, taskId, positionId);
                 return Y9Result.successMsg("拒签成功");
             }
         } catch (Exception e) {
@@ -913,6 +920,7 @@ public class ButtonOperationRestController {
             buttonOperationApi.reposition(tenantId, positionId, taskId, routeToTaskId, users, "",
                 StringUtils.isBlank(sponsorGuid) ? "" : sponsorGuid);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
+            asyncUtilService.repositionAuditLog(tenantId, positionId, task.getName(), routeToTaskId, users);
             return Y9Result.successMsg("重定向成功");
         } catch (Exception e) {
             LOGGER.error("reposition error", e);
@@ -942,6 +950,8 @@ public class ButtonOperationRestController {
             }
             buttonOperationApi.rollBack2History(tenantId, positionId, taskId, routeToTaskId,
                 Arrays.stream(orgUnitIds).collect(Collectors.toList()), "", "");
+            asyncUtilService.rollBackTwoHistoryAuditLog(tenantId, positionId, taskId, routeToTaskId,
+                Arrays.stream(orgUnitIds).collect(Collectors.toList()));
             return Y9Result.successMsg("多步退回成功");
         } catch (Exception e) {
             LOGGER.error("reposition error", e);
@@ -980,6 +990,7 @@ public class ButtonOperationRestController {
             } else {
                 buttonOperationApi.rollBack(tenantId, positionId, taskId, reason);
             }
+            asyncUtilService.rollbackAuditLog(tenantId, positionId, taskId, reason);
             // 更新自定义历程结束时间
             List<ProcessTrackModel> ptModelList = processTrackApi.findByTaskId(tenantId, taskId).getData();
             for (ProcessTrackModel ptModel : ptModelList) {
@@ -1011,6 +1022,7 @@ public class ButtonOperationRestController {
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             buttonOperationApi.rollbackToSender(tenantId, positionId, taskId);
+            asyncUtilService.rollbackToSenderAuditLog(tenantId, positionId, taskId, "rollback");
             return Y9Result.successMsg("返回发送人成功");
         } catch (Exception e) {
             LOGGER.error("rollbackToSender error", e);
@@ -1033,6 +1045,7 @@ public class ButtonOperationRestController {
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             buttonOperationApi.rollbackToStartor(tenantId, positionId, taskId, reason);
+            asyncUtilService.rollbackToStartorAuditLog(tenantId, positionId, taskId, "rollback");
             return Y9Result.successMsg("返回起草人成功");
         } catch (Exception e) {
             LOGGER.error("rollbackToStartor error", e);
@@ -1237,6 +1250,7 @@ public class ButtonOperationRestController {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         try {
             buttonOperationApi.rollbackToSender(tenantId, positionId, taskId);
+            asyncUtilService.rollbackToSenderAuditLog(tenantId, positionId, taskId, "sendback");
             return Y9Result.successMsg("返回发送人成功");
         } catch (Exception e) {
             LOGGER.error("sendToSender error", e);
@@ -1276,6 +1290,7 @@ public class ButtonOperationRestController {
             }
             documentApi.saveAndForwarding(tenantId, positionId, processInstanceId, taskId, sponsorHandle, itemId,
                 processSerialNumber, processDefinitionKey, userChoice, "", routeToTaskId, variables);
+            asyncUtilService.rollbackToStartorAuditLog(tenantId, positionId, taskId, "sendback");
             return Y9Result.successMsg("发送拟稿人成功");
         } catch (Exception e) {
             LOGGER.error("sendToStartor error", e);
@@ -1324,6 +1339,7 @@ public class ButtonOperationRestController {
             ptModel.setTaskId(taskId);
             ptModel.setId("");
             processTrackApi.saveOrUpdate(tenantId, ptModel);
+            asyncUtilService.specialCompleteAuditLog(tenantId, positionId, taskId);
             return Y9Result.successMsg("特殊办结成功");
         } catch (Exception e) {
             LOGGER.error("specialComplete error", e);
@@ -1346,6 +1362,7 @@ public class ButtonOperationRestController {
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             buttonOperationApi.takeback(tenantId, positionId, taskId, reason);
+            asyncUtilService.takebackAuditLog(tenantId, positionId, taskId);
             return Y9Result.successMsg("收回成功");
         } catch (Exception e) {
             LOGGER.error("takeback error", e);
@@ -1385,8 +1402,10 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/unclaim")
     public Y9Result<String> unclaim(@RequestParam @NotBlank String taskId) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
+            Position position = Y9FlowableHolder.getPosition();
+            String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
             taskApi.unClaim(tenantId, taskId);
+            asyncUtilService.unclaimAuditLog(tenantId, positionId, taskId);
             return Y9Result.successMsg("撤销签收成功");
         } catch (Exception e) {
             LOGGER.error("unclaim error", e);
