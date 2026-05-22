@@ -20,19 +20,23 @@ import net.risesoft.entity.Item;
 import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.entity.entrust.EntrustHistory;
 import net.risesoft.enums.EntrustUseEnum;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.EntrustItemModel;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.repository.entrust.EntrustHistoryRepository;
 import net.risesoft.repository.entrust.EntrustRepository;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.entrust.EntrustService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
+import net.risesoft.y9.util.Y9StringUtil;
 
 /**
  * @author qinman
@@ -69,6 +73,19 @@ public class EntrustServiceImpl implements EntrustService {
         } else {
             entrustRepository.deleteById(id);
         }
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, entrust.getOwnerId()).getData();
+        OrgUnit orgAssignee = orgUnitApi.getOrgUnit(tenantId, entrust.getAssigneeId()).getData();
+        Item item = itemService.findById(entrust.getItemId());
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.ENTRUST_DELETE.getAction())
+            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ENTRUST_DELETE.getDescription(), item.getName(),
+                orgUnit.getName(), orgAssignee.getName()))
+            .objectId(id)
+            .oldObject(entrust)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
     }
 
     @Override
@@ -512,6 +529,10 @@ public class EntrustServiceImpl implements EntrustService {
     @Transactional
     public Entrust saveOrUpdate(Entrust entrust) {
         String id = entrust.getId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, entrust.getOwnerId()).getData();
+        OrgUnit orgAssignee = orgUnitApi.getOrgUnit(tenantId, entrust.getAssigneeId()).getData();
+        Item item = itemService.findById(entrust.getItemId());
         if (StringUtils.isNotEmpty(id)) {
             Entrust old = this.getById(id);
             old.setItemId(entrust.getItemId());
@@ -519,6 +540,15 @@ public class EntrustServiceImpl implements EntrustService {
             old.setStartTime(entrust.getStartTime());
             old.setEndTime(entrust.getEndTime());
             entrustRepository.save(old);
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.ENTRUST_ADD.getAction())
+                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ENTRUST_ADD.getDescription(), item.getName(),
+                    orgUnit.getName(), orgAssignee.getName()))
+                .objectId(id)
+                .oldObject(entrust)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
             return old;
         }
         Entrust newEntrust = new Entrust();
@@ -529,6 +559,15 @@ public class EntrustServiceImpl implements EntrustService {
         newEntrust.setStartTime(entrust.getStartTime());
         newEntrust.setEndTime(entrust.getEndTime());
         entrustRepository.save(newEntrust);
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.ENTRUST_ADD.getAction())
+            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ENTRUST_ADD.getDescription(), item.getName(),
+                orgUnit.getName(), orgAssignee.getName()))
+            .objectId(id)
+            .oldObject(entrust)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
         return newEntrust;
     }
 }
