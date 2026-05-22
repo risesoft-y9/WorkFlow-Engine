@@ -10,15 +10,6 @@ import java.util.List;
 public interface AsyncPublishEventService {
 
     /**
-     * 异步保存加签审计日志
-     * 
-     * @param tenantId
-     * @param taskId
-     * @param userId
-     */
-    void addMultiInstanceAuditLog(final String tenantId, final String taskId, final String userId);
-
-    /**
      * 异步保存发送审计日志
      * 
      * @param tenantId

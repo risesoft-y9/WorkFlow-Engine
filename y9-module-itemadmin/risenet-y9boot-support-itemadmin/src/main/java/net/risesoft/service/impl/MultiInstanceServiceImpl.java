@@ -64,7 +64,6 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         // variableApi.setVariable(tenantId, taskId,
         // SysVariables.NR_OF_ACTIVE_INSTANCES, (int)nrOfActiveInstances + 1);
         // }
-        asyncPublishEventService.addMultiInstanceAuditLog(tenantId, taskId, elementUser);
     }
 
     @Override

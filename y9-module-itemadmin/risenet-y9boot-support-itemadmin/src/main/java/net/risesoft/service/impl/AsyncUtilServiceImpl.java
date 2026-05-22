@@ -14,26 +14,34 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ErrorLog;
+import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.TaskTimeConf;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.config.TaskTimeConfService;
 import net.risesoft.service.core.DocumentService;
+import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9StringUtil;
 
 /**
  * @author qinman
@@ -61,6 +69,10 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
 
     private final AsyncUtilService self;
 
+    private final HistoricTaskApi historicTaskApi;
+
+    private final ProcessParamService processParamService;
+
     public AsyncUtilServiceImpl(
         ErrorLogService errorLogService,
         OrgUnitApi orgUnitApi,
@@ -69,7 +81,9 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         DocumentService documentService,
         VariableApi variableApi,
         TaskTimeConfService taskTimeConfService,
-        @Lazy AsyncUtilService self) {
+        @Lazy AsyncUtilService self,
+        HistoricTaskApi historicTaskApi,
+        ProcessParamService processParamService) {
         this.errorLogService = errorLogService;
         this.orgUnitApi = orgUnitApi;
         this.taskApi = taskApi;
@@ -78,6 +92,8 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         this.variableApi = variableApi;
         this.taskTimeConfService = taskTimeConfService;
         this.self = self;
+        this.historicTaskApi = historicTaskApi;
+        this.processParamService = processParamService;
     }
 
     /**
@@ -251,6 +267,36 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         errorLog.setTaskId(taskId);
         errorLog.setText(text);
         return errorLog;
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void takeBackTwoTaskDefKeyAuditLog(String tenantId, String orgUnitId, String taskId, String targetTaskKey) {
+        try {
+            HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
+            List<TargetModel> targetModelList =
+                processDefinitionApi.getNodes(tenantId, historicTaskInstanceModel.getProcessDefinitionId()).getData();
+            TargetModel targetModel = targetModelList.stream()
+                .filter(model -> targetTaskKey.equals(model.getTaskDefKey()))
+                .findFirst()
+                .orElse(null);
+            ProcessParam processParam =
+                processParamService.findByProcessInstanceId(historicTaskInstanceModel.getProcessInstanceId());
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.BUTTON_TAKEBACK_TASK_DEF_KEY.getAction())
+                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.BUTTON_TAKEBACK_TASK_DEF_KEY.getDescription(),
+                    orgUnit.getName(), historicTaskInstanceModel.getName(), processParam.getTitle(),
+                    targetModel.getTaskDefName()))
+                .objectId(taskId)
+                .oldObject(historicTaskInstanceModel)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
+        } catch (Exception e) {
+            LOGGER.error("保存指定任务收回审计日志失败", e);
+        }
     }
 
     /**

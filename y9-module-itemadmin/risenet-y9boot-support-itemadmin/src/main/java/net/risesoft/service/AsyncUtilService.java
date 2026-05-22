@@ -17,4 +17,15 @@ public interface AsyncUtilService {
      */
     void loopSending(final String tenantId, final String orgUnitId, final String itemId,
         final String processInstanceId);
+
+    /**
+     * 指定节点收回任务审计日志
+     *
+     * @param tenantId
+     * @param orgUnitId
+     * @param taskId
+     * @param taskDefKey
+     */
+    void takeBackTwoTaskDefKeyAuditLog(final String tenantId, final String orgUnitId, final String taskId,
+        String taskDefKey);
 }

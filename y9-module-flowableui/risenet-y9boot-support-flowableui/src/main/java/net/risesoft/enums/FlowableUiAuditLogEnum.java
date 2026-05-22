@@ -44,14 +44,13 @@ public enum FlowableUiAuditLogEnum {
     BUTTON_SAVE_CUSTOM_PROCESS("BUTTON_SAVE_CUSTOM_PROCESS", "保存流程定制信息 [{}]"),
     BUTTON_SEND_TO_SENDER("BUTTON_SEND_TO_SENDER", "办理人 [{}] 在任务节点 [{}] 将办件 [{}] 返回任务至上一个任务节点 [{}]、发送人 [{}]"),
     BUTTON_SEND_TO_STARTOR("BUTTON_SEND_TO_STARTOR", " 办理人[{}] 在任务节点 [{}] 将办件 [{}] 发送至流程启动节点 [{}]、发起人 [{}]"),
-    BUTTON_SPECIAL_COMPLETE("BUTTON_SPECIAL_COMPLETE", "特殊办结 [{}]"),
-    BUTTON_TAKEBACK("BUTTON_TAKEBACK", "任务收回 [{}]"),
-    BUTTON_TAKEBACK2_TASK_DEF_KEY("BUTTON_TAKEBACK2_TASK_DEF_KEY", "任务收回 [{}]"),
-    BUTTON_UNCLAIM("BUTTON_UNCLAIM", "撤销签收 [{}]"),
-    BUTTON_DELETE_TODOS("BUTTON_DELETE_TODOS", "放入回收站 [{}]"),
-    BUTTON_DELETE_BY_PROCESS_SERIAL_NUMBERS("BUTTON_DELETE_BY_PROCESS_SERIAL_NUMBERS", "批量放入回收站 [{}]"),
-    BUTTON_RECOVERS("BUTTON_RECOVERS", "从回收站恢复待办 [{}]"),
-    BUTTON_REMOVES("BUTTON_REMOVES", "从回收站彻底删除 [{}]"),
+    BUTTON_SPECIAL_COMPLETE("BUTTON_SPECIAL_COMPLETE", "办件 [{}] 被办理人 [{}] 在任务节点 [{}] 特殊办结"),
+    BUTTON_TAKEBACK("BUTTON_TAKEBACK", "办件 [{}] 被办理人 [{}] 在任务节点 [{}] 收回"),
+    BUTTON_TAKEBACK_TASK_DEF_KEY("BUTTON_TAKEBACK_TASK_DEF_KEY", "办理人 [{}] 在当前任务节点 [{}] 收回指定任务节点 [{}] 的办件 [{}]"),
+    BUTTON_UNCLAIM("BUTTON_UNCLAIM", "办理人 [{}] 在任务节点 [{}] 撤销签收办件 [{}]"),
+    BUTTON_DELETE_TODOS("BUTTON_DELETE_TODOS", "操作人 [{}] 删除待办 [{}] 放入回收站"),
+    BUTTON_RECOVERS("BUTTON_RECOVERS", "操作人 [{}] 从回收站恢复待办 [{}]"),
+    BUTTON_REMOVES("BUTTON_REMOVES", "操作人 [{}] 从回收站彻底删除待办 [{}]"),
 
     // ========== 抄送操作 ==========
     CHAOSONG_CHANGE_STATE("CHAOSONG_CHANGE_STATE", "改变抄送件意见状态 [{}]"),
@@ -69,9 +68,10 @@ public enum FlowableUiAuditLogEnum {
     ENTRUST_SAVE("ENTRUST_SAVE", "保存委托数据 [{}]"),
 
     // ========== 加减签操作 ==========
-    MULTI_INSTANCE_ADD("MULTI_INSTANCE_ADD", "加签 [{}]"),
-    MULTI_INSTANCE_PARALLEL_REMOVE("MULTI_INSTANCE_PARALLEL_REMOVE", "并行减签 [{}]"),
-    MULTI_INSTANCE_SEQUENTIAL_REMOVE("MULTI_INSTANCE_SEQUENTIAL_REMOVE", "串行减签 [{}]"),
+    MULTI_INSTANCE_PARALLEL_ADD("MULTI_INSTANCE_PARALLEL_ADD", "办件 [{}] 中操作人 [{}] 在任务 [{}] 并行加签 [{}]"),
+    MULTI_INSTANCE_SEQUENTIAL_ADD("MULTI_INSTANCE_SEQUENTIAL_ADD", "办件 [{}] 中操作人 [{}] 在任务 [{}] 串行加签 [{}]"),
+    MULTI_INSTANCE_PARALLEL_REMOVE("MULTI_INSTANCE_PARALLEL_REMOVE", "办件 [{}] 中操作人 [{}] 在任务 [{}] 并行减签 [{}]"),
+    MULTI_INSTANCE_SEQUENTIAL_REMOVE("MULTI_INSTANCE_SEQUENTIAL_REMOVE", "办件 [{}] 中操作人 [{}] 在任务 [{}] 串行减签 [{}]"),
     MULTI_INSTANCE_SET_SPONSOR("MULTI_INSTANCE_SET_SPONSOR", "设置主办人 [{}]"),
 
     // ========== 关注操作 ==========
