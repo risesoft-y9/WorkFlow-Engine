@@ -41,6 +41,7 @@ public enum ItemAdminAuditLogEnum {
     DOING_SUB_SIGN("DOING_SUB_SIGN", "在办 [{}] 减签 [{}]"),
 
     // 多人会签操作
+    MULTI_INSTANCE_PARALLEL_ADD("MULTI_INSTANCE_PARALLEL_ADD", "并行加签 [{}]"),
     MULTI_INSTANCE_ADD("MULTI_INSTANCE_ADD", "会签任务 [{}] 加签 [{}]"),
     MULTI_INSTANCE_DELETE("MULTI_INSTANCE_DELETE", "会签任务 [{}] 减签"),
 
@@ -96,17 +97,17 @@ public enum ItemAdminAuditLogEnum {
     ASSOCIATED_FILE_DELETE("ASSOCIATED_FILE_DELETE", "删除关联流程 [{}]"),
 
     // 抄送操作
-    CHAOSONG_SEND("CHAOSONG_SEND", "抄送 [{}] 给 [{}]"),
-    CHAOSONG_READ("CHAOSONG_READ", "已读抄送 [{}]"),
+    CHAOSONG_SEND("CHAOSONG_SEND", "抄送办件 [{}] 给 [{}]"),
+    CHAOSONG_READ("CHAOSONG_READ", "抄送件 [{}] 已读"),
     CHAOSONG_DELETE("CHAOSONG_DELETE", "删除抄送 [{}]"),
 
     // 催办操作
     REMINDER_SEND("REMINDER_SEND", "催办 [{}]"),
 
     // 委托操作
-    ENTRUST_ADD("ENTRUST_ADD", "添加委托 [{}]"),
-    ENTRUST_DELETE("ENTRUST_DELETE", "删除委托 [{}]"),
-    ENTRUST_UPDATE("ENTRUST_UPDATE", "更新委托 [{}]"),
+    ENTRUST_ADD("ENTRUST_ADD", "事项 [{}] 中，操作人 [{}] 添加对 [{}] 的委托"),
+    ENTRUST_DELETE("ENTRUST_DELETE", "事项 [{}] 中，操作人 [{}] 删除对 [{}] 的委托"),
+    ENTRUST_UPDATE("ENTRUST_UPDATE", "事项 [{}] 中，操作人 [{}] 更新对 [{}] 的委托"),
 
     // 事项操作
     ITEM_START("ITEM_START", "启动事项 [{}]"),

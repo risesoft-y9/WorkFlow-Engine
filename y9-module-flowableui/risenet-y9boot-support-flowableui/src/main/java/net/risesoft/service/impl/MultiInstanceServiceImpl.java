@@ -27,7 +27,9 @@ import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.itemadmin.SmsDetailModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
 import net.risesoft.y9.Y9FlowableHolder;
@@ -57,9 +59,13 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     private final SmsDetailApi smsDetailApi;
 
+    private final AsyncUtilService asyncUtilService;
+
     @Override
     public void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms,
         String isShuMing, String smsContent) throws Exception {
+        Position position = Y9FlowableHolder.getPosition();
+        String positionName = position.getName();
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         String activityId = task.getTaskDefinitionKey();
@@ -82,6 +88,8 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         }
         for (String user : users) {
             buttonOperationApi.addMultiInstanceExecution(tenantId, activityId, processInstanceId, taskId, user);
+            asyncUtilService.addMultiInstanceParallelAuditLog(tenantId, positionName, processParamModel.getTitle(),
+                taskId, task.getName(), user);
         }
         if (processParamModel != null) {
             process4SearchService.saveToDataCenter1(tenantId, taskId, processParamModel);
@@ -124,6 +132,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public void addExecutionId4Sequential(String executionId, String taskId, String userChoice, String selectUserId,
         int num) throws Exception {
+        String positionId = Y9LoginUserHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String[] userChoiceArr = userChoice.split(";");
         String usersObj =
@@ -160,6 +169,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances + userChoiceArr.length);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.NR_OF_INSTANCES, val1);
+        asyncUtilService.addExecutionIdSequentialAuditLog(tenantId, positionId, executionId, taskId, usersListTemp);
     }
 
     @Override
@@ -245,7 +255,9 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public void removeExecution(String executionId, String taskId, String elementUser) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
         buttonOperationApi.deleteMultiInstanceExecution(tenantId, executionId, taskId, elementUser);
+        asyncUtilService.deleteMultiInstanceParallelAuditLog(tenantId, positionId, executionId, taskId, elementUser);
     }
 
     @SuppressWarnings("unchecked")
@@ -253,6 +265,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     public void removeExecution4Sequential(String executionId, String taskId, String elementUser, int num)
         throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9LoginUserHolder.getPositionId();
         String usersObj =
             variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.USERS).getData();
         // 计算删除后的users
@@ -287,5 +300,6 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances - 1);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.NR_OF_INSTANCES, val1);
+        asyncUtilService.deleteMultiInstanceSequentialAuditLog(tenantId, positionId, executionId, taskId, elementUser);
     }
 }

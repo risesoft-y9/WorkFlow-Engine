@@ -14,7 +14,6 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.service.AsyncPublishEventService;
 import net.risesoft.y9.Y9Context;
@@ -33,26 +32,6 @@ public class AsyncPublishEventServiceImpl implements AsyncPublishEventService {
     private final OrgUnitApi orgUnitApi;
 
     private final TaskApi taskApi;
-
-    @Async
-    @Override
-    public void addMultiInstanceAuditLog(String tenantId, String taskId, String userId) {
-        try {
-            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
-            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-                .action(ItemAdminAuditLogEnum.MULTI_INSTANCE_ADD.getAction())
-                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.MULTI_INSTANCE_ADD.getDescription(),
-                    taskModel.getName(), orgUnit.getName()))
-                .objectId(userId)
-                .oldObject(taskModel)
-                .currentObject(null)
-                .build();
-            Y9Context.publishEvent(auditLogEvent);
-        } catch (Exception e) {
-            LOGGER.error("addMultiInstanceAuditLog error", e);
-        }
-    }
 
     @Async
     @Override
