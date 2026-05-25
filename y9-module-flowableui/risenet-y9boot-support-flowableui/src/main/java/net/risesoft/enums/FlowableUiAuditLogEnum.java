@@ -72,11 +72,11 @@ public enum FlowableUiAuditLogEnum {
     MULTI_INSTANCE_SEQUENTIAL_ADD("MULTI_INSTANCE_SEQUENTIAL_ADD", "办件 [{}] 中操作人 [{}] 在任务 [{}] 串行加签 [{}]"),
     MULTI_INSTANCE_PARALLEL_REMOVE("MULTI_INSTANCE_PARALLEL_REMOVE", "办件 [{}] 中操作人 [{}] 在任务 [{}] 并行减签 [{}]"),
     MULTI_INSTANCE_SEQUENTIAL_REMOVE("MULTI_INSTANCE_SEQUENTIAL_REMOVE", "办件 [{}] 中操作人 [{}] 在任务 [{}] 串行减签 [{}]"),
-    MULTI_INSTANCE_SET_SPONSOR("MULTI_INSTANCE_SET_SPONSOR", "设置主办人 [{}]"),
+    MULTI_INSTANCE_SET_SPONSOR("MULTI_INSTANCE_SET_SPONSOR", "办件 [{}] 中操作人 [{}] 在任务节点设置主办人 [{}]"),
 
     // ========== 关注操作 ==========
-    OFFICE_FOLLOW_DELETE("OFFICE_FOLLOW_DELETE", "取消关注 [{}]"),
-    OFFICE_FOLLOW_SAVE("OFFICE_FOLLOW_SAVE", "保存关注的办件信息 [{}]"),
+    OFFICE_FOLLOW_DELETE("OFFICE_FOLLOW_DELETE", "办理人 [{}] 取消关注办件 [{}]"),
+    OFFICE_FOLLOW_SAVE("OFFICE_FOLLOW_SAVE", "办理人 [{}] 保存关注的办件 [{}]"),
 
     // ========== 流程跟踪操作 ==========
     PROCESS_TRACK_VIEW("PROCESS_TRACK_VIEW", "查看电子历程 [{}]"),
