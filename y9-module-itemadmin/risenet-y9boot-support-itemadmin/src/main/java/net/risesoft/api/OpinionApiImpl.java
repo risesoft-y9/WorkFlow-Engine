@@ -13,7 +13,6 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.opinion.OpinionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
@@ -45,8 +44,6 @@ public class OpinionApiImpl implements OpinionApi {
     private final OpinionService opinionService;
 
     private final ItemOpinionFrameBindService itemOpinionFrameBindService;
-
-    private final PersonApi personApi;
 
     private final OrgUnitApi orgUnitApi;
 
