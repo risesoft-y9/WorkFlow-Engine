@@ -55,7 +55,7 @@ public class DeleteProcessServiceImpl implements DeleteProcessService {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
-            processParamApi.deleteByPprocessInstanceId(tenantId, processInstanceId);
+            processParamApi.deleteByProcessInstanceId(tenantId, processInstanceId);
         } catch (Exception e3) {
             LOGGER.error("**********删除流程实例", e3);
         }

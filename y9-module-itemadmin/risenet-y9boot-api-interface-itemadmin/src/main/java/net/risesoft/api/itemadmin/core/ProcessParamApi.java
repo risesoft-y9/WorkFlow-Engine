@@ -26,8 +26,8 @@ public interface ProcessParamApi {
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
-    @PostMapping("/deleteByPprocessInstanceId")
-    Y9Result<Object> deleteByPprocessInstanceId(@RequestParam("tenantId") String tenantId,
+    @PostMapping("/deleteByProcessInstanceId")
+    Y9Result<Object> deleteByProcessInstanceId(@RequestParam("tenantId") String tenantId,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
