@@ -9,8 +9,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.filter.CheckUserLoginFilter4Flowable;
 import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.configuration.app.flowble.Y9FlowableProperties;
+
+import feign.RequestInterceptor;
 
 @Configuration
 @EnableConfigurationProperties({Y9Properties.class, Y9FlowableProperties.class})
@@ -30,5 +33,15 @@ public class FlowableUIConfiguration {
     @Bean
     public Y9Context y9Context() {
         return new Y9Context();
+    }
+
+    @Bean
+    public RequestInterceptor commonParamsInterceptor() {
+        return template -> {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String userId = Y9LoginUserHolder.getPersonId();
+            template.header("X-Tenant-Id", tenantId);
+            template.header("X-User-Id", userId);
+        };
     }
 }
