@@ -1,7 +1,5 @@
 package net.risesoft.config;
 
-import javax.sql.DataSource;
-
 import org.apache.ibatis.session.SqlSessionFactory;
 import org.flowable.ui.modeler.properties.FlowableModelerAppProperties;
 import org.flowable.ui.modeler.service.FlowableModelQueryService;
@@ -10,26 +8,19 @@ import org.flowable.ui.modeler.service.ModelServiceImpl;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnBean;
-import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
-import org.springframework.boot.context.properties.ConfigurationProperties;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.ImportResource;
-import org.springframework.context.annotation.Primary;
-import org.springframework.core.env.Environment;
 import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.support.PathMatchingResourcePatternResolver;
-import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.web.servlet.config.annotation.ViewControllerRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 import com.alibaba.druid.pool.DruidDataSource;
-import com.alibaba.druid.spring.boot.autoconfigure.DruidDataSourceBuilder;
 
 import lombok.RequiredArgsConstructor;
 
@@ -40,8 +31,6 @@ import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 import net.risesoft.y9.configuration.feature.liquibase.Y9LiquibaseProperties;
-import net.risesoft.y9.tenant.datasource.Y9TenantDataSource;
-import net.risesoft.y9.tenant.datasource.Y9TenantDataSourceLookup;
 
 import liquibase.integration.spring.SpringLiquibase;
 
@@ -56,8 +45,6 @@ import liquibase.integration.spring.SpringLiquibase;
 @ImportResource({"classpath:/spring-configs/flowable.cfg.xml"})
 @ComponentScan(basePackages = {"net.risesoft", "org.flowable.ui"})
 public class ProcessAdminConfiguration implements WebMvcConfigurer {
-
-    private final Environment environment;
 
     @Override
     public void addViewControllers(ViewControllerRegistry registry) {
@@ -77,17 +64,6 @@ public class ProcessAdminConfiguration implements WebMvcConfigurer {
     @Bean
     public FlowableMultiTenantListener flowableMultiTenantListener() {
         return new FlowableMultiTenantListener();
-    }
-
-    @Bean(name = {"jdbcTemplate4Public"})
-    public JdbcTemplate jdbcTemplate(@Qualifier("y9PublicDS") DruidDataSource y9PublicDs) {
-        return new JdbcTemplate(y9PublicDs);
-    }
-
-    @Bean("jdbcTemplate4Tenant")
-    @ConditionalOnMissingBean(name = "jdbcTemplate4Tenant")
-    public JdbcTemplate jdbcTemplate4Tenant(@Qualifier("y9TenantDataSource") DataSource ds) {
-        return new JdbcTemplate(ds);
     }
 
     @Bean
@@ -111,7 +87,8 @@ public class ProcessAdminConfiguration implements WebMvcConfigurer {
     }
 
     @Bean(name = {"sqlSessionFactory"})
-    public SqlSessionFactory sqlSessionFactory(@Qualifier("y9FlowableDS") DruidDataSource dataSource) throws Exception {
+    public SqlSessionFactory sqlSessionFactory(@Qualifier("defaultDataSource") DruidDataSource dataSource)
+        throws Exception {
         SqlSessionFactoryBean bean = new SqlSessionFactoryBean();
         bean.setDataSource(dataSource);
 
@@ -131,35 +108,9 @@ public class ProcessAdminConfiguration implements WebMvcConfigurer {
         return new Y9Context();
     }
 
-    @Primary
-    @ConfigurationProperties("spring.datasource.druid.flowable")
-    @Bean(name = {"y9FlowableDS"})
-    public DruidDataSource y9FlowableDs() {
-        return DruidDataSourceBuilder.create().build();
-    }
-
-    @ConfigurationProperties("spring.datasource.druid.y9-public")
-    @Bean(name = {"y9PublicDS"})
-    @ConditionalOnMissingBean(name = "y9PublicDS")
-    public DruidDataSource y9PublicDs() {
-        return DruidDataSourceBuilder.create().build();
-    }
-
-    @Bean("y9TenantDataSource")
-    public DataSource y9TenantDataSource(@Qualifier("y9FlowableDS") DruidDataSource y9FlowableDs,
-        @Qualifier("y9TenantDataSourceLookup") Y9TenantDataSourceLookup y9TenantDataSourceLookup) {
-        return new Y9TenantDataSource(y9FlowableDs, y9TenantDataSourceLookup);
-    }
-
-    @Bean("y9TenantDataSourceLookup")
-    public Y9TenantDataSourceLookup y9TenantDataSourceLookup(@Qualifier("y9PublicDS") DruidDataSource ds) {
-        return new Y9TenantDataSourceLookup(ds, environment.getProperty("y9.systemName"));
-    }
-
     @Bean
-    @ConditionalOnBean(name = "y9FlowableDS")
     public SpringLiquibase y9FlowableSpringLiquibase(Y9LiquibaseProperties properties,
-        @Qualifier("y9FlowableDS") DruidDataSource dataSource, ResourceLoader resourceLoader) {
+        @Qualifier("defaultDataSource") DruidDataSource dataSource, ResourceLoader resourceLoader) {
         return LiquibaseUtil.getSpringLiquibase(dataSource, properties, resourceLoader, false);
     }
 }

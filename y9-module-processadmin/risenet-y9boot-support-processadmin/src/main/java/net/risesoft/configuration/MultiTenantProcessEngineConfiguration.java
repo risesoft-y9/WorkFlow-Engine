@@ -41,7 +41,7 @@ public class MultiTenantProcessEngineConfiguration extends MultiSchemaMultiTenan
 
     public MultiTenantProcessEngineConfiguration(
         @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public,
-        @Qualifier("y9FlowableDS") DruidDataSource defaultDataSource,
+        @Qualifier("defaultDataSource") DruidDataSource defaultDataSource,
         Y9Properties y9Properties,
         SystemApi systemApi) {
         super(getFlowableTenantInfoHolder());
