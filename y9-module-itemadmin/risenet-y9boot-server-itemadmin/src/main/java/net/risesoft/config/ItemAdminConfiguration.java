@@ -2,8 +2,10 @@ package net.risesoft.config;
 
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.boot.context.properties.EnableConfigurationProperties;
+import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.core.Ordered;
 import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.orm.jpa.JpaVendorAdapter;
 import org.springframework.orm.jpa.vendor.HibernateJpaVendorAdapter;
@@ -36,5 +38,14 @@ public class ItemAdminConfiguration {
     @Bean
     public Y9Context y9Context() {
         return new Y9Context();
+    }
+
+    @Bean
+    public FilterRegistrationBean<CommonParamsFilter> commonParamsFilterRegistration() {
+        FilterRegistrationBean<CommonParamsFilter> registration = new FilterRegistrationBean<>();
+        registration.setFilter(new CommonParamsFilter());
+        registration.addUrlPatterns("/services/rest/*");
+        registration.setOrder(Ordered.HIGHEST_PRECEDENCE);
+        return registration;
     }
 }
