@@ -39,7 +39,7 @@ public class ProcessParamApiImpl implements ProcessParamApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteByPprocessInstanceId(@RequestParam String tenantId,
+    public Y9Result<Object> deleteByProcessInstanceId(@RequestParam String tenantId,
         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         processParamService.deleteByPprocessInstanceId(processInstanceId);
