@@ -1,4 +1,4 @@
-package net.risesoft.controller;
+package net.risesoft.controller.buttonOperation;
 
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
 
 import jakarta.validation.constraints.NotBlank;
@@ -44,6 +45,7 @@ import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
+import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.SmsDetailModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
@@ -378,7 +380,6 @@ public class ButtonOperationRestController {
      * @param taskId 任务id
      * @return Y9Result<String>
      */
-    @SuppressWarnings("unchecked")
     @FlowableLog(operationName = "获取串行办理人顺序")
     @GetMapping(value = "/getHandleSerial", produces = "application/json")
     public Y9Result<String> getHandleSerial(@RequestParam @NotBlank String taskId) {
@@ -1413,6 +1414,52 @@ public class ButtonOperationRestController {
         return Y9Result.failure("撤销签收失败");
     }
 
+    /**
+     * 流程办结
+     *
+     * @param taskId 任务id
+     * @param infoOvert 办结数据是否在数据中心公开
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/complete")
+    public Y9Result<String> complete(@RequestParam @NotBlank String taskId,
+        @RequestParam(required = false) String infoOvert) {
+        try {
+            buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
+            return Y9Result.successMsg("办结成功");
+        } catch (Exception e) {
+            LOGGER.error("流程办结失败", e);
+        }
+        return Y9Result.failure("办结失败");
+    }
+
+    /**
+     * 批量办结
+     *
+     * @param taskIds 任务id集合
+     * @return Y9Result<String>
+     */
+    @FlowableLog(operationName = "批量办结", operationType = FlowableOperationTypeEnum.COMPLETE)
+    @PostMapping(value = "/completeTodo")
+    public Y9Result<String> completeTodo(@RequestParam String[] taskIds) {
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger failCount = new AtomicInteger();
+        Arrays.stream(taskIds).forEach(taskId -> {
+            try {
+                TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+                if (null != task) {
+                    buttonOperationService.complete(taskId, "办结", "已办结", "");
+                    successCount.getAndIncrement();
+                } else {
+                    failCount.getAndIncrement();
+                }
+            } catch (Exception e) {
+                failCount.getAndIncrement();
+            }
+        });
+        return Y9Result.successMsg("批量办结成功，成功：" + successCount.get() + "，失败：" + failCount.get());
+    }
+
     @FlowableLog(operationName = "放入回收站", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteTodos")
     public Y9Result<String> deleteTodos(@RequestParam String[] taskIdAndProcessSerialNumbers) {
@@ -1435,6 +1482,220 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/removes")
     public Y9Result<String> removes(@RequestParam String[] processSerialNumbers) {
         return buttonOperationService.removes(processSerialNumbers);
+    }
+
+    /**
+     * 办件发送
+     *
+     * @param itemId 事项id
+     * @param taskId 任务id
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<Object>
+     */
+    @PostMapping(value = "/submitTo")
+    public Y9Result<Object> submitTo(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
+        return documentApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), taskId,
+            itemId, processSerialNumber);
+    }
+
+    /**
+     * 办件发送
+     *
+     * @param itemId 事项id
+     * @param sponsorHandle 是否主办办理
+     * @param processInstanceId 流程实例id
+     * @param taskId 任务id
+     * @param processDefinitionKey 流程定义key
+     * @param processSerialNumber 流程编号
+     * @param userChoice 收件人
+     * @param sponsorGuid 主办人id
+     * @param routeToTaskId 发送路由，任务key
+     * @param isSendSms 是否短信提醒
+     * @param isShuMing 是否署名
+     * @param smsContent 短信内容
+     * @return Y9Result<Map < String, Object>>
+     */
+    @FlowableLog(operationName = "办件发送", operationType = FlowableOperationTypeEnum.SEND)
+    @PostMapping(value = "/forwarding")
+    public Y9Result<Map<String, Object>> forwarding(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String sponsorHandle, @RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processDefinitionKey,
+        @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String userChoice,
+        @RequestParam(required = false) String sponsorGuid, @RequestParam @NotBlank String routeToTaskId,
+        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
+        @RequestParam(required = false) String smsContent) {
+        Map<String, Object> map = new HashMap<>();
+        Map<String, Object> variables = new HashMap<>(16);
+        try {
+            SmsDetailModel smsDetailModel = SmsDetailModel.builder()
+                .processSerialNumber(processSerialNumber)
+                .positionId(Y9FlowableHolder.getPositionId())
+                .positionName(Y9LoginUserHolder.getUserInfo().getName())
+                .send(!StringUtils.isBlank(isSendSms) && Boolean.parseBoolean(isSendSms))
+                .sign(!StringUtils.isBlank(isShuMing) && Boolean.parseBoolean(isShuMing))
+                .content(smsContent)
+                .positionIds(userChoice)
+                .build();
+            Y9Result<Object> result = smsDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), smsDetailModel);
+            if (!result.isSuccess()) {
+                return Y9Result.failure("保存短信详情失败！");
+            }
+            Y9Result<String> y9Result = documentApi.saveAndForwarding(Y9LoginUserHolder.getTenantId(),
+                Y9FlowableHolder.getPositionId(), processInstanceId, taskId, sponsorHandle, itemId, processSerialNumber,
+                processDefinitionKey, userChoice, sponsorGuid, routeToTaskId, variables);
+            if (y9Result.isSuccess()) {
+                map.put("processInstanceId", y9Result.getData());
+                return Y9Result.success(map, y9Result.getMsg());
+            } else {
+                return Y9Result.failure(y9Result.getMsg());
+            }
+        } catch (Exception e) {
+            LOGGER.error("发送失败", e);
+        }
+        return Y9Result.failure("发送失败，发生异常");
+    }
+
+    /**
+     * 获取签收任务配置（用于判断是否直接发送）
+     *
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefinitionKey 任务key
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/signTaskConfig")
+    public Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String taskDefinitionKey,
+        @RequestParam @NotBlank String processSerialNumber) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        return documentApi.signTaskConfig(tenantId, Y9FlowableHolder.getPositionId(), itemId, processDefinitionId,
+            taskDefinitionKey, processSerialNumber);
+    }
+
+    /**
+     * 获取协办人员办理情况
+     *
+     * @param taskId 任务id * @return Y9Result<Map<String, Object>>
+     */
+    @GetMapping(value = "/getParallelNames")
+    public Y9Result<Map<String, Object>> getParallelNames(@RequestParam @NotBlank String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9FlowableHolder.getPositionId();
+        try {
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
+            if (taskModel == null) {
+                return Y9Result.failure("任务不存在");
+            }
+            Map<String, Object> result = new HashMap<>(16);
+            String multiInstance = processDefinitionApi
+                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+                .getData();
+            if (isParallelInstance(multiInstance)) {
+                handleParallelInstance(result, tenantId, positionId, taskModel);
+            } else {
+                result.put("isParallel", false);
+                result.put(FlowableUiConsts.PARALLELDOING_KEY, "");
+                result.put(FlowableUiConsts.COUNT_KEY, 0);
+            }
+            return Y9Result.success(result, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取协办人员办理情况失败", e);
+            return Y9Result.failure("获取失败");
+        }
+    }
+
+    /**
+     * 判断是否为并行实例
+     */
+    private boolean isParallelInstance(String multiInstance) {
+        return SysVariables.PARALLEL.equals(multiInstance);
+    }
+
+    /**
+     * 处理并行实例情况
+     */
+    private void handleParallelInstance(Map<String, Object> result, String tenantId, String positionId,
+        TaskModel taskModel) {
+        result.put("isParallel", true);
+        try {
+            List<TaskModel> taskList =
+                taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), true).getData();
+            ParallelProcessingResult processingResult = processAssistantTasks(tenantId, positionId, taskList);
+            result.put(FlowableUiConsts.PARALLELDOING_KEY, processingResult.assistantNames);
+            result.put(FlowableUiConsts.COUNT_KEY, taskList != null ? taskList.size() - 1 : 0);
+        } catch (Exception e) {
+            LOGGER.warn("处理并行任务列表失败", e);
+            result.put(FlowableUiConsts.PARALLELDOING_KEY, "");
+            result.put(FlowableUiConsts.COUNT_KEY, 0);
+        }
+    }
+
+    /**
+     * 处理协办任务
+     */
+    private ParallelProcessingResult processAssistantTasks(String tenantId, String positionId,
+        List<TaskModel> taskList) {
+        StringBuilder assistantNames = new StringBuilder();
+        int count = 0;
+        if (taskList != null) {
+            for (TaskModel task : taskList) {
+                if (count >= 5) {
+                    break;
+                }
+                String assigneeId = task.getAssignee();
+                if (isAssistantUser(assigneeId, positionId)) {
+                    OrgUnit employee = getEmployeeInfo(tenantId, assigneeId);
+                    if (employee != null) {
+                        appendAssistantName(assistantNames, employee.getName());
+                        count++;
+                    }
+                }
+            }
+        }
+        return new ParallelProcessingResult(assistantNames.toString());
+    }
+
+    /**
+     * 判断是否为协办用户
+     */
+    private boolean isAssistantUser(String assigneeId, String positionId) {
+        return StringUtils.isNotBlank(assigneeId) && !assigneeId.equals(positionId);
+    }
+
+    /**
+     * 获取员工信息
+     */
+    private OrgUnit getEmployeeInfo(String tenantId, String assigneeId) {
+        try {
+            return orgUnitApi.getPersonOrPosition(tenantId, assigneeId).getData();
+        } catch (Exception e) {
+            LOGGER.warn("获取员工信息失败: assigneeId={}", assigneeId, e);
+            return null;
+        }
+    }
+
+    /**
+     * 添加协办人员名称
+     */
+    private void appendAssistantName(StringBuilder names, String name) {
+        if (names.length() == 0) {
+            names.append(name);
+        } else {
+            names.append("、").append(name);
+        }
+    }
+
+    /**
+     * 并行处理结果封装类
+     */
+    private static class ParallelProcessingResult {
+        final String assistantNames;
+
+        ParallelProcessingResult(String assistantNames) {
+            this.assistantNames = assistantNames;
+        }
     }
 
     /**
