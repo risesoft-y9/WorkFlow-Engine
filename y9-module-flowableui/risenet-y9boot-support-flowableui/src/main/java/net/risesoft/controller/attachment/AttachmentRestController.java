@@ -9,6 +9,7 @@ import jakarta.servlet.ServletContext;
 import jakarta.servlet.ServletOutputStream;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 import org.apache.commons.io.FilenameUtils;
@@ -18,6 +19,7 @@ import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ModelAttribute;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -28,6 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.dto.DeleteEntityDTO;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.log.FlowableOperationTypeEnum;
@@ -77,7 +80,7 @@ public class AttachmentRestController {
      */
     @FlowableLog(operationName = "附件下载", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @GetMapping(value = "/download")
-    public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
+    public void download(@RequestParam @NotBlank String id, HttpServletResponse response) {
         String tenantId = Y9LoginUserHolder.getTenantId();
 
         try (ServletOutputStream out = response.getOutputStream()) {
@@ -96,13 +99,13 @@ public class AttachmentRestController {
     /**
      * 删除附件
      *
-     * @param ids 附件ids，逗号隔开
+     * @param dto 删除DTO
      * @return Y9Result<String>
      */
-    @FlowableLog(operationName = "删除附件", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delFile")
-    public Y9Result<String> delFile(@RequestParam @NotBlank String ids) {
-        return attachmentService.delFile(ids);
+    @FlowableLog(operationName = "删除附件", operationType = FlowableOperationTypeEnum.DELETE)
+    public Y9Result<String> delFile(@RequestBody @Valid DeleteEntityDTO dto) {
+        return attachmentService.delFile(dto.getIds());
     }
 
     /**

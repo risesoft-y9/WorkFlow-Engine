@@ -74,9 +74,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Transactional
     @Override
-    public void delFile(String ids) {
-        String[] id = ids.split(",");
-        for (String str : id) {
+    public void delFile(List<String> ids) {
+        for (String str : ids) {
             Attachment file = attachmentRepository.findById(str).orElse(null);
             attachmentRepository.deleteById(str);
             assert file != null;

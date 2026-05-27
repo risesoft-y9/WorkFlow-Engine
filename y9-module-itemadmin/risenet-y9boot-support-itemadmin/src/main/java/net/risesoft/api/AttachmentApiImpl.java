@@ -85,14 +85,12 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 删除附件（物理删除，包含具体文件）
      *
-     * @param tenantId 租户id
      * @param ids 附件ids
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delFile(@RequestParam String tenantId, @RequestParam String ids) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> delFile(@RequestBody List<String> ids) {
         attachmentService.delFile(ids);
         return Y9Result.success();
     }

@@ -87,9 +87,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     @Transactional
-    public Y9Result<String> delFile(String ids) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        attachmentApi.delFile(tenantId, ids);
+    public Y9Result<String> delFile(List<String> ids) {
+        attachmentApi.delFile(ids);
         return Y9Result.successMsg("删除成功");
     }
 
