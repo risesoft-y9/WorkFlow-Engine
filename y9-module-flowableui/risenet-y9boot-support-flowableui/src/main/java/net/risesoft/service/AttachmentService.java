@@ -1,6 +1,7 @@
 package net.risesoft.service;
 
 import java.io.OutputStream;
+import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -32,7 +33,7 @@ public interface AttachmentService {
      * @param ids 附件ids，逗号隔开
      * @return Y9Result<String>
      */
-    Y9Result<String> delFile(String ids);
+    Y9Result<String> delFile(List<String> ids);
 
     /**
      * 附加打包zip下载

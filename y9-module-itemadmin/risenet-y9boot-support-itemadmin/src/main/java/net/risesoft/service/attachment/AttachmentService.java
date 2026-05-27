@@ -25,7 +25,7 @@ public interface AttachmentService {
      * 
      * @param ids 附件唯一标识
      */
-    void delFile(String ids);
+    void delFile(List<String> ids);
 
     /**
      * (软航附件控件) 根据流程编号查询附件数量

@@ -37,13 +37,12 @@ public interface AttachmentApi {
     /**
      * 删除附件
      *
-     * @param tenantId 租户id
      * @param ids 附件ids
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/delFile")
-    Y9Result<Object> delFile(@RequestParam("tenantId") String tenantId, @RequestParam("ids") String ids);
+    Y9Result<Object> delFile(@RequestBody List<String> ids);
 
     /**
      * 附件数
