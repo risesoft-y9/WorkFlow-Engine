@@ -12,7 +12,7 @@ import lombok.RequiredArgsConstructor;
 @RequiredArgsConstructor
 public enum FlowableUiAuditLogEnum {
     // ========== 附件操作 ==========
-    ATTACHMENT_DOWNLOAD("ATTACHMENT_DOWNLOAD", "附件下载 [{}]"),
+    ATTACHMENT_DOWNLOAD("ATTACHMENT_DOWNLOAD", "下载附件 [{}]"),
     ATTACHMENT_DELETE("ATTACHMENT_DELETE", "删除附件 [{}]"),
     ATTACHMENT_PACK_DOWNLOAD("ATTACHMENT_PACK_DOWNLOAD", "打包zip下载办件 [{}] 所有的附件"),
     ATTACHMENT_UPLOAD("ATTACHMENT_UPLOAD", "上传附件 [{}]"),
@@ -77,6 +77,8 @@ public enum FlowableUiAuditLogEnum {
     // ========== 关注操作 ==========
     OFFICE_FOLLOW_DELETE("OFFICE_FOLLOW_DELETE", "办理人 [{}] 取消关注办件 [{}]"),
     OFFICE_FOLLOW_SAVE("OFFICE_FOLLOW_SAVE", "办理人 [{}] 保存关注的办件 [{}]"),
+
+    ORGANWORD_NUMBER_SAVE("ORGANWORD_NUMBER_SAVE", "办件 [{}] 添加编号 [{}]"),
 
     // ========== 流程跟踪操作 ==========
     PROCESS_TRACK_VIEW("PROCESS_TRACK_VIEW", "查看电子历程 [{}]"),
