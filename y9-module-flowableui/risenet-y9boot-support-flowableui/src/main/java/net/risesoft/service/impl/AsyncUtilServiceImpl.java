@@ -537,7 +537,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     public void addMultiInstanceParallelAuditLog(String tenantId, String userName, String title, String taskId,
         String taskName, String users) {
         try {
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, users).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, users).getData();
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                 .action(FlowableUiAuditLogEnum.MULTI_INSTANCE_PARALLEL_ADD.getAction())
                 .description(Y9StringUtil.format(FlowableUiAuditLogEnum.MULTI_INSTANCE_PARALLEL_ADD.getDescription(),
@@ -548,7 +548,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 .build();
             Y9Context.publishEvent(auditLogEvent);
         } catch (Exception e) {
-            LOGGER.error("保存并行任务加签审批日志失败 error", e);
+            LOGGER.error("保存并行任务加签审计日志失败 error", e);
         }
     }
 
@@ -561,7 +561,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
             String userNames = "";
             for (String user : users) {
                 OrgUnit orgUser = orgUnitApi.getOrgUnit(tenantId, user).getData();
@@ -577,7 +577,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 .build();
             Y9Context.publishEvent(auditLogEvent);
         } catch (Exception e) {
-            LOGGER.error("保存串行任务加签审批日志失败 error", e);
+            LOGGER.error("保存串行任务加签审计日志失败 error", e);
         }
     }
 
@@ -590,7 +590,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
             OrgUnit orgUser = orgUnitApi.getOrgUnit(tenantId, users).getData();
 
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
@@ -604,7 +604,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 .build();
             Y9Context.publishEvent(auditLogEvent);
         } catch (Exception e) {
-            LOGGER.error("保存并行任务减签审批日志失败 error", e);
+            LOGGER.error("保存并行任务减签审计日志失败 error", e);
         }
     }
 
@@ -617,7 +617,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
             OrgUnit orgUser = orgUnitApi.getOrgUnit(tenantId, users).getData();
 
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
@@ -632,7 +632,97 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 .build();
             Y9Context.publishEvent(auditLogEvent);
         } catch (Exception e) {
-            LOGGER.error("保存串行任务减签审批日志失败 error", e);
+            LOGGER.error("保存串行任务减签审计日志失败 error", e);
+        }
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void setSponsorAuditLog(String tenantId, String orgUnitId, String taskId, String sponsorGuid, String title) {
+        try {
+            HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
+            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
+            OrgUnit orgUser = orgUnitApi.getOrgUnit(tenantId, sponsorGuid).getData();
+
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(FlowableUiAuditLogEnum.MULTI_INSTANCE_SET_SPONSOR.getAction())
+                .description(Y9StringUtil.format(FlowableUiAuditLogEnum.MULTI_INSTANCE_SET_SPONSOR.getDescription(),
+                    title, orgUnit.getName(), historicTaskInstanceModel.getName(), orgUser.getName()))
+                .objectId(taskId)
+                .oldObject(orgUser)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
+        } catch (Exception e) {
+            LOGGER.error("保存设置主办人审计日志失败 error", e);
+        }
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void delOfficeFollowAuditLog(String tenantId, String orgUnitId, String processInstanceIds) {
+        try {
+            String[] ids = processInstanceIds.split(",");
+            for (String processInstanceId : ids) {
+                OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
+                ProcessParamModel processParamModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(FlowableUiAuditLogEnum.OFFICE_FOLLOW_DELETE.getAction())
+                    .description(Y9StringUtil.format(FlowableUiAuditLogEnum.OFFICE_FOLLOW_DELETE.getDescription(),
+                        orgUnit.getName(), processParamModel.getTitle()))
+                    .objectId(processInstanceId)
+                    .oldObject(processParamModel)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
+            }
+        } catch (Exception e) {
+            LOGGER.error("保存取消关注办件审计日志失败 error", e);
+        }
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void saveOfficeFollowAuditLog(String tenantId, String orgUnitId, String processInstanceId, String title) {
+        try {
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(FlowableUiAuditLogEnum.OFFICE_FOLLOW_SAVE.getAction())
+                .description(Y9StringUtil.format(FlowableUiAuditLogEnum.OFFICE_FOLLOW_SAVE.getDescription(),
+                    orgUnit.getName(), title))
+                .objectId(processInstanceId)
+                .oldObject(title)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
+        } catch (Exception e) {
+            LOGGER.error("保存关注办件审计日志失败 error", e);
+        }
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void organWordSaveAuditLog(String tenantId, String orgUnitId, String processSerialNumber,
+        String numberString) {
+        try {
+            ProcessParamModel processParamModel =
+                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(FlowableUiAuditLogEnum.ORGANWORD_NUMBER_SAVE.getAction())
+                .description(Y9StringUtil.format(FlowableUiAuditLogEnum.ORGANWORD_NUMBER_SAVE.getDescription(),
+                    processParamModel.getTitle(), numberString))
+                .objectId(processSerialNumber)
+                .oldObject(numberString)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
+        } catch (Exception e) {
+            LOGGER.error("保存办件编号审计日志失败 error", e);
         }
     }
 

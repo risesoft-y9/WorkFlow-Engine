@@ -15,6 +15,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.RemindInstanceRepository;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.RemindInstanceService;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -32,6 +33,7 @@ import net.risesoft.y9.util.Y9Util;
 public class RemindInstanceServiceImpl implements RemindInstanceService {
 
     private final RemindInstanceRepository remindInstanceRepository;
+    private final AsyncUtilService asyncUtilService;
 
     @Override
     public RemindInstance getRemindInstance(String processInstanceId) {
@@ -73,6 +75,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
         String arriveTaskKey, String completeTaskKey) {
         try {
             String userId = Y9FlowableHolder.getOrgUnitId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
             RemindInstance remindInstance =
                 remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId, userId);
             // 删除
@@ -102,6 +105,8 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
                 remindInstance.setArriveTaskKey(arriveTaskKey);
                 remindInstance.setCompleteTaskKey(completeTaskKey);
                 remindInstanceRepository.save(remindInstance);
+                asyncUtilService.remindMsgAuditLog(tenantId, userId, taskIds, processInstanceId, process, arriveTaskKey,
+                    completeTaskKey);
                 return Y9Result.successMsg("保存成功");
             }
             remindInstance = new RemindInstance();
@@ -114,6 +119,8 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
             remindInstance.setArriveTaskKey(arriveTaskKey);
             remindInstance.setCompleteTaskKey(completeTaskKey);
             remindInstanceRepository.save(remindInstance);
+            asyncUtilService.remindMsgAuditLog(tenantId, userId, taskIds, processInstanceId, process, arriveTaskKey,
+                completeTaskKey);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error(e.getMessage(), e);

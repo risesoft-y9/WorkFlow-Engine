@@ -31,6 +31,7 @@ import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -58,6 +59,8 @@ public class OfficeFollowRestController {
 
     private final OfficeDoneInfoApi officeDoneInfoApi;
 
+    private final AsyncUtilService asyncUtilService;
+
     /**
      * 取消关注
      *
@@ -70,8 +73,10 @@ public class OfficeFollowRestController {
         try {
             Y9Result<Object> y9Result;
             String tenantId = Y9LoginUserHolder.getTenantId();
-            y9Result = officeFollowApi.delOfficeFollow(tenantId, Y9FlowableHolder.getPositionId(), processInstanceIds);
+            String positionId = Y9FlowableHolder.getPositionId();
+            y9Result = officeFollowApi.delOfficeFollow(tenantId, positionId, processInstanceIds);
             if (y9Result.isSuccess()) {
+                asyncUtilService.delOfficeFollowAuditLog(tenantId, positionId, processInstanceIds);
                 return Y9Result.successMsg("取消关注成功");
             }
         } catch (Exception e) {
@@ -151,6 +156,8 @@ public class OfficeFollowRestController {
                 officeFollow.setUserName(position.getName());
                 Y9Result<Object> y9Result = officeFollowApi.saveOfficeFollow(tenantId, officeFollow);
                 if (y9Result.isSuccess()) {
+                    asyncUtilService.saveOfficeFollowAuditLog(tenantId, positionId, processInstanceId,
+                        processParamModel.getTitle());
                     return Y9Result.successMsg("关注成功");
                 }
             }

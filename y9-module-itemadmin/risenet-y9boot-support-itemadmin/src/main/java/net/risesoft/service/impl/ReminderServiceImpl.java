@@ -1,5 +1,6 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
@@ -23,17 +24,21 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Reminder;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ReminderModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TaskModel;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.repository.jpa.ReminderRepository;
 import net.risesoft.service.ReminderService;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9StringUtil;
 
 /**
  * @author qinman
@@ -62,6 +67,15 @@ public class ReminderServiceImpl implements ReminderService {
         Arrays.stream(ids).forEach(id -> {
             Optional<Reminder> reminderOptional = reminderRepository.findById(id);
             reminderOptional.ifPresent(reminderRepository::delete);
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.REMINDER_DELETE.getAction())
+                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.REMINDER_DELETE.getDescription(),
+                    reminderOptional.get().getMsgContent()))
+                .objectId(id)
+                .oldObject(reminderOptional.get())
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         });
     }
 
@@ -299,6 +313,15 @@ public class ReminderServiceImpl implements ReminderService {
             r.setMsgContent(reminder.getMsgContent());
             r.setReadTime(null);
             reminderRepository.save(r);
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.REMINDER_UPDATE.getAction())
+                .description(
+                    Y9StringUtil.format(ItemAdminAuditLogEnum.REMINDER_UPDATE.getDescription(), r.getMsgContent()))
+                .objectId(id)
+                .oldObject(r)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
             return r;
         }
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -312,6 +335,14 @@ public class ReminderServiceImpl implements ReminderService {
         r.setProcInstId(reminder.getProcInstId());
         r.setMsgContent(reminder.getMsgContent());
         reminderRepository.save(r);
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.REMINDER_ADD.getAction())
+            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.REMINDER_ADD.getDescription(), r.getMsgContent()))
+            .objectId(id)
+            .oldObject(r)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
         return r;
     }
 
@@ -328,8 +359,18 @@ public class ReminderServiceImpl implements ReminderService {
             Optional<Reminder> reminderOptional = reminderRepository.findById(id);
             if (reminderOptional.isPresent()) {
                 Reminder reminder = reminderOptional.get();
-                reminder.setReadTime(new Date());
+                Date now = new Date();
+                reminder.setReadTime(now);
                 reminderRepository.save(reminder);
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.REMINDER_READ.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.REMINDER_READ.getDescription(),
+                        reminder.getMsgContent(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(now)))
+                    .objectId(id)
+                    .oldObject(reminder)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
             }
         });
     }

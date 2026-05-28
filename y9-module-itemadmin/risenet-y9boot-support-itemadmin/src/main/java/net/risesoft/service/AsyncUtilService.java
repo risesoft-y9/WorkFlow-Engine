@@ -1,5 +1,7 @@
 package net.risesoft.service;
 
+import java.util.List;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -28,4 +30,57 @@ public interface AsyncUtilService {
      */
     void takeBackTwoTaskDefKeyAuditLog(final String tenantId, final String orgUnitId, final String taskId,
         String taskDefKey);
+
+    /**
+     * 快速发送审计日志
+     *
+     * @param tenantId
+     * @param orgUnitId
+     * @param itemId
+     * @param taskKey
+     * @param assignee
+     * @param optType
+     */
+    void quickSendAuditLog(final String tenantId, final String orgUnitId, final String itemId, final String taskKey,
+        final String assignee, final String optType);
+
+    /**
+     * 提醒消息审计日志
+     * 
+     * @param tenantId
+     * @param orgUnitId
+     * @param taskIds
+     * @param processInstanceId
+     * @param process
+     * @param arriveTaskKey
+     * @param completeTaskKey
+     */
+    void remindMsgAuditLog(final String tenantId, final String orgUnitId, final String taskIds,
+        final String processInstanceId, final Boolean process, final String arriveTaskKey,
+        final String completeTaskKey);
+
+    /**
+     * 异步保存发送审计日志
+     *
+     * @param tenantId
+     * @param userIds
+     */
+    void sendAuditLog(final String tenantId, final String title, final String userIds);
+
+    /**
+     * 异步保存发送审计日志
+     *
+     * @param tenantId
+     * @param userIdList
+     */
+    void sendAuditLog(final String tenantId, final String title, final List<String> userIdList);
+
+    /**
+     * 异步保存办件提交发送审计日志
+     *
+     * @param tenantId
+     * @param title
+     * @param userIdList
+     */
+    void submitSendAuditLog(final String tenantId, final String title, final List<String> userIdList);
 }

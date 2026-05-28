@@ -8,8 +8,10 @@ import net.risesoft.entity.QuickSend;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.repository.jpa.QuickSendRepository;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.QuickSendService;
 import net.risesoft.y9.Y9FlowableHolder;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  *
@@ -21,6 +23,7 @@ import net.risesoft.y9.Y9FlowableHolder;
 public class QuickSendServiceImpl implements QuickSendService {
 
     private final QuickSendRepository quickSendRepository;
+    private final AsyncUtilService asyncUtilService;
 
     @Override
     public String getAssignee(String itemId, String taskKey) {
@@ -31,11 +34,14 @@ public class QuickSendServiceImpl implements QuickSendService {
 
     @Override
     public void saveOrUpdate(String itemId, String taskKey, String assignee) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         QuickSend quickSend =
             quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9FlowableHolder.getOrgUnitId(), taskKey);
         if (quickSend != null) {
             quickSend.setAssignee(assignee);
             quickSendRepository.save(quickSend);
+            asyncUtilService.quickSendAuditLog(tenantId, Y9FlowableHolder.getOrgUnitId(), itemId, taskKey, assignee,
+                "update");
             return;
         }
         quickSend = new QuickSend();
@@ -45,6 +51,7 @@ public class QuickSendServiceImpl implements QuickSendService {
         quickSend.setTaskKey(taskKey);
         quickSend.setPositionId(Y9FlowableHolder.getOrgUnitId());
         quickSendRepository.save(quickSend);
+        asyncUtilService.quickSendAuditLog(tenantId, Y9FlowableHolder.getOrgUnitId(), itemId, taskKey, assignee, "add");
     }
 
 }

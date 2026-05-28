@@ -11,6 +11,11 @@ import lombok.RequiredArgsConstructor;
 @Getter
 @RequiredArgsConstructor
 public enum ItemAdminAuditLogEnum {
+
+    // 新增、修改
+    OPTTYPE_ADD("add", "新增"),
+    OPTTYPE_UPDATE("update", "更新"),
+
     // 办件操作
     DOCUMENT_ADD("DOCUMENT_ADD", "新建办件 [{}]"),
     DOCUMENT_COMPLETE("DOCUMENT_COMPLETE", "办件 [{}] 办结"),
@@ -101,8 +106,26 @@ public enum ItemAdminAuditLogEnum {
     CHAOSONG_READ("CHAOSONG_READ", "抄送件 [{}] 已读"),
     CHAOSONG_DELETE("CHAOSONG_DELETE", "删除抄送 [{}]"),
 
+    // 快捷发送操作
+    QUICK_SEND_ADD("QUICK_SEND_ADD", "事项 [{}] 任务节点 [{}] 新增快捷发送 [{}]"),
+    QUICK_SEND_UPDATE("QUICK_SEND_UPDATE", "事项 [{}] 任务节点 [{}] 编辑快捷发送 [{}]"),
+
     // 催办操作
-    REMINDER_SEND("REMINDER_SEND", "催办 [{}]"),
+    REMINDER_ADD("REMINDER_ADD", "催办 [{}]"),
+    REMINDER_UPDATE("REMINDER_UPDATE", "更新催办 [{}]"),
+    REMINDER_DELETE("REMINDER_DELETE", "删除催办 [{}]"),
+    REMINDER_READ("REMINDER_READ", "催办 [{}] 已读,阅读时间 [{}]"),
+
+    // 消息提醒设置
+    REMINDERMSG_SET_TASKCOMPLETE("REMINDERMSG_SET_TASKCOMPLETE", "任务 [{}] 设置了任务完成消息提醒"),
+    REMINDERMSG_SET_NODEARRIVE("REMINDERMSG_SET_NODEARRIVE", "流程节点 [{}] 设置了节点到达消息提醒"),
+    REMINDERMSG_SET_NODECOMPLETE("REMINDERMSG_SET_NODECOMPLETE", "流程节点 [{}] 设置了节点完成消息提醒"),
+    REMINDERMSG_SET_PROCESSCOMPLETE("REMINDERMSG_SET_PROCESSCOMPLETE", "任务 [{}] 设置了流程办结消息提醒"),
+
+    // 沟通交流操作
+    SPEAKINFO_ADD("SPEAKINFO_ADD", "发言人 [{}] 在沟通交流页签内，当前时间 [{}] 添加信息 [{}]"),
+    SPEAKINFO_UPDATE("SPEAKINFO_UPDATE", "发言人 [{}] 在沟通交流页签内，当前时间 [{}] 更新信息 [{}]"),
+    SPEAKINFO_DELETE("SPEAKINFO_DELETE", "发言人 [{}] 在沟通交流页签内，当前时间 [{}] 删除信息 [{}]]"),
 
     // 委托操作
     ENTRUST_ADD("ENTRUST_ADD", "事项 [{}] 中，操作人 [{}] 添加对 [{}] 的委托"),

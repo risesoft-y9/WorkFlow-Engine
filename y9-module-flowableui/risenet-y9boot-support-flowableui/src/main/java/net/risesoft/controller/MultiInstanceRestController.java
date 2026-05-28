@@ -30,6 +30,7 @@ import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -56,6 +57,8 @@ public class MultiInstanceRestController {
     private final VariableApi variableApi;
 
     private final ProcessParamApi processParamApi;
+
+    private final AsyncUtilService ascyncUtilService;
 
     /**
      * 加签
@@ -185,6 +188,7 @@ public class MultiInstanceRestController {
     @FlowableLog(operationName = "设置主办人", operationType = FlowableOperationTypeEnum.ADD)
     @PostMapping(value = "/setSponsor")
     public Y9Result<String> setSponsor(@RequestParam @NotBlank String taskId) {
+        String positionId = Y9LoginUserHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
         List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
@@ -212,6 +216,8 @@ public class MultiInstanceRestController {
             processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
         processParam.setSponsorGuid(taskModel.getAssignee());
         processParamApi.saveOrUpdate(tenantId, processParam);
+        ascyncUtilService.setSponsorAuditLog(tenantId, positionId, taskId, taskModel.getAssignee(),
+            processParam.getTitle());
         return Y9Result.successMsg("设置成功");
     }
 }
