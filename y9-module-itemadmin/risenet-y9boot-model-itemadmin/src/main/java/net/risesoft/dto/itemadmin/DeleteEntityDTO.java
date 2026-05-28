@@ -1,4 +1,4 @@
-package net.risesoft.dto;
+package net.risesoft.dto.itemadmin;
 
 import java.util.List;
 

@@ -8,6 +8,8 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.dto.itemadmin.DeleteEntityDTO;
+import net.risesoft.dto.itemadmin.OrderEntityDTO;
 import net.risesoft.model.itemadmin.AttachmentConfModel;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.pojo.Y9Page;
@@ -37,12 +39,12 @@ public interface AttachmentApi {
     /**
      * 删除附件
      *
-     * @param ids 附件ids
+     * @param deleteEntityDTO 删除附件信息
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/delFile")
-    Y9Result<Object> delFile(@RequestBody List<String> ids);
+    Y9Result<Object> delFile(@RequestBody DeleteEntityDTO deleteEntityDTO);
 
     /**
      * 附件数
@@ -226,12 +228,9 @@ public interface AttachmentApi {
     /**
      * 保存附件排序
      *
-     * @param tenantId
-     * @param userId
-     * @param idAndTabIndexs
+     * @param orderEntityDTOList 排序信息
      * @return
      */
     @PostMapping("/saveOrder")
-    Y9Result<Object> saveOrder(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam String[] idAndTabIndexs);
+    Y9Result<Object> saveOrder(@RequestBody List<OrderEntityDTO> orderEntityDTOList);
 }

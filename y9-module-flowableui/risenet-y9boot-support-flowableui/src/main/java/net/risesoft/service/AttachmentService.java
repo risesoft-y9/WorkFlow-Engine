@@ -1,13 +1,13 @@
 package net.risesoft.service;
 
 import java.io.OutputStream;
-import java.util.List;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 
+import net.risesoft.dto.itemadmin.DeleteEntityDTO;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -30,10 +30,10 @@ public interface AttachmentService {
     /**
      * 删除附件
      *
-     * @param ids 附件ids，逗号隔开
+     * @param dto 删除实体
      * @return Y9Result<String>
      */
-    Y9Result<String> delFile(List<String> ids);
+    Y9Result<String> delFile(DeleteEntityDTO dto);
 
     /**
      * 附加打包zip下载

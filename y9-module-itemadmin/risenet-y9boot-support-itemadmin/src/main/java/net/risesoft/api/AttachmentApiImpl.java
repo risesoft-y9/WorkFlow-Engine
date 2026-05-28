@@ -17,7 +17,8 @@ import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.user.UserApi;
-import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.dto.itemadmin.DeleteEntityDTO;
+import net.risesoft.dto.itemadmin.OrderEntityDTO;
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.entity.attachment.AttachmentConf;
 import net.risesoft.enums.ItemAdminAuditLogEnum;
@@ -85,13 +86,13 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 删除附件（物理删除，包含具体文件）
      *
-     * @param ids 附件ids
+     * @param deleteEntityDTO 删除附件信息
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delFile(@RequestBody List<String> ids) {
-        attachmentService.delFile(ids);
+    public Y9Result<Object> delFile(@RequestBody DeleteEntityDTO deleteEntityDTO) {
+        attachmentService.delFile(deleteEntityDTO);
         return Y9Result.success();
     }
 
@@ -436,20 +437,13 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 保存附件排序
      * 
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param idAndTabIndexs idAndTabIndexs
+     * @param orderEntityDTOList idAndTabIndexs
      * @return Y9Result<Object>
      */
     @Override
-    public Y9Result<Object> saveOrder(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String[] idAndTabIndexs) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        for (String str : idAndTabIndexs) {
-            String[] arr = str.split(SysVariables.COLON);
-            attachmentRepository.updateAttachmentOrder(Integer.parseInt(arr[1]), arr[0]);
+    public Y9Result<Object> saveOrder(@RequestBody List<OrderEntityDTO> orderEntityDTOList) {
+        for (OrderEntityDTO dto : orderEntityDTOList) {
+            attachmentRepository.updateAttachmentOrder(dto.getTabIndex(), dto.getId());
         }
         return Y9Result.success();
     }
