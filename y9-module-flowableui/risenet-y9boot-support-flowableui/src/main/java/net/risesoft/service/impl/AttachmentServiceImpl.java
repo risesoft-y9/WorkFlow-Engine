@@ -32,6 +32,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
+import net.risesoft.dto.itemadmin.DeleteEntityDTO;
 import net.risesoft.enums.BrowserTypeEnum;
 import net.risesoft.enums.FlowableUiAuditLogEnum;
 import net.risesoft.model.itemadmin.AttachmentModel;
@@ -87,8 +88,8 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     @Transactional
-    public Y9Result<String> delFile(List<String> ids) {
-        attachmentApi.delFile(ids);
+    public Y9Result<String> delFile(DeleteEntityDTO deleteEntityDTO) {
+        attachmentApi.delFile(deleteEntityDTO);
         return Y9Result.successMsg("删除成功");
     }
 
