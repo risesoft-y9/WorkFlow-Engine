@@ -23,6 +23,7 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.OrganWordPropertyModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -40,6 +41,7 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class OrganWordRestController {
 
     private final OrganWordApi organWordApi;
+    private final AsyncUtilService asyncUtilService;
 
     /**
      * 验证并获取最新编号
@@ -182,9 +184,12 @@ public class OrganWordRestController {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId();
         try {
-            Map<String, Object> map =
-                organWordApi.saveNumberString(tenantId, userId, custom, numberString, itemId, processSerialNumber)
-                    .getData();
+            Y9Result<Map<String, Object>> y9Result =
+                organWordApi.saveNumberString(tenantId, userId, custom, numberString, itemId, processSerialNumber);
+            if (y9Result.isSuccess()) {
+                asyncUtilService.organWordSaveAuditLog(tenantId, userId, processSerialNumber, numberString);
+            }
+            Map<String, Object> map = y9Result.getData();
             return Y9Result.success(map, "保存编号成功");
         } catch (Exception e) {
             LOGGER.error("保存编号失败", e);

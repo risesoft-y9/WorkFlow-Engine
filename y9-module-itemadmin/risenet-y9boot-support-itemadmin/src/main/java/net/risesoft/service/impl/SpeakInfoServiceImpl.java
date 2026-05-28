@@ -1,5 +1,6 @@
 package net.risesoft.service.impl;
 
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -11,14 +12,18 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.entity.SpeakInfo;
+import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.user.UserInfo;
+import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.SpeakInfoRepository;
 import net.risesoft.service.SpeakInfoService;
 import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.util.Y9StringUtil;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -49,6 +54,16 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
                 return Y9Result.failure("该信息已提交超过5分钟,不可删除!");
             } else {
                 speakInfoRepository.deleteById(id);
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.SPEAKINFO_DELETE.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.SPEAKINFO_DELETE.getDescription(),
+                        speakInfo.getUserName(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
+                        speakInfo.getContent()))
+                    .objectId(id)
+                    .oldObject(speakInfo)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {
@@ -108,6 +123,15 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
             SpeakInfo oldSpeakInfo = this.findById(id);
             oldSpeakInfo.setContent(speakInfo.getContent());
             speakInfoRepository.save(oldSpeakInfo);
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.SPEAKINFO_ADD.getAction())
+                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.SPEAKINFO_ADD.getDescription(),
+                    speakInfo.getUserName(), speakInfo.getUpdateTime(), speakInfo.getContent()))
+                .objectId(id)
+                .oldObject(speakInfo)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
             return id;
         }
         UserInfo person = Y9LoginUserHolder.getUserInfo();
@@ -122,6 +146,15 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
         newSpeakInfo.setUserName(userName);
         newSpeakInfo.setReadUserId(userId);
         speakInfoRepository.save(newSpeakInfo);
+        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+            .action(ItemAdminAuditLogEnum.SPEAKINFO_ADD.getAction())
+            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.SPEAKINFO_ADD.getDescription(),
+                speakInfo.getUserName(), speakInfo.getCreateTime(), speakInfo.getContent()))
+            .objectId(id)
+            .oldObject(speakInfo)
+            .currentObject(null)
+            .build();
+        Y9Context.publishEvent(auditLogEvent);
         return newId;
     }
 }

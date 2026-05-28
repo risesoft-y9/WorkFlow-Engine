@@ -5,6 +5,7 @@ import java.io.StringWriter;
 import java.io.Writer;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
@@ -14,12 +15,15 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
+import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ErrorLog;
+import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.TaskTimeConf;
 import net.risesoft.enums.ItemAdminAuditLogEnum;
@@ -28,6 +32,7 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
+import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.AuditLogEvent;
@@ -36,6 +41,7 @@ import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.config.TaskTimeConfService;
 import net.risesoft.service.core.DocumentService;
+import net.risesoft.service.core.ItemService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
@@ -73,17 +79,26 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
 
     private final ProcessParamService processParamService;
 
+    private final ItemService itemService;
+
+    private final RepositoryApi repositoryApi;
+
+    private final HistoricProcessApi historicProcessApi;
+
     public AsyncUtilServiceImpl(
         ErrorLogService errorLogService,
         OrgUnitApi orgUnitApi,
         TaskApi taskApi,
         ProcessDefinitionApi processDefinitionApi,
-        DocumentService documentService,
+        @Lazy DocumentService documentService,
         VariableApi variableApi,
         TaskTimeConfService taskTimeConfService,
         @Lazy AsyncUtilService self,
         HistoricTaskApi historicTaskApi,
-        ProcessParamService processParamService) {
+        ProcessParamService processParamService,
+        ItemService itemService,
+        RepositoryApi repositoryApi,
+        HistoricProcessApi historicProcessApi) {
         this.errorLogService = errorLogService;
         this.orgUnitApi = orgUnitApi;
         this.taskApi = taskApi;
@@ -94,6 +109,9 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         this.self = self;
         this.historicTaskApi = historicTaskApi;
         this.processParamService = processParamService;
+        this.itemService = itemService;
+        this.repositoryApi = repositoryApi;
+        this.historicProcessApi = historicProcessApi;
     }
 
     /**
@@ -296,6 +314,196 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
             Y9Context.publishEvent(auditLogEvent);
         } catch (Exception e) {
             LOGGER.error("保存指定任务收回审计日志失败", e);
+        }
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void quickSendAuditLog(String tenantId, String orgUnitId, String itemId, String taskKey, String assignee,
+        String optType) {
+        try {
+            Item item = itemService.findById(itemId);
+            ProcessDefinitionModel processDefinitionModel =
+                repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
+            List<TargetModel> targetModelList =
+                processDefinitionApi.getNodes(tenantId, processDefinitionModel.getId()).getData();
+            TargetModel targetModel = targetModelList.stream()
+                .filter(model -> taskKey.equals(model.getTaskDefKey()))
+                .findFirst()
+                .orElse(null);
+            String sendPersons = "";
+            String[] ids = assignee.split(SysVariables.COMMA);
+            for (String id : ids) {
+                String orgId = id.split(SysVariables.COLON)[1];
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgId).getData();
+                sendPersons += orgUnit.getName() + SysVariables.COMMA;
+            }
+            String action = ItemAdminAuditLogEnum.QUICK_SEND_ADD.getAction();
+            String description = Y9StringUtil.format(ItemAdminAuditLogEnum.QUICK_SEND_ADD.getDescription(),
+                item.getName(), targetModel.getTaskDefName(), sendPersons);
+            if (optType.equals(ItemAdminAuditLogEnum.OPTTYPE_UPDATE.getAction())) {
+                action = ItemAdminAuditLogEnum.QUICK_SEND_UPDATE.getAction();
+                description = Y9StringUtil.format(ItemAdminAuditLogEnum.QUICK_SEND_UPDATE.getDescription(),
+                    item.getName(), targetModel.getTaskDefName(), sendPersons);
+            }
+
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(action)
+                .description(description)
+                .objectId(itemId)
+                .oldObject(item)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
+        } catch (Exception e) {
+            LOGGER.error("保存快捷发送审计日志失败", e);
+        }
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void remindMsgAuditLog(String tenantId, String orgUnitId, String taskIds, String processInstanceId,
+        Boolean process, String arriveTaskKey, String completeTaskKey) {
+        try {
+            String[] ids = taskIds.split(",");
+            for (String id : ids) {
+                TaskModel taskModel = taskApi.findById(tenantId, id).getData();
+                if (StringUtils.isNotBlank(taskIds)) {
+                    AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                        .action(ItemAdminAuditLogEnum.REMINDERMSG_SET_TASKCOMPLETE.getAction())
+                        .description(Y9StringUtil.format(
+                            ItemAdminAuditLogEnum.REMINDERMSG_SET_TASKCOMPLETE.getDescription(), taskModel.getName()))
+                        .objectId(id)
+                        .oldObject(taskModel)
+                        .currentObject(null)
+                        .build();
+                    Y9Context.publishEvent(auditLogEvent);
+                }
+
+                if (Boolean.TRUE.equals(process)) {
+                    AuditLogEvent auditLogEvent =
+                        AuditLogEvent.builder()
+                            .action(ItemAdminAuditLogEnum.REMINDERMSG_SET_PROCESSCOMPLETE.getAction())
+                            .description(Y9StringUtil.format(
+                                ItemAdminAuditLogEnum.REMINDERMSG_SET_PROCESSCOMPLETE.getDescription(),
+                                taskModel.getName()))
+                            .objectId(id)
+                            .oldObject(taskModel)
+                            .currentObject(null)
+                            .build();
+                    Y9Context.publishEvent(auditLogEvent);
+                }
+
+            }
+            if (StringUtils.isNotBlank(arriveTaskKey)) {
+                String[] arriveTaskKeys = arriveTaskKey.split(",");
+                for (String arriveKey : arriveTaskKeys) {
+                    String processNodeKey = arriveKey.split(SysVariables.COLON)[0];
+                    String processNodeName = arriveKey.split(SysVariables.COLON)[1];
+                    AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                        .action(ItemAdminAuditLogEnum.REMINDERMSG_SET_NODEARRIVE.getAction())
+                        .description(Y9StringUtil
+                            .format(ItemAdminAuditLogEnum.REMINDERMSG_SET_NODEARRIVE.getDescription(), processNodeName))
+                        .objectId(processNodeKey)
+                        .oldObject(processNodeName)
+                        .currentObject(null)
+                        .build();
+                    Y9Context.publishEvent(auditLogEvent);
+                }
+            }
+            if (StringUtils.isNotBlank(completeTaskKey)) {
+                String[] completeTaskKeys = completeTaskKey.split(",");
+                for (String completeKey : completeTaskKeys) {
+                    String processNodeKey = completeKey.split(SysVariables.COLON)[0];
+                    String processNodeName = completeKey.split(SysVariables.COLON)[1];
+                    AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                        .action(ItemAdminAuditLogEnum.REMINDERMSG_SET_NODECOMPLETE.getAction())
+                        .description(Y9StringUtil.format(
+                            ItemAdminAuditLogEnum.REMINDERMSG_SET_NODECOMPLETE.getDescription(), processNodeName))
+                        .objectId(processNodeKey)
+                        .oldObject(processNodeName)
+                        .currentObject(null)
+                        .build();
+                    Y9Context.publishEvent(auditLogEvent);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("保存消息提醒审计日志失败", e);
+        }
+
+    }
+
+    @Async
+    @Override
+    @Transactional
+    public void sendAuditLog(String tenantId, String title, String userChoice) {
+        try {
+            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
+            for (String choice : userChoices) {
+                String[] parts = choice.split(SysVariables.COLON);
+                String userId = choice;
+                if (parts.length == 2) {
+                    userId = parts[1];
+                }
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.DOCUMENT_SEND.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SEND.getDescription(), title,
+                        orgUnit.getName()))
+                    .objectId(userId)
+                    .oldObject(orgUnit)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
+            }
+        } catch (Exception e) {
+            LOGGER.error("sendAuditLog error", e);
+        }
+    }
+
+    @Async
+    @Transactional
+    @Override
+    public void sendAuditLog(String tenantId, String title, List<String> userIdList) {
+        try {
+            for (String userId : userIdList) {
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.DOCUMENT_SEND.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SEND.getDescription(), title,
+                        orgUnit.getName()))
+                    .objectId(userId)
+                    .oldObject(orgUnit)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
+            }
+        } catch (Exception e) {
+            LOGGER.error("sendAuditLog-userIdList error", e);
+        }
+    }
+
+    @Async
+    @Transactional
+    @Override
+    public void submitSendAuditLog(String tenantId, String title, List<String> userIdList) {
+        try {
+            for (String userId : userIdList) {
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.DOCUMENT_SUBMIT_SEND.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SUBMIT_SEND.getDescription(), title,
+                        orgUnit.getName()))
+                    .objectId(userId)
+                    .oldObject(orgUnit)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
+            }
+        } catch (Exception e) {
+            LOGGER.error("submitSendAuditLog-userIdList error", e);
         }
     }
 

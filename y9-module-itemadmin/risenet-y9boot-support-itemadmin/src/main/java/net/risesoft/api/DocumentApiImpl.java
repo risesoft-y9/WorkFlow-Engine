@@ -30,7 +30,6 @@ import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.AsyncPublishEventService;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.chaosong.ChaoSongInfoService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
@@ -60,8 +59,6 @@ public class DocumentApiImpl implements DocumentApi {
     private final VariableApi variableApi;
 
     private final AsyncUtilService asyncUtilService;
-
-    private final AsyncPublishEventService asyncPublishEventService;
 
     private final ProcessParamService processParamService;
 
@@ -426,7 +423,7 @@ public class DocumentApiImpl implements DocumentApi {
             asyncUtilService.loopSending(tenantId, orgUnitId, itemId, y9Result.getData());
             // 保存发送审计日志
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-            asyncPublishEventService.sendAuditLog(tenantId, processParam.getTitle(), userChoice);
+            asyncUtilService.sendAuditLog(tenantId, processParam.getTitle(), userChoice);
         }
         return y9Result;
     }
@@ -451,7 +448,13 @@ public class DocumentApiImpl implements DocumentApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
-        return documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
+        Y9Result<String> y9Result =
+            documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
+        if (y9Result.isSuccess()) {
+            ProcessParam processParam = processParamService.findByProcessInstanceId(y9Result.getData());
+            asyncUtilService.sendAuditLog(tenantId, processParam.getTitle(), userChoice);
+        }
+        return y9Result;
     }
 
     /**

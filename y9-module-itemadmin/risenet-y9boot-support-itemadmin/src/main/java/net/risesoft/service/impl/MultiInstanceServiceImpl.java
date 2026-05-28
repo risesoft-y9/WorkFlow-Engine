@@ -14,7 +14,6 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.service.AsyncPublishEventService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -33,8 +32,6 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     private final RuntimeApi runtimeApi;
 
     private final TaskApi taskApi;
-
-    private final AsyncPublishEventService asyncPublishEventService;
 
     @SuppressWarnings("unchecked")
     @Override

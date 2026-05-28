@@ -245,4 +245,47 @@ public interface AsyncUtilService {
      */
     void deleteMultiInstanceSequentialAuditLog(final String tenantId, final String userId,
         final String processInstanceId, final String taskId, final String users);
+
+    /**
+     * 设置任务主办人审计日志
+     *
+     * @param tenantId
+     * @param orgUnitId
+     * @param taskId
+     * @param sponsorGuid
+     * @param title
+     */
+    void setSponsorAuditLog(final String tenantId, final String orgUnitId, final String taskId,
+        final String sponsorGuid, final String title);
+
+    /**
+     * 取消关注审计日志
+     *
+     * @param tenantId
+     * @param orgUnitId
+     * @param processInstanceIds
+     */
+    void delOfficeFollowAuditLog(final String tenantId, final String orgUnitId, final String processInstanceIds);
+
+    /**
+     * 保存关注办件审计日志
+     *
+     * @param tenantId
+     * @param orgUnitId
+     * @param processInstanceId
+     * @param title
+     */
+    void saveOfficeFollowAuditLog(final String tenantId, final String orgUnitId, final String processInstanceId,
+        final String title);
+
+    /**
+     * 保存编号办件审计日志
+     * 
+     * @param tenantId
+     * @param orgUnitId
+     * @param processSerialNumber
+     * @param numberString
+     */
+    void organWordSaveAuditLog(final String tenantId, final String orgUnitId, final String processSerialNumber,
+        final String numberString);
 }
