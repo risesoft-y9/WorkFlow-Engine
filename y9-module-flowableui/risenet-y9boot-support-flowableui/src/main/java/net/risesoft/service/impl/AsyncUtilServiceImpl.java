@@ -24,6 +24,7 @@ import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.TargetModel;
+import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.y9.Y9Context;
@@ -300,7 +301,9 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     public void rollbackAuditLog(String tenantId, String orgUnitId, String taskId, String reason) {
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
-            HistoricTaskInstanceModel previousTask = historicTaskApi.getThePreviousTask(tenantId, taskId).getData();
+            List<TaskModel> taskList =
+                taskApi.findByProcessInstanceId(tenantId, historicTaskInstanceModel.getProcessInstanceId()).getData();
+            TaskModel previousTask = taskList.get(0);
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                 .action(FlowableUiAuditLogEnum.BUTTON_ROLLBACK.getAction())
@@ -322,7 +325,9 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     public void rollbackToSenderAuditLog(String tenantId, String orgUnitId, String taskId, String optType) {
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
-            HistoricTaskInstanceModel previousTask = historicTaskApi.getThePreviousTask(tenantId, taskId).getData();
+            List<TaskModel> taskList =
+                taskApi.findByProcessInstanceId(tenantId, historicTaskInstanceModel.getProcessInstanceId()).getData();
+            TaskModel previousTask = taskList.get(0);
             String taskSenderId =
                 variableApi.getVariableLocal(tenantId, previousTask.getProcessInstanceId(), SysVariables.TASK_SENDER_ID)
                     .getData();
@@ -589,7 +594,8 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             ProcessParamModel processParamModel =
-                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                processParamApi.findByProcessInstanceId(tenantId, historicTaskInstanceModel.getProcessInstanceId())
+                    .getData();
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
             OrgUnit orgUser = orgUnitApi.getOrgUnit(tenantId, users).getData();
 
