@@ -24,6 +24,7 @@ import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.repository.jpa.AssociatedFileRepository;
 import net.risesoft.service.AssociatedFileService;
+import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.service.UtilService;
 import net.risesoft.y9.Y9Context;
@@ -50,6 +51,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
     private final TaskApi taskApi;
 
     private final UtilService utilService;
+
+    private final AsyncUtilService asyncUtilService;
 
     @Override
     public int countAssociatedFile(String processSerialNumber) {
@@ -101,15 +104,7 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             }
             associatedFile.setAssociatedId(newAssociatedId);
             associatedFileRepository.save(associatedFile);
-            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-                .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getAction())
-                .description(
-                    Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getDescription(), "id:" + delId))
-                .objectId(delId)
-                .oldObject(associatedFile)
-                .currentObject(null)
-                .build();
-            Y9Context.publishEvent(auditLogEvent);
+            asyncUtilService.deleteAssociatedFileAuditLog(delId);
         }
     }
 
@@ -258,16 +253,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             associatedFile.setUserName(Y9FlowableHolder.getOrgUnit().getName());
             associatedFile.setAssociatedId(newAssociatedId);
         }
-        associatedFileRepository.save(associatedFile);
-        AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-            .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getAction())
-            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getDescription(),
-                "processInstanceIds:" + processInstanceIds))
-            .objectId(processInstanceIds)
-            .oldObject(associatedFile)
-            .currentObject(null)
-            .build();
-        Y9Context.publishEvent(auditLogEvent);
+        associatedFileRepository.saveAndFlush(associatedFile);
+        asyncUtilService.saveAssociatedFileAuditLog(Y9LoginUserHolder.getTenantId(), associatedFile.getAssociatedId());
     }
 
 }

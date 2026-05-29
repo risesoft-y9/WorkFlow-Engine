@@ -459,7 +459,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 Y9Context.publishEvent(auditLogEvent);
             }
         } catch (Exception e) {
-            LOGGER.error("sendAuditLog error", e);
+            LOGGER.error("保存发送审计日志失败", e);
         }
     }
 
@@ -481,7 +481,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 Y9Context.publishEvent(auditLogEvent);
             }
         } catch (Exception e) {
-            LOGGER.error("sendAuditLog-userIdList error", e);
+            LOGGER.error("保存发送审计日志失败 userIdList", e);
         }
     }
 
@@ -503,7 +503,51 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 Y9Context.publishEvent(auditLogEvent);
             }
         } catch (Exception e) {
-            LOGGER.error("submitSendAuditLog-userIdList error", e);
+            LOGGER.error("保存办件提交发送审计日志失败 userIdList", e);
+        }
+    }
+
+    @Async
+    @Transactional
+    @Override
+    public void saveAssociatedFileAuditLog(String tenantId, String processInstanceIds) {
+        try {
+            String[] processInstanceIdArray = processInstanceIds.split(SysVariables.COMMA);
+            for (String processInstanceId : processInstanceIdArray) {
+                ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_SAVE.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_SAVE.getDescription(),
+                        processParam.getTitle()))
+                    .objectId(processInstanceId)
+                    .oldObject(processParam)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
+            }
+        } catch (Exception e) {
+            LOGGER.error("保存关联文件审计日志失败 processInstanceIds：" + processInstanceIds, e);
+        }
+    }
+
+    @Override
+    public void deleteAssociatedFileAuditLog(String processInstanceIds) {
+        try {
+            String[] processInstanceIdArray = processInstanceIds.split(SysVariables.COMMA);
+            for (String processInstanceId : processInstanceIdArray) {
+                ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getDescription(),
+                        processParam.getTitle()))
+                    .objectId(processInstanceId)
+                    .oldObject(processParam)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
+            }
+        } catch (Exception e) {
+            LOGGER.error("保存关联文件审计日志失败 processInstanceIds：" + processInstanceIds, e);
         }
     }
 
