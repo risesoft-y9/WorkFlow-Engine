@@ -142,10 +142,12 @@ public class OpinionServiceImpl implements OpinionService {
         if (oldOpinion.isPresent()) {
             opinionRepository.delete(oldOpinion.get());
             asyncHandleService.saveOpinionHistory(Y9LoginUserHolder.getTenantId(), oldOpinion.get(), "2");
+            ProcessParam processParam =
+                processParamService.findByProcessSerialNumber(oldOpinion.get().getProcessSerialNumber());
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                 .action(ItemAdminAuditLogEnum.OPINION_DELETE.getAction())
                 .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_DELETE.getDescription(),
-                    oldOpinion.get().getContent()))
+                    processParam.getTitle(), oldOpinion.get().getContent()))
                 .objectId(id)
                 .oldObject(oldOpinion.get())
                 .currentObject(null)
@@ -997,9 +999,11 @@ public class OpinionServiceImpl implements OpinionService {
 
         opinionRepository.save(opinion);
         asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
+        ProcessParam processParam = processParamService.findByProcessSerialNumber(entity.getProcessSerialNumber());
         AuditLogEvent auditLogEvent = AuditLogEvent.builder()
             .action(ItemAdminAuditLogEnum.OPINION_ADD.getAction())
-            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_ADD.getDescription(), opinion.getContent()))
+            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_ADD.getDescription(),
+                processParam.getTitle(), opinion.getContent()))
             .objectId(opinion.getId())
             .oldObject(opinion)
             .currentObject(null)
@@ -1032,10 +1036,11 @@ public class OpinionServiceImpl implements OpinionService {
         asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
         // 修改意见保存历史记录
         asyncHandleService.saveOpinionHistory(Y9LoginUserHolder.getTenantId(), oldOpinion, "1");
+        ProcessParam processParam = processParamService.findByProcessSerialNumber(entity.getProcessSerialNumber());
         AuditLogEvent auditLogEvent = AuditLogEvent.builder()
             .action(ItemAdminAuditLogEnum.OPINION_UPDATE.getAction())
-            .description(
-                Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_UPDATE.getDescription(), opinion.getContent()))
+            .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_UPDATE.getDescription(),
+                processParam.getTitle(), opinion.getContent()))
             .objectId(opinion.getId())
             .oldObject(opinion)
             .currentObject(null)

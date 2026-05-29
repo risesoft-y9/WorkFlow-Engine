@@ -90,9 +90,9 @@ public enum ItemAdminAuditLogEnum {
     WPS_DOWNLOAD("WPS_DOWNLOAD", "下载 WPS 文档 [{}]"),
 
     // 意见操作
-    OPINION_ADD("OPINION_ADD", "办件 [{}] 中添加意见 [{}] 时间为 [{}]"),
-    OPINION_UPDATE("OPINION_UPDATE", "办件 [{}] 中更新意见 [{}] 时间为 [{}]"),
-    OPINION_DELETE("OPINION_DELETE", "办件 [{}] 中删除意见 [{}] 时间为 [{}]"),
+    OPINION_ADD("OPINION_ADD", "办件 [{}] 中添加意见 [{}] "),
+    OPINION_UPDATE("OPINION_UPDATE", "办件 [{}] 中更新意见 [{}] "),
+    OPINION_DELETE("OPINION_DELETE", "办件 [{}] 中删除意见 [{}] "),
     OPINION_SIGN_ADD("OPINION_SIGN", "签写意见添加 [{}]"),
     OPINION_SIGN_UPDATE("OPINION_SIGN_UPDATE", "签写意见更新 [{}]"),
     OPINION_SIGN_DELETE("OPINION_SIGN_DELETE", "签写意见删除 [{}]"),
@@ -123,9 +123,9 @@ public enum ItemAdminAuditLogEnum {
     REMINDERMSG_SET_PROCESSCOMPLETE("REMINDERMSG_SET_PROCESSCOMPLETE", "任务 [{}] 设置了流程办结消息提醒"),
 
     // 沟通交流操作
-    SPEAKINFO_ADD("SPEAKINFO_ADD", "发言人 [{}] 在沟通交流页签内，当前时间 [{}] 添加信息 [{}]"),
-    SPEAKINFO_UPDATE("SPEAKINFO_UPDATE", "发言人 [{}] 在沟通交流页签内，当前时间 [{}] 更新信息 [{}]"),
-    SPEAKINFO_DELETE("SPEAKINFO_DELETE", "发言人 [{}] 在沟通交流页签内，当前时间 [{}] 删除信息 [{}]]"),
+    SPEAKINFO_ADD("SPEAKINFO_ADD", "发言人 [{}] 在沟通交流页签内，添加信息 [{}]"),
+    SPEAKINFO_UPDATE("SPEAKINFO_UPDATE", "发言人 [{}] 在沟通交流页签内，更新信息 [{}]"),
+    SPEAKINFO_DELETE("SPEAKINFO_DELETE", "发言人 [{}] 在沟通交流页签内，删除信息 [{}]]"),
 
     // 委托操作
     ENTRUST_ADD("ENTRUST_ADD", "事项 [{}] 中，操作人 [{}] 添加对 [{}] 的委托"),
