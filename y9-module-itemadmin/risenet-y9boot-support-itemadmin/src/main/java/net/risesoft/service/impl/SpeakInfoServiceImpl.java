@@ -1,6 +1,5 @@
 package net.risesoft.service.impl;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
@@ -57,8 +56,7 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
                 AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                     .action(ItemAdminAuditLogEnum.SPEAKINFO_DELETE.getAction())
                     .description(Y9StringUtil.format(ItemAdminAuditLogEnum.SPEAKINFO_DELETE.getDescription(),
-                        speakInfo.getUserName(), new SimpleDateFormat("yyyy-MM-dd HH:mm:ss").format(new Date()),
-                        speakInfo.getContent()))
+                        speakInfo.getUserName(), speakInfo.getContent()))
                     .objectId(id)
                     .oldObject(speakInfo)
                     .currentObject(null)
@@ -122,11 +120,11 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
         if (StringUtils.isNotEmpty(id)) {
             SpeakInfo oldSpeakInfo = this.findById(id);
             oldSpeakInfo.setContent(speakInfo.getContent());
-            speakInfoRepository.save(oldSpeakInfo);
+            speakInfoRepository.saveAndFlush(oldSpeakInfo);
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-                .action(ItemAdminAuditLogEnum.SPEAKINFO_ADD.getAction())
-                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.SPEAKINFO_ADD.getDescription(),
-                    speakInfo.getUserName(), speakInfo.getUpdateTime(), speakInfo.getContent()))
+                .action(ItemAdminAuditLogEnum.SPEAKINFO_UPDATE.getAction())
+                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.SPEAKINFO_UPDATE.getDescription(),
+                    oldSpeakInfo.getUserName(), oldSpeakInfo.getContent()))
                 .objectId(id)
                 .oldObject(speakInfo)
                 .currentObject(null)
@@ -145,13 +143,13 @@ public class SpeakInfoServiceImpl implements SpeakInfoService {
         newSpeakInfo.setUserId(userId);
         newSpeakInfo.setUserName(userName);
         newSpeakInfo.setReadUserId(userId);
-        speakInfoRepository.save(newSpeakInfo);
+        speakInfoRepository.saveAndFlush(newSpeakInfo);
         AuditLogEvent auditLogEvent = AuditLogEvent.builder()
             .action(ItemAdminAuditLogEnum.SPEAKINFO_ADD.getAction())
             .description(Y9StringUtil.format(ItemAdminAuditLogEnum.SPEAKINFO_ADD.getDescription(),
-                speakInfo.getUserName(), speakInfo.getCreateTime(), speakInfo.getContent()))
+                newSpeakInfo.getUserName(), newSpeakInfo.getContent()))
             .objectId(id)
-            .oldObject(speakInfo)
+            .oldObject(newSpeakInfo)
             .currentObject(null)
             .build();
         Y9Context.publishEvent(auditLogEvent);
