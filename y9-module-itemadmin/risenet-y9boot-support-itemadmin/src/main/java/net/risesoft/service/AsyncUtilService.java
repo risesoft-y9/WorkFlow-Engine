@@ -83,4 +83,19 @@ public interface AsyncUtilService {
      * @param userIdList
      */
     void submitSendAuditLog(final String tenantId, final String title, final List<String> userIdList);
+
+    /**
+     * 异步保存关联文件审计日志
+     *
+     * @param tenantId
+     * @param processInstanceIds
+     */
+    void saveAssociatedFileAuditLog(final String tenantId, final String processInstanceIds);
+
+    /**
+     * 异步保存删除关联文件审计日志
+     *
+     * @param processInstanceIds
+     */
+    void deleteAssociatedFileAuditLog(final String processInstanceIds);
 }

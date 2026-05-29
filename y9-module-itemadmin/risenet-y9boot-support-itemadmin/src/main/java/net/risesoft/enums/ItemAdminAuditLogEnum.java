@@ -90,16 +90,16 @@ public enum ItemAdminAuditLogEnum {
     WPS_DOWNLOAD("WPS_DOWNLOAD", "下载 WPS 文档 [{}]"),
 
     // 意见操作
-    OPINION_ADD("OPINION_ADD", "添加意见 [{}]"),
-    OPINION_UPDATE("OPINION_UPDATE", "更新意见 [{}]"),
-    OPINION_DELETE("OPINION_DELETE", "删除意见 [{}]"),
+    OPINION_ADD("OPINION_ADD", "办件 [{}] 中添加意见 [{}] 时间为 [{}]"),
+    OPINION_UPDATE("OPINION_UPDATE", "办件 [{}] 中更新意见 [{}] 时间为 [{}]"),
+    OPINION_DELETE("OPINION_DELETE", "办件 [{}] 中删除意见 [{}] 时间为 [{}]"),
     OPINION_SIGN_ADD("OPINION_SIGN", "签写意见添加 [{}]"),
     OPINION_SIGN_UPDATE("OPINION_SIGN_UPDATE", "签写意见更新 [{}]"),
     OPINION_SIGN_DELETE("OPINION_SIGN_DELETE", "签写意见删除 [{}]"),
 
     // 关联流程操作
-    ASSOCIATED_FILE_SAVE("ASSOCIATED_FILE_SAVE", "保存关联流程 [{}]"),
-    ASSOCIATED_FILE_DELETE("ASSOCIATED_FILE_DELETE", "删除关联流程 [{}]"),
+    ASSOCIATED_FILE_SAVE("ASSOCIATED_FILE_SAVE", "保存关联流程办件 [{}]"),
+    ASSOCIATED_FILE_DELETE("ASSOCIATED_FILE_DELETE", "删除关联流程办件 [{}]"),
 
     // 抄送操作
     CHAOSONG_SEND("CHAOSONG_SEND", "抄送办件 [{}] 给 [{}]"),
