@@ -30,8 +30,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.dto.itemadmin.DeleteEntityDTO;
-import net.risesoft.dto.itemadmin.OrderEntityDTO;
+import net.risesoft.dto.itemadmin.IdsDTO;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.log.FlowableOperationTypeEnum;
@@ -105,7 +104,7 @@ public class AttachmentRestController {
      */
     @PostMapping(value = "/delFile")
     @FlowableLog(operationName = "删除附件", operationType = FlowableOperationTypeEnum.DELETE)
-    public Y9Result<String> delFile(@RequestBody @Valid DeleteEntityDTO dto) {
+    public Y9Result<String> delFile(@RequestBody @Valid IdsDTO dto) {
         return attachmentService.delFile(dto);
     }
 
@@ -226,13 +225,13 @@ public class AttachmentRestController {
     /**
      * 保存附件排序
      * 
-     * @param orderEntityList 排序实体列表
+     * @param idsDTO 排序主键列表
      * @return Y9Result<Object>
      */
     @FlowableLog(operationName = "保存附件排序", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrder")
-    public Y9Result<Object> saveOrder(@RequestBody List<OrderEntityDTO> orderEntityList) {
-        attachmentApi.saveOrder(orderEntityList);
+    public Y9Result<Object> saveOrder(@RequestBody @Valid IdsDTO idsDTO) {
+        attachmentApi.saveOrder(idsDTO);
         return Y9Result.successMsg("保存附件排序成功！");
     }
 
