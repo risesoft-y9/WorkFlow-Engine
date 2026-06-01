@@ -7,7 +7,7 @@ import javax.servlet.http.HttpServletResponse;
 
 import org.springframework.web.multipart.MultipartFile;
 
-import net.risesoft.dto.itemadmin.DeleteEntityDTO;
+import net.risesoft.dto.itemadmin.IdsDTO;
 import net.risesoft.pojo.Y9Result;
 
 /**
@@ -33,7 +33,7 @@ public interface AttachmentService {
      * @param dto 删除实体
      * @return Y9Result<String>
      */
-    Y9Result<String> delFile(DeleteEntityDTO dto);
+    Y9Result<String> delFile(IdsDTO dto);
 
     /**
      * 附加打包zip下载

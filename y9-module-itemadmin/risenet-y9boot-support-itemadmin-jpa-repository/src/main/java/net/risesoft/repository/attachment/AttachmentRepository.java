@@ -2,13 +2,10 @@ package net.risesoft.repository.attachment;
 
 import java.util.List;
 
-import javax.persistence.LockModeType;
-
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.JpaSpecificationExecutor;
-import org.springframework.data.jpa.repository.Lock;
 import org.springframework.data.jpa.repository.Modifying;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
@@ -49,7 +46,6 @@ public interface AttachmentRepository extends JpaRepository<Attachment, String>,
     @Query("select count(*) from Attachment t where t.processSerialNumber=?1 and t.fileSource = ?2 and t.fileType = ?3")
     Integer getAttachmentCountByFileType(String processSerialNumber, String fileSource, String fileType);
 
-    @Lock(LockModeType.PESSIMISTIC_WRITE)
     @Query("select max(t.tabIndex) from Attachment t where t.processSerialNumber=?1")
     Integer getMaxTabIndex(String processSerialNumber);
 
