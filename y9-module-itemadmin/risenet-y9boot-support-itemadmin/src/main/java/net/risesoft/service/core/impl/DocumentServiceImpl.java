@@ -1985,9 +1985,14 @@ public class DocumentServiceImpl implements DocumentService {
             handleSendButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
         // 处理退回按钮
-        if (buttonList.contains(ItemButton.tuiHui)) {
+        if (buttonList.contains(ItemButton.tuiHui) || buttonList.stream()
+            .filter(itemButtonModel -> itemButtonModel.getKey().equals("back2any"))
+            .collect(Collectors.toList())
+            .size() > 0) {
             handleRollbackButtons(buttonList, taskId, processDefinitionId, taskDefKey, tenantId);
         }
+        // 打印按钮添加到最后
+        buttonList.add(ItemButton.daYin);
         model.setButtonList(buttonList);
         return model;
     }

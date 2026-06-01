@@ -3,8 +3,8 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-12 09:42:08
- * @LastEditors: mengjuhua
- * @LastEditTime: 2025-12-30 14:31:51
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-06-01 09:52:26
  * @Descripttion: 按钮绑定配置
  * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\item\config\buttonConfig\buttonBind.vue
 -->
@@ -12,7 +12,8 @@
     <div class="organWordBindDiv">
         <div style="margin-bottom: 16px">
             <el-button-group>
-                <el-button type="primary" @click="addButton"><i class="ri-add-line"></i>按钮</el-button>
+                <el-button type="primary" @click="addButton"><i class="ri-add-line"></i>自定义按钮</el-button>
+                <el-button type="primary" @click="addFixedButton"><i class="ri-add-line"></i>固定按钮</el-button>
                 <el-button type="primary" @click="delButton"><i class="ri-delete-bin-line"></i>删除</el-button>
                 <el-button type="primary" @click="addRole"><i class="ri-user-add-line"></i>角色</el-button>
                 <el-button type="primary" @click="delRole"><i class="ri-delete-bin-line"></i>删除角色</el-button>
@@ -25,7 +26,7 @@
             @select-all="handlerSelectData"
         ></y9Table>
         <el-drawer v-model="tableDrawer" :title="title" direction="rtl">
-            <y9Table :config="buttonTableConfig" @select="handlerGetData" @select-all="handlerGetData"></y9Table>
+            <y9Table :config="buttonTableConfig" @on-current-change="currentChange"></y9Table>
             <div slot="footer" class="dialog-footer" style="text-align: center; margin-top: 15px">
                 <el-button type="primary" @click="saveBind"><span>保存</span></el-button>
                 <el-button @click="tableDrawer = false"><span>取消</span></el-button>
@@ -127,7 +128,7 @@
         },
         buttonTableConfig: {
             columns: [
-                { title: '', type: 'selection', fixed: 'left', width: '60' },
+                // { title: '', type: 'selection', fixed: 'left', width: '60' },
                 { title: '序号', type: 'index', width: '60' },
                 { title: '按钮名称', key: 'name' },
                 { title: '唯一标示', key: 'customId', width: '200' }
@@ -167,7 +168,8 @@
         buttonArr: [],
         buttonBindArr: [],
         roleBindArr: [],
-        roleIdArr: []
+        roleIdArr: [],
+        currentRow: null
     });
 
     let {
@@ -190,7 +192,8 @@
         buttonBindArr,
         roleBindArr,
         roleIdArr,
-        selectField
+        selectField,
+        currentRow
     } = toRefs(data);
 
     watch(
@@ -252,9 +255,26 @@
     }
 
     function addButton() {
-        title.value = '添加按钮';
+        title.value = '添加自定义按钮';
         tableDrawer.value = true;
+        buttonTableConfig.value.tableData = [];
         getButtonTable();
+    }
+
+    function addFixedButton() {
+        currentRow.value = null;
+        title.value = '添加固定按钮';
+        tableDrawer.value = true;
+        buttonTableConfig.value.tableData = [];
+        setTimeout(() => {
+            // 设置固定按钮id,fixed_button:按钮名称:定义key
+            buttonTableConfig.value.tableData = [
+                {id: 'fixed_button:退回上一步:04',name: '退回上一步', customId: '04'},
+                {id: 'fixed_button:退回发起人:back2draft',name: '退回发起人', customId: 'back2draft'},
+                {id: 'fixed_button:多步退回:back2any',name: '多步退回', customId: 'back2any'},
+                {id: 'fixed_button:抄送:18', name: '抄送',customId: '18'}
+            ];
+        }, 100);
     }
 
     function addRole() {
@@ -393,19 +413,13 @@
         }
     }
 
+    function currentChange(row) {
+        currentRow.value = row;
+    }
+
     async function saveBind() {
-        if (buttonArr.value.length == 0) {
-            ElNotification({ title: '操作提示', message: '请勾选一条数据', type: 'error', duration: 2000, offset: 80 });
-            return;
-        }
-        if (buttonArr.value.length > 1) {
-            ElNotification({
-                title: '操作提示',
-                message: '只能勾选一条数据' + title.value,
-                type: 'error',
-                duration: 2000,
-                offset: 80
-            });
+        if (!currentRow.value) {
+            ElNotification({ title: '操作提示', message: '请选择一条数据', type: 'error', duration: 2000, offset: 80 });
             return;
         }
 
@@ -413,7 +427,7 @@
             props.currTreeNodeInfo.id,
             props.processDefinitionId,
             props.taskDefKey,
-            buttonArr.value[0].id,
+            currentRow.value.id,
             props.buttonType
         );
         ElNotification({
