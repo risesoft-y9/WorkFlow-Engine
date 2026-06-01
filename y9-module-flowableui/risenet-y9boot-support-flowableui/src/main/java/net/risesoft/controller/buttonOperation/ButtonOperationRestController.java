@@ -921,7 +921,7 @@ public class ButtonOperationRestController {
             buttonOperationApi.reposition(tenantId, positionId, taskId, routeToTaskId, users, "",
                 StringUtils.isBlank(sponsorGuid) ? "" : sponsorGuid);
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
-            asyncUtilService.repositionAuditLog(tenantId, positionId, task.getName(), routeToTaskId, users);
+            asyncUtilService.repositionAuditLog(tenantId, positionId, taskId, routeToTaskId, users);
             return Y9Result.successMsg("重定向成功");
         } catch (Exception e) {
             LOGGER.error("reposition error", e);
