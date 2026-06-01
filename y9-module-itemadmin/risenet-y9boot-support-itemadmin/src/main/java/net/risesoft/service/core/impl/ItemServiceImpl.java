@@ -23,6 +23,7 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Item;
+import net.risesoft.entity.ItemExtendProps;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -51,6 +52,7 @@ import net.risesoft.service.config.RelatedProcessService;
 import net.risesoft.service.config.TaskTimeConfService;
 import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.config.Y9PreFormItemBindService;
+import net.risesoft.service.core.ItemExtendPropsService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.template.PrintTemplateService;
 import net.risesoft.y9.Y9Context;
@@ -90,6 +92,7 @@ public class ItemServiceImpl implements ItemService {
     private final TaskTimeConfService taskTimeConfService;
     private final ItemWordConfService itemWordConfService;
     private final ItemBackTaskConfService itemBackTaskConfService;
+    private final ItemExtendPropsService itemExtendPropsService;
 
     @Override
     @Transactional
@@ -140,6 +143,14 @@ public class ItemServiceImpl implements ItemService {
                 newItem.setName(item.getName() + "副本");
                 newItem.setTabIndex(null != tabIndex ? tabIndex + 1 : 1);
                 itemRepository.save(newItem);
+
+                // 复制扩展属性信息
+                ItemExtendProps itemExtendProps = itemExtendPropsService.findByItemId(id);
+                if (null != itemExtendProps) {
+                    itemExtendProps.setItemId(newItemId);
+                    itemExtendProps.setId("");
+                    itemExtendPropsService.saveExtendProps(itemExtendProps);
+                }
                 String proDefKey = item.getWorkflowGuid();
                 ProcessDefinitionModel processDefinition =
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
@@ -199,6 +210,8 @@ public class ItemServiceImpl implements ItemService {
                 String[] id = ids.split(SysVariables.COMMA);
                 for (String s : id) {
                     itemRepository.deleteById(s);
+                    // 删除扩展属性
+                    itemExtendPropsService.deleteByItemId(s);
                     // 删除表单绑定信息
                     y9FormItemBindService.deleteBindInfo(s);
                     // 删除权限绑定信息

@@ -3,8 +3,8 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-05 16:21:46
- * @LastEditors: mengjuhua
- * @LastEditTime: 2025-12-30 14:53:37
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-06-01 17:19:15
  * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\item\baseInfo.vue
 -->
 <template>
@@ -50,7 +50,7 @@
     import { reactive, toRefs, watch } from 'vue';
     import { $deepAssignObject } from '@/utils/object';
     import itemForm from './itemForm.vue';
-    import { saveItem } from '@/api/itemAdmin/item/item';
+    import { saveItem,saveExtendProps } from '@/api/itemAdmin/item/item';
 
     const props = defineProps({
         currTreeNodeInfo: {
@@ -121,6 +121,12 @@
                 return;
             }
             let formData = itemFormRef.value.itemForm;
+            let extendProps = itemFormRef.value.extendProps;
+            extendProps.itemId = formData.id;
+            result = await saveExtendProps(JSON.stringify(extendProps).toString());
+            if(!result.success){
+                ElNotification({title: '失败',message: result.msg,type: 'error',duration: 2000,offset: 80});
+            }
             result = await saveItem(JSON.stringify(formData).toString());
             ElNotification({
                 title: result.success ? '成功' : '失败',

@@ -817,4 +817,20 @@
             <column name="BACK_TASKDEFKEY" remarks="可退回任务key" type="VARCHAR(1000)"/>
         </createTable>
     </changeSet>
+    <changeSet id="1704700543333-59" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_ITEM_EXTENDPROPS"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项扩展属性信息表" tableName="FF_ITEM_EXTENDPROPS">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)"/>
+            <column name="SHOWDOCUMENTTAB" remarks="是否显示正文" type="INT"/>
+            <column name="SHOWFILETAB" remarks="是否显示意见附件" type="INT"/>
+            <column name="SHOWHISTORYTAB" remarks="是否显示关联流程" type="INT"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

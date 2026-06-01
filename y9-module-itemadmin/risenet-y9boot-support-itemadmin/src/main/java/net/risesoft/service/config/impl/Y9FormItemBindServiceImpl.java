@@ -16,6 +16,7 @@ import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Item;
+import net.risesoft.entity.ItemExtendProps;
 import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.entity.form.Y9FormItemMobileBind;
 import net.risesoft.id.IdType;
@@ -27,6 +28,7 @@ import net.risesoft.repository.form.Y9FormItemBindRepository;
 import net.risesoft.repository.form.Y9FormItemMobileBindRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.config.Y9FormItemBindService;
+import net.risesoft.service.core.ItemExtendPropsService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
@@ -52,19 +54,40 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
 
     private final Y9FormItemBindService self;
 
+    private final ItemExtendPropsService itemExtendPropsService;
+
     public Y9FormItemBindServiceImpl(
         Y9FormItemBindRepository y9FormItemBindRepository,
         Y9FormItemMobileBindRepository y9FormItemMobileBindRepository,
         ItemRepository itemRepository,
         ProcessDefinitionApi processDefinitionApi,
         RepositoryApi repositoryApi,
-        @Lazy Y9FormItemBindService self) {
+        @Lazy Y9FormItemBindService self,
+        @Lazy ItemExtendPropsService itemExtendPropsService) {
         this.y9FormItemBindRepository = y9FormItemBindRepository;
         this.y9FormItemMobileBindRepository = y9FormItemMobileBindRepository;
         this.itemRepository = itemRepository;
         this.processDefinitionApi = processDefinitionApi;
         this.repositoryApi = repositoryApi;
         this.self = self;
+        this.itemExtendPropsService = itemExtendPropsService;
+    }
+
+    /**
+     * 构建结果字符串
+     */
+    private String buildResultString(boolean showDocumentFlag, boolean showFileFlag, boolean showHistoryFlag) {
+        String result = "";
+        if (showDocumentFlag) {
+            result = Y9Util.genCustomStr(result, "showDocumentTab");
+        }
+        if (showFileFlag) {
+            result = Y9Util.genCustomStr(result, "showFileTab");
+        }
+        if (showHistoryFlag) {
+            result = Y9Util.genCustomStr(result, "showHistoryTab");
+        }
+        return result;
     }
 
     @Override
@@ -144,21 +167,6 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         }
         // 复制手机端表单绑定信息
         copyMobileBindForm(previousProcessDefinitionId, latestProcessDefinitionId, itemId, tenantId, nodes);
-    }
-
-    /**
-     * 获取前一版本流程定义ID
-     */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
-        String latestProcessDefinitionId, ProcessDefinitionModel latestProcessDefinition) {
-        String previousProcessDefinitionId = processDefinitionId;
-
-        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
-            ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
-            previousProcessDefinitionId = previousProcessDefinition.getId();
-        }
-        return previousProcessDefinitionId;
     }
 
     /**
@@ -278,58 +286,42 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     @Override
-    public Integer getMaxTabIndex(String itemId, String processDefinitionId) {
-        return y9FormItemBindRepository.getMaxTabIndex(itemId, processDefinitionId);
-    }
-
-    @Override
     public Y9FormItemBind getById(String id) {
         return y9FormItemBindRepository.findById(id).orElse(null);
     }
 
     @Override
-    public String getShowOther(List<Y9FormItemBind> formTaskBinds) {
-        if (formTaskBinds == null || formTaskBinds.isEmpty()) {
-            return "";
-        }
-        boolean showDocumentFlag = false;
-        boolean showFileFlag = false;
-        boolean showHistoryFlag = false;
-        // 遍历表单绑定列表，设置相应的标志位
-        for (Y9FormItemBind y9FormItemBind : formTaskBinds) {
-            // 只有当标志位尚未设置为true时才检查
-            if (!showDocumentFlag) {
-                showDocumentFlag = y9FormItemBind.isShowDocumentTab();
-            }
-            if (!showFileFlag) {
-                showFileFlag = y9FormItemBind.isShowFileTab();
-            }
-            if (!showHistoryFlag) {
-                showHistoryFlag = y9FormItemBind.isShowHistoryTab();
-            }
-            // 如果所有标志位都已设置为true，则提前退出循环
-            if (showDocumentFlag && showFileFlag && showHistoryFlag) {
-                break;
-            }
-        }
-        return buildResultString(showDocumentFlag, showFileFlag, showHistoryFlag);
+    public Integer getMaxTabIndex(String itemId, String processDefinitionId) {
+        return y9FormItemBindRepository.getMaxTabIndex(itemId, processDefinitionId);
     }
 
     /**
-     * 构建结果字符串
+     * 获取前一版本流程定义ID
      */
-    private String buildResultString(boolean showDocumentFlag, boolean showFileFlag, boolean showHistoryFlag) {
-        String result = "";
-        if (showDocumentFlag) {
-            result = Y9Util.genCustomStr(result, "showDocumentTab");
+    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
+        String latestProcessDefinitionId, ProcessDefinitionModel latestProcessDefinition) {
+        String previousProcessDefinitionId = processDefinitionId;
+
+        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
+            ProcessDefinitionModel previousProcessDefinition =
+                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
+            previousProcessDefinitionId = previousProcessDefinition.getId();
         }
-        if (showFileFlag) {
-            result = Y9Util.genCustomStr(result, "showFileTab");
+        return previousProcessDefinitionId;
+    }
+
+    @Override
+    public String getShowOther(String itemId) {
+        boolean showDocumentFlag = false;
+        boolean showFileFlag = false;
+        boolean showHistoryFlag = false;
+        ItemExtendProps itemExtendProps = itemExtendPropsService.findByItemId(itemId);
+        if (itemExtendProps != null) {
+            showDocumentFlag = itemExtendProps.isShowDocumentTab();
+            showFileFlag = itemExtendProps.isShowFileTab();
+            showHistoryFlag = itemExtendProps.isShowHistoryTab();
         }
-        if (showHistoryFlag) {
-            result = Y9Util.genCustomStr(result, "showHistoryTab");
-        }
-        return result;
+        return buildResultString(showDocumentFlag, showFileFlag, showHistoryFlag);
     }
 
     @Override
