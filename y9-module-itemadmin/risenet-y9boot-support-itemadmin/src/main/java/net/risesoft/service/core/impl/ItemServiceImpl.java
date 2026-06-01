@@ -36,6 +36,7 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.repository.jpa.ItemRepository;
+import net.risesoft.service.config.ItemBackTaskConfService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemInterfaceBindService;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
@@ -88,6 +89,7 @@ public class ItemServiceImpl implements ItemService {
     private final ItemViewConfService itemViewConfService;
     private final TaskTimeConfService taskTimeConfService;
     private final ItemWordConfService itemWordConfService;
+    private final ItemBackTaskConfService itemBackTaskConfService;
 
     @Override
     @Transactional
@@ -113,6 +115,8 @@ public class ItemServiceImpl implements ItemService {
             taskTimeConfService.copyTaskConf(itemId, processDefinitionId);
             // 复制正文组件权限配置
             itemWordConfService.copyWordConf(itemId, processDefinitionId);
+            // 复制退回任务配置
+            itemBackTaskConfService.copyTaskConf(itemId, processDefinitionId);
             return Y9Result.successMsg("复制成功");
         } catch (Exception e) {
             LOGGER.error("复制事项出现异常，问题打印：", e);
@@ -177,6 +181,7 @@ public class ItemServiceImpl implements ItemService {
 
                 // 复制视图配置绑定信息
                 itemViewConfService.copyBindInfo(id, newItemId);
+
                 return Y9Result.successMsg("复制成功");
             }
             return Y9Result.failure("复制事项异常,事项不存在");
@@ -253,17 +258,8 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public Boolean hasProcessDefinitionByKey(String processDefinitionKey) {
-        boolean hasKey = false;
-        try {
-            Item sa = itemRepository.findItemByKey(processDefinitionKey);
-            if (null != sa) {
-                hasKey = true;
-            }
-        } catch (Exception e) {
-            LOGGER.error("判断流程定义Key是否存在异常", e);
-        }
-        return hasKey;
+    public List<Item> findBySystemName(String systemName) {
+        return itemRepository.findBySystemName(systemName, Sort.by(Sort.Direction.ASC, ItemConsts.TABINDEX_KEY));
     }
 
     @Override
@@ -282,13 +278,22 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<Item> list() {
-        return itemRepository.findAll(Sort.by(Sort.Direction.ASC, ItemConsts.TABINDEX_KEY));
+    public Boolean hasProcessDefinitionByKey(String processDefinitionKey) {
+        boolean hasKey = false;
+        try {
+            Item sa = itemRepository.findItemByKey(processDefinitionKey);
+            if (null != sa) {
+                hasKey = true;
+            }
+        } catch (Exception e) {
+            LOGGER.error("判断流程定义Key是否存在异常", e);
+        }
+        return hasKey;
     }
 
     @Override
-    public List<Item> findBySystemName(String systemName) {
-        return itemRepository.findBySystemName(systemName, Sort.by(Sort.Direction.ASC, ItemConsts.TABINDEX_KEY));
+    public List<Item> list() {
+        return itemRepository.findAll(Sort.by(Sort.Direction.ASC, ItemConsts.TABINDEX_KEY));
     }
 
     @Override
