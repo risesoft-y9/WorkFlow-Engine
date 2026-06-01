@@ -1719,8 +1719,7 @@
         } else if (key == 'common_faqiren') {
             rollbackToStartor();
         } else if (key == 'back2draft') {//退回发起节点
-            optType.value = 'back2any';
-            rollbackInfo.value = backTaskMap.value[0];
+            optType.value = 'back2draft';
             Object.assign(dialogConfig.value, {
                 show: true,
                 width: '40%',
