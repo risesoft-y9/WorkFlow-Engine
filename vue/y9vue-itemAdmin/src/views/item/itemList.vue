@@ -3,8 +3,8 @@
  * @version:
  * @Author: zhangchongjie
  * @Date: 2022-05-05 11:38:27
- * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-08 13:49:32
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-06-01 15:26:43
  * @FilePath: \vue\y9vue-itemAdmin\src\views\item\itemList.vue
 -->
 <template>
@@ -126,6 +126,14 @@
                         :maxVersion="maxVersion"
                     />
                 </div>
+                <div id="backBox" class="boxDiv">
+                    <backConfig
+                        :currTreeNodeInfo="currTreeNodeInfo"
+                        :processDefinitionId="processDefinitionId"
+                        :selectVersion="selectVersion"
+                        :maxVersion="maxVersion"
+                    />
+                </div>
                 <div id="mappingBindBox" class="boxDiv">
                     <mappingConfig :currTreeNodeInfo="currTreeNodeInfo" :itemList="itemList" />
                 </div>
@@ -169,7 +177,7 @@
     import dataTransfer from './config/dataTransfer/dataTransfer.vue';
     import mappingConfig from './config/mappingConfig/mappingConfig.vue';
     import preFormConfig from './config/preFormConfig/index.vue';
-
+    import backConfig from './config/backConfig/backConfig.vue';
     import { copyItem, deleteItem, getItemList, saveItem, saveOrder } from '@/api/itemAdmin/item/item';
     import { getProcessDefinitionList } from '@/api/itemAdmin/item/itemAdminConfig';
 
@@ -198,6 +206,7 @@
             { type: '#signBox', name: '签收配置' },
             { type: '#routerBox', name: '路由配置' },
             { type: '#buttonBox', name: '按钮配置' },
+            { type: '#backBox', name: '退回配置' },
             { type: '#mappingBindBox', name: '系统对接' },
             { type: '#dataMoveBox', name: '数据迁移' }
         ],
