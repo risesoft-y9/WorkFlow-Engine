@@ -3,8 +3,8 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-12 09:42:08
- * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-08 13:51:03
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-06-01 17:22:05
  * @Descripttion: 表单配置
  * @FilePath: \vue\y9vue-itemAdmin\src\views\item\config\formConfig\formConfig.vue
 -->
@@ -42,7 +42,7 @@
                             </y9Table>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane v-if="formBindType == 'PC'" label="页签设置" name="secord">
+                    <!-- <el-tab-pane v-if="formBindType == 'PC'" label="页签设置" name="secord">
                         <div style="text-align: center; padding: 10px">
                             <el-checkbox v-model="bindForm.showFileTab" style="margin-left: 8px">附件</el-checkbox>
                             <el-checkbox v-model="bindForm.showHistoryTab">关联文件</el-checkbox>
@@ -50,10 +50,9 @@
                         <div style="text-align: center; margin: 15px 5px 0px">
                             <span slot="footer" class="dialog-footer">
                                 <el-button type="primary" @click="saveSetting">保存设置</el-button>
-                                <!-- <el-button @click="cancelBind">取消</el-button> -->
                             </span>
                         </div>
-                    </el-tab-pane>
+                    </el-tab-pane> -->
                 </el-tabs>
             </template>
             <template #mobileCell="{ row, column, index }">

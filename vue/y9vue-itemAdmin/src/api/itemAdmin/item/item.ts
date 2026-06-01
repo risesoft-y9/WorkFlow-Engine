@@ -70,6 +70,19 @@ export function saveItem(item) {
     });
 }
 
+//保存事项扩展属性
+export function saveExtendProps(item) {
+    const params = {
+        itemJson: item
+    };
+    const data = qs.stringify(params);
+    return itemAdminRequest({
+        url: '/vue/item/saveExtendProps',
+        method: 'post',
+        data: data
+    });
+}
+
 //删除事项
 export function deleteItem(id) {
     const params = {

@@ -46,15 +46,6 @@ public interface Y9FormItemBindService {
     void deleteBindInfo(String itemId);
 
     /**
-     * Description: 获取PC段表单绑定的最大顺序
-     * 
-     * @param itemId
-     * @param processDefinitionId
-     * @return
-     */
-    Integer getMaxTabIndex(String itemId, String processDefinitionId);
-
-    /**
      * 根据id获取绑定信息
      *
      * @param id
@@ -63,12 +54,20 @@ public interface Y9FormItemBindService {
     Y9FormItemBind getById(String id);
 
     /**
-     * 表单正文、附件是否显示的代码
+     * Description: 获取PC段表单绑定的最大顺序
      *
-     * @param formTaskBinds
+     * @param itemId
+     * @param processDefinitionId
      * @return
      */
-    String getShowOther(List<Y9FormItemBind> formTaskBinds);
+    Integer getMaxTabIndex(String itemId, String processDefinitionId);
+
+    /**
+     * 表单正文、附件是否显示的代码
+     *
+     * @return
+     */
+    String getShowOther(String itemId);
 
     /**
      * 查找指定事项id和流程定义Id绑定的表单

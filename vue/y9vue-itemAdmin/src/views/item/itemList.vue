@@ -4,7 +4,7 @@
  * @Author: zhangchongjie
  * @Date: 2022-05-05 11:38:27
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2026-06-01 15:26:43
+ * @LastEditTime: 2026-06-01 17:06:14
  * @FilePath: \vue\y9vue-itemAdmin\src\views\item\itemList.vue
 -->
 <template>
@@ -178,7 +178,7 @@
     import mappingConfig from './config/mappingConfig/mappingConfig.vue';
     import preFormConfig from './config/preFormConfig/index.vue';
     import backConfig from './config/backConfig/backConfig.vue';
-    import { copyItem, deleteItem, getItemList, saveItem, saveOrder } from '@/api/itemAdmin/item/item';
+    import { copyItem, deleteItem, getItemList, saveItem, saveOrder,saveExtendProps } from '@/api/itemAdmin/item/item';
     import { getProcessDefinitionList } from '@/api/itemAdmin/item/itemAdminConfig';
 
     //tree实例
@@ -224,6 +224,12 @@
                         return;
                     }
                     let formData = itemFormRef.value.itemForm;
+                    let extendProps = itemFormRef.value.extendProps;
+                    extendProps.itemId = formData.id;
+                    result = await saveExtendProps(JSON.stringify(extendProps).toString());
+                    if(!result.success){
+                        ElNotification({title: '失败',message: result.msg,type: 'error',duration: 2000,offset: 80});
+                    }
                     result = await saveItem(JSON.stringify(formData).toString());
                     ElNotification({
                         title: result.success ? '成功' : '失败',
