@@ -2447,7 +2447,6 @@ public class DocumentServiceImpl implements DocumentService {
                 asyncHandleService.forwarding4Task(processInstanceId, processParam, "true", sponsorGuid, taskId,
                     flowElementModel, variables, userList);
             }
-            asyncUtilService.sendAuditLog(tenantId, processParam.getTitle(), userList);
             return Y9Result.success(processInstanceId, "发送成功!");
         } catch (Exception e) {
             LOGGER.error("公文发送失败！", e);
