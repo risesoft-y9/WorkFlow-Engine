@@ -800,4 +800,21 @@
                     type="VARCHAR(50)"/>
         </addColumn>
     </changeSet>
+
+    <changeSet id="1704700543333-58" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_BACKTASK_CONF"/>
+            </not>
+        </preConditions>
+        <createTable remarks="退回任务配置表" tableName="FF_BACKTASK_CONF">
+            <column name="ID" remarks="主键" type="VARCHAR(38)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="ITEMID" remarks="事项Id" type="VARCHAR(50)"/>
+            <column name="PROCESSDEFINITIONID" remarks="流程定义Id" type="VARCHAR(100)"/>
+            <column name="TASKDEFKEY" remarks="任务key" type="VARCHAR(50)"/>
+            <column name="BACK_TASKDEFKEY" remarks="可退回任务key" type="VARCHAR(1000)"/>
+        </createTable>
+    </changeSet>
 </databaseChangeLog>

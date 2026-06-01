@@ -71,34 +71,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         buttonItemBindRepository.save(itemButtonBind);
     }
 
-    /**
-     * 创建按钮绑定对象
-     */
-    private ItemButtonBind createButtonItemBind(String buttonId, ItemButtonTypeEnum buttonType, String itemId,
-        String processDefinitionId, String taskDefKey, String tenantId, String userId, String userName) {
-        ItemButtonBind itemButtonBind = new ItemButtonBind();
-        itemButtonBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        itemButtonBind.setButtonId(buttonId);
-        itemButtonBind.setButtonType(buttonType);
-        itemButtonBind.setItemId(itemId);
-        itemButtonBind.setProcessDefinitionId(processDefinitionId);
-        itemButtonBind.setTaskDefKey(taskDefKey);
-        itemButtonBind.setTenantId(tenantId);
-        itemButtonBind.setUserId(userId);
-        itemButtonBind.setUserName(userName);
-        return itemButtonBind;
-    }
-
-    /**
-     * 设置按钮绑定的标签索引
-     */
-    private void setTabIndex(ItemButtonBind itemButtonBind, String itemId, String processDefinitionId,
-        String taskDefKey, ItemButtonTypeEnum buttonType) {
-        Integer maxTabIndex =
-            buttonItemBindRepository.getMaxTabIndex(itemId, processDefinitionId, taskDefKey, buttonType);
-        itemButtonBind.setTabIndex(maxTabIndex == null ? 1 : maxTabIndex + 1);
-    }
-
     @Override
     @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
@@ -119,6 +91,182 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             copyButtonBindingsForNode(itemId, tenantId, userId, userName, latestProcessDefinitionId,
                 previousProcessDefinitionId, currentTaskDefKey);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
+        List<ItemButtonBind> bindList =
+            buttonItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, lastVersionPid);
+        for (ItemButtonBind bind : bindList) {
+            ItemButtonBind newBind = new ItemButtonBind();
+            newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            newBind.setButtonId(bind.getButtonId());
+            newBind.setButtonType(bind.getButtonType());
+            newBind.setItemId(newItemId);
+            newBind.setProcessDefinitionId(lastVersionPid);
+            newBind.setTaskDefKey(bind.getTaskDefKey());
+            newBind.setTenantId(tenantId);
+            newBind.setUserId(userId);
+            newBind.setUserName(userName);
+            newBind.setTabIndex(bind.getTabIndex());
+            buttonItemBindRepository.save(newBind);
+        }
+    }
+
+    /**
+     * 为指定节点复制按钮绑定信息
+     */
+    private void copyButtonBindingsForNode(String itemId, String tenantId, String userId, String userName,
+        String latestProcessDefinitionId, String previousProcessDefinitionId, String currentTaskDefKey) {
+        List<ItemButtonBind> bindList = getButtonBindings(itemId, previousProcessDefinitionId, currentTaskDefKey);
+        for (ItemButtonBind bind : bindList) {
+            ItemButtonBind existingBind =
+                getExistingButtonBinding(itemId, latestProcessDefinitionId, currentTaskDefKey, bind.getButtonId());
+            // 如果不存在，则创建新的绑定
+            if (null == existingBind) {
+                createNewButtonBinding(itemId, tenantId, userId, userName, latestProcessDefinitionId, currentTaskDefKey,
+                    bind);
+            }
+        }
+    }
+
+    /**
+     * 复制按钮角色授权信息
+     */
+    private void copyButtonRoles(String sourceBindId, String targetBindId) {
+        List<ItemButtonRole> roleList = itemButtonRoleService.listByItemButtonId(sourceBindId);
+        for (ItemButtonRole role : roleList) {
+            itemButtonRoleService.saveOrUpdate(targetBindId, role.getRoleId());
+        }
+    }
+
+    /**
+     * 创建按钮绑定对象
+     */
+    private ItemButtonBind createButtonItemBind(String buttonId, ItemButtonTypeEnum buttonType, String itemId,
+        String processDefinitionId, String taskDefKey, String tenantId, String userId, String userName) {
+        ItemButtonBind itemButtonBind = new ItemButtonBind();
+        itemButtonBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        itemButtonBind.setButtonId(buttonId);
+        itemButtonBind.setButtonType(buttonType);
+        itemButtonBind.setItemId(itemId);
+        itemButtonBind.setProcessDefinitionId(processDefinitionId);
+        itemButtonBind.setTaskDefKey(taskDefKey);
+        itemButtonBind.setTenantId(tenantId);
+        itemButtonBind.setUserId(userId);
+        itemButtonBind.setUserName(userName);
+        return itemButtonBind;
+    }
+
+    /**
+     * 创建按钮绑定对象
+     */
+    private ItemButtonBind createButtonItemBind(String bindId, String itemId, String tenantId, String userId,
+        String userName, String processDefinitionId, String taskDefKey, ItemButtonBind sourceBind) {
+        ItemButtonBind newBind = new ItemButtonBind();
+        newBind.setId(bindId);
+        newBind.setButtonId(sourceBind.getButtonId());
+        newBind.setButtonType(sourceBind.getButtonType());
+        newBind.setItemId(itemId);
+        newBind.setProcessDefinitionId(processDefinitionId);
+        newBind.setTaskDefKey(taskDefKey);
+        newBind.setTenantId(tenantId);
+        newBind.setUserId(userId);
+        newBind.setUserName(userName);
+        setTabIndex(newBind, itemId, processDefinitionId, taskDefKey, sourceBind.getButtonType());
+        return newBind;
+    }
+
+    /**
+     * 创建新的按钮绑定
+     */
+    private void createNewButtonBinding(String itemId, String tenantId, String userId, String userName,
+        String processDefinitionId, String taskDefKey, ItemButtonBind sourceBind) {
+        String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+        String sourceBindId = sourceBind.getId();
+        // 创建新的按钮绑定
+        ItemButtonBind newBind = createButtonItemBind(newBindId, itemId, tenantId, userId, userName,
+            processDefinitionId, taskDefKey, sourceBind);
+        buttonItemBindRepository.save(newBind);
+        // 复制按钮授权信息
+        copyButtonRoles(sourceBindId, newBindId);
+    }
+
+    @Override
+    @Transactional
+    public void deleteBindInfo(String itemId) {
+        try {
+            List<ItemButtonBind> bindList = buttonItemBindRepository.findByItemId(itemId);
+            if (null != bindList && !bindList.isEmpty()) {
+                for (ItemButtonBind bind : bindList) {
+                    itemButtonRoleService.deleteByItemButtonId(bind.getId());
+                    buttonItemBindRepository.deleteById(bind.getId());
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.error("删除按钮绑定信息失败", e);
+        }
+    }
+
+    /**
+     * 获取指定节点的按钮绑定列表
+     */
+    private List<ItemButtonBind> getButtonBindings(String itemId, String processDefinitionId, String taskDefKey) {
+        if (StringUtils.isBlank(taskDefKey)) {
+            return buttonItemBindRepository
+                .findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(itemId, processDefinitionId);
+        } else {
+            return buttonItemBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId,
+                processDefinitionId, taskDefKey);
+        }
+    }
+
+    /**
+     * 根据按钮类型获取按钮信息
+     */
+    private ButtonInfo getButtonInfo(String buttonId, ItemButtonTypeEnum buttonType) {
+        String buttonName = BUTTON_NAME_KEY;
+        String buttonCustomId = "";
+
+        if (buttonType == ItemButtonTypeEnum.COMMON) {
+            CommonButton commonButton = commonButtonService.getById(buttonId);
+            if (commonButton != null) {
+                buttonName = commonButton.getName();
+                buttonCustomId = commonButton.getCustomId();
+            }
+        } else {
+            SendButton sendButton = sendButtonService.getById(buttonId);
+            if (sendButton != null) {
+                buttonName = sendButton.getName();
+                buttonCustomId = sendButton.getCustomId();
+            }
+        }
+
+        return new ButtonInfo(buttonName, buttonCustomId);
+    }
+
+    @Override
+    public ItemButtonBind getById(String id) {
+        return buttonItemBindRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * 获取已存在的按钮绑定
+     */
+    private ItemButtonBind getExistingButtonBinding(String itemId, String processDefinitionId, String taskDefKey,
+        String buttonId) {
+        if (StringUtils.isBlank(taskDefKey)) {
+            return buttonItemBindRepository
+                .findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullAndButtonIdOrderByTabIndexAsc(itemId,
+                    processDefinitionId, buttonId);
+        } else {
+            return buttonItemBindRepository
+                .findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndButtonIdOrderByTabIndexAsc(itemId,
+                    processDefinitionId, taskDefKey, buttonId);
         }
     }
 
@@ -147,137 +295,26 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     /**
-     * 为指定节点复制按钮绑定信息
+     * 获取按钮绑定的角色信息
      */
-    private void copyButtonBindingsForNode(String itemId, String tenantId, String userId, String userName,
-        String latestProcessDefinitionId, String previousProcessDefinitionId, String currentTaskDefKey) {
-        List<ItemButtonBind> bindList = getButtonBindings(itemId, previousProcessDefinitionId, currentTaskDefKey);
-        for (ItemButtonBind bind : bindList) {
-            ItemButtonBind existingBind =
-                getExistingButtonBinding(itemId, latestProcessDefinitionId, currentTaskDefKey, bind.getButtonId());
-            // 如果不存在，则创建新的绑定
-            if (null == existingBind) {
-                createNewButtonBinding(itemId, tenantId, userId, userName, latestProcessDefinitionId, currentTaskDefKey,
-                    bind);
+    private RoleInfo getRoleInfo(String itemButtonBindId) {
+        List<ItemButtonRole> roleList = itemButtonRoleService.listByItemButtonIdContainRoleName(itemButtonBindId);
+        List<String> roleIds = new ArrayList<>();
+        StringBuilder roleNamesBuilder = new StringBuilder();
+
+        for (int i = 0; i < roleList.size(); i++) {
+            ItemButtonRole role = roleList.get(i);
+            // 存绑定关系id，便于删除
+            roleIds.add(role.getId());
+
+            if (i == 0) {
+                roleNamesBuilder.append(role.getRoleName());
+            } else {
+                roleNamesBuilder.append("、").append(role.getRoleName());
             }
         }
-    }
 
-    /**
-     * 获取指定节点的按钮绑定列表
-     */
-    private List<ItemButtonBind> getButtonBindings(String itemId, String processDefinitionId, String taskDefKey) {
-        if (StringUtils.isBlank(taskDefKey)) {
-            return buttonItemBindRepository
-                .findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullOrderByTabIndexAsc(itemId, processDefinitionId);
-        } else {
-            return buttonItemBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByTabIndexAsc(itemId,
-                processDefinitionId, taskDefKey);
-        }
-    }
-
-    /**
-     * 获取已存在的按钮绑定
-     */
-    private ItemButtonBind getExistingButtonBinding(String itemId, String processDefinitionId, String taskDefKey,
-        String buttonId) {
-        if (StringUtils.isBlank(taskDefKey)) {
-            return buttonItemBindRepository
-                .findByItemIdAndProcessDefinitionIdAndTaskDefKeyIsNullAndButtonIdOrderByTabIndexAsc(itemId,
-                    processDefinitionId, buttonId);
-        } else {
-            return buttonItemBindRepository
-                .findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndButtonIdOrderByTabIndexAsc(itemId,
-                    processDefinitionId, taskDefKey, buttonId);
-        }
-    }
-
-    /**
-     * 创建新的按钮绑定
-     */
-    private void createNewButtonBinding(String itemId, String tenantId, String userId, String userName,
-        String processDefinitionId, String taskDefKey, ItemButtonBind sourceBind) {
-        String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-        String sourceBindId = sourceBind.getId();
-        // 创建新的按钮绑定
-        ItemButtonBind newBind = createButtonItemBind(newBindId, itemId, tenantId, userId, userName,
-            processDefinitionId, taskDefKey, sourceBind);
-        buttonItemBindRepository.save(newBind);
-        // 复制按钮授权信息
-        copyButtonRoles(sourceBindId, newBindId);
-    }
-
-    /**
-     * 创建按钮绑定对象
-     */
-    private ItemButtonBind createButtonItemBind(String bindId, String itemId, String tenantId, String userId,
-        String userName, String processDefinitionId, String taskDefKey, ItemButtonBind sourceBind) {
-        ItemButtonBind newBind = new ItemButtonBind();
-        newBind.setId(bindId);
-        newBind.setButtonId(sourceBind.getButtonId());
-        newBind.setButtonType(sourceBind.getButtonType());
-        newBind.setItemId(itemId);
-        newBind.setProcessDefinitionId(processDefinitionId);
-        newBind.setTaskDefKey(taskDefKey);
-        newBind.setTenantId(tenantId);
-        newBind.setUserId(userId);
-        newBind.setUserName(userName);
-        setTabIndex(newBind, itemId, processDefinitionId, taskDefKey, sourceBind.getButtonType());
-        return newBind;
-    }
-
-    /**
-     * 复制按钮角色授权信息
-     */
-    private void copyButtonRoles(String sourceBindId, String targetBindId) {
-        List<ItemButtonRole> roleList = itemButtonRoleService.listByItemButtonId(sourceBindId);
-        for (ItemButtonRole role : roleList) {
-            itemButtonRoleService.saveOrUpdate(targetBindId, role.getRoleId());
-        }
-    }
-
-    @Override
-    @Transactional
-    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), userId = person.getPersonId(), userName = person.getName();
-        List<ItemButtonBind> bindList =
-            buttonItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, lastVersionPid);
-        for (ItemButtonBind bind : bindList) {
-            ItemButtonBind newBind = new ItemButtonBind();
-            newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            newBind.setButtonId(bind.getButtonId());
-            newBind.setButtonType(bind.getButtonType());
-            newBind.setItemId(newItemId);
-            newBind.setProcessDefinitionId(lastVersionPid);
-            newBind.setTaskDefKey(bind.getTaskDefKey());
-            newBind.setTenantId(tenantId);
-            newBind.setUserId(userId);
-            newBind.setUserName(userName);
-            newBind.setTabIndex(bind.getTabIndex());
-            buttonItemBindRepository.save(newBind);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void deleteBindInfo(String itemId) {
-        try {
-            List<ItemButtonBind> bindList = buttonItemBindRepository.findByItemId(itemId);
-            if (null != bindList && !bindList.isEmpty()) {
-                for (ItemButtonBind bind : bindList) {
-                    itemButtonRoleService.deleteByItemButtonId(bind.getId());
-                    buttonItemBindRepository.deleteById(bind.getId());
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.error("删除按钮绑定信息失败", e);
-        }
-    }
-
-    @Override
-    public ItemButtonBind getById(String id) {
-        return buttonItemBindRepository.findById(id).orElse(null);
+        return new RoleInfo(roleIds, roleNamesBuilder.toString());
     }
 
     @Override
@@ -315,30 +352,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         return buttonBindList;
     }
 
-    /**
-     * 根据按钮类型获取按钮信息
-     */
-    private ButtonInfo getButtonInfo(String buttonId, ItemButtonTypeEnum buttonType) {
-        String buttonName = BUTTON_NAME_KEY;
-        String buttonCustomId = "";
-
-        if (buttonType == ItemButtonTypeEnum.COMMON) {
-            CommonButton commonButton = commonButtonService.getById(buttonId);
-            if (commonButton != null) {
-                buttonName = commonButton.getName();
-                buttonCustomId = commonButton.getCustomId();
-            }
-        } else {
-            SendButton sendButton = sendButtonService.getById(buttonId);
-            if (sendButton != null) {
-                buttonName = sendButton.getName();
-                buttonCustomId = sendButton.getCustomId();
-            }
-        }
-
-        return new ButtonInfo(buttonName, buttonCustomId);
-    }
-
     @Override
     public List<ItemButtonBind> listByItemIdAndButtonTypeAndProcessDefinitionIdAndTaskDefKey(String itemId,
         ItemButtonTypeEnum buttonType, String processDefinitionId, String taskDefKey) {
@@ -364,10 +377,14 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
 
         for (ItemButtonBind buttonBind : buttonBindList) {
             // 设置按钮信息
-            ButtonInfo buttonInfo = getButtonInfo(buttonBind.getButtonId(), buttonType);
-            buttonBind.setButtonName(buttonInfo.getName());
-            buttonBind.setButtonCustomId(buttonInfo.getCustomId());
-
+            if (buttonBind.getButtonId().contains("fixed_button")) {// 固定按钮
+                buttonBind.setButtonName(buttonBind.getButtonId().split(":")[1]);
+                buttonBind.setButtonCustomId(buttonBind.getButtonId().split(":")[2]);
+            } else {
+                ButtonInfo buttonInfo = getButtonInfo(buttonBind.getButtonId(), buttonType);
+                buttonBind.setButtonName(buttonInfo.getName());
+                buttonBind.setButtonCustomId(buttonInfo.getCustomId());
+            }
             // 设置角色信息
             RoleInfo roleInfo = getRoleInfo(buttonBind.getId());
             buttonBind.setRoleIds(roleInfo.getRoleIds());
@@ -375,29 +392,6 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         }
 
         return buttonBindList;
-    }
-
-    /**
-     * 获取按钮绑定的角色信息
-     */
-    private RoleInfo getRoleInfo(String itemButtonBindId) {
-        List<ItemButtonRole> roleList = itemButtonRoleService.listByItemButtonIdContainRoleName(itemButtonBindId);
-        List<String> roleIds = new ArrayList<>();
-        StringBuilder roleNamesBuilder = new StringBuilder();
-
-        for (int i = 0; i < roleList.size(); i++) {
-            ItemButtonRole role = roleList.get(i);
-            // 存绑定关系id，便于删除
-            roleIds.add(role.getId());
-
-            if (i == 0) {
-                roleNamesBuilder.append(role.getRoleName());
-            } else {
-                roleNamesBuilder.append("、").append(role.getRoleName());
-            }
-        }
-
-        return new RoleInfo(roleIds, roleNamesBuilder.toString());
     }
 
     @Override
@@ -415,10 +409,15 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         }
         for (ItemButtonBind bind : bindList) {
             if (buttonType.equals(ItemButtonTypeEnum.COMMON)) {
-                CommonButton cb = commonButtonService.getById(bind.getButtonId());
-                if (null != cb) {
-                    buttonName = cb.getName();
-                    buttonCustomId = cb.getCustomId();
+                if (bind.getButtonId().contains("fixed_button")) {// 固定按钮
+                    buttonName = bind.getButtonId().split(":")[1];
+                    buttonCustomId = bind.getButtonId().split(":")[2];
+                } else {
+                    CommonButton cb = commonButtonService.getById(bind.getButtonId());
+                    if (null != cb) {
+                        buttonName = cb.getName();
+                        buttonCustomId = cb.getCustomId();
+                    }
                 }
             } else {
                 SendButton sb = sendButtonService.getById(bind.getButtonId());
@@ -538,18 +537,13 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     }
 
     /**
-     * 角色信息封装类
+     * 设置按钮绑定的标签索引
      */
-    @Getter
-    private static class RoleInfo {
-        private final List<String> roleIds;
-        private final String roleNames;
-
-        public RoleInfo(List<String> roleIds, String roleNames) {
-            this.roleIds = roleIds;
-            this.roleNames = roleNames;
-        }
-
+    private void setTabIndex(ItemButtonBind itemButtonBind, String itemId, String processDefinitionId,
+        String taskDefKey, ItemButtonTypeEnum buttonType) {
+        Integer maxTabIndex =
+            buttonItemBindRepository.getMaxTabIndex(itemId, processDefinitionId, taskDefKey, buttonType);
+        itemButtonBind.setTabIndex(maxTabIndex == null ? 1 : maxTabIndex + 1);
     }
 
     /**
@@ -563,6 +557,21 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         public ButtonInfo(String name, String customId) {
             this.name = name;
             this.customId = customId;
+        }
+
+    }
+
+    /**
+     * 角色信息封装类
+     */
+    @Getter
+    private static class RoleInfo {
+        private final List<String> roleIds;
+        private final String roleNames;
+
+        public RoleInfo(List<String> roleIds, String roleNames) {
+            this.roleIds = roleIds;
+            this.roleNames = roleNames;
         }
 
     }

@@ -44,6 +44,7 @@ import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.entity.BackTaskConf;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.Item;
@@ -120,6 +121,7 @@ import net.risesoft.service.RoleService;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.SpeakInfoService;
 import net.risesoft.service.attachment.AttachmentService;
+import net.risesoft.service.config.ItemBackTaskConfService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.config.ItemPermissionService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
@@ -201,6 +203,7 @@ public class DocumentServiceImpl implements DocumentService {
     private final AssociatedFileService associatedFileService;
     private final SpeakInfoService speakInfoService;
     private final OfficeFollowService officeFollowService;
+    private final ItemBackTaskConfService itemBackTaskConfService;
 
     @Override
     public DocumentDetailModel add(String itemId) {
@@ -1345,8 +1348,11 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 处理主流程退回按钮
      */
-    private void handleMainProcessRollback(List<ItemButtonModel> buttonList, TaskModel task,
+    private void handleMainProcessRollback(String itemId, List<ItemButtonModel> buttonList, TaskModel task,
         List<HistoricTaskInstanceModel> results, String tenantId) {
+        // 查询多步退回配置
+        BackTaskConf backTaskConf = itemBackTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+            task.getProcessDefinitionId(), task.getTaskDefinitionKey());
         List<TargetModel> subNodeList =
             processDefinitionApi.getSubProcessChildNode(tenantId, task.getProcessDefinitionId()).getData();
         results.stream()
@@ -1369,7 +1375,16 @@ public class DocumentServiceImpl implements DocumentService {
                     ItemButtonModel itemButtonModel = new ItemButtonModel(hisTask.getTaskDefinitionKey(), taskName,
                         ItemButtonTypeEnum.ROLLBACK, List.of(hisTask.getAssignee()), "", null);
                     if (!buttonList.contains(itemButtonModel)) {
-                        buttonList.add(itemButtonModel);
+                        if (backTaskConf != null && StringUtils.isNotBlank(backTaskConf.getBackTaskDefKey())) {
+                            // 存在退回配置，根据配置显示退回的任务节点
+                            List<String> backTaskDefKeyList =
+                                Arrays.stream(backTaskConf.getBackTaskDefKey().split(",")).collect(Collectors.toList());
+                            if (backTaskDefKeyList.contains(hisTask.getTaskDefinitionKey())) {
+                                buttonList.add(itemButtonModel);
+                            }
+                        } else {
+                            buttonList.add(itemButtonModel);
+                        }
                     }
                 }
             });
@@ -1539,16 +1554,16 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 处理退回按钮
      */
-    private void handleRollbackButtons(List<ItemButtonModel> buttonList, String taskId, String processDefinitionId,
-        String taskDefKey, String tenantId) {
+    private void handleRollbackButtons(String itemId, List<ItemButtonModel> buttonList, String taskId,
+        String processDefinitionId, String taskDefKey, String tenantId) {
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         Boolean isSub = processDefinitionApi.isSubProcessChildNode(tenantId, processDefinitionId, taskDefKey).getData();
         List<HistoricTaskInstanceModel> results =
             historictaskApi.getByProcessInstanceId(tenantId, task.getProcessInstanceId(), "").getData();
         if (isSub) {
-            handleSubProcessRollback(buttonList, task, results, tenantId);
+            handleSubProcessRollback(itemId, buttonList, task, results, tenantId);
         } else {
-            handleMainProcessRollback(buttonList, task, results, tenantId);
+            handleMainProcessRollback(itemId, buttonList, task, results, tenantId);
         }
     }
 
@@ -1718,9 +1733,12 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 处理子流程退回按钮
      */
-    private void handleSubProcessRollback(List<ItemButtonModel> buttonList, TaskModel task,
+    private void handleSubProcessRollback(String itemId, List<ItemButtonModel> buttonList, TaskModel task,
         List<HistoricTaskInstanceModel> results, String tenantId) {
         String executionId = task.getExecutionId();
+        // 查询多步退回配置
+        BackTaskConf backTaskConf = itemBackTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+            task.getProcessDefinitionId(), task.getTaskDefinitionKey());
         results.stream().filter(r -> r.getExecutionId().equals(executionId) && null != r.getEndTime()).forEach(r -> {
             String taskName = r.getName() + "({0})";
             OrgUnit position = null;
@@ -1731,7 +1749,16 @@ public class DocumentServiceImpl implements DocumentService {
             ItemButtonModel itemButtonModel = new ItemButtonModel(r.getTaskDefinitionKey(), taskName,
                 ItemButtonTypeEnum.ROLLBACK, List.of(r.getAssignee()), "", null);
             if (!buttonList.contains(itemButtonModel)) {
-                buttonList.add(itemButtonModel);
+                if (backTaskConf != null && StringUtils.isNotBlank(backTaskConf.getBackTaskDefKey())) {
+                    // 存在退回配置，根据配置显示退回的任务节点
+                    List<String> backTaskDefKeyList =
+                        Arrays.stream(backTaskConf.getBackTaskDefKey().split(",")).collect(Collectors.toList());
+                    if (backTaskDefKeyList.contains(r.getTaskDefinitionKey())) {
+                        buttonList.add(itemButtonModel);
+                    }
+                } else {
+                    buttonList.add(itemButtonModel);
+                }
             }
         });
     }
@@ -1985,9 +2012,14 @@ public class DocumentServiceImpl implements DocumentService {
             handleSendButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
         // 处理退回按钮
-        if (buttonList.contains(ItemButton.tuiHui)) {
-            handleRollbackButtons(buttonList, taskId, processDefinitionId, taskDefKey, tenantId);
+        if (buttonList.contains(ItemButton.tuiHui) || buttonList.stream()
+            .filter(itemButtonModel -> itemButtonModel.getKey().equals("back2any"))
+            .collect(Collectors.toList())
+            .size() > 0) {
+            handleRollbackButtons(itemId, buttonList, taskId, processDefinitionId, taskDefKey, tenantId);
         }
+        // 打印按钮添加到最后
+        buttonList.add(ItemButton.daYin);
         model.setButtonList(buttonList);
         return model;
     }

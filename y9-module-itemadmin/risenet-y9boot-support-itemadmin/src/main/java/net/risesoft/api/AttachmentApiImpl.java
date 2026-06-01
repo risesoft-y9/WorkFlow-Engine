@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.IntStream;
 
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -17,8 +18,7 @@ import net.risesoft.api.itemadmin.AttachmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.user.UserApi;
-import net.risesoft.dto.itemadmin.DeleteEntityDTO;
-import net.risesoft.dto.itemadmin.OrderEntityDTO;
+import net.risesoft.dto.itemadmin.IdsDTO;
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.entity.attachment.AttachmentConf;
 import net.risesoft.enums.ItemAdminAuditLogEnum;
@@ -91,7 +91,7 @@ public class AttachmentApiImpl implements AttachmentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delFile(@RequestBody DeleteEntityDTO deleteEntityDTO) {
+    public Y9Result<Object> delFile(@RequestBody IdsDTO deleteEntityDTO) {
         attachmentService.delFile(deleteEntityDTO);
         return Y9Result.success();
     }
@@ -437,14 +437,13 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 保存附件排序
      * 
-     * @param orderEntityDTOList idAndTabIndexs
+     * @param idsDTO idsDTO
      * @return Y9Result<Object>
      */
     @Override
-    public Y9Result<Object> saveOrder(@RequestBody List<OrderEntityDTO> orderEntityDTOList) {
-        for (OrderEntityDTO dto : orderEntityDTOList) {
-            attachmentRepository.updateAttachmentOrder(dto.getTabIndex(), dto.getId());
-        }
+    public Y9Result<Object> saveOrder(@RequestBody IdsDTO idsDTO) {
+        List<String> ids = idsDTO.getIds();
+        IntStream.range(0, ids.size()).forEach(i -> attachmentRepository.updateAttachmentOrder(i + 1, ids.get(i)));
         return Y9Result.success();
     }
 }

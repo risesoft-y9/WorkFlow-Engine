@@ -2,8 +2,8 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2024-04-23 15:08:38
- * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-06 16:59:39
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-06-01 09:45:39
  * @Descripttion: 编辑/查看 详情信息
  * @FilePath: \vue\y9vue-flowableUI\src\views\workForm\y9Document.vue
 -->
@@ -144,6 +144,7 @@
                 ref="rollbackOrTakebackRef"
                 :basicData="basicData"
                 :optType="optType"
+                :rollbackInfo="rollbackInfo"
             />
             <specialComplete
                 v-if="dialogConfig.type == 'specialComplete'"
@@ -264,6 +265,32 @@
         startTaskDefKey: ''
     };
 
+    const buttonIcon = {
+        '01': 'ri-save-line',
+        '02': 'ri-send-plane-fill',
+        '04': 'ri-reply-line',
+        '05': 'ri-hand-heart-line',
+        '06': 'ri-wechat-2-line',
+        '07': 'ri-check-line',
+        '08': 'ri-user-shared-2-line',
+        '09': 'ri-check-line',
+        '10': 'ri-mail-check-line',
+        '11': 'ri-mail-close-line',
+        '12': 'ri-radio-button-line',
+        '13': 'ri-folder-received-line',
+        '14': 'ri-mail-forbid-line',
+        '15': 'ri-radio-button-line',
+        '16': 'ri-gps-line',
+        '17': 'ri-printer-line',
+        '18': 'ri-file-copy-2-line',
+        '19': 'ri-user-add-line',
+        '20': 'ri-device-recover-line',
+        '21': 'ri-check-line',
+        common_follow:'ri-star-line',
+        back2draft: 'ri-reply-line',
+        back2any: 'ri-reply-line'
+    };
+
     let myForm = ref();
 
     const emits = defineEmits(['refreshCount']);
@@ -287,6 +314,7 @@
         menuMap: [] as any, //按钮菜单数据
         sendMap: [] as any, //发送菜单数据
         repositionMap: [] as any, //重定位菜单
+        backTaskMap: [] as any,//多步退回菜单
         formList: [{ formName: '未绑定表单' }] as any, //绑定表单数据
         basicData: baseData1,
         processSerialNumber: '', //流程编号
@@ -331,10 +359,12 @@
         saveFormId: '', //已经保存过表单数据的表单id，多表单新建时，切换页签先保存表单，避免重新初始化数据。
         isRefreshButton: false, //串行存在未开始人员，如果有发送按钮，提交按钮，办结按钮等，要提醒重新打开办件处理
         bindValue: '', //表单数据绑定值，用于根据绑定值获取正文模板
-        initFormData: {} as any //表单初始化数据
+        initFormData: {} as any, //表单初始化数据
+        rollbackInfo: {} as any,//多步退回选择任务路由
     });
 
     let {
+        rollbackInfo,
         processDataList,
         routeToTask,
         reposition,
@@ -350,6 +380,7 @@
         addInitData,
         menuMap,
         sendMap,
+        backTaskMap,
         formList,
         basicData,
         processSerialNumber,
@@ -502,25 +533,47 @@
                 backToList();
             }
         });
+
+        //恢复待办按钮
+        if (!(listType.value.indexOf('monitor') == -1 || settings.huifudaiban)) {
+            menuMap.value = menuMap.value.filter((item) => {
+                return item.key != '20';
+            });
+        }
+        //新建不显示打印按钮
+        if (itembox.value == 'add') {
+            menuMap.value = menuMap.value.filter((item) => {
+                return item.key != '17';
+            });
+        }
+        //回收站只显示返回按钮
+        if (listType.value == 'draftRecycle') {
+            menuMap.value = [];
+        }
         for (let item of menuMap.value) {
-            //回收站只显示返回按钮
-            if (listType.value == 'draftRecycle') {
-                continue;
-            }
             if (item.key.indexOf('follow') > -1 && follow.value) {
                 //关注按钮：取消关注
                 operationBtnList.value.push({
                     name: '取消关注',
-                    icon: 'ri-star-fill',
+                    icon: buttonIcon[item.key],
                     onClick: () => {
                         delFollow();
+                    }
+                });
+            } else if (item.key.indexOf('follow') > -1 && !follow.value) {
+                //关注按钮：点击关注
+                operationBtnList.value.push({
+                    name: '关注',
+                    icon: buttonIcon[item.key],
+                    onClick: () => {
+                        saveFollow();
                     }
                 });
             } else if (!customItem.value && item.key == '02') {
                 //发送按钮
                 operationBtnList.value.push({
                     name: item.name,
-                    icon: 'ri-send-plane-fill',
+                    icon: buttonIcon[item.key],
                     render: () => {
                         let sbnArr: any = [];
                         sendMap.value.forEach((item) => {
@@ -539,20 +592,42 @@
                         return h('div', {}, sbnArr);
                     }
                 });
-            } else if (item.key.indexOf('follow') > -1 && !follow.value) {
-                //关注按钮：点击关注
+            } else if (item.key == 'back2any') {
+                //多步退回按钮
                 operationBtnList.value.push({
-                    name: '关注',
-                    icon: 'ri-star-line',
-                    onClick: () => {
-                        saveFollow();
+                    name: item.name,
+                    icon: buttonIcon[item.key],
+                    render: () => {
+                        let sbnArr: any = [];
+                        backTaskMap.value.forEach((item) => {
+                            sbnArr.push(
+                                h(
+                                    'span',
+                                    {
+                                        onclick: () => {
+                                            optType.value = 'back2any';
+                                            rollbackInfo.value = item;
+                                            Object.assign(dialogConfig.value, {
+                                                show: true,
+                                                width: '40%',
+                                                title: computed(() => t('退回')),
+                                                type: 'rollbackOrTakeback',
+                                                showFooter: false
+                                            });
+                                        }
+                                    },
+                                    t(item.name)
+                                )
+                            );
+                        });
+                        return h('div', {}, sbnArr);
                     }
                 });
             } else if (item.key == '16') {
                 //重定位按钮
                 operationBtnList.value.push({
                     name: item.name,
-                    icon: 'ri-gps-line',
+                    icon: buttonIcon[item.key],
                     render: () => {
                         let rArr: any = [];
                         repositionMap.value.forEach((ritem) => {
@@ -571,108 +646,15 @@
                         return h('div', {}, rArr);
                     }
                 });
-            } else if (item.key == '12') {
-                //办结按钮
-                operationBtnList.value.push({
-                    name: item.name,
-                    icon: 'ri-radio-button-line',
-                    onClick: () => {
-                        buttonEvent(item.key);
-                    }
-                });
-            } else if (item.key == '20') {
-                //恢复待办按钮
-                if (listType.value.indexOf('monitor') == -1 || settings.huifudaiban) {
-                    operationBtnList.value.push({
-                        name: item.name,
-                        icon: 'ri-device-recover-line',
-                        onClick: () => {
-                            buttonEvent(item.key);
-                        }
-                    });
-                }
-            } else if (item.key == '18') {
-                //抄送按钮
-                operationBtnList.value.push({
-                    name: item.name,
-                    icon: 'ri-file-copy-2-line',
-                    onClick: () => {
-                        buttonEvent(item.key);
-                    }
-                });
-            } else if (item.key == '17') {
-                //打印按钮
-                if (itembox.value != 'add') {
-                    //新建不显示打印按钮
-                    operationBtnList.value.push({
-                        name: item.name,
-                        icon: 'ri-printer-line',
-                        onClick: () => {
-                            buttonEvent(item.key);
-                        }
-                    });
-                }
             } else if (
                 item.key != '02' &&
-                item.key != '17' &&
-                item.key != '18' &&
-                item.key != '12' &&
                 item.key != '16' &&
-                item.key != '20' &&
                 item.key.indexOf('follow') == -1
             ) {
                 //其他按钮
-                let iconName = 'ri-mouse-line';
-                if (item.key == '01') {
-                    //保存
-                    iconName = 'ri-save-line';
-                } else if (item.key == '04') {
-                    //退回
-                    iconName = 'ri-reply-line';
-                } else if (item.key == '05') {
-                    //委托
-                    iconName = 'ri-hand-heart-line';
-                } else if (item.key == '06') {
-                    //协商
-                    iconName = 'ri-wechat-2-line';
-                } else if (item.key == '07') {
-                    //完成
-                    iconName = 'ri-check-line';
-                } else if (item.key == '08') {
-                    //送下一人
-                    iconName = 'ri-user-shared-2-line';
-                } else if (item.key == '09') {
-                    //办理完成
-                    iconName = 'ri-check-line';
-                } else if (item.key == '10') {
-                    //签收
-                    iconName = 'ri-mail-check-line';
-                } else if (item.key == '11') {
-                    //撤销签收
-                    iconName = 'ri-mail-close-line';
-                } else if (item.key == '13') {
-                    //收回
-                    iconName = 'ri-folder-received-line';
-                } else if (item.key == '14') {
-                    //拒签
-                    iconName = 'ri-mail-forbid-line';
-                } else if (item.key == '15') {
-                    //特殊办结
-                    iconName = 'ri-radio-button-line';
-                } else if (item.key == '19') {
-                    //加减签
-                    iconName = 'ri-user-add-line';
-                } else if (item.key == 'common_fasongren') {
-                    //返回发送人
-                    iconName = 'ri-arrow-left-line';
-                } else if (item.key == '21') {
-                    //提交
-                    iconName = 'ri-check-line';
-                }
-
                 operationBtnList.value.push({
                     name: item.name,
-                    icon: iconName,
+                    icon: buttonIcon[item.key],
                     onClick: () => {
                         buttonEvent(item.key);
                     }
@@ -818,6 +800,9 @@
             });
             repositionMap.value = resData.buttonList.filter((item) => {
                 return item.buttonType !== undefined && item.buttonType !== null && item.buttonType === 4;
+            });
+            backTaskMap.value = resData.buttonList.filter((item) => {
+                return item.buttonType !== undefined && item.buttonType !== null && item.buttonType === 3;
             });
             formList.value = resData.formList;
             formId.value = resData.formList[0].formId;
@@ -1733,6 +1718,15 @@
             });
         } else if (key == 'common_faqiren') {
             rollbackToStartor();
+        } else if (key == 'back2draft') {//退回发起节点
+            optType.value = 'back2draft';
+            Object.assign(dialogConfig.value, {
+                show: true,
+                width: '40%',
+                title: computed(() => t('退回')),
+                type: 'rollbackOrTakeback',
+                showFooter: false
+            });
         } else if (key == 'common_fasongren') {
             //返回发送人
             sendToSender();
