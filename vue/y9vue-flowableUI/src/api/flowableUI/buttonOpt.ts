@@ -53,6 +53,21 @@ export const buttonApi = {
         });
     },
 
+    //多步退回
+    rollback2history(taskId,routeToTaskId,orgUnitIds,reason){
+        const params = {
+            taskId:taskId,
+            routeToTaskId:routeToTaskId,
+            orgUnitIds:orgUnitIds,
+            reason:reason
+        };
+        return flowableRequest({
+            url: "/vue/buttonOperation/rollBack2History",
+            method: 'post',
+            params: params
+        });
+    },
+
     //退回拟稿人，不用选人，直接退回
     rollbackToStartor(taskId) {
         const params = {
