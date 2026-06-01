@@ -3,7 +3,7 @@
  * @Author: zhangchongjie
  * @Date: 2024-01-26 17:36:06
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2026-06-01 09:47:21
+ * @LastEditTime: 2026-06-01 15:00:59
  * @Descripttion: 退回
  * @FilePath: \y9-vue\y9vue-flowableUI\src\views\workForm\dialogContent\rollbackOrTakeback.vue
 -->
@@ -15,8 +15,8 @@
         element-loading-background="rgba(0, 0, 0, 0.8)"
         element-loading-spinner="el-icon-loading"
     >
-        <el-divider v-if="optType != 'back2any'" content-position="left">{{ $t('任务列表') }}</el-divider>
-        <y9Table v-if="optType != 'back2any'" :config="tableConfig"></y9Table>
+        <el-divider v-if="optType != 'back2any' && optType != 'back2draft'" content-position="left">{{ $t('任务列表') }}</el-divider>
+        <y9Table v-if="optType != 'back2any' && optType != 'back2draft'" :config="tableConfig"></y9Table>
         <el-divider content-position="left">{{ $t(title) }}{{ $t('原因') }}</el-divider>
         <el-input
             v-model="reason"
@@ -91,7 +91,7 @@
         if (props.optType == 'takeback') {
             title.value = computed(() => t('收回'));
         }
-        if (props.optType != 'back2any') {//多步退回不获取任务列表
+        if (props.optType != 'back2any' && props.optType != 'back2draft') {//多步退回不获取任务列表
             buttonApi.getTaskList(props.basicData.taskId).then((res) => {
                 multiInstance.value = res.data.multiInstance;
                 if (multiInstance.value == '串行') {
@@ -161,7 +161,26 @@
               ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.task-list' });
             }
           });
-        } else if (props.optType == 'takeback') {
+        } else if (props.optType == 'back2draft') {
+            buttonApi.rollbackToStartor(props.basicData.taskId).then((res) => {
+                    loading.value = false;
+                    if (res.success) {
+                        ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.task-list' });
+                        let link = currentrRute.matched[0].path;
+                        let query = {
+                            itemId: props.basicData.itemId,
+                            refreshCount: true
+                        };
+                        router.push({
+                            //核心语句
+                            path: link + '/todo', //跳转的路径
+                            query: query //路由传参时push和query搭配使用 ，作用时传递参数
+                        });
+                    } else {
+                        ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.task-list' });
+                    }
+                });
+        }else if (props.optType == 'takeback') {
             buttonApi.takeback(props.basicData.taskId, reason.value).then((res) => {
                 loading.value = false;
                 if (res.success) {
