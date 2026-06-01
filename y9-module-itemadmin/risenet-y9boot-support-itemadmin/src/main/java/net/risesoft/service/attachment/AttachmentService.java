@@ -2,7 +2,7 @@ package net.risesoft.service.attachment;
 
 import java.util.List;
 
-import net.risesoft.dto.itemadmin.DeleteEntityDTO;
+import net.risesoft.dto.itemadmin.IdsDTO;
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.model.itemadmin.AttachmentModel;
 import net.risesoft.pojo.Y9Page;
@@ -26,7 +26,7 @@ public interface AttachmentService {
      * 
      * @param deleteEntityDTO 删除附件信息
      */
-    void delFile(DeleteEntityDTO deleteEntityDTO);
+    void delFile(IdsDTO deleteEntityDTO);
 
     /**
      * (软航附件控件) 根据流程编号查询附件数量

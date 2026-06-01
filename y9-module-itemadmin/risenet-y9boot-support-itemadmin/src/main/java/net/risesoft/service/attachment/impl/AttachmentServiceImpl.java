@@ -14,7 +14,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.dto.itemadmin.DeleteEntityDTO;
+import net.risesoft.dto.itemadmin.IdsDTO;
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.exception.GlobalErrorCodeEnum;
@@ -75,7 +75,7 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Transactional
     @Override
-    public void delFile(DeleteEntityDTO deleteEntityDTO) {
+    public void delFile(IdsDTO deleteEntityDTO) {
         for (String str : deleteEntityDTO.getIds()) {
             Attachment file = attachmentRepository.findById(str).orElse(null);
             attachmentRepository.deleteById(str);
