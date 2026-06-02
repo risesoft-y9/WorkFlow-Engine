@@ -6,7 +6,6 @@ import java.util.Map;
 import org.springframework.scheduling.annotation.Async;
 
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.FlowElementModel;
 
@@ -66,15 +65,6 @@ public interface AsyncHandleService {
     void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle, String sponsorGuid,
         String taskId, FlowElementModel flowElementModel, Map<String, Object> variables, List<String> userList)
         throws Exception;
-
-    /**
-     * 保存意见历史记录
-     * 
-     * @param tenantId 租户id
-     * @param oldOpinion 旧意见
-     * @param opinionType 意见类型
-     */
-    void saveOpinionHistory(final String tenantId, final Opinion oldOpinion, final String opinionType);
 
     /**
      * 发送意见填写消息提醒

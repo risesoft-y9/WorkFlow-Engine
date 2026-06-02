@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
-import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.pojo.Y9Result;
@@ -38,20 +37,6 @@ public interface OpinionApi {
     @GetMapping("/checkSignOpinion")
     Y9Result<Boolean> checkSignOpinion(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId);
-
-    /**
-     * 获取意见框历史记录数量
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @param opinionFrameMark 意见框标识
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是意见框历史记录数量
-     * @since 9.6.6
-     */
-    @GetMapping("/countOpinionHistory")
-    Y9Result<Integer> countOpinionHistory(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("opinionFrameMark") String opinionFrameMark);
 
     /**
      * 删除意见
@@ -87,20 +72,6 @@ public interface OpinionApi {
      */
     @GetMapping("/getById")
     Y9Result<OpinionModel> getById(@RequestParam("id") String id);
-
-    /**
-     * 获取意见框历史记录
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @param opinionFrameMark 意见框标识
-     * @return {@code Y9Result<List<OpinionHistoryModel>>} 通用请求返回对象 - data 是历史意见列表
-     * @since 9.6.6
-     */
-    @GetMapping("/opinionHistoryList")
-    Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("opinionFrameMark") String opinionFrameMark);
 
     /**
      * 获取个人意见列表
