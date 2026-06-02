@@ -18,7 +18,6 @@ import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
-import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.platform.org.OrgUnit;
@@ -66,23 +65,6 @@ public class OpinionApiImpl implements OpinionApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         Boolean result = opinionService.checkSignOpinion(processSerialNumber, taskId);
         return Y9Result.success(result);
-    }
-
-    /**
-     * 获取意见框历史记录数量
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @param opinionFrameMark 意见框标识
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是意见框历史记录数量
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Integer> countOpinionHistory(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber, @RequestParam String opinionFrameMark) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        int count = opinionService.countOpinionHistory(processSerialNumber, opinionFrameMark);
-        return Y9Result.success(count);
     }
 
     /**
@@ -139,24 +121,6 @@ public class OpinionApiImpl implements OpinionApi {
             Y9BeanUtil.copyProperties(opinion, opinionModel);
         }
         return Y9Result.success(opinionModel);
-    }
-
-    /**
-     * 根据意见框标识获取意见框历史记录
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @param opinionFrameMark 意见框标识
-     * @return {@code Y9Result<List<OpinionHistoryModel>>} 通用请求返回对象 - data 是历史意见列表
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber, @RequestParam String opinionFrameMark) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        List<OpinionHistoryModel> opinionHistoryModelList =
-            opinionService.listOpinionHistory(processSerialNumber, opinionFrameMark);
-        return Y9Result.success(opinionHistoryModelList);
     }
 
     /**

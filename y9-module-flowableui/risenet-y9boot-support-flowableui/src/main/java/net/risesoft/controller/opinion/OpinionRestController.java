@@ -25,7 +25,6 @@ import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
-import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
@@ -72,21 +71,6 @@ public class OpinionRestController {
     }
 
     /**
-     * 获取意见框历史记录数量
-     *
-     * @param processSerialNumber 流程编号
-     * @param opinionFrameMark 意见框标识
-     * @return Y9Result<Integer>
-     */
-    @GetMapping(value = "/countOpinionHistory")
-    public Y9Result<Integer> countOpinionHistory(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam @NotBlank String opinionFrameMark) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        Integer num = opinionApi.countOpinionHistory(tenantId, processSerialNumber, opinionFrameMark).getData();
-        return Y9Result.success(num, "获取成功");
-    }
-
-    /**
      * 删除意见
      *
      * @param id 意见id
@@ -117,20 +101,6 @@ public class OpinionRestController {
         @RequestParam @NotBlank String processDefinitionId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         return opinionApi.getBindOpinionFrame(tenantId, itemId, processDefinitionId);
-    }
-
-    /**
-     * 获取意见框历史记录
-     *
-     * @param processSerialNumber 流程编号
-     * @param opinionFrameMark 意见框标识
-     * @return Y9Result<List < OpinionHistoryModel>>
-     */
-    @GetMapping(value = "/opinionHistoryList")
-    public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam @NotBlank String opinionFrameMark) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return opinionApi.opinionHistoryList(tenantId, processSerialNumber, opinionFrameMark);
     }
 
     /**

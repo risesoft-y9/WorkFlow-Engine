@@ -5,7 +5,6 @@ import java.util.List;
 import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
-import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 
 /**
@@ -23,15 +22,6 @@ public interface OpinionService {
      * @return Boolean
      */
     Boolean checkSignOpinion(String processSerialNumber, String taskId);
-
-    /**
-     * 获取意见历史记录数量
-     *
-     * @param processSerialNumber 流程序列号
-     * @param opinionFrameMark 意见框标识
-     * @return int
-     */
-    int countOpinionHistory(String processSerialNumber, String opinionFrameMark);
 
     /**
      * 根据id删除意见
@@ -89,15 +79,6 @@ public interface OpinionService {
      * @return
      */
     List<Opinion> listByTaskIdAndProcessTrackId(String taskId, String processTrackId);
-
-    /**
-     * 获取意见历史记录
-     *
-     * @param processSerialNumber
-     * @param opinionFrameMark
-     * @return List<OpinionHistoryModel>
-     */
-    List<OpinionHistoryModel> listOpinionHistory(String processSerialNumber, String opinionFrameMark);
 
     /**
      * 
