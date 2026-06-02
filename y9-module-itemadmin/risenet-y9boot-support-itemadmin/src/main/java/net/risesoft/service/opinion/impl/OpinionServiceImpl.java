@@ -22,6 +22,7 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.dto.itemadmin.OpinionDTO;
 import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
@@ -807,41 +808,42 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     @Transactional
-    public Opinion saveOrUpdate(Opinion entity) {
-        if (StringUtils.isBlank(entity.getId())) {
-            return createOpinion(entity);
+    public Opinion saveOrUpdate(OpinionDTO opinionDTO) {
+        if (StringUtils.isBlank(opinionDTO.getId())) {
+            return createOpinion(opinionDTO);
         } else {
-            return updateOpinion(entity);
+            return updateOpinion(opinionDTO);
         }
     }
 
-    private Opinion createOpinion(Opinion entity) {
+    private Opinion createOpinion(OpinionDTO opinionDTO) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        OrgUnit user = Y9FlowableHolder.getOrgUnit();
+        OrgUnit orgUnit = Y9FlowableHolder.getOrgUnit();
         String orgUnitId = Y9FlowableHolder.getOrgUnitId();
 
         Opinion opinion = new Opinion();
         opinion.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        opinion.setTenantId(tenantId + (opinionDTO.isMobile() ? ":mobile" : ""));
         opinion.setUserId(person.getPersonId());
         opinion.setUserName(person.getName());
-        opinion.setDeptId(user.getParentId());
-
-        setOrgUnitInfo(opinion, tenantId, user.getParentId());
-
-        opinion.setProcessSerialNumber(entity.getProcessSerialNumber());
-        opinion.setProcessInstanceId(entity.getProcessInstanceId());
-        opinion.setTaskId(entity.getTaskId());
-        opinion.setOpinionFrameMark(entity.getOpinionFrameMark());
-        opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
-        opinion.setContent(entity.getContent());
+        opinion.setDeptId(orgUnit.getParentId());
         opinion.setPositionId(orgUnitId);
-        opinion.setPositionName(user.getName());
-        handleProcessTrack(opinion, entity.getTaskId());
+        opinion.setPositionName(orgUnit.getName());
+        setOrgUnitInfo(opinion, tenantId, orgUnit.getParentId());
+
+        opinion.setProcessSerialNumber(opinionDTO.getProcessSerialNumber());
+        opinion.setProcessInstanceId(opinionDTO.getProcessInstanceId());
+        opinion.setTaskId(opinionDTO.getTaskId());
+        opinion.setOpinionFrameMark(opinionDTO.getOpinionFrameMark());
+        opinion.setContent(opinionDTO.getContent());
+
+        handleProcessTrack(opinion, opinionDTO.getTaskId());
 
         opinionRepository.save(opinion);
-        asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
-        ProcessParam processParam = processParamService.findByProcessSerialNumber(entity.getProcessSerialNumber());
+        asyncHandleService.sendMsgRemind(tenantId, orgUnitId, opinionDTO.getProcessSerialNumber(),
+            opinionDTO.getContent());
+        ProcessParam processParam = processParamService.findByProcessSerialNumber(opinionDTO.getProcessSerialNumber());
         AuditLogEvent auditLogEvent = AuditLogEvent.builder()
             .action(ItemAdminAuditLogEnum.OPINION_ADD.getAction())
             .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_ADD.getDescription(),
@@ -854,39 +856,33 @@ public class OpinionServiceImpl implements OpinionService {
         return opinion;
     }
 
-    private Opinion updateOpinion(Opinion entity) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        OrgUnit user = Y9FlowableHolder.getOrgUnit();
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
-        Opinion opinion = opinionRepository.findById(entity.getId()).orElse(null);
-        if (opinion == null) {
+    private Opinion updateOpinion(OpinionDTO opinionDTO) {
+        Opinion exsitOpinion = opinionRepository.findById(opinionDTO.getId()).orElse(null);
+        if (exsitOpinion == null) {
             return null;
         }
-        Opinion oldOpinion = new Opinion();
-        Y9BeanUtil.copyProperties(opinion, oldOpinion);
-        opinion.setUserId(person.getPersonId());
-        opinion.setUserName(person.getName());
-        opinion.setTaskId(entity.getTaskId());
-        opinion.setContent(entity.getContent());
-        opinion.setProcessInstanceId(entity.getProcessInstanceId());
-        opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
-        setOrgUnitInfo(opinion, tenantId, user.getParentId());
-        opinion.setPositionId(orgUnitId);
-        opinion.setPositionName(user.getName());
-        opinionRepository.save(opinion);
-        asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
-        ProcessParam processParam = processParamService.findByProcessSerialNumber(entity.getProcessSerialNumber());
+        Opinion originalOpinion = new Opinion();
+        Y9BeanUtil.copyProperties(exsitOpinion, originalOpinion);
+        exsitOpinion.setContent(opinionDTO.getContent());
+        exsitOpinion.setTenantId(Y9LoginUserHolder.getTenantId() + (opinionDTO.isMobile() ? ":mobile" : ""));
+        opinionRepository.save(exsitOpinion);
+        // 发送消息以事件
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        asyncHandleService.sendMsgRemind(tenantId, orgUnitId, exsitOpinion.getProcessSerialNumber(),
+            exsitOpinion.getContent());
+        ProcessParam processParam =
+            processParamService.findByProcessSerialNumber(exsitOpinion.getProcessSerialNumber());
         AuditLogEvent auditLogEvent = AuditLogEvent.builder()
             .action(ItemAdminAuditLogEnum.OPINION_UPDATE.getAction())
             .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_UPDATE.getDescription(),
-                processParam.getTitle(), opinion.getContent()))
-            .objectId(opinion.getId())
-            .oldObject(opinion)
-            .currentObject(null)
+                processParam.getTitle(), exsitOpinion.getContent()))
+            .objectId(exsitOpinion.getId())
+            .oldObject(originalOpinion)
+            .currentObject(exsitOpinion)
             .build();
         Y9Context.publishEvent(auditLogEvent);
-        return opinion;
+        return exsitOpinion;
     }
 
     private void setOrgUnitInfo(Opinion opinion, String tenantId, String parentId) {

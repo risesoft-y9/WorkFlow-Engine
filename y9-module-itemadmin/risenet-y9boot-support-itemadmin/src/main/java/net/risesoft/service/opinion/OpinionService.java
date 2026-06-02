@@ -2,6 +2,7 @@ package net.risesoft.service.opinion;
 
 import java.util.List;
 
+import net.risesoft.dto.itemadmin.OpinionDTO;
 import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
@@ -119,10 +120,10 @@ public interface OpinionService {
     /**
      * 保存意见
      *
-     * @param entity 待保存的实体
+     * @param opinionDTO 意见信息
      * @return Opinion
      */
-    Opinion saveOrUpdate(Opinion entity);
+    Opinion saveOrUpdate(OpinionDTO opinionDTO);
 
     /**
      * 如果用户在启动流程之前先保存了意见，这时意见数据表中之前保存的数据的taskId和processInstanceId仍为空，

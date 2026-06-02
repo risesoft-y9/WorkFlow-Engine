@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.opinion.OpinionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.user.UserApi;
+import net.risesoft.dto.itemadmin.OpinionDTO;
 import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
@@ -185,25 +186,19 @@ public class OpinionApiImpl implements OpinionApi {
     /**
      * 保存或更新意见信息
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param orgUnitId 人员、岗位id
-     * @param opinionModel 意见信息
+     * @param opinionDTO 意见信息
      * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      * @throws Exception Exception
      * @since 9.6.6
      */
     @Override
-    public Y9Result<OpinionModel> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String orgUnitId, @RequestBody OpinionModel opinionModel) throws Exception {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
+    public Y9Result<OpinionModel> saveOrUpdate(@RequestParam String orgUnitId, @RequestBody OpinionDTO opinionDTO)
+        throws Exception {
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
-        Opinion opinion = new Opinion();
-        Y9BeanUtil.copyProperties(opinionModel, opinion);
-        opinion = opinionService.saveOrUpdate(opinion);
+        Opinion opinion = opinionService.saveOrUpdate(opinionDTO);
+        OpinionModel opinionModel = new OpinionModel();
         Y9BeanUtil.copyProperties(opinion, opinionModel);
         return Y9Result.success(opinionModel);
     }
