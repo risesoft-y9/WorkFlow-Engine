@@ -23,6 +23,7 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.ProcessTrack;
@@ -379,8 +380,13 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public OpinionFrameModel listPersonCommentNew(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey) {
+    public OpinionFrameModel listPersonCommentNew(OpinionFrameDTO opinionFrameDTO) {
+        String processSerialNumber = opinionFrameDTO.getProcessSerialNumber();
+        String taskId = opinionFrameDTO.getTaskId();
+        String itembox = opinionFrameDTO.getItembox();
+        String opinionFrameMark = opinionFrameDTO.getOpinionFrameMark();
+        String itemId = opinionFrameDTO.getItemId();
+        String taskDefinitionKey = opinionFrameDTO.getTaskDefinitionKey();
         OpinionFrameModel opinionFrameModel = new OpinionFrameModel();
         opinionFrameModel.setAddable(true);
         opinionFrameModel.setMark(opinionFrameMark);
