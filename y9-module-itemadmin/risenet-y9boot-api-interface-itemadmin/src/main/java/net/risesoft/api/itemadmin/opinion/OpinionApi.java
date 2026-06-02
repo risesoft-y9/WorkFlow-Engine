@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
@@ -80,13 +81,12 @@ public interface OpinionApi {
     /**
      * 根据id获取意见
      *
-     * @param tenantId 租户id
      * @param id 唯一标识
      * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      * @since 9.6.6
      */
     @GetMapping("/getById")
-    Y9Result<OpinionModel> getById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
+    Y9Result<OpinionModel> getById(@RequestParam("id") String id);
 
     /**
      * 获取意见框历史记录
@@ -126,23 +126,12 @@ public interface OpinionApi {
     /**
      * 获取个人意见列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param processSerialNumber 流程编号
-     * @param taskId 任务id
-     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
-     * @param opinionFrameMark 意见框标识
-     * @param itemId 事项id
-     * @param taskDefinitionKey 任务定义key
+     * @param opinionFrameDTO 意见框信息
      * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
      * @since 9.6.6
      */
-    @GetMapping("/personCommentListNew")
-    Y9Result<OpinionFrameModel> personCommentListNew(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("itembox") String itembox,
-        @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
-        @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey);
+    @PostMapping("/personCommentListNew")
+    Y9Result<OpinionFrameModel> personCommentListNew(@RequestBody OpinionFrameDTO opinionFrameDTO);
 
     /**
      * 保存意见

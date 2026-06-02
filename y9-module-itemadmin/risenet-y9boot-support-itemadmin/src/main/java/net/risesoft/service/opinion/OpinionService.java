@@ -2,6 +2,7 @@ package net.risesoft.service.opinion;
 
 import java.util.List;
 
+import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionHistoryModel;
@@ -115,16 +116,10 @@ public interface OpinionService {
     /**
      *
      *
-     * @param processSerialNumber
-     * @param taskId
-     * @param itembox
-     * @param opinionFrameMark
-     * @param itemId
-     * @param taskDefinitionKey
+     * @param opinionFrameDTO 意见框信息
      * @return
      */
-    OpinionFrameModel listPersonCommentNew(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey);
+    OpinionFrameModel listPersonCommentNew(OpinionFrameDTO opinionFrameDTO);
 
     /**
      * 保存多条意见

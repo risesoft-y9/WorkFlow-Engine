@@ -14,6 +14,7 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.opinion.OpinionApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.user.UserApi;
+import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
@@ -126,14 +127,12 @@ public class OpinionApiImpl implements OpinionApi {
     /**
      * 根据id获取意见数据
      *
-     * @param tenantId 租户id
      * @param id 唯一标识
      * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      * @since 9.6.6
      */
     @Override
-    public Y9Result<OpinionModel> getById(@RequestParam String tenantId, @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<OpinionModel> getById(@RequestParam String id) {
         Opinion opinion = opinionService.getById(id);
         OpinionModel opinionModel = new OpinionModel();
         if (opinion != null) {
@@ -190,26 +189,13 @@ public class OpinionApiImpl implements OpinionApi {
     /**
      * 获取个人意见列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param processSerialNumber 流程编号
-     * @param taskId 任务id
-     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
-     * @param opinionFrameMark 意见框标识
-     * @param itemId 事项id
-     * @param taskDefinitionKey 任务定义key
+     * @param opinionFrameDTO 意见框信息
      * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<OpinionFrameModel> personCommentListNew(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String processSerialNumber, String taskId, @RequestParam String itembox,
-        @RequestParam String opinionFrameMark, @RequestParam String itemId, String taskDefinitionKey) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        OpinionFrameModel opinionFrameModel = opinionService.listPersonCommentNew(processSerialNumber, taskId, itembox,
-            opinionFrameMark, itemId, taskDefinitionKey);
+    public Y9Result<OpinionFrameModel> personCommentListNew(@RequestBody OpinionFrameDTO opinionFrameDTO) {
+        OpinionFrameModel opinionFrameModel = opinionService.listPersonCommentNew(opinionFrameDTO);
         return Y9Result.success(opinionFrameModel);
     }
 
