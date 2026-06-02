@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.dto.itemadmin.OpinionDTO;
 import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
@@ -120,18 +121,15 @@ public interface OpinionApi {
     /**
      * 保存或更新意见
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param orgUnitId 人员、岗位id
-     * @param opinionModel 意见信息
+     * @param opinionDTO 意见信息
      * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      * @throws Exception Exception
      * @since 9.6.6
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<OpinionModel> saveOrUpdate(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestBody OpinionModel opinionModel) throws Exception;
+    Y9Result<OpinionModel> saveOrUpdate(@RequestParam("orgUnitId") String orgUnitId, @RequestBody OpinionDTO opinionDTO)
+        throws Exception;
 
     /**
      * 更新意见

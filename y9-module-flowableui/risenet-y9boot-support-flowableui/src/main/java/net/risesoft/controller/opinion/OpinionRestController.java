@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import jakarta.validation.Valid;
 import jakarta.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
@@ -20,6 +21,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.opinion.OpinionApi;
+import net.risesoft.dto.itemadmin.OpinionDTO;
 import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
@@ -30,7 +32,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 办理意见
@@ -110,7 +111,7 @@ public class OpinionRestController {
      * @return Y9Result<OpinionFrameModel>
      */
     @PostMapping(value = "/personCommentList")
-    public Y9Result<OpinionFrameModel> personCommentList(@RequestBody @Validated OpinionFrameDTO opinionFrameDTO) {
+    public Y9Result<OpinionFrameModel> personCommentList(@RequestBody @Valid OpinionFrameDTO opinionFrameDTO) {
         return opinionApi.personCommentListNew(opinionFrameDTO);
     }
 
@@ -132,18 +133,15 @@ public class OpinionRestController {
     /**
      * 保存意见
      *
-     * @param jsonData 意见实体json
+     * @param opinionDTO 意见信息
      * @return Y9Result<OpinionModel>
      */
     @FlowableLog(operationName = "保存意见", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrUpdate")
-    public Y9Result<OpinionModel> save(@RequestParam @NotBlank String jsonData) {
+    public Y9Result<OpinionModel> saveOrUpdate(@RequestBody @Valid OpinionDTO opinionDTO) {
         try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String userId = person.getPersonId(), tenantId = person.getTenantId();
-            OpinionModel opinion = Y9JsonUtil.readValue(jsonData, OpinionModel.class);
             String positionId = Y9FlowableHolder.getPositionId();
-            OpinionModel opinionModel = opinionApi.saveOrUpdate(tenantId, userId, positionId, opinion).getData();
+            OpinionModel opinionModel = opinionApi.saveOrUpdate(positionId, opinionDTO).getData();
             return Y9Result.success(opinionModel, "保存成功");
         } catch (Exception e) {
             LOGGER.error("保存意见失败", e);
