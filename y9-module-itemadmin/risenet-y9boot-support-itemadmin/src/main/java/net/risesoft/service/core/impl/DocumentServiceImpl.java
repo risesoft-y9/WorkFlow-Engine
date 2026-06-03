@@ -999,7 +999,7 @@ public class DocumentServiceImpl implements DocumentService {
                 map.put("formName", formName);
                 list.add(map);
             }
-            showOtherFlag = y9FormItemBindService.getShowOther(y9FormTaskBinds);
+            showOtherFlag = y9FormItemBindService.getShowOther(itemId);
         }
         model.setFormList(list);
         model.setFormIds(formIds);
@@ -1033,7 +1033,7 @@ public class DocumentServiceImpl implements DocumentService {
                 itemFormModel.setFormName(formName);
                 list.add(itemFormModel);
             }
-            showOtherFlag = y9FormItemBindService.getShowOther(y9FormTaskBinds);
+            showOtherFlag = y9FormItemBindService.getShowOther(itemId);
         }
         model.setFormList(list);
         model.setShowOtherFlag(showOtherFlag);
@@ -1305,7 +1305,7 @@ public class DocumentServiceImpl implements DocumentService {
             List<Y9FormItemBind> formBinds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
                 processDefinitionId, taskDefinitionKey);
             formList.addAll(convertFormBinds(formBinds));
-            showOtherFlag = y9FormItemBindService.getShowOther(formBinds);
+            showOtherFlag = y9FormItemBindService.getShowOther(itemId);
         }
         model.setFormList(formList);
         model.setShowOtherFlag(showOtherFlag);

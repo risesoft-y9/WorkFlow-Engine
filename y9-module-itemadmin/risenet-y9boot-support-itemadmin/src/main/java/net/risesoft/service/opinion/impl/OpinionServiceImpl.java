@@ -1,7 +1,6 @@
 package net.risesoft.service.opinion.impl;
 
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
@@ -23,19 +22,19 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.dto.itemadmin.OpinionDTO;
+import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.entity.opinion.ItemOpinionFrameBind;
 import net.risesoft.entity.opinion.Opinion;
-import net.risesoft.entity.opinion.OpinionHistory;
 import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionFrameOneClickSetModel;
-import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.platform.org.OrgUnit;
@@ -47,7 +46,6 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.AuditLogEvent;
-import net.risesoft.repository.opinion.OpinionHistoryRepository;
 import net.risesoft.repository.opinion.OpinionRepository;
 import net.risesoft.service.AsyncHandleService;
 import net.risesoft.service.ProcessTrackService;
@@ -103,8 +101,6 @@ public class OpinionServiceImpl implements OpinionService {
 
     private final AsyncHandleService asyncHandleService;
 
-    private final OpinionHistoryRepository opinionHistoryRepository;
-
     private final PositionApi positionApi;
 
     private final VariableApi variableApi;
@@ -130,18 +126,11 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public int countOpinionHistory(String processSerialNumber, String opinionFrameMark) {
-        return opinionHistoryRepository.countByProcessSerialNumberAndOpinionFrameMark(processSerialNumber,
-            opinionFrameMark);
-    }
-
-    @Override
     @Transactional
     public void delete(String id) {
         Optional<Opinion> oldOpinion = opinionRepository.findById(id);
         if (oldOpinion.isPresent()) {
             opinionRepository.delete(oldOpinion.get());
-            asyncHandleService.saveOpinionHistory(Y9LoginUserHolder.getTenantId(), oldOpinion.get(), "2");
             ProcessParam processParam =
                 processParamService.findByProcessSerialNumber(oldOpinion.get().getProcessSerialNumber());
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
@@ -192,157 +181,6 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public List<OpinionHistoryModel> listOpinionHistory(String processSerialNumber, String opinionFrameMark) {
-        List<OpinionHistoryModel> resList = new ArrayList<>();
-
-        try {
-            // 获取历史意见和当前意见
-            List<OpinionHistoryModel> historyOpinions = getHistoryOpinions(processSerialNumber, opinionFrameMark);
-            List<OpinionHistoryModel> currentOpinions = getCurrentOpinions(processSerialNumber, opinionFrameMark);
-
-            // 合并并排序
-            resList.addAll(historyOpinions);
-            resList.addAll(currentOpinions);
-            resList.sort(this::compareOpinionHistoryByDate);
-
-        } catch (Exception e) {
-            LOGGER.error("获取意见历史记录失败，processSerialNumber: {}, opinionFrameMark: {}", processSerialNumber,
-                opinionFrameMark, e);
-        }
-
-        return resList;
-    }
-
-    /**
-     * 获取历史意见列表
-     */
-    private List<OpinionHistoryModel> getHistoryOpinions(String processSerialNumber, String opinionFrameMark) {
-        List<OpinionHistoryModel> historyModels = new ArrayList<>();
-
-        try {
-            List<OpinionHistory> historyList = opinionHistoryRepository
-                .findByProcessSerialNumberAndOpinionFrameMark(processSerialNumber, opinionFrameMark);
-
-            for (OpinionHistory history : historyList) {
-                OpinionHistoryModel historyModel = new OpinionHistoryModel();
-                Y9BeanUtil.copyProperties(history, historyModel);
-                historyModels.add(historyModel);
-            }
-        } catch (Exception e) {
-            LOGGER.warn("获取历史意见失败，processSerialNumber: {}, opinionFrameMark: {}", processSerialNumber, opinionFrameMark,
-                e);
-        }
-
-        return historyModels;
-    }
-
-    /**
-     * 获取当前意见列表
-     */
-    private List<OpinionHistoryModel> getCurrentOpinions(String processSerialNumber, String opinionFrameMark) {
-        List<OpinionHistoryModel> currentModels = new ArrayList<>();
-
-        try {
-            List<Opinion> opinionList =
-                opinionRepository.findByProcessSerialNumberAndOpinionFrameMarkOrderByCreateTimeAsc(processSerialNumber,
-                    opinionFrameMark);
-
-            for (Opinion opinion : opinionList) {
-                OpinionHistoryModel historyModel = createOpinionHistoryModelFromOpinion(opinion);
-                currentModels.add(historyModel);
-            }
-        } catch (Exception e) {
-            LOGGER.warn("获取当前意见失败，processSerialNumber: {}, opinionFrameMark: {}", processSerialNumber, opinionFrameMark,
-                e);
-        }
-
-        return currentModels;
-    }
-
-    /**
-     * 从Opinion对象创建OpinionHistoryModel对象
-     */
-    private OpinionHistoryModel createOpinionHistoryModelFromOpinion(Opinion opinion) {
-        OpinionHistoryModel history = new OpinionHistoryModel();
-        history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        history.setContent(opinion.getContent());
-        history.setSaveDate("");
-        history.setDeptId(opinion.getDeptId());
-        history.setDeptName(opinion.getDeptName());
-        history.setOpinionFrameMark(opinion.getOpinionFrameMark());
-        history.setOpinionType("");
-        history.setProcessInstanceId(opinion.getProcessInstanceId());
-        history.setProcessSerialNumber(opinion.getProcessSerialNumber());
-        history.setTaskId(opinion.getTaskId());
-        history.setTenantId(opinion.getTenantId());
-        history.setUserId(opinion.getUserId());
-        history.setUserName(opinion.getUserName());
-        return history;
-    }
-
-    /**
-     * 按日期比较意见历史模型
-     */
-    private int compareOpinionHistoryByDate(OpinionHistoryModel o1, OpinionHistoryModel o2) {
-        try {
-            // 首先按创建日期比较
-            Date createTime1 = o1.getCreateTime();
-            Date createTime2 = o2.getCreateTime();
-
-            if (null == createTime1 && null == createTime2) {
-                return 0;
-            }
-            if (null == createTime1) {
-                return -1;
-            }
-            if (null == createTime2) {
-                return 1;
-            }
-
-            long time1 = createTime1.getTime();
-            long time2 = createTime2.getTime();
-
-            int createTimeComparison = Long.compare(time1, time2);
-            if (createTimeComparison != 0) {
-                return createTimeComparison;
-            }
-
-            // 创建时间相同时，按修改日期比较
-            return compareByModifyDate(o1, o2);
-        } catch (Exception e) {
-            LOGGER.error("比较意见历史日期时发生错误", e);
-            return -1;
-        }
-    }
-
-    /**
-     * 按修改日期比较
-     */
-    private int compareByModifyDate(OpinionHistoryModel o1, OpinionHistoryModel o2) {
-        Date modifyDate1 = o1.getUpdateTime();
-        Date modifyDate2 = o2.getUpdateTime();
-
-        if (null == modifyDate1 && null == modifyDate2) {
-            return 0;
-        }
-        if (null == modifyDate1) {
-            return -1;
-        }
-        if (null == modifyDate2) {
-            return 1;
-        }
-
-        try {
-            long time1 = modifyDate1.getTime();
-            long time2 = modifyDate2.getTime();
-            return Long.compare(time1, time2);
-        } catch (Exception e) {
-            LOGGER.error("解析修改日期时发生错误", e);
-            return -1;
-        }
-    }
-
-    @Override
     public List<OpinionListModel> listPersonComment(String processSerialNumber, String taskId, String itembox,
         String opinionFrameMark, String itemId, String taskDefinitionKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
@@ -379,8 +217,13 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     @Override
-    public OpinionFrameModel listPersonCommentNew(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey) {
+    public OpinionFrameModel listPersonCommentNew(OpinionFrameDTO opinionFrameDTO) {
+        String processSerialNumber = opinionFrameDTO.getProcessSerialNumber();
+        String taskId = opinionFrameDTO.getTaskId();
+        String itembox = opinionFrameDTO.getItembox();
+        String opinionFrameMark = opinionFrameDTO.getOpinionFrameMark();
+        String itemId = opinionFrameDTO.getItemId();
+        String taskDefinitionKey = opinionFrameDTO.getTaskDefinitionKey();
         OpinionFrameModel opinionFrameModel = new OpinionFrameModel();
         opinionFrameModel.setAddable(true);
         opinionFrameModel.setMark(opinionFrameMark);
@@ -965,41 +808,42 @@ public class OpinionServiceImpl implements OpinionService {
 
     @Override
     @Transactional
-    public Opinion saveOrUpdate(Opinion entity) {
-        if (StringUtils.isBlank(entity.getId())) {
-            return createOpinion(entity);
+    public Opinion saveOrUpdate(OpinionDTO opinionDTO) {
+        if (StringUtils.isBlank(opinionDTO.getId())) {
+            return createOpinion(opinionDTO);
         } else {
-            return updateOpinion(entity);
+            return updateOpinion(opinionDTO);
         }
     }
 
-    private Opinion createOpinion(Opinion entity) {
+    private Opinion createOpinion(OpinionDTO opinionDTO) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        OrgUnit user = Y9FlowableHolder.getOrgUnit();
+        OrgUnit orgUnit = Y9FlowableHolder.getOrgUnit();
         String orgUnitId = Y9FlowableHolder.getOrgUnitId();
 
         Opinion opinion = new Opinion();
         opinion.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        opinion.setTenantId(tenantId + (opinionDTO.isMobile() ? ":mobile" : ""));
         opinion.setUserId(person.getPersonId());
         opinion.setUserName(person.getName());
-        opinion.setDeptId(user.getParentId());
-
-        setOrgUnitInfo(opinion, tenantId, user.getParentId());
-
-        opinion.setProcessSerialNumber(entity.getProcessSerialNumber());
-        opinion.setProcessInstanceId(entity.getProcessInstanceId());
-        opinion.setTaskId(entity.getTaskId());
-        opinion.setOpinionFrameMark(entity.getOpinionFrameMark());
-        opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
-        opinion.setContent(entity.getContent());
+        opinion.setDeptId(orgUnit.getParentId());
         opinion.setPositionId(orgUnitId);
-        opinion.setPositionName(user.getName());
-        handleProcessTrack(opinion, entity.getTaskId());
+        opinion.setPositionName(orgUnit.getName());
+        setOrgUnitInfo(opinion, tenantId, orgUnit.getParentId());
+
+        opinion.setProcessSerialNumber(opinionDTO.getProcessSerialNumber());
+        opinion.setProcessInstanceId(opinionDTO.getProcessInstanceId());
+        opinion.setTaskId(opinionDTO.getTaskId());
+        opinion.setOpinionFrameMark(opinionDTO.getOpinionFrameMark());
+        opinion.setContent(opinionDTO.getContent());
+
+        handleProcessTrack(opinion, opinionDTO.getTaskId());
 
         opinionRepository.save(opinion);
-        asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
-        ProcessParam processParam = processParamService.findByProcessSerialNumber(entity.getProcessSerialNumber());
+        asyncHandleService.sendMsgRemind(tenantId, orgUnitId, opinionDTO.getProcessSerialNumber(),
+            opinionDTO.getContent());
+        ProcessParam processParam = processParamService.findByProcessSerialNumber(opinionDTO.getProcessSerialNumber());
         AuditLogEvent auditLogEvent = AuditLogEvent.builder()
             .action(ItemAdminAuditLogEnum.OPINION_ADD.getAction())
             .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_ADD.getDescription(),
@@ -1012,41 +856,33 @@ public class OpinionServiceImpl implements OpinionService {
         return opinion;
     }
 
-    private Opinion updateOpinion(Opinion entity) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        OrgUnit user = Y9FlowableHolder.getOrgUnit();
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
-        Opinion opinion = opinionRepository.findById(entity.getId()).orElse(null);
-        if (opinion == null) {
+    private Opinion updateOpinion(OpinionDTO opinionDTO) {
+        Opinion exsitOpinion = opinionRepository.findById(opinionDTO.getId()).orElse(null);
+        if (exsitOpinion == null) {
             return null;
         }
-        Opinion oldOpinion = new Opinion();
-        Y9BeanUtil.copyProperties(opinion, oldOpinion);
-        opinion.setUserId(person.getPersonId());
-        opinion.setUserName(person.getName());
-        opinion.setTaskId(entity.getTaskId());
-        opinion.setContent(entity.getContent());
-        opinion.setProcessInstanceId(entity.getProcessInstanceId());
-        opinion.setTenantId(StringUtils.isNotBlank(entity.getTenantId()) ? entity.getTenantId() : tenantId);
-        setOrgUnitInfo(opinion, tenantId, user.getParentId());
-        opinion.setPositionId(orgUnitId);
-        opinion.setPositionName(user.getName());
-        opinionRepository.save(opinion);
-        asyncHandleService.sendMsgRemind(tenantId, orgUnitId, entity.getProcessSerialNumber(), entity.getContent());
-        // 修改意见保存历史记录
-        asyncHandleService.saveOpinionHistory(Y9LoginUserHolder.getTenantId(), oldOpinion, "1");
-        ProcessParam processParam = processParamService.findByProcessSerialNumber(entity.getProcessSerialNumber());
+        Opinion originalOpinion = new Opinion();
+        Y9BeanUtil.copyProperties(exsitOpinion, originalOpinion);
+        exsitOpinion.setContent(opinionDTO.getContent());
+        exsitOpinion.setTenantId(Y9LoginUserHolder.getTenantId() + (opinionDTO.isMobile() ? ":mobile" : ""));
+        opinionRepository.save(exsitOpinion);
+        // 发送消息以事件
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        asyncHandleService.sendMsgRemind(tenantId, orgUnitId, exsitOpinion.getProcessSerialNumber(),
+            exsitOpinion.getContent());
+        ProcessParam processParam =
+            processParamService.findByProcessSerialNumber(exsitOpinion.getProcessSerialNumber());
         AuditLogEvent auditLogEvent = AuditLogEvent.builder()
             .action(ItemAdminAuditLogEnum.OPINION_UPDATE.getAction())
             .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_UPDATE.getDescription(),
-                processParam.getTitle(), opinion.getContent()))
-            .objectId(opinion.getId())
-            .oldObject(opinion)
-            .currentObject(null)
+                processParam.getTitle(), exsitOpinion.getContent()))
+            .objectId(exsitOpinion.getId())
+            .oldObject(originalOpinion)
+            .currentObject(exsitOpinion)
             .build();
         Y9Context.publishEvent(auditLogEvent);
-        return opinion;
+        return exsitOpinion;
     }
 
     private void setOrgUnitInfo(Opinion opinion, String tenantId, String parentId) {

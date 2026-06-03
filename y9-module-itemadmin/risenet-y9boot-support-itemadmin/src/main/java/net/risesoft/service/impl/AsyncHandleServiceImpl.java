@@ -26,8 +26,6 @@ import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.TaskVariable;
-import net.risesoft.entity.opinion.Opinion;
-import net.risesoft.entity.opinion.OpinionHistory;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.enums.TodoTaskEventActionEnum;
 import net.risesoft.id.IdType;
@@ -41,7 +39,6 @@ import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.repository.jpa.DraftEntityRepository;
 import net.risesoft.repository.jpa.TaskVariableRepository;
-import net.risesoft.repository.opinion.OpinionHistoryRepository;
 import net.risesoft.repository.opinion.OpinionRepository;
 import net.risesoft.service.AsyncForwardingHandleService;
 import net.risesoft.service.AsyncHandleService;
@@ -51,7 +48,6 @@ import net.risesoft.service.config.ItemTaskConfService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.event.Y9TodoUpdateEvent;
 import net.risesoft.service.word.Y9WordHistoryService;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -74,8 +70,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
     private final PositionApi positionApi;
 
     private final ProcessParamService processParamService;
-
-    private final OpinionHistoryRepository opinionHistoryRepository;
 
     private final DraftEntityRepository draftEntityRepository;
 
@@ -252,31 +246,6 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
             }
         }
         return id;
-    }
-
-    @Async
-    @Override
-    public void saveOpinionHistory(final String tenantId, final Opinion oldOpinion, final String opinionType) {
-        try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            OpinionHistory history = new OpinionHistory();
-            history.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            history.setContent(oldOpinion.getContent());
-            history.setSaveDate(Y9DateTimeUtils.formatCurrentDateTime());
-            history.setDeptId(oldOpinion.getDeptId());
-            history.setDeptName(oldOpinion.getDeptName());
-            history.setOpinionFrameMark(oldOpinion.getOpinionFrameMark());
-            history.setOpinionType(opinionType);
-            history.setProcessInstanceId(oldOpinion.getProcessInstanceId());
-            history.setProcessSerialNumber(oldOpinion.getProcessSerialNumber());
-            history.setTaskId(oldOpinion.getTaskId());
-            history.setTenantId(oldOpinion.getTenantId());
-            history.setUserId(oldOpinion.getUserId());
-            history.setUserName(oldOpinion.getUserName());
-            opinionHistoryRepository.save(history);
-        } catch (Exception e) {
-            LOGGER.warn("*****saveOpinionHistory发生异常*****", e);
-        }
     }
 
     @Async

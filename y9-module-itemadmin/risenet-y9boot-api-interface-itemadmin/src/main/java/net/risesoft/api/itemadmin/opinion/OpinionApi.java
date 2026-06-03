@@ -8,9 +8,10 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.dto.itemadmin.OpinionDTO;
+import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
-import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.pojo.Y9Result;
@@ -37,20 +38,6 @@ public interface OpinionApi {
     @GetMapping("/checkSignOpinion")
     Y9Result<Boolean> checkSignOpinion(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("taskId") String taskId);
-
-    /**
-     * 获取意见框历史记录数量
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @param opinionFrameMark 意见框标识
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是意见框历史记录数量
-     * @since 9.6.6
-     */
-    @GetMapping("/countOpinionHistory")
-    Y9Result<Integer> countOpinionHistory(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("opinionFrameMark") String opinionFrameMark);
 
     /**
      * 删除意见
@@ -80,27 +67,12 @@ public interface OpinionApi {
     /**
      * 根据id获取意见
      *
-     * @param tenantId 租户id
      * @param id 唯一标识
      * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      * @since 9.6.6
      */
     @GetMapping("/getById")
-    Y9Result<OpinionModel> getById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
-
-    /**
-     * 获取意见框历史记录
-     *
-     * @param tenantId 租户id
-     * @param processSerialNumber 流程编号
-     * @param opinionFrameMark 意见框标识
-     * @return {@code Y9Result<List<OpinionHistoryModel>>} 通用请求返回对象 - data 是历史意见列表
-     * @since 9.6.6
-     */
-    @GetMapping("/opinionHistoryList")
-    Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("opinionFrameMark") String opinionFrameMark);
+    Y9Result<OpinionModel> getById(@RequestParam("id") String id);
 
     /**
      * 获取个人意见列表
@@ -126,23 +98,12 @@ public interface OpinionApi {
     /**
      * 获取个人意见列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param processSerialNumber 流程编号
-     * @param taskId 任务id
-     * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
-     * @param opinionFrameMark 意见框标识
-     * @param itemId 事项id
-     * @param taskDefinitionKey 任务定义key
+     * @param opinionFrameDTO 意见框信息
      * @return {@code Y9Result<List<OpinionListModel>>} 通用请求返回对象 - data 是意见列表
      * @since 9.6.6
      */
-    @GetMapping("/personCommentListNew")
-    Y9Result<OpinionFrameModel> personCommentListNew(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("itembox") String itembox,
-        @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
-        @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey);
+    @PostMapping("/personCommentListNew")
+    Y9Result<OpinionFrameModel> personCommentListNew(@RequestBody OpinionFrameDTO opinionFrameDTO);
 
     /**
      * 保存意见
@@ -160,18 +121,15 @@ public interface OpinionApi {
     /**
      * 保存或更新意见
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param orgUnitId 人员、岗位id
-     * @param opinionModel 意见信息
+     * @param opinionDTO 意见信息
      * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      * @throws Exception Exception
      * @since 9.6.6
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<OpinionModel> saveOrUpdate(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestBody OpinionModel opinionModel) throws Exception;
+    Y9Result<OpinionModel> saveOrUpdate(@RequestParam("orgUnitId") String orgUnitId, @RequestBody OpinionDTO opinionDTO)
+        throws Exception;
 
     /**
      * 更新意见

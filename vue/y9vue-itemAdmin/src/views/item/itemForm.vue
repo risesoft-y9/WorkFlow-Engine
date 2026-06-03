@@ -3,8 +3,8 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2022-07-05 16:07:56
- * @LastEditors: mengjuhua
- * @LastEditTime: 2025-12-30 15:47:55
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-06-01 17:24:37
  * @FilePath: \y9-vue\y9vue-itemAdmin\src\views\item\itemForm.vue
 -->
 <template>
@@ -190,6 +190,14 @@
                     </el-button>
                 </td>
             </tr>
+            <tr>
+                <td class="lefttd">页签配置</td>
+                <td class="rigthtd" colspan="3">
+                    <el-checkbox :disabled="!isEditState" v-model="extendProps.showFileTab" style="margin-left: 8px">附件</el-checkbox>
+                    <el-checkbox :disabled="!isEditState" v-model="extendProps.showDocumentTab">正文</el-checkbox>
+                    <el-checkbox :disabled="!isEditState" v-model="extendProps.showHistoryTab">关联文件</el-checkbox>
+                </td>
+            </tr>
         </tbody>
     </table>
     <y9Dialog v-model:config="iformDialogConfig">
@@ -305,7 +313,9 @@
         manager: [],
         treeApiObj: {},
         percentage: 0,
-        uploadLoading: false
+        uploadLoading: false,
+        extendProps: { 
+        }
     });
 
     let {
@@ -321,7 +331,8 @@
         selectField,
         manager,
         percentage,
-        uploadLoading
+        uploadLoading,
+        extendProps
     } = toRefs(data);
 
     watch(
@@ -384,12 +395,14 @@
             }
             manager.value = res.data.manager != undefined ? res.data.manager : [];
             workflowList.value = res.data.workflowList;
+            extendProps.value = res.data.itemExtendProps;
         }
     }
 
     defineExpose({
         itemForm,
-        validForm
+        validForm,
+        extendProps
     });
 
     function checkInput(e, name) {
@@ -580,6 +593,20 @@
     .layui-table {
         :deep(.el-tag) {
             margin-right: 8px;
+        }
+        :deep(.el-checkbox__input.is-disabled.is-checked .el-checkbox__inner:after){
+            border-color: #555 !important;
+        }
+        :deep(.el-checkbox__input.is-disabled.is-checked .el-checkbox__inner) {
+            background-color: #dedede !important;
+            border-color: #777 !important;
+        }
+        :deep(.el-checkbox__input.is-disabled .el-checkbox__inner){
+            background-color: #dedede !important;
+            border-color: #777 !important;
+        }
+        :deep(.el-checkbox__label){
+            color: rgb(68, 68, 68) !important;
         }
     }
 </style>

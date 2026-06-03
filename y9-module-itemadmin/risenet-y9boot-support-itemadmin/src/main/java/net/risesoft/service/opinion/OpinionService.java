@@ -2,9 +2,10 @@ package net.risesoft.service.opinion;
 
 import java.util.List;
 
+import net.risesoft.dto.itemadmin.OpinionDTO;
+import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.opinion.Opinion;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
-import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 
 /**
@@ -22,15 +23,6 @@ public interface OpinionService {
      * @return Boolean
      */
     Boolean checkSignOpinion(String processSerialNumber, String taskId);
-
-    /**
-     * 获取意见历史记录数量
-     *
-     * @param processSerialNumber 流程序列号
-     * @param opinionFrameMark 意见框标识
-     * @return int
-     */
-    int countOpinionHistory(String processSerialNumber, String opinionFrameMark);
 
     /**
      * 根据id删除意见
@@ -90,15 +82,6 @@ public interface OpinionService {
     List<Opinion> listByTaskIdAndProcessTrackId(String taskId, String processTrackId);
 
     /**
-     * 获取意见历史记录
-     *
-     * @param processSerialNumber
-     * @param opinionFrameMark
-     * @return List<OpinionHistoryModel>
-     */
-    List<OpinionHistoryModel> listOpinionHistory(String processSerialNumber, String opinionFrameMark);
-
-    /**
      * 
      *
      * @param processSerialNumber
@@ -115,16 +98,10 @@ public interface OpinionService {
     /**
      *
      *
-     * @param processSerialNumber
-     * @param taskId
-     * @param itembox
-     * @param opinionFrameMark
-     * @param itemId
-     * @param taskDefinitionKey
+     * @param opinionFrameDTO 意见框信息
      * @return
      */
-    OpinionFrameModel listPersonCommentNew(String processSerialNumber, String taskId, String itembox,
-        String opinionFrameMark, String itemId, String taskDefinitionKey);
+    OpinionFrameModel listPersonCommentNew(OpinionFrameDTO opinionFrameDTO);
 
     /**
      * 保存多条意见
@@ -143,10 +120,10 @@ public interface OpinionService {
     /**
      * 保存意见
      *
-     * @param entity 待保存的实体
+     * @param opinionDTO 意见信息
      * @return Opinion
      */
-    Opinion saveOrUpdate(Opinion entity);
+    Opinion saveOrUpdate(OpinionDTO opinionDTO);
 
     /**
      * 如果用户在启动流程之前先保存了意见，这时意见数据表中之前保存的数据的taskId和processInstanceId仍为空，

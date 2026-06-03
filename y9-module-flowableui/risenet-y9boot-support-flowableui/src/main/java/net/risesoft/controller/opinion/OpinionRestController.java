@@ -4,6 +4,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
 import org.apache.commons.lang3.StringUtils;
@@ -11,6 +12,7 @@ import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
@@ -19,18 +21,17 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.opinion.OpinionApi;
+import net.risesoft.dto.itemadmin.OpinionDTO;
+import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
-import net.risesoft.model.itemadmin.OpinionHistoryModel;
 import net.risesoft.model.itemadmin.OpinionModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
  * 办理意见
@@ -71,21 +72,6 @@ public class OpinionRestController {
     }
 
     /**
-     * 获取意见框历史记录数量
-     *
-     * @param processSerialNumber 流程编号
-     * @param opinionFrameMark 意见框标识
-     * @return Y9Result<Integer>
-     */
-    @GetMapping(value = "/countOpinionHistory")
-    public Y9Result<Integer> countOpinionHistory(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam @NotBlank String opinionFrameMark) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        Integer num = opinionApi.countOpinionHistory(tenantId, processSerialNumber, opinionFrameMark).getData();
-        return Y9Result.success(num, "获取成功");
-    }
-
-    /**
      * 删除意见
      *
      * @param id 意见id
@@ -119,39 +105,14 @@ public class OpinionRestController {
     }
 
     /**
-     * 获取意见框历史记录
-     *
-     * @param processSerialNumber 流程编号
-     * @param opinionFrameMark 意见框标识
-     * @return Y9Result<List < OpinionHistoryModel>>
-     */
-    @GetMapping(value = "/opinionHistoryList")
-    public Y9Result<List<OpinionHistoryModel>> opinionHistoryList(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam @NotBlank String opinionFrameMark) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return opinionApi.opinionHistoryList(tenantId, processSerialNumber, opinionFrameMark);
-    }
-
-    /**
      * 获取意见列表
      *
-     * @param processSerialNumber 流程编号
-     * @param taskId 任务id
-     * @param itembox 办件状态
-     * @param opinionFrameMark 意见框标识
-     * @param itemId 事项id
-     * @param taskDefinitionKey 任务key
+     * @param opinionFrameDTO 意见框数据
      * @return Y9Result<OpinionFrameModel>
      */
-    @GetMapping(value = "/personCommentList")
-    public Y9Result<OpinionFrameModel> personCommentList(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String itembox,
-        @RequestParam @NotBlank String opinionFrameMark, @RequestParam @NotBlank String itemId,
-        @RequestParam(required = false) String taskDefinitionKey) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = person.getTenantId();
-        return opinionApi.personCommentListNew(tenantId, userId, processSerialNumber, taskId, itembox, opinionFrameMark,
-            itemId, taskDefinitionKey);
+    @PostMapping(value = "/personCommentList")
+    public Y9Result<OpinionFrameModel> personCommentList(@RequestBody @Valid OpinionFrameDTO opinionFrameDTO) {
+        return opinionApi.personCommentListNew(opinionFrameDTO);
     }
 
     /**
@@ -161,33 +122,26 @@ public class OpinionRestController {
      * @return Y9Result<Map < String, Object>>
      */
     @GetMapping(value = "/newOrModify/personalComment")
-    public Y9Result<Map<String, Object>> personalComment(@RequestParam(required = false) String id) {
-        Map<String, Object> map = new HashMap<>(16);
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        map.put("date", Y9DateTimeUtils.formatCurrentDateTime());
+    public Y9Result<OpinionModel> personalComment(@RequestParam(required = false) String id) {
+        OpinionModel opinion = new OpinionModel();
         if (StringUtils.isNotBlank(id)) {
-            OpinionModel opinion = opinionApi.getById(tenantId, id).getData();
-            map.put("opinion", opinion);
-            map.put("date", opinion.getCreateTime());
+            opinion = opinionApi.getById(id).getData();
         }
-        return Y9Result.success(map, "获取成功");
+        return Y9Result.success(opinion, "获取成功");
     }
 
     /**
      * 保存意见
      *
-     * @param jsonData 意见实体json
+     * @param opinionDTO 意见信息
      * @return Y9Result<OpinionModel>
      */
     @FlowableLog(operationName = "保存意见", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrUpdate")
-    public Y9Result<OpinionModel> save(@RequestParam @NotBlank String jsonData) {
+    public Y9Result<OpinionModel> saveOrUpdate(@RequestBody @Valid OpinionDTO opinionDTO) {
         try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String userId = person.getPersonId(), tenantId = person.getTenantId();
-            OpinionModel opinion = Y9JsonUtil.readValue(jsonData, OpinionModel.class);
             String positionId = Y9FlowableHolder.getPositionId();
-            OpinionModel opinionModel = opinionApi.saveOrUpdate(tenantId, userId, positionId, opinion).getData();
+            OpinionModel opinionModel = opinionApi.saveOrUpdate(positionId, opinionDTO).getData();
             return Y9Result.success(opinionModel, "保存成功");
         } catch (Exception e) {
             LOGGER.error("保存意见失败", e);

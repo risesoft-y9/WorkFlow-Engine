@@ -27,6 +27,7 @@ import net.risesoft.api.platform.resource.AppIconApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.consts.ItemConsts;
 import net.risesoft.entity.Item;
+import net.risesoft.entity.ItemExtendProps;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.AppIcon;
@@ -35,6 +36,7 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Organization;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.service.core.ItemExtendPropsService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
@@ -54,6 +56,8 @@ public class ItemRestController {
 
     private final ItemService itemService;
 
+    private final ItemExtendPropsService itemExtendPropsService;
+
     private final RepositoryApi repositoryApi;
 
     private final OrganizationApi organizationApi;
@@ -65,17 +69,6 @@ public class ItemRestController {
     private final OrgUnitApi orgUnitApi;
 
     /**
-     * 复制事项
-     *
-     * @param id
-     * @return
-     */
-    @PostMapping(value = "/copyItem")
-    public Y9Result<String> copyItem(@RequestParam(required = true) String id) {
-        return itemService.copyItem(id);
-    }
-
-    /**
      * 复制事项和流程定义版本相关的绑定
      *
      * @param itemId 事项唯一标识
@@ -85,6 +78,17 @@ public class ItemRestController {
     @PostMapping(value = "/copyAllBind")
     public Y9Result<String> copyAllBind(@RequestParam String itemId, @RequestParam String processDefinitionId) {
         return itemService.copyAllBind(itemId, processDefinitionId);
+    }
+
+    /**
+     * 复制事项
+     *
+     * @param id
+     * @return
+     */
+    @PostMapping(value = "/copyItem")
+    public Y9Result<String> copyItem(@RequestParam(required = true) String id) {
+        return itemService.copyItem(id);
     }
 
     /**
@@ -210,6 +214,7 @@ public class ItemRestController {
         Item item = new Item();
         item.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         List<OrgUnit> manager = new ArrayList<>();
+        ItemExtendProps itemExtendProps = new ItemExtendProps();
         if (StringUtils.isNotBlank(id)) {
             item = itemService.findById(id);
             if (StringUtils.isNotBlank(item.getNature())) {// 事项管理员
@@ -217,9 +222,11 @@ public class ItemRestController {
                 List<String> idList = Arrays.asList(idStr.split(";"));
                 manager = orgUnitApi.listPersonOrPositionByIds(tenantId, idList).getData();
             }
+            itemExtendProps = itemExtendPropsService.findByItemId(id);
         }
         map.put("item", item);
         map.put("manager", manager);
+        map.put("itemExtendProps", itemExtendProps == null ? new ItemExtendProps() : itemExtendProps);
         List<Map<String, Object>> workflowList = new ArrayList<>();
         List<ProcessDefinitionModel> pdModelList = repositoryApi.getLatestProcessDefinitionList(tenantId).getData();
         for (ProcessDefinitionModel pdModel : pdModelList) {
@@ -280,6 +287,19 @@ public class ItemRestController {
     public Y9Result<Item> save(String itemJson) {
         Item item = Y9JsonUtil.readValue(itemJson, Item.class);
         return itemService.save(item);
+    }
+
+    /**
+     * 保存事项扩展属性
+     *
+     * @param itemJson 事项扩展属性信息json
+     * @return
+     */
+    @PostMapping(value = "/saveExtendProps")
+    public Y9Result<Object> saveExtendProps(String itemJson) {
+        ItemExtendProps item = Y9JsonUtil.readValue(itemJson, ItemExtendProps.class);
+        itemExtendPropsService.saveExtendProps(item);
+        return Y9Result.success();
     }
 
     /**
