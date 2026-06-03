@@ -26,7 +26,6 @@ import org.flowable.engine.runtime.ProcessInstance;
 import org.flowable.task.api.history.HistoricTaskInstance;
 import org.flowable.variable.api.history.HistoricVariableInstance;
 import org.springframework.jdbc.core.JdbcTemplate;
-import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -213,13 +212,8 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     @Transactional
     public void recovery4SetUpCompleted(String processInstanceId) {
         runtimeService.activateProcessInstanceById(processInstanceId);
-        String updateSql =
-            "UPDATE ACT_HI_PROCINST T SET T.END_TIME_ = #{END_TIME_,jdbcType=DATE} WHERE T.PROC_INST_ID_=#{processInstanceId}";
-        historyService.createNativeHistoricProcessInstanceQuery()
-            .sql(updateSql)
-            .parameter("END_TIME_", null)
-            .parameter(SysVariables.PROCESSINSTANCEID, processInstanceId)
-            .singleResult();
+        // 改用 jdbcTemplate 直接执行 UPDATE，避免 Flowable native query 的锁等待问题
+        jdbcTemplate.update("UPDATE ACT_HI_PROCINST SET END_TIME_ = NULL WHERE PROC_INST_ID_ = ?", processInstanceId);
     }
 
     /**
@@ -236,20 +230,32 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             if (!"kingbase".equals(dialectName)) {
                 stmt.addBatch("SET FOREIGN_KEY_CHECKS=0");
             }
-            String sql =
-                "INSERT INTO ACT_RU_EXECUTION (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,"
-                    + "IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,"
-                    + "START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,"
-                    + "VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,"
-                    + "ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,"
-                    + "TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,"
-                    + "TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ FROM FF_ACT_RU_EXECUTION_"
-                    + year + " T WHERE T.PROC_INST_ID_ = :processInstanceId";
-            NamedParameterJdbcTemplate namedJdbcTemplate = new NamedParameterJdbcTemplate(jdbcTemplate);
-            Map<String, Object> paramMap = new HashMap<>();
-            paramMap.put(SysVariables.PROCESSINSTANCEID, processInstanceId);
-            namedJdbcTemplate.update(sql, paramMap);
-            LOGGER.info("**************复制数据到ACT_RU_EXECUTION成功****************");
+            // 先检查是否已经存在该流程实例
+            String checkSql = "SELECT COUNT(*) FROM ACT_RU_EXECUTION WHERE PROC_INST_ID_ = ?";
+            Integer count = jdbcTemplate.queryForObject(checkSql, Integer.class, processInstanceId);
+
+            if (count != null && count > 0) {
+                LOGGER.warn("流程实例 {} 已存在于 ACT_RU_EXECUTION 表中，跳过恢复", processInstanceId);
+                return;
+            }
+
+            // 检查备份表中是否有数据
+            String checkBackupSql = "SELECT COUNT(*) FROM FF_ACT_RU_EXECUTION_" + year + " WHERE PROC_INST_ID_ = ?";
+            Integer backupCount = jdbcTemplate.queryForObject(checkBackupSql, Integer.class, processInstanceId);
+
+            if (backupCount == null || backupCount == 0) {
+                LOGGER.warn("备份表 FF_ACT_RU_EXECUTION_{} 中不存在流程实例 {} 的数据", year, processInstanceId);
+                return;
+            }
+            stmt.addBatch(
+                "INSERT INTO ACT_RU_EXECUTION (ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_) SELECT ID_,REV_,PROC_INST_ID_,BUSINESS_KEY_,PARENT_ID_,PROC_DEF_ID_,SUPER_EXEC_,ROOT_PROC_INST_ID_,ACT_ID_,IS_ACTIVE_,IS_CONCURRENT_,IS_SCOPE_,IS_EVENT_SCOPE_,IS_MI_ROOT_,SUSPENSION_STATE_,CACHED_ENT_STATE_,TENANT_ID_,NAME_,START_ACT_ID_,START_TIME_,START_USER_ID_,LOCK_TIME_,IS_COUNT_ENABLED_,EVT_SUBSCR_COUNT_,TASK_COUNT_,JOB_COUNT_,TIMER_JOB_COUNT_,SUSP_JOB_COUNT_,DEADLETTER_JOB_COUNT_,VAR_COUNT_,ID_LINK_COUNT_,CALLBACK_ID_,CALLBACK_TYPE_ FROM FF_ACT_RU_EXECUTION_"
+                    + year + " T WHERE T.PROC_INST_ID_ = '" + processInstanceId + "'");
+            stmt.executeBatch();
+            stmt.execute("SET FOREIGN_KEY_CHECKS=1");
+            LOGGER.info(
+                "**************复制数据到ACT_RU_EXECUTION成功，processInstanceId:" + processInstanceId + "****************");
+        } catch (SQLException e) {
+            LOGGER.error("恢复流程实例异常 ", e);
         }
     }
 
@@ -283,9 +289,11 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     /**
      * 获取最新的历史任务实例
      */
+    @SuppressWarnings("java:S2077")
     private HistoricTaskInstance getLatestHistoricTaskInstance(String processInstanceId, String year) {
         String sql = "SELECT DISTINCT RES.* FROM ACT_HI_TASKINST_" + year + " RES WHERE RES.PROC_INST_ID_ = '"
             + processInstanceId + "' ORDER BY RES.END_TIME_ DESC";
+
         List<HistoricTaskInstance> taskInstances =
             historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list();
 
@@ -460,14 +468,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
             .singleResult();
 
-        String sql01 =
-            "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_=#{PROC_INST_ID_} OR EXECUTION_ID_=#{MIROOTEXECUTION_ID_} OR TASK_ID_=#{TASK_ID_}";
-        historyService.createNativeHistoricVariableInstanceQuery()
-            .sql(sql01)
-            .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
-            .parameter("MIROOTEXECUTION_ID_", miRootExecution.getId())
-            .parameter("TASK_ID_", taskId)
-            .list();
+        // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 对 DELETE 语句的锁等待问题
+        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_ = ? OR EXECUTION_ID_ = ? OR TASK_ID_ = ?";
+        jdbcTemplate.update(sql01, processInstanceId, miRootExecution.getId(), taskId);
 
         runtimeService.setVariablesLocal(miRootExecution.getId(), new HashMap<>(16));
     }
@@ -476,12 +479,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
      * 清理普通实例的历史变量数据
      */
     private void cleanupNormalHistoricVariables(String processInstanceId, String taskId) {
-        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_=#{PROC_INST_ID_} OR TASK_ID_=#{TASK_ID_}";
-        historyService.createNativeHistoricVariableInstanceQuery()
-            .sql(sql01)
-            .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
-            .parameter("TASK_ID_", taskId)
-            .list();
+        // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 对 DELETE 语句的锁等待问题
+        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_ = ? OR TASK_ID_ = ?";
+        jdbcTemplate.update(sql01, processInstanceId, taskId);
     }
 
     /**
@@ -498,19 +498,14 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
         for (HistoricActivityInstance hisActivity : hisActivityList) {
             if (hisActivity.getActivityType().equals(SysVariables.USER_TASK)) {
-                String sql2 =
-                    "UPDATE ACT_HI_ACTINST SET END_TIME_=NULL,DURATION_=NULL,DELETE_REASON_=NULL WHERE ID_ = :id";
-                historyService.createNativeHistoricActivityInstanceQuery()
-                    .sql(sql2)
-                    .parameter("id", hisActivity.getId())
-                    .list();
+                // 改用 jdbcTemplate 直接执行 UPDATE，避免 Flowable native query 的锁等待问题
+                jdbcTemplate.update(
+                    "UPDATE ACT_HI_ACTINST SET END_TIME_=NULL, DURATION_=NULL, DELETE_REASON_=NULL WHERE ID_ = ?",
+                    hisActivity.getId());
                 break;
             } else {
-                String sql2 = "DELETE FROM ACT_HI_ACTINST WHERE ID_ = :id";
-                historyService.createNativeHistoricActivityInstanceQuery()
-                    .sql(sql2)
-                    .parameter("id", hisActivity.getId())
-                    .list();
+                // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 的锁等待问题
+                jdbcTemplate.update("DELETE FROM ACT_HI_ACTINST WHERE ID_ = ?", hisActivity.getId());
             }
         }
     }
@@ -531,6 +526,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             restoreActRuDetail(processInstanceId);
             // 7:删除年度数据
             deleteProcessService.deleteYearData(Y9LoginUserHolder.getTenantId(), year, processInstanceId);
+            // stmt.execute("SET FOREIGN_KEY_CHECKS=1");
         } catch (Exception e) {
             saveErrorLog(processInstanceId, "恢复待办失败", e);
             LOGGER.error("恢复待办失败", e);
@@ -637,14 +633,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     @Transactional
     public void setUpCompleted(String processInstanceId) {
         runtimeService.suspendProcessInstanceById(processInstanceId);
-
-        String updateSql =
-            "UPDATE ACT_HI_PROCINST T SET T.END_TIME_ = #{END_TIME_} WHERE T.PROC_INST_ID_=#{processInstanceId}";
-        historyService.createNativeHistoricProcessInstanceQuery()
-            .sql(updateSql)
-            .parameter("END_TIME_", new Date())
-            .parameter(SysVariables.PROCESSINSTANCEID, processInstanceId)
-            .singleResult();
+        // 改用 jdbcTemplate 直接执行 UPDATE，避免 Flowable native query 的锁等待问题
+        jdbcTemplate.update("UPDATE ACT_HI_PROCINST SET END_TIME_ = ? WHERE PROC_INST_ID_ = ?", new Date(),
+            processInstanceId);
     }
 
     @Override
