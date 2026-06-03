@@ -120,10 +120,12 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         /**
          * 记录审计日志
          */
+        ProcessParamModel processParamModel =
+            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         AuditLogEvent auditLogEvent = AuditLogEvent.builder()
             .action(FlowableUiAuditLogEnum.DOCUMENT_COMPLETE.getAction())
-            .description(
-                Y9StringUtil.format(FlowableUiAuditLogEnum.DOCUMENT_COMPLETE.getDescription(), taskModel.getName()))
+            .description(Y9StringUtil.format(FlowableUiAuditLogEnum.DOCUMENT_COMPLETE.getDescription(),
+                processParamModel.getTitle(), taskModel.getName()))
             .objectId(taskId)
             .oldObject(taskModel)
             .currentObject(null)

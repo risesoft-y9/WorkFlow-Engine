@@ -143,7 +143,7 @@ public enum FlowableUiAuditLogEnum {
     MONITOR_BATCH_DELETE("MONITOR_BATCH_DELETE", "批量彻底删除流程实例 [{}]"),
 
     // ========== 办件操作 ==========
-    DOCUMENT_COMPLETE("DOCUMENT_COMPLETE", "流程办结 [{}]"),
+    DOCUMENT_COMPLETE("DOCUMENT_COMPLETE", "办件 [{}] 在任务 [{}] 节点流程办结 "),
     DOCUMENT_COPY2TODO("DOCUMENT_COPY2TODO", "复制并起草 [{}]"),
     DOCUMENT_SEND("DOCUMENT_SEND", "办件发送 [{}]"),
     DOCUMENT_BATCH_SEND("DOCUMENT_BATCH_SEND", "批量发送 [{}]"),
