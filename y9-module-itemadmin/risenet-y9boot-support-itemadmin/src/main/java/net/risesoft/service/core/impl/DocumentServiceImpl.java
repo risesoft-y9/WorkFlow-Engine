@@ -2016,8 +2016,21 @@ public class DocumentServiceImpl implements DocumentService {
         if (buttonList.contains(ItemButton.faSong) && StringUtils.isNotBlank(taskDefKey)) {
             handleSendButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
-        // 处理退回按钮
-        if (buttonList.contains(ItemButton.tuiHui) || buttonList.stream()
+
+        // 处理退回上一步按钮，通过按钮配置显示后，进一步处理是否显示退回按钮
+        if (buttonList.contains(ItemButton.tuiHui)) {
+            String returnDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+            String takeBackDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
+            String repositionDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+            // 当前任务为退回件,或者收回件都不能再退回，不显示退回按钮
+            if (returnDoc != null || takeBackDoc != null || repositionDoc != null) {
+                buttonList = buttonList.stream()
+                    .filter(itemButtonModel -> !itemButtonModel.getKey().equals(ItemButton.tuiHui.getKey()))
+                    .collect(Collectors.toList());
+            }
+        }
+        // 处理多步退回按钮
+        if (buttonList.stream()
             .filter(itemButtonModel -> itemButtonModel.getKey().equals("back2any"))
             .collect(Collectors.toList())
             .size() > 0) {
