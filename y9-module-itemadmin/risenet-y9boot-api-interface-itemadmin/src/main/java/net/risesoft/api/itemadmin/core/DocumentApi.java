@@ -3,12 +3,15 @@ package net.risesoft.api.itemadmin.core;
 import java.util.List;
 import java.util.Map;
 
+import javax.validation.Valid;
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestParam;
 
+import net.risesoft.dto.itemadmin.ForwardingDTO;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -276,33 +279,15 @@ public interface DocumentApi {
 
     /**
      * 带自定义变量发送
-     *
-     * @param tenantId 租户id
+     * 
      * @param orgUnitId 人员、岗位 id
-     * @param processInstanceId 流程实例id
-     * @param taskId 任务id
-     * @param sponsorHandle 是否主办人办理
-     * @param itemId 事项id
-     * @param processSerialNumber 流程编号
-     * @param processDefinitionKey 流程定义key
-     * @param userChoice 选择的发送人员
-     * @param sponsorGuid 主办人id
-     * @param routeToTaskId 任务key
-     * @param variables 保存变量
+     * @param forwardingDTO 带自定义变量发送
      * @return {@code Y9Result<String>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping(value = "/saveAndForwarding", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<String> saveAndForwarding(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
-        @RequestParam(value = "taskId", required = false) String taskId,
-        @RequestParam(value = "sponsorHandle", required = false) String sponsorHandle,
-        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("userChoice") String userChoice,
-        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid,
-        @RequestParam("routeToTaskId") String routeToTaskId, @RequestBody Map<String, Object> variables);
+    Y9Result<String> saveAndForwarding(@RequestParam("orgUnitId") String orgUnitId,
+        @RequestBody @Valid ForwardingDTO forwardingDTO);
 
     /**
      * 带自定义变量发送

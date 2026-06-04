@@ -23,6 +23,7 @@ import net.risesoft.api.processadmin.SpecialOperationApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.dto.itemadmin.ForwardingDTO;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.FlowElementModel;
@@ -146,7 +147,13 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
         Y9FlowableHolder.setOrgUnit(orgUnit);
         ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
         String startUserId = "6" + SysVariables.COLON + processInstance.getStartUserId();
-        Y9Result<String> y9Result = documentService.forwarding(taskId, "true", startUserId, routeToTask, "");
+        ForwardingDTO forwardingDTO = new ForwardingDTO();
+        forwardingDTO.setTaskId(taskId);
+        forwardingDTO.setRouteToTaskId(routeToTask);
+        forwardingDTO.setUserChoice(startUserId);
+        forwardingDTO.setSponsorHandle("true");
+        forwardingDTO.setSponsorGuid("");
+        Y9Result<String> y9Result = documentService.forwarding(forwardingDTO);
         if (y9Result.isSuccess()) {
             return Y9Result.success();
         }

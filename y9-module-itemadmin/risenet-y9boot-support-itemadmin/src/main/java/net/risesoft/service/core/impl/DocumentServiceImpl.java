@@ -43,6 +43,7 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.dto.itemadmin.ForwardingDTO;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.BackTaskConf;
 import net.risesoft.entity.DynamicRole;
@@ -905,8 +906,12 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Y9Result<String> forwarding(String taskId, String sponsorHandle, String userChoice, String routeToTaskId,
-        String sponsorGuid) {
+    public Y9Result<String> forwarding(ForwardingDTO forwardingDTO) {
+        String taskId = forwardingDTO.getTaskId();
+        String sponsorHandle = forwardingDTO.getSponsorHandle();
+        String userChoice = forwardingDTO.getUserChoice();
+        String routeToTaskId = forwardingDTO.getRouteToTaskId();
+        String sponsorGuid = forwardingDTO.getSponsorGuid();
         String processInstanceId = "";
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getOrgUnitId();
@@ -2230,12 +2235,17 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public Y9Result<String> saveAndForwarding(String itemId, String processSerialNumber, String processDefinitionKey,
-        String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables) {
+    public Y9Result<String> saveAndForwarding(ForwardingDTO forwardingDTO) {
+        String itemId = forwardingDTO.getItemId();
+        String processSerialNumber = forwardingDTO.getProcessSerialNumber();
+        String userChoice = forwardingDTO.getUserChoice();
+        String sponsorGuid = forwardingDTO.getSponsorGuid();
+        String routeToTaskId = forwardingDTO.getRouteToTaskId();
+        Map<String, Object> variables = forwardingDTO.getVariables();
         try {
             // 参数验证
             if (StringUtils.isBlank(itemId) || StringUtils.isBlank(processSerialNumber)
-                || StringUtils.isBlank(processDefinitionKey) || StringUtils.isBlank(userChoice)) {
+                || StringUtils.isBlank(userChoice)) {
                 return Y9Result.failure("必要参数不能为空");
             }
             // 解析用户选择
@@ -2249,7 +2259,7 @@ public class DocumentServiceImpl implements DocumentService {
                 return Y9Result.failure("未匹配到发送人");
             }
             // 启动流程
-            StartProcessResultModel model = startProcess(itemId, processSerialNumber, processDefinitionKey);
+            StartProcessResultModel model = startProcess(itemId, processSerialNumber);
             if (model == null || StringUtils.isBlank(model.getTaskId())) {
                 return Y9Result.failure("流程启动失败");
             }
@@ -2313,7 +2323,7 @@ public class DocumentServiceImpl implements DocumentService {
             if (!userResult.isSuccess()) {
                 return Y9Result.failure(userResult.getMsg());
             }
-            StartProcessResultModel model = startProcess(itemId, processSerialNumber, processDefinitionKey);
+            StartProcessResultModel model = startProcess(itemId, processSerialNumber);
             String taskId = model.getTaskId(), processInstanceId = model.getProcessInstanceId();
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             List<String> userList = userResult.getData();
@@ -2505,8 +2515,7 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public StartProcessResultModel startProcess(String itemId, String processSerialNumber,
-        String processDefinitionKey) {
+    public StartProcessResultModel startProcess(String itemId, String processSerialNumber) {
         StartProcessResultModel model = null;
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
@@ -2519,7 +2528,7 @@ public class DocumentServiceImpl implements DocumentService {
             assert item != null;
             if (item.isShowSubmitButton()) {
                 ProcessDefinitionModel processDefinitionModel =
-                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
                 List<Y9FormItemBind> binds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
                     processDefinitionModel.getId(), "");
                 Map<String, Object> variables =
@@ -2538,7 +2547,7 @@ public class DocumentServiceImpl implements DocumentService {
                 }
                 vars.putAll(variables);
             }
-            TaskModel task = activitiOptService.startProcess(processSerialNumber, processDefinitionKey,
+            TaskModel task = activitiOptService.startProcess(processSerialNumber, item.getWorkflowGuid(),
                 item.getSystemName(), List.of(), vars);
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             processParam.setProcessInstanceId(task.getProcessInstanceId());
