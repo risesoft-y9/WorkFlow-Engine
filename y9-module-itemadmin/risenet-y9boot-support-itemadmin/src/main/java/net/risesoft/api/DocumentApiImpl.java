@@ -14,10 +14,10 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.core.DocumentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
+import net.risesoft.dto.itemadmin.ForwardingDTO;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
@@ -51,8 +51,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class DocumentApiImpl implements DocumentApi {
 
     private final DocumentService documentService;
-
-    private final PersonApi personApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -387,43 +385,31 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 带自定义变量发送
      *
-     * @param tenantId 租户id
      * @param orgUnitId 人员、岗位 id
-     * @param processInstanceId 流程实例id
-     * @param taskId 任务id
-     * @param sponsorHandle 是否主办人办理
-     * @param itemId 事项id
-     * @param processSerialNumber 流程编号
-     * @param processDefinitionKey 流程定义key
-     * @param userChoice 选择的发送人员
-     * @param sponsorGuid 主办人id
-     * @param routeToTaskId 任务key
-     * @param variables 保存变量
      * @return {@code Y9Result<String>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveAndForwarding(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        String processInstanceId, String taskId, String sponsorHandle, @RequestParam String itemId,
-        @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey,
-        @RequestParam String userChoice, String sponsorGuid, @RequestParam String routeToTaskId,
-        @RequestBody Map<String, Object> variables) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<String> saveAndForwarding(@RequestParam String orgUnitId,
+        @RequestBody ForwardingDTO forwardingDTO) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
         Y9Result<String> y9Result;
-        if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
-            y9Result = documentService.saveAndForwarding(itemId, processSerialNumber, processDefinitionKey, userChoice,
-                sponsorGuid, routeToTaskId, variables);
+        if (StringUtils.isBlank(forwardingDTO.getTaskId()) || UtilConsts.NULL.equals(forwardingDTO.getTaskId())) {
+            y9Result = documentService.saveAndForwarding(forwardingDTO);
         } else {
-            variableApi.setVariables(tenantId, taskId, variables);
-            y9Result = documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
+            if (null != forwardingDTO.getVariables()) {
+                variableApi.setVariables(tenantId, forwardingDTO.getTaskId(), forwardingDTO.getVariables());
+            }
+            y9Result = documentService.forwarding(forwardingDTO);
         }
         if (y9Result.isSuccess()) {// 异步自动循环发送
-            asyncUtilService.loopSending(tenantId, orgUnitId, itemId, y9Result.getData());
+            asyncUtilService.loopSending(tenantId, orgUnitId, forwardingDTO.getItemId(), y9Result.getData());
             // 保存发送审计日志
-            ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-            asyncUtilService.sendAuditLog(tenantId, processParam.getTitle(), userChoice);
+            ProcessParam processParam =
+                processParamService.findByProcessSerialNumber(forwardingDTO.getProcessSerialNumber());
+            asyncUtilService.sendAuditLog(tenantId, processParam.getTitle(), forwardingDTO.getUserChoice());
         }
         return y9Result;
     }
@@ -448,8 +434,13 @@ public class DocumentApiImpl implements DocumentApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
-        Y9Result<String> y9Result =
-            documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
+        ForwardingDTO forwardingDTO = new ForwardingDTO();
+        forwardingDTO.setTaskId(taskId);
+        forwardingDTO.setUserChoice(userChoice);
+        forwardingDTO.setRouteToTaskId(routeToTaskId);
+        forwardingDTO.setSponsorHandle(sponsorHandle);
+        forwardingDTO.setSponsorGuid(sponsorGuid);
+        Y9Result<String> y9Result = documentService.forwarding(forwardingDTO);
         if (y9Result.isSuccess()) {
             ProcessParam processParam = processParamService.findByProcessInstanceId(y9Result.getData());
             asyncUtilService.sendAuditLog(tenantId, processParam.getTitle(), userChoice);
@@ -492,7 +483,13 @@ public class DocumentApiImpl implements DocumentApi {
             if (!variables.isEmpty()) {
                 variableApi.setVariables(tenantId, taskId, variables);
             }
-            return documentService.forwarding(taskId, sponsorHandle, userChoice, routeToTaskId, sponsorGuid);
+            ForwardingDTO forwardingDTO = new ForwardingDTO();
+            forwardingDTO.setTaskId(taskId);
+            forwardingDTO.setUserChoice(userChoice);
+            forwardingDTO.setRouteToTaskId(routeToTaskId);
+            forwardingDTO.setSponsorHandle(sponsorHandle);
+            forwardingDTO.setSponsorGuid(sponsorGuid);
+            return documentService.forwarding(forwardingDTO);
         }
     }
 
@@ -578,7 +575,7 @@ public class DocumentApiImpl implements DocumentApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         Y9FlowableHolder.setOrgUnit(orgUnit);
-        StartProcessResultModel model = documentService.startProcess(itemId, processSerialNumber, processDefinitionKey);
+        StartProcessResultModel model = documentService.startProcess(itemId, processSerialNumber);
         return Y9Result.success(model);
     }
 

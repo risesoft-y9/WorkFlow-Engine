@@ -3,6 +3,7 @@ package net.risesoft.service.core;
 import java.util.List;
 import java.util.Map;
 
+import net.risesoft.dto.itemadmin.ForwardingDTO;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -154,15 +155,10 @@ public interface DocumentService {
     /**
      * Description: 发送
      *
-     * @param taskId 任务id
-     * @param sponsorHandle
-     * @param userChoice
-     * @param routeToTaskId
-     * @param sponsorGuid
+     * @param forwardingDTO 发送传输对象
      * @return
      */
-    Y9Result<String> forwarding(String taskId, String sponsorHandle, String userChoice, String routeToTaskId,
-        String sponsorGuid);
+    Y9Result<String> forwarding(ForwardingDTO forwardingDTO);
 
     /**
      * Description: 获取绑定表单
@@ -308,17 +304,10 @@ public interface DocumentService {
     /**
      * Description: 启动流程并发送
      *
-     * @param itemId 事项id
-     * @param processSerialNumber 流程编号
-     * @param processDefinitionKey 流程定义key
-     * @param userChoice
-     * @param sponsorGuid
-     * @param routeToTaskId
-     * @param variables
+     * @param forwardingDTO 发送传输对象
      * @return
      */
-    Y9Result<String> saveAndForwarding(String itemId, String processSerialNumber, String processDefinitionKey,
-        String userChoice, String sponsorGuid, String routeToTaskId, Map<String, Object> variables);
+    Y9Result<String> saveAndForwarding(ForwardingDTO forwardingDTO);
 
     /**
      * Description: 启动流程并发送(指定)
@@ -374,10 +363,9 @@ public interface DocumentService {
      *
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
-     * @param processDefinitionKey 流程定义key
      * @return
      */
-    StartProcessResultModel startProcess(String itemId, String processSerialNumber, String processDefinitionKey);
+    StartProcessResultModel startProcess(String itemId, String processSerialNumber);
 
     /**
      * 启动流程，用于当前人启动本租户的流程，启动者是人
