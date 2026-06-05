@@ -14,8 +14,12 @@ import org.springframework.scheduling.annotation.EnableScheduling;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9FlowableHolder;
+import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.Y9Properties;
 import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
+
+import feign.RequestInterceptor;
 
 /**
  * @author qinman
@@ -40,6 +44,24 @@ public class ItemAdminConfiguration {
         return new Y9Context();
     }
 
+    /**
+     * 调用第三方feignclient时添加通用参数
+     */
+    @Bean
+    public RequestInterceptor commonParamsInterceptor() {
+        return template -> {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String userId = Y9LoginUserHolder.getPersonId();
+            String positionId = Y9FlowableHolder.getPositionId();
+            template.header("X-Tenant-Id", tenantId);
+            template.header("X-User-Id", userId);
+            template.header("X-Position-Id", positionId);
+        };
+    }
+
+    /**
+     * 针对feignclient调用，设置用户信息
+     */
     @Bean
     public FilterRegistrationBean<CommonParamsFilter> commonParamsFilterRegistration() {
         FilterRegistrationBean<CommonParamsFilter> registration = new FilterRegistrationBean<>();
