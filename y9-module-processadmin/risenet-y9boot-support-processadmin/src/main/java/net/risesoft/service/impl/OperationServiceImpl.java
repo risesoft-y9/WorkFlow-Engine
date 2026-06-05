@@ -93,7 +93,7 @@ public class OperationServiceImpl implements OperationService {
     @Transactional
     public void reposition(String taskId, String targetTaskDefineKey, List<String> users, String reason,
         String sponsorGuid) {
-        String userName = Y9FlowableHolder.getOrgUnit().getName();
+        String userName = Y9FlowableHolder.getPosition().getName();
         Task currentTask = this.customTaskService.findById(taskId);
         String processInstanceId = currentTask.getProcessInstanceId();
         String reason0 = "该任务已由办理人员" + userName + "重定向" + (StringUtils.isNotBlank(reason) ? ":" + reason : "");
@@ -150,7 +150,7 @@ public class OperationServiceImpl implements OperationService {
     @Transactional
     public void rollBack2History(String taskId, String targetTaskDefineKey, List<String> users, String reason,
         String sponsorGuid) {
-        OrgUnit position = Y9FlowableHolder.getOrgUnit();
+        OrgUnit position = Y9FlowableHolder.getPosition();
         Task currentTask = this.customTaskService.findById(taskId);
         String processInstanceId = currentTask.getProcessInstanceId();
         String processSerialNumber =
@@ -185,7 +185,7 @@ public class OperationServiceImpl implements OperationService {
     @Override
     @Transactional
     public void rollBack(String taskId, String reason) {
-        String userName = Y9FlowableHolder.getOrgUnit().getName();
+        String userName = Y9FlowableHolder.getPosition().getName();
         HistoricTaskInstance thePreviousTask = this.customHistoricTaskService.getThePreviousTask(taskId);
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
             processInstanceId = thePreviousTask.getProcessInstanceId();
@@ -224,7 +224,7 @@ public class OperationServiceImpl implements OperationService {
 
     @Override
     public void rollbackToStartor(String taskId, String reason) {
-        String userName = Y9FlowableHolder.getOrgUnit().getName();
+        String userName = Y9FlowableHolder.getPosition().getName();
         Task currentTask = this.customTaskService.findById(taskId);
         String processInstanceId = currentTask.getProcessInstanceId();
         /*
@@ -248,7 +248,7 @@ public class OperationServiceImpl implements OperationService {
     public void specialComplete(String taskId, String reason) {
         String processInstanceId = "";
         try {
-            String userName = Y9FlowableHolder.getOrgUnit().getName();
+            String userName = Y9FlowableHolder.getPosition().getName();
             Task task = this.customTaskService.findById(taskId);
             String endKey = this.customProcessDefinitionService.getTaskDefKey4EndEvent(task.getProcessDefinitionId());
             processInstanceId = task.getProcessInstanceId();
@@ -303,7 +303,7 @@ public class OperationServiceImpl implements OperationService {
                     new JumpCommand(taskId, endKey, new ArrayList<>(), "该任务由" + userName + "特殊办结:" + reason));
                 // 保存到数据中心，在流程办结监听执行
                 // process4CompleteUtilService.saveToDataCenter(Y9LoginUserHolder.getTenantId(), year,
-                // Y9FlowableHolder.getOrgUnitId(), processInstanceId, userName);
+                // Y9FlowableHolder.getPositionId(), processInstanceId, userName);
             }
         } catch (Exception e) {
             final Writer result = new StringWriter();
@@ -330,13 +330,13 @@ public class OperationServiceImpl implements OperationService {
     @Override
     @Transactional
     public void takeBack(String taskId, String reason) {
-        String userName = Y9FlowableHolder.getOrgUnit().getName();
+        String userName = Y9FlowableHolder.getPosition().getName();
         HistoricTaskInstance thePreviousTask = this.customHistoricTaskService.getThePreviousTask(taskId);
         String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
             processInstanceId = thePreviousTask.getProcessInstanceId();
         // 设置任务的完成动作
         this.customVariableService.setVariableLocal(taskId, SysVariables.ACTION_NAME, SysVariables.TAKEBACK);
-        String user = Y9FlowableHolder.getOrgUnitId();
+        String user = Y9FlowableHolder.getPositionId();
         List<String> users = new ArrayList<>();
         users.add(user);
         this.managementService
@@ -350,12 +350,12 @@ public class OperationServiceImpl implements OperationService {
     @Override
     @Transactional
     public void takeBack2TaskDefKey(String taskId, String taskDefKey, String reason) {
-        String userName = Y9FlowableHolder.getOrgUnit().getName();
+        String userName = Y9FlowableHolder.getPosition().getName();
         Task currentTask = customTaskService.findById(taskId);
         String processInstanceId = currentTask.getProcessInstanceId();
         // 设置任务的完成动作
         this.customVariableService.setVariableLocal(taskId, SysVariables.ACTION_NAME, SysVariables.TAKEBACK);
-        String user = Y9FlowableHolder.getOrgUnitId();
+        String user = Y9FlowableHolder.getPositionId();
         List<String> users = new ArrayList<>();
         users.add(user);
         this.managementService

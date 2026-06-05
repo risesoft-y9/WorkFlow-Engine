@@ -6,7 +6,7 @@ import java.util.Map;
 import org.springframework.scheduling.annotation.Async;
 
 import net.risesoft.entity.ProcessParam;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.FlowElementModel;
 
 /**
@@ -30,7 +30,7 @@ public interface AsyncHandleService {
      * @param userAndDeptIdList 用户和部门id列表
      */
     @Async
-    void forwarding(final String tenantId, final OrgUnit orgUnit, final String processInstanceId,
+    void forwarding(final String tenantId, final Position position, final String processInstanceId,
         final ProcessParam processParam, final String sponsorHandle, final String sponsorGuid, final String taskId,
         final FlowElementModel flowElementModel, final Map<String, Object> variables,
         final List<String> userAndDeptIdList);

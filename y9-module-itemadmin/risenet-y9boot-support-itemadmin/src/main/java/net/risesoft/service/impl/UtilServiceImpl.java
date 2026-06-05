@@ -147,7 +147,7 @@ public class UtilServiceImpl implements UtilService {
 
     @Override
     public List<String> getItemBoxAndTaskId(List<TaskModel> taskList) {
-        String userId = Y9FlowableHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getPositionId();
         String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
         List<String> list = new ArrayList<>();
         for (TaskModel task : taskList) {

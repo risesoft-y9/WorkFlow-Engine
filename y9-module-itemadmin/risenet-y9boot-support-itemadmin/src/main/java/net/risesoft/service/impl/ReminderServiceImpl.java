@@ -88,7 +88,7 @@ public class ReminderServiceImpl implements ReminderService {
     @Transactional
     public String handleReminder(String msgContent, String procInstId, Integer reminderAutomatic, String remType,
         String taskId, String documentTitle) {
-        OrgUnit person = Y9FlowableHolder.getOrgUnit();
+        OrgUnit person = Y9FlowableHolder.getPosition();
         String[] procInstIds = procInstId.split(SysVariables.COMMA);
         String[] taskIds = taskId.split(SysVariables.COMMA);
         List<Reminder> list = new ArrayList<>();
@@ -325,7 +325,7 @@ public class ReminderServiceImpl implements ReminderService {
             return r;
         }
         String tenantId = Y9LoginUserHolder.getTenantId();
-        OrgUnit orgUnit = Y9FlowableHolder.getOrgUnit();
+        OrgUnit orgUnit = Y9FlowableHolder.getPosition();
         Reminder r = new Reminder();
         r.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         r.setSenderId(orgUnit.getId());

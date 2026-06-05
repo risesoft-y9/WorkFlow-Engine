@@ -61,7 +61,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     @Override
     public int countByProcessInstanceId(String processInstanceId) {
         return officeFollowRepository.countByProcessInstanceIdAndUserId(processInstanceId,
-            Y9FlowableHolder.getOrgUnitId());
+            Y9FlowableHolder.getPositionId());
     }
 
     @Override
@@ -69,7 +69,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     public void delOfficeFollow(String processInstanceIds) {
         String[] ids = processInstanceIds.split(",");
         for (String processInstanceId : ids) {
-            officeFollowRepository.deleteByProcessInstanceId(processInstanceId, Y9FlowableHolder.getOrgUnitId());
+            officeFollowRepository.deleteByProcessInstanceId(processInstanceId, Y9FlowableHolder.getPositionId());
         }
     }
 
@@ -81,12 +81,12 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
 
     @Override
     public int getFollowCount() {
-        return officeFollowRepository.countByUserId(Y9FlowableHolder.getOrgUnitId());
+        return officeFollowRepository.countByUserId(Y9FlowableHolder.getPositionId());
     }
 
     @Override
     public Y9Page<OfficeFollowModel> pageBySearchName(String searchName, int page, int rows) {
-        String userId = Y9FlowableHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OfficeFollowModel> resultList = new ArrayList<>();
 
@@ -221,7 +221,7 @@ public class OfficeFollowServiceImpl implements OfficeFollowService {
     @Override
     public Y9Page<OfficeFollowModel> pageBySystemNameAndSearchName(String systemName, String searchName, int page,
         int rows) {
-        String userId = Y9FlowableHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<OfficeFollowModel> resultList = new ArrayList<>();
 

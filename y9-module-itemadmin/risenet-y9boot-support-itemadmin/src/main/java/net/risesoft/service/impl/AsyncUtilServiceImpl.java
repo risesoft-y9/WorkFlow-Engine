@@ -15,6 +15,7 @@ import lombok.Getter;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
@@ -30,7 +31,7 @@ import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
@@ -61,7 +62,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
 
     private final ErrorLogService errorLogService;
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     private final TaskApi taskApi;
 
@@ -88,6 +89,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     public AsyncUtilServiceImpl(
         ErrorLogService errorLogService,
         OrgUnitApi orgUnitApi,
+        PositionApi positionApi,
         TaskApi taskApi,
         ProcessDefinitionApi processDefinitionApi,
         @Lazy DocumentService documentService,
@@ -100,7 +102,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         RepositoryApi repositoryApi,
         HistoricProcessApi historicProcessApi) {
         this.errorLogService = errorLogService;
-        this.orgUnitApi = orgUnitApi;
+        this.positionApi = positionApi;
         this.taskApi = taskApi;
         this.processDefinitionApi = processDefinitionApi;
         this.documentService = documentService;
@@ -156,8 +158,8 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
      */
     private void setupUserContext(String tenantId, String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
     }
 
     /**
@@ -301,11 +303,11 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 .orElse(null);
             ProcessParam processParam =
                 processParamService.findByProcessInstanceId(historicTaskInstanceModel.getProcessInstanceId());
-            OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
+            Position position = positionApi.get(tenantId, orgUnitId).getData();
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                 .action(ItemAdminAuditLogEnum.BUTTON_TAKEBACK_TASK_DEF_KEY.getAction())
                 .description(Y9StringUtil.format(ItemAdminAuditLogEnum.BUTTON_TAKEBACK_TASK_DEF_KEY.getDescription(),
-                    orgUnit.getName(), historicTaskInstanceModel.getName(), processParam.getTitle(),
+                    position.getName(), historicTaskInstanceModel.getName(), processParam.getTitle(),
                     targetModel.getTaskDefName()))
                 .objectId(taskId)
                 .oldObject(historicTaskInstanceModel)
@@ -332,20 +334,20 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 .filter(model -> taskKey.equals(model.getTaskDefKey()))
                 .findFirst()
                 .orElse(null);
-            String sendPersons = "";
+            StringBuilder sendPersons = new StringBuilder();
             String[] ids = assignee.split(SysVariables.COMMA);
             for (String id : ids) {
                 String orgId = id.split(SysVariables.COLON)[1];
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgId).getData();
-                sendPersons += orgUnit.getName() + SysVariables.COMMA;
+                Position position = positionApi.get(tenantId, orgId).getData();
+                sendPersons.append(position.getName()).append(SysVariables.COMMA);
             }
             String action = ItemAdminAuditLogEnum.QUICK_SEND_ADD.getAction();
             String description = Y9StringUtil.format(ItemAdminAuditLogEnum.QUICK_SEND_ADD.getDescription(),
-                item.getName(), targetModel.getTaskDefName(), sendPersons);
+                item.getName(), targetModel.getTaskDefName(), sendPersons.toString());
             if (optType.equals(ItemAdminAuditLogEnum.OPTTYPE_UPDATE.getAction())) {
                 action = ItemAdminAuditLogEnum.QUICK_SEND_UPDATE.getAction();
                 description = Y9StringUtil.format(ItemAdminAuditLogEnum.QUICK_SEND_UPDATE.getDescription(),
-                    item.getName(), targetModel.getTaskDefName(), sendPersons);
+                    item.getName(), targetModel.getTaskDefName(), sendPersons.toString());
             }
 
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
@@ -447,13 +449,13 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 if (parts.length == 2) {
                     userId = parts[1];
                 }
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
+                Position position = positionApi.get(tenantId, userId).getData();
                 AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                     .action(ItemAdminAuditLogEnum.DOCUMENT_SEND.getAction())
                     .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SEND.getDescription(), title,
-                        orgUnit.getName()))
+                        position.getName()))
                     .objectId(userId)
-                    .oldObject(orgUnit)
+                    .oldObject(position)
                     .currentObject(null)
                     .build();
                 Y9Context.publishEvent(auditLogEvent);
@@ -469,13 +471,13 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     public void sendAuditLog(String tenantId, String title, List<String> userIdList) {
         try {
             for (String userId : userIdList) {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
+                Position position = positionApi.get(tenantId, userId).getData();
                 AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                     .action(ItemAdminAuditLogEnum.DOCUMENT_SEND.getAction())
                     .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SEND.getDescription(), title,
-                        orgUnit.getName()))
+                        position.getName()))
                     .objectId(userId)
-                    .oldObject(orgUnit)
+                    .oldObject(position)
                     .currentObject(null)
                     .build();
                 Y9Context.publishEvent(auditLogEvent);
@@ -491,13 +493,13 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     public void submitSendAuditLog(String tenantId, String title, List<String> userIdList) {
         try {
             for (String userId : userIdList) {
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
+                Position position = positionApi.get(tenantId, userId).getData();
                 AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                     .action(ItemAdminAuditLogEnum.DOCUMENT_SUBMIT_SEND.getAction())
                     .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SUBMIT_SEND.getDescription(), title,
-                        orgUnit.getName()))
+                        position.getName()))
                     .objectId(userId)
-                    .oldObject(orgUnit)
+                    .oldObject(position)
                     .currentObject(null)
                     .build();
                 Y9Context.publishEvent(auditLogEvent);

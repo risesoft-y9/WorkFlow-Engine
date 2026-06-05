@@ -45,7 +45,7 @@ public class QuickSendApiImpl implements QuickSendApi {
         @RequestParam @NotBlank String orgUnitId, @RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String taskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         return Y9Result.success(quickSendService.getAssignee(itemId, taskKey));
     }
 
@@ -65,7 +65,7 @@ public class QuickSendApiImpl implements QuickSendApi {
         @RequestParam @NotBlank String orgUnitId, @RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String taskKey, @RequestParam String assignee) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         quickSendService.saveOrUpdate(itemId, taskKey, assignee);
         return Y9Result.success();
     }

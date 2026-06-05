@@ -18,6 +18,7 @@ import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CustomViewModel;
 import net.risesoft.pojo.Y9Result;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -44,7 +45,7 @@ public class CustomViewController {
     @FlowableLog(operationName = "删除自定义视图", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/delCustomView")
     public Y9Result<Object> delCustomView(@RequestParam String viewType) {
-        return customViewApi.delCustomView(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), viewType);
+        return customViewApi.delCustomView(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), viewType);
     }
 
     /**
@@ -55,7 +56,8 @@ public class CustomViewController {
      */
     @GetMapping(value = "/listCustomView")
     public Y9Result<List<CustomViewModel>> listCustomView(@RequestParam String viewType) {
-        return customViewApi.listCustomView(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(), viewType);
+        return customViewApi.listCustomView(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(),
+            viewType);
     }
 
     /**

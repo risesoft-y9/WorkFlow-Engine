@@ -28,7 +28,7 @@ public class QuickSendServiceImpl implements QuickSendService {
     @Override
     public String getAssignee(String itemId, String taskKey) {
         QuickSend quickSend =
-            quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9FlowableHolder.getOrgUnitId(), taskKey);
+            quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9FlowableHolder.getPositionId(), taskKey);
         return quickSend != null ? quickSend.getAssignee() : "";
     }
 
@@ -36,11 +36,11 @@ public class QuickSendServiceImpl implements QuickSendService {
     public void saveOrUpdate(String itemId, String taskKey, String assignee) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         QuickSend quickSend =
-            quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9FlowableHolder.getOrgUnitId(), taskKey);
+            quickSendRepository.findByItemIdAndPositionIdAndTaskKey(itemId, Y9FlowableHolder.getPositionId(), taskKey);
         if (quickSend != null) {
             quickSend.setAssignee(assignee);
             quickSendRepository.save(quickSend);
-            asyncUtilService.quickSendAuditLog(tenantId, Y9FlowableHolder.getOrgUnitId(), itemId, taskKey, assignee,
+            asyncUtilService.quickSendAuditLog(tenantId, Y9FlowableHolder.getPositionId(), itemId, taskKey, assignee,
                 "update");
             return;
         }
@@ -49,9 +49,10 @@ public class QuickSendServiceImpl implements QuickSendService {
         quickSend.setItemId(itemId);
         quickSend.setAssignee(assignee);
         quickSend.setTaskKey(taskKey);
-        quickSend.setPositionId(Y9FlowableHolder.getOrgUnitId());
+        quickSend.setPositionId(Y9FlowableHolder.getPositionId());
         quickSendRepository.save(quickSend);
-        asyncUtilService.quickSendAuditLog(tenantId, Y9FlowableHolder.getOrgUnitId(), itemId, taskKey, assignee, "add");
+        asyncUtilService.quickSendAuditLog(tenantId, Y9FlowableHolder.getPositionId(), itemId, taskKey, assignee,
+            "add");
     }
 
 }

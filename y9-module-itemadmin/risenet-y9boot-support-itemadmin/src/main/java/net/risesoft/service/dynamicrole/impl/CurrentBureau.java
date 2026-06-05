@@ -35,7 +35,7 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
     @Override
     public List<OrgUnit> getOrgUnitList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, user.getParentId()).getData();
@@ -46,7 +46,7 @@ public class CurrentBureau extends AbstractDynamicRoleMember {
     @Override
     public List<OrgUnit> getOrgUnitList(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         List<OrgUnit> orgUnitList = new ArrayList<>();
         OrgUnit user = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         OrgUnit orgUnit = orgUnitApi.getOrgUnitBureau(tenantId, user.getParentId()).getData();

@@ -32,7 +32,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         final Integer loopCounter) {
         Y9LoginUserHolder.setTenantId(tenantId);
         FlowableTenantInfoHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         try {
             if (info.getRequestType().equals(ItemInterfaceTypeEnum.METHOD_GET)) {
                 interfaceMethodService.getMethod(processSerialNumber, itemId, info, processInstanceId,

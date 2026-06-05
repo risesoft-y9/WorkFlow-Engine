@@ -14,11 +14,11 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ReminderApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.entity.Reminder;
 import net.risesoft.model.itemadmin.ReminderModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -44,7 +44,7 @@ public class ReminderApiImpl implements ReminderApi {
 
     private final ReminderService reminderService;
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     private final TaskApi taskApi;
 
@@ -156,8 +156,8 @@ public class ReminderApiImpl implements ReminderApi {
     public Y9Result<String> saveReminder(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processInstanceId, @RequestBody String[] taskIds, @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, userId).getData();
+        Y9FlowableHolder.setPosition(position);
         try {
             Reminder reminder;
             for (String taskId : taskIds) {
@@ -198,8 +198,8 @@ public class ReminderApiImpl implements ReminderApi {
         @RequestParam String remType, @RequestParam String procInstId, @RequestParam String processInstanceId,
         @RequestParam String documentTitle, @RequestParam String taskId, @RequestParam String msgContent) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, userId).getData();
+        Y9FlowableHolder.setPosition(position);
         try {
             // 催办信息处理
             String err = reminderService.handleReminder(URLDecoder.decode(msgContent, StandardCharsets.UTF_8),

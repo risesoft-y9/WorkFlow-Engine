@@ -33,7 +33,7 @@ public class CurrentDeptLeadersExtend extends AbstractDynamicRoleMember {
     @Override
     public List<OrgUnit> getOrgUnitList() {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
         List<OrgUnit> leaders =
             departmentApi

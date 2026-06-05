@@ -542,7 +542,7 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private void handleMultiInstanceStatus(TaskContext context, String tenantId) {
         String multiInstance = context.multiInstance;
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
 
         if (SysVariables.SEQUENTIAL.equals(multiInstance)) {
             handleSequentialStatus(context, tenantId, orgUnitId);
@@ -1467,7 +1467,7 @@ public class ButtonServiceImpl implements ButtonService {
     @Override
     public Map<String, Object> showButton(String itemId, String taskId, String itemBox) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         Map<String, Object> result = initializeResultMap();
         // 获取任务和相关变量信息
         TaskContext taskContext = buildTaskContext(tenantId, itemId, taskId, itemBox);
@@ -1509,7 +1509,7 @@ public class ButtonServiceImpl implements ButtonService {
     @Override
     public List<ItemButtonModel> showButton4Doing(DocumentDetailModel model) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         String taskId = model.getTaskId();
 
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
@@ -1587,7 +1587,7 @@ public class ButtonServiceImpl implements ButtonService {
                         .getData();
                 HistoricTaskInstanceModel hisTaskModelTemp = list != null && !list.isEmpty() ? list.get(0) : null;
                 if (hisTaskModelTemp != null
-                    && hisTaskModelTemp.getAssignee().equals(Y9FlowableHolder.getOrgUnit().getId())) {
+                    && hisTaskModelTemp.getAssignee().equals(Y9FlowableHolder.getPosition().getId())) {
                     buttonModelList.add(ItemButton.huiFuDaiBan);
                 }
                 break;
@@ -1637,7 +1637,7 @@ public class ButtonServiceImpl implements ButtonService {
         String itemId = model.getItemId();
         String taskId = model.getTaskId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
 
         List<ItemButtonModel> buttonList = new ArrayList<>();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();

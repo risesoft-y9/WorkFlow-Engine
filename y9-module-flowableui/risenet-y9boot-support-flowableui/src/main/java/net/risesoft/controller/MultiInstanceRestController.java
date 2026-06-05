@@ -188,7 +188,7 @@ public class MultiInstanceRestController {
     @FlowableLog(operationName = "设置主办人", operationType = FlowableOperationTypeEnum.ADD)
     @PostMapping(value = "/setSponsor")
     public Y9Result<String> setSponsor(@RequestParam @NotBlank String taskId) {
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
         List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();

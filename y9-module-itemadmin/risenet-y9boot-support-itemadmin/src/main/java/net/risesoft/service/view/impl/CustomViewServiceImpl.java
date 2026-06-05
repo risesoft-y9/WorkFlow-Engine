@@ -40,13 +40,13 @@ public class CustomViewServiceImpl implements CustomViewService {
     @Override
     @Transactional
     public void delCustomView(String viewType) {
-        customViewRepository.deleteByUserIdAndViewType(Y9FlowableHolder.getOrgUnitId(), viewType);
+        customViewRepository.deleteByUserIdAndViewType(Y9FlowableHolder.getPositionId(), viewType);
     }
 
     @Override
     public Y9Result<List<CustomViewModel>> listCustomView(String viewType) {
         List<CustomView> list =
-            customViewRepository.findByUserIdAndViewTypeOrderByTabIndex(Y9FlowableHolder.getOrgUnitId(), viewType);
+            customViewRepository.findByUserIdAndViewTypeOrderByTabIndex(Y9FlowableHolder.getPositionId(), viewType);
         List<CustomViewModel> listCustomViewModel = new ArrayList<>();
         for (CustomView customView : list) {
             CustomViewModel customViewModelTemp = new CustomViewModel();
@@ -78,8 +78,8 @@ public class CustomViewServiceImpl implements CustomViewService {
                 info.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             }
             info.setTabIndex(maxTabIndex);
-            info.setUserId(Y9FlowableHolder.getOrgUnitId());
-            info.setUserName(Y9FlowableHolder.getOrgUnit().getName());
+            info.setUserId(Y9FlowableHolder.getPositionId());
+            info.setUserName(Y9FlowableHolder.getPosition().getName());
             Y9FormField y9FormField = y9FormFieldRepository.findById(info.getFieldId()).orElse(null);
             if (y9FormField != null) {
                 info.setFormId(y9FormField.getFormId());
@@ -89,6 +89,6 @@ public class CustomViewServiceImpl implements CustomViewService {
                 maxTabIndex++;
             }
         }
-        customViewRepository.deleteByUserIdAndViewTypeAndIdNotIn(Y9FlowableHolder.getOrgUnitId(), viewType, ids);
+        customViewRepository.deleteByUserIdAndViewTypeAndIdNotIn(Y9FlowableHolder.getPositionId(), viewType, ids);
     }
 }

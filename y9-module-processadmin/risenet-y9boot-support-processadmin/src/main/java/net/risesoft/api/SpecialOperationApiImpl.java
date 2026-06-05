@@ -9,9 +9,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.SpecialOperationApi;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OperationService;
 import net.risesoft.y9.FlowableTenantInfoHolder;
@@ -32,7 +32,7 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
 
     private final OperationService operationService;
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     /**
      * 重定向
@@ -53,8 +53,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         operationService.reposition(taskId, repositionToTaskId, userChoice, reason, sponsorGuid);
         return Y9Result.success();
     }
@@ -78,8 +78,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         operationService.rollBack2History(taskId, routeToTaskId, userChoice, reason, sponsorGuid);
         return Y9Result.success();
     }
@@ -99,8 +99,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         @RequestParam String taskId, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         operationService.rollBack(taskId, reason);
         return Y9Result.success();
     }
@@ -119,8 +119,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         @RequestParam String taskId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         operationService.rollbackToSender(taskId);
         return Y9Result.success();
     }
@@ -140,8 +140,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         @RequestParam String taskId, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         operationService.rollbackToStartor(taskId, reason);
         return Y9Result.success();
     }
@@ -161,8 +161,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         @RequestParam String taskId, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         operationService.specialComplete(taskId, reason);
         return Y9Result.success();
     }
@@ -182,8 +182,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         @RequestParam String taskId, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         operationService.takeBack(taskId, reason);
         return Y9Result.success();
     }
@@ -203,8 +203,8 @@ public class SpecialOperationApiImpl implements SpecialOperationApi {
         @RequestParam String taskId, @RequestParam String taskDefKey, String reason) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         operationService.takeBack2TaskDefKey(taskId, taskDefKey, reason);
         return Y9Result.success();
     }

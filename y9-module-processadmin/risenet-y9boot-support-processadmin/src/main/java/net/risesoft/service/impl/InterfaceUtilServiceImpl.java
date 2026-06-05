@@ -51,7 +51,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
         String processSerialNumber = "";
         String processInstanceId = executionEntity.getProcessInstanceId();
         String itemId = "";
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         Y9Result<List<InterfaceModel>> y9Result = null;
         Boolean interfaceSwitch = y9ProcessAdminProperties.getInterfaceSwitch();
         if (!interfaceSwitch) {
@@ -98,7 +98,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
         String processSerialNumber = "";
         String itemId = "";
         Y9Result<List<InterfaceModel>> y9Result = null;
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         Boolean interfaceSwitch = y9ProcessAdminProperties.getInterfaceSwitch();
         if (!interfaceSwitch) {
             return;

@@ -184,7 +184,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
                 variables.put(SysVariables.USER, userList.stream().findFirst().get());
             }
             variables.put(SysVariables.USERS, userList);
-            variables.put(SysVariables.ACTION_NAME + ":" + Y9FlowableHolder.getOrgUnitId(), "结束会签");
+            variables.put(SysVariables.ACTION_NAME + ":" + Y9FlowableHolder.getPositionId(), "结束会签");
             taskService.complete(taskId, variables, false);
         } catch (Exception e) {
             final Writer result = new StringWriter();

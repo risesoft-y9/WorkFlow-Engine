@@ -126,7 +126,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     public Y9Result<List<HistoryProcessModel>> processTrackList(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         try {
             List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId(processInstanceId);
             return Y9Result.success(items);
@@ -149,7 +149,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     public Y9Result<List<HistoryProcessModel>> processTrackListWithActionName(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         try {
             List<HistoryProcessModel> items =
                 processTrackService.listByProcessInstanceIdWithActionName(processInstanceId);
@@ -173,7 +173,7 @@ public class ProcessTrackApiImpl implements ProcessTrackApi {
     public Y9Result<List<HistoryProcessModel>> processTrackList4Simple(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         try {
             List<HistoryProcessModel> items = processTrackService.listByProcessInstanceId4Simple(processInstanceId);
             return Y9Result.success(items);

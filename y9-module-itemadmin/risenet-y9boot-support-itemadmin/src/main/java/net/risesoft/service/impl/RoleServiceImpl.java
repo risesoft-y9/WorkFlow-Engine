@@ -734,7 +734,7 @@ public class RoleServiceImpl implements RoleService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             if (StringUtils.isBlank(id) || UtilConsts.NULL.equals(id)) {
-                id = orgUnitApi.getOrgUnitBureau(tenantId, Y9FlowableHolder.getOrgUnit().getId()).getData().getId();
+                id = orgUnitApi.getOrgUnitBureau(tenantId, Y9FlowableHolder.getPosition().getId()).getData().getId();
             }
             List<OrgUnit> orgUnitList =
                 orgUnitApi.getSubTree(tenantId, id, OrgTreeTypeEnum.TREE_TYPE_POSITION).getData();

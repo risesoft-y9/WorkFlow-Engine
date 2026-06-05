@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.OrganWordApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.model.itemadmin.OrganWordModel;
 import net.risesoft.model.itemadmin.OrganWordPropertyModel;
@@ -34,8 +33,6 @@ import net.risesoft.y9.Y9LoginUserHolder;
 public class OrganWordApiImpl implements OrganWordApi {
 
     private final OrganWordService organWordService;
-
-    private final PersonApi personApi;
 
     private final UserApi userApi;
 
@@ -104,7 +101,7 @@ public class OrganWordApiImpl implements OrganWordApi {
     public Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String custom, @RequestParam String itemId,
         @RequestParam String processDefinitionId, String taskDefKey) {
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.listByCustom(itemId, processDefinitionId, taskDefKey, custom));
     }
@@ -124,7 +121,7 @@ public class OrganWordApiImpl implements OrganWordApi {
     public Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam String tenantId,
         @RequestParam String orgUnitId, @RequestParam String itemId, @RequestParam String processDefinitionId,
         String taskDefKey) {
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.listByCustomNumber(itemId, processDefinitionId, taskDefKey));
     }

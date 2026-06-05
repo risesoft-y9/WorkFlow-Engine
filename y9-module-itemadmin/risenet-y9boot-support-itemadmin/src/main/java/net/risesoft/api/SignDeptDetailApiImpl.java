@@ -12,13 +12,13 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.opinion.OpinionSign;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.opinion.OpinionSignService;
@@ -39,7 +39,7 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
 
     private final SignDeptDetailService signDeptDetailService;
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     private final OpinionSignService opinionSignService;
 
@@ -175,8 +175,8 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
     public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestParam String positionId,
         @RequestBody SignDeptDetailModel signDeptDetailModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, positionId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, positionId).getData();
+        Y9FlowableHolder.setPosition(position);
         SignDeptDetail signDeptDetail = new SignDeptDetail();
         Y9BeanUtil.copyProperties(signDeptDetailModel, signDeptDetail);
         signDeptDetailService.saveOrUpdate(signDeptDetail);

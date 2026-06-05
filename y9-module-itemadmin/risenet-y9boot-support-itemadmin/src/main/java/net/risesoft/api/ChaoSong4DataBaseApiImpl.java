@@ -9,14 +9,13 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ChaoSong4DataBaseApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.ChaoSong;
 import net.risesoft.enums.ChaoSongStatusEnum;
 import net.risesoft.model.itemadmin.ChaoSong4DataBaseModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -38,9 +37,7 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
 
     private final ChaoSongService chaoSongService;
 
-    private final PersonApi personApi;
-
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     private final UserApi userApi;
 
@@ -173,7 +170,7 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
         @RequestParam String id, @RequestParam String processInstanceId, @RequestParam Integer status,
         Boolean openNotRead, @RequestParam boolean mobile) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         OpenDataModel model = chaoSongService.detail(processInstanceId, status, mobile);
         model.setId(id);
         model.setStatus(status);
@@ -250,7 +247,7 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
         @RequestParam String orgUnitId, @RequestParam String processInstanceId, String userName, @RequestParam int rows,
         @RequestParam int page) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         return chaoSongService.pageByProcessInstanceIdAndUserName(processInstanceId, userName, rows, page);
     }
 
@@ -345,7 +342,7 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
         String searchName, String itemId, String userName, Integer state, String year, @RequestParam int page,
         @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         return chaoSongService.pageMyChaoSongList(searchName, itemId, userName, state, year, rows, page);
     }
 
@@ -369,8 +366,8 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
         @RequestParam String orgUnitId, @RequestParam String processInstanceId, @RequestParam String users,
         String isSendSms, String isShuMing, String smsContent, String smsPersonId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
         return chaoSongService.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
@@ -396,7 +393,7 @@ public class ChaoSong4DataBaseApiImpl implements ChaoSong4DataBaseApi {
         @RequestParam String orgUnitId, String searchName, String itemId, String userName, Integer state, String year,
         @RequestParam Integer page, @RequestParam Integer rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         return chaoSongService.searchAllByUserId(searchName, itemId, userName, state, year, page, rows);
     }
 

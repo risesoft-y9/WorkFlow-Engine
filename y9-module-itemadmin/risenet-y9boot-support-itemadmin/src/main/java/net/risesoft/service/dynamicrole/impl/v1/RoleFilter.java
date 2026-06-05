@@ -41,7 +41,7 @@ public class RoleFilter extends AbstractDynamicRoleMember {
     @Override
     public List<Position> getPositionList(String processInstanceId, DynamicRole dynamicRole) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9FlowableHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getPositionId();
         OrgUnit currentOrgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
         if (dynamicRole.isUseProcessInstanceId()) {
             ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
