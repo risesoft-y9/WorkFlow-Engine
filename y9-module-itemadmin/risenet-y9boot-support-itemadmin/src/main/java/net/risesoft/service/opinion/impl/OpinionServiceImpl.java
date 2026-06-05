@@ -847,7 +847,7 @@ public class OpinionServiceImpl implements OpinionService {
         AuditLogEvent auditLogEvent = AuditLogEvent.builder()
             .action(ItemAdminAuditLogEnum.OPINION_ADD.getAction())
             .description(Y9StringUtil.format(ItemAdminAuditLogEnum.OPINION_ADD.getDescription(),
-                processParam.getTitle(), opinion.getContent()))
+                null == processParam ? "暂无标题" : processParam.getTitle(), opinion.getContent()))
             .objectId(opinion.getId())
             .oldObject(opinion)
             .currentObject(null)
