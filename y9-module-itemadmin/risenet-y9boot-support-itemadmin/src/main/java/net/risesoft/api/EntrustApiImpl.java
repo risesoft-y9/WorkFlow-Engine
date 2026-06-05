@@ -11,10 +11,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.entrust.EntrustApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.model.itemadmin.EntrustModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.entrust.EntrustService;
 import net.risesoft.y9.Y9FlowableHolder;
@@ -35,7 +35,7 @@ public class EntrustApiImpl implements EntrustApi {
 
     private final EntrustService entrustService;
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     /**
      * 删除委托
@@ -96,8 +96,8 @@ public class EntrustApiImpl implements EntrustApi {
     public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestBody EntrustModel entrustModel) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         Entrust entrust = new Entrust();
         Y9BeanUtil.copyProperties(entrustModel, entrust);
         entrustService.saveOrUpdate(entrust);

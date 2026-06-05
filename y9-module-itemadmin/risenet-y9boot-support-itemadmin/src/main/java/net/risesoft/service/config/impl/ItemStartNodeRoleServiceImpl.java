@@ -213,7 +213,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     @Override
     public String getStartTaskDefKey(String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9FlowableHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getPositionId();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId：" + itemId + "事项";
         // 获取最新流程定义
@@ -295,7 +295,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
 
     @Override
     public List<ItemStartNodeRoleModel> getAllStartTaskDefKey(String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9FlowableHolder.getOrgUnitId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9FlowableHolder.getPositionId();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId=" + itemId + "事项";
         String processDefinitionKey = item.getWorkflowGuid();

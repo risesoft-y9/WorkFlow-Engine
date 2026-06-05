@@ -258,9 +258,9 @@ public class JumpCommand implements Command<Void> {
      */
     private Map<String, Object> createTaskVariables() {
         Map<String, Object> vars = new HashMap<>(16);
-        vars.put(SysVariables.TASK_SENDER, Y9FlowableHolder.getOrgUnit().getName());
-        vars.put(SysVariables.TASK_SENDER_ID, Y9FlowableHolder.getOrgUnitId());
-        vars.put(SysVariables.TASK_SENDER_POSITION_ID, Y9FlowableHolder.getOrgUnitId());
+        vars.put(SysVariables.TASK_SENDER, Y9FlowableHolder.getPosition().getName());
+        vars.put(SysVariables.TASK_SENDER_ID, Y9FlowableHolder.getPositionId());
+        vars.put(SysVariables.TASK_SENDER_POSITION_ID, Y9FlowableHolder.getPositionId());
 
         String user = null;
         if (users.size() == 1) {

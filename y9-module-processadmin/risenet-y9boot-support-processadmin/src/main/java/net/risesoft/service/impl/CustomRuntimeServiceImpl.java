@@ -338,7 +338,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
         Map<String, Object> pVarMap = new HashMap<>(Math.max(16, pVarList.size() + 8));
         Map<String, Object> tVarMap = new HashMap<>(Math.max(16, tVarList.size() + 8));
-        OrgUnit orgUnit = Y9FlowableHolder.getOrgUnit();
+        OrgUnit orgUnit = Y9FlowableHolder.getPosition();
         String orgUnitId = orgUnit.getId();
         // 处理流程变量
         processProcessVariables(pVarList, pVarMap, nodeType, orgUnitId);
@@ -653,7 +653,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     public ProcessInstance startProcessInstanceByKey(String processDefinitionKey, String systemName,
         Map<String, Object> map) {
         try {
-            identityService.setAuthenticatedUserId(Y9FlowableHolder.getOrgUnitId());
+            identityService.setAuthenticatedUserId(Y9FlowableHolder.getPositionId());
             return runtimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
         } finally {
             identityService.setAuthenticatedUserId(null);

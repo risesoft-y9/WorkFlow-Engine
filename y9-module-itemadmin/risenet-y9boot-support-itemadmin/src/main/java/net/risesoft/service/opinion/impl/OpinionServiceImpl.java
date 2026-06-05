@@ -819,8 +819,8 @@ public class OpinionServiceImpl implements OpinionService {
     private Opinion createOpinion(OpinionDTO opinionDTO) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        OrgUnit orgUnit = Y9FlowableHolder.getOrgUnit();
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        OrgUnit orgUnit = Y9FlowableHolder.getPosition();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
 
         Opinion opinion = new Opinion();
         opinion.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
@@ -868,7 +868,7 @@ public class OpinionServiceImpl implements OpinionService {
         opinionRepository.save(exsitOpinion);
         // 发送消息以事件
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         asyncHandleService.sendMsgRemind(tenantId, orgUnitId, exsitOpinion.getProcessSerialNumber(),
             exsitOpinion.getContent());
         ProcessParam processParam =

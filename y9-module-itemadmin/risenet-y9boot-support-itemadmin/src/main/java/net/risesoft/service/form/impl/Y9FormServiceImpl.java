@@ -347,7 +347,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             if (y9Table.getTableType() == ItemTableTypeEnum.SUB) {
                 String sqlStr = buildSelectSql(dialect, tableName) + " where parentProcessSerialNumber =?" + userIdSql;
                 dataMap = jdbcTemplate4Tenant.queryForList(sqlStr, parentProcessSerialNumber,
-                    Y9FlowableHolder.getOrgUnitId());
+                    Y9FlowableHolder.getPositionId());
                 return dataMap;
             }
         }

@@ -13,9 +13,9 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.AssociatedFileApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.AssociatedFileModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AssociatedFileService;
 import net.risesoft.y9.Y9FlowableHolder;
@@ -36,7 +36,7 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
 
     private final AssociatedFileService associatedFileService;
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     /**
      * 关联流程数量
@@ -101,8 +101,8 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
     public Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam @NotBlank String tenantId,
         @RequestParam @NotBlank String orgUnitId, @RequestParam String processSerialNumber) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         List<AssociatedFileModel> list = associatedFileService.listAssociatedFileAll(processSerialNumber);
         return Y9Result.success(list, "获取成功");
     }
@@ -122,8 +122,8 @@ public class AssociatedFileApiImpl implements AssociatedFileApi {
         @RequestParam @NotBlank String orgUnitId, @RequestParam String processSerialNumber,
         @RequestParam String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         associatedFileService.saveAssociatedFile(processSerialNumber, processInstanceIds);
         return Y9Result.success();
     }

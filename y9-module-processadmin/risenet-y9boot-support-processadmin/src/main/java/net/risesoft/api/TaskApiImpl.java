@@ -17,9 +17,9 @@ import org.springframework.web.bind.annotation.RestController;
 
 import lombok.RequiredArgsConstructor;
 
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.TaskApi;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -43,7 +43,7 @@ public class TaskApiImpl implements TaskApi {
 
     private final CustomTaskService customTaskService;
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     /**
      * 签收任务
@@ -112,8 +112,8 @@ public class TaskApiImpl implements TaskApi {
         @RequestParam String processInstanceId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         customTaskService.completeTaskWithoutAssignee(processInstanceId);
         return Y9Result.success();
     }
@@ -133,8 +133,8 @@ public class TaskApiImpl implements TaskApi {
         @RequestParam String orgUnitId, @RequestBody Map<String, Object> vars) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         customTaskService.completeWithVariables(taskId, vars);
         return Y9Result.success();
     }
@@ -156,8 +156,8 @@ public class TaskApiImpl implements TaskApi {
         @RequestBody List<String> orgUnitIdList) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         customTaskService.createWithVariables(orgUnitId, vars, routeToTaskId, orgUnitIdList);
         return Y9Result.success();
     }

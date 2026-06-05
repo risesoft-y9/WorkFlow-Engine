@@ -255,7 +255,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         ProcessDefinitionInfo processDefInfo, String taskDefinitionKey) {
         OpenDataModel model = new OpenDataModel();
         ProcessParam processParam = processParamService.findByProcessInstanceId(taskInfo.getProcessInstanceId());
-        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, Y9FlowableHolder.getOrgUnitId()).getData();
+        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, Y9FlowableHolder.getPositionId()).getData();
         model.setTitle(processParam.getTitle());
         model.setStartor(processDefInfo.getStartor());
         model.setItembox(taskInfo.getItembox());
@@ -306,7 +306,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         }
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         PageRequest pageable = PageRequest.of(page - 1, rows, sort);
-        String senderId = Y9FlowableHolder.getOrgUnitId();
+        String senderId = Y9FlowableHolder.getPositionId();
         ChaoSongSpecification<ChaoSong> specification =
             new ChaoSongSpecification<>(processInstanceId, null, null, userName, null, null, null, null, null, null);
         // 手动添加 senderId 不等于当前用户的条件
@@ -426,7 +426,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Y9Page<ChaoSong4DataBaseModel> pageMyChaoSongList(String searchName, String itemId, String userName,
         Integer state, String year, int rows, int page) {
-        String userId = Y9FlowableHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getPositionId();
         if (page < 1) {
             page = 1;
         }
@@ -604,8 +604,8 @@ public class ChaoSongServiceImpl implements ChaoSongService {
         String smsContent, String smsPersonId) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String currentUserId = Y9FlowableHolder.getOrgUnitId();
-            OrgUnit currentOrgUnit = Y9FlowableHolder.getOrgUnit();
+            String currentUserId = Y9FlowableHolder.getPositionId();
+            OrgUnit currentOrgUnit = Y9FlowableHolder.getPosition();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             String title = processParam.getTitle();
             String itemId = processParam.getItemId();
@@ -743,7 +743,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     public Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(String searchName, String itemId, String userName,
         Integer state, String year, Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9FlowableHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getPositionId();
         if (page == null || page < 1) {
             page = 1;
         }

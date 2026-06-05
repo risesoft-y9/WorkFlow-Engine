@@ -12,14 +12,14 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.core.ItemApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
 import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.service.core.DocumentService;
@@ -45,7 +45,7 @@ public class ItemApiImpl implements ItemApi {
 
     private final ItemService itemService;
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     private final ItemMappingConfRepository itemMappingConfRepository;
 
@@ -164,7 +164,7 @@ public class ItemApiImpl implements ItemApi {
         if (item != null) {
             Y9BeanUtil.copyProperties(item, itemModel);
         } else {
-            LOGGER.info("根据事项id未找到该事项:" + itemId);
+            LOGGER.info("根据事项id未找到该事项:{}", itemId);
         }
         return Y9Result.success(itemModel);
     }
@@ -180,8 +180,8 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<String> getFirstItem(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         String itemId = documentService.getFirstItem();
         return Y9Result.success(itemId);
     }
@@ -214,8 +214,8 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemListModel>> getItemList(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         List<ItemListModel> list = documentService.listItems();
         return Y9Result.success(list);
     }
@@ -268,8 +268,8 @@ public class ItemApiImpl implements ItemApi {
     @Override
     public Y9Result<List<ItemListModel>> getMyItemList(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         List<ItemListModel> list = documentService.listMyItems();
         return Y9Result.success(list);
     }

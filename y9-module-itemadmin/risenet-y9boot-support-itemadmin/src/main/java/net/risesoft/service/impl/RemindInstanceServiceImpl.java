@@ -38,7 +38,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
     @Override
     public RemindInstance getRemindInstance(String processInstanceId) {
         return remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId,
-            Y9FlowableHolder.getOrgUnitId());
+            Y9FlowableHolder.getPositionId());
     }
 
     @Override
@@ -74,7 +74,7 @@ public class RemindInstanceServiceImpl implements RemindInstanceService {
     public Y9Result<String> saveRemindInstance(String processInstanceId, String taskIds, Boolean process,
         String arriveTaskKey, String completeTaskKey) {
         try {
-            String userId = Y9FlowableHolder.getOrgUnitId();
+            String userId = Y9FlowableHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
             RemindInstance remindInstance =
                 remindInstanceRepository.findByProcessInstanceIdAndUserId(processInstanceId, userId);

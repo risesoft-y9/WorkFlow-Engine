@@ -4,7 +4,6 @@ import java.util.Map;
 
 import com.alibaba.ttl.TransmittableThreadLocal;
 
-import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Position;
 
 /**
@@ -17,17 +16,11 @@ public class Y9FlowableHolder {
     private static final TransmittableThreadLocal<Position> POSITION_HOLDER = new TransmittableThreadLocal<>();
     private static final TransmittableThreadLocal<String> POSITION_ID_HOLDER = new TransmittableThreadLocal<>();
 
-    private static final TransmittableThreadLocal<OrgUnit> ORGUNIT_HOLDER = new TransmittableThreadLocal<>();
-    private static final TransmittableThreadLocal<String> ORGUNIT_ID_HOLDER = new TransmittableThreadLocal<>();
-
     private static final TransmittableThreadLocal<Map<String, Object>> MAP_HOLDER = new TransmittableThreadLocal<>();
 
     public static void clear() {
         POSITION_HOLDER.remove();
         POSITION_ID_HOLDER.remove();
-
-        ORGUNIT_HOLDER.remove();
-        ORGUNIT_ID_HOLDER.remove();
 
         MAP_HOLDER.remove();
     }
@@ -38,23 +31,6 @@ public class Y9FlowableHolder {
 
     public static void setMap(final Map<String, Object> map) {
         MAP_HOLDER.set(map);
-    }
-
-    public static OrgUnit getOrgUnit() {
-        return ORGUNIT_HOLDER.get();
-    }
-
-    public static void setOrgUnit(final OrgUnit orgUnit) {
-        ORGUNIT_HOLDER.set(orgUnit);
-        ORGUNIT_ID_HOLDER.set(orgUnit.getId());
-    }
-
-    public static String getOrgUnitId() {
-        return ORGUNIT_ID_HOLDER.get();
-    }
-
-    public static void setOrgUnitId(final String orgUnitId) {
-        ORGUNIT_ID_HOLDER.set(orgUnitId);
     }
 
     public static Position getPosition() {

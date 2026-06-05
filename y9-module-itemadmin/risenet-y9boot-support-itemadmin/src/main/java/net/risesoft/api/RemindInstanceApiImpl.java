@@ -163,7 +163,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
     public Y9Result<RemindInstanceModel> getRemindInstance(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(userId);
+        Y9FlowableHolder.setPositionId(userId);
         RemindInstance remindInstance = remindInstanceService.getRemindInstance(processInstanceId);
         RemindInstanceModel remindInstanceModel = null;
         if (remindInstance != null) {
@@ -191,7 +191,7 @@ public class RemindInstanceApiImpl implements RemindInstanceApi {
         @RequestParam String processInstanceId, @RequestParam String taskIds, @RequestParam Boolean process,
         @RequestParam String arriveTaskKey, @RequestParam String completeTaskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(userId);
+        Y9FlowableHolder.setPositionId(userId);
         return remindInstanceService.saveRemindInstance(processInstanceId, taskIds, process, arriveTaskKey,
             completeTaskKey);
     }

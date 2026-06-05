@@ -363,7 +363,7 @@ public class FormDataServiceImpl implements FormDataService {
      */
     public FieldPermModel getFieldPerm(Y9FieldPerm y9FieldPerm) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9FlowableHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getPositionId();
         // 绑定了角色
         FieldPermModel model = new FieldPermModel();
         model.setFieldName(y9FieldPerm.getFieldName());

@@ -132,7 +132,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public void addExecutionId4Sequential(String executionId, String taskId, String userChoice, String selectUserId,
         int num) throws Exception {
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String[] userChoiceArr = userChoice.split(";");
         String usersObj =
@@ -255,7 +255,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public void removeExecution(String executionId, String taskId, String elementUser) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         buttonOperationApi.deleteMultiInstanceExecution(tenantId, executionId, taskId, elementUser);
         asyncUtilService.deleteMultiInstanceParallelAuditLog(tenantId, positionId, executionId, taskId, elementUser);
     }
@@ -265,7 +265,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     public void removeExecution4Sequential(String executionId, String taskId, String elementUser, int num)
         throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9LoginUserHolder.getPositionId();
+        String positionId = Y9FlowableHolder.getPositionId();
         String usersObj =
             variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.USERS).getData();
         // 计算删除后的users

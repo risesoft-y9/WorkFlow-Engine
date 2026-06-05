@@ -57,8 +57,8 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 // 3、保存流程数据到ES，截转年度数据
                 Process4CompleteUtilService process4CompleteUtilService =
                     Y9Context.getBean(Process4CompleteUtilService.class);
-                process4CompleteUtilService.saveToEs(tenantId, "", Y9FlowableHolder.getOrgUnitId(),
-                    executionEntity.getProcessInstanceId(), Y9FlowableHolder.getOrgUnit().getName());
+                process4CompleteUtilService.saveToEs(tenantId, "", Y9FlowableHolder.getPositionId(),
+                    executionEntity.getProcessInstanceId(), Y9FlowableHolder.getPosition().getName());
                 break;
             case PROCESS_STARTED:
                 FlowableEntityEventImpl entityEventStart = (FlowableEntityEventImpl)event;

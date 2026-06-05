@@ -11,13 +11,12 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.opinion.OpinionSignApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PersonApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.opinion.OpinionSign;
 import net.risesoft.model.itemadmin.OpinionSignListModel;
 import net.risesoft.model.itemadmin.OpinionSignModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.opinion.OpinionSignService;
@@ -38,9 +37,7 @@ public class OpinionSignApiImpl implements OpinionSignApi {
 
     private final OpinionSignService opinionSignService;
 
-    private final PersonApi personApi;
-
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     private final UserApi userApi;
 
@@ -118,7 +115,7 @@ public class OpinionSignApiImpl implements OpinionSignApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
-        Y9FlowableHolder.setOrgUnitId(positionId);
+        Y9FlowableHolder.setPositionId(positionId);
         List<OpinionSignListModel> opinionList =
             opinionSignService.list(processSerialNumber, signDeptDetailId, itembox, taskId, opinionFrameMark);
         return Y9Result.success(opinionList);
@@ -141,8 +138,8 @@ public class OpinionSignApiImpl implements OpinionSignApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         OpinionSign opinionSign = new OpinionSign();
         Y9BeanUtil.copyProperties(opinionSignModel, opinionSign);
         opinionSign = opinionSignService.saveOrUpdate(opinionSign);

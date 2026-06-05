@@ -12,7 +12,7 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.opinion.OpinionApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.dto.itemadmin.OpinionDTO;
 import net.risesoft.dto.itemadmin.OpinionFrameDTO;
@@ -21,7 +21,7 @@ import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
@@ -46,7 +46,7 @@ public class OpinionApiImpl implements OpinionApi {
 
     private final ItemOpinionFrameBindService itemOpinionFrameBindService;
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     private final UserApi userApi;
 
@@ -195,8 +195,8 @@ public class OpinionApiImpl implements OpinionApi {
     @Override
     public Y9Result<OpinionModel> saveOrUpdate(@RequestParam String orgUnitId, @RequestBody OpinionDTO opinionDTO)
         throws Exception {
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(Y9LoginUserHolder.getTenantId(), orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         Opinion opinion = opinionService.saveOrUpdate(opinionDTO);
         OpinionModel opinionModel = new OpinionModel();
         Y9BeanUtil.copyProperties(opinion, opinionModel);

@@ -232,8 +232,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             associatedFile.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             associatedFile.setAssociatedId(processInstanceIds);
             associatedFile.setProcessSerialNumber(processSerialNumber);
-            associatedFile.setUserId(Y9FlowableHolder.getOrgUnitId());
-            associatedFile.setUserName(Y9FlowableHolder.getOrgUnit().getName());
+            associatedFile.setUserId(Y9FlowableHolder.getPositionId());
+            associatedFile.setUserName(Y9FlowableHolder.getPosition().getName());
             associatedFile.setTenantId(Y9LoginUserHolder.getTenantId());
         } else {
             String associatedId = associatedFile.getAssociatedId();
@@ -249,8 +249,8 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
                 newAssociatedId = processInstanceIds;
             }
             newAssociatedId = Y9Util.genCustomStr(associatedId, newAssociatedId);
-            associatedFile.setUserId(Y9FlowableHolder.getOrgUnitId());
-            associatedFile.setUserName(Y9FlowableHolder.getOrgUnit().getName());
+            associatedFile.setUserId(Y9FlowableHolder.getPositionId());
+            associatedFile.setUserName(Y9FlowableHolder.getPosition().getName());
             associatedFile.setAssociatedId(newAssociatedId);
         }
         associatedFileRepository.saveAndFlush(associatedFile);

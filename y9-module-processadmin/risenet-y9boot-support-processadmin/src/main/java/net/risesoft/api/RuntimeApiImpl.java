@@ -20,8 +20,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.ExecutionModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
@@ -53,6 +55,8 @@ public class RuntimeApiImpl implements RuntimeApi {
     private final CustomTaskService customTaskService;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final PositionApi positionApi;
 
     /**
      * 加签
@@ -87,8 +91,8 @@ public class RuntimeApiImpl implements RuntimeApi {
         @RequestParam String processInstanceId, @RequestParam String taskId) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         customTaskService.complete(processInstanceId, taskId);
         return Y9Result.success();
     }
@@ -107,8 +111,8 @@ public class RuntimeApiImpl implements RuntimeApi {
         @RequestParam String taskId, List<String> userList) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         customTaskService.completeSub(taskId, userList);
         return Y9Result.success();
     }
@@ -252,8 +256,8 @@ public class RuntimeApiImpl implements RuntimeApi {
         @RequestParam String processInstanceId, @RequestParam String year) throws Exception {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         customRuntimeService.recoveryCompleted(processInstanceId, year);
         return Y9Result.success();
     }
@@ -413,8 +417,8 @@ public class RuntimeApiImpl implements RuntimeApi {
         @RequestBody Map<String, Object> map) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         ProcessInstance pi = customRuntimeService.startProcessInstanceByKey(processDefinitionKey, systemName, map);
         return Y9Result.success(FlowableModelConvertUtil.processInstance2Model(pi));
     }

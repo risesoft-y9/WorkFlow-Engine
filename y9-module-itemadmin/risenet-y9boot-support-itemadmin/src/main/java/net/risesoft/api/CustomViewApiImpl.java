@@ -14,8 +14,9 @@ import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.view.CustomViewApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.CustomViewModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.view.CustomViewService;
 import net.risesoft.y9.Y9FlowableHolder;
@@ -38,21 +39,23 @@ public class CustomViewApiImpl implements CustomViewApi {
 
     private final OrgUnitApi orgUnitApi;
 
+    private final PositionApi positionApi;
+
     /**
      * 删除自定义视图
      * 
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param positionId 人员id
      * @param viewType 视图类型
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
     public Y9Result<Object> delCustomView(@RequestParam @NotBlank String tenantId,
-        @RequestParam @NotBlank String userId, @RequestParam String viewType) {
+        @RequestParam @NotBlank String positionId, @RequestParam String viewType) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, positionId).getData();
+        Y9FlowableHolder.setPosition(position);
         customViewService.delCustomView(viewType);
         return Y9Result.success();
     }
@@ -61,17 +64,17 @@ public class CustomViewApiImpl implements CustomViewApi {
      * 获取自定义视图
      *
      * @param tenantId 租户id
-     * @param userId 人员id
+     * @param positionId 人员id
      * @param viewType 视图类型
      * @return {@code Y9Result<List<CustomViewModel>>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
     public Y9Result<List<CustomViewModel>> listCustomView(@RequestParam @NotBlank String tenantId,
-        @RequestParam @NotBlank String userId, @RequestParam @NotBlank String viewType) {
+        @RequestParam @NotBlank String positionId, @RequestParam @NotBlank String viewType) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, positionId).getData();
+        Y9FlowableHolder.setPosition(position);
         return customViewService.listCustomView(viewType);
     }
 
@@ -88,8 +91,8 @@ public class CustomViewApiImpl implements CustomViewApi {
     public Y9Result<Object> saveCustomView(@RequestParam @NotBlank String tenantId,
         @RequestParam @NotBlank String orgUnitId, @RequestParam String jsonData) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         customViewService.saveCustomView(jsonData);
         return Y9Result.success();
     }

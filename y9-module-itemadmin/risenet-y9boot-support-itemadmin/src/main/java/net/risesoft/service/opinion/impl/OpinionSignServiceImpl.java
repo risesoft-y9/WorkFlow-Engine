@@ -259,7 +259,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                         DepartmentPropCategoryEnum.LEADER.getCategory())
                     .getData();
             boolean isLeader =
-                leaders.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9FlowableHolder.getOrgUnitId()));
+                leaders.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9FlowableHolder.getPositionId()));
             if (isLeader) {
                 model.setAddable(true);
             }
@@ -276,7 +276,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
                         DepartmentPropCategoryEnum.MANAGER.getCategory())
                     .getData();
             boolean isManager =
-                managers.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9FlowableHolder.getOrgUnitId()));
+                managers.stream().anyMatch(dp -> dp.getOrgBaseId().equals(Y9FlowableHolder.getPositionId()));
             if (isManager) {
                 model.setAddable(true);
             }

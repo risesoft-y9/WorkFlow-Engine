@@ -16,6 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
@@ -25,7 +26,7 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.dto.itemadmin.ForwardingDTO;
 import net.risesoft.entity.ActRuDetail;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
@@ -57,6 +58,8 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     private final MultiInstanceService multiInstanceService;
 
     private final OrgUnitApi orgUnitApi;
+
+    private final PositionApi positionApi;
 
     private final TaskApi taskApi;
 
@@ -143,8 +146,8 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public Y9Result<Object> directSend(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String taskId, @RequestParam String routeToTask, @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
         String startUserId = "6" + SysVariables.COLON + processInstance.getStartUserId();
         ForwardingDTO forwardingDTO = new ForwardingDTO();
@@ -182,12 +185,12 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             // 前一任务的受让人，标题
             String assignee = hti.getAssignee();
             userAndDeptIdList.add(assignee);
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-            Y9FlowableHolder.setOrgUnit(orgUnit);
+            Position position = positionApi.get(tenantId, orgUnitId).getData();
+            Y9FlowableHolder.setPosition(position);
             FlowElementModel flowElementModel =
                 processDefinitionApi.getNode(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())
                     .getData();
-            Map<String, Object> variables = CommonOpt.setVariables(orgUnitId, orgUnit.getName(),
+            Map<String, Object> variables = CommonOpt.setVariables(orgUnitId, position.getName(),
                 hti.getTaskDefinitionKey(), userAndDeptIdList, flowElementModel);
             Map<String, Object> val = new HashMap<>();
             val.put("val", SysVariables.REFUSE_CLAIM_ROLLBACK);

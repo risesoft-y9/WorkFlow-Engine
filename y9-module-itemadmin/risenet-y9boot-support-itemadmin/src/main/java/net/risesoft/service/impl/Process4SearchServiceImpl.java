@@ -27,6 +27,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
 import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.nosql.elastic.entity.OfficeDoneInfo;
 import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
@@ -56,15 +57,15 @@ public class Process4SearchServiceImpl implements Process4SearchService {
     private final JdbcTemplate jdbcTemplate;
 
     @Override
-    public void saveToDataCenter(final String tenantId, final ProcessParam processParam, final OrgUnit orgUnit) {
+    public void saveToDataCenter(final String tenantId, final ProcessParam processParam, final Position position) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setPosition(position);
         String processInstanceId = processParam.getProcessInstanceId();
         try {
             // 获取流程实例基本信息
             ProcessInstanceInfo processInfo = getProcessInstanceInfo(processInstanceId);
             // 构建办件信息
-            OfficeDoneInfo officeDoneInfo = buildOfficeDoneInfo(tenantId, processParam, orgUnit, processInfo);
+            OfficeDoneInfo officeDoneInfo = buildOfficeDoneInfo(tenantId, processParam, position, processInfo);
             // 保存到数据中心
             officeDoneInfoService.saveOfficeDone(officeDoneInfo);
         } catch (Exception e) {

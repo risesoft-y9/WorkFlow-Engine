@@ -108,7 +108,7 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     @Override
     @Transactional
     public OpenDataModel openDraft(String processSerialNumber, String itemId, boolean mobile) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getOrgUnitId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getPositionId();
         OpenDataModel model = new OpenDataModel();
         Item item = itemService.findById(itemId);
         model.setItemId(itemId);
@@ -277,10 +277,10 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         draft.setProcessSerialNumber(processSerialNumber);
         draft.setItemId(itemId);
         draft.setProcessDefinitionKey(processDefinitionKey);
-        draft.setCreaterId(Y9FlowableHolder.getOrgUnitId());
+        draft.setCreaterId(Y9FlowableHolder.getPositionId());
 
         OrgUnit orgUnit =
-            orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getOrgUnitId()).getData();
+            orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData();
         draft.setCreater(orgUnit.getName());
         draft.setDelFlag(false);
         draft.setUrgency(urgency);

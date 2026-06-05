@@ -13,6 +13,7 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.ProcessDefinitionApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
@@ -21,6 +22,7 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.ProcessTrack;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.repository.jpa.ProcessTrackRepository;
@@ -42,6 +44,8 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
 
     private final OrgUnitApi orgUnitApi;
 
+    private final PositionApi positionApi;
+
     private final TaskApi taskApi;
 
     private final ProcessDefinitionApi processDefinitionApi;
@@ -54,12 +58,14 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
 
     public AsyncForwardingHandleServiceImpl(
         OrgUnitApi orgUnitApi,
+        PositionApi positionApi,
         TaskApi taskApi,
         ProcessDefinitionApi processDefinitionApi,
         VariableApi variableApi,
         ProcessTrackRepository processTrackRepository,
         SignDeptDetailService signDeptDetailService) {
         this.orgUnitApi = orgUnitApi;
+        this.positionApi = positionApi;
         this.taskApi = taskApi;
         this.processDefinitionApi = processDefinitionApi;
         this.variableApi = variableApi;
@@ -74,12 +80,12 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
         final String sponsorGuid, final ProcessParam processParam, List<String> userList) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-            Y9FlowableHolder.setOrgUnit(orgUnit);
+            Position position = positionApi.get(tenantId, orgUnitId).getData();
+            Y9FlowableHolder.setPosition(position);
             // 更新自定义历程结束时间
             updateProcessTrackEndTime(task);
             // 处理任务变量和子流程信息
-            handleTaskAndSubProcess(tenantId, orgUnit, task, executionId, processInstanceId, flowElementModel,
+            handleTaskAndSubProcess(tenantId, position, task, executionId, processInstanceId, flowElementModel,
                 sponsorGuid, processParam);
         } catch (Exception e) {
             LOGGER.warn("*****forwardingHandle发送发生异常*****", e);

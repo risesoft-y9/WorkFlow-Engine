@@ -15,13 +15,13 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.opinion.OpinionCopyApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.DocumentCopy;
 import net.risesoft.entity.opinion.OpinionCopy;
 import net.risesoft.enums.DocumentCopyStatusEnum;
 import net.risesoft.model.itemadmin.OpinionCopyModel;
-import net.risesoft.model.platform.org.OrgUnit;
+import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentCopyService;
@@ -45,7 +45,7 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
 
     private final OpinionCopyService opinionCopyService;
 
-    private final OrgUnitApi orgUnitApi;
+    private final PositionApi positionApi;
 
     private final UserApi userApi;
 
@@ -84,8 +84,8 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
         Y9LoginUserHolder.setTenantId(tenantId);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
         OpinionCopy opinionCopy = new OpinionCopy();
         Y9BeanUtil.copyProperties(opinionCopyModel, opinionCopy);
         Optional<OpinionCopy> optional = opinionCopyService.saveOrUpdate(opinionCopy);

@@ -645,7 +645,7 @@ public class OrganWordServiceImpl implements OrganWordService {
         }
 
         // 检查用户是否拥有任意一个角色
-        String userId = Y9FlowableHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getPositionId();
         return roleIds.stream()
             .map(roleId -> checkRolePermission(tenantId, roleId, userId))
             .anyMatch(Boolean.TRUE::equals);
@@ -685,7 +685,7 @@ public class OrganWordServiceImpl implements OrganWordService {
     public List<OrganWordPropertyModel> listByCustomNumber(String itemId, String processDefinitionId,
         String taskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9FlowableHolder.getOrgUnitId();
+        String userId = Y9FlowableHolder.getPositionId();
 
         List<ItemOrganWordBind> bindList = itemOrganWordBindService
             .listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId, taskDefKey);

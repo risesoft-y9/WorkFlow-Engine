@@ -93,12 +93,12 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
 
     @Async
     @Override
-    public void forwarding(final String tenantId, final OrgUnit orgUnit, final String processInstanceId,
+    public void forwarding(final String tenantId, final Position orgUnit, final String processInstanceId,
         final ProcessParam processParam, final String sponsorHandle, final String sponsorGuid, final String taskId,
         final FlowElementModel flowElementModel, final Map<String, Object> variables,
         final List<String> userAndDeptIdList) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnit(orgUnit);
+        Y9FlowableHolder.setPosition(orgUnit);
         try {
             this.forwarding4Task(processInstanceId, processParam, sponsorHandle, sponsorGuid, taskId, flowElementModel,
                 variables, userAndDeptIdList);
@@ -136,7 +136,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
     public void forwarding4Gfg(String processInstanceId, ProcessParam processParam, String sponsorHandle,
         String sponsorGuid, String taskId, FlowElementModel flowElementModel, Map<String, Object> variables,
         List<String> userList) {
-        OrgUnit orgUnit = Y9FlowableHolder.getOrgUnit();
+        OrgUnit orgUnit = Y9FlowableHolder.getPosition();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(
@@ -184,7 +184,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
     public void forwarding4Task(String processInstanceId, ProcessParam processParam, String sponsorHandle,
         String sponsorGuid, String taskId, FlowElementModel flowElementModel, Map<String, Object> variables,
         List<String> userList) {
-        OrgUnit orgUnit = Y9FlowableHolder.getOrgUnit();
+        OrgUnit orgUnit = Y9FlowableHolder.getPosition();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(

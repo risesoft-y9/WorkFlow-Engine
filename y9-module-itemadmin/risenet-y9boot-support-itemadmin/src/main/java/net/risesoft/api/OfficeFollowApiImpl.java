@@ -45,7 +45,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     public Y9Result<Integer> countByProcessInstanceId(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         int count = officeFollowService.countByProcessInstanceId(processInstanceId);
         return Y9Result.success(count);
     }
@@ -63,7 +63,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     public Y9Result<Object> delOfficeFollow(@RequestParam String tenantId, @RequestParam String orgUnitId,
         @RequestParam String processInstanceIds) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         officeFollowService.delOfficeFollow(processInstanceIds);
         return Y9Result.successMsg("取消关注成功");
     }
@@ -95,7 +95,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     @Override
     public Y9Result<Integer> getFollowCount(@RequestParam String tenantId, @RequestParam String orgUnitId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         int count = officeFollowService.getFollowCount();
         return Y9Result.success(count);
     }
@@ -117,7 +117,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
         @RequestParam String orgUnitId, @RequestParam String systemName, String searchName, @RequestParam int page,
         @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         return officeFollowService.pageBySystemNameAndSearchName(systemName, searchName, page, rows);
     }
 
@@ -136,7 +136,7 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     public Y9Page<OfficeFollowModel> getOfficeFollowList(@RequestParam String tenantId, @RequestParam String orgUnitId,
         String searchName, @RequestParam int page, @RequestParam int rows) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setOrgUnitId(orgUnitId);
+        Y9FlowableHolder.setPositionId(orgUnitId);
         return officeFollowService.pageBySearchName(searchName, page, rows);
     }
 

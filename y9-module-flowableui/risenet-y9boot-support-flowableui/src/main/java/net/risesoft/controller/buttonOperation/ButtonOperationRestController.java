@@ -1529,7 +1529,7 @@ public class ButtonOperationRestController {
             if (!result.isSuccess()) {
                 return Y9Result.failure("保存短信详情失败！");
             }
-            Y9Result<String> y9Result = documentApi.saveAndForwarding(Y9LoginUserHolder.getPositionId(), forwardingDTO);
+            Y9Result<String> y9Result = documentApi.saveAndForwarding(Y9FlowableHolder.getPositionId(), forwardingDTO);
             if (y9Result.isSuccess()) {
                 map.put("processInstanceId", y9Result.getData());
                 return Y9Result.success(map, y9Result.getMsg());

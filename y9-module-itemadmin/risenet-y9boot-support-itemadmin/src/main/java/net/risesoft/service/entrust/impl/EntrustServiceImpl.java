@@ -554,7 +554,7 @@ public class EntrustServiceImpl implements EntrustService {
         Entrust newEntrust = new Entrust();
         newEntrust.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         newEntrust.setItemId(entrust.getItemId());
-        newEntrust.setOwnerId(Y9FlowableHolder.getOrgUnitId());
+        newEntrust.setOwnerId(Y9FlowableHolder.getPositionId());
         newEntrust.setAssigneeId(entrust.getAssigneeId());
         newEntrust.setStartTime(entrust.getStartTime());
         newEntrust.setEndTime(entrust.getEndTime());

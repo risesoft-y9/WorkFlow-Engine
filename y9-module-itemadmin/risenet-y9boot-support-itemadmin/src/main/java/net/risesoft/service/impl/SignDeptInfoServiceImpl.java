@@ -70,8 +70,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
                 deptType, dept.getId())) {
                 SignDeptInfo signDeptInfo = new SignDeptInfo();
                 signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                signDeptInfo.setInputPerson(Y9FlowableHolder.getOrgUnit().getName());
-                signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
+                signDeptInfo.setInputPerson(Y9FlowableHolder.getPosition().getName());
+                signDeptInfo.setInputPersonId(Y9FlowableHolder.getPositionId());
                 signDeptInfo.setOrderIndex(dept.getTabIndex());
                 signDeptInfo.setDeptId(dept.getId());
                 Department department = departmentApi.get(Y9LoginUserHolder.getTenantId(), dept.getId()).getData();
@@ -119,7 +119,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         Map<String, Object> map = new HashMap<>(1);
         StringBuffer deptNames = new StringBuffer();
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
-        String starter = null == processParam ? Y9FlowableHolder.getOrgUnit().getId() : processParam.getStartor();
+        String starter = null == processParam ? Y9FlowableHolder.getPosition().getId() : processParam.getStartor();
         Department bureau = (Department)orgUnitApi.getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), starter).getData();
         deptNames.append(StringUtils.isNotBlank(bureau.getAliasName()) ? bureau.getAliasName() : bureau.getName());
         List<SignDeptInfo> signDeptList = this.getSignDeptList(processSerialNumber, "0");
@@ -212,8 +212,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         String tzsDeptId) {
         SignDeptInfo signDeptInfo = new SignDeptInfo();
         signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        signDeptInfo.setInputPerson(Y9FlowableHolder.getOrgUnit().getName());
-        signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
+        signDeptInfo.setInputPerson(Y9FlowableHolder.getPosition().getName());
+        signDeptInfo.setInputPersonId(Y9FlowableHolder.getPositionId());
         signDeptInfo.setOrderIndex(dept.getTabIndex());
         signDeptInfo.setDeptId(dept.getId());
 
@@ -253,7 +253,7 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
     private void updateTzsDisplayInfo(SignDeptInfo signDeptInfo) {
         try {
             Department bureau = (Department)orgUnitApi
-                .getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getOrgUnitId())
+                .getOrgUnitBureau(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId())
                 .getData();
             if (bureau != null) {
                 signDeptInfo.setDisplayDeptId(bureau.getId());
@@ -292,8 +292,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
         Integer index) {
         SignDeptInfo signDeptInfo = new SignDeptInfo();
         signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        signDeptInfo.setInputPerson(Y9FlowableHolder.getOrgUnit().getName());
-        signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
+        signDeptInfo.setInputPerson(Y9FlowableHolder.getPosition().getName());
+        signDeptInfo.setInputPersonId(Y9FlowableHolder.getPositionId());
         signDeptInfo.setOrderIndex(index);
         signDeptInfo.setDeptId(deptId);
         // 设置部门名称
@@ -390,8 +390,8 @@ public class SignDeptInfoServiceImpl implements SignDeptInfoService {
 
             SignDeptInfo signDeptInfo = new SignDeptInfo();
             signDeptInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            signDeptInfo.setInputPerson(Y9FlowableHolder.getOrgUnit().getName());
-            signDeptInfo.setInputPersonId(Y9FlowableHolder.getOrgUnitId());
+            signDeptInfo.setInputPerson(Y9FlowableHolder.getPosition().getName());
+            signDeptInfo.setInputPersonId(Y9FlowableHolder.getPositionId());
             signDeptInfo.setOrderIndex(tzsbureau.getTabIndex());
             signDeptInfo.setDeptId(tzsbureau.getId());
             signDeptInfo.setDeptName(
