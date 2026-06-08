@@ -44,69 +44,6 @@ public class UtilServiceImpl implements UtilService {
 
     private final IdentityApi identityApi;
 
-    @Override
-    public void setPublicData(Map<String, Object> mapTemp, String processInstanceId, List<TaskModel> taskList,
-        ItemBoxTypeEnum itemBoxTypeEnum) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId(),
-            positionId = Y9FlowableHolder.getPositionId();
-        int chaosongNum = 0, speakInfoNum = 0, countFollow = 0;
-        boolean isReminder = false;
-        RemindInstanceModel remindInstanceModel = null;
-        switch (itemBoxTypeEnum) {
-            case TODO:
-            case DOING:
-                chaosongNum =
-                    chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
-                speakInfoNum = speakInfoApi.getNotReadCount(tenantId, personId, processInstanceId).getData();
-                remindInstanceModel =
-                    remindInstanceApi.getRemindInstance(tenantId, personId, processInstanceId).getData();
-                countFollow =
-                    officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
-                isReminder = String.valueOf(taskList.get(0).getPriority()).contains("8");
-                break;
-            case DONE:
-                countFollow =
-                    officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
-                chaosongNum =
-                    chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
-                break;
-            case MONITOR_DOING:
-                isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-                break;
-            case QUERY:
-                countFollow =
-                    officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
-                break;
-            default:
-                LOGGER.warn("未定义的itemBoxTypeEnum:{}", itemBoxTypeEnum);
-                break;
-        }
-        mapTemp.put("chaosongNum", chaosongNum);
-        mapTemp.put("speakInfoNum", speakInfoNum);
-        mapTemp.put("remindSetting", remindInstanceModel != null);
-        mapTemp.put("follow", countFollow > 0);
-        mapTemp.put("isReminder", isReminder);
-    }
-
-    @Override
-    public String getAssigneeNames(List<TaskModel> taskList, SignDeptDetailModel signDeptDetail) {
-        if (taskList.isEmpty()) {
-            return "";
-        }
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<String> assigneeNameList = new ArrayList<>();
-        for (TaskModel task : taskList) {
-            if (null != signDeptDetail && !task.getExecutionId().equals(signDeptDetail.getExecutionId())) {
-                continue;
-            }
-            String name = getTaskAssigneeName(task, tenantId);
-            if (name != null && !name.isEmpty()) {
-                assigneeNameList.add(name);
-            }
-        }
-        return formatAssigneeNames(assigneeNameList, taskList.size());
-    }
-
     /**
      * 格式化办理人名称列表
      *
@@ -140,21 +77,6 @@ public class UtilServiceImpl implements UtilService {
     }
 
     /**
-     * 获取任务办理人名称
-     *
-     * @param task 任务对象
-     * @param tenantId 租户ID
-     * @return 办理人名称
-     */
-    private String getTaskAssigneeName(TaskModel task, String tenantId) {
-        if (StringUtils.isNotBlank(task.getAssignee())) {
-            return getAssignedTaskAssigneeName(task, tenantId);
-        } else {
-            return getUnassignedTaskAssigneeNames(task, tenantId);
-        }
-    }
-
-    /**
      * 处理已分配的任务，获取办理人名称
      *
      * @param task 任务对象
@@ -170,6 +92,56 @@ public class UtilServiceImpl implements UtilService {
             }
         }
         return null;
+    }
+
+    @Override
+    public String getAssigneeNames(List<TaskModel> taskList, SignDeptDetailModel signDeptDetail) {
+        if (taskList.isEmpty()) {
+            return "";
+        }
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<String> assigneeNameList = new ArrayList<>();
+        for (TaskModel task : taskList) {
+            if (null != signDeptDetail && !task.getExecutionId().equals(signDeptDetail.getExecutionId())) {
+                continue;
+            }
+            String name = getTaskAssigneeName(task, tenantId);
+            if (name != null && !name.isEmpty()) {
+                assigneeNameList.add(name);
+            }
+        }
+        return formatAssigneeNames(assigneeNameList, taskList.size());
+    }
+
+    @Override
+    public ItemBoxAndTaskIdModel getItemBoxAndTaskId(List<TaskModel> taskList) {
+        String userId = Y9FlowableHolder.getPositionId();
+        String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
+        for (TaskModel task : taskList) {
+            String assignee = task.getAssignee();
+            if (StringUtils.isNotBlank(assignee)) {
+                if (assignee.contains(userId)) {
+                    itembox = ItemBoxTypeEnum.TODO.getValue();
+                    taskId = task.getId();
+                }
+            }
+        }
+        return new ItemBoxAndTaskIdModel(itembox, taskId);
+    }
+
+    /**
+     * 获取任务办理人名称
+     *
+     * @param task 任务对象
+     * @param tenantId 租户ID
+     * @return 办理人名称
+     */
+    private String getTaskAssigneeName(TaskModel task, String tenantId) {
+        if (StringUtils.isNotBlank(task.getAssignee())) {
+            return getAssignedTaskAssigneeName(task, tenantId);
+        } else {
+            return getUnassignedTaskAssigneeNames(task, tenantId);
+        }
     }
 
     /**
@@ -205,18 +177,46 @@ public class UtilServiceImpl implements UtilService {
     }
 
     @Override
-    public ItemBoxAndTaskIdModel getItemBoxAndTaskId(List<TaskModel> taskList) {
-        String userId = Y9FlowableHolder.getPositionId();
-        String itembox = ItemBoxTypeEnum.DOING.getValue(), taskId = "";
-        for (TaskModel task : taskList) {
-            String assignee = task.getAssignee();
-            if (StringUtils.isNotBlank(assignee)) {
-                if (assignee.contains(userId)) {
-                    itembox = ItemBoxTypeEnum.TODO.getValue();
-                    taskId = task.getId();
-                }
-            }
+    public void setPublicData(Map<String, Object> mapTemp, String processInstanceId, List<TaskModel> taskList,
+        ItemBoxTypeEnum itemBoxTypeEnum) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId(),
+            positionId = Y9FlowableHolder.getPositionId();
+        int chaosongNum = 0, speakInfoNum = 0, countFollow = 0;
+        boolean isReminder = false;
+        RemindInstanceModel remindInstanceModel = null;
+        switch (itemBoxTypeEnum) {
+            case TODO:
+            case DOING:
+                chaosongNum =
+                    chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                speakInfoNum = speakInfoApi.getNotReadCount(processInstanceId).getData();
+                remindInstanceModel =
+                    remindInstanceApi.getRemindInstance(tenantId, personId, processInstanceId).getData();
+                countFollow =
+                    officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                isReminder = String.valueOf(taskList.get(0).getPriority()).contains("8");
+                break;
+            case DONE:
+                countFollow =
+                    officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                chaosongNum =
+                    chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                break;
+            case MONITOR_DOING:
+                isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
+                break;
+            case QUERY:
+                countFollow =
+                    officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                break;
+            default:
+                LOGGER.warn("未定义的itemBoxTypeEnum:{}", itemBoxTypeEnum);
+                break;
         }
-        return new ItemBoxAndTaskIdModel(itembox, taskId);
+        mapTemp.put("chaosongNum", chaosongNum);
+        mapTemp.put("speakInfoNum", speakInfoNum);
+        mapTemp.put("remindSetting", remindInstanceModel != null);
+        mapTemp.put("follow", countFollow > 0);
+        mapTemp.put("isReminder", isReminder);
     }
 }

@@ -48,8 +48,7 @@ public class SpeakInfoRestController {
     @PostMapping(value = "/deleteById")
     public Y9Result<Object> deleteById(@RequestParam @NotBlank String id) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = person.getTenantId();
-        return speakInfoApi.deleteById(tenantId, userId, id);
+        return speakInfoApi.deleteById(id);
     }
 
     /**
@@ -63,12 +62,10 @@ public class SpeakInfoRestController {
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String content,
         @RequestParam @NotBlank String processInstanceId) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = person.getTenantId();
         SpeakInfoModel speakInfoModel = new SpeakInfoModel();
         speakInfoModel.setContent(content);
         speakInfoModel.setProcessInstanceId(processInstanceId);
-        speakInfoApi.saveOrUpdate(tenantId, userId, speakInfoModel);
+        speakInfoApi.saveOrUpdate(speakInfoModel);
         return Y9Result.successMsg("提交成功");
     }
 
@@ -81,9 +78,8 @@ public class SpeakInfoRestController {
     @GetMapping(value = "/speakInfoList")
     public Y9Result<Map<String, Object>> speakInfoList(@RequestParam @NotBlank String processInstanceId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), userName = person.getName(), tenantId = person.getTenantId();
-        List<SpeakInfoModel> siModelList =
-            speakInfoApi.findByProcessInstanceId(tenantId, userId, processInstanceId).getData();
+        String userId = person.getPersonId(), userName = person.getName();
+        List<SpeakInfoModel> siModelList = speakInfoApi.findByProcessInstanceId(processInstanceId).getData();
         Map<String, Object> map = new HashMap<>(16);
         map.put("rows", siModelList);
         map.put("processInstanceId", processInstanceId);
