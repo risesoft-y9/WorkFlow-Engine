@@ -18,12 +18,9 @@ import net.risesoft.entity.opinion.OpinionSign;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.model.itemadmin.OpinionSignModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
-import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.SignDeptDetailService;
 import net.risesoft.service.opinion.OpinionSignService;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -46,36 +43,25 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
     /**
      * 根据主键删除会签信息
      *
-     * @param tenantId 租户ID
      * @param id 主键
      * @return Y9Result<Object>
      * @since 9.6.8
      */
     @Override
-    public Y9Result<Object> deleteById(@RequestParam String tenantId, @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> deleteById(@RequestParam String id) {
         signDeptDetailService.deleteById(id);
         return Y9Result.success();
     }
 
     /**
-     * 根据主键恢复会签信息
+     * 根据主键获取会签信息
      *
-     * @param tenantId 租户ID
      * @param id 主键
-     * @return Y9Result<Object>
+     * @return Y9Result<SignDeptModel>
      * @since 9.6.8
      */
     @Override
-    public Y9Result<Object> recoverById(@RequestParam String tenantId, @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        signDeptDetailService.recoverById(id);
-        return Y9Result.success();
-    }
-
-    @Override
-    public Y9Result<SignDeptDetailModel> findById(String tenantId, String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<SignDeptDetailModel> findById(String id) {
         SignDeptDetail signDeptDetail = signDeptDetailService.findById(id);
         if (null != signDeptDetail) {
             SignDeptDetailModel model = new SignDeptDetailModel();
@@ -97,15 +83,12 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
     /**
      * 根据流程序列号获取会签信息
      *
-     * @param tenantId 租户ID
      * @param processSerialNumber 流程序列号
      * @return Y9Result<List<SignDeptModel>
      * @since 9.6.8
      */
     @Override
-    public Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumber(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumber(@RequestParam String processSerialNumber) {
         List<SignDeptDetail> list = signDeptDetailService.findByProcessSerialNumber(processSerialNumber);
         List<SignDeptDetailModel> modelList = new ArrayList<>();
         for (SignDeptDetail signDeptDetail : list) {
@@ -116,10 +99,17 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
         return Y9Result.success(modelList);
     }
 
+    /**
+     * 根据流程序列号和部门ID获取会签信息
+     *
+     * @param processSerialNumber 流程序列号
+     * @param deptId 部门ID
+     * @return Y9Result<SignDeptModel>
+     * @since 9.6.8
+     */
     @Override
-    public Y9Result<SignDeptDetailModel> findByProcessSerialNumberAndDeptId4Latest(String tenantId,
-        String processSerialNumber, String deptId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<SignDeptDetailModel> findByProcessSerialNumberAndDeptId4Latest(String processSerialNumber,
+        String deptId) {
         SignDeptDetail signDeptDetail =
             signDeptDetailService.findByProcessSerialNumberAndDeptId4Latest(processSerialNumber, deptId);
         if (null != signDeptDetail) {
@@ -133,16 +123,14 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
     /**
      * 根据流程序列号和会签状态获取会签信息
      *
-     * @param tenantId 租户ID
      * @param processSerialNumber 流程序列号
      * @param status 会签状态 {@link net.risesoft.enums.SignDeptDetailStatusEnum}
      * @return Y9Result<List<SignDeptModel>
      * @since 9.6.8
      */
     @Override
-    public Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumberAndStatus(@RequestParam String tenantId,
+    public Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumberAndStatus(
         @RequestParam String processSerialNumber, @RequestParam SignDeptDetailStatusEnum status) {
-        Y9LoginUserHolder.setTenantId(tenantId);
         List<SignDeptDetail> list =
             signDeptDetailService.findByProcessSerialNumberAndStatus(processSerialNumber, status);
         List<SignDeptDetailModel> modelList = new ArrayList<>();
@@ -163,20 +151,27 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
     }
 
     /**
+     * 根据主键恢复会签信息
+     *
+     * @param id 主键
+     * @return Y9Result<Object>
+     * @since 9.6.8
+     */
+    @Override
+    public Y9Result<Object> recoverById(@RequestParam String id) {
+        signDeptDetailService.recoverById(id);
+        return Y9Result.success();
+    }
+
+    /**
      * 保存会签信息
      *
-     * @param tenantId 租户ID
-     * @param positionId 岗位id
      * @param signDeptDetailModel 会签部门信息
      * @return Y9Result<Object>
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestBody SignDeptDetailModel signDeptDetailModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, positionId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<Object> saveOrUpdate(@RequestBody SignDeptDetailModel signDeptDetailModel) {
         SignDeptDetail signDeptDetail = new SignDeptDetail();
         Y9BeanUtil.copyProperties(signDeptDetailModel, signDeptDetail);
         signDeptDetailService.saveOrUpdate(signDeptDetail);
@@ -186,15 +181,13 @@ public class SignDeptDetailApiImpl implements SignDeptDetailApi {
     /**
      * 更新会签文件存储id
      *
-     * @param tenantId 租户ID
      * @param signId 会签id
      * @param fileStoreId 文件存储id
      * @return Y9Result<Object>
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Object> updateFileStoreId(String tenantId, String signId, String fileStoreId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> updateFileStoreId(String signId, String fileStoreId) {
         signDeptDetailService.updateFileStoreId(signId, fileStoreId);
         return Y9Result.success();
     }

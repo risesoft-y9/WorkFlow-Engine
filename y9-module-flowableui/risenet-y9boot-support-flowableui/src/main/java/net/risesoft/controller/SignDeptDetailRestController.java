@@ -73,9 +73,9 @@ public class SignDeptDetailRestController {
     @PostMapping(value = "/deleteById")
     Y9Result<Object> deleteById(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        SignDeptDetailModel signDeptDetail = signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
+        SignDeptDetailModel signDeptDetail = signDeptDetailApi.findById(id).getData();
         List<SignDeptDetailModel> signDeptDetailModels =
-            signDeptDetailApi.findByProcessSerialNumber(tenantId, signDeptDetail.getProcessSerialNumber()).getData();
+            signDeptDetailApi.findByProcessSerialNumber(signDeptDetail.getProcessSerialNumber()).getData();
         if (signDeptDetailModels.stream()
             .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING))
             .count() == 1) {
@@ -88,7 +88,7 @@ public class SignDeptDetailRestController {
         /*
          * 2、删除会签详情信息
          */
-        signDeptDetailApi.deleteById(Y9LoginUserHolder.getTenantId(), id);
+        signDeptDetailApi.deleteById(id);
         /*
          * 3、修改历程信息
          */
@@ -138,11 +138,9 @@ public class SignDeptDetailRestController {
                 .getData()
                 .getId();
         } else {
-            bureauId =
-                signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), signDeptDetailId).getData().getDeptId();
+            bureauId = signDeptDetailApi.findById(signDeptDetailId).getData().getDeptId();
         }
-        return signDeptDetailApi.findByProcessSerialNumberAndDeptId4Latest(Y9LoginUserHolder.getTenantId(),
-            processSerialNumber, bureauId);
+        return signDeptDetailApi.findByProcessSerialNumberAndDeptId4Latest(processSerialNumber, bureauId);
     }
 
     /**
@@ -160,8 +158,7 @@ public class SignDeptDetailRestController {
         if (null == task) {
             return Y9Result.failure("当前待办已被处理");
         }
-        List<SignDeptDetailModel> sddList =
-            signDeptDetailApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        List<SignDeptDetailModel> sddList = signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
         List<SignDeptDetailModel> collect = sddList.stream()
             .filter(sdd -> sdd.getExecutionId().equals(task.getExecutionId()))
             .collect(Collectors.toList());
@@ -183,11 +180,10 @@ public class SignDeptDetailRestController {
     Y9Result<List<SignDeptDetailModel>> getSignDeptDetailById(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String signDepIdtDetailId) {
         if (StringUtils.isBlank(signDepIdtDetailId)) {
-            return signDeptDetailApi.findByProcessSerialNumberAndStatus(Y9LoginUserHolder.getTenantId(),
-                processSerialNumber, SignDeptDetailStatusEnum.DONE);
+            return signDeptDetailApi.findByProcessSerialNumberAndStatus(processSerialNumber,
+                SignDeptDetailStatusEnum.DONE);
         }
-        return Y9Result.success(Collections
-            .singletonList(signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), signDepIdtDetailId).getData()));
+        return Y9Result.success(Collections.singletonList(signDeptDetailApi.findById(signDepIdtDetailId).getData()));
     }
 
     /**
@@ -201,7 +197,7 @@ public class SignDeptDetailRestController {
     @PostMapping(value = "/recoverById")
     Y9Result<Object> recoverById(@RequestParam @NotBlank String id) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        SignDeptDetailModel ssd = signDeptDetailApi.findById(Y9LoginUserHolder.getTenantId(), id).getData();
+        SignDeptDetailModel ssd = signDeptDetailApi.findById(id).getData();
         /*
          * 1、恢复流程参与信息
          */
@@ -209,7 +205,7 @@ public class SignDeptDetailRestController {
         /*
          * 2、恢复会签信息
          */
-        signDeptDetailApi.recoverById(Y9LoginUserHolder.getTenantId(), id);
+        signDeptDetailApi.recoverById(id);
         /*
          * 3、修改历程信息
          */
@@ -248,7 +244,6 @@ public class SignDeptDetailRestController {
     @PostMapping(value = "/saveOrUpdate")
     Y9Result<Object> saveOrUpdate(@RequestParam @NotBlank String jsonData) {
         SignDeptDetailModel signDeptDetailModel = Y9JsonUtil.readValue(jsonData, SignDeptDetailModel.class);
-        return signDeptDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(),
-            signDeptDetailModel);
+        return signDeptDetailApi.saveOrUpdate(signDeptDetailModel);
     }
 }

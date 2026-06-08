@@ -52,6 +52,53 @@ public class RoleRestController {
 
     private final SignDeptDetailApi signDeptDetailApi;
 
+    /**
+     * 添加部门下的所有岗位
+     */
+    private void addDepartmentPositions(String deptId, List<String> userIds) {
+        List<Position> positions = getAllPositionByDeptId(deptId);
+        for (Position position : positions) {
+            if (userIds.size() >= 100) {
+                break;
+            }
+            addUserIds(userIds, position.getId());
+        }
+    }
+
+    /**
+     * 加签-获取加签的人-排除正在会签和减签的部门的秘书
+     *
+     * @param roleId 角色id
+     * @param principalType 选人类型
+     * @param id 父节点id
+     * @return Y9Result<List < Map < String, Object>>>
+     */
+    @GetMapping(value = "/addSignDept")
+    public Y9Result<List<ItemRoleOrgUnitModel>> addSignDept(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String roleId, @RequestParam Integer principalType,
+        @RequestParam(required = false) String id) {
+        if (StringUtils.isBlank(id)) {
+            id = "";
+        }
+        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId(),
+            positionId = Y9FlowableHolder.getPositionId();
+        // 正在会签和减签的部门
+        List<SignDeptDetailModel> sddList = signDeptDetailApi.findByProcessSerialNumber(processSerialNumber)
+            .getData()
+            .stream()
+            .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING)
+                || ssd.getStatus().equals(SignDeptDetailStatusEnum.DELETED))
+            .collect(Collectors.toList());
+        List<ItemRoleOrgUnitModel> list =
+            itemRoleApi.findByRoleId(tenantId, personId, positionId, roleId, principalType, id)
+                .getData()
+                .stream()
+                .filter(itemRoleOrgUnitModel -> sddList.stream()
+                    .noneMatch(ssd -> itemRoleOrgUnitModel.getGuidPath().contains(ssd.getDeptId())))
+                .collect(Collectors.toList());
+        return Y9Result.success(list);
+    }
+
     private void addUserIds(List<String> userIds, String userId) {
         if (!userIds.contains(userId)) {
             userIds.add(userId);
@@ -72,6 +119,24 @@ public class RoleRestController {
         @RequestParam OrgTreeTypeEnum treeType, @RequestParam(required = false) String name) {
         return itemRoleApi.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), id, treeType,
             name);
+    }
+
+    /**
+     * 获取发送选人组织机构数据
+     *
+     * @param roleId 角色id
+     * @param principalType 选人类型
+     * @param id 父节点id
+     * @return Y9Result<List<ItemRoleOrgUnitModel>>
+     */
+    @GetMapping(value = "/findByRoleId")
+    public Y9Result<List<ItemRoleOrgUnitModel>> findByRoleId(@RequestParam @NotBlank String roleId,
+        @RequestParam Integer principalType, @RequestParam(required = false) String id) {
+        if (StringUtils.isBlank(id)) {
+            id = "";
+        }
+        return itemRoleApi.findByRoleId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
+            Y9FlowableHolder.getPositionId(), roleId, principalType, id);
     }
 
     /**
@@ -157,24 +222,6 @@ public class RoleRestController {
     }
 
     /**
-     * 获取发送选人组织机构数据
-     *
-     * @param roleId 角色id
-     * @param principalType 选人类型
-     * @param id 父节点id
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
-     */
-    @GetMapping(value = "/findByRoleId")
-    public Y9Result<List<ItemRoleOrgUnitModel>> findByRoleId(@RequestParam @NotBlank String roleId,
-        @RequestParam Integer principalType, @RequestParam(required = false) String id) {
-        if (StringUtils.isBlank(id)) {
-            id = "";
-        }
-        return itemRoleApi.findByRoleId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9FlowableHolder.getPositionId(), roleId, principalType, id);
-    }
-
-    /**
      * 获取发送选择人数
      *
      * @param userChoice 人员id
@@ -233,19 +280,6 @@ public class RoleRestController {
         }
     }
 
-    /**
-     * 添加部门下的所有岗位
-     */
-    private void addDepartmentPositions(String deptId, List<String> userIds) {
-        List<Position> positions = getAllPositionByDeptId(deptId);
-        for (Position position : positions) {
-            if (userIds.size() >= 100) {
-                break;
-            }
-            addUserIds(userIds, position.getId());
-        }
-    }
-
     private void recursionAllPosition(String parentID, List<Position> list) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         list.addAll(positionApi.listByParentId(tenantId, parentID).getData());
@@ -255,40 +289,5 @@ public class RoleRestController {
                 recursionAllPosition(dept.getId(), list);
             }
         }
-    }
-
-    /**
-     * 加签-获取加签的人-排除正在会签和减签的部门的秘书
-     *
-     * @param roleId 角色id
-     * @param principalType 选人类型
-     * @param id 父节点id
-     * @return Y9Result<List < Map < String, Object>>>
-     */
-    @GetMapping(value = "/addSignDept")
-    public Y9Result<List<ItemRoleOrgUnitModel>> addSignDept(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam @NotBlank String roleId, @RequestParam Integer principalType,
-        @RequestParam(required = false) String id) {
-        if (StringUtils.isBlank(id)) {
-            id = "";
-        }
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId(),
-            positionId = Y9FlowableHolder.getPositionId();
-        // 正在会签和减签的部门
-        List<SignDeptDetailModel> sddList =
-            signDeptDetailApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber)
-                .getData()
-                .stream()
-                .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING)
-                    || ssd.getStatus().equals(SignDeptDetailStatusEnum.DELETED))
-                .collect(Collectors.toList());
-        List<ItemRoleOrgUnitModel> list =
-            itemRoleApi.findByRoleId(tenantId, personId, positionId, roleId, principalType, id)
-                .getData()
-                .stream()
-                .filter(itemRoleOrgUnitModel -> sddList.stream()
-                    .noneMatch(ssd -> itemRoleOrgUnitModel.getGuidPath().contains(ssd.getDeptId())))
-                .collect(Collectors.toList());
-        return Y9Result.success(list);
     }
 }

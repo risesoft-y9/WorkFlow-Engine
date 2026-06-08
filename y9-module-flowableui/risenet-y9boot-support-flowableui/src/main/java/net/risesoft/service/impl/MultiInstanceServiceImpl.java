@@ -99,15 +99,14 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public void addExecutionId(ProcessParamModel processParamModel, String activityId, String userChoice) {
         String tenantId = Y9LoginUserHolder.getTenantId(), processInstanceId = processParamModel.getProcessInstanceId(),
-            processSerialNumber = processParamModel.getProcessSerialNumber(),
-            positionId = Y9FlowableHolder.getPositionId();
+            processSerialNumber = processParamModel.getProcessSerialNumber();
         String[] users = userChoice.split(";");
         for (String user : users) {
             buttonOperationApi.addMultiInstanceExecutionByActivityId(tenantId, activityId, processInstanceId, user);
         }
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         List<SignDeptDetailModel> signDeptDetailModels =
-            signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
         SignDeptDetailModel ssd = signDeptDetailModels.get(0);
         taskList.forEach(task -> {
             if (signDeptDetailModels.stream().noneMatch(sdd -> sdd.getExecutionId().equals(task.getExecutionId()))) {
@@ -123,7 +122,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
                 signDeptDetail.setDeptId(bureau.getId());
                 signDeptDetail.setDeptName(bureau.getName());
                 signDeptDetail.setTabIndex(bureau.getTabIndex());
-                signDeptDetailApi.saveOrUpdate(tenantId, positionId, signDeptDetail);
+                signDeptDetailApi.saveOrUpdate(signDeptDetail);
             }
         });
     }
