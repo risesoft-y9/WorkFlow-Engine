@@ -51,14 +51,13 @@ public class FlowableUrgeInfoServiceImpl implements FlowableUrgeInfoService {
 
     @Override
     public Y9Result<Object> deleteById(String id) {
-        return urgeInfoApi.deleteById(Y9LoginUserHolder.getTenantId(), id);
+        return urgeInfoApi.deleteById(id);
     }
 
     @Override
     public List<UrgeInfoModel> findByProcessSerialNumber(String processSerialNumber) {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
-        List<UrgeInfoModel> urgeList =
-            urgeInfoApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        List<UrgeInfoModel> urgeList = urgeInfoApi.findByProcessSerialNumber(processSerialNumber).getData();
         List<SignDeptDetailModel> signDeptDetailList =
             signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
         OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, positionId).getData();
@@ -104,11 +103,10 @@ public class FlowableUrgeInfoServiceImpl implements FlowableUrgeInfoService {
 
     @Override
     public Y9Result<Object> save(String[] processSerialNumbers, String msgContent) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9LoginUserHolder.getPersonId();
         AtomicInteger errorCount = new AtomicInteger();
         AtomicInteger successCount = new AtomicInteger();
         Arrays.stream(processSerialNumbers).forEach(processSerialNumber -> {
-            if (urgeInfoApi.save(tenantId, userId, processSerialNumber, msgContent).isSuccess()) {
+            if (urgeInfoApi.save(processSerialNumber, msgContent).isSuccess()) {
                 successCount.getAndIncrement();
             } else {
                 errorCount.getAndIncrement();
