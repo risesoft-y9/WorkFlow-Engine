@@ -13,8 +13,6 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.QuickSendApi;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.QuickSendService;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 快速发送设置接口
@@ -33,27 +31,19 @@ public class QuickSendApiImpl implements QuickSendApi {
     /**
      * 获取设置的快速发送人信息
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是快捷发送人
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> getAssignee(@RequestParam @NotBlank String tenantId,
-        @RequestParam @NotBlank String orgUnitId, @RequestParam @NotBlank String itemId,
-        @RequestParam @NotBlank String taskKey) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Result<String> getAssignee(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey) {
         return Y9Result.success(quickSendService.getAssignee(itemId, taskKey));
     }
 
     /**
      * 保存快速发送人信息设置
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param taskKey 任务key
      * @param assignee 发送人
@@ -61,11 +51,8 @@ public class QuickSendApiImpl implements QuickSendApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String tenantId,
-        @RequestParam @NotBlank String orgUnitId, @RequestParam @NotBlank String itemId,
-        @RequestParam @NotBlank String taskKey, @RequestParam String assignee) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey,
+        @RequestParam String assignee) {
         quickSendService.saveOrUpdate(itemId, taskKey, assignee);
         return Y9Result.success();
     }
