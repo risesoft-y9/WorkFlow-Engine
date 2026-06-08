@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.List;
 import java.util.Map;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,14 +12,10 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.OrganWordApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.model.itemadmin.OrganWordModel;
 import net.risesoft.model.itemadmin.OrganWordPropertyModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.organword.OrganWordService;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 编号接口
@@ -34,13 +31,9 @@ public class OrganWordApiImpl implements OrganWordApi {
 
     private final OrganWordService organWordService;
 
-    private final UserApi userApi;
-
     /**
      * 验证编号是否已经被使用
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param characterValue 机关代字
      * @param custom 机关代字标志
      * @param year 文号年份
@@ -52,13 +45,9 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> checkNumberStr(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String characterValue, @RequestParam String custom, @RequestParam Integer year,
-        @RequestParam Integer numberTemp, @RequestParam String itemId, @RequestParam Integer common,
-        @RequestParam String processSerialNumber) {
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Integer> checkNumberStr(@RequestParam String characterValue, @RequestParam String custom,
+        @RequestParam Integer year, @RequestParam Integer numberTemp, @RequestParam String itemId,
+        @RequestParam Integer common, @RequestParam String processSerialNumber) {
         return Y9Result.success(organWordService.checkNumberStr(characterValue, custom, year, numberTemp, itemId,
             common, processSerialNumber));
     }
@@ -66,8 +55,6 @@ public class OrganWordApiImpl implements OrganWordApi {
     /**
      * 判断编号标识在当前流程实例中是否编号,未编号就获取有权限的编号的机关代字
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param custom 编号标识
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例id
@@ -76,20 +63,14 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<OrganWordModel> exist(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String custom, @RequestParam String processSerialNumber, String processInstanceId,
-        @RequestParam String itembox) {
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<OrganWordModel> exist(@RequestParam String custom, @RequestParam String processSerialNumber,
+        String processInstanceId, @RequestParam String itembox) {
         return Y9Result.success(organWordService.exist(custom, processSerialNumber, processInstanceId, itembox));
     }
 
     /**
      * 获取编号标识对应的有权限的机构代字
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param custom 编号标识
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
@@ -98,19 +79,14 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam String tenantId,
-        @RequestParam String orgUnitId, @RequestParam String custom, @RequestParam String itemId,
+    public Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam String custom, @RequestParam String itemId,
         @RequestParam String processDefinitionId, String taskDefKey) {
-        Y9FlowableHolder.setPositionId(orgUnitId);
-        Y9LoginUserHolder.setTenantId(tenantId);
         return Y9Result.success(organWordService.listByCustom(itemId, processDefinitionId, taskDefKey, custom));
     }
 
     /**
      * 获取有权限的编号标识
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务定义key
@@ -118,19 +94,14 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam String tenantId,
-        @RequestParam String orgUnitId, @RequestParam String itemId, @RequestParam String processDefinitionId,
-        String taskDefKey) {
-        Y9FlowableHolder.setPositionId(orgUnitId);
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam String itemId,
+        @RequestParam String processDefinitionId, String taskDefKey) {
         return Y9Result.success(organWordService.listByCustomNumber(itemId, processDefinitionId, taskDefKey));
     }
 
     /**
      * 获取未使用的编号数字
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param custom 机关代字标志
      * @param characterValue 机关代字
      * @param year 文号年份
@@ -140,20 +111,14 @@ public class OrganWordApiImpl implements OrganWordApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getNumber(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String custom, @RequestParam String characterValue, @RequestParam Integer year,
-        @RequestParam Integer common, @RequestParam String itemId) {
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Integer> getNumber(@RequestParam String custom, @RequestParam String characterValue,
+        @RequestParam Integer year, @RequestParam Integer common, @RequestParam String itemId) {
         return Y9Result.success(organWordService.getNumber(custom, characterValue, year, common, itemId));
     }
 
     /**
      * 获取编号的数字
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param custom 机关代字标志
      * @param characterValue 机关代字
      * @param year 文号年份
@@ -164,20 +129,14 @@ public class OrganWordApiImpl implements OrganWordApi {
      *
      */
     @Override
-    public Y9Result<Integer> getNumberOnly(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String custom, @RequestParam String characterValue, @RequestParam Integer year,
-        @RequestParam Integer common, @RequestParam String itemId) {
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Integer> getNumberOnly(@RequestParam String custom, @RequestParam String characterValue,
+        @RequestParam Integer year, @RequestParam Integer common, @RequestParam String itemId) {
         return Y9Result.success(organWordService.getNumberOnly(custom, characterValue, year, common, itemId));
     }
 
     /**
      * 获取临时编号数字
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param custom 机关代字标志
      * @param characterValue 机关代字
      * @param itemId 事项id
@@ -186,19 +145,13 @@ public class OrganWordApiImpl implements OrganWordApi {
      *
      */
     @Override
-    public Y9Result<String> getTempNumber(String tenantId, String userId, String custom, String characterValue,
-        String itemId) {
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<String> getTempNumber(String custom, String characterValue, String itemId) {
         return Y9Result.success(organWordService.getTempNumber(custom, characterValue, itemId));
     }
 
     /**
      * 保存临时编号字符串（保存后将占用编号）
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param custom 机关代字标志
      * @param numberString 编号字符串
      * @param itemId 事项id
@@ -208,12 +161,8 @@ public class OrganWordApiImpl implements OrganWordApi {
      *
      */
     @Override
-    public Y9Result<Map<String, Object>> saveNumberString(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String custom, @RequestParam String numberString, @RequestParam String itemId,
-        @RequestParam String processSerialNumber) {
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Map<String, Object>> saveNumberString(@RequestParam String custom,
+        @RequestParam String numberString, @RequestParam String itemId, @RequestParam String processSerialNumber) {
         return Y9Result.success(organWordService.saveNumberString(custom, numberString, itemId, processSerialNumber));
     }
 }
