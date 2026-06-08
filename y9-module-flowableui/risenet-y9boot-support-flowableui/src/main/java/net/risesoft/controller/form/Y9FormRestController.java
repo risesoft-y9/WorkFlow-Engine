@@ -401,7 +401,7 @@ public class Y9FormRestController {
             });
             return Y9Result.success(list);
         }
-        return optionClassApi.getOptionValueList(tenantId, type);
+        return optionClassApi.getOptionValueList(type);
     }
 
     /**
