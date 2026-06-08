@@ -17,8 +17,6 @@ public interface RejectReasonApi {
     /**
      * 保存驳回原因
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param action action
      * @param taskId 任务id
      * @param reason 理由
@@ -26,7 +24,6 @@ public interface RejectReasonApi {
      * @since 9.6.6
      */
     @PostMapping("/save")
-    Y9Result<Object> save(@RequestParam("userId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("action") Integer action, @RequestParam("taskId") String taskId,
+    Y9Result<Object> save(@RequestParam("action") Integer action, @RequestParam("taskId") String taskId,
         @RequestParam(value = "reason", required = false) String reason);
 }
