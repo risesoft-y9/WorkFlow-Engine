@@ -4,6 +4,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -21,8 +22,6 @@ import net.risesoft.model.itemadmin.ReminderModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.FlowableReminderService;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 催办
@@ -49,8 +48,7 @@ public class ReminderRestController {
     @FlowableLog(operationName = "删除催办信息", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteList")
     public Y9Result<String> deleteList(@RequestParam String[] ids) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        reminderApi.deleteList(tenantId, ids);
+        reminderApi.deleteList(ids);
         return Y9Result.successMsg("删除成功");
     }
 
@@ -65,8 +63,7 @@ public class ReminderRestController {
     @GetMapping(value = "/reminderMeList")
     public Y9Page<ReminderModel> getReminderList(@RequestParam @NotBlank String taskId, @RequestParam int rows,
         @RequestParam int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return reminderApi.findByTaskId(tenantId, taskId, page, rows);
+        return reminderApi.findByTaskId(taskId, page, rows);
     }
 
     /**
@@ -81,14 +78,11 @@ public class ReminderRestController {
     @GetMapping(value = "/reminderList")
     public Y9Page<ReminderModel> myReminder(@RequestParam @NotBlank String type,
         @RequestParam @NotBlank String processInstanceId, @RequestParam int rows, @RequestParam int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9FlowableHolder.getPositionId();
         Y9Page<ReminderModel> map;
         if ("my".equals(type)) {
-            map = reminderApi.findBySenderIdAndProcessInstanceIdAndActive(tenantId, userId, processInstanceId, page,
-                rows);
+            map = reminderApi.findBySenderIdAndProcessInstanceIdAndActive(processInstanceId, page, rows);
         } else {
-            map = reminderApi.findByProcessInstanceId(tenantId, processInstanceId, page, rows);
+            map = reminderApi.findByProcessInstanceId(processInstanceId, page, rows);
         }
         return map;
     }
@@ -105,9 +99,7 @@ public class ReminderRestController {
     @PostMapping(value = "/saveReminder")
     public Y9Result<String> saveReminder(@RequestParam @NotBlank String processInstanceId,
         @RequestParam String[] taskIds, @RequestParam @NotBlank String msgContent) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9FlowableHolder.getPositionId();
-        return reminderApi.saveReminder(tenantId, userId, processInstanceId, taskIds, msgContent);
+        return reminderApi.saveReminder(processInstanceId, taskIds, msgContent);
     }
 
     /**
@@ -119,7 +111,7 @@ public class ReminderRestController {
     @FlowableLog(operationName = "批量设置催办阅读时间", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/setReadTime")
     public Y9Result<Object> setReadTime(@RequestParam String[] ids) {
-        return reminderApi.setReadTime(Y9LoginUserHolder.getTenantId(), ids);
+        return reminderApi.setReadTime(ids);
     }
 
     /**
@@ -147,7 +139,6 @@ public class ReminderRestController {
     @PostMapping(value = "/updateReminder")
     public Y9Result<String> updateReminder(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String msgContent) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return reminderApi.updateReminder(tenantId, id, msgContent);
+        return reminderApi.updateReminder(id, msgContent);
     }
 }
