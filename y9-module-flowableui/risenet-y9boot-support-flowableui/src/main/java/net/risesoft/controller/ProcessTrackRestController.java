@@ -76,7 +76,7 @@ public class ProcessTrackRestController {
     @GetMapping(value = "/getTaskList")
     public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam @NotBlank String processInstanceId) {
         try {
-            return processTrackApi.getTaskList(Y9LoginUserHolder.getTenantId(), processInstanceId);
+            return processTrackApi.getTaskList(processInstanceId);
         } catch (Exception e) {
             LOGGER.error("获取流程图任务节点信息失败", e);
         }
@@ -95,8 +95,7 @@ public class ProcessTrackRestController {
         String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>();
-        List<HistoryProcessModel> items =
-            processTrackApi.processTrackList(tenantId, positionId, processInstanceId).getData();
+        List<HistoryProcessModel> items = processTrackApi.processTrackList(processInstanceId).getData();
         int mychaosongNum =
             chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
         int otherchaosongNum = chaoSongApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
@@ -115,11 +114,7 @@ public class ProcessTrackRestController {
     @FlowableLog(operationType = FlowableOperationTypeEnum.BROWSE, operationName = "查看电子历程")
     @GetMapping(value = "/list")
     public Y9Result<List<HistoryProcessModel>> list(@RequestParam @NotBlank String processInstanceId) {
-        Position position = Y9FlowableHolder.getPosition();
-        String positionId = position.getId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<HistoryProcessModel> items =
-            processTrackApi.processTrackListWithActionName(tenantId, positionId, processInstanceId).getData();
+        List<HistoryProcessModel> items = processTrackApi.processTrackListWithActionName(processInstanceId).getData();
         return Y9Result.success(items, "获取成功");
     }
 
@@ -131,11 +126,8 @@ public class ProcessTrackRestController {
      */
     @GetMapping(value = "/processList")
     public Y9Result<List<HistoryProcessModel>> processList(@RequestParam @NotBlank String processInstanceId) {
-        Position position = Y9FlowableHolder.getPosition();
-        String positionId = position.getId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            return processTrackApi.processTrackList4Simple(tenantId, positionId, processInstanceId);
+            return processTrackApi.processTrackList4Simple(processInstanceId);
         } catch (Exception e) {
             LOGGER.error("获取简易历程数据失败", e);
 

@@ -104,13 +104,12 @@ public class OperationServiceImpl implements OperationService {
             this.customProcessDefinitionService.getNode(currentTask.getProcessDefinitionId(), targetTaskDefineKey)
                 .getMultiInstance();
         // 更新自定义历程结束时间
-        List<ProcessTrackModel> ptModelList =
-            this.processTrackApi.findByTaskId(Y9LoginUserHolder.getTenantId(), taskId).getData();
+        List<ProcessTrackModel> ptModelList = this.processTrackApi.findByTaskId(taskId).getData();
         for (ProcessTrackModel ptModel : ptModelList) {
             if (StringUtils.isBlank(ptModel.getEndTime())) {
                 try {
                     ptModel.setDescribed(reason0);
-                    this.processTrackApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), ptModel);
+                    this.processTrackApi.saveOrUpdate(ptModel);
                 } catch (Exception e) {
                     LOGGER.error("更新自定义历程结束时间失败", e);
                 }

@@ -95,11 +95,11 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         /*
           2更新自定义历程结束时间
          */
-        List<ProcessTrackModel> ptModelList = processTrackApi.findByTaskId(tenantId, taskId).getData();
+        List<ProcessTrackModel> ptModelList = processTrackApi.findByTaskId(taskId).getData();
         for (ProcessTrackModel ptModel : ptModelList) {
             if (StringUtils.isBlank(ptModel.getEndTime())) {
                 ptModel.setEndTime(Y9DateTimeUtils.formatCurrentDateTime());
-                processTrackApi.saveOrUpdate(tenantId, ptModel);
+                processTrackApi.saveOrUpdate(ptModel);
             }
         }
         /*
@@ -115,7 +115,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         ptModel.setTaskDefName(taskDefName);
         ptModel.setTaskId(taskId);
         ptModel.setId("");
-        processTrackApi.saveOrUpdate(tenantId, ptModel);
+        processTrackApi.saveOrUpdate(ptModel);
 
         /**
          * 记录审计日志
@@ -152,142 +152,27 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     }
 
     @Override
-    public void multipleResumeToDo(String processInstanceIds, String desc) throws Exception {
-        if (StringUtils.isBlank(processInstanceIds)) {
-            return;
-        }
-        String[] array = processInstanceIds.split(";");
-        for (String processInstanceId : array) {
-            if (StringUtils.isNotBlank(processInstanceId)) {
-                resumeToDo(processInstanceId, desc);
-            }
-        }
-    }
-
-    @Override
-    public Y9Result<String> multipleResumeToDo(String[] processInstanceIds, String desc) {
-        boolean haveDoing =
-            Arrays.stream(processInstanceIds)
-                .anyMatch(processInstanceId -> runtimeApi
-                    .getProcessInstance(Y9LoginUserHolder.getTenantId(), processInstanceId)
-                    .isSuccess());
-        if (haveDoing) {
-            return Y9Result.failure("存在正在运行的流程，请刷新列表！");
-        }
-        AtomicInteger successCount = new AtomicInteger();
-        AtomicInteger failCount = new AtomicInteger();
-        Arrays.stream(processInstanceIds).forEach(processInstanceId -> {
-            if (resumeToDoAndReposition(processInstanceId, desc).isSuccess()) {
-                successCount.getAndIncrement();
-            } else {
-                failCount.getAndIncrement();
-            }
-        });
-        return Y9Result.successMsg(
-            "共" + processInstanceIds.length + "条记录，成功" + successCount.get() + "条，失败" + failCount.get() + "条。");
-    }
-
-    @Override
-    public void resumeToDo(String processInstanceId, String desc) throws Exception {
-        String positionId = Y9FlowableHolder.getPositionId();
-        String userName = Y9FlowableHolder.getPosition().getName();
+    public Y9Result<String> deleteByProcessSerialNumbers(String[] processSerialNumbers) {
+        Position position = Y9FlowableHolder.getPosition();
+        String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String title = "";
-        try {
-            /*
-              1、恢复待办
-             */
-            String year;
-            OfficeDoneInfoModel officeDoneInfoModel =
-                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            if (officeDoneInfoModel != null) {
-                year = officeDoneInfoModel.getStartTime().substring(0, 4);
-                title = officeDoneInfoModel.getTitle();
-            } else {
-                ProcessParamModel processParamModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                year = getYear(processParamModel.getCreateTime());
-                title = processParamModel.getTitle();
+        int total = processSerialNumbers.length;
+        AtomicInteger success = new AtomicInteger();
+        AtomicInteger error = new AtomicInteger();
+        for (String processSerialNumber : processSerialNumbers) {
+            try {
+                if (actRuDetailApi.deleteByProcessSerialNumber(tenantId, processSerialNumber).isSuccess()) {
+                    asyncUtilService.deleteToDoAuditLog(tenantId, positionId, processSerialNumber);
+                    success.getAndIncrement();
+                } else {
+                    error.getAndIncrement();
+                }
+            } catch (Exception e) {
+                error.getAndIncrement();
+                e.printStackTrace();
             }
-            HistoricTaskInstanceModel hisTaskModelTemp =
-                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
-                    .getData()
-                    .get(0);
-            runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
-            /*
-              2、添加流程的历程
-             */
-            ProcessTrackModel ptm = new ProcessTrackModel();
-            ptm.setDescribed(desc);
-            ptm.setProcessInstanceId(hisTaskModelTemp.getProcessInstanceId());
-            ptm.setReceiverName(userName);
-            ptm.setSenderName(userName);
-            ptm.setStartTime(Y9DateTimeUtils.formatCurrentDateTime());
-            ptm.setEndTime(Y9DateTimeUtils.formatCurrentDateTime());
-            ptm.setTaskDefName("恢复待办");
-            ptm.setTaskId(hisTaskModelTemp.getId());
-
-            processTrackApi.saveOrUpdate(tenantId, ptm);
-            /*
-              2、添加流程的历程
-             */
-            ptm = new ProcessTrackModel();
-            ptm.setDescribed(desc);
-            ptm.setProcessInstanceId(hisTaskModelTemp.getProcessInstanceId());
-            ptm.setReceiverName(userName);
-            ptm.setSenderName(userName);
-            ptm.setStartTime(Y9DateTimeUtils.formatCurrentDateTime());
-            ptm.setEndTime("");
-            ptm.setTaskDefName(hisTaskModelTemp.getName());
-            ptm.setTaskId(hisTaskModelTemp.getId());
-            processTrackApi.saveOrUpdate(tenantId, ptm);
-            asyncUtilService.resumeToDoAuditLog(tenantId, processInstanceId, title);
-        } catch (Exception e) {
-            LOGGER.error("runtimeApi resumeToDo error", e);
-            throw new Exception("runtimeApi resumeToDo error");
         }
-    }
-
-    private String getYear(Date date) {
-        Calendar calendar = Calendar.getInstance();
-        calendar.setTime(date);
-        return String.valueOf(calendar.get(Calendar.YEAR));
-    }
-
-    @Override
-    public Y9Result<String> resumeToDoAndReposition(String processInstanceId, String desc) {
-        String positionId = Y9FlowableHolder.getPositionId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            // 1、恢复待办
-            String year;
-            OfficeDoneInfoModel officeDoneInfoModel =
-                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            if (officeDoneInfoModel != null) {
-                year = officeDoneInfoModel.getStartTime().substring(0, 4);
-            } else {
-                ProcessParamModel processParamModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                year = getYear(processParamModel.getCreateTime());
-            }
-            HistoricTaskInstanceModel hisTaskModel =
-                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
-                    .getData()
-                    .get(0);
-            runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
-            // 2、添加动作名称
-            Map<String, Object> vars = new HashMap<>();
-            vars.put("val", desc);
-            variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId,
-                SysVariables.ACTION_NAME + ":" + positionId, vars);
-            // 3、重定位，谁激活就重定位给谁
-            buttonOperationApi.reposition(tenantId, positionId, hisTaskModel.getId(),
-                hisTaskModel.getTaskDefinitionKey(), List.of(positionId), desc, "");
-            return Y9Result.successMsg(desc + "成功");
-        } catch (Exception e) {
-            LOGGER.error("{}异常", desc, e);
-        }
-        return Y9Result.failure(desc + "失败");
+        return Y9Result.successMsg("成功删除" + success.get() + "条，失败" + error.get() + "条，共" + total + "条");
     }
 
     @Override
@@ -331,28 +216,46 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         return Y9Result.successMsg("成功删除" + success.get() + "条，失败" + error.get() + "条，共" + total + "条");
     }
 
+    private String getYear(Date date) {
+        Calendar calendar = Calendar.getInstance();
+        calendar.setTime(date);
+        return String.valueOf(calendar.get(Calendar.YEAR));
+    }
+
     @Override
-    public Y9Result<String> deleteByProcessSerialNumbers(String[] processSerialNumbers) {
-        Position position = Y9FlowableHolder.getPosition();
-        String positionId = position.getId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        int total = processSerialNumbers.length;
-        AtomicInteger success = new AtomicInteger();
-        AtomicInteger error = new AtomicInteger();
-        for (String processSerialNumber : processSerialNumbers) {
-            try {
-                if (actRuDetailApi.deleteByProcessSerialNumber(tenantId, processSerialNumber).isSuccess()) {
-                    asyncUtilService.deleteToDoAuditLog(tenantId, positionId, processSerialNumber);
-                    success.getAndIncrement();
-                } else {
-                    error.getAndIncrement();
-                }
-            } catch (Exception e) {
-                error.getAndIncrement();
-                e.printStackTrace();
+    public void multipleResumeToDo(String processInstanceIds, String desc) throws Exception {
+        if (StringUtils.isBlank(processInstanceIds)) {
+            return;
+        }
+        String[] array = processInstanceIds.split(";");
+        for (String processInstanceId : array) {
+            if (StringUtils.isNotBlank(processInstanceId)) {
+                resumeToDo(processInstanceId, desc);
             }
         }
-        return Y9Result.successMsg("成功删除" + success.get() + "条，失败" + error.get() + "条，共" + total + "条");
+    }
+
+    @Override
+    public Y9Result<String> multipleResumeToDo(String[] processInstanceIds, String desc) {
+        boolean haveDoing =
+            Arrays.stream(processInstanceIds)
+                .anyMatch(processInstanceId -> runtimeApi
+                    .getProcessInstance(Y9LoginUserHolder.getTenantId(), processInstanceId)
+                    .isSuccess());
+        if (haveDoing) {
+            return Y9Result.failure("存在正在运行的流程，请刷新列表！");
+        }
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger failCount = new AtomicInteger();
+        Arrays.stream(processInstanceIds).forEach(processInstanceId -> {
+            if (resumeToDoAndReposition(processInstanceId, desc).isSuccess()) {
+                successCount.getAndIncrement();
+            } else {
+                failCount.getAndIncrement();
+            }
+        });
+        return Y9Result.successMsg(
+            "共" + processInstanceIds.length + "条记录，成功" + successCount.get() + "条，失败" + failCount.get() + "条。");
     }
 
     @Override
@@ -382,5 +285,102 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 processParamModel.getTitle());
         }
         return Y9Result.successMsg("成功删除" + processSerialNumbers.length + "条待办");
+    }
+
+    @Override
+    public void resumeToDo(String processInstanceId, String desc) throws Exception {
+        String positionId = Y9FlowableHolder.getPositionId();
+        String userName = Y9FlowableHolder.getPosition().getName();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String title = "";
+        try {
+            /*
+              1、恢复待办
+             */
+            String year;
+            OfficeDoneInfoModel officeDoneInfoModel =
+                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            if (officeDoneInfoModel != null) {
+                year = officeDoneInfoModel.getStartTime().substring(0, 4);
+                title = officeDoneInfoModel.getTitle();
+            } else {
+                ProcessParamModel processParamModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                year = getYear(processParamModel.getCreateTime());
+                title = processParamModel.getTitle();
+            }
+            HistoricTaskInstanceModel hisTaskModelTemp =
+                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
+                    .getData()
+                    .get(0);
+            runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
+            /*
+              2、添加流程的历程
+             */
+            ProcessTrackModel ptm = new ProcessTrackModel();
+            ptm.setDescribed(desc);
+            ptm.setProcessInstanceId(hisTaskModelTemp.getProcessInstanceId());
+            ptm.setReceiverName(userName);
+            ptm.setSenderName(userName);
+            ptm.setStartTime(Y9DateTimeUtils.formatCurrentDateTime());
+            ptm.setEndTime(Y9DateTimeUtils.formatCurrentDateTime());
+            ptm.setTaskDefName("恢复待办");
+            ptm.setTaskId(hisTaskModelTemp.getId());
+
+            processTrackApi.saveOrUpdate(ptm);
+            /*
+              2、添加流程的历程
+             */
+            ptm = new ProcessTrackModel();
+            ptm.setDescribed(desc);
+            ptm.setProcessInstanceId(hisTaskModelTemp.getProcessInstanceId());
+            ptm.setReceiverName(userName);
+            ptm.setSenderName(userName);
+            ptm.setStartTime(Y9DateTimeUtils.formatCurrentDateTime());
+            ptm.setEndTime("");
+            ptm.setTaskDefName(hisTaskModelTemp.getName());
+            ptm.setTaskId(hisTaskModelTemp.getId());
+            processTrackApi.saveOrUpdate(ptm);
+            asyncUtilService.resumeToDoAuditLog(tenantId, processInstanceId, title);
+        } catch (Exception e) {
+            LOGGER.error("runtimeApi resumeToDo error", e);
+            throw new Exception("runtimeApi resumeToDo error");
+        }
+    }
+
+    @Override
+    public Y9Result<String> resumeToDoAndReposition(String processInstanceId, String desc) {
+        String positionId = Y9FlowableHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            // 1、恢复待办
+            String year;
+            OfficeDoneInfoModel officeDoneInfoModel =
+                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            if (officeDoneInfoModel != null) {
+                year = officeDoneInfoModel.getStartTime().substring(0, 4);
+            } else {
+                ProcessParamModel processParamModel =
+                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                year = getYear(processParamModel.getCreateTime());
+            }
+            HistoricTaskInstanceModel hisTaskModel =
+                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
+                    .getData()
+                    .get(0);
+            runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
+            // 2、添加动作名称
+            Map<String, Object> vars = new HashMap<>();
+            vars.put("val", desc);
+            variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId,
+                SysVariables.ACTION_NAME + ":" + positionId, vars);
+            // 3、重定位，谁激活就重定位给谁
+            buttonOperationApi.reposition(tenantId, positionId, hisTaskModel.getId(),
+                hisTaskModel.getTaskDefinitionKey(), List.of(positionId), desc, "");
+            return Y9Result.successMsg(desc + "成功");
+        } catch (Exception e) {
+            LOGGER.error("{}异常", desc, e);
+        }
+        return Y9Result.failure(desc + "失败");
     }
 }

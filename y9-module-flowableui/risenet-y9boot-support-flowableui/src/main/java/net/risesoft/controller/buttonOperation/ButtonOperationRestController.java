@@ -1312,11 +1312,11 @@ public class ButtonOperationRestController {
             }
             asyncUtilService.rollbackAuditLog(tenantId, positionId, taskId, reason);
             // 更新自定义历程结束时间
-            List<ProcessTrackModel> ptModelList = processTrackApi.findByTaskId(tenantId, taskId).getData();
+            List<ProcessTrackModel> ptModelList = processTrackApi.findByTaskId(taskId).getData();
             for (ProcessTrackModel ptModel : ptModelList) {
                 if (StringUtils.isBlank(ptModel.getEndTime())) {
                     try {
-                        processTrackApi.saveOrUpdate(tenantId, ptModel);
+                        processTrackApi.saveOrUpdate(ptModel);
                     } catch (Exception e) {
                         LOGGER.error("更新自定义历程结束时间失败", e);
                     }
@@ -1541,11 +1541,11 @@ public class ButtonOperationRestController {
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             buttonOperationApi.specialComplete(tenantId, positionId, taskId, reason);
             // 更新自定义历程结束时间
-            List<ProcessTrackModel> ptModelList = processTrackApi.findByTaskId(tenantId, taskId).getData();
+            List<ProcessTrackModel> ptModelList = processTrackApi.findByTaskId(taskId).getData();
             for (ProcessTrackModel ptModel : ptModelList) {
                 if (StringUtils.isBlank(ptModel.getEndTime())) {
                     try {
-                        processTrackApi.saveOrUpdate(tenantId, ptModel);
+                        processTrackApi.saveOrUpdate(ptModel);
                     } catch (Exception e) {
                         LOGGER.error("specialComplete error", e);
                     }
@@ -1564,7 +1564,7 @@ public class ButtonOperationRestController {
             ptModel.setTaskDefName("特殊办结");
             ptModel.setTaskId(taskId);
             ptModel.setId("");
-            processTrackApi.saveOrUpdate(tenantId, ptModel);
+            processTrackApi.saveOrUpdate(ptModel);
             asyncUtilService.specialCompleteAuditLog(tenantId, positionId, taskId);
             return Y9Result.successMsg("特殊办结成功");
         } catch (Exception e) {
