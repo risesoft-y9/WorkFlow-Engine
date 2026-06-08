@@ -134,7 +134,7 @@ public class ButtonOperationExtendRestController {
                 }
                 return Y9Result.success(mainTargetModelList);
             } else {
-                SignDeptDetailModel signDeptDetail = signDeptDetailApi.findById(tenantId, documentId).getData();
+                SignDeptDetailModel signDeptDetail = signDeptDetailApi.findById(documentId).getData();
                 if (!signDeptDetail.getStatus().equals(SignDeptDetailStatusEnum.DOING)) {
                     return Y9Result.failure("不能重定向，" + signDeptDetail.getDeptName() + "的会签件已被处理。");
                 }

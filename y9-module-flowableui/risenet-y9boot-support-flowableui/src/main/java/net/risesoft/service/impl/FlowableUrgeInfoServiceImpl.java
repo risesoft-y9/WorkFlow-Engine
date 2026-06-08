@@ -59,7 +59,7 @@ public class FlowableUrgeInfoServiceImpl implements FlowableUrgeInfoService {
         String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         List<UrgeInfoModel> urgeList = urgeInfoApi.findByProcessSerialNumber(processSerialNumber).getData();
         List<SignDeptDetailModel> signDeptDetailList =
-            signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
         OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, positionId).getData();
         boolean isSub = signDeptDetailList.stream().anyMatch(sdd -> sdd.getDeptId().equals(bureau.getId()));
         /*

@@ -173,7 +173,7 @@ public class WorkListServiceImpl implements WorkListService {
                 mapTemp.putAll(getTaskNameAndUserName4Todo(ardModel));
             } else {
                 List<SignDeptDetailModel> signDeptDetailList =
-                    signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
                 if (!ardModel.isEnded()) {
                     mapTemp.put(SysVariables.ITEM_BOX,
                         isOrg ? ItemBoxTypeEnum.MONITOR_DOING.getValue() : ItemBoxTypeEnum.DOING.getValue());
@@ -242,7 +242,7 @@ public class WorkListServiceImpl implements WorkListService {
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             List<SignDeptDetailModel> signDeptDetailList =
-                signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
             mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
             mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
             mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
@@ -278,7 +278,7 @@ public class WorkListServiceImpl implements WorkListService {
             ProcessParamModel processParam =
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             List<SignDeptDetailModel> signDeptDetailList =
-                signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             boolean isSignDept = signDeptDetailList.stream()
                 .anyMatch(signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
@@ -319,7 +319,7 @@ public class WorkListServiceImpl implements WorkListService {
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             List<SignDeptDetailModel> signDeptDetailList =
-                signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
             mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
             mapTemp.put(FlowableUiConsts.SYSTEMCNNAME_KEY, processParam.getSystemCnName());
             mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
@@ -366,9 +366,8 @@ public class WorkListServiceImpl implements WorkListService {
             List<UrgeInfoModel> urgeInfoList = urgeInfoApi.findByProcessSerialNumber(processSerialNumber).getData();
             mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Done(ardModel, false, urgeInfoList));
             mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.MONITOR_DONE.getValue());
-            List<SignDeptDetailModel> signDeptDetailList = signDeptDetailApi
-                .findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), ardModel.getProcessSerialNumber())
-                .getData();
+            List<SignDeptDetailModel> signDeptDetailList =
+                signDeptDetailApi.findByProcessSerialNumber(ardModel.getProcessSerialNumber()).getData();
             mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                 getChildren(ardModel, mapTemp, List.of(), urgeInfoList, signDeptDetailList, true));
         } catch (Exception e) {
@@ -403,7 +402,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(SysVariables.ITEM_BOX, isBureau ? ItemBoxTypeEnum.MONITOR_DONE_BUREAU.getValue()
                 : ItemBoxTypeEnum.MONITOR_DONE_DEPT.getValue());
             List<SignDeptDetailModel> signDeptDetailList =
-                signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
             boolean isSignDept = signDeptDetailList.stream()
                 .anyMatch(signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
             List<UrgeInfoModel> urgeInfoList = urgeInfoApi.findByProcessSerialNumber(processSerialNumber).getData();
@@ -469,7 +468,7 @@ public class WorkListServiceImpl implements WorkListService {
                 ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
             mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, ardModel.getProcessDefinitionId());
             List<SignDeptDetailModel> signDeptDetailList =
-                signDeptDetailApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
             List<UrgeInfoModel> urgeInfoList = urgeInfoApi.findByProcessSerialNumber(processSerialNumber).getData();
             List<TaskRelatedModel> taskRelatedList;
             if (ardModel.isEnded()) {
