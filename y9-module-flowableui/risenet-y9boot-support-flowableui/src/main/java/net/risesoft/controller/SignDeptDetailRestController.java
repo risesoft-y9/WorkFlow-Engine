@@ -113,10 +113,10 @@ public class SignDeptDetailRestController {
             .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DONE))
             .anyMatch(ssd -> ssd.getDeptId().equals(signDeptDetail.getDeptId()));
         if (!match) {
-            List<SignDeptModel> sdmList = signDeptInfoApi.getSignDeptList(tenantId, "0", processSerialNumber).getData();
+            List<SignDeptModel> sdmList = signDeptInfoApi.getSignDeptList("0", processSerialNumber).getData();
             sdmList.stream()
                 .filter(sdm -> sdm.getDeptId().equals(signDeptDetail.getDeptId()))
-                .forEach(sdm -> signDeptInfoApi.deleteById(tenantId, Y9FlowableHolder.getPositionId(), sdm.getId()));
+                .forEach(sdm -> signDeptInfoApi.deleteById(sdm.getId()));
         }
         return Y9Result.success();
     }
@@ -229,11 +229,10 @@ public class SignDeptDetailRestController {
         /*
          * 4、如果该部门不存在委内会签部门，则新增委内会签部门
          */
-        List<SignDeptModel> sdmList = signDeptInfoApi.getSignDeptList(tenantId, "0", processSerialNumber).getData();
+        List<SignDeptModel> sdmList = signDeptInfoApi.getSignDeptList("0", processSerialNumber).getData();
         boolean match = sdmList.stream().anyMatch(sdm -> sdm.getDeptId().equals(ssd.getDeptId()));
         if (!match) {
-            signDeptInfoApi.addSignDept(tenantId, Y9FlowableHolder.getPosition().getId(), ssd.getDeptId(), "0",
-                processSerialNumber);
+            signDeptInfoApi.addSignDept(ssd.getDeptId(), "0", processSerialNumber);
         }
         return Y9Result.success();
     }

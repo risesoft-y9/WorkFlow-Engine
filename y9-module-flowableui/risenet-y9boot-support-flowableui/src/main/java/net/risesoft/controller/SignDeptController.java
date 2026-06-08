@@ -2,6 +2,7 @@ package net.risesoft.controller;
 
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,8 +20,6 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.platform.org.Department;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 会签信息
@@ -46,7 +45,7 @@ public class SignDeptController {
     @FlowableLog(operationName = "删除会签信息", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteById")
     public Y9Result<Object> deleteById(@RequestParam String id) {
-        return signDeptInfoApi.deleteById(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), id);
+        return signDeptInfoApi.deleteById(id);
     }
 
     /**
@@ -60,7 +59,7 @@ public class SignDeptController {
     @GetMapping(value = "/getSignDeptList")
     public Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam String processSerialNumber,
         @RequestParam String deptType) {
-        return signDeptInfoApi.getSignDeptList(Y9LoginUserHolder.getTenantId(), deptType, processSerialNumber);
+        return signDeptInfoApi.getSignDeptList(deptType, processSerialNumber);
     }
 
     /**
@@ -72,7 +71,7 @@ public class SignDeptController {
     @FlowableLog(operationName = "获取委外会签部门树")
     @GetMapping(value = "/getSignOutDeptTree")
     public Y9Result<List<Department>> getSignOutDeptTree(@RequestParam(required = false) String id) {
-        return signDeptInfoApi.getSignOutDeptTree(Y9LoginUserHolder.getTenantId(), id);
+        return signDeptInfoApi.getSignOutDeptTree(id);
     }
 
     /**
@@ -88,8 +87,7 @@ public class SignDeptController {
     @PostMapping(value = "/saveSignDept")
     public Y9Result<Object> saveSignDept(@RequestParam String processSerialNumber, @RequestParam String deptType,
         @RequestParam String deptIds, @RequestParam(required = false) String tzsDeptId) {
-        return signDeptInfoApi.saveSignDept(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), deptIds,
-            deptType, processSerialNumber, tzsDeptId);
+        return signDeptInfoApi.saveSignDept(deptIds, deptType, processSerialNumber, tzsDeptId);
     }
 
     /**
@@ -102,7 +100,7 @@ public class SignDeptController {
     @FlowableLog(operationName = "保存会签签名", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveSignDeptInfo")
     public Y9Result<Object> saveSignDeptInfo(@RequestParam String id, @RequestParam(required = false) String userName) {
-        return signDeptInfoApi.saveSignDeptInfo(Y9LoginUserHolder.getTenantId(), id, userName);
+        return signDeptInfoApi.saveSignDeptInfo(id, userName);
     }
 
     /**
@@ -117,7 +115,6 @@ public class SignDeptController {
     @PostMapping(value = "/updateSignDept")
     public Y9Result<Object> updateSignDept(@RequestParam String processSerialNumber, @RequestParam String type,
         @RequestParam String tzsDeptId) {
-        return signDeptInfoApi.updateSignDept(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(),
-            processSerialNumber, type, tzsDeptId);
+        return signDeptInfoApi.updateSignDept(processSerialNumber, type, tzsDeptId);
     }
 }

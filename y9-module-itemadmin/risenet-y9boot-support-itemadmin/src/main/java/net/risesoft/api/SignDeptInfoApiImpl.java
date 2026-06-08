@@ -21,13 +21,11 @@ import net.risesoft.entity.SignOutDeptType;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.model.itemadmin.SignDeptModel;
 import net.risesoft.model.platform.org.Department;
-import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.jpa.SignOutDeptRepository;
 import net.risesoft.repository.jpa.SignOutDeptTypeRepository;
 import net.risesoft.service.SignDeptInfoService;
 import net.risesoft.service.SignDeptOutService;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -56,8 +54,6 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     /**
      * 添加会签信息
      *
-     * @param tenantId 租户ID
-     * @param positionId 岗位id
      * @param deptIds 部门ids
      * @param deptType 单位类型（0：委内，1：委外）
      * @param processSerialNumber 流程编号
@@ -65,11 +61,8 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Object> addSignDept(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, positionId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<Object> addSignDept(@RequestParam String deptIds, @RequestParam String deptType,
+        @RequestParam String processSerialNumber) {
         signDeptInfoService.addSignDept(processSerialNumber, deptType, deptIds);
         return Y9Result.success();
     }
@@ -77,25 +70,18 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     /**
      * 根据主键删除会签信息
      *
-     * @param tenantId 租户ID
      * @param id 主键
      * @return Y9Result<Object>
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Object> deleteById(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, positionId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<Object> deleteById(@RequestParam String id) {
         signDeptInfoService.deleteById(id);
         return Y9Result.success();
     }
 
     @Override
-    public Y9Result<Map<String, String>> findByDeptNameMax(@RequestParam String tenantId,
-        @RequestParam String deptNameMax) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Map<String, String>> findByDeptNameMax(@RequestParam String deptNameMax) {
         Map<String, String> map = new HashMap<String, String>();
 
         SignOutDept signOutDept = signDeptOutService.findByDeptNameMax(deptNameMax);
@@ -115,16 +101,14 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     /**
      * 根据流程编号获取会签信息
      *
-     * @param tenantId 租户ID
      * @param deptType 单位类型（0：委内，1：委外）
      * @param processSerialNumber 流程编号
      * @return Y9Result<List < SignDeptModel>
      * @since 9.6.0
      */
     @Override
-    public Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam String tenantId, @RequestParam String deptType,
+    public Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam String deptType,
         @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
         List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(processSerialNumber, deptType);
         List<SignDeptModel> modelList = new ArrayList<>();
         for (SignDeptInfo signDeptInfo : list) {
@@ -138,14 +122,11 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     /**
      * 获取委外会签单位树
      *
-     * @param tenantId 租户ID
      * @return Y9Result<List < Department>>
      * @since 9.6.0
      */
     @Override
-    public Y9Result<List<Department>> getSignOutDeptTree(@RequestParam String tenantId,
-        @RequestParam(required = false) String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<Department>> getSignOutDeptTree(@RequestParam(required = false) String id) {
         List<Department> modelList = new ArrayList<>();
         if (StringUtils.isBlank(id)) {
             List<SignOutDeptType> typelist = signOutDeptTypeRepository.findByIsForbiddenOrderByTabIndexAsc(0);
@@ -173,8 +154,7 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
 
     /**
      * 根据流程编号和部门ID判断是否是会签部门
-     *
-     * @param tenantId 租户ID
+     * 
      * @param deptId 部门ID
      * @param deptType 单位类型（0：委内，1：委外）
      * @param processSerialNumber 流程编号
@@ -182,9 +162,8 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Boolean> isSignDept(@RequestParam String tenantId, @RequestParam String deptId,
-        @RequestParam String deptType, @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Boolean> isSignDept(@RequestParam String deptId, @RequestParam String deptType,
+        @RequestParam String processSerialNumber) {
         List<SignDeptInfo> list = signDeptInfoService.getSignDeptList(processSerialNumber, deptType);
         if (list.isEmpty()) {
             return Y9Result.success(false);
@@ -195,8 +174,6 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     /**
      * 保存会签信息
      *
-     * @param tenantId 租户ID
-     * @param positionId 岗位id
      * @param deptIds 部门ids
      * @param deptType 单位类型（0：委内，1：委外）
      * @param processSerialNumber 流程编号
@@ -205,12 +182,8 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Object> saveSignDept(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String deptIds, @RequestParam String deptType, @RequestParam String processSerialNumber,
-        String tzsDeptId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, positionId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<Object> saveSignDept(@RequestParam String deptIds, @RequestParam String deptType,
+        @RequestParam String processSerialNumber, String tzsDeptId) {
         signDeptInfoService.saveSignDept(processSerialNumber, deptType, deptIds, tzsDeptId);
         return Y9Result.success();
     }
@@ -218,15 +191,13 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     /**
      * 保存会签签名
      *
-     * @param tenantId 租户ID
      * @param id 主键
      * @param userName 签字人姓名
      * @return Y9Result<Object>
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Object> saveSignDeptInfo(@RequestParam String tenantId, @RequestParam String id, String userName) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> saveSignDeptInfo(@RequestParam String id, String userName) {
         signDeptInfoService.saveSignDeptInfo(id, userName);
         return Y9Result.success();
     }
@@ -234,8 +205,6 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
     /**
      * 插入或更新会签部门，更新显示名称
      *
-     * @param tenantId 租户ID
-     * @param positionId 岗位id
      * @param processSerialNumber 流程编号
      * @param type 中央预算内投资计划下达类文件类型,1为是，0为否
      * @param tzsDeptId 司局部门id
@@ -243,12 +212,9 @@ public class SignDeptInfoApiImpl implements SignDeptInfoApi {
      * @since 9.6.0
      */
     @Override
-    public Y9Result<Object> updateSignDept(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String processSerialNumber, @RequestParam String type, @RequestParam String tzsDeptId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, positionId).getData();
-        Y9FlowableHolder.setPosition(position);
-        signDeptInfoService.updateSignDept(processSerialNumber, positionId, type, tzsDeptId);
+    public Y9Result<Object> updateSignDept(@RequestParam String processSerialNumber, @RequestParam String type,
+        @RequestParam String tzsDeptId) {
+        signDeptInfoService.updateSignDept(processSerialNumber, Y9LoginUserHolder.getPositionId(), type, tzsDeptId);
         return Y9Result.success();
     }
 }
