@@ -78,7 +78,7 @@ public class ProcessInstanceVueController {
             boolean b = customHistoricProcessService.removeProcess(processInstanceId);
             if (b) {
                 // 批量删除附件表
-                attachmentApi.delBatchByProcessSerialNumbers(tenantId, list);
+                attachmentApi.delBatchByProcessSerialNumbers(list);
                 // 批量删除正文表
                 y9WordApi.delBatchByProcessSerialNumbers(list);
                 return Y9Result.successMsg("删除成功");

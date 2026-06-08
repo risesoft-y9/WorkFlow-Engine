@@ -80,8 +80,9 @@ public class VueNTKOController {
         try {
             Map<String, Object> map = new HashMap<>();
             UserInfo userInfo = userApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setTenantId(tenantId);
             Y9LoginUserHolder.setUserInfo(userInfo);
-            AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
+            AttachmentModel file = attachmentApi.getFile(fileId).getData();
             String downloadUrl =
                 y9Config.getCommon().getItemAdminBaseUrl() + "/s/" + file.getFileStoreId() + "." + file.getFileType();
             map.put("fileName", file.getName());
