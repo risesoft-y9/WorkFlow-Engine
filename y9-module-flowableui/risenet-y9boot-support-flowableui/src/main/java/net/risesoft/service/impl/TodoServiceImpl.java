@@ -55,40 +55,6 @@ public class TodoServiceImpl implements TodoService {
     private final HandleFormDataService handleFormDataService;
     private final UtilService utilService;
 
-    @Override
-    public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9FlowableHolder.getPositionId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            String processDefinitionKey = item.getWorkflowGuid();
-            String itemName = item.getName();
-            Y9Page<TaskModel> taskPage;
-            if (StringUtils.isBlank(searchTerm)) {
-                taskPage = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                    processDefinitionKey, page, rows);
-            } else {
-                taskPage = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                    processDefinitionKey, searchTerm, page, rows);
-            }
-            List<TaskModel> taskList = taskPage.getRows();
-            List<Map<String, Object>> items = new ArrayList<>();
-            List<String> processSerialNumbers = new ArrayList<>();
-            int serialNumber = (page - 1) * rows;
-            for (TaskModel task : taskList) {
-                Map<String, Object> itemMap = buildTodoListItem(task, tenantId, itemId, itemName, processSerialNumbers);
-                itemMap.put("serialNumber", serialNumber + 1);
-                serialNumber++;
-                items.add(itemMap);
-            }
-            handleFormDataService.execute(itemId, items, processSerialNumbers);
-            return Y9Page.success(page, taskPage.getTotalPages(), taskPage.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
-        }
-        return Y9Page.failure(0, 0, 0, List.of(), "获取列表失败", 500);
-    }
-
     private Map<String, Object> buildTodoListItem(TaskModel task, String tenantId, String itemId, String itemName,
         List<String> processSerialNumbers) {
         Map<String, Object> mapTemp = new HashMap<>(16);
@@ -183,29 +149,6 @@ public class TodoServiceImpl implements TodoService {
         }
     }
 
-    private void handleTaskStatusFlags(Map<String, Object> mapTemp, TaskModel task, String tenantId,
-        String processInstanceId) {
-        String taskId = task.getId();
-        try {
-            // 发送标识
-            mapTemp.put(FlowableUiConsts.ISFORWARDING_KEY, false);
-            TaskVariableModel taskVariableModel =
-                taskvariableApi.findByTaskIdAndKeyName(tenantId, taskId, FlowableUiConsts.ISFORWARDING_KEY).getData();
-            if (taskVariableModel != null) {
-                mapTemp.put(FlowableUiConsts.ISFORWARDING_KEY, taskVariableModel.getText().contains("true"));
-            }
-            // 退回件标识
-            String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-            if (Boolean.parseBoolean(rollBack)) {
-                mapTemp.put("rollBack", true);
-            }
-            // 收回件标识
-            handleTakeBackFlag(mapTemp, task, tenantId, processInstanceId);
-        } catch (Exception e) {
-            LOGGER.warn("处理任务状态标识异常, taskId: {}", taskId, e);
-        }
-    }
-
     private void handleTakeBackFlag(Map<String, Object> mapTemp, TaskModel task, String tenantId,
         String processInstanceId) {
         try {
@@ -222,5 +165,62 @@ public class TodoServiceImpl implements TodoService {
         } catch (Exception e) {
             LOGGER.error("收回件异常", e);
         }
+    }
+
+    private void handleTaskStatusFlags(Map<String, Object> mapTemp, TaskModel task, String tenantId,
+        String processInstanceId) {
+        String taskId = task.getId();
+        try {
+            // 发送标识
+            mapTemp.put(FlowableUiConsts.ISFORWARDING_KEY, false);
+            TaskVariableModel taskVariableModel =
+                taskvariableApi.findByTaskIdAndKeyName(taskId, FlowableUiConsts.ISFORWARDING_KEY).getData();
+            if (taskVariableModel != null) {
+                mapTemp.put(FlowableUiConsts.ISFORWARDING_KEY, taskVariableModel.getText().contains("true"));
+            }
+            // 退回件标识
+            String rollBack = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
+            if (Boolean.parseBoolean(rollBack)) {
+                mapTemp.put("rollBack", true);
+            }
+            // 收回件标识
+            handleTakeBackFlag(mapTemp, task, tenantId, processInstanceId);
+        } catch (Exception e) {
+            LOGGER.warn("处理任务状态标识异常, taskId: {}", taskId, e);
+        }
+    }
+
+    @Override
+    public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String positionId = Y9FlowableHolder.getPositionId();
+            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            String processDefinitionKey = item.getWorkflowGuid();
+            String itemName = item.getName();
+            Y9Page<TaskModel> taskPage;
+            if (StringUtils.isBlank(searchTerm)) {
+                taskPage = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    processDefinitionKey, page, rows);
+            } else {
+                taskPage = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    processDefinitionKey, searchTerm, page, rows);
+            }
+            List<TaskModel> taskList = taskPage.getRows();
+            List<Map<String, Object>> items = new ArrayList<>();
+            List<String> processSerialNumbers = new ArrayList<>();
+            int serialNumber = (page - 1) * rows;
+            for (TaskModel task : taskList) {
+                Map<String, Object> itemMap = buildTodoListItem(task, tenantId, itemId, itemName, processSerialNumbers);
+                itemMap.put("serialNumber", serialNumber + 1);
+                serialNumber++;
+                items.add(itemMap);
+            }
+            handleFormDataService.execute(itemId, items, processSerialNumbers);
+            return Y9Page.success(page, taskPage.getTotalPages(), taskPage.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取待办异常", e);
+        }
+        return Y9Page.failure(0, 0, 0, List.of(), "获取列表失败", 500);
     }
 }
