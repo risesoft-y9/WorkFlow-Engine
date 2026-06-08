@@ -148,6 +148,33 @@ public class OperationServiceImpl implements OperationService {
 
     @Override
     @Transactional
+    public void rollBack(String taskId, String reason) {
+        String userName = Y9FlowableHolder.getPosition().getName();
+        HistoricTaskInstance thePreviousTask = this.customHistoricTaskService.getThePreviousTask(taskId);
+        String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
+            processInstanceId = thePreviousTask.getProcessInstanceId();
+        /*
+         * 设置任务的完成动作
+         */
+        this.customVariableService.setVariableLocal(taskId, SysVariables.ACTION_NAME, SysVariables.ROLLBACK);
+        /*
+         * 把taskId对应的任务的发送岗位作为接受的岗位
+         */
+        HistoricVariableInstance taskSenderIdObject =
+            this.customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.TASK_SENDER_ID, "");
+        String user = taskSenderIdObject != null ? taskSenderIdObject.getValue().toString() : "";
+        List<String> users = new ArrayList<>();
+        users.add(user);
+        this.managementService
+            .executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, "该任务由" + userName + "驳回：" + reason));
+        List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
+        for (Task task : taskList) {
+            this.customVariableService.setVariableLocal(task.getId(), SysVariables.ROLLBACK, true);
+        }
+    }
+
+    @Override
+    @Transactional
     public void rollBack2History(String taskId, String targetTaskDefineKey, List<String> users, String reason,
         String sponsorGuid) {
         OrgUnit position = Y9FlowableHolder.getPosition();
@@ -178,35 +205,8 @@ public class OperationServiceImpl implements OperationService {
             taskRelatedModel.setSenderId(position.getId());
             taskRelatedModel.setSenderName(position.getName());
             taskRelatedModel.setSub(isSub);
-            this.taskRelatedApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), taskRelatedModel);
+            this.taskRelatedApi.saveOrUpdate(taskRelatedModel);
         });
-    }
-
-    @Override
-    @Transactional
-    public void rollBack(String taskId, String reason) {
-        String userName = Y9FlowableHolder.getPosition().getName();
-        HistoricTaskInstance thePreviousTask = this.customHistoricTaskService.getThePreviousTask(taskId);
-        String targetTaskDefineKey = thePreviousTask.getTaskDefinitionKey(),
-            processInstanceId = thePreviousTask.getProcessInstanceId();
-        /*
-         * 设置任务的完成动作
-         */
-        this.customVariableService.setVariableLocal(taskId, SysVariables.ACTION_NAME, SysVariables.ROLLBACK);
-        /*
-         * 把taskId对应的任务的发送岗位作为接受的岗位
-         */
-        HistoricVariableInstance taskSenderIdObject =
-            this.customHistoricVariableService.getByTaskIdAndVariableName(taskId, SysVariables.TASK_SENDER_ID, "");
-        String user = taskSenderIdObject != null ? taskSenderIdObject.getValue().toString() : "";
-        List<String> users = new ArrayList<>();
-        users.add(user);
-        this.managementService
-            .executeCommand(new JumpCommand(taskId, targetTaskDefineKey, users, "该任务由" + userName + "驳回：" + reason));
-        List<Task> taskList = this.customTaskService.listByProcessInstanceId(processInstanceId);
-        for (Task task : taskList) {
-            this.customVariableService.setVariableLocal(task.getId(), SysVariables.ROLLBACK, true);
-        }
     }
 
     @Override
