@@ -47,81 +47,6 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
     private final ReceiveDepartmentRepository receiveDepartmentRepository;
 
     /**
-     * 根据单位名称模糊查询收发单位
-     *
-     * @param tenantId 租户id
-     * @param name 单位名称
-     * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<List<ReceiveOrgUnit>> findByDeptNameLike(@RequestParam String tenantId, @RequestParam String name) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        List<ReceiveOrgUnit> listMap = new ArrayList<>();
-        if (StringUtils.isBlank(name)) {
-            name = "";
-        }
-        name = "%" + name + "%";
-        List<ReceiveDepartment> list = receiveDepartmentRepository.findByDeptNameLikeOrderByTabIndex(name);
-        for (ReceiveDepartment receiveDepartment : list) {
-            buildReceiveOrgUnit(tenantId, listMap, receiveDepartment, receiveDepartment.getParentId(), true);
-        }
-        return Y9Result.success(listMap);
-    }
-
-    /**
-     * 获取所有收发单位
-     *
-     * @param tenantId 租户id
-     * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTree(@RequestParam String tenantId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        List<ReceiveOrgUnit> listMap = new ArrayList<>();
-        List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
-        for (ReceiveDepartment receiveDepartment : list) {
-            buildReceiveOrgUnit(tenantId, listMap, receiveDepartment, receiveDepartment.getParentId(), true);
-        }
-        return Y9Result.success(listMap);
-    }
-
-    /**
-     * 获取所有收发单位、子收发单位（可根据单位名称模糊查询）
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 单位Id
-     * @param name 名称
-     * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTreeById(@RequestParam String tenantId,
-        @RequestParam String orgUnitId, String name) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        List<ReceiveOrgUnit> listMap = new ArrayList<>();
-        if (StringUtils.isNotBlank(name)) {
-            List<ReceiveDepartment> list = receiveDepartmentRepository.findByDeptNameContainingOrderByTabIndex(name);
-            for (ReceiveDepartment receiveDepartment : list) {
-                buildReceiveOrgUnit(tenantId, listMap, receiveDepartment, receiveDepartment.getParentId(), true);
-            }
-        } else {
-            List<ReceiveDepartment> list;
-            if (StringUtils.isBlank(orgUnitId)) {
-                list = receiveDepartmentRepository.findAll();
-            } else {
-                list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(orgUnitId);
-            }
-            for (ReceiveDepartment receiveDepartment : list) {
-                String parentId = StringUtils.isNotBlank(orgUnitId) ? orgUnitId : receiveDepartment.getParentId();
-                buildReceiveOrgUnit(tenantId, listMap, receiveDepartment, parentId, false);
-            }
-        }
-        return Y9Result.success(listMap);
-    }
-
-    /**
      * 构建收发单位对象
      */
     private void buildReceiveOrgUnit(String tenantId, List<ReceiveOrgUnit> listMap, ReceiveDepartment receiveDepartment,
@@ -152,20 +77,90 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
     }
 
     /**
+     * 根据单位名称模糊查询收发单位
+     *
+     * @param name 单位名称
+     * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<ReceiveOrgUnit>> findByDeptNameLike(@RequestParam String name) {
+        List<ReceiveOrgUnit> listMap = new ArrayList<>();
+        if (StringUtils.isBlank(name)) {
+            name = "";
+        }
+        name = "%" + name + "%";
+        List<ReceiveDepartment> list = receiveDepartmentRepository.findByDeptNameLikeOrderByTabIndex(name);
+        for (ReceiveDepartment receiveDepartment : list) {
+            buildReceiveOrgUnit(Y9LoginUserHolder.getTenantId(), listMap, receiveDepartment,
+                receiveDepartment.getParentId(), true);
+        }
+        return Y9Result.success(listMap);
+    }
+
+    /**
+     * 获取所有收发单位
+     *
+     * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTree() {
+        List<ReceiveOrgUnit> listMap = new ArrayList<>();
+        List<ReceiveDepartment> list = receiveDepartmentRepository.findAll();
+        for (ReceiveDepartment receiveDepartment : list) {
+            buildReceiveOrgUnit(Y9LoginUserHolder.getTenantId(), listMap, receiveDepartment,
+                receiveDepartment.getParentId(), true);
+        }
+        return Y9Result.success(listMap);
+    }
+
+    /**
+     * 获取所有收发单位、子收发单位（可根据单位名称模糊查询）
+     *
+     * @param orgUnitId 单位Id
+     * @param name 名称
+     * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTreeById(@RequestParam String orgUnitId, String name) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<ReceiveOrgUnit> listMap = new ArrayList<>();
+        if (StringUtils.isNotBlank(name)) {
+            List<ReceiveDepartment> list = receiveDepartmentRepository.findByDeptNameContainingOrderByTabIndex(name);
+            for (ReceiveDepartment receiveDepartment : list) {
+                buildReceiveOrgUnit(tenantId, listMap, receiveDepartment, receiveDepartment.getParentId(), true);
+            }
+        } else {
+            List<ReceiveDepartment> list;
+            if (StringUtils.isBlank(orgUnitId)) {
+                list = receiveDepartmentRepository.findAll();
+            } else {
+                list = receiveDepartmentRepository.findByParentIdOrderByTabIndex(orgUnitId);
+            }
+            for (ReceiveDepartment receiveDepartment : list) {
+                String parentId = StringUtils.isNotBlank(orgUnitId) ? orgUnitId : receiveDepartment.getParentId();
+                buildReceiveOrgUnit(tenantId, listMap, receiveDepartment, parentId, false);
+            }
+        }
+        return Y9Result.success(listMap);
+    }
+
+    /**
      * 根据收发单位id获取单位下未禁用的人员集合
      *
-     * @param tenantId 租户id
      * @param deptId 部门id
      * @return {@code Y9Result<List<Person>>} 通用请求返回对象 - data 是人员集合
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<OrgUnit>> getSendReceiveByDeptId(@RequestParam String tenantId, @RequestParam String deptId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<OrgUnit>> getSendReceiveByDeptId(@RequestParam String deptId) {
         List<ReceivePerson> list = receivePersonRepository.findByDeptId(deptId);
         List<OrgUnit> users = new ArrayList<>();
         for (ReceivePerson receivePerson : list) {
-            OrgUnit person = orgUnitApi.getPersonOrPosition(tenantId, receivePerson.getPersonId()).getData();
+            OrgUnit person =
+                orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), receivePerson.getPersonId()).getData();
             if (person != null && StringUtils.isNotBlank(person.getId())
                 && !Boolean.TRUE.equals(person.getDisabled())) {
                 users.add(person);
@@ -177,16 +172,13 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
     /**
      * 根据组织id获取对应的收发单位
      *
-     * @param tenantId 租户id
      * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<List<ReceiveOrgUnit>>} 通用请求返回对象 - data 是收发单位集合
      * @since 9.6.6
      */
     @Override
     @GetMapping(value = "/getSendReceiveByUserId")
-    public Y9Result<List<ReceiveOrgUnit>> getSendReceiveByUserId(@RequestParam String tenantId,
-        @RequestParam String orgUnitId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<ReceiveOrgUnit>> getSendReceiveByUserId(@RequestParam String orgUnitId) {
         List<ReceiveOrgUnit> listMap = new ArrayList<>();
         if (StringUtils.isBlank(orgUnitId)) {
             orgUnitId = "";
@@ -195,7 +187,8 @@ public class ReceiveDeptAndPersonApiImpl implements ReceiveDeptAndPersonApi {
         List<ReceivePerson> list = receivePersonRepository.findByPersonId(orgUnitId);
         if (!list.isEmpty()) {
             for (ReceivePerson receivePerson : list) {
-                Department department = departmentApi.get(tenantId, receivePerson.getDeptId()).getData();
+                Department department =
+                    departmentApi.get(Y9LoginUserHolder.getTenantId(), receivePerson.getDeptId()).getData();
                 if (department == null || department.getId() == null) {
                     continue;
                 }
