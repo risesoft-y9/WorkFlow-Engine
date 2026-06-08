@@ -8,12 +8,9 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.RejectReasonApi;
-import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.user.UserApi;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.RejectReasonService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 驳回原因接口
@@ -29,15 +26,11 @@ public class RejectReasonApiImpl implements RejectReasonApi {
 
     private final RejectReasonService rejectReasonService;
 
-    private final PersonApi personApi;
-
     private final UserApi userApi;
 
     /**
      * 保存驳回原因信息
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param action action
      * @param taskId 任务id
      * @param reason 理由
@@ -45,12 +38,7 @@ public class RejectReasonApiImpl implements RejectReasonApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> save(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam Integer action, @RequestParam String taskId, String reason) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-
+    public Y9Result<Object> save(@RequestParam Integer action, @RequestParam String taskId, String reason) {
         rejectReasonService.save(reason, taskId, action);
         return Y9Result.success();
     }
