@@ -2,7 +2,6 @@ package net.risesoft.api;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.IntStream;
 
 import org.springframework.http.MediaType;
@@ -22,12 +21,8 @@ import net.risesoft.dto.itemadmin.IdsDTO;
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.entity.attachment.AttachmentConf;
 import net.risesoft.enums.ItemAdminAuditLogEnum;
-import net.risesoft.id.IdType;
-import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.AttachmentConfModel;
 import net.risesoft.model.itemadmin.AttachmentModel;
-import net.risesoft.model.platform.org.Position;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
@@ -36,9 +31,6 @@ import net.risesoft.repository.attachment.AttachmentRepository;
 import net.risesoft.service.attachment.AttachmentService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
-import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
 import net.risesoft.y9.util.Y9StringUtil;
 
@@ -70,15 +62,13 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 根据流程编号删除附件
      *
-     * @param tenantId 租户id
+     * 
      * @param processSerialNumbers 流程编号
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delBatchByProcessSerialNumbers(@RequestParam String tenantId,
-        @RequestBody List<String> processSerialNumbers) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> delBatchByProcessSerialNumbers(@RequestBody List<String> processSerialNumbers) {
         attachmentService.delBatchByProcessSerialNumbers(processSerialNumbers);
         return Y9Result.success();
     }
@@ -99,14 +89,13 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 根据流程编号获取附件数量
      *
-     * @param tenantId 租户id
+     * 
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data是附件数
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> fileCounts(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Integer> fileCounts(@RequestParam String processSerialNumber) {
         int num = attachmentService.fileCounts(processSerialNumber);
         return Y9Result.success(num);
     }
@@ -114,14 +103,13 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 根据附件id获取附件信息
      *
-     * @param tenantId 租户id
+     * 
      * @param id 附件id
      * @return {@code Y9Result<AttachmentModel>} 通用请求返回对象 - data是附件对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<AttachmentModel> findById(@RequestParam String tenantId, @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<AttachmentModel> findById(@RequestParam String id) {
         Attachment file = attachmentService.findById(id);
         AttachmentModel model = null;
         if (file != null) {
@@ -134,7 +122,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 根据流程编号、附件来源、文件类型获取附件数量
      *
-     * @param tenantId 租户id
+     * 
      * @param processSerialNumber 流程编号
      * @param fileSource 附件来源
      * @param fileType 文件类型
@@ -142,9 +130,8 @@ public class AttachmentApiImpl implements AttachmentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getAttachmentCount(@RequestParam String tenantId, @RequestParam String processSerialNumber,
-        String fileSource, String fileType) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Integer> getAttachmentCount(@RequestParam String processSerialNumber, String fileSource,
+        String fileType) {
         fileType = fileType.toLowerCase();
         int num = attachmentService.getAttachmentCount(processSerialNumber, fileSource, fileType);
         return Y9Result.success(num);
@@ -153,7 +140,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 获取附件分页列表
      *
-     * @param tenantId 租户id
+     * 
      * @param processSerialNumber 流程编号
      * @param fileSource 附件来源
      * @param page 页码
@@ -162,23 +149,21 @@ public class AttachmentApiImpl implements AttachmentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<AttachmentModel> getAttachmentList(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber, String fileSource, @RequestParam int page, @RequestParam int rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<AttachmentModel> getAttachmentList(@RequestParam String processSerialNumber, String fileSource,
+        @RequestParam int page, @RequestParam int rows) {
         return attachmentService.pageByProcessSerialNumber(processSerialNumber, fileSource, page, rows);
     }
 
     /**
      * 获取附件文件信息
      *
-     * @param tenantId 租户id
+     * 
      * @param fileId 附件id
      * @return {@code Y9Result<AttachmentModel>} 通用请求返回对象 - data是附件对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<AttachmentModel> getFile(@RequestParam String tenantId, @RequestParam String fileId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<AttachmentModel> getFile(@RequestParam String fileId) {
         Attachment file = attachmentRepository.findById(fileId).orElse(null);
         AttachmentModel model = null;
         if (file != null) {
@@ -189,136 +174,9 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
-     * 保存附件信息
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param attachjson 附件信息
-     * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public Y9Result<Object> saveAttachment(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String attachjson, @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        Map<String, Object> attachmentJson = Y9JsonUtil.readValue(attachjson, Map.class);
-        assert attachmentJson != null;
-        List<Map<String, Object>> attachmentList = (List<Map<String, Object>>)attachmentJson.get("attachment");
-        for (Map<String, Object> map : attachmentList) {
-            Attachment file = new Attachment();
-            file.setDescribes(map.get("describes") == null ? "" : map.get("describes").toString());
-            file.setFileStoreId(map.get("filePath").toString());
-            file.setFileSize(map.get("fileSize") == null ? "" : map.get("fileSize").toString());
-            file.setFileSource(map.get("fileSource") == null ? "" : map.get("fileSource").toString());
-            file.setFileType(map.get("fileType") == null ? "" : map.get("fileType").toString());
-            file.setId(map.get("id").toString());
-            file.setName(map.get("fileName").toString());
-            file.setPersonId(map.get("personId") == null ? "" : map.get("personId").toString());
-            file.setPersonName(map.get("personName") == null ? "" : map.get("personName").toString());
-            file.setProcessSerialNumber(processSerialNumber);
-            file.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
-            attachmentRepository.save(file);
-            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-                .action(ItemAdminAuditLogEnum.ATTACHMENT_SAVEINFO.getAction())
-                .description(
-                    Y9StringUtil.format(ItemAdminAuditLogEnum.ATTACHMENT_SAVEINFO.getDescription(), file.getName()))
-                .objectId(file.getId())
-                .oldObject(file)
-                .currentObject(null)
-                .build();
-            Y9Context.publishEvent(auditLogEvent);
-        }
-        return Y9Result.success();
-    }
-
-    /**
-     * 保存或更新附件上传信息
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param fileName 文件名称
-     * @param fileType 文件类型
-     * @param fileSizeString 文件大小
-     * @param fileSource 附件来源
-     * @param processInstanceId 流程实例id
-     * @param processSerialNumber 流程编号
-     * @param taskId 任务id
-     * @param y9FileStoreId 附件上传id
-     * @return {@code Y9Result<String>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<String> saveOrUpdateUploadInfo(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String fileName, String fileType, String fileSizeString, String fileSource,
-        String processInstanceId, String processSerialNumber, String taskId, @RequestParam String y9FileStoreId) {
-        String msg;
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        try {
-            Attachment attachment = attachmentService.getFileInfoByFileName(fileName, processSerialNumber);
-            if (null != attachment) {
-                attachment.setFileStoreId(y9FileStoreId);
-                attachment.setName(fileName);
-                attachment.setFileSize(fileSizeString);
-                attachment.setTaskId(taskId);
-                attachment.setPersonId(orgUnitId);
-                attachment.setPersonName(position.getName());
-                attachment.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
-                attachmentRepository.save(attachment);
-                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-                    .action(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD_INFO_UPDATE.getAction())
-                    .description(Y9StringUtil.format(
-                        ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD_INFO_UPDATE.getDescription(), attachment.getName()))
-                    .objectId(attachment.getId())
-                    .oldObject(attachment)
-                    .currentObject(null)
-                    .build();
-                Y9Context.publishEvent(auditLogEvent);
-            } else {
-                Attachment fileAttachment = new Attachment();
-                fileAttachment.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-                fileAttachment.setFileStoreId(y9FileStoreId);
-                fileAttachment.setName(fileName);
-                fileAttachment.setFileSize(fileSizeString);
-                fileAttachment.setFileType(fileType);
-                fileAttachment.setUploadTime(Y9DateTimeUtils.formatCurrentDateTime());
-                fileAttachment.setPersonId(orgUnitId);
-                fileAttachment.setPersonName(position.getName());
-                fileAttachment.setProcessInstanceId(processInstanceId);
-                fileAttachment.setProcessSerialNumber(processSerialNumber);
-                fileAttachment.setTaskId(taskId);
-                fileAttachment.setFileSource(fileSource);
-                fileAttachment.setTabIndex(attachmentService.fileCounts(processSerialNumber) + 1);
-                attachmentRepository.save(fileAttachment);
-                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-                    .action(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD.getAction())
-                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ATTACHMENT_UPLOAD.getDescription(),
-                        fileAttachment.getName()))
-                    .objectId(fileAttachment.getId())
-                    .oldObject(fileAttachment)
-                    .currentObject(null)
-                    .build();
-                Y9Context.publishEvent(auditLogEvent);
-            }
-
-            msg = "success:true";
-        } catch (Exception e) {
-            LOGGER.error("saveOrUpdateUploadInfo error", e);
-            msg = "success:false";
-        }
-        return Y9Result.success(msg);
-    }
-
-    /**
      * 更新附件信息
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
+     * 
      * @param fileId 文件id
      * @param fileSize 文件大小
      * @param taskId 任务id
@@ -327,12 +185,9 @@ public class AttachmentApiImpl implements AttachmentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> updateFile(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String fileId, String fileSize, String taskId, @RequestParam String y9FileStoreId) {
+    public Y9Result<String> updateFile(@RequestParam String fileId, String fileSize, String taskId,
+        @RequestParam String y9FileStoreId) {
         String msg;
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
         try {
             Attachment attachment = attachmentRepository.findById(fileId).orElse(null);
             if (null != attachment) {
@@ -361,9 +216,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 上传附件
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param orgUnitId 人员、岗位id
+     * 
      * @param fileName 文件名
      * @param fileSize 文件大小
      * @param processInstanceId 流程实例id
@@ -376,15 +229,9 @@ public class AttachmentApiImpl implements AttachmentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> upload(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String orgUnitId, @RequestParam String fileName, String fileSize, String processInstanceId,
+    public Y9Result<String> upload(@RequestParam String fileName, String fileSize, String processInstanceId,
         String taskId, String describes, String processSerialNumber, String fileSource,
         @RequestParam String y9FileStoreId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
         attachmentService.uploadRest(fileName, fileSize, processInstanceId, taskId, processSerialNumber, describes,
             fileSource, y9FileStoreId);
         return Y9Result.successMsg("上传成功");
@@ -393,18 +240,13 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 更新附件信息(model)
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
+     * 
      * @param attachmentModel 附件实体信息
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> uploadModel(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestBody AttachmentModel attachmentModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<Object> uploadModel(@RequestBody AttachmentModel attachmentModel) {
         Attachment file = new Attachment();
         Y9BeanUtil.copyProperties(attachmentModel, file);
         attachmentService.uploadRestModel(file);
@@ -414,14 +256,12 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 获取附件配置信息
      * 
-     * @param tenantId 租户id
+     * 
      * @param attachmentType 附件类型
      * @return Y9Result<List<AttachmentConfModel>>
      */
     @Override
-    public Y9Result<List<AttachmentConfModel>> findByAttachmentType(@RequestParam String tenantId,
-        @RequestParam String attachmentType) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<AttachmentConfModel>> findByAttachmentType(@RequestParam String attachmentType) {
         List<AttachmentConfModel> attachmentConfModelList = new ArrayList<>();
         List<AttachmentConf> attachmentConfList =
             attachmentConfRepository.findByAttachmentTypeOrderByTabIndexAsc(attachmentType);

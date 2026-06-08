@@ -42,7 +42,6 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AttachmentService;
 import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9FileUtil;
 import net.risesoft.y9.util.Y9StringUtil;
@@ -99,8 +98,7 @@ public class AttachmentServiceImpl implements AttachmentService {
         HttpServletRequest request) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Y9Page<AttachmentModel> y9Page =
-                attachmentApi.getAttachmentList(tenantId, processSerialNumber, fileSource, 1, 100);
+            Y9Page<AttachmentModel> y9Page = attachmentApi.getAttachmentList(processSerialNumber, fileSource, 1, 100);
             List<AttachmentModel> list = y9Page.getRows();
             // 拼接zip文件,之后下载下来的压缩文件的名字
             String base_name = "附件" + new Date().getTime();
@@ -183,7 +181,6 @@ public class AttachmentServiceImpl implements AttachmentService {
     @Override
     public Y9Result<String> upload(MultipartFile file, String processInstanceId, String taskId, String describes,
         String processSerialNumber, String fileSource) {
-        String userId = Y9LoginUserHolder.getUserInfo().getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             if (StringUtils.isNotBlank(describes)) {
@@ -197,8 +194,8 @@ public class AttachmentServiceImpl implements AttachmentService {
             String storeId = y9FileStore.getId();
             String fileSize =
                 Y9FileUtil.getDisplayFileSize(y9FileStore.getFileSize() != null ? y9FileStore.getFileSize() : 0);
-            return attachmentApi.upload(tenantId, userId, Y9FlowableHolder.getPositionId(), fileName, fileSize,
-                processInstanceId, taskId, describes, processSerialNumber, fileSource, storeId);
+            return attachmentApi.upload(fileName, fileSize, processInstanceId, taskId, describes, processSerialNumber,
+                fileSource, storeId);
         } catch (Exception e) {
             LOGGER.error("上传失败", e);
         }

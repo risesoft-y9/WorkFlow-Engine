@@ -63,7 +63,7 @@ public class FileNTKOController {
     public void openDoc(@RequestParam String fileId, @RequestParam String tenantId, HttpServletResponse response,
         HttpServletRequest request) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
+        AttachmentModel file = attachmentApi.getFile(fileId).getData();
         try (ServletOutputStream out = response.getOutputStream()) {
             String agent = request.getHeader("USER-AGENT");
             String fileName = file.getName();
@@ -120,15 +120,14 @@ public class FileNTKOController {
             Y9LoginUserHolder.setTenantId(tenantId);
             UserInfo userInfo = userApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setUserInfo(userInfo);
-            AttachmentModel file = attachmentApi.getFile(tenantId, fileId).getData();
+            AttachmentModel file = attachmentApi.getFile(fileId).getData();
             MultipartHttpServletRequest multipartRequest = (MultipartHttpServletRequest)request;
             MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
             String fullPath =
                 Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "attachmentFile", processSerialNumber);
             Y9FileStore y9FileStore =
                 y9FileStoreService.uploadFile(multipartFile.getInputStream(), fullPath, file.getName());
-            result = attachmentApi
-                .updateFile(tenantId, positionId, fileId, y9FileStore.getDisplayFileSize(), taskId, y9FileStore.getId())
+            result = attachmentApi.updateFile(fileId, y9FileStore.getDisplayFileSize(), taskId, y9FileStore.getId())
                 .getData();
         } catch (Exception e) {
             LOGGER.error("更新附件失败", e);

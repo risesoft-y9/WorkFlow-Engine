@@ -81,10 +81,8 @@ public class AttachmentRestController {
     @FlowableLog(operationName = "附件下载", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @GetMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, HttpServletResponse response) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-
         try (ServletOutputStream out = response.getOutputStream()) {
-            AttachmentModel model = attachmentApi.findById(tenantId, id).getData();
+            AttachmentModel model = attachmentApi.findById(id).getData();
             String filename = model.getName();
             String fileStoreId = model.getFileStoreId();
             response.setHeader("Content-disposition", ContentDispositionUtil.standardizeAttachment(filename));
@@ -120,8 +118,7 @@ public class AttachmentRestController {
     @GetMapping(value = "/getAttachmentList")
     public Y9Page<AttachmentModel> getAttachmentList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String fileSource, @RequestParam int page, @RequestParam int rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return attachmentApi.getAttachmentList(tenantId, processSerialNumber, fileSource, page, rows);
+        return attachmentApi.getAttachmentList(processSerialNumber, fileSource, page, rows);
     }
 
     /**
@@ -164,8 +161,7 @@ public class AttachmentRestController {
      */
     @GetMapping(value = "/getAttachmentConfig")
     public Y9Result<List<AttachmentConfModel>> getAttachmentConfig(@RequestParam @NotBlank String attachmentType) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return attachmentApi.findByAttachmentType(tenantId, attachmentType);
+        return attachmentApi.findByAttachmentType(attachmentType);
     }
 
     /**
@@ -215,7 +211,7 @@ public class AttachmentRestController {
             attachmentModel.setDeptName(department != null ? department.getName() : "");
             attachmentModel.setPersonId(userId);
             attachmentModel.setPersonName(userName);
-            return attachmentApi.uploadModel(tenantId, userId, attachmentModel);
+            return attachmentApi.uploadModel(attachmentModel);
         } catch (Exception e) {
             LOGGER.error("上传失败", e);
         }
