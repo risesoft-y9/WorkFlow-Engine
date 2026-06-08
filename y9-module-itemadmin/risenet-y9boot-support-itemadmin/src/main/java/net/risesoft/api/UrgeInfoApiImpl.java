@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -12,14 +13,10 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.UrgeInfoApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.UrgeInfo;
 import net.risesoft.model.itemadmin.UrgeInfoModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.UrgeInfoService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -33,25 +30,16 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequestMapping(value = "/services/rest/urgeInfo", produces = MediaType.APPLICATION_JSON_VALUE)
 public class UrgeInfoApiImpl implements UrgeInfoApi {
 
-    private final PersonApi personApi;
-
     private final UrgeInfoService urgeInfoService;
 
-    private final UserApi userApi;
-
     @Override
-    public Y9Result<Object> save(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String processSerialNumber, @RequestParam String msgContent) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        urgeInfoService.save(processSerialNumber, msgContent);
+    public Y9Result<Object> deleteById(String id) {
+        urgeInfoService.deleteById(id);
         return Y9Result.success();
     }
 
     @Override
-    public Y9Result<List<UrgeInfoModel>> findByProcessSerialNumber(String tenantId, String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<UrgeInfoModel>> findByProcessSerialNumber(String processSerialNumber) {
         List<UrgeInfo> urgeInfoList = urgeInfoService.findByProcessSerialNumber(processSerialNumber);
         List<UrgeInfoModel> modelList = new ArrayList<>();
         urgeInfoList.forEach(urgeInfo -> {
@@ -63,9 +51,8 @@ public class UrgeInfoApiImpl implements UrgeInfoApi {
     }
 
     @Override
-    public Y9Result<Object> deleteById(String tenantId, String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        urgeInfoService.deleteById(id);
+    public Y9Result<Object> save(@RequestParam String processSerialNumber, @RequestParam String msgContent) {
+        urgeInfoService.save(processSerialNumber, msgContent);
         return Y9Result.success();
     }
 }
