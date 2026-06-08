@@ -8,6 +8,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -37,7 +38,6 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -73,9 +73,7 @@ public class RemindInstanceRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         HistoricProcessInstanceModel his = historicProcessApi.getById(tenantId, processInstanceId).getData();
         List<TargetModel> list0 = processDefinitionApi.getNodes(tenantId, his.getProcessDefinitionId()).getData();
-        RemindInstanceModel remindInstance =
-            remindInstanceApi.getRemindInstance(tenantId, Y9FlowableHolder.getPositionId(), processInstanceId)
-                .getData();
+        RemindInstanceModel remindInstance = remindInstanceApi.getRemindInstance(processInstanceId).getData();
         retMap.put(REMINDTYPE_KEY, "");
         retMap.put("completeTaskKey", "");
         retMap.put("arriveTaskKey", "");
@@ -124,9 +122,8 @@ public class RemindInstanceRestController {
     public Y9Result<String> saveRemindInstance(@RequestParam @NotBlank String processInstanceId,
         @RequestParam(required = false) String taskIds, @RequestParam Boolean process,
         @RequestParam(required = false) String arriveTaskKey, @RequestParam(required = false) String completeTaskKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9FlowableHolder.getPositionId();
-        return remindInstanceApi.saveRemindInstance(tenantId, userId, processInstanceId, taskIds, process,
-            arriveTaskKey, completeTaskKey);
+        return remindInstanceApi.saveRemindInstance(processInstanceId, taskIds, process, arriveTaskKey,
+            completeTaskKey);
 
     }
 
@@ -150,9 +147,7 @@ public class RemindInstanceRestController {
             int serialNumber = 0;
             Map<String, Object> mapTemp;
             Date currentTime = new Date();
-            RemindInstanceModel remindInstance =
-                remindInstanceApi.getRemindInstance(tenantId, Y9FlowableHolder.getPositionId(), processInstanceId)
-                    .getData();
+            RemindInstanceModel remindInstance = remindInstanceApi.getRemindInstance(processInstanceId).getData();
             retMap.put(REMINDTYPE_KEY, "");
             retMap.put("taskIds", "");
             if (remindInstance != null) {

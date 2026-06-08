@@ -179,8 +179,7 @@ public class UtilServiceImpl implements UtilService {
     @Override
     public void setPublicData(Map<String, Object> mapTemp, String processInstanceId, List<TaskModel> taskList,
         ItemBoxTypeEnum itemBoxTypeEnum) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId(),
-            positionId = Y9FlowableHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         int chaosongNum = 0, speakInfoNum = 0, countFollow = 0;
         boolean isReminder = false;
         RemindInstanceModel remindInstanceModel = null;
@@ -190,8 +189,7 @@ public class UtilServiceImpl implements UtilService {
                 chaosongNum =
                     chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                 speakInfoNum = speakInfoApi.getNotReadCount(processInstanceId).getData();
-                remindInstanceModel =
-                    remindInstanceApi.getRemindInstance(tenantId, personId, processInstanceId).getData();
+                remindInstanceModel = remindInstanceApi.getRemindInstance(processInstanceId).getData();
                 countFollow =
                     officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                 isReminder = String.valueOf(taskList.get(0).getPriority()).contains("8");
