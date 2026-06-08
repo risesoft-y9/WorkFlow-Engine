@@ -123,8 +123,10 @@ public class VueNTKOController {
         @RequestParam(required = false) String browser, @RequestParam(required = false) String bindValue,
         @RequestParam(required = false) String positionId, @RequestParam String tenantId, @RequestParam String userId) {
         try {
-            Y9WordInfo wordInfo =
-                y9WordApi.showWord(tenantId, userId, processSerialNumber, itemId, itembox, taskId, bindValue).getData();
+            Y9LoginUserHolder.setTenantId(tenantId);
+            UserInfo userInfo = userApi.get(tenantId, userId).getData();
+            Y9LoginUserHolder.setUserInfo(userInfo);
+            Y9WordInfo wordInfo = y9WordApi.showWord(processSerialNumber, itemId, itembox, taskId, bindValue).getData();
             String documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();

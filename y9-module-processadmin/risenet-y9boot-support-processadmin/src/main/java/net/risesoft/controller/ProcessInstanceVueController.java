@@ -80,7 +80,7 @@ public class ProcessInstanceVueController {
                 // 批量删除附件表
                 attachmentApi.delBatchByProcessSerialNumbers(tenantId, list);
                 // 批量删除正文表
-                y9WordApi.delBatchByProcessSerialNumbers(tenantId, list);
+                y9WordApi.delBatchByProcessSerialNumbers(list);
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {

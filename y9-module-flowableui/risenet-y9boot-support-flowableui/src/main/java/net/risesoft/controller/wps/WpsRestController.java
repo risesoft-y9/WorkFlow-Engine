@@ -26,6 +26,7 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.model.itemadmin.TaoHongTemplateModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
@@ -51,6 +52,29 @@ public class WpsRestController {
     private final Y9FileStoreService y9FileStoreService;
     private final Y9WordApi y9WordApi;
     private final AuditLogSaveService auditLogSaveService;
+    private final UserApi userApi;
+
+    /**
+     * 确定套红状态
+     *
+     * @param fileType 文件类型
+     * @param istaohong 套红参数
+     * @return 套红状态
+     */
+    private String determineTaoHongStatus(String fileType, String istaohong) {
+        if (fileType == null) {
+            return "0";
+        }
+        switch (fileType) {
+            case ".pdf":
+            case ".tif":
+                return "2";
+            case ".ofd":
+                return "3";
+            default:
+                return StringUtils.isNotBlank(istaohong) ? istaohong : "0";
+        }
+    }
 
     /**
      * 下载正文
@@ -62,9 +86,10 @@ public class WpsRestController {
     public void download(@RequestParam String tenantId, @RequestParam String processSerialNumber,
         HttpServletResponse response, HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
+            Y9LoginUserHolder.setTenantId(tenantId);
             String title = getTitle(processSerialNumber);
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, title);
-            String y9FileStoreId = y9WordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            String y9FileStoreId = y9WordApi.openDocumentByProcessSerialNumber(processSerialNumber).getData();
             y9FileStoreService.downloadFileToOutputStream(y9FileStoreId, out);
             auditLogSaveService.downloadWpsLog(y9FileStoreId, title, "mobile");
         } catch (Exception e) {
@@ -72,10 +97,35 @@ public class WpsRestController {
         }
     }
 
-    private String getTitle(String processSerialNumber) {
-        ProcessParamModel processModel =
-            processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
-        return processModel.getTitle() != null ? processModel.getTitle() : "正文";
+    /**
+     * 获取文档标题
+     *
+     * @param tenantId 租户ID
+     * @param processInstanceId 流程实例ID
+     * @return 文档标题
+     */
+    private String getDocumentTitle(String tenantId, String processInstanceId) {
+        try {
+            ProcessParamModel processModel =
+                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            return processModel.getTitle() != null ? processModel.getTitle() : "正文";
+        } catch (Exception e) {
+            LOGGER.warn("获取文档标题失败，使用默认标题", e);
+            return "正文";
+        }
+    }
+
+    /**
+     * 获取文件类型
+     *
+     * @param fileName 文件名
+     * @return 文件类型
+     */
+    private String getFileType(String fileName) {
+        if (StringUtils.isBlank(fileName)) {
+            return DOCX_KEY;
+        }
+        return !fileName.contains(".") ? DOCX_KEY : fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
     }
 
     /**
@@ -88,7 +138,9 @@ public class WpsRestController {
     @GetMapping(value = "/getTaoHongTemplate")
     public void getTaoHongTemplate(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String templateGuid, HttpServletResponse response) {
-        String content = y9WordApi.openDocumentTemplate(tenantId, userId, templateGuid).getData();
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPersonId(userId);
+        String content = y9WordApi.openDocumentTemplate(templateGuid).getData();
         try (ServletOutputStream out = response.getOutputStream()) {
             byte[] result;
             result = java.util.Base64.getDecoder().decode(content);
@@ -106,6 +158,12 @@ public class WpsRestController {
         }
     }
 
+    private String getTitle(String processSerialNumber) {
+        ProcessParamModel processModel =
+            processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        return processModel.getTitle() != null ? processModel.getTitle() : "正文";
+    }
+
     /**
      * 撤销红头
      *
@@ -117,14 +175,45 @@ public class WpsRestController {
     public void revokeRedHeader(@RequestParam String tenantId, @RequestParam String userId,
         @RequestParam String processSerialNumber, HttpServletResponse response, HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
+            Y9LoginUserHolder.setTenantId(tenantId);
             String title = getTitle(processSerialNumber);
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, title);
-            y9WordApi.deleteByIsTaoHong(tenantId, userId, processSerialNumber, "1");
-            String y9FileStoreId = y9WordApi.openDocumentByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            y9WordApi.deleteByIsTaoHong(processSerialNumber, "1");
+            String y9FileStoreId = y9WordApi.openDocumentByProcessSerialNumber(processSerialNumber).getData();
             y9FileStoreService.downloadFileToOutputStream(y9FileStoreId, out);
             auditLogSaveService.revokeRedHeaderLog(y9FileStoreId, title, "mobile");
         } catch (Exception e) {
             LOGGER.error("撤销红头异常", e);
+        }
+    }
+
+    /**
+     * 保存正文信息
+     *
+     * @param tenantId 租户ID
+     * @param userId 用户ID
+     * @param title 文档标题
+     * @param fileType 文件类型
+     * @param processSerialNumber 流程编号
+     * @param isTaoHong 套红状态
+     * @param taskId 任务ID
+     * @param y9FileStore 文件存储对象
+     * @return 是否保存成功
+     */
+    private boolean saveWordInfo(String tenantId, String userId, String title, String fileType,
+        String processSerialNumber, String isTaoHong, String taskId, Y9FileStore y9FileStore) {
+        try {
+            Y9LoginUserHolder.setTenantId(tenantId);
+            Y9LoginUserHolder.setPersonId(userId);
+            Boolean result =
+                y9WordApi
+                    .uploadWord(title, fileType, processSerialNumber, isTaoHong, "", taskId,
+                        y9FileStore.getDisplayFileSize(), y9FileStore.getId())
+                    .getData();
+            return Boolean.TRUE.equals(result);
+        } catch (Exception e) {
+            LOGGER.error("保存正文信息失败", e);
+            return false;
         }
     }
 
@@ -137,13 +226,16 @@ public class WpsRestController {
      */
     @GetMapping(value = "/taoHongTemplateList")
     public List<TaoHongTemplateModel> taoHongTemplateList(@RequestParam String tenantId, @RequestParam String userId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setPersonId(userId);
+        Y9LoginUserHolder.setUserInfo(userApi.get(tenantId, userId).getData());
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         OrgUnit currentBureau = orgUnitApi.getOrgUnitBureau(tenantId, userId).getData();
         String currentBureauGuid = currentBureau != null ? currentBureau.getId() : "";
         if (StringUtils.isBlank(currentBureauGuid)) {
             currentBureauGuid = person.getParentId();
         }
-        return y9WordApi.taoHongTemplateList(tenantId, userId, currentBureauGuid).getData();
+        return y9WordApi.taoHongTemplateList(currentBureauGuid).getData();
     }
 
     /**
@@ -199,59 +291,6 @@ public class WpsRestController {
     }
 
     /**
-     * 获取文档标题
-     *
-     * @param tenantId 租户ID
-     * @param processInstanceId 流程实例ID
-     * @return 文档标题
-     */
-    private String getDocumentTitle(String tenantId, String processInstanceId) {
-        try {
-            ProcessParamModel processModel =
-                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            return processModel.getTitle() != null ? processModel.getTitle() : "正文";
-        } catch (Exception e) {
-            LOGGER.warn("获取文档标题失败，使用默认标题", e);
-            return "正文";
-        }
-    }
-
-    /**
-     * 确定套红状态
-     *
-     * @param fileType 文件类型
-     * @param istaohong 套红参数
-     * @return 套红状态
-     */
-    private String determineTaoHongStatus(String fileType, String istaohong) {
-        if (fileType == null) {
-            return "0";
-        }
-        switch (fileType) {
-            case ".pdf":
-            case ".tif":
-                return "2";
-            case ".ofd":
-                return "3";
-            default:
-                return StringUtils.isNotBlank(istaohong) ? istaohong : "0";
-        }
-    }
-
-    /**
-     * 获取文件类型
-     *
-     * @param fileName 文件名
-     * @return 文件类型
-     */
-    private String getFileType(String fileName) {
-        if (StringUtils.isBlank(fileName)) {
-            return DOCX_KEY;
-        }
-        return !fileName.contains(".") ? DOCX_KEY : fileName.substring(fileName.lastIndexOf(".")).toLowerCase();
-    }
-
-    /**
      * 上传文件到文件存储服务
      *
      * @param file 上传的文件
@@ -266,33 +305,5 @@ public class WpsRestController {
         String fileType) throws Exception {
         String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "word", processSerialNumber);
         return y9FileStoreService.uploadFile(file.getInputStream(), fullPath, title + fileType);
-    }
-
-    /**
-     * 保存正文信息
-     *
-     * @param tenantId 租户ID
-     * @param userId 用户ID
-     * @param title 文档标题
-     * @param fileType 文件类型
-     * @param processSerialNumber 流程编号
-     * @param isTaoHong 套红状态
-     * @param taskId 任务ID
-     * @param y9FileStore 文件存储对象
-     * @return 是否保存成功
-     */
-    private boolean saveWordInfo(String tenantId, String userId, String title, String fileType,
-        String processSerialNumber, String isTaoHong, String taskId, Y9FileStore y9FileStore) {
-        try {
-            Boolean result =
-                y9WordApi
-                    .uploadWord(tenantId, userId, title, fileType, processSerialNumber, isTaoHong, "", taskId,
-                        y9FileStore.getDisplayFileSize(), y9FileStore.getId())
-                    .getData();
-            return Boolean.TRUE.equals(result);
-        } catch (Exception e) {
-            LOGGER.error("保存正文信息失败", e);
-            return false;
-        }
     }
 }
