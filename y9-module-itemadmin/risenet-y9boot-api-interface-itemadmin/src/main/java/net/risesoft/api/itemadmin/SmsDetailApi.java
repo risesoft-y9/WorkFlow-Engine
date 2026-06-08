@@ -20,25 +20,22 @@ public interface SmsDetailApi {
     /**
      * 根据流程编号查找流程数据
      *
-     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
-     * @param positionId 岗位id
+     * @param taskSenderId 发送岗位id
      * @return {@code Y9Result<ProcessParamModel>} 通用请求返回对象 -data 短信详情
      * @since 9.6.9
      */
     @GetMapping("/findByProcessSerialNumberAndPositionId")
-    Y9Result<SmsDetailModel> findByProcessSerialNumberAndPositionId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("positionId") String positionId, @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<SmsDetailModel> findByProcessSerialNumberAndPositionId(@RequestParam("taskSenderId") String taskSenderId,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 保存或更新短信详情
      *
-     * @param tenantId 租户ID
      * @param smsDetailModel 短信详情
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.9
      */
     @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> saveOrUpdate(@RequestParam("tenantId") String tenantId,
-        @RequestBody SmsDetailModel smsDetailModel);
+    Y9Result<Object> saveOrUpdate(@RequestBody SmsDetailModel smsDetailModel);
 }

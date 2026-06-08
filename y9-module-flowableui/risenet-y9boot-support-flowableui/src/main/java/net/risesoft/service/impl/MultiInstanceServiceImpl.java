@@ -82,7 +82,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
                 .content(smsContent)
                 .positionIds(userChoice)
                 .build();
-            smsDetailApi.saveOrUpdate(tenantId, smsDetailModel);
+            smsDetailApi.saveOrUpdate(smsDetailModel);
         } catch (Exception e) {
             LOGGER.error("保存短信详情失败", e);
         }

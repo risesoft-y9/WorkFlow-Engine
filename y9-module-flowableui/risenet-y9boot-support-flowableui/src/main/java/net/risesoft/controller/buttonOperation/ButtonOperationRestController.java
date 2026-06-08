@@ -106,6 +106,68 @@ public class ButtonOperationRestController {
     private final AsyncUtilService asyncUtilService;
 
     /**
+     * 添加协办人员名称
+     */
+    private void appendAssistantName(StringBuilder names, String name) {
+        if (names.length() == 0) {
+            names.append(name);
+        } else {
+            names.append("、").append(name);
+        }
+    }
+
+    /**
+     * 批量退回拟稿人
+     *
+     * @param actionName 操作名称
+     * @param taskIdAndProcessSerialNumbers 批量退回参数
+     * @return Y9Result<String>
+     */
+    @FlowableLog(operationName = "批量退回拟稿人", operationType = FlowableOperationTypeEnum.ROLLBACK)
+    @PostMapping(value = "/batchRollBack")
+    public Y9Result<List<TargetModel>> batchRollBack(@RequestParam @NotBlank String actionName,
+        @RequestParam String[] taskIdAndProcessSerialNumbers) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            TaskCollectionResult collectionResult = collectTaskInfo(tenantId, taskIdAndProcessSerialNumbers);
+            Y9Result<List<TargetModel>> validationResult = validateTasks(collectionResult);
+            if (validationResult != null) {
+                return validationResult;
+            }
+            BatchOperationResult operationResult =
+                executeBatchRollback(tenantId, actionName, collectionResult.taskList);
+            return Y9Result
+                .successMsg(String.format("退回成功%d条，退回失败%d条", operationResult.successCount, operationResult.failCount));
+        } catch (Exception e) {
+            LOGGER.error("批量退回拟稿人失败", e);
+            return Y9Result.failure("操作失败: " + e.getMessage());
+        }
+    }
+
+    /**
+     * 检查任务状态
+     */
+    private void checkTaskStatus(String tenantId, TaskModel task, TaskCollectionResult result) {
+        // 检查是否未签收
+        if (StringUtils.isBlank(task.getAssignee())) {
+            result.signList.add(task);
+        }
+
+        // 检查是否为会签任务
+        if (result.subTaskList.isEmpty()) {
+            try {
+                List<TargetModel> data =
+                    processDefinitionApi.getSubProcessChildNode(tenantId, task.getProcessDefinitionId()).getData();
+                if (data.stream().anyMatch(m -> m.getTaskDefKey().equals(task.getTaskDefinitionKey()))) {
+                    result.subTaskList.add(task);
+                }
+            } catch (Exception e) {
+                LOGGER.warn("检查会签任务失败: taskId={}", task.getId(), e);
+            }
+        }
+    }
+
+    /**
      * 任务签收
      *
      * @param taskId 任务id
@@ -135,6 +197,43 @@ public class ButtonOperationRestController {
     }
 
     /**
+     * 收集任务信息
+     */
+    private TaskCollectionResult collectTaskInfo(String tenantId, String[] taskIdAndProcessSerialNumbers) {
+        TaskCollectionResult result = new TaskCollectionResult();
+        for (String taskIdAndProcessSerialNumber : taskIdAndProcessSerialNumbers) {
+            String[] tpArr = taskIdAndProcessSerialNumber.split(":");
+            TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
+            if (task == null) {
+                handleNullTask(tenantId, tpArr, result.processedTaskMsg);
+            } else {
+                result.taskList.add(task);
+                checkTaskStatus(tenantId, task, result);
+            }
+        }
+        return result;
+    }
+
+    /**
+     * 流程办结
+     *
+     * @param taskId 任务id
+     * @param infoOvert 办结数据是否在数据中心公开
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/complete")
+    public Y9Result<String> complete(@RequestParam @NotBlank String taskId,
+        @RequestParam(required = false) String infoOvert) {
+        try {
+            buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
+            return Y9Result.successMsg("办结成功");
+        } catch (Exception e) {
+            LOGGER.error("流程办结失败", e);
+        }
+        return Y9Result.failure("办结失败");
+    }
+
+    /**
      * 任务完成（在协办的时候使用，例如A点击协办按钮，将公文发给B，此时B协办完成后仍然要把流程返给A，此方法解决这个问题）
      *
      * @param taskId 任务id
@@ -151,6 +250,33 @@ public class ButtonOperationRestController {
             LOGGER.error("完成任务失败", e);
         }
         return Y9Result.failure("完成任务失败");
+    }
+
+    /**
+     * 批量办结
+     *
+     * @param taskIds 任务id集合
+     * @return Y9Result<String>
+     */
+    @FlowableLog(operationName = "批量办结", operationType = FlowableOperationTypeEnum.COMPLETE)
+    @PostMapping(value = "/completeTodo")
+    public Y9Result<String> completeTodo(@RequestParam String[] taskIds) {
+        AtomicInteger successCount = new AtomicInteger();
+        AtomicInteger failCount = new AtomicInteger();
+        Arrays.stream(taskIds).forEach(taskId -> {
+            try {
+                TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+                if (null != task) {
+                    buttonOperationService.complete(taskId, "办结", "已办结", "");
+                    successCount.getAndIncrement();
+                } else {
+                    failCount.getAndIncrement();
+                }
+            } catch (Exception e) {
+                failCount.getAndIncrement();
+            }
+        });
+        return Y9Result.successMsg("批量办结成功，成功：" + successCount.get() + "，失败：" + failCount.get());
     }
 
     /**
@@ -203,130 +329,16 @@ public class ButtonOperationRestController {
         return Y9Result.failure("发送失败");
     }
 
-    /**
-     * 处理发送到下一节点的情况
-     */
-    private Y9Result<String> handleNextNode(String itemId, String processSerialNumber, String processInstanceId,
-        String taskId, String infoOvert) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        CustomProcessInfoModel customProcessInfo =
-            customProcessInfoApi.getCurrentTaskNextNode(tenantId, processSerialNumber).getData();
-        if (customProcessInfo == null) {
-            return Y9Result.successMsg("发送成功");
-        }
-
-        if (customProcessInfo.getTaskType().equals(SysVariables.END_EVENT)) {// 办结
-            return handleProcessCompletion(taskId, infoOvert, tenantId, processSerialNumber);
-        }
-        return handleTaskForwarding(itemId, processSerialNumber, processInstanceId, taskId, customProcessInfo);
+    @FlowableLog(operationName = "批量放入回收站", operationType = FlowableOperationTypeEnum.DELETE)
+    @PostMapping(value = "/deleteByProcessSerialNumbers")
+    public Y9Result<String> deleteByProcessSerialNumbers(@RequestParam String[] processSerialNumbers) {
+        return buttonOperationService.deleteByProcessSerialNumbers(processSerialNumbers);
     }
 
-    /**
-     * 处理流程办结情况
-     */
-    private Y9Result<String> handleProcessCompletion(String taskId, String infoOvert, String tenantId,
-        String processSerialNumber) {
-        try {
-            buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
-            // 办结成功后更新当前运行节点
-            customProcessInfoApi.updateCurrentTask(tenantId, processSerialNumber);
-            // 办结后定制流程设为false,恢复待办后不再走定制流程
-            processParamApi.updateCustomItem(tenantId, processSerialNumber, false);
-            return Y9Result.successMsg("办结成功");
-        } catch (Exception e) {
-            LOGGER.error("办结失败", e);
-            return Y9Result.failure("办结失败");
-        }
-    }
-
-    /**
-     * 处理任务转发情况
-     */
-    private Y9Result<String> handleTaskForwarding(String itemId, String processSerialNumber, String processInstanceId,
-        String taskId, CustomProcessInfoModel customProcessInfo) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9FlowableHolder.getPositionId();
-
-        String userChoice = customProcessInfo.getOrgId();
-        String routeToTaskId = customProcessInfo.getTaskKey();
-        ForwardingDTO forwardingDTO = new ForwardingDTO();
-        forwardingDTO.setProcessSerialNumber(processSerialNumber);
-        forwardingDTO.setItemId(itemId);
-        forwardingDTO.setUserChoice(userChoice);
-        forwardingDTO.setRouteToTaskId(routeToTaskId);
-        forwardingDTO.setTaskId(taskId);
-        Y9Result<String> y9Result = documentApi.saveAndForwarding(positionId, forwardingDTO);
-        if (!y9Result.isSuccess()) {
-            return Y9Result.failure("发送失败");
-        }
-
-        // 发送成功后更新当前运行节点
-        customProcessInfoApi.updateCurrentTask(tenantId, processSerialNumber);
-        return Y9Result.successMsg("发送成功");
-    }
-
-    /**
-     * 处理当前节点任务情况
-     */
-    private Y9Result<String> handleCurrentNode(String multiInstance, String processInstanceId, String taskId) {
-        if (multiInstance.equals(SysVariables.PARALLEL)) {
-            return handleParallelTask(processInstanceId, taskId);
-        } else if (multiInstance.equals(SysVariables.SEQUENTIAL)) {
-            return handleSequentialTask(processInstanceId, taskId);
-        }
-        return Y9Result.successMsg("发送成功");
-    }
-
-    /**
-     * 处理并行任务
-     */
-    private Y9Result<String> handleParallelTask(String processInstanceId, String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-        // 改变流程变量中users的值
-        try {
-            String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
-            List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
-            if (users != null && users.isEmpty()) {
-                List<String> usersTemp = new ArrayList<>();
-                for (TaskModel t : list) {
-                    usersTemp.add(t.getAssignee());
-                }
-                Map<String, Object> vmap = new HashMap<>(16);
-                vmap.put(SysVariables.USERS, usersTemp);
-                variableApi.setVariables(tenantId, taskId, vmap);
-            }
-        } catch (Exception e) {
-            LOGGER.error("改变流程变量中users的值失败", e);
-        }
-        taskApi.complete(tenantId, taskId);
-        return Y9Result.successMsg("发送成功");
-    }
-
-    /**
-     * 处理串行任务
-     */
-    private Y9Result<String> handleSequentialTask(String processInstanceId, String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9FlowableHolder.getPositionId();
-        Position position = Y9FlowableHolder.getPosition();
-
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
-        Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
-        vars.put(SysVariables.TASK_SENDER, position.getName());
-        vars.put(SysVariables.TASK_SENDER_ID, position.getId());
-        taskApi.completeWithVariables(tenantId, taskId, positionId, vars);
-
-        List<TaskModel> taskNextList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
-        for (TaskModel taskNext : taskNextList) {
-            Map<String, Object> mapTemp = new HashMap<>(16);
-            mapTemp.put(SysVariables.TASK_SENDER, position.getName());
-            mapTemp.put(SysVariables.TASK_SENDER_ID, position.getId());
-            variableApi.setVariables(tenantId, taskNext.getId(), mapTemp);
-        }
-
-        process4SearchService.saveToDataCenter(tenantId, taskId, processInstanceId);
-        return Y9Result.successMsg("发送成功");
+    @FlowableLog(operationName = "放入回收站", operationType = FlowableOperationTypeEnum.DELETE)
+    @PostMapping(value = "/deleteTodos")
+    public Y9Result<String> deleteTodos(@RequestParam String[] taskIdAndProcessSerialNumbers) {
+        return buttonOperationService.deleteTodos(taskIdAndProcessSerialNumbers);
     }
 
     /**
@@ -357,6 +369,126 @@ public class ButtonOperationRestController {
     }
 
     /**
+     * 执行批量退回操作
+     */
+    private BatchOperationResult executeBatchRollback(String tenantId, String actionName, List<TaskModel> taskList) {
+        BatchOperationResult result = new BatchOperationResult();
+        String positionId = Y9FlowableHolder.getPositionId();
+
+        for (TaskModel task : taskList) {
+            try {
+                // 设置流程变量
+                Map<String, Object> vars = new HashMap<>();
+                vars.put("val", actionName);
+                variableApi.setVariableByProcessInstanceId(tenantId, task.getProcessInstanceId(),
+                    SysVariables.ACTION_NAME + ":" + positionId, vars);
+
+                // 执行退回操作
+                Y9Result<Object> operationResult =
+                    buttonOperationApi.rollbackToStartor(tenantId, positionId, task.getId(), "无");
+
+                if (operationResult.isSuccess()) {
+                    result.successCount++;
+                } else {
+                    result.failCount++;
+                    LOGGER.warn("任务退回失败: taskId={}, reason={}", task.getId(), operationResult.getMsg());
+                }
+            } catch (Exception e) {
+                result.failCount++;
+                LOGGER.error("任务退回异常: taskId={}", task.getId(), e);
+            }
+        }
+
+        return result;
+    }
+
+    /**
+     * 填充并行任务状态和时间信息
+     */
+    private void fillParallelTaskStatusAndTime(Map<String, Object> map, HistoricTaskInstanceModel hai,
+        String tenantId) {
+        Date endTime = hai.getEndTime();
+        map.put(END_TIME_KEY, endTime == null ? "" : Y9DateTimeUtils.formatDateTime(endTime));
+
+        String parallelSponsorObj = getParallelSponsorObject(hai, tenantId);
+        setParallelSponsorInfo(map, hai, parallelSponsorObj, tenantId);
+
+        map.put(FlowableUiConsts.STATUS, endTime == null ? "正在处理" : "完成");
+    }
+
+    /**
+     * 填充并行任务用户信息
+     */
+    private void fillParallelTaskUserInfo(Map<String, Object> map, HistoricTaskInstanceModel hai, String tenantId) {
+        try {
+            OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, hai.getAssignee()).getData();
+            map.put("user", employee != null ? employee.getName() : "岗位不存在");
+
+            if (StringUtils.isNotBlank(hai.getScopeType())) {
+                map.put("user", hai.getScopeType());
+            }
+        } catch (Exception e) {
+            LOGGER.warn("填充并行任务用户信息时，获取用户信息失败: {}", hai.getAssignee(), e);
+            map.put("user", "未知用户");
+        }
+    }
+
+    /**
+     * 填充串行任务的完成时间
+     */
+    private void fillSequentialTaskEndTime(Map<String, Object> map, List<HistoricTaskInstanceModel> modelList,
+        String userId) {
+        for (HistoricTaskInstanceModel hai : modelList) {
+            if (hai != null && userId.equals(hai.getAssignee())) {
+                map.put(END_TIME_KEY, Y9DateTimeUtils.formatDateTime(hai.getEndTime()));
+                if (StringUtils.isNotBlank(hai.getScopeType())) {
+                    map.put("user", hai.getScopeType());
+                }
+                break;
+            }
+        }
+    }
+
+    /**
+     * 办件发送
+     *
+     * @param forwardingDTO 办件发送参数
+     * @return Y9Result<Map < String, Object>>
+     */
+    @FlowableLog(operationName = "办件发送", operationType = FlowableOperationTypeEnum.SEND)
+    @PostMapping(value = "/forwarding")
+    public Y9Result<Map<String, Object>> forwarding(@RequestBody @Valid ForwardingDTO forwardingDTO) {
+        Map<String, Object> map = new HashMap<>();
+        try {
+            SmsDetailModel smsDetailModel = SmsDetailModel.builder()
+                .processSerialNumber(forwardingDTO.getProcessSerialNumber())
+                .positionId(Y9FlowableHolder.getPositionId())
+                .positionName(Y9LoginUserHolder.getUserInfo().getName())
+                .send(!StringUtils.isBlank(forwardingDTO.getIsSendSms())
+                    && Boolean.parseBoolean(forwardingDTO.getIsSendSms()))
+                .sign(!StringUtils.isBlank(forwardingDTO.getIsShuMing())
+                    && Boolean.parseBoolean(forwardingDTO.getIsShuMing()))
+                .content(forwardingDTO.getSmsContent())
+                .positionIds(forwardingDTO.getUserChoice())
+                .build();
+            Y9Result<Object> result = smsDetailApi.saveOrUpdate(smsDetailModel);
+            if (!result.isSuccess()) {
+                return Y9Result.failure("保存短信详情失败！");
+            }
+            Y9Result<String> y9Result = documentApi.saveAndForwarding(Y9FlowableHolder.getPositionId(), forwardingDTO);
+            if (y9Result.isSuccess()) {
+                map.put("processInstanceId", y9Result.getData());
+                return Y9Result.success(map, y9Result.getMsg());
+            } else {
+                return Y9Result.failure(y9Result.getMsg());
+            }
+        } catch (Exception e) {
+            LOGGER.error("发送失败", e);
+        }
+        return Y9Result.failure("发送失败，发生异常");
+    }
+
+    /**
      * 获取有办结权限的用户任务集合(仅获取主流程的办结权限)
      *
      * @param processDefinitionId 流程定义id
@@ -372,6 +504,18 @@ public class ButtonOperationRestController {
             LOGGER.error("获取失败", e);
         }
         return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取员工信息
+     */
+    private OrgUnit getEmployeeInfo(String tenantId, String assigneeId) {
+        try {
+            return orgUnitApi.getPersonOrPosition(tenantId, assigneeId).getData();
+        } catch (Exception e) {
+            LOGGER.warn("获取员工信息失败: assigneeId={}", assigneeId, e);
+            return null;
+        }
     }
 
     /**
@@ -416,6 +560,57 @@ public class ButtonOperationRestController {
     }
 
     /**
+     * 获取协办人员办理情况
+     *
+     * @param taskId 任务id * @return Y9Result<Map<String, Object>>
+     */
+    @GetMapping(value = "/getParallelNames")
+    public Y9Result<Map<String, Object>> getParallelNames(@RequestParam @NotBlank String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9FlowableHolder.getPositionId();
+        try {
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
+            if (taskModel == null) {
+                return Y9Result.failure("任务不存在");
+            }
+            Map<String, Object> result = new HashMap<>(16);
+            String multiInstance = processDefinitionApi
+                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+                .getData();
+            if (isParallelInstance(multiInstance)) {
+                handleParallelInstance(result, tenantId, positionId, taskModel);
+            } else {
+                result.put("isParallel", false);
+                result.put(FlowableUiConsts.PARALLELDOING_KEY, "");
+                result.put(FlowableUiConsts.COUNT_KEY, 0);
+            }
+            return Y9Result.success(result, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("获取协办人员办理情况失败", e);
+            return Y9Result.failure("获取失败");
+        }
+    }
+
+    /**
+     * 获取并行任务主办人对象
+     */
+    private String getParallelSponsorObject(HistoricTaskInstanceModel hai, String tenantId) {
+        try {
+            if (hai.getEndTime() == null) {
+                return variableApi.getVariableLocal(tenantId, hai.getId(), FlowableUiConsts.PARALLELSPONSOR).getData();
+            } else {
+                HistoricVariableInstanceModel parallelSponsorObj1 = historicvariableApi
+                    .getByTaskIdAndVariableName(tenantId, hai.getId(), FlowableUiConsts.PARALLELSPONSOR, "")
+                    .getData();
+                return parallelSponsorObj1 != null ? parallelSponsorObj1.getValue().toString() : "";
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取主办人变量失败", e);
+            return "";
+        }
+    }
+
+    /**
      * 获取目标任务节点集合
      *
      * @param processDefinitionId 流程定义id
@@ -450,6 +645,28 @@ public class ButtonOperationRestController {
             LOGGER.error("获取失败", e);
         }
         return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取任务相关信息
+     */
+    private TaskInfoHolder getTaskInfo(String tenantId, String taskId) {
+        try {
+            Map<String, Object> variables = variableApi.getVariables(tenantId, taskId).getData();
+            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
+            if (variables == null || taskModel == null) {
+                return null;
+            }
+            String multiInstance = processDefinitionApi
+                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+                .getData();
+
+            List<String> users = (List<String>)variables.get("users");
+            return new TaskInfoHolder(taskModel, variables, multiInstance, users);
+        } catch (Exception e) {
+            LOGGER.error("获取任务信息失败", e);
+            return null;
+        }
     }
 
     /**
@@ -498,28 +715,6 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 获取任务相关信息
-     */
-    private TaskInfoHolder getTaskInfo(String tenantId, String taskId) {
-        try {
-            Map<String, Object> variables = variableApi.getVariables(tenantId, taskId).getData();
-            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-            if (variables == null || taskModel == null) {
-                return null;
-            }
-            String multiInstance = processDefinitionApi
-                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
-                .getData();
-
-            List<String> users = (List<String>)variables.get("users");
-            return new TaskInfoHolder(taskModel, variables, multiInstance, users);
-        } catch (Exception e) {
-            LOGGER.error("获取任务信息失败", e);
-            return null;
-        }
-    }
-
-    /**
      * 处理普通单实例任务
      */
     private void handleCommonInstance(TaskInfoHolder taskInfo, List<Map<String, Object>> listMap, String tenantId) {
@@ -551,6 +746,190 @@ public class ButtonOperationRestController {
             map.put(END_TIME_KEY, "");
             map.put(MULTIINSTANCE_KEY, "普通单实例");
             listMap.add(map);
+        }
+    }
+
+    /**
+     * 处理当前节点任务情况
+     */
+    private Y9Result<String> handleCurrentNode(String multiInstance, String processInstanceId, String taskId) {
+        if (multiInstance.equals(SysVariables.PARALLEL)) {
+            return handleParallelTask(processInstanceId, taskId);
+        } else if (multiInstance.equals(SysVariables.SEQUENTIAL)) {
+            return handleSequentialTask(processInstanceId, taskId);
+        }
+        return Y9Result.successMsg("发送成功");
+    }
+
+    /**
+     * 处理发送到下一节点的情况
+     */
+    private Y9Result<String> handleNextNode(String itemId, String processSerialNumber, String processInstanceId,
+        String taskId, String infoOvert) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        CustomProcessInfoModel customProcessInfo =
+            customProcessInfoApi.getCurrentTaskNextNode(tenantId, processSerialNumber).getData();
+        if (customProcessInfo == null) {
+            return Y9Result.successMsg("发送成功");
+        }
+
+        if (customProcessInfo.getTaskType().equals(SysVariables.END_EVENT)) {// 办结
+            return handleProcessCompletion(taskId, infoOvert, tenantId, processSerialNumber);
+        }
+        return handleTaskForwarding(itemId, processSerialNumber, processInstanceId, taskId, customProcessInfo);
+    }
+
+    /**
+     * 处理空任务
+     */
+    private void handleNullTask(String tenantId, String[] tpArr, StringBuilder msg) {
+        try {
+            ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
+            if (StringUtils.isBlank(msg.toString())) {
+                msg.append(ppModel.getTitle());
+            } else {
+                msg.append(",").append(ppModel.getTitle());
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取流程参数失败: processSerialNumber={}", tpArr[1], e);
+        }
+    }
+
+    /**
+     * 办理完成（并行处理时使用）
+     *
+     * @param taskId 任务id
+     * @return Y9Result<String>
+     */
+    @FlowableLog(operationName = "办理完成", operationType = FlowableOperationTypeEnum.COMPLETE_TASK)
+    @SuppressWarnings("unchecked")
+    @PostMapping(value = "/handleParallel")
+    public Y9Result<String> handleParallel(@RequestParam @NotBlank String taskId) {
+        try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            if (task == null) {
+                return Y9Result.failure("该件已被办理！");
+            }
+            List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
+            if (list.size() == 1) {// 并行状态且不区分主协办时，多人同时打开办理页面，当其他人都已办理完成，最后一人需提示已是并行办理的最后一人，需刷新重新办理。
+                return Y9Result.failure("您是并行办理的最后一人，请刷新后重新办理。");
+            }
+            /*
+             * 改变流程变量中users的值
+             */
+            try {
+                String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
+                List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
+                if (users != null && users.isEmpty()) {
+                    List<String> usersTemp = new ArrayList<>();
+                    for (TaskModel t : list) {
+                        usersTemp.add(t.getAssignee());
+                    }
+                    Map<String, Object> vmap = new HashMap<>(16);
+                    vmap.put(SysVariables.USERS, usersTemp);
+                    variableApi.setVariables(tenantId, taskId, vmap);
+                }
+            } catch (Exception e) {
+                LOGGER.error("handleParallel error", e);
+            }
+            taskApi.complete(tenantId, taskId);
+            asyncUtilService.handleParallelAuditLog(tenantId, task.getName(), task.getProcessInstanceId());
+            return Y9Result.successMsg("办理成功");
+        } catch (Exception e) {
+            LOGGER.error("handleParallel error", e);
+        }
+        return Y9Result.failure("办理失败");
+    }
+
+    /**
+     * 处理并行实例任务
+     */
+    private void handleParallelInstance(TaskInfoHolder taskInfo, List<Map<String, Object>> listMap, String tenantId) {
+        List<HistoricTaskInstanceModel> modelList;
+        try {
+            modelList = historictaskApi.getByProcessInstanceId(tenantId, taskInfo.taskModel.getProcessInstanceId(), "")
+                .getData();
+        } catch (Exception e) {
+            LOGGER.warn("获取历史任务实例失败", e);
+            return;
+        }
+        for (HistoricTaskInstanceModel hai : modelList) {
+            if (hai == null) {
+                continue;
+            }
+            long timeDiff = taskInfo.taskModel.getCreateTime().getTime() - hai.getStartTime().getTime();
+            if (((timeDiff >= -3000 && timeDiff <= 3000) && taskInfo.taskModel.getName().equals(hai.getName()))
+                || hai.getEndTime() == null) {
+                Map<String, Object> map = new HashMap<>(16);
+                fillParallelTaskUserInfo(map, hai, tenantId);
+                fillParallelTaskStatusAndTime(map, hai, tenantId);
+                map.put(MULTIINSTANCE_KEY, "并行");
+                listMap.add(map);
+            }
+        }
+    }
+
+    /**
+     * 处理并行实例情况
+     */
+    private void handleParallelInstance(Map<String, Object> result, String tenantId, String positionId,
+        TaskModel taskModel) {
+        result.put("isParallel", true);
+        try {
+            List<TaskModel> taskList =
+                taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), true).getData();
+            ParallelProcessingResult processingResult = processAssistantTasks(tenantId, positionId, taskList);
+            result.put(FlowableUiConsts.PARALLELDOING_KEY, processingResult.assistantNames);
+            result.put(FlowableUiConsts.COUNT_KEY, taskList != null ? taskList.size() - 1 : 0);
+        } catch (Exception e) {
+            LOGGER.warn("处理并行任务列表失败", e);
+            result.put(FlowableUiConsts.PARALLELDOING_KEY, "");
+            result.put(FlowableUiConsts.COUNT_KEY, 0);
+        }
+    }
+
+    /**
+     * 处理并行任务
+     */
+    private Y9Result<String> handleParallelTask(String processInstanceId, String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        // 改变流程变量中users的值
+        try {
+            String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
+            List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
+            if (users != null && users.isEmpty()) {
+                List<String> usersTemp = new ArrayList<>();
+                for (TaskModel t : list) {
+                    usersTemp.add(t.getAssignee());
+                }
+                Map<String, Object> vmap = new HashMap<>(16);
+                vmap.put(SysVariables.USERS, usersTemp);
+                variableApi.setVariables(tenantId, taskId, vmap);
+            }
+        } catch (Exception e) {
+            LOGGER.error("改变流程变量中users的值失败", e);
+        }
+        taskApi.complete(tenantId, taskId);
+        return Y9Result.successMsg("发送成功");
+    }
+
+    /**
+     * 处理流程办结情况
+     */
+    private Y9Result<String> handleProcessCompletion(String taskId, String infoOvert, String tenantId,
+        String processSerialNumber) {
+        try {
+            buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
+            // 办结成功后更新当前运行节点
+            customProcessInfoApi.updateCurrentTask(tenantId, processSerialNumber);
+            // 办结后定制流程设为false,恢复待办后不再走定制流程
+            processParamApi.updateCustomItem(tenantId, processSerialNumber, false);
+            return Y9Result.successMsg("办结成功");
+        } catch (Exception e) {
+            LOGGER.error("办结失败", e);
+            return Y9Result.failure("办结失败");
         }
     }
 
@@ -606,166 +985,29 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 填充串行任务的完成时间
+     * 处理串行任务
      */
-    private void fillSequentialTaskEndTime(Map<String, Object> map, List<HistoricTaskInstanceModel> modelList,
-        String userId) {
-        for (HistoricTaskInstanceModel hai : modelList) {
-            if (hai != null && userId.equals(hai.getAssignee())) {
-                map.put(END_TIME_KEY, Y9DateTimeUtils.formatDateTime(hai.getEndTime()));
-                if (StringUtils.isNotBlank(hai.getScopeType())) {
-                    map.put("user", hai.getScopeType());
-                }
-                break;
-            }
+    private Y9Result<String> handleSequentialTask(String processInstanceId, String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9FlowableHolder.getPositionId();
+        Position position = Y9FlowableHolder.getPosition();
+
+        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();// 获取流程中当前任务的所有变量
+        vars.put(SysVariables.TASK_SENDER, position.getName());
+        vars.put(SysVariables.TASK_SENDER_ID, position.getId());
+        taskApi.completeWithVariables(tenantId, taskId, positionId, vars);
+
+        List<TaskModel> taskNextList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
+        for (TaskModel taskNext : taskNextList) {
+            Map<String, Object> mapTemp = new HashMap<>(16);
+            mapTemp.put(SysVariables.TASK_SENDER, position.getName());
+            mapTemp.put(SysVariables.TASK_SENDER_ID, position.getId());
+            variableApi.setVariables(tenantId, taskNext.getId(), mapTemp);
         }
-    }
 
-    /**
-     * 处理并行实例任务
-     */
-    private void handleParallelInstance(TaskInfoHolder taskInfo, List<Map<String, Object>> listMap, String tenantId) {
-        List<HistoricTaskInstanceModel> modelList;
-        try {
-            modelList = historictaskApi.getByProcessInstanceId(tenantId, taskInfo.taskModel.getProcessInstanceId(), "")
-                .getData();
-        } catch (Exception e) {
-            LOGGER.warn("获取历史任务实例失败", e);
-            return;
-        }
-        for (HistoricTaskInstanceModel hai : modelList) {
-            if (hai == null) {
-                continue;
-            }
-            long timeDiff = taskInfo.taskModel.getCreateTime().getTime() - hai.getStartTime().getTime();
-            if (((timeDiff >= -3000 && timeDiff <= 3000) && taskInfo.taskModel.getName().equals(hai.getName()))
-                || hai.getEndTime() == null) {
-                Map<String, Object> map = new HashMap<>(16);
-                fillParallelTaskUserInfo(map, hai, tenantId);
-                fillParallelTaskStatusAndTime(map, hai, tenantId);
-                map.put(MULTIINSTANCE_KEY, "并行");
-                listMap.add(map);
-            }
-        }
-    }
-
-    /**
-     * 填充并行任务用户信息
-     */
-    private void fillParallelTaskUserInfo(Map<String, Object> map, HistoricTaskInstanceModel hai, String tenantId) {
-        try {
-            OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, hai.getAssignee()).getData();
-            map.put("user", employee != null ? employee.getName() : "岗位不存在");
-
-            if (StringUtils.isNotBlank(hai.getScopeType())) {
-                map.put("user", hai.getScopeType());
-            }
-        } catch (Exception e) {
-            LOGGER.warn("填充并行任务用户信息时，获取用户信息失败: {}", hai.getAssignee(), e);
-            map.put("user", "未知用户");
-        }
-    }
-
-    /**
-     * 填充并行任务状态和时间信息
-     */
-    private void fillParallelTaskStatusAndTime(Map<String, Object> map, HistoricTaskInstanceModel hai,
-        String tenantId) {
-        Date endTime = hai.getEndTime();
-        map.put(END_TIME_KEY, endTime == null ? "" : Y9DateTimeUtils.formatDateTime(endTime));
-
-        String parallelSponsorObj = getParallelSponsorObject(hai, tenantId);
-        setParallelSponsorInfo(map, hai, parallelSponsorObj, tenantId);
-
-        map.put(FlowableUiConsts.STATUS, endTime == null ? "正在处理" : "完成");
-    }
-
-    /**
-     * 获取并行任务主办人对象
-     */
-    private String getParallelSponsorObject(HistoricTaskInstanceModel hai, String tenantId) {
-        try {
-            if (hai.getEndTime() == null) {
-                return variableApi.getVariableLocal(tenantId, hai.getId(), FlowableUiConsts.PARALLELSPONSOR).getData();
-            } else {
-                HistoricVariableInstanceModel parallelSponsorObj1 = historicvariableApi
-                    .getByTaskIdAndVariableName(tenantId, hai.getId(), FlowableUiConsts.PARALLELSPONSOR, "")
-                    .getData();
-                return parallelSponsorObj1 != null ? parallelSponsorObj1.getValue().toString() : "";
-            }
-        } catch (Exception e) {
-            LOGGER.warn("获取主办人变量失败", e);
-            return "";
-        }
-    }
-
-    /**
-     * 设置并行任务主办人信息
-     */
-    private void setParallelSponsorInfo(Map<String, Object> map, HistoricTaskInstanceModel hai,
-        String parallelSponsorObj, String tenantId) {
-        try {
-            OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, hai.getAssignee()).getData();
-            if (parallelSponsorObj != null && employee != null) {
-                if (parallelSponsorObj.equals(employee.getId())) {
-                    map.put(FlowableUiConsts.PARALLELSPONSOR, "主办");
-                } else {
-                    map.put(FlowableUiConsts.PARALLELSPONSOR, "协办");
-                }
-            } else {
-                map.put(FlowableUiConsts.PARALLELSPONSOR, "协办");
-            }
-        } catch (Exception e) {
-            LOGGER.warn("获取主办人信息失败", e);
-            map.put(FlowableUiConsts.PARALLELSPONSOR, "协办");
-        }
-    }
-
-    /**
-     * 办理完成（并行处理时使用）
-     *
-     * @param taskId 任务id
-     * @return Y9Result<String>
-     */
-    @FlowableLog(operationName = "办理完成", operationType = FlowableOperationTypeEnum.COMPLETE_TASK)
-    @SuppressWarnings("unchecked")
-    @PostMapping(value = "/handleParallel")
-    public Y9Result<String> handleParallel(@RequestParam @NotBlank String taskId) {
-        try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            TaskModel task = taskApi.findById(tenantId, taskId).getData();
-            if (task == null) {
-                return Y9Result.failure("该件已被办理！");
-            }
-            List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
-            if (list.size() == 1) {// 并行状态且不区分主协办时，多人同时打开办理页面，当其他人都已办理完成，最后一人需提示已是并行办理的最后一人，需刷新重新办理。
-                return Y9Result.failure("您是并行办理的最后一人，请刷新后重新办理。");
-            }
-            /*
-             * 改变流程变量中users的值
-             */
-            try {
-                String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
-                List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
-                if (users != null && users.isEmpty()) {
-                    List<String> usersTemp = new ArrayList<>();
-                    for (TaskModel t : list) {
-                        usersTemp.add(t.getAssignee());
-                    }
-                    Map<String, Object> vmap = new HashMap<>(16);
-                    vmap.put(SysVariables.USERS, usersTemp);
-                    variableApi.setVariables(tenantId, taskId, vmap);
-                }
-            } catch (Exception e) {
-                LOGGER.error("handleParallel error", e);
-            }
-            taskApi.complete(tenantId, taskId);
-            asyncUtilService.handleParallelAuditLog(tenantId, task.getName(), task.getProcessInstanceId());
-            return Y9Result.successMsg("办理成功");
-        } catch (Exception e) {
-            LOGGER.error("handleParallel error", e);
-        }
-        return Y9Result.failure("办理失败");
+        process4SearchService.saveToDataCenter(tenantId, taskId, processInstanceId);
+        return Y9Result.successMsg("发送成功");
     }
 
     /**
@@ -792,6 +1034,71 @@ public class ButtonOperationRestController {
     }
 
     /**
+     * 处理任务转发情况
+     */
+    private Y9Result<String> handleTaskForwarding(String itemId, String processSerialNumber, String processInstanceId,
+        String taskId, CustomProcessInfoModel customProcessInfo) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String positionId = Y9FlowableHolder.getPositionId();
+
+        String userChoice = customProcessInfo.getOrgId();
+        String routeToTaskId = customProcessInfo.getTaskKey();
+        ForwardingDTO forwardingDTO = new ForwardingDTO();
+        forwardingDTO.setProcessSerialNumber(processSerialNumber);
+        forwardingDTO.setItemId(itemId);
+        forwardingDTO.setUserChoice(userChoice);
+        forwardingDTO.setRouteToTaskId(routeToTaskId);
+        forwardingDTO.setTaskId(taskId);
+        Y9Result<String> y9Result = documentApi.saveAndForwarding(positionId, forwardingDTO);
+        if (!y9Result.isSuccess()) {
+            return Y9Result.failure("发送失败");
+        }
+
+        // 发送成功后更新当前运行节点
+        customProcessInfoApi.updateCurrentTask(tenantId, processSerialNumber);
+        return Y9Result.successMsg("发送成功");
+    }
+
+    /**
+     * 判断是否为协办用户
+     */
+    private boolean isAssistantUser(String assigneeId, String positionId) {
+        return StringUtils.isNotBlank(assigneeId) && !assigneeId.equals(positionId);
+    }
+
+    /**
+     * 判断是否为并行实例
+     */
+    private boolean isParallelInstance(String multiInstance) {
+        return SysVariables.PARALLEL.equals(multiInstance);
+    }
+
+    /**
+     * 处理协办任务
+     */
+    private ParallelProcessingResult processAssistantTasks(String tenantId, String positionId,
+        List<TaskModel> taskList) {
+        StringBuilder assistantNames = new StringBuilder();
+        int count = 0;
+        if (taskList != null) {
+            for (TaskModel task : taskList) {
+                if (count >= 5) {
+                    break;
+                }
+                String assigneeId = task.getAssignee();
+                if (isAssistantUser(assigneeId, positionId)) {
+                    OrgUnit employee = getEmployeeInfo(tenantId, assigneeId);
+                    if (employee != null) {
+                        appendAssistantName(assistantNames, employee.getName());
+                        count++;
+                    }
+                }
+            }
+        }
+        return new ParallelProcessingResult(assistantNames.toString());
+    }
+
+    /**
      * 任务委托（委托是把任务转给其他人操作，被委托人会在待办任务列表里看到这条任务，正常处理任务后，流程会继续向下运行）
      *
      * @param taskId 任务id
@@ -810,6 +1117,12 @@ public class ButtonOperationRestController {
             LOGGER.error("reAssign error", e);
         }
         return Y9Result.failure("委托失败");
+    }
+
+    @FlowableLog(operationName = "从回收站恢复待办", operationType = FlowableOperationTypeEnum.RESUME)
+    @PostMapping(value = "/recovers")
+    public Y9Result<String> recovers(@RequestParam String[] processSerialNumbers) {
+        return buttonOperationService.recovers(processSerialNumbers);
     }
 
     /**
@@ -875,6 +1188,12 @@ public class ButtonOperationRestController {
         return Y9Result.failure("拒签失败");
     }
 
+    @FlowableLog(operationName = "从回收站彻底删除", operationType = FlowableOperationTypeEnum.DELETE)
+    @PostMapping(value = "/removes")
+    public Y9Result<String> removes(@RequestParam String[] processSerialNumbers) {
+        return buttonOperationService.removes(processSerialNumbers);
+    }
+
     /**
      * 重定向（选择任意流程节点重定向）
      *
@@ -914,7 +1233,7 @@ public class ButtonOperationRestController {
                 .content(smsContent)
                 .positionIds(userChoice)
                 .build();
-            Y9Result<Object> result = smsDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), smsDetailModel);
+            Y9Result<Object> result = smsDetailApi.saveOrUpdate(smsDetailModel);
             if (!result.isSuccess()) {
                 return Y9Result.failure("保存短信详情失败！");
             }
@@ -1055,144 +1374,6 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 批量退回拟稿人
-     *
-     * @param actionName 操作名称
-     * @param taskIdAndProcessSerialNumbers 批量退回参数
-     * @return Y9Result<String>
-     */
-    @FlowableLog(operationName = "批量退回拟稿人", operationType = FlowableOperationTypeEnum.ROLLBACK)
-    @PostMapping(value = "/batchRollBack")
-    public Y9Result<List<TargetModel>> batchRollBack(@RequestParam @NotBlank String actionName,
-        @RequestParam String[] taskIdAndProcessSerialNumbers) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            TaskCollectionResult collectionResult = collectTaskInfo(tenantId, taskIdAndProcessSerialNumbers);
-            Y9Result<List<TargetModel>> validationResult = validateTasks(collectionResult);
-            if (validationResult != null) {
-                return validationResult;
-            }
-            BatchOperationResult operationResult =
-                executeBatchRollback(tenantId, actionName, collectionResult.taskList);
-            return Y9Result
-                .successMsg(String.format("退回成功%d条，退回失败%d条", operationResult.successCount, operationResult.failCount));
-        } catch (Exception e) {
-            LOGGER.error("批量退回拟稿人失败", e);
-            return Y9Result.failure("操作失败: " + e.getMessage());
-        }
-    }
-
-    /**
-     * 收集任务信息
-     */
-    private TaskCollectionResult collectTaskInfo(String tenantId, String[] taskIdAndProcessSerialNumbers) {
-        TaskCollectionResult result = new TaskCollectionResult();
-        for (String taskIdAndProcessSerialNumber : taskIdAndProcessSerialNumbers) {
-            String[] tpArr = taskIdAndProcessSerialNumber.split(":");
-            TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
-            if (task == null) {
-                handleNullTask(tenantId, tpArr, result.processedTaskMsg);
-            } else {
-                result.taskList.add(task);
-                checkTaskStatus(tenantId, task, result);
-            }
-        }
-        return result;
-    }
-
-    /**
-     * 处理空任务
-     */
-    private void handleNullTask(String tenantId, String[] tpArr, StringBuilder msg) {
-        try {
-            ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
-            if (StringUtils.isBlank(msg.toString())) {
-                msg.append(ppModel.getTitle());
-            } else {
-                msg.append(",").append(ppModel.getTitle());
-            }
-        } catch (Exception e) {
-            LOGGER.warn("获取流程参数失败: processSerialNumber={}", tpArr[1], e);
-        }
-    }
-
-    /**
-     * 检查任务状态
-     */
-    private void checkTaskStatus(String tenantId, TaskModel task, TaskCollectionResult result) {
-        // 检查是否未签收
-        if (StringUtils.isBlank(task.getAssignee())) {
-            result.signList.add(task);
-        }
-
-        // 检查是否为会签任务
-        if (result.subTaskList.isEmpty()) {
-            try {
-                List<TargetModel> data =
-                    processDefinitionApi.getSubProcessChildNode(tenantId, task.getProcessDefinitionId()).getData();
-                if (data.stream().anyMatch(m -> m.getTaskDefKey().equals(task.getTaskDefinitionKey()))) {
-                    result.subTaskList.add(task);
-                }
-            } catch (Exception e) {
-                LOGGER.warn("检查会签任务失败: taskId={}", task.getId(), e);
-            }
-        }
-    }
-
-    /**
-     * 验证任务
-     */
-    private Y9Result<List<TargetModel>> validateTasks(TaskCollectionResult collectionResult) {
-        if (!collectionResult.signList.isEmpty()) {
-            return Y9Result.failure("不能退回，存在未签收的待办");
-        }
-
-        if (StringUtils.isNotBlank(collectionResult.processedTaskMsg.toString())) {
-            return Y9Result.failure("不能退回，以下待办已处理：" + collectionResult.processedTaskMsg);
-        }
-
-        if (!collectionResult.subTaskList.isEmpty()) {
-            return Y9Result.failure("不能退回，存在正在会签的件");
-        }
-
-        return null; // 验证通过
-    }
-
-    /**
-     * 执行批量退回操作
-     */
-    private BatchOperationResult executeBatchRollback(String tenantId, String actionName, List<TaskModel> taskList) {
-        BatchOperationResult result = new BatchOperationResult();
-        String positionId = Y9FlowableHolder.getPositionId();
-
-        for (TaskModel task : taskList) {
-            try {
-                // 设置流程变量
-                Map<String, Object> vars = new HashMap<>();
-                vars.put("val", actionName);
-                variableApi.setVariableByProcessInstanceId(tenantId, task.getProcessInstanceId(),
-                    SysVariables.ACTION_NAME + ":" + positionId, vars);
-
-                // 执行退回操作
-                Y9Result<Object> operationResult =
-                    buttonOperationApi.rollbackToStartor(tenantId, positionId, task.getId(), "无");
-
-                if (operationResult.isSuccess()) {
-                    result.successCount++;
-                } else {
-                    result.failCount++;
-                    LOGGER.warn("任务退回失败: taskId={}, reason={}", task.getId(), operationResult.getMsg());
-                }
-            } catch (Exception e) {
-                result.failCount++;
-                LOGGER.error("任务退回异常: taskId={}", task.getId(), e);
-            }
-        }
-
-        return result;
-    }
-
-    /**
      * 保存流程定制信息
      *
      * @param itemId 事项id
@@ -1304,6 +1485,46 @@ public class ButtonOperationRestController {
     }
 
     /**
+     * 设置并行任务主办人信息
+     */
+    private void setParallelSponsorInfo(Map<String, Object> map, HistoricTaskInstanceModel hai,
+        String parallelSponsorObj, String tenantId) {
+        try {
+            OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, hai.getAssignee()).getData();
+            if (parallelSponsorObj != null && employee != null) {
+                if (parallelSponsorObj.equals(employee.getId())) {
+                    map.put(FlowableUiConsts.PARALLELSPONSOR, "主办");
+                } else {
+                    map.put(FlowableUiConsts.PARALLELSPONSOR, "协办");
+                }
+            } else {
+                map.put(FlowableUiConsts.PARALLELSPONSOR, "协办");
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取主办人信息失败", e);
+            map.put(FlowableUiConsts.PARALLELSPONSOR, "协办");
+        }
+    }
+
+    /**
+     * 获取签收任务配置（用于判断是否直接发送）
+     *
+     * @param itemId 事项id
+     * @param processDefinitionId 流程定义id
+     * @param taskDefinitionKey 任务key
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/signTaskConfig")
+    public Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String taskDefinitionKey,
+        @RequestParam @NotBlank String processSerialNumber) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        return documentApi.signTaskConfig(tenantId, Y9FlowableHolder.getPositionId(), itemId, processDefinitionId,
+            taskDefinitionKey, processSerialNumber);
+    }
+
+    /**
      * 特殊办结
      *
      * @param taskId 任务id
@@ -1353,26 +1574,18 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 任务收回
+     * 办件发送
      *
+     * @param itemId 事项id
      * @param taskId 任务id
-     * @param reason 收回原因
-     * @return Y9Result<String>
+     * @param processSerialNumber 流程编号
+     * @return Y9Result<Object>
      */
-    @FlowableLog(operationName = "任务收回", operationType = FlowableOperationTypeEnum.TAKE_BACK)
-    @PostMapping(value = "/takeback")
-    public Y9Result<String> takeback(@RequestParam @NotBlank String taskId,
-        @RequestParam(required = false) String reason) {
-        Position position = Y9FlowableHolder.getPosition();
-        String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            buttonOperationApi.takeback(tenantId, positionId, taskId, reason);
-            asyncUtilService.takebackAuditLog(tenantId, positionId, taskId);
-            return Y9Result.successMsg("收回成功");
-        } catch (Exception e) {
-            LOGGER.error("takeback error", e);
-        }
-        return Y9Result.failure("收回失败");
+    @PostMapping(value = "/submitTo")
+    public Y9Result<Object> submitTo(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
+        return documentApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), taskId,
+            itemId, processSerialNumber);
     }
 
     /**
@@ -1390,6 +1603,29 @@ public class ButtonOperationRestController {
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             buttonOperationApi.takeBack2TaskDefKey(tenantId, positionId, taskId, reason);
+            return Y9Result.successMsg("收回成功");
+        } catch (Exception e) {
+            LOGGER.error("takeback error", e);
+        }
+        return Y9Result.failure("收回失败");
+    }
+
+    /**
+     * 任务收回
+     *
+     * @param taskId 任务id
+     * @param reason 收回原因
+     * @return Y9Result<String>
+     */
+    @FlowableLog(operationName = "任务收回", operationType = FlowableOperationTypeEnum.TAKE_BACK)
+    @PostMapping(value = "/takeback")
+    public Y9Result<String> takeback(@RequestParam @NotBlank String taskId,
+        @RequestParam(required = false) String reason) {
+        Position position = Y9FlowableHolder.getPosition();
+        String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            buttonOperationApi.takeback(tenantId, positionId, taskId, reason);
+            asyncUtilService.takebackAuditLog(tenantId, positionId, taskId);
             return Y9Result.successMsg("收回成功");
         } catch (Exception e) {
             LOGGER.error("takeback error", e);
@@ -1419,258 +1655,30 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 流程办结
-     *
-     * @param taskId 任务id
-     * @param infoOvert 办结数据是否在数据中心公开
-     * @return Y9Result<String>
+     * 验证任务
      */
-    @PostMapping(value = "/complete")
-    public Y9Result<String> complete(@RequestParam @NotBlank String taskId,
-        @RequestParam(required = false) String infoOvert) {
-        try {
-            buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
-            return Y9Result.successMsg("办结成功");
-        } catch (Exception e) {
-            LOGGER.error("流程办结失败", e);
+    private Y9Result<List<TargetModel>> validateTasks(TaskCollectionResult collectionResult) {
+        if (!collectionResult.signList.isEmpty()) {
+            return Y9Result.failure("不能退回，存在未签收的待办");
         }
-        return Y9Result.failure("办结失败");
-    }
 
-    /**
-     * 批量办结
-     *
-     * @param taskIds 任务id集合
-     * @return Y9Result<String>
-     */
-    @FlowableLog(operationName = "批量办结", operationType = FlowableOperationTypeEnum.COMPLETE)
-    @PostMapping(value = "/completeTodo")
-    public Y9Result<String> completeTodo(@RequestParam String[] taskIds) {
-        AtomicInteger successCount = new AtomicInteger();
-        AtomicInteger failCount = new AtomicInteger();
-        Arrays.stream(taskIds).forEach(taskId -> {
-            try {
-                TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
-                if (null != task) {
-                    buttonOperationService.complete(taskId, "办结", "已办结", "");
-                    successCount.getAndIncrement();
-                } else {
-                    failCount.getAndIncrement();
-                }
-            } catch (Exception e) {
-                failCount.getAndIncrement();
-            }
-        });
-        return Y9Result.successMsg("批量办结成功，成功：" + successCount.get() + "，失败：" + failCount.get());
-    }
-
-    @FlowableLog(operationName = "放入回收站", operationType = FlowableOperationTypeEnum.DELETE)
-    @PostMapping(value = "/deleteTodos")
-    public Y9Result<String> deleteTodos(@RequestParam String[] taskIdAndProcessSerialNumbers) {
-        return buttonOperationService.deleteTodos(taskIdAndProcessSerialNumbers);
-    }
-
-    @FlowableLog(operationName = "批量放入回收站", operationType = FlowableOperationTypeEnum.DELETE)
-    @PostMapping(value = "/deleteByProcessSerialNumbers")
-    public Y9Result<String> deleteByProcessSerialNumbers(@RequestParam String[] processSerialNumbers) {
-        return buttonOperationService.deleteByProcessSerialNumbers(processSerialNumbers);
-    }
-
-    @FlowableLog(operationName = "从回收站恢复待办", operationType = FlowableOperationTypeEnum.RESUME)
-    @PostMapping(value = "/recovers")
-    public Y9Result<String> recovers(@RequestParam String[] processSerialNumbers) {
-        return buttonOperationService.recovers(processSerialNumbers);
-    }
-
-    @FlowableLog(operationName = "从回收站彻底删除", operationType = FlowableOperationTypeEnum.DELETE)
-    @PostMapping(value = "/removes")
-    public Y9Result<String> removes(@RequestParam String[] processSerialNumbers) {
-        return buttonOperationService.removes(processSerialNumbers);
-    }
-
-    /**
-     * 办件发送
-     *
-     * @param itemId 事项id
-     * @param taskId 任务id
-     * @param processSerialNumber 流程编号
-     * @return Y9Result<Object>
-     */
-    @PostMapping(value = "/submitTo")
-    public Y9Result<Object> submitTo(@RequestParam @NotBlank String itemId,
-        @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
-        return documentApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), taskId,
-            itemId, processSerialNumber);
-    }
-
-    /**
-     * 办件发送
-     * 
-     * @param forwardingDTO 办件发送参数
-     * @return Y9Result<Map < String, Object>>
-     */
-    @FlowableLog(operationName = "办件发送", operationType = FlowableOperationTypeEnum.SEND)
-    @PostMapping(value = "/forwarding")
-    public Y9Result<Map<String, Object>> forwarding(@RequestBody @Valid ForwardingDTO forwardingDTO) {
-        Map<String, Object> map = new HashMap<>();
-        try {
-            SmsDetailModel smsDetailModel = SmsDetailModel.builder()
-                .processSerialNumber(forwardingDTO.getProcessSerialNumber())
-                .positionId(Y9FlowableHolder.getPositionId())
-                .positionName(Y9LoginUserHolder.getUserInfo().getName())
-                .send(!StringUtils.isBlank(forwardingDTO.getIsSendSms())
-                    && Boolean.parseBoolean(forwardingDTO.getIsSendSms()))
-                .sign(!StringUtils.isBlank(forwardingDTO.getIsShuMing())
-                    && Boolean.parseBoolean(forwardingDTO.getIsShuMing()))
-                .content(forwardingDTO.getSmsContent())
-                .positionIds(forwardingDTO.getUserChoice())
-                .build();
-            Y9Result<Object> result = smsDetailApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), smsDetailModel);
-            if (!result.isSuccess()) {
-                return Y9Result.failure("保存短信详情失败！");
-            }
-            Y9Result<String> y9Result = documentApi.saveAndForwarding(Y9FlowableHolder.getPositionId(), forwardingDTO);
-            if (y9Result.isSuccess()) {
-                map.put("processInstanceId", y9Result.getData());
-                return Y9Result.success(map, y9Result.getMsg());
-            } else {
-                return Y9Result.failure(y9Result.getMsg());
-            }
-        } catch (Exception e) {
-            LOGGER.error("发送失败", e);
+        if (StringUtils.isNotBlank(collectionResult.processedTaskMsg.toString())) {
+            return Y9Result.failure("不能退回，以下待办已处理：" + collectionResult.processedTaskMsg);
         }
-        return Y9Result.failure("发送失败，发生异常");
-    }
 
-    /**
-     * 获取签收任务配置（用于判断是否直接发送）
-     *
-     * @param itemId 事项id
-     * @param processDefinitionId 流程定义id
-     * @param taskDefinitionKey 任务key
-     * @param processSerialNumber 流程编号
-     * @return Y9Result<Map < String, Object>>
-     */
-    @GetMapping(value = "/signTaskConfig")
-    public Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam @NotBlank String itemId,
-        @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String taskDefinitionKey,
-        @RequestParam @NotBlank String processSerialNumber) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return documentApi.signTaskConfig(tenantId, Y9FlowableHolder.getPositionId(), itemId, processDefinitionId,
-            taskDefinitionKey, processSerialNumber);
-    }
-
-    /**
-     * 获取协办人员办理情况
-     *
-     * @param taskId 任务id * @return Y9Result<Map<String, Object>>
-     */
-    @GetMapping(value = "/getParallelNames")
-    public Y9Result<Map<String, Object>> getParallelNames(@RequestParam @NotBlank String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9FlowableHolder.getPositionId();
-        try {
-            TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-            if (taskModel == null) {
-                return Y9Result.failure("任务不存在");
-            }
-            Map<String, Object> result = new HashMap<>(16);
-            String multiInstance = processDefinitionApi
-                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
-                .getData();
-            if (isParallelInstance(multiInstance)) {
-                handleParallelInstance(result, tenantId, positionId, taskModel);
-            } else {
-                result.put("isParallel", false);
-                result.put(FlowableUiConsts.PARALLELDOING_KEY, "");
-                result.put(FlowableUiConsts.COUNT_KEY, 0);
-            }
-            return Y9Result.success(result, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("获取协办人员办理情况失败", e);
-            return Y9Result.failure("获取失败");
+        if (!collectionResult.subTaskList.isEmpty()) {
+            return Y9Result.failure("不能退回，存在正在会签的件");
         }
+
+        return null; // 验证通过
     }
 
     /**
-     * 判断是否为并行实例
+     * 批量操作结果
      */
-    private boolean isParallelInstance(String multiInstance) {
-        return SysVariables.PARALLEL.equals(multiInstance);
-    }
-
-    /**
-     * 处理并行实例情况
-     */
-    private void handleParallelInstance(Map<String, Object> result, String tenantId, String positionId,
-        TaskModel taskModel) {
-        result.put("isParallel", true);
-        try {
-            List<TaskModel> taskList =
-                taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId(), true).getData();
-            ParallelProcessingResult processingResult = processAssistantTasks(tenantId, positionId, taskList);
-            result.put(FlowableUiConsts.PARALLELDOING_KEY, processingResult.assistantNames);
-            result.put(FlowableUiConsts.COUNT_KEY, taskList != null ? taskList.size() - 1 : 0);
-        } catch (Exception e) {
-            LOGGER.warn("处理并行任务列表失败", e);
-            result.put(FlowableUiConsts.PARALLELDOING_KEY, "");
-            result.put(FlowableUiConsts.COUNT_KEY, 0);
-        }
-    }
-
-    /**
-     * 处理协办任务
-     */
-    private ParallelProcessingResult processAssistantTasks(String tenantId, String positionId,
-        List<TaskModel> taskList) {
-        StringBuilder assistantNames = new StringBuilder();
-        int count = 0;
-        if (taskList != null) {
-            for (TaskModel task : taskList) {
-                if (count >= 5) {
-                    break;
-                }
-                String assigneeId = task.getAssignee();
-                if (isAssistantUser(assigneeId, positionId)) {
-                    OrgUnit employee = getEmployeeInfo(tenantId, assigneeId);
-                    if (employee != null) {
-                        appendAssistantName(assistantNames, employee.getName());
-                        count++;
-                    }
-                }
-            }
-        }
-        return new ParallelProcessingResult(assistantNames.toString());
-    }
-
-    /**
-     * 判断是否为协办用户
-     */
-    private boolean isAssistantUser(String assigneeId, String positionId) {
-        return StringUtils.isNotBlank(assigneeId) && !assigneeId.equals(positionId);
-    }
-
-    /**
-     * 获取员工信息
-     */
-    private OrgUnit getEmployeeInfo(String tenantId, String assigneeId) {
-        try {
-            return orgUnitApi.getPersonOrPosition(tenantId, assigneeId).getData();
-        } catch (Exception e) {
-            LOGGER.warn("获取员工信息失败: assigneeId={}", assigneeId, e);
-            return null;
-        }
-    }
-
-    /**
-     * 添加协办人员名称
-     */
-    private void appendAssistantName(StringBuilder names, String name) {
-        if (names.length() == 0) {
-            names.append(name);
-        } else {
-            names.append("、").append(name);
-        }
+    private static class BatchOperationResult {
+        int successCount = 0;
+        int failCount = 0;
     }
 
     /**
@@ -1692,14 +1700,6 @@ public class ButtonOperationRestController {
         final List<TaskModel> taskList = new ArrayList<>();
         final List<TaskModel> subTaskList = new ArrayList<>();
         final StringBuilder processedTaskMsg = new StringBuilder();
-    }
-
-    /**
-     * 批量操作结果
-     */
-    private static class BatchOperationResult {
-        int successCount = 0;
-        int failCount = 0;
     }
 
     /**
