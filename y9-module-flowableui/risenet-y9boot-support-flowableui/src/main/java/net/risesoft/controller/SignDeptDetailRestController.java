@@ -97,12 +97,12 @@ public class SignDeptDetailRestController {
         taskModelList.stream()
             .filter(tm -> StringUtils.equals(tm.getExecutionId(), signDeptDetail.getExecutionId()))
             .forEach(tm -> {
-                List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tenantId, tm.getId()).getData();
+                List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tm.getId()).getData();
                 taskRelatedModels.stream()
                     .filter(trm -> StringUtils.equals(trm.getInfoType(), TaskRelatedEnum.ACTIONNAME.getValue()))
                     .forEach(trm -> {
                         trm.setMsgContent("减签");
-                        taskRelatedApi.saveOrUpdate(tenantId, trm);
+                        taskRelatedApi.saveOrUpdate(trm);
                     });
             });
         String processSerialNumber = signDeptDetail.getProcessSerialNumber();
@@ -217,12 +217,12 @@ public class SignDeptDetailRestController {
         taskModelList.stream()
             .filter(tm -> StringUtils.equals(tm.getExecutionId(), ssd.getExecutionId()))
             .forEach(tm -> {
-                List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tenantId, tm.getId()).getData();
+                List<TaskRelatedModel> taskRelatedModels = taskRelatedApi.findByTaskId(tm.getId()).getData();
                 taskRelatedModels.stream()
                     .filter(trm -> StringUtils.equals(trm.getInfoType(), TaskRelatedEnum.ACTIONNAME.getValue()))
                     .forEach(trm -> {
                         trm.setMsgContent("恢复");
-                        taskRelatedApi.saveOrUpdate(tenantId, trm);
+                        taskRelatedApi.saveOrUpdate(trm);
                     });
             });
         String processSerialNumber = ssd.getProcessSerialNumber();

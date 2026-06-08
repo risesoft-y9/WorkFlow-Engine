@@ -945,11 +945,10 @@ public class WorkListServiceImpl implements WorkListService {
      */
     private List<TaskRelatedModel> getTaskRelated4Doing(String processSerialNumber, String executionId,
         boolean isChildren, List<UrgeInfoModel> urgeInfoList) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<TaskRelatedModel> returnList = new ArrayList<>();
             List<TaskRelatedModel> taskRelatedList =
-                taskRelatedApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                taskRelatedApi.findByProcessSerialNumber(processSerialNumber).getData();
             List<TaskRelatedModel> banwenshumingList;
             // 办文说明
             if (isChildren) {
@@ -1005,11 +1004,10 @@ public class WorkListServiceImpl implements WorkListService {
      */
     private List<TaskRelatedModel> getTaskRelated4FuYuan(String processSerialNumber,
         List<TaskRelatedModel> processRelatedList) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<TaskRelatedModel> taskRelatedList;
         try {
             if (processRelatedList.isEmpty()) {
-                processRelatedList = taskRelatedApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processRelatedList = taskRelatedApi.findByProcessSerialNumber(processSerialNumber).getData();
             }
             taskRelatedList = processRelatedList.stream()
                 .filter(taskRelatedModel -> TaskRelatedEnum.FU.getValue().equals(taskRelatedModel.getInfoType())
@@ -1050,10 +1048,9 @@ public class WorkListServiceImpl implements WorkListService {
      * @return List<TaskRelatedModel>
      */
     private List<TaskRelatedModel> getTaskRelated4Todo(ActRuDetailModel ardModel) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<TaskRelatedModel> processRelatedList =
-                taskRelatedApi.findByProcessSerialNumber(tenantId, ardModel.getProcessSerialNumber()).getData();
+                taskRelatedApi.findByProcessSerialNumber(ardModel.getProcessSerialNumber()).getData();
             List<TaskRelatedModel> taskRelatedList = processRelatedList.stream()
                 .filter(prl -> prl.getTaskId().equals(ardModel.getTaskId()))
                 .collect(Collectors.toList());

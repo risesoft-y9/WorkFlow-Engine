@@ -34,29 +34,47 @@ import net.risesoft.y9.Y9Context;
 @Slf4j
 public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListener {
 
-    @Override
-    public boolean isFailOnException() {
-        // TODO Auto-generated method stub
-        return true;
+    /**
+     * 提取任务变量
+     */
+    private Map<String, Object> extractTaskVariables(TaskEntityImpl taskEntity) {
+        Map<String, Object> mapTemp = new HashMap<>(16);
+
+        String user = (String)taskEntity.getVariable(SysVariables.USER);
+        @SuppressWarnings("unchecked")
+        List<String> users = (List<String>)taskEntity.getVariable(SysVariables.USERS);
+        String taskSender = (String)taskEntity.getVariable(SysVariables.TASK_SENDER);
+        String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASK_SENDER_ID);
+
+        if (null != user) {
+            mapTemp.put(SysVariables.USER, user);
+            System.out.println("###########user##" + user);
+        }
+        if (null != users && !users.isEmpty()) {
+            mapTemp.put(SysVariables.USERS, users);
+        }
+        if (StringUtils.isNotBlank(taskSender)) {
+            mapTemp.put(SysVariables.TASK_SENDER, taskSender);
+        }
+        if (StringUtils.isNotBlank(taskSenderId)) {
+            mapTemp.put(SysVariables.TASK_SENDER_ID, taskSenderId);
+        }
+
+        return mapTemp;
     }
 
-    @Override
-    @Transactional(rollbackFor = Exception.class)
-    public void onEvent(FlowableEvent event) {
-        FlowableEngineEventType type = (FlowableEngineEventType)event.getType();
-        switch (type) {
-            case TASK_CREATED:
-                handleTaskCreatedEvent(event);
-                break;
-            case TASK_COMPLETED:
-                // 任务完成事件处理逻辑可以在这里添加
-                break;
-            case SEQUENCEFLOW_TAKEN:
-                handleSequenceFlowTakenEvent(event);
-                break;
-            default:
-                // 默认处理逻辑
-                break;
+    /**
+     * 处理路由事件
+     */
+    private void handleSequenceFlowTakenEvent(FlowableEvent event) {
+        // 路由监听
+        FlowableSequenceFlowTakenEventImpl entity = (FlowableSequenceFlowTakenEventImpl)event;
+        // 接口调用
+        InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
+        try {
+            interfaceUtilService.interfaceCallBySequenceFlow(entity, "经过");
+        } catch (Exception e) {
+            throw new RuntimeException("调用接口失败 EventListener4ExcludeTodo2Doing_SEQUENCEFLOW_TAKEN");
         }
     }
 
@@ -89,45 +107,6 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
     }
 
     /**
-     * 设置任务分配人变量
-     */
-    private void setAssigneeVariable(TaskEntityImpl taskEntity) {
-        String assignee = taskEntity.getAssignee();
-        if (StringUtils.isNotBlank(assignee)) {
-            taskEntity.setVariable(assignee, assignee);
-        }
-    }
-
-    /**
-     * 提取任务变量
-     */
-    private Map<String, Object> extractTaskVariables(TaskEntityImpl taskEntity) {
-        Map<String, Object> mapTemp = new HashMap<>(16);
-
-        String user = (String)taskEntity.getVariable(SysVariables.USER);
-        @SuppressWarnings("unchecked")
-        List<String> users = (List<String>)taskEntity.getVariable(SysVariables.USERS);
-        String taskSender = (String)taskEntity.getVariable(SysVariables.TASK_SENDER);
-        String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASK_SENDER_ID);
-
-        if (null != user) {
-            mapTemp.put(SysVariables.USER, user);
-            System.out.println("###########user##" + user);
-        }
-        if (null != users && !users.isEmpty()) {
-            mapTemp.put(SysVariables.USERS, users);
-        }
-        if (StringUtils.isNotBlank(taskSender)) {
-            mapTemp.put(SysVariables.TASK_SENDER, taskSender);
-        }
-        if (StringUtils.isNotBlank(taskSenderId)) {
-            mapTemp.put(SysVariables.TASK_SENDER_ID, taskSenderId);
-        }
-
-        return mapTemp;
-    }
-
-    /**
      * 处理任务优先级
      */
     private void handleTaskPriority(TaskEntityImpl taskEntity) {
@@ -143,22 +122,6 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
                     LOGGER.error("设置优先级失败", e);
                 }
             }
-        }
-    }
-
-    /**
-     * 设置任务到期时间
-     */
-    private void setTaskDueDate(TaskEntityImpl taskEntity) {
-        String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
-        String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
-
-        ProcessParamApi processParamApi = Y9Context.getBean(ProcessParamApi.class);
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-
-        if (null != processParamModel.getDueDate()) {
-            taskEntity.setDueDate(processParamModel.getDueDate());
         }
     }
 
@@ -187,6 +150,54 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
         setPreviousAction(taskEntity, processParamModel, isSub, taskSenderId, taskSender, tenantId);
     }
 
+    @Override
+    public boolean isFailOnException() {
+        // TODO Auto-generated method stub
+        return true;
+    }
+
+    @Override
+    @Transactional(rollbackFor = Exception.class)
+    public void onEvent(FlowableEvent event) {
+        FlowableEngineEventType type = (FlowableEngineEventType)event.getType();
+        switch (type) {
+            case TASK_CREATED:
+                handleTaskCreatedEvent(event);
+                break;
+            case TASK_COMPLETED:
+                // 任务完成事件处理逻辑可以在这里添加
+                break;
+            case SEQUENCEFLOW_TAKEN:
+                handleSequenceFlowTakenEvent(event);
+                break;
+            default:
+                // 默认处理逻辑
+                break;
+        }
+    }
+
+    /**
+     * 设置任务分配人变量
+     */
+    private void setAssigneeVariable(TaskEntityImpl taskEntity) {
+        String assignee = taskEntity.getAssignee();
+        if (StringUtils.isNotBlank(assignee)) {
+            taskEntity.setVariable(assignee, assignee);
+        }
+    }
+
+    /**
+     * 设置业务分类
+     */
+    private void setBusinessCategory(TaskEntityImpl taskEntity) {
+        HistoricProcessInstance historicProcessInstance =
+            Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
+        if (null != historicProcessInstance) {
+            String businessKey = historicProcessInstance.getBusinessKey();
+            taskEntity.setCategory(businessKey);
+        }
+    }
+
     /**
      * 设置办文说明
      */
@@ -204,7 +215,7 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
             taskRelatedModel.setMsgContent(processParamModel.getDescription());
             taskRelatedModel.setSenderId(taskSenderId);
             taskRelatedModel.setSenderName(taskSender);
-            taskRelatedApi.saveOrUpdate(tenantId, taskRelatedModel);
+            taskRelatedApi.saveOrUpdate(taskRelatedModel);
         }
     }
 
@@ -226,34 +237,23 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
             taskRelatedModel.setMsgContent(String.valueOf(actionName));
             taskRelatedModel.setSenderId(taskSenderId);
             taskRelatedModel.setSenderName(taskSender);
-            taskRelatedApi.saveOrUpdate(tenantId, taskRelatedModel);
+            taskRelatedApi.saveOrUpdate(taskRelatedModel);
         }
     }
 
     /**
-     * 设置业务分类
+     * 设置任务到期时间
      */
-    private void setBusinessCategory(TaskEntityImpl taskEntity) {
-        HistoricProcessInstance historicProcessInstance =
-            Y9Context.getBean(CustomHistoricProcessService.class).getById(taskEntity.getProcessInstanceId());
-        if (null != historicProcessInstance) {
-            String businessKey = historicProcessInstance.getBusinessKey();
-            taskEntity.setCategory(businessKey);
-        }
-    }
+    private void setTaskDueDate(TaskEntityImpl taskEntity) {
+        String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
+        String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
 
-    /**
-     * 处理路由事件
-     */
-    private void handleSequenceFlowTakenEvent(FlowableEvent event) {
-        // 路由监听
-        FlowableSequenceFlowTakenEventImpl entity = (FlowableSequenceFlowTakenEventImpl)event;
-        // 接口调用
-        InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
-        try {
-            interfaceUtilService.interfaceCallBySequenceFlow(entity, "经过");
-        } catch (Exception e) {
-            throw new RuntimeException("调用接口失败 EventListener4ExcludeTodo2Doing_SEQUENCEFLOW_TAKEN");
+        ProcessParamApi processParamApi = Y9Context.getBean(ProcessParamApi.class);
+        ProcessParamModel processParamModel =
+            processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+
+        if (null != processParamModel.getDueDate()) {
+            taskEntity.setDueDate(processParamModel.getDueDate());
         }
     }
 }

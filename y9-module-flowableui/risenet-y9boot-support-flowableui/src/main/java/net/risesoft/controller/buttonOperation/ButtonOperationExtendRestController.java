@@ -81,25 +81,6 @@ public class ButtonOperationExtendRestController {
     private final ButtonOperationService buttonOperationService;
 
     /**
-     * 批量恢复待办
-     *
-     * @param processInstanceIds 流程实例ids ，逗号隔开
-     * @param desc 原因
-     * @return Y9Result<String>
-     */
-    @PostMapping(value = "/multipleResumeToDo")
-    public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceIds,
-        @RequestParam(required = false) String desc) {
-        try {
-            buttonOperationService.multipleResumeToDo(processInstanceIds, desc);
-            return Y9Result.successMsg("恢复成功");
-        } catch (Exception e) {
-            LOGGER.error("恢复待办失败", e);
-        }
-        return Y9Result.failure("恢复失败");
-    }
-
-    /**
      * 检查是否可以批量发送
      *
      * @param taskIdAndProcessSerialNumbers 任务id和流程实例id
@@ -122,77 +103,6 @@ public class ButtonOperationExtendRestController {
             LOGGER.error("校验批量发送失败", e);
             return Y9Result.failure("校验是否可以批量发送失败，发生异常");
         }
-    }
-
-    /**
-     * 收集批量任务信息
-     */
-    private BatchCheckResult collectBatchTaskInfo(String tenantId, String[] taskIdAndProcessSerialNumbers) {
-        BatchCheckResult result = new BatchCheckResult();
-        for (String taskIdAndProcessSerialNumber : taskIdAndProcessSerialNumbers) {
-            String[] tpArr = taskIdAndProcessSerialNumber.split(":");
-            TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
-            if (task == null) {
-                handleNullTask(tenantId, tpArr, result.processedTaskMsg);
-            } else {
-                result.validTasks.add(task);
-                if (StringUtils.isBlank(task.getAssignee())) {
-                    result.unsignedTasks.add(task);
-                }
-                if (!result.taskDefinitionKeys.contains(task.getTaskDefinitionKey())) {
-                    result.taskDefinitionKeys.add(task.getTaskDefinitionKey());
-                }
-            }
-        }
-        return result;
-    }
-
-    /**
-     * 处理空任务情况
-     */
-    private void handleNullTask(String tenantId, String[] tpArr, StringBuilder msg) {
-        try {
-            ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
-            if (StringUtils.isBlank(msg.toString())) {
-                msg.append(ppModel.getTitle());
-            } else {
-                msg.append(",").append(ppModel.getTitle());
-            }
-        } catch (Exception e) {
-            LOGGER.warn("获取流程参数失败: processSerialNumber={}", tpArr[1], e);
-        }
-    }
-
-    /**
-     * 验证批量任务
-     */
-    private Y9Result<List<TargetModel>> validateBatchTasks(BatchCheckResult checkResult) {
-        if (!checkResult.unsignedTasks.isEmpty()) {
-            return Y9Result.failure("不能批量发送，存在未签收的待办");
-        }
-        if (StringUtils.isNotBlank(checkResult.processedTaskMsg.toString())) {
-            return Y9Result.failure("不能批量发送，以下待办已处理：" + checkResult.processedTaskMsg);
-        }
-        if (checkResult.taskDefinitionKeys.size() > 1) {
-            return Y9Result.failure("不能批量发送，存在不同的办理环节");
-        }
-        return null;
-    }
-
-    /**
-     * 获取批量任务的目标节点
-     */
-    private List<TargetModel> getTargetNodesForBatch(String tenantId, List<TaskModel> taskList) {
-        if (taskList.isEmpty()) {
-            return new ArrayList<>();
-        }
-        TaskModel firstTask = taskList.get(0);
-        return processDefinitionApi
-            .getTargetNodes(tenantId, firstTask.getProcessDefinitionId(), firstTask.getTaskDefinitionKey())
-            .getData()
-            .stream()
-            .filter(m -> !"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName()))
-            .collect(Collectors.toList());
     }
 
     /**
@@ -240,6 +150,29 @@ public class ButtonOperationExtendRestController {
     }
 
     /**
+     * 收集批量任务信息
+     */
+    private BatchCheckResult collectBatchTaskInfo(String tenantId, String[] taskIdAndProcessSerialNumbers) {
+        BatchCheckResult result = new BatchCheckResult();
+        for (String taskIdAndProcessSerialNumber : taskIdAndProcessSerialNumbers) {
+            String[] tpArr = taskIdAndProcessSerialNumber.split(":");
+            TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
+            if (task == null) {
+                handleNullTask(tenantId, tpArr, result.processedTaskMsg);
+            } else {
+                result.validTasks.add(task);
+                if (StringUtils.isBlank(task.getAssignee())) {
+                    result.unsignedTasks.add(task);
+                }
+                if (!result.taskDefinitionKeys.contains(task.getTaskDefinitionKey())) {
+                    result.taskDefinitionKeys.add(task.getTaskDefinitionKey());
+                }
+            }
+        }
+        return result;
+    }
+
+    /**
      * 复制并起草
      *
      * @param processSerialNumber 流程序列号
@@ -251,7 +184,7 @@ public class ButtonOperationExtendRestController {
         @RequestParam(required = false) String startTaskDefKey) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<TaskRelatedModel> processRelatedList =
-            taskRelatedApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            taskRelatedApi.findByProcessSerialNumber(processSerialNumber).getData();
         if (processRelatedList.stream()
             .anyMatch(taskRelatedModel -> TaskRelatedEnum.FU.getValue().equals(taskRelatedModel.getInfoType()))) {
             return Y9Result.failure("操作失败：复制件不能被复制!");
@@ -301,7 +234,7 @@ public class ButtonOperationExtendRestController {
         sourceTaskRelated.setSub(false);
         sourceTaskRelated.setSenderId(position.getId());
         sourceTaskRelated.setSenderName(position.getName());
-        Y9Result<Object> yuanResult = taskRelatedApi.saveOrUpdate(tenantId, sourceTaskRelated);
+        Y9Result<Object> yuanResult = taskRelatedApi.saveOrUpdate(sourceTaskRelated);
         // 6 设置复制件的相关信息
         Map<String, Object> fwFormDataMap =
             formDataApi.getData4TableAlias(tenantId, processSerialNumber, "fw").getData();
@@ -316,7 +249,7 @@ public class ButtonOperationExtendRestController {
         targetTaskRelated.setMsgContent(sourceLsh);
         targetTaskRelated.setSenderId(position.getId());
         targetTaskRelated.setSenderName(position.getName());
-        Y9Result<Object> fuResult = taskRelatedApi.saveOrUpdate(tenantId, targetTaskRelated);
+        Y9Result<Object> fuResult = taskRelatedApi.saveOrUpdate(targetTaskRelated);
 
         List<ActRuDetailModel> actRuDetailList = actRuDetailApi
             .findByProcessSerialNumberAndStatus(tenantId, targetProcessSerialNumber, ActRuDetailStatusEnum.TODO)
@@ -405,6 +338,57 @@ public class ButtonOperationExtendRestController {
     }
 
     /**
+     * 获取批量任务的目标节点
+     */
+    private List<TargetModel> getTargetNodesForBatch(String tenantId, List<TaskModel> taskList) {
+        if (taskList.isEmpty()) {
+            return new ArrayList<>();
+        }
+        TaskModel firstTask = taskList.get(0);
+        return processDefinitionApi
+            .getTargetNodes(tenantId, firstTask.getProcessDefinitionId(), firstTask.getTaskDefinitionKey())
+            .getData()
+            .stream()
+            .filter(m -> !"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName()))
+            .collect(Collectors.toList());
+    }
+
+    /**
+     * 处理空任务情况
+     */
+    private void handleNullTask(String tenantId, String[] tpArr, StringBuilder msg) {
+        try {
+            ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
+            if (StringUtils.isBlank(msg.toString())) {
+                msg.append(ppModel.getTitle());
+            } else {
+                msg.append(",").append(ppModel.getTitle());
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取流程参数失败: processSerialNumber={}", tpArr[1], e);
+        }
+    }
+
+    /**
+     * 批量恢复待办
+     *
+     * @param processInstanceIds 流程实例ids ，逗号隔开
+     * @param desc 原因
+     * @return Y9Result<String>
+     */
+    @PostMapping(value = "/multipleResumeToDo")
+    public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceIds,
+        @RequestParam(required = false) String desc) {
+        try {
+            buttonOperationService.multipleResumeToDo(processInstanceIds, desc);
+            return Y9Result.successMsg("恢复成功");
+        } catch (Exception e) {
+            LOGGER.error("恢复待办失败", e);
+        }
+        return Y9Result.failure("恢复失败");
+    }
+
+    /**
      * 批量签收
      *
      * @param taskIdAndProcessSerialNumbers 任务id和流程实例id
@@ -414,6 +398,22 @@ public class ButtonOperationExtendRestController {
     @PostMapping(value = "/sign4Batch")
     public Y9Result<String> sign4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
         return documentHandleService.sign4Batch(taskIdAndProcessSerialNumbers);
+    }
+
+    /**
+     * 验证批量任务
+     */
+    private Y9Result<List<TargetModel>> validateBatchTasks(BatchCheckResult checkResult) {
+        if (!checkResult.unsignedTasks.isEmpty()) {
+            return Y9Result.failure("不能批量发送，存在未签收的待办");
+        }
+        if (StringUtils.isNotBlank(checkResult.processedTaskMsg.toString())) {
+            return Y9Result.failure("不能批量发送，以下待办已处理：" + checkResult.processedTaskMsg);
+        }
+        if (checkResult.taskDefinitionKeys.size() > 1) {
+            return Y9Result.failure("不能批量发送，存在不同的办理环节");
+        }
+        return null;
     }
 
     /**
