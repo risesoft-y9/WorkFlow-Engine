@@ -31,19 +31,10 @@ public class OptionClassApiImpl implements OptionClassApi {
 
     private final Y9FormOptionClassService y9FormOptionClassService;
 
-    /**
-     * 获取数据字典列表
-     *
-     * @param tenantId 租户id
-     * @param type 字典标识
-     * @return {@code Y9Result<List<Y9FormOptionValueModel>>} 通用请求返回对象 -data是数据字典列表
-     * @since 9.6.6
-     */
     @Override
-    public Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(@RequestParam String tenantId,
-        @RequestParam String type) {
+    public Y9Result<List<Y9FormOptionValueModel>> findAll(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
-        List<Y9FormOptionValue> list = y9FormOptionClassService.listByTypeOrderByTabIndexAsc(type);
+        List<Y9FormOptionValue> list = y9FormOptionClassService.listAllOptionValue();
         List<Y9FormOptionValueModel> listMap = new ArrayList<>();
         for (Y9FormOptionValue option : list) {
             Y9FormOptionValueModel map = new Y9FormOptionValueModel();
@@ -56,10 +47,16 @@ public class OptionClassApiImpl implements OptionClassApi {
         return Y9Result.success(listMap);
     }
 
+    /**
+     * 获取数据字典列表
+     *
+     * @param type 字典标识
+     * @return {@code Y9Result<List<Y9FormOptionValueModel>>} 通用请求返回对象 -data是数据字典列表
+     * @since 9.6.6
+     */
     @Override
-    public Y9Result<List<Y9FormOptionValueModel>> findAll(String tenantId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        List<Y9FormOptionValue> list = y9FormOptionClassService.listAllOptionValue();
+    public Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(@RequestParam String type) {
+        List<Y9FormOptionValue> list = y9FormOptionClassService.listByTypeOrderByTabIndexAsc(type);
         List<Y9FormOptionValueModel> listMap = new ArrayList<>();
         for (Y9FormOptionValue option : list) {
             Y9FormOptionValueModel map = new Y9FormOptionValueModel();
