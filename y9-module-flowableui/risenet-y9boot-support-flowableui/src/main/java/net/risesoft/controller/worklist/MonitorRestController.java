@@ -56,6 +56,28 @@ public class MonitorRestController {
     private final ProcessParamApi processParamApi;
 
     /**
+     * 获取监控阅件列表
+     *
+     * @param searchName 搜索词
+     * @param itemId 事项id
+     * @param senderName 发送人
+     * @param userName 收件人
+     * @param state 办件状态
+     * @param year 年度
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<ChaoSongModel>
+     */
+    @GetMapping(value = "/chaoSongList")
+    public Y9Page<ChaoSongModel> chaoSongList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String senderName,
+        @RequestParam(required = false) String userName, @RequestParam(required = false) String state,
+        @RequestParam(required = false) String year, @RequestParam Integer page, @RequestParam Integer rows) {
+        return monitorService.pageMonitorChaosongList(searchName, itemId, senderName, userName, state, year, page,
+            rows);
+    }
+
+    /**
      * 获取单位所有件列表
      *
      * @param itemId 事项id
@@ -93,28 +115,6 @@ public class MonitorRestController {
         @RequestParam(required = false) String state, @RequestParam(required = false) String year,
         @RequestParam Integer page, @RequestParam Integer rows) {
         return monitorService.pageMonitorBanjianList(searchName, itemId, userName, state, year, page, rows);
-    }
-
-    /**
-     * 获取监控阅件列表
-     *
-     * @param searchName 搜索词
-     * @param itemId 事项id
-     * @param senderName 发送人
-     * @param userName 收件人
-     * @param state 办件状态
-     * @param year 年度
-     * @param page 页码
-     * @param rows 条数
-     * @return Y9Page<ChaoSongModel>
-     */
-    @GetMapping(value = "/chaoSongList")
-    public Y9Page<ChaoSongModel> chaoSongList(@RequestParam(required = false) String searchName,
-        @RequestParam(required = false) String itemId, @RequestParam(required = false) String senderName,
-        @RequestParam(required = false) String userName, @RequestParam(required = false) String state,
-        @RequestParam(required = false) String year, @RequestParam Integer page, @RequestParam Integer rows) {
-        return monitorService.pageMonitorChaosongList(searchName, itemId, senderName, userName, state, year, page,
-            rows);
     }
 
     /**
@@ -175,7 +175,7 @@ public class MonitorRestController {
                 // 批量删除附件表
                 attachmentApi.delBatchByProcessSerialNumbers(tenantId, list);
                 // 批量删除正文表
-                y9WordApi.delBatchByProcessSerialNumbers(tenantId, list);
+                y9WordApi.delBatchByProcessSerialNumbers(list);
                 return Y9Result.successMsg("删除成功");
             }
         } catch (Exception e) {

@@ -93,9 +93,7 @@ public class FormNTKOPrintController {
         Y9LoginUserHolder.setTenantId(tenantId);
         UserInfo userInfo = userApi.get(tenantId, userId).getData();
         Y9LoginUserHolder.setUserInfo(userInfo);
-        String y9FileStoreId =
-            y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, bindValue).getData();
-
+        String y9FileStoreId = y9WordApi.openDocument(processSerialNumber, itemId, bindValue).getData();
         try (ServletOutputStream out = response.getOutputStream()) {
             String agent = request.getHeader("USER-AGENT");
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);

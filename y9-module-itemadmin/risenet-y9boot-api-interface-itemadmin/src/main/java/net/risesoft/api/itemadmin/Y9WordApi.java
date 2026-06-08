@@ -25,85 +25,82 @@ public interface Y9WordApi {
     /**
      * 根据流程编号删除正文，同时删除文件系统的文件
      *
-     * @param tenantId 租户id
      * @param processSerialNumbers 流程编号
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping(value = "/delBatchByProcessSerialNumbers")
-    Y9Result<Object> delBatchByProcessSerialNumbers(@RequestParam("tenantId") String tenantId,
-        @RequestBody List<String> processSerialNumbers);
+    Y9Result<Object> delBatchByProcessSerialNumbers(@RequestBody List<String> processSerialNumbers);
 
     /**
      * 删除撤销PDF文件
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param isTaoHong 是否套红
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping(value = "/deleteByIsTaoHong")
-    Y9Result<Object> deleteByIsTaoHong(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("isTaoHong") String isTaoHong);
+    Y9Result<Object> deleteByIsTaoHong(@RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("isTaoHong") String isTaoHong);
 
     /**
      * 获取正文文件信息（数据传输）
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Y9WordModel>} 通用请求返回对象 - data 是正文文件信息
      * @since 9.6.6
      */
     @GetMapping(value = "/exchangeFindWordByProcessSerialNumber")
-    Y9Result<Y9WordModel> exchangeFindWordByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Y9WordModel>
+        exchangeFindWordByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 打开历史文件
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param taskId 任务id
      * @return {@code Y9Result<Y9WordHistoryModel>} 通用请求返回对象 - data 是历史正文文件信息对象
      * @since 9.6.6
      */
     @GetMapping(value = "/findHistoryVersionDoc")
-    Y9Result<Y9WordHistoryModel> findHistoryVersionDoc(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("taskId") String taskId);
+    Y9Result<Y9WordHistoryModel> findHistoryVersionDoc(@RequestParam("taskId") String taskId);
 
     /**
      * 获取正文文件信息
      *
-     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Y9WordModel>} 通用请求返回对象 - data 是正文文件信息
      * @since 9.6.6
      */
     @GetMapping(value = "/findWordByProcessSerialNumber")
-    Y9Result<Y9WordModel> findWordByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Y9WordModel>
+        findWordByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 获取正文列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<List<Y9WordModel>>} 通用请求返回对象 - data 是正文文件信息列表
      * @since 9.6.6
      */
     @GetMapping(value = "/getWordList")
-    Y9Result<List<Y9WordModel>> getWordList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<Y9WordModel>> getWordList(@RequestParam("processSerialNumber") String processSerialNumber);
+
+    /**
+     * 保存公文传输转入工作流的正文信息
+     *
+     * @param docJson 正文json信息
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 是保存是否成功的信息
+     * @since 9.6.6
+     */
+    @PostMapping(value = "/importY9Word")
+    Y9Result<Boolean> importY9Word(@RequestParam("docJson") String docJson,
+        @RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 打开正文
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
      * @param bindValue 绑定值
@@ -111,95 +108,64 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/openDocument")
-    Y9Result<String> openDocument(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("itemId") String itemId,
-        @RequestParam("bindValue") String bindValue);
+    Y9Result<String> openDocument(@RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("itemId") String itemId, @RequestParam("bindValue") String bindValue);
 
     /**
      * 根据流程编号打开正文
      *
-     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是正文文件地址
      * @since 9.6.6
      */
     @GetMapping(value = "/openDocumentByProcessSerialNumber")
-    Y9Result<String> openDocumentByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<String> openDocumentByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 打开套红模板
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param templateGuid 模板id
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是套红文件地址
      * @since 9.6.6
      */
     @GetMapping(value = "/openDocumentTemplate")
-    Y9Result<String> openDocumentTemplate(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("templateGuid") String templateGuid);
+    Y9Result<String> openDocumentTemplate(@RequestParam("templateGuid") String templateGuid);
 
     /**
      * 打开PDF
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是PDF文件地址
      * @since 9.6.6
      */
     @GetMapping(value = "/openPdf")
-    Y9Result<String> openPdf(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<String> openPdf(@RequestParam("processSerialNumber") String processSerialNumber);
 
     /**
      * 打开撤销PDF后的正文
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param isTaoHong 是否套红
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是PDF文件地址
      * @since 9.6.6
      */
     @GetMapping(value = "/openRevokePDFAfterDocument")
-    Y9Result<String> openRevokePdfAfterDocument(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processSerialNumber") String processSerialNumber,
+    Y9Result<String> openRevokePdfAfterDocument(@RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("isTaoHong") String isTaoHong);
 
     /**
      * 选择套红
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param activitiUser activitiUser
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 是当前人员的委办局GUID
      * @since 9.6.6
      */
     @GetMapping(value = "/openTaoHong")
-    Y9Result<String> openTaoHong(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("activitiUser") String activitiUser);
-
-    /**
-     * 保存公文传输转入工作流的正文信息
-     *
-     * @param tenantId 租户Id
-     * @param userId 人员Id
-     * @param docJson 正文json信息
-     * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 是保存是否成功的信息
-     * @since 9.6.6
-     */
-    @PostMapping(value = "/importY9Word")
-    Y9Result<Boolean> importY9Word(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("docJson") String docJson, @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<String> openTaoHong(@RequestParam("activitiUser") String activitiUser);
 
     /**
      * 获取正文
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param itemId 事项id
      * @param itembox 办件状态，{@link net.risesoft.enums.ItemBoxTypeEnum}
@@ -209,29 +175,24 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/showWord")
-    Y9Result<Y9WordInfo> showWord(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("itemId") String itemId,
-        @RequestParam(value = "itembox", required = false) String itembox,
+    Y9Result<Y9WordInfo> showWord(@RequestParam("processSerialNumber") String processSerialNumber,
+        @RequestParam("itemId") String itemId, @RequestParam(value = "itembox", required = false) String itembox,
         @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("bindValue") String bindValue);
 
     /**
      * 获取套红模板列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param currentBureauGuid 委办局id
      * @return {@code Y9Result<List<TaoHongTemplateModel>>} 通用请求返回对象 - data 是套红模板列表
      * @since 9.6.6
      */
     @GetMapping(value = "/taoHongTemplateList")
-    Y9Result<List<TaoHongTemplateModel>> taoHongTemplateList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("currentBureauGuid") String currentBureauGuid);
+    Y9Result<List<TaoHongTemplateModel>>
+        taoHongTemplateList(@RequestParam("currentBureauGuid") String currentBureauGuid);
 
     /**
      * 草稿箱保存正文
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param documentTitle 文档标题
      * @param fileType 文件类型
      * @param processSerialNumber 流程编号
@@ -244,9 +205,8 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/uploadWord")
-    Y9Result<Boolean> uploadWord(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("documentTitle") String documentTitle, @RequestParam("fileType") String fileType,
-        @RequestParam("processSerialNumber") String processSerialNumber,
+    Y9Result<Boolean> uploadWord(@RequestParam("documentTitle") String documentTitle,
+        @RequestParam("fileType") String fileType, @RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam(value = "isTaoHong", required = false) String isTaoHong,
         @RequestParam(value = "docCategory", required = false) String docCategory,
         @RequestParam(value = "taskId", required = false) String taskId,
@@ -255,11 +215,10 @@ public interface Y9WordApi {
     /**
      * 下载正文
      *
-     * @param tenantId 租户Id
      * @param id 正文id
      * @return {@code Y9Result<WordInfo>} 通用请求返回对象 - data 是正文详情
      * @since 9.6.6
      */
     @GetMapping(value = "/wordDownload")
-    Y9Result<Y9WordModel> wordDownload(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
+    Y9Result<Y9WordModel> wordDownload(@RequestParam("id") String id);
 }

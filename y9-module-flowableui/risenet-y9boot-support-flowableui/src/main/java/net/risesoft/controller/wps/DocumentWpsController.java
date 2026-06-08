@@ -140,6 +140,62 @@ public class DocumentWpsController {
     }
 
     /**
+     * 创建新的WPS文档
+     *
+     * @param tenantId 租户ID
+     * @param processSerialNumber 流程编号
+     * @param processInstanceId 流程实例ID
+     * @param userId 用户ID
+     * @param apiInstance WPS文件API实例
+     * @param result0 用户信息
+     * @param model Spring Model对象
+     * @return 创建的文档模型
+     */
+    private DocumentWpsModel createNewDocument(String tenantId, String processSerialNumber, String processInstanceId,
+        String userId, AppFilesApi apiInstance, User result0, Model model) {
+        try {
+            String documentTitle = getDocumentTitle(tenantId, processSerialNumber, processInstanceId);
+            documentTitle = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
+
+            // 创建空文件
+            CreateEmptyRequest body = new CreateEmptyRequest();
+            body.setFileName(documentTitle + DOCX_KEY);
+            EmptyFile result = apiInstance.appCreateEmpty(VOLUME, ROOT, body);
+            LOGGER.debug("获取空文件结果result:{}", result);
+            // 设置文件权限
+            setFilePermissions(result0);
+            // 获取编辑URL
+            WebofficeEditorGetUrlRequest body1 = createWebofficeEditorRequest(result0);
+
+            FileEditor result1 = apiInstance.appGetFileEditor(result.getVolumeId(), result.getId(), body1);
+            String docUrl = result1.getUrl();
+            model.addAttribute(DOC_URL_KEY, docUrl);
+            LOGGER.debug("result1:{}", result1);
+
+            // 保存文档信息
+            DocumentWpsModel documentWps = new DocumentWpsModel();
+            documentWps.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            documentWps.setFileId(result.getId());
+            documentWps.setFileName(documentTitle + DOCX_KEY);
+            documentWps.setFileType("docx");
+            documentWps.setHasContent("0");
+            documentWps.setIstaohong("0");
+            documentWps.setProcessInstanceId(processInstanceId);
+            documentWps.setProcessSerialNumber(processSerialNumber);
+            documentWps.setTenantId(tenantId);
+            documentWps.setUserId(userId);
+            documentWps.setVolumeId(result.getVolumeId());
+
+            documentWpsApi.saveDocumentWps(tenantId, documentWps);
+
+            return documentWps;
+        } catch (Exception e) {
+            LOGGER.error("创建新文档异常", e);
+            throw new RuntimeException("创建新文档失败", e);
+        }
+    }
+
+    /**
      * 创建并初始化WebOffice编辑器URL请求对象
      *
      * @param user 用户信息
@@ -197,14 +253,12 @@ public class DocumentWpsController {
 
     @GetMapping(value = "/getDocument")
     public Map<String, Object> getDocument(@RequestParam String processSerialNumber, @RequestParam String itemId) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
         map.put("fileUrl", "");
         map.put("y9FileStoreId", "");
         try {
-            String y9FileStoreId = y9WordApi.openDocument(tenantId, userId, processSerialNumber, itemId, "").getData();
+            String y9FileStoreId = y9WordApi.openDocument(processSerialNumber, itemId, "").getData();
             Y9FileStore y9FileStore = y9FileStoreService.getById(y9FileStoreId);
             String fileUrl = y9FileStore.getUrl();
             map.put("y9FileStoreId", y9FileStoreId);
@@ -214,59 +268,6 @@ public class DocumentWpsController {
             LOGGER.error("获取正文异常", e);
         }
         return map;
-    }
-
-    @PostMapping(value = "/saveWps")
-    public Map<String, Object> saveWps(@RequestParam String processSerialNumber) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put(UtilConsts.SUCCESS, true);
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            documentWpsApi.saveWpsContent(tenantId, processSerialNumber, "1");
-        } catch (Exception e) {
-            map.put(UtilConsts.SUCCESS, false);
-            LOGGER.error("保存正文异常", e);
-        }
-        return map;
-    }
-
-    /**
-     * 获取正文
-     *
-     * @return String
-     */
-    @GetMapping("/showWps")
-    public String showWord(@RequestParam String processSerialNumber, @RequestParam String processInstanceId,
-        @RequestParam String itembox, Model model) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        try {
-            // 初始化模型属性
-            initializeModelAttributes(model, itembox, processInstanceId, processSerialNumber, userId, tenantId);
-            // 登录WPS并获取用户信息
-            String wpsSid = loginWpsAndGetSid();
-            User user = getUserProfile(wpsSid);
-            // 获取WPS API实例
-            AppFilesApi apiInstance = getWpsApiInstance();
-            // 查找现有文档
-            DocumentWpsModel documentWps =
-                documentWpsApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-            if (documentWps != null) {
-                // 处理已存在的文档
-                handleExistingDocument(documentWps, itembox, apiInstance, user, wpsSid, model);
-            } else {
-                // 创建新文档
-                DocumentWpsModel newDocument = createNewDocument(tenantId, processSerialNumber, processInstanceId,
-                    userId, apiInstance, user, model);
-                model.addAttribute("id", newDocument.getId());
-            }
-        } catch (Exception e) {
-            model.addAttribute(DOC_URL_KEY, "发生异常");
-            LOGGER.error("发生异常", e);
-        }
-
-        return "intranet/webOfficeWps";
     }
 
     /**
@@ -290,6 +291,44 @@ public class DocumentWpsController {
         } catch (Exception e) {
             LOGGER.warn("获取文档标题失败，使用默认标题", e);
             return "正文";
+        }
+    }
+
+    /**
+     * 获取用户配置信息
+     */
+    private User getUserProfile(String wpsSid) throws Exception {
+        UserOrgApi apiInstance0 = new UserOrgApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET,
+            YUN_WPS_REDIRECT_URI, YUN_WPS_USER_SCOPE, wpsSid);
+        User result0 = apiInstance0.userGetProfile();
+        LOGGER.debug("User:{}", result0);
+        return result0;
+    }
+
+    /**
+     * 获取WPS API实例
+     */
+    private AppFilesApi getWpsApiInstance() {
+        return new AppFilesApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
+    }
+
+    /**
+     * 处理编辑模式
+     *
+     * @param documentWps WPS文档模型
+     * @param apiInstance WPS文件API实例
+     * @param result0 用户信息
+     * @param model Spring Model对象
+     */
+    private void handleEditMode(DocumentWpsModel documentWps, AppFilesApi apiInstance, User result0, Model model) {
+        try {
+            WebofficeEditorGetUrlRequest body1 = createWebofficeEditorRequest(result0);
+            FileEditor result1 =
+                apiInstance.appGetFileEditor(documentWps.getVolumeId(), documentWps.getFileId(), body1);
+            String docUrl = result1.getUrl();
+            model.addAttribute(DOC_URL_KEY, docUrl);
+        } catch (ApiException e) {
+            LOGGER.warn("Exception when calling AppFilesApi#appGetFileEditor", e);
         }
     }
 
@@ -331,16 +370,6 @@ public class DocumentWpsController {
     }
 
     /**
-     * 判断是否为预览模式
-     *
-     * @param itembox 文档箱类型
-     * @return 是否为预览模式
-     */
-    private boolean isPreviewMode(String itembox) {
-        return itembox.equals(ItemBoxTypeEnum.TODO.getValue()) || itembox.equals(ItemBoxTypeEnum.DRAFT.getValue());
-    }
-
-    /**
      * 处理预览模式
      *
      * @param documentWps WPS文档模型
@@ -360,79 +389,51 @@ public class DocumentWpsController {
     }
 
     /**
-     * 处理编辑模式
-     *
-     * @param documentWps WPS文档模型
-     * @param apiInstance WPS文件API实例
-     * @param result0 用户信息
-     * @param model Spring Model对象
+     * 初始化模型属性
      */
-    private void handleEditMode(DocumentWpsModel documentWps, AppFilesApi apiInstance, User result0, Model model) {
-        try {
-            WebofficeEditorGetUrlRequest body1 = createWebofficeEditorRequest(result0);
-            FileEditor result1 =
-                apiInstance.appGetFileEditor(documentWps.getVolumeId(), documentWps.getFileId(), body1);
-            String docUrl = result1.getUrl();
-            model.addAttribute(DOC_URL_KEY, docUrl);
-        } catch (ApiException e) {
-            LOGGER.warn("Exception when calling AppFilesApi#appGetFileEditor", e);
-        }
+    private void initializeModelAttributes(Model model, String itembox, String processInstanceId,
+        String processSerialNumber, String userId, String tenantId) {
+        model.addAttribute(DOC_URL_KEY, "");
+        model.addAttribute("itembox", itembox);
+        model.addAttribute("hasContent", "0");
+        model.addAttribute("processInstanceId", processInstanceId);
+        model.addAttribute("processSerialNumber", processSerialNumber);
+        model.addAttribute("id", "");
+        model.addAttribute("userId", userId);
+        model.addAttribute("tenantId", tenantId);
     }
 
     /**
-     * 创建新的WPS文档
+     * 判断是否为预览模式
      *
-     * @param tenantId 租户ID
-     * @param processSerialNumber 流程编号
-     * @param processInstanceId 流程实例ID
-     * @param userId 用户ID
-     * @param apiInstance WPS文件API实例
-     * @param result0 用户信息
-     * @param model Spring Model对象
-     * @return 创建的文档模型
+     * @param itembox 文档箱类型
+     * @return 是否为预览模式
      */
-    private DocumentWpsModel createNewDocument(String tenantId, String processSerialNumber, String processInstanceId,
-        String userId, AppFilesApi apiInstance, User result0, Model model) {
+    private boolean isPreviewMode(String itembox) {
+        return itembox.equals(ItemBoxTypeEnum.TODO.getValue()) || itembox.equals(ItemBoxTypeEnum.DRAFT.getValue());
+    }
+
+    /**
+     * 登录WPS并获取会话ID
+     */
+    private String loginWpsAndGetSid() throws Exception {
+        String wpsSid = new YunApi(YUN_WPS_BASE_PATH).yunLogin(YUN_WPS_USER_NAME, YUN_WPS_USER_PD);
+        LOGGER.debug("wpsSid:{}", wpsSid);
+        return wpsSid;
+    }
+
+    @PostMapping(value = "/saveWps")
+    public Map<String, Object> saveWps(@RequestParam String processSerialNumber) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put(UtilConsts.SUCCESS, true);
+        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            String documentTitle = getDocumentTitle(tenantId, processSerialNumber, processInstanceId);
-            documentTitle = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
-
-            // 创建空文件
-            CreateEmptyRequest body = new CreateEmptyRequest();
-            body.setFileName(documentTitle + DOCX_KEY);
-            EmptyFile result = apiInstance.appCreateEmpty(VOLUME, ROOT, body);
-            LOGGER.debug("获取空文件结果result:{}", result);
-            // 设置文件权限
-            setFilePermissions(result0);
-            // 获取编辑URL
-            WebofficeEditorGetUrlRequest body1 = createWebofficeEditorRequest(result0);
-
-            FileEditor result1 = apiInstance.appGetFileEditor(result.getVolumeId(), result.getId(), body1);
-            String docUrl = result1.getUrl();
-            model.addAttribute(DOC_URL_KEY, docUrl);
-            LOGGER.debug("result1:{}", result1);
-
-            // 保存文档信息
-            DocumentWpsModel documentWps = new DocumentWpsModel();
-            documentWps.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            documentWps.setFileId(result.getId());
-            documentWps.setFileName(documentTitle + DOCX_KEY);
-            documentWps.setFileType("docx");
-            documentWps.setHasContent("0");
-            documentWps.setIstaohong("0");
-            documentWps.setProcessInstanceId(processInstanceId);
-            documentWps.setProcessSerialNumber(processSerialNumber);
-            documentWps.setTenantId(tenantId);
-            documentWps.setUserId(userId);
-            documentWps.setVolumeId(result.getVolumeId());
-
-            documentWpsApi.saveDocumentWps(tenantId, documentWps);
-
-            return documentWps;
+            documentWpsApi.saveWpsContent(tenantId, processSerialNumber, "1");
         } catch (Exception e) {
-            LOGGER.error("创建新文档异常", e);
-            throw new RuntimeException("创建新文档失败", e);
+            map.put(UtilConsts.SUCCESS, false);
+            LOGGER.error("保存正文异常", e);
         }
+        return map;
     }
 
     /**
@@ -467,45 +468,42 @@ public class DocumentWpsController {
     }
 
     /**
-     * 初始化模型属性
+     * 获取正文
+     *
+     * @return String
      */
-    private void initializeModelAttributes(Model model, String itembox, String processInstanceId,
-        String processSerialNumber, String userId, String tenantId) {
-        model.addAttribute(DOC_URL_KEY, "");
-        model.addAttribute("itembox", itembox);
-        model.addAttribute("hasContent", "0");
-        model.addAttribute("processInstanceId", processInstanceId);
-        model.addAttribute("processSerialNumber", processSerialNumber);
-        model.addAttribute("id", "");
-        model.addAttribute("userId", userId);
-        model.addAttribute("tenantId", tenantId);
-    }
+    @GetMapping("/showWps")
+    public String showWord(@RequestParam String processSerialNumber, @RequestParam String processInstanceId,
+        @RequestParam String itembox, Model model) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        try {
+            // 初始化模型属性
+            initializeModelAttributes(model, itembox, processInstanceId, processSerialNumber, userId, tenantId);
+            // 登录WPS并获取用户信息
+            String wpsSid = loginWpsAndGetSid();
+            User user = getUserProfile(wpsSid);
+            // 获取WPS API实例
+            AppFilesApi apiInstance = getWpsApiInstance();
+            // 查找现有文档
+            DocumentWpsModel documentWps =
+                documentWpsApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            if (documentWps != null) {
+                // 处理已存在的文档
+                handleExistingDocument(documentWps, itembox, apiInstance, user, wpsSid, model);
+            } else {
+                // 创建新文档
+                DocumentWpsModel newDocument = createNewDocument(tenantId, processSerialNumber, processInstanceId,
+                    userId, apiInstance, user, model);
+                model.addAttribute("id", newDocument.getId());
+            }
+        } catch (Exception e) {
+            model.addAttribute(DOC_URL_KEY, "发生异常");
+            LOGGER.error("发生异常", e);
+        }
 
-    /**
-     * 登录WPS并获取会话ID
-     */
-    private String loginWpsAndGetSid() throws Exception {
-        String wpsSid = new YunApi(YUN_WPS_BASE_PATH).yunLogin(YUN_WPS_USER_NAME, YUN_WPS_USER_PD);
-        LOGGER.debug("wpsSid:{}", wpsSid);
-        return wpsSid;
-    }
-
-    /**
-     * 获取用户配置信息
-     */
-    private User getUserProfile(String wpsSid) throws Exception {
-        UserOrgApi apiInstance0 = new UserOrgApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET,
-            YUN_WPS_REDIRECT_URI, YUN_WPS_USER_SCOPE, wpsSid);
-        User result0 = apiInstance0.userGetProfile();
-        LOGGER.debug("User:{}", result0);
-        return result0;
-    }
-
-    /**
-     * 获取WPS API实例
-     */
-    private AppFilesApi getWpsApiInstance() {
-        return new AppFilesApi(YUN_WPS_BASE_PATH_GRAPH, YUN_WPS_APP_ID, YUN_WPS_APP_SECRET, YUN_WPS_APP_SCOPE);
+        return "intranet/webOfficeWps";
     }
 
     /**
