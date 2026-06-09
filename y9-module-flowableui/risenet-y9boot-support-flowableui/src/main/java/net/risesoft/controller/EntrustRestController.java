@@ -57,7 +57,7 @@ public class EntrustRestController {
     public Y9Result<String> deleteEntrust(@RequestParam String id) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            entrustApi.deleteEntrust(tenantId, id);
+            entrustApi.deleteEntrust(id);
             return Y9Result.success("删除成功");
         } catch (Exception e) {
             LOGGER.error("删除委托出错", e);
@@ -72,8 +72,7 @@ public class EntrustRestController {
      */
     @GetMapping(value = "/getEntrustList")
     public Y9Result<List<EntrustModel>> getEntrustList() {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return entrustApi.getEntrustList(tenantId, Y9FlowableHolder.getPositionId());
+        return entrustApi.findByOwnerId(Y9FlowableHolder.getPositionId());
     }
 
     /**
@@ -123,9 +122,8 @@ public class EntrustRestController {
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam String jsonData) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             EntrustModel model = Y9JsonUtil.readValue(jsonData, EntrustModel.class);
-            entrustApi.saveOrUpdate(tenantId, Y9FlowableHolder.getPositionId(), model);
+            entrustApi.saveOrUpdate(model);
             return Y9Result.success("保存成功");
         } catch (Exception e) {
             LOGGER.error("保存委托数据出错", e);

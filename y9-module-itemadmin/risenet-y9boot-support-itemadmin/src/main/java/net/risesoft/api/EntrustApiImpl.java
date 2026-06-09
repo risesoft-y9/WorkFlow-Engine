@@ -14,11 +14,8 @@ import net.risesoft.api.itemadmin.entrust.EntrustApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.model.itemadmin.EntrustModel;
-import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.entrust.EntrustService;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -40,64 +37,51 @@ public class EntrustApiImpl implements EntrustApi {
     /**
      * 删除委托
      *
-     * @param tenantId 租户id
      * @param id 委托id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteEntrust(@RequestParam String tenantId, @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> deleteEntrust(@RequestParam String id) {
         entrustService.destroyEntrust(id);
         return Y9Result.success();
     }
 
     /**
-     * 获取我委托的列表
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
+     * 获取岗位的委托列表
+     * 
+     * @param ownerId 委托的岗位id
      * @return {@code Y9Result<List<EntrustModel>>} 通用请求返回对象 - data 是委托设置列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<EntrustModel>> getEntrustList(@RequestParam String tenantId, @RequestParam String orgUnitId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        List<EntrustModel> list = entrustService.listEntrustByUserId(orgUnitId);
+    public Y9Result<List<EntrustModel>> findByOwnerId(@RequestParam String ownerId) {
+        List<EntrustModel> list = entrustService.listEntrustByUserId(ownerId);
         return Y9Result.success(list);
     }
 
     /**
-     * 获取委托我的列表
+     * 获取岗位的被委托列表
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
+     * @param assigneeId 被委托岗位id
      * @return {@code Y9Result<List<EntrustModel>>} 通用请求返回对象 - data 是委托设置列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<EntrustModel>> getMyEntrustList(@RequestParam String tenantId,
-        @RequestParam String orgUnitId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        List<EntrustModel> list = entrustService.listMyEntrust(orgUnitId);
+    public Y9Result<List<EntrustModel>> findByAssigneeId(@RequestParam String assigneeId) {
+        List<EntrustModel> list = entrustService.listMyEntrust(assigneeId);
         return Y9Result.success(list);
     }
 
     /**
      * 保存或更新委托
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param entrustModel 实体类（EntrustModel）
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestBody EntrustModel entrustModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<Object> saveOrUpdate(@RequestBody EntrustModel entrustModel) {
         Entrust entrust = new Entrust();
         Y9BeanUtil.copyProperties(entrustModel, entrust);
         entrustService.saveOrUpdate(entrust);
