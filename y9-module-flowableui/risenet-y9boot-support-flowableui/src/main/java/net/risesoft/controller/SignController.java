@@ -22,7 +22,6 @@ import net.risesoft.api.itemadmin.CalendarConfigApi;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 计算天数
@@ -87,12 +86,11 @@ public class SignController {
      */
     @GetMapping(value = "/getDay")
     public Y9Result<String> getDay(@RequestParam String startDate, @RequestParam String endDate) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             String day = "";
             if (StringUtils.isNotBlank(startDate) && StringUtils.isNotBlank(endDate)) {
                 String year = startDate.substring(0, 4);
-                CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(tenantId, year).getData();
+                CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(year).getData();
                 String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
                 if (StringUtils.isNotBlank(everyYearHoliday)) {
                     day = daysBetween(startDate, endDate, everyYearHoliday);
@@ -125,9 +123,8 @@ public class SignController {
         @RequestParam(required = false) String endSel, @RequestParam(required = false) String selStartTime,
         @RequestParam(required = false) String selEndTime, @RequestParam(required = false) String leaveType) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             String year = leaveEndTime.split("-")[0];
-            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(tenantId, year).getData();
+            CalendarConfigModel calendarConfig = calendarConfigApi.findByYear(year).getData();
             String holidayStr = calendarConfig.getEveryYearHoliday();
             String result = calculateLeaveDuration(type, leaveStartTime, leaveEndTime, startSel, endSel, selStartTime,
                 selEndTime, leaveType, holidayStr);

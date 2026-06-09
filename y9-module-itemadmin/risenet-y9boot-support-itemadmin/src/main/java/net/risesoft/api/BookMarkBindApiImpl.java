@@ -11,11 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
+import lombok.RequiredArgsConstructor;
+
 import net.risesoft.api.itemadmin.BookMarkBindApi;
 import net.risesoft.entity.template.BookMarkBind;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.BookMarkBindService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 书签绑定接口
@@ -24,24 +25,18 @@ import net.risesoft.y9.Y9LoginUserHolder;
  * @author zhangchongjie
  * @date 2022/12/20
  */
+@RequiredArgsConstructor
 @RestController
 @RequestMapping(value = "/services/rest/bookMarkBind", produces = MediaType.APPLICATION_JSON_VALUE)
 public class BookMarkBindApiImpl implements BookMarkBindApi {
 
+    @Qualifier("jdbcTemplate4Tenant")
     private final JdbcTemplate jdbcTemplate;
     private final BookMarkBindService bookMarkBindService;
-
-    public BookMarkBindApiImpl(
-        @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate,
-        BookMarkBindService bookMarkBindService) {
-        this.jdbcTemplate = jdbcTemplate;
-        this.bookMarkBindService = bookMarkBindService;
-    }
 
     /**
      * 根据模板id和流程编号查询模板的书签对应的值
      *
-     * @param tenantId 租户id
      * @param wordTemplateId 模板id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Map < String, Object>>} 通用请求返回对象 - data 是书签对应的值
@@ -49,9 +44,8 @@ public class BookMarkBindApiImpl implements BookMarkBindApi {
      */
     @SuppressWarnings("java:S2077")
     @Override
-    public Y9Result<Map<String, Object>> getBookMarkData(@RequestParam String tenantId,
-        @RequestParam String wordTemplateId, @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Map<String, Object>> getBookMarkData(@RequestParam String wordTemplateId,
+        @RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         List<BookMarkBind> bookMarkBindList = bookMarkBindService.listByWordTemplateId(wordTemplateId);
         if (!bookMarkBindList.isEmpty()) {

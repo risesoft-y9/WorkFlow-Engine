@@ -12,7 +12,6 @@ import net.risesoft.entity.CalendarConfig;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CalendarConfigService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -32,14 +31,12 @@ public class CalendarConfigApiImpl implements CalendarConfigApi {
     /**
      * 获取指定年节假日配置信息
      *
-     * @param tenantId 租户id
      * @param year 年份
      * @return {@code Y9Result<CalendarConfigModel>} 通用请求返回对象 - data 是日历配置
      * @since 9.6.6
      */
     @Override
-    public Y9Result<CalendarConfigModel> findByYear(@RequestParam String tenantId, @RequestParam String year) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<CalendarConfigModel> findByYear(@RequestParam String year) {
         CalendarConfig calendarConfig = calendarConfigService.findByYear(year);
         CalendarConfigModel calendarConfigModel = new CalendarConfigModel();
         if (calendarConfig != null) {

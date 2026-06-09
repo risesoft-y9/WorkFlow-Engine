@@ -15,7 +15,6 @@ import net.risesoft.api.itemadmin.CalendarConfigApi;
 import net.risesoft.model.itemadmin.CalendarConfigModel;
 import net.risesoft.service.ItemWorkDayService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author : qinman
@@ -64,12 +63,11 @@ public class ItemWorkDayServiceImpl implements ItemWorkDayService {
 
     @Override
     public int getDay(Date startDate, Date endDate) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         int days = -1;
         try {
             if (null != startDate && null != endDate) {
                 CalendarConfigModel calendarConfigModel =
-                    calendarConfigApi.findByYear(tenantId, Y9DateTimeUtils.getYear(startDate)).getData();
+                    calendarConfigApi.findByYear(Y9DateTimeUtils.getYear(startDate)).getData();
                 String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
                 if (StringUtils.isNotBlank(everyYearHoliday)) {
                     days = daysBetween(startDate, endDate, everyYearHoliday);
@@ -92,8 +90,7 @@ public class ItemWorkDayServiceImpl implements ItemWorkDayService {
             return Y9DateTimeUtils.formatDate(date);
         }
         Calendar cal = Calendar.getInstance();
-        CalendarConfigModel calendarConfigModel =
-            calendarConfigApi.findByYear(Y9LoginUserHolder.getTenantId(), Y9DateTimeUtils.getYear(date)).getData();
+        CalendarConfigModel calendarConfigModel = calendarConfigApi.findByYear(Y9DateTimeUtils.getYear(date)).getData();
         String everyYearHoliday = calendarConfigModel.getEveryYearHoliday();
         String endDate = "";
         if (StringUtils.isNotBlank(everyYearHoliday)) {

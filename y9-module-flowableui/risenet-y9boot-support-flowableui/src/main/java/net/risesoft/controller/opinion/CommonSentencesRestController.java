@@ -19,9 +19,7 @@ import net.risesoft.api.itemadmin.CommonSentencesApi;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 常用语
@@ -45,9 +43,7 @@ public class CommonSentencesRestController {
      */
     @GetMapping(value = "/list")
     public Y9Result<List<CommonSentencesModel>> listSentencesService() {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = person.getTenantId();
-        return commonSentencesApi.listSentencesService(tenantId, userId);
+        return commonSentencesApi.listSentencesService();
     }
 
     /**
@@ -60,8 +56,7 @@ public class CommonSentencesRestController {
     @PostMapping(value = "/remove")
     public Y9Result<String> remove(@RequestParam int tabIndex) {
         try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            commonSentencesApi.removeCommonSentences(Y9LoginUserHolder.getTenantId(), person.getPersonId(), tabIndex);
+            commonSentencesApi.removeCommonSentences(tabIndex);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
             LOGGER.error("删除常用语失败", e);
@@ -77,8 +72,7 @@ public class CommonSentencesRestController {
     @PostMapping(value = "/removeUseNumber")
     public Y9Result<String> removeUseNumber() {
         try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            commonSentencesApi.removeUseNumber(Y9LoginUserHolder.getTenantId(), person.getPersonId());
+            commonSentencesApi.removeUseNumber();
             return Y9Result.successMsg("操作成功");
         } catch (Exception e) {
             LOGGER.error("清除常用语使用次数失败", e);
@@ -96,9 +90,7 @@ public class CommonSentencesRestController {
     @PostMapping(value = "/save")
     public Y9Result<String> save(@RequestParam @NotBlank String content) {
         try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String userId = person.getPersonId(), tenantId = person.getTenantId();
-            commonSentencesApi.save(tenantId, userId, "", content);
+            commonSentencesApi.save("", content);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("保存常用语失败", e);
@@ -116,11 +108,8 @@ public class CommonSentencesRestController {
     @FlowableLog(operationName = "修改个人常用语", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveEdit")
     public Y9Result<String> saveEdit(@RequestParam @NotBlank String content, @RequestParam @NotBlank String tabIndex) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId();
         try {
-            commonSentencesApi.saveCommonSentences(Y9LoginUserHolder.getTenantId(), userId, content,
-                Integer.parseInt(tabIndex));
+            commonSentencesApi.saveCommonSentences(content, Integer.parseInt(tabIndex));
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("修改常用语失败", e);
@@ -137,7 +126,7 @@ public class CommonSentencesRestController {
     @PostMapping(value = "/updateUseNumber")
     public Y9Result<String> updateUseNumber(@RequestParam @NotBlank String id) {
         try {
-            commonSentencesApi.updateUseNumber(Y9LoginUserHolder.getTenantId(), id);
+            commonSentencesApi.updateUseNumber(id);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("更新常用语使用次数失败", e);
