@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Sort;
 import org.springframework.http.MediaType;
@@ -18,7 +19,6 @@ import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.core.ActRuDetailService;
 import net.risesoft.service.util.ItemPageService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -39,8 +39,6 @@ public class ItemMonitorApiImpl implements ItemMonitorApi {
     /**
      * 根据用户id和系统名称查询(以发送时间排序)
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
@@ -48,9 +46,8 @@ public class ItemMonitorApiImpl implements ItemMonitorApi {
      * @since 9.6.8
      */
     @Override
-    public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String systemName, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         Sort sort = Sort.by(Sort.Direction.DESC, "startTime");
         Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemName(systemName, rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();

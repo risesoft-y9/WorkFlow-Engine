@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.data.domain.Page;
@@ -27,7 +28,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.core.ActRuDetailService;
 import net.risesoft.service.form.Y9TableService;
 import net.risesoft.service.util.ItemPageService;
-import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -61,28 +62,37 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private SqlComponents buildSearchSqlComponents(String searchMapStr) {
+        String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+            assert searchMap != null;
+            List<String> sqlList = y9TableService.getSql(searchMap);
+            innerSql = sqlList.get(0);
+            whereSql = sqlList.get(1);
+            assigneeNameInnerSql = sqlList.get(2);
+            assigneeNameWhereSql = sqlList.get(3);
+        }
+        return new SqlComponents(innerSql, whereSql, assigneeNameInnerSql, assigneeNameWhereSql);
+    }
+
     /**
      * 根据系统名称查询当前人的已办（包含在办和办结）数量
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是在办任务数量
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String systemName) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        int count =
-            actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId, ActRuDetailStatusEnum.DOING);
+    public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String systemName) {
+        int count = actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName,
+            Y9FlowableHolder.getPositionId(), ActRuDetailStatusEnum.DOING);
         return Y9Result.success(count);
     }
 
     /**
      * 根据系统名称查询已办（包含在办和办结）列表
      *
-     * @param tenantId 租户id
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
@@ -90,9 +100,8 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
-        @RequestParam Integer page, @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String systemName, @RequestParam Integer page,
+        @RequestParam Integer rows) {
         String sql =
             "SELECT A.* FROM ( SELECT T.*, ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.STATUS = 0 AND T.DELETED = FALSE AND T.SYSTEMNAME = ? ORDER BY T.LASTTIME DESC) A WHERE A.RS_NUM=1";
         String countSql =
@@ -107,8 +116,6 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
     /**
      * 根据用户id和系统名称查询当前人的已办（包含在办和办结）列表
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
@@ -116,13 +123,11 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestParam Integer page,
-        @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String systemName,
+        @RequestParam Integer page, @RequestParam Integer rows) {
         Sort sort = Sort.by(Sort.Direction.DESC, "lastTime");
-        Page<ActRuDetail> ardPage =
-            actRuDetailService.pageBySystemNameAndAssigneeAndStatusEquals1(systemName, userId, rows, page, sort);
+        Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemNameAndAssigneeAndStatusEquals1(systemName,
+            Y9FlowableHolder.getPositionId(), rows, page, sort);
         List<ActRuDetail> ardList = ardPage.getContent();
         ActRuDetailModel actRuDetailModel;
         List<ActRuDetailModel> modelList = new ArrayList<>();
@@ -137,7 +142,6 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
     /**
      * 根据系统名称、表名称、搜索内容查询已办（包含在办和办结）列表
      *
-     * @param tenantId 租户id
      * @param systemName 系统名称
      * @param tableName 表名称
      * @param searchMapStr 搜索内容
@@ -147,10 +151,8 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String systemName,
-        @RequestParam String tableName, @RequestBody String searchMapStr, @RequestParam Integer page,
-        @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String systemName, @RequestParam String tableName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         String safeTableName = validateAndSanitizeTableName(tableName);
         String sql0 = "LEFT JOIN " + safeTableName + " F ON T.PROCESSSERIALNUMBER = F.GUID ";
         StringBuilder whereSql = new StringBuilder();
@@ -179,17 +181,6 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
     }
 
     /**
-     * 验证并清理表名，防止SQL注入
-     */
-    private String validateAndSanitizeTableName(String tableName) {
-        // 只允许字母、数字和下划线
-        if (!tableName.matches("^[a-zA-Z0-9_]+$")) {
-            throw new IllegalArgumentException("Invalid table name: " + tableName);
-        }
-        return tableName.toUpperCase();
-    }
-
-    /**
      * 根据用户id、系统名称、表名称、搜索内容查询当前人的已办（包含在办和办结）列表
      *
      * @param tenantId 租户id
@@ -203,10 +194,8 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
      */
     @SuppressWarnings("java:S2077")
     @Override
-    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         SqlComponents sqlComponents = buildSearchSqlComponents(searchMapStr);
         String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sqlComponents.innerSql + sqlComponents.assigneeNameInnerSql
             + " WHERE T.DELETED = FALSE AND T.STATUS = 1 AND T.SYSTEMNAME =? AND T.ASSIGNEE = ? "
@@ -215,7 +204,7 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
             "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + sqlComponents.innerSql + sqlComponents.assigneeNameInnerSql
                 + " WHERE T.DELETED = FALSE AND T.STATUS =1 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? "
                 + sqlComponents.whereSql + sqlComponents.assigneeNameWhereSql;
-        Object[] args = {systemName, userId};
+        Object[] args = {systemName, Y9FlowableHolder.getPositionId()};
         ItemPage<ActRuDetailModel> itemPage = itemPageService.page(sql, args,
             new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
         return Y9Page.success(itemPage.getCurrpage(), itemPage.getTotalpages(), itemPage.getTotal(),
@@ -224,31 +213,27 @@ public class ItemHaveDoneApiImpl implements ItemHaveDoneApi {
 
     @SuppressWarnings("java:S2077")
     @Override
-    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String systemName, @RequestBody String searchMapStr) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String systemName,
+        @RequestBody String searchMapStr) {
         SqlComponents sqlComponents = buildSearchSqlComponents(searchMapStr);
         String sql = "SELECT T.* FROM FF_ACT_RU_DETAIL T " + sqlComponents.innerSql + sqlComponents.assigneeNameInnerSql
             + " WHERE T.DELETED =FALSE AND T.STATUS = 1 AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? "
             + sqlComponents.whereSql + sqlComponents.assigneeNameWhereSql + " ORDER BY T.CREATETIME DESC";
-        Object[] args = {systemName, userId};
+        Object[] args = {systemName, Y9FlowableHolder.getPositionId()};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class), args);
         return Y9Result.success(content);
     }
 
-    private SqlComponents buildSearchSqlComponents(String searchMapStr) {
-        String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";
-        if (StringUtils.isNotBlank(searchMapStr)) {
-            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
-            assert searchMap != null;
-            List<String> sqlList = y9TableService.getSql(searchMap);
-            innerSql = sqlList.get(0);
-            whereSql = sqlList.get(1);
-            assigneeNameInnerSql = sqlList.get(2);
-            assigneeNameWhereSql = sqlList.get(3);
+    /**
+     * 验证并清理表名，防止SQL注入
+     */
+    private String validateAndSanitizeTableName(String tableName) {
+        // 只允许字母、数字和下划线
+        if (!tableName.matches("^[a-zA-Z0-9_]+$")) {
+            throw new IllegalArgumentException("Invalid table name: " + tableName);
         }
-        return new SqlComponents(innerSql, whereSql, assigneeNameInnerSql, assigneeNameWhereSql);
+        return tableName.toUpperCase();
     }
 
     /**
