@@ -83,6 +83,49 @@ public class MainRestController {
     private final ItemTodoApi itemTodoApi;
 
     /**
+     * 构建委托岗位信息
+     */
+    private PositionInfo buildEntrustPositionInfo(EntrustModel model, String tenantId, String count, String itemId,
+        String systemName) {
+        try {
+            String ownerId = model.getOwnerId();
+            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, ownerId).getData();
+            if (orgUnit != null) {
+                Map<String, Object> positionMap = new HashMap<>(16);
+                positionMap.put("id", orgUnit.getId());
+                positionMap.put("name", orgUnit.getName());
+                long todoCount = 0;
+                if (StringUtils.isNotBlank(count)) {
+                    todoCount = getTodoCount(tenantId, orgUnit.getId(), itemId, systemName);
+                }
+                positionMap.put(TODO_COUNT_KEY, todoCount);
+                return new PositionInfo(positionMap, todoCount);
+            }
+        } catch (Exception e) {
+            LOGGER.warn("获取委托岗位信息失败: ownerId={}", model.getOwnerId(), e);
+        }
+        return null;
+    }
+
+    /**
+     * 构建岗位信息
+     */
+    private PositionInfo buildPositionInfo(Position position, String tenantId, String count, String itemId,
+        String systemName) {
+        Map<String, Object> positionMap = new HashMap<>(16);
+        positionMap.put("id", position.getId());
+        positionMap.put("name", position.getName());
+
+        long todoCount = 0;
+        if (StringUtils.isNotBlank(count)) {
+            todoCount = getTodoCount(tenantId, position.getId(), itemId, systemName);
+        }
+
+        positionMap.put(TODO_COUNT_KEY, todoCount);
+        return new PositionInfo(positionMap, todoCount);
+    }
+
+    /**
      * 获取所有事项信息
      *
      * @return Y9Result<List < ItemModel>>
@@ -136,7 +179,7 @@ public class MainRestController {
                 todoCount = flowableCountModel.getTodoCount();
                 doingCount = flowableCountModel.getDoingCount();
                 try {
-                    doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, itemId).getData();
+                    doneCount = officeDoneInfoApi.countByUserId(itemId).getData();
                 } catch (Exception e) {
                     LOGGER.error("获取事项办结件数量统计失败", e);
                 }
@@ -149,8 +192,8 @@ public class MainRestController {
 
             if (person.isGlobalManager()) {
                 try {
-                    monitorDoing = officeDoneInfoApi.countDoingByItemId(tenantId, itemId).getData();
-                    monitorDone = officeDoneInfoApi.countByItemId(tenantId, itemId).getData();
+                    monitorDoing = officeDoneInfoApi.countDoingByItemId(itemId).getData();
+                    monitorDone = officeDoneInfoApi.countByItemId(itemId).getData();
                 } catch (Exception e) {
                     LOGGER.error("获取事项监控在办和办结件数量统计失败", e);
                 }
@@ -201,7 +244,7 @@ public class MainRestController {
             todoCount = flowableCountModel.getTodoCount();
             doingCount = flowableCountModel.getDoingCount();
             try {
-                doneCount = officeDoneInfoApi.countByUserIdAndSystemName(tenantId, positionId, systemName).getData();
+                doneCount = officeDoneInfoApi.countByUserIdAndSystemName(systemName).getData();
             } catch (Exception e) {
                 LOGGER.error("获取事项流程办结件统计失败", e);
             }
@@ -297,10 +340,10 @@ public class MainRestController {
             todoCount = itemTodoApi.countByUserId(tenantId, positionId).getData();
             // 统计流程在办件
             Y9Page<OfficeDoneInfoModel> y9Page =
-                officeDoneInfoApi.searchAllByUserId(tenantId, positionId, "", "", "", "todo", "", "", "", 1, 1);
+                officeDoneInfoApi.searchAllByUserId("", "", "", "todo", "", "", "", 1, 1);
             doingCount = y9Page.getTotal();
             // 统计历史办结件
-            doneCount = officeDoneInfoApi.countByUserId(tenantId, positionId, "").getData();
+            doneCount = officeDoneInfoApi.countByUserId("").getData();
             map.put(TODO_COUNT_KEY, todoCount);
             map.put(DOING_COUNT_KEY, doingCount);
             map.put(DONE_COUNT_KEY, doneCount);
@@ -309,6 +352,18 @@ public class MainRestController {
             LOGGER.error("获取事项流程与当前人相关的办件数量统计失败", e);
         }
         return Y9Result.failure(50000, "获取失败");
+    }
+
+    /**
+     * 获取当前人有权限的事项列表
+     *
+     * @return Y9Result<List < Map < String, Object>>>
+     */
+    @GetMapping(value = "/getMyItemList")
+    public Y9Result<List<ItemListModel>> getMyItemList() {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9LoginUserHolder.getPersonId();
+        return itemApi.getMyItemList(tenantId, userId);
     }
 
     /**
@@ -348,73 +403,6 @@ public class MainRestController {
         } catch (Exception e) {
             LOGGER.error("获取岗位列表失败", e);
             return Y9Result.failure("获取失败");
-        }
-    }
-
-    /**
-     * 构建岗位信息
-     */
-    private PositionInfo buildPositionInfo(Position position, String tenantId, String count, String itemId,
-        String systemName) {
-        Map<String, Object> positionMap = new HashMap<>(16);
-        positionMap.put("id", position.getId());
-        positionMap.put("name", position.getName());
-
-        long todoCount = 0;
-        if (StringUtils.isNotBlank(count)) {
-            todoCount = getTodoCount(tenantId, position.getId(), itemId, systemName);
-        }
-
-        positionMap.put(TODO_COUNT_KEY, todoCount);
-        return new PositionInfo(positionMap, todoCount);
-    }
-
-    /**
-     * 构建委托岗位信息
-     */
-    private PositionInfo buildEntrustPositionInfo(EntrustModel model, String tenantId, String count, String itemId,
-        String systemName) {
-        try {
-            String ownerId = model.getOwnerId();
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, ownerId).getData();
-            if (orgUnit != null) {
-                Map<String, Object> positionMap = new HashMap<>(16);
-                positionMap.put("id", orgUnit.getId());
-                positionMap.put("name", orgUnit.getName());
-                long todoCount = 0;
-                if (StringUtils.isNotBlank(count)) {
-                    todoCount = getTodoCount(tenantId, orgUnit.getId(), itemId, systemName);
-                }
-                positionMap.put(TODO_COUNT_KEY, todoCount);
-                return new PositionInfo(positionMap, todoCount);
-            }
-        } catch (Exception e) {
-            LOGGER.warn("获取委托岗位信息失败: ownerId={}", model.getOwnerId(), e);
-        }
-        return null;
-    }
-
-    /**
-     * 获取待办数量
-     */
-    private long getTodoCount(String tenantId, String userId, String itemId, String systemName) {
-        try {
-            if (StringUtils.isNotBlank(itemId)) {
-                // 单个事项获取待办数量
-                ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
-                return processTodoApi
-                    .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId, itemModel.getWorkflowGuid())
-                    .getData();
-            } else if (StringUtils.isNotBlank(systemName)) {
-                // 按系统名称获取待办数量
-                return processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, userId, systemName).getData();
-            } else {
-                // 工作台获取所有待办数量
-                return itemTodoApi.countByUserId(tenantId, userId).getData();
-            }
-        } catch (Exception e) {
-            LOGGER.error("获取待办数量失败: userId={}, itemId={}, systemName={}", userId, itemId, systemName, e);
-            return 0;
         }
     }
 
@@ -472,7 +460,7 @@ public class MainRestController {
                     historicProcessApi.getById(tenantId, processInstanceId).getData();
                 if (processModel == null || processModel.getId() == null) {
                     OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
                     if (officeDoneInfoModel == null) {
                         processInstanceId = "";
                     }
@@ -493,15 +481,27 @@ public class MainRestController {
     }
 
     /**
-     * 获取当前人有权限的事项列表
-     *
-     * @return Y9Result<List < Map < String, Object>>>
+     * 获取待办数量
      */
-    @GetMapping(value = "/getMyItemList")
-    public Y9Result<List<ItemListModel>> getMyItemList() {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPersonId();
-        return itemApi.getMyItemList(tenantId, userId);
+    private long getTodoCount(String tenantId, String userId, String itemId, String systemName) {
+        try {
+            if (StringUtils.isNotBlank(itemId)) {
+                // 单个事项获取待办数量
+                ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
+                return processTodoApi
+                    .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId, itemModel.getWorkflowGuid())
+                    .getData();
+            } else if (StringUtils.isNotBlank(systemName)) {
+                // 按系统名称获取待办数量
+                return processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, userId, systemName).getData();
+            } else {
+                // 工作台获取所有待办数量
+                return itemTodoApi.countByUserId(tenantId, userId).getData();
+            }
+        } catch (Exception e) {
+            LOGGER.error("获取待办数量失败: userId={}, itemId={}, systemName={}", userId, itemId, systemName, e);
+            return 0;
+        }
     }
 
     /**

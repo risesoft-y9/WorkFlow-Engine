@@ -114,10 +114,56 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
         return runtimeService.addMultiInstanceExecution(activityId, parentExecutionId, map);
     }
 
+    /**
+     * 清理历史变量数据
+     */
+    private void cleanupHistoricVariables(String processInstanceId, String taskId, String nodeType) {
+        if (nodeType.equals(SysVariables.PARALLEL) || nodeType.equals(SysVariables.SEQUENTIAL)) {
+            cleanupMultiInstanceHistoricVariables(processInstanceId, taskId);
+        } else {
+            cleanupNormalHistoricVariables(processInstanceId, taskId);
+        }
+    }
+
+    /**
+     * 清理多实例的历史变量数据
+     */
+    private void cleanupMultiInstanceHistoricVariables(String processInstanceId, String taskId) {
+        String sql00 = "SELECT * FROM ACT_RU_EXECUTION WHERE PROC_INST_ID_ = #{PROC_INST_ID_} AND IS_MI_ROOT_=1";
+        Execution miRootExecution = runtimeService.createNativeExecutionQuery()
+            .sql(sql00)
+            .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
+            .singleResult();
+
+        // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 对 DELETE 语句的锁等待问题
+        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_ = ? OR EXECUTION_ID_ = ? OR TASK_ID_ = ?";
+        jdbcTemplate.update(sql01, processInstanceId, miRootExecution.getId(), taskId);
+
+        runtimeService.setVariablesLocal(miRootExecution.getId(), new HashMap<>(16));
+    }
+
+    /**
+     * 清理普通实例的历史变量数据
+     */
+    private void cleanupNormalHistoricVariables(String processInstanceId, String taskId) {
+        // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 对 DELETE 语句的锁等待问题
+        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_ = ? OR TASK_ID_ = ?";
+        jdbcTemplate.update(sql01, processInstanceId, taskId);
+    }
+
     @Override
     @Transactional
     public void deleteMultiInstanceExecution(String executionId) {
         runtimeService.deleteMultiInstanceExecution(executionId, true);
+    }
+
+    /**
+     * 执行年度数据SQL
+     *
+     * @param sql SQL语句
+     */
+    private void executeYearDataSql(String sql) {
+        jdbcTemplate.execute(sql);
     }
 
     private String getActGeBytearraySql(String year, String processInstanceId) {
@@ -193,9 +239,140 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
         return runtimeService.createExecutionQuery().executionId(executionId).singleResult();
     }
 
+    /**
+     * 获取执行实例ID集合
+     */
+    private Set<String> getExecutionIds(String processInstanceId) {
+        List<Execution> executionList =
+            runtimeService.createExecutionQuery().processInstanceId(processInstanceId).list();
+        Set<String> executionSet = new HashSet<>();
+        for (Execution execution : executionList) {
+            executionSet.add(execution.getId());
+        }
+        return executionSet;
+    }
+
+    /**
+     * 获取最新的历史任务实例
+     */
+    @SuppressWarnings("java:S2077")
+    private HistoricTaskInstance getLatestHistoricTaskInstance(String processInstanceId, String year) {
+        String sql = "SELECT DISTINCT RES.* FROM ACT_HI_TASKINST_" + year + " RES WHERE RES.PROC_INST_ID_ = '"
+            + processInstanceId + "' ORDER BY RES.END_TIME_ DESC";
+
+        List<HistoricTaskInstance> taskInstances =
+            historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list();
+
+        if (taskInstances == null || taskInstances.isEmpty()) {
+            throw new IllegalStateException("未找到流程实例的历史任务信息: " + processInstanceId);
+        }
+
+        return taskInstances.get(0);
+    }
+
+    /**
+     * 获取节点的多实例类型
+     */
+    private String getNodeMultiInstanceType(HistoricTaskInstance hti) {
+        return customProcessDefinitionService.getNode(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())
+            .getMultiInstance();
+    }
+
+    /**
+     * 获取流程变量和任务变量
+     */
+    private VariableMaps getProcessAndTaskVariables(Set<String> executionSet, String taskId, String nodeType) {
+        List<HistoricVariableInstance> pVarList = historyService.createHistoricVariableInstanceQuery()
+            .executionIds(executionSet)
+            .excludeTaskVariables()
+            .list();
+        List<HistoricVariableInstance> tVarList =
+            historyService.createHistoricVariableInstanceQuery().taskId(taskId).list();
+
+        Map<String, Object> pVarMap = new HashMap<>(Math.max(16, pVarList.size() + 8));
+        Map<String, Object> tVarMap = new HashMap<>(Math.max(16, tVarList.size() + 8));
+        OrgUnit orgUnit = Y9FlowableHolder.getPosition();
+        String orgUnitId = orgUnit.getId();
+        // 处理流程变量
+        processProcessVariables(pVarList, pVarMap, nodeType, orgUnitId);
+        // 处理任务变量
+        processTaskVariables(tVarList, tVarMap, nodeType, orgUnitId);
+        return new VariableMaps(pVarMap, tVarMap);
+    }
+
     @Override
     public ProcessInstance getProcessInstance(String processInstanceId) {
         return runtimeService.createProcessInstanceQuery().processInstanceId(processInstanceId).singleResult();
+    }
+
+    /**
+     * 处理普通节点的流程变量
+     */
+    private void handleNormalProcessVariables(List<HistoricVariableInstance> pVarList, Map<String, Object> pVarMap) {
+        for (HistoricVariableInstance pVar : pVarList) {
+            String key = pVar.getVariableName();
+            Object val = pVar.getValue();
+            if (key.equals(SysVariables.ELEMENT_USER) || key.equals(SysVariables.LOOP_COUNTER)
+                || key.equals(SysVariables.ROUTE_TO_TASK_ID)) {
+                continue;
+            }
+            pVarMap.put(key, val);
+        }
+    }
+
+    /**
+     * 处理并行多实例的流程变量
+     */
+    private void handleParallelProcessVariables(List<HistoricVariableInstance> pVarList, Map<String, Object> pVarMap,
+        String orgUnitId) {
+        for (HistoricVariableInstance pVar : pVarList) {
+            String key = pVar.getVariableName();
+            Object val = pVar.getValue();
+            if (key.equals(SysVariables.ELEMENT_USER) || key.equals(SysVariables.LOOP_COUNTER)
+                || key.equals(SysVariables.ROUTE_TO_TASK_ID) || key.equals(SysVariables.USER)) {
+                continue;
+            }
+            pVarMap.put(key, val);
+        }
+        Map<String, Object> multiInstanceVars = initializeMultiInstanceVariables(orgUnitId);
+        pVarMap.putAll(multiInstanceVars);
+    }
+
+    /**
+     * 处理串行多实例的流程变量
+     */
+    private void handleSequentialProcessVariables(List<HistoricVariableInstance> pVarList, Map<String, Object> pVarMap,
+        String orgUnitId) {
+        for (HistoricVariableInstance pVar : pVarList) {
+            String key = pVar.getVariableName();
+            Object val = pVar.getValue();
+            if (key.equals(SysVariables.ELEMENT_USER) || key.equals(SysVariables.LOOP_COUNTER)
+                || key.equals(SysVariables.ROUTE_TO_TASK_ID) || key.equals(SysVariables.USER)
+                || key.equals(SysVariables.USERS)) {
+                continue;
+            }
+            pVarMap.put(key, val);
+        }
+        Map<String, Object> multiInstanceVars = initializeMultiInstanceVariables(orgUnitId);
+        pVarMap.putAll(multiInstanceVars);
+    }
+
+    /**
+     * 初始化多实例用户变量
+     *
+     * @param orgUnitId 组织单元ID
+     * @return 包含初始化变量的Map
+     */
+    private Map<String, Object> initializeMultiInstanceVariables(String orgUnitId) {
+        Map<String, Object> variables = new HashMap<>();
+        List<String> usersList = new ArrayList<>();
+        usersList.add(orgUnitId);
+        variables.put(SysVariables.USERS, usersList);
+        variables.put(SysVariables.NR_OF_INSTANCES, 1);
+        variables.put(SysVariables.NR_OF_COMPLETED_INSTANCES, 0);
+        variables.put(SysVariables.NR_OF_ACTIVE_INSTANCES, 1);
+        variables.put(SysVariables.LOOP_COUNTER, 0);
+        return variables;
     }
 
     @Override
@@ -208,12 +385,127 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
         return runtimeService.createProcessInstanceQuery().processDefinitionKey(processDefinitionKey).list();
     }
 
+    /**
+     * 处理流程变量
+     */
+    private void processProcessVariables(List<HistoricVariableInstance> pVarList, Map<String, Object> pVarMap,
+        String nodeType, String orgUnitId) {
+        if (nodeType.equals(SysVariables.SEQUENTIAL)) {
+            handleSequentialProcessVariables(pVarList, pVarMap, orgUnitId);
+        } else if (nodeType.equals(SysVariables.PARALLEL)) {
+            handleParallelProcessVariables(pVarList, pVarMap, orgUnitId);
+        } else {
+            handleNormalProcessVariables(pVarList, pVarMap);
+        }
+    }
+
+    /**
+     * 处理任务变量
+     */
+    private void processTaskVariables(List<HistoricVariableInstance> tVarList, Map<String, Object> tVarMap,
+        String nodeType, String orgUnitId) {
+        for (HistoricVariableInstance tVar : tVarList) {
+            tVarMap.put(tVar.getVariableName(), tVar.getValue());
+            // 串行恢复待办,任务变量users需要重新设置,避免打开办件时nrOfInstances与usersSize不一致
+            if (nodeType.equals(SysVariables.SEQUENTIAL) && tVar.getVariableName().equals(SysVariables.USERS)) {
+                List<String> usersList = new ArrayList<>();
+                usersList.add(orgUnitId);
+                tVarMap.put(SysVariables.USERS, usersList);
+            }
+        }
+    }
+
     @Override
     @Transactional
     public void recovery4SetUpCompleted(String processInstanceId) {
         runtimeService.activateProcessInstanceById(processInstanceId);
         // 改用 jdbcTemplate 直接执行 UPDATE，避免 Flowable native query 的锁等待问题
         jdbcTemplate.update("UPDATE ACT_HI_PROCINST SET END_TIME_ = NULL WHERE PROC_INST_ID_ = ?", processInstanceId);
+    }
+
+    @Override
+    @Transactional
+    public void recoveryCompleted(String processInstanceId, String year) throws Exception {
+        try {
+            // 1:恢复执行实例数据
+            restoreProcessInstance(processInstanceId, year);
+            // 2和3:恢复流程变量数据并执行恢复命令
+            restoreProcessVariablesAndExecuteCommand(processInstanceId, year);
+            // 4:删除历史节点中办结任务到结束节点的数据
+            removeHistoricActivitiesAfterCompletedTask(processInstanceId);
+            // 5:恢复办件信息数据
+            restoreOfficeDoneInfo(processInstanceId);
+            // 6:恢复办件详情
+            restoreActRuDetail(processInstanceId);
+            // 7:删除年度数据
+            deleteProcessService.deleteYearData(Y9LoginUserHolder.getTenantId(), year, processInstanceId);
+            // stmt.execute("SET FOREIGN_KEY_CHECKS=1");
+        } catch (Exception e) {
+            saveErrorLog(processInstanceId, "恢复待办失败", e);
+            LOGGER.error("恢复待办失败", e);
+            throw new Exception("CustomRuntimeServiceImpl recovery4Completed error");
+        }
+    }
+
+    /**
+     * 删除历史节点中办结任务到结束节点的数据
+     *
+     * @param processInstanceId 流程实例ID
+     */
+    private void removeHistoricActivitiesAfterCompletedTask(String processInstanceId) {
+        List<HistoricActivityInstance> hisActivityList = historyService.createHistoricActivityInstanceQuery()
+            .processInstanceId(processInstanceId)
+            .orderByHistoricActivityInstanceEndTime()
+            .desc()
+            .list();
+
+        for (HistoricActivityInstance hisActivity : hisActivityList) {
+            if (hisActivity.getActivityType().equals(SysVariables.USER_TASK)) {
+                // 改用 jdbcTemplate 直接执行 UPDATE，避免 Flowable native query 的锁等待问题
+                jdbcTemplate.update(
+                    "UPDATE ACT_HI_ACTINST SET END_TIME_=NULL, DURATION_=NULL, DELETE_REASON_=NULL WHERE ID_ = ?",
+                    hisActivity.getId());
+                break;
+            } else {
+                // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 的锁等待问题
+                jdbcTemplate.update("DELETE FROM ACT_HI_ACTINST WHERE ID_ = ?", hisActivity.getId());
+            }
+        }
+    }
+
+    /**
+     * 恢复办件详情
+     *
+     * @param processInstanceId 流程实例ID
+     */
+    private void restoreActRuDetail(String processInstanceId) {
+        try {
+            // 恢复整个流程的办件详情,恢复为未办结
+            actRuDetailApi.recoveryByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
+        } catch (Exception e) {
+            saveErrorLog(processInstanceId, "恢复办件详情失败", e);
+        }
+    }
+
+    /**
+     * 恢复办件信息数据
+     *
+     * @param processInstanceId 流程实例ID
+     */
+    private void restoreOfficeDoneInfo(String processInstanceId) {
+        try {
+            // 修改ES办件信息数据
+            OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
+            officeDoneInfo.setUserComplete("");
+            officeDoneInfo.setEndTime(null);
+            officeDoneInfoApi.saveOfficeDone(officeDoneInfo);
+            ProcessParamModel processParamModel =
+                processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+            processParamModel.setCompleter("");
+            processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
+        } catch (Exception e) {
+            saveErrorLog(processInstanceId, "恢复办件信息数据失败", e);
+        }
     }
 
     /**
@@ -265,7 +557,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
      * 先查询出来，再删除。因为调接口保存的时候，会再向历史表里面插入一份
      * <p>
      * 3执行恢复命令代码
-     * 
+     *
      * @param processInstanceId 流程实例ID
      * @param year 年份
      */
@@ -284,290 +576,6 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
         cleanupHistoricVariables(processInstanceId, hti.getId(), nodeType);
         // 7. 执行数据恢复命令
         managementService.executeCommand(new RecoveryTodoCommand(hti, variableMaps.pVarMap, variableMaps.tVarMap));
-    }
-
-    /**
-     * 获取最新的历史任务实例
-     */
-    @SuppressWarnings("java:S2077")
-    private HistoricTaskInstance getLatestHistoricTaskInstance(String processInstanceId, String year) {
-        String sql = "SELECT DISTINCT RES.* FROM ACT_HI_TASKINST_" + year + " RES WHERE RES.PROC_INST_ID_ = '"
-            + processInstanceId + "' ORDER BY RES.END_TIME_ DESC";
-
-        List<HistoricTaskInstance> taskInstances =
-            historyService.createNativeHistoricTaskInstanceQuery().sql(sql).list();
-
-        if (taskInstances == null || taskInstances.isEmpty()) {
-            throw new IllegalStateException("未找到流程实例的历史任务信息: " + processInstanceId);
-        }
-
-        return taskInstances.get(0);
-    }
-
-    /**
-     * 获取执行实例ID集合
-     */
-    private Set<String> getExecutionIds(String processInstanceId) {
-        List<Execution> executionList =
-            runtimeService.createExecutionQuery().processInstanceId(processInstanceId).list();
-        Set<String> executionSet = new HashSet<>();
-        for (Execution execution : executionList) {
-            executionSet.add(execution.getId());
-        }
-        return executionSet;
-    }
-
-    /**
-     * 获取节点的多实例类型
-     */
-    private String getNodeMultiInstanceType(HistoricTaskInstance hti) {
-        return customProcessDefinitionService.getNode(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())
-            .getMultiInstance();
-    }
-
-    /**
-     * 获取流程变量和任务变量
-     */
-    private VariableMaps getProcessAndTaskVariables(Set<String> executionSet, String taskId, String nodeType) {
-        List<HistoricVariableInstance> pVarList = historyService.createHistoricVariableInstanceQuery()
-            .executionIds(executionSet)
-            .excludeTaskVariables()
-            .list();
-        List<HistoricVariableInstance> tVarList =
-            historyService.createHistoricVariableInstanceQuery().taskId(taskId).list();
-
-        Map<String, Object> pVarMap = new HashMap<>(Math.max(16, pVarList.size() + 8));
-        Map<String, Object> tVarMap = new HashMap<>(Math.max(16, tVarList.size() + 8));
-        OrgUnit orgUnit = Y9FlowableHolder.getPosition();
-        String orgUnitId = orgUnit.getId();
-        // 处理流程变量
-        processProcessVariables(pVarList, pVarMap, nodeType, orgUnitId);
-        // 处理任务变量
-        processTaskVariables(tVarList, tVarMap, nodeType, orgUnitId);
-        return new VariableMaps(pVarMap, tVarMap);
-    }
-
-    /**
-     * 处理流程变量
-     */
-    private void processProcessVariables(List<HistoricVariableInstance> pVarList, Map<String, Object> pVarMap,
-        String nodeType, String orgUnitId) {
-        if (nodeType.equals(SysVariables.SEQUENTIAL)) {
-            handleSequentialProcessVariables(pVarList, pVarMap, orgUnitId);
-        } else if (nodeType.equals(SysVariables.PARALLEL)) {
-            handleParallelProcessVariables(pVarList, pVarMap, orgUnitId);
-        } else {
-            handleNormalProcessVariables(pVarList, pVarMap);
-        }
-    }
-
-    /**
-     * 处理串行多实例的流程变量
-     */
-    private void handleSequentialProcessVariables(List<HistoricVariableInstance> pVarList, Map<String, Object> pVarMap,
-        String orgUnitId) {
-        for (HistoricVariableInstance pVar : pVarList) {
-            String key = pVar.getVariableName();
-            Object val = pVar.getValue();
-            if (key.equals(SysVariables.ELEMENT_USER) || key.equals(SysVariables.LOOP_COUNTER)
-                || key.equals(SysVariables.ROUTE_TO_TASK_ID) || key.equals(SysVariables.USER)
-                || key.equals(SysVariables.USERS)) {
-                continue;
-            }
-            pVarMap.put(key, val);
-        }
-        Map<String, Object> multiInstanceVars = initializeMultiInstanceVariables(orgUnitId);
-        pVarMap.putAll(multiInstanceVars);
-    }
-
-    /**
-     * 初始化多实例用户变量
-     *
-     * @param orgUnitId 组织单元ID
-     * @return 包含初始化变量的Map
-     */
-    private Map<String, Object> initializeMultiInstanceVariables(String orgUnitId) {
-        Map<String, Object> variables = new HashMap<>();
-        List<String> usersList = new ArrayList<>();
-        usersList.add(orgUnitId);
-        variables.put(SysVariables.USERS, usersList);
-        variables.put(SysVariables.NR_OF_INSTANCES, 1);
-        variables.put(SysVariables.NR_OF_COMPLETED_INSTANCES, 0);
-        variables.put(SysVariables.NR_OF_ACTIVE_INSTANCES, 1);
-        variables.put(SysVariables.LOOP_COUNTER, 0);
-        return variables;
-    }
-
-    /**
-     * 处理并行多实例的流程变量
-     */
-    private void handleParallelProcessVariables(List<HistoricVariableInstance> pVarList, Map<String, Object> pVarMap,
-        String orgUnitId) {
-        for (HistoricVariableInstance pVar : pVarList) {
-            String key = pVar.getVariableName();
-            Object val = pVar.getValue();
-            if (key.equals(SysVariables.ELEMENT_USER) || key.equals(SysVariables.LOOP_COUNTER)
-                || key.equals(SysVariables.ROUTE_TO_TASK_ID) || key.equals(SysVariables.USER)) {
-                continue;
-            }
-            pVarMap.put(key, val);
-        }
-        Map<String, Object> multiInstanceVars = initializeMultiInstanceVariables(orgUnitId);
-        pVarMap.putAll(multiInstanceVars);
-    }
-
-    /**
-     * 处理普通节点的流程变量
-     */
-    private void handleNormalProcessVariables(List<HistoricVariableInstance> pVarList, Map<String, Object> pVarMap) {
-        for (HistoricVariableInstance pVar : pVarList) {
-            String key = pVar.getVariableName();
-            Object val = pVar.getValue();
-            if (key.equals(SysVariables.ELEMENT_USER) || key.equals(SysVariables.LOOP_COUNTER)
-                || key.equals(SysVariables.ROUTE_TO_TASK_ID)) {
-                continue;
-            }
-            pVarMap.put(key, val);
-        }
-    }
-
-    /**
-     * 处理任务变量
-     */
-    private void processTaskVariables(List<HistoricVariableInstance> tVarList, Map<String, Object> tVarMap,
-        String nodeType, String orgUnitId) {
-        for (HistoricVariableInstance tVar : tVarList) {
-            tVarMap.put(tVar.getVariableName(), tVar.getValue());
-            // 串行恢复待办,任务变量users需要重新设置,避免打开办件时nrOfInstances与usersSize不一致
-            if (nodeType.equals(SysVariables.SEQUENTIAL) && tVar.getVariableName().equals(SysVariables.USERS)) {
-                List<String> usersList = new ArrayList<>();
-                usersList.add(orgUnitId);
-                tVarMap.put(SysVariables.USERS, usersList);
-            }
-        }
-    }
-
-    /**
-     * 清理历史变量数据
-     */
-    private void cleanupHistoricVariables(String processInstanceId, String taskId, String nodeType) {
-        if (nodeType.equals(SysVariables.PARALLEL) || nodeType.equals(SysVariables.SEQUENTIAL)) {
-            cleanupMultiInstanceHistoricVariables(processInstanceId, taskId);
-        } else {
-            cleanupNormalHistoricVariables(processInstanceId, taskId);
-        }
-    }
-
-    /**
-     * 清理多实例的历史变量数据
-     */
-    private void cleanupMultiInstanceHistoricVariables(String processInstanceId, String taskId) {
-        String sql00 = "SELECT * FROM ACT_RU_EXECUTION WHERE PROC_INST_ID_ = #{PROC_INST_ID_} AND IS_MI_ROOT_=1";
-        Execution miRootExecution = runtimeService.createNativeExecutionQuery()
-            .sql(sql00)
-            .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
-            .singleResult();
-
-        // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 对 DELETE 语句的锁等待问题
-        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_ = ? OR EXECUTION_ID_ = ? OR TASK_ID_ = ?";
-        jdbcTemplate.update(sql01, processInstanceId, miRootExecution.getId(), taskId);
-
-        runtimeService.setVariablesLocal(miRootExecution.getId(), new HashMap<>(16));
-    }
-
-    /**
-     * 清理普通实例的历史变量数据
-     */
-    private void cleanupNormalHistoricVariables(String processInstanceId, String taskId) {
-        // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 对 DELETE 语句的锁等待问题
-        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_ = ? OR TASK_ID_ = ?";
-        jdbcTemplate.update(sql01, processInstanceId, taskId);
-    }
-
-    /**
-     * 删除历史节点中办结任务到结束节点的数据
-     *
-     * @param processInstanceId 流程实例ID
-     */
-    private void removeHistoricActivitiesAfterCompletedTask(String processInstanceId) {
-        List<HistoricActivityInstance> hisActivityList = historyService.createHistoricActivityInstanceQuery()
-            .processInstanceId(processInstanceId)
-            .orderByHistoricActivityInstanceEndTime()
-            .desc()
-            .list();
-
-        for (HistoricActivityInstance hisActivity : hisActivityList) {
-            if (hisActivity.getActivityType().equals(SysVariables.USER_TASK)) {
-                // 改用 jdbcTemplate 直接执行 UPDATE，避免 Flowable native query 的锁等待问题
-                jdbcTemplate.update(
-                    "UPDATE ACT_HI_ACTINST SET END_TIME_=NULL, DURATION_=NULL, DELETE_REASON_=NULL WHERE ID_ = ?",
-                    hisActivity.getId());
-                break;
-            } else {
-                // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 的锁等待问题
-                jdbcTemplate.update("DELETE FROM ACT_HI_ACTINST WHERE ID_ = ?", hisActivity.getId());
-            }
-        }
-    }
-
-    @Override
-    @Transactional
-    public void recoveryCompleted(String processInstanceId, String year) throws Exception {
-        try {
-            // 1:恢复执行实例数据
-            restoreProcessInstance(processInstanceId, year);
-            // 2和3:恢复流程变量数据并执行恢复命令
-            restoreProcessVariablesAndExecuteCommand(processInstanceId, year);
-            // 4:删除历史节点中办结任务到结束节点的数据
-            removeHistoricActivitiesAfterCompletedTask(processInstanceId);
-            // 5:恢复办件信息数据
-            restoreOfficeDoneInfo(processInstanceId);
-            // 6:恢复办件详情
-            restoreActRuDetail(processInstanceId);
-            // 7:删除年度数据
-            deleteProcessService.deleteYearData(Y9LoginUserHolder.getTenantId(), year, processInstanceId);
-            // stmt.execute("SET FOREIGN_KEY_CHECKS=1");
-        } catch (Exception e) {
-            saveErrorLog(processInstanceId, "恢复待办失败", e);
-            LOGGER.error("恢复待办失败", e);
-            throw new Exception("CustomRuntimeServiceImpl recovery4Completed error");
-        }
-    }
-
-    /**
-     * 恢复办件信息数据
-     *
-     * @param processInstanceId 流程实例ID
-     */
-    private void restoreOfficeDoneInfo(String processInstanceId) {
-        try {
-            // 修改ES办件信息数据
-            OfficeDoneInfoModel officeDoneInfo =
-                officeDoneInfoApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
-            officeDoneInfo.setUserComplete("");
-            officeDoneInfo.setEndTime(null);
-            officeDoneInfoApi.saveOfficeDone(Y9LoginUserHolder.getTenantId(), officeDoneInfo);
-            ProcessParamModel processParamModel =
-                processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
-            processParamModel.setCompleter("");
-            processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
-        } catch (Exception e) {
-            saveErrorLog(processInstanceId, "恢复办件信息数据失败", e);
-        }
-    }
-
-    /**
-     * 恢复办件详情
-     *
-     * @param processInstanceId 流程实例ID
-     */
-    private void restoreActRuDetail(String processInstanceId) {
-        try {
-            // 恢复整个流程的办件详情,恢复为未办结
-            actRuDetailApi.recoveryByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
-        } catch (Exception e) {
-            saveErrorLog(processInstanceId, "恢复办件详情失败", e);
-        }
     }
 
     /**
@@ -618,15 +626,6 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
         executeYearDataSql(getActHiActinstSql(year, processInstanceId));
         // 同步流程实例
         executeYearDataSql(getActHiProcinstSql(year, processInstanceId));
-    }
-
-    /**
-     * 执行年度数据SQL
-     *
-     * @param sql SQL语句
-     */
-    private void executeYearDataSql(String sql) {
-        jdbcTemplate.execute(sql);
     }
 
     @Override
