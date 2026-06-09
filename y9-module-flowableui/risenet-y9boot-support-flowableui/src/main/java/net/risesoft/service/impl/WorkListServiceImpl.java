@@ -758,10 +758,8 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> doneList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9FlowableHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage =
-                itemDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+            Y9Page<ActRuDetailModel> itemPage = itemDoneApi.findByUserIdAndSystemName(item.getSystemName(), page, rows);
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
@@ -783,9 +781,9 @@ public class WorkListServiceImpl implements WorkListService {
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage = itemDoneApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+                itemPage = itemDoneApi.findBySystemName(item.getSystemName(), page, rows);
             } else {
-                itemPage = itemDoneApi.searchBySystemName(tenantId, item.getSystemName(), searchMapStr, page, rows);
+                itemPage = itemDoneApi.searchBySystemName(item.getSystemName(), searchMapStr, page, rows);
             }
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
@@ -813,11 +811,10 @@ public class WorkListServiceImpl implements WorkListService {
             String deptId = isBureau ? bureau.getId() : position.getParentId();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage =
-                    itemDoneApi.findByDeptIdAndSystemName(tenantId, deptId, isBureau, item.getSystemName(), page, rows);
+                itemPage = itemDoneApi.findByDeptIdAndSystemName(deptId, isBureau, item.getSystemName(), page, rows);
             } else {
-                itemPage = itemDoneApi.searchByDeptIdAndSystemName(tenantId, deptId, isBureau, item.getSystemName(),
-                    searchMapStr, page, rows);
+                itemPage = itemDoneApi.searchByDeptIdAndSystemName(deptId, isBureau, item.getSystemName(), searchMapStr,
+                    page, rows);
             }
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
