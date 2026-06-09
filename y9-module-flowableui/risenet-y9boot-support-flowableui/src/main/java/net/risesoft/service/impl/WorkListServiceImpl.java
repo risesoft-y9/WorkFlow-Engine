@@ -1187,15 +1187,12 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> recycleList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9FlowableHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage =
-                    itemRecycleApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                itemPage = itemRecycleApi.findByUserIdAndSystemName(item.getSystemName(), page, rows);
             } else {
-                itemPage = itemRecycleApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                    searchMapStr, page, rows);
+                itemPage = itemRecycleApi.searchByUserIdAndSystemName(item.getSystemName(), searchMapStr, page, rows);
             }
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
@@ -1218,9 +1215,9 @@ public class WorkListServiceImpl implements WorkListService {
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage = itemRecycleApi.findBySystemName(tenantId, item.getSystemName(), page, rows);
+                itemPage = itemRecycleApi.findBySystemName(item.getSystemName(), page, rows);
             } else {
-                itemPage = itemRecycleApi.searchBySystemName(tenantId, item.getSystemName(), searchMapStr, page, rows);
+                itemPage = itemRecycleApi.searchBySystemName(item.getSystemName(), searchMapStr, page, rows);
             }
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
@@ -1248,10 +1245,9 @@ public class WorkListServiceImpl implements WorkListService {
             String deptId = isBureau ? bureau.getId() : position.getParentId();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage = itemRecycleApi.findByDeptIdAndSystemName(tenantId, deptId, isBureau, item.getSystemName(),
-                    page, rows);
+                itemPage = itemRecycleApi.findByDeptIdAndSystemName(deptId, isBureau, item.getSystemName(), page, rows);
             } else {
-                itemPage = itemRecycleApi.searchByDeptIdAndSystemName(tenantId, deptId, isBureau, item.getSystemName(),
+                itemPage = itemRecycleApi.searchByDeptIdAndSystemName(deptId, isBureau, item.getSystemName(),
                     searchMapStr, page, rows);
             }
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
