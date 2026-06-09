@@ -5,6 +5,7 @@ import java.util.List;
 
 import javax.validation.constraints.NotBlank;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -30,7 +31,6 @@ import net.risesoft.repository.interfaceinfo.ItemInterfaceBindRepository;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceParamsBindRepository;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceTaskBindRepository;
 import net.risesoft.repository.jpa.TaskTimeConfRepository;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -59,7 +59,6 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     /**
      * 获取事项绑定的接口信息
      *
-     * @param tenantId 租户id
      * @param itemId 事项id
      * @param taskKey 任务key
      * @param processDefinitionId 流程定义id
@@ -68,9 +67,8 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<InterfaceModel>> getInterface(@RequestParam String tenantId, @RequestParam String itemId,
-        String taskKey, @RequestParam String processDefinitionId, @RequestParam String condition) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<InterfaceModel>> getInterface(@RequestParam String itemId, String taskKey,
+        @RequestParam String processDefinitionId, @RequestParam String condition) {
         List<ItemInterfaceTaskBind> list = itemInterfaceTaskBindRepository
             .findByItemIdAndTaskDefKeyAndProcessDefinitionIdAndExecuteConditionContaining(itemId, taskKey,
                 processDefinitionId, condition);
@@ -94,14 +92,12 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     /**
      * 根据事项id获取绑定接口
      *
-     * @param tenantId 租户id
      * @param itemId 事项id
      * @return {@code Y9Result<List<InterfaceModel>>} 通用请求返回对象 - data 是接口绑定列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<InterfaceModel>> getInterfaceList(@RequestParam String tenantId, @RequestParam String itemId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<InterfaceModel>> getInterfaceList(@RequestParam String itemId) {
         List<ItemInterfaceBind> list = itemInterfaceBindRepository.findByItemIdOrderByCreateTimeDesc(itemId);
         List<InterfaceModel> resList = new ArrayList<>();
         for (ItemInterfaceBind bind : list) {
@@ -138,16 +134,14 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     /**
      * 获取事项绑定的接口参数信息
      *
-     * @param tenantId 租户id
      * @param itemId 事项id
      * @param interfaceId 接口id
      * @return {@code Y9Result<List<InterfaceParamsModel>>} 通用请求返回对象 - data 是接口绑定参数列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam @NotBlank String tenantId,
-        @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String interfaceId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String interfaceId) {
         List<ItemInterfaceParamsBind> list =
             itemInterfaceParamsBindRepository.findByItemIdAndInterfaceIdOrderByCreateTimeDesc(itemId, interfaceId);
         List<InterfaceParamsModel> resList = new ArrayList<>();
@@ -176,7 +170,6 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
     /**
      * 获取任务时间配置信息
      *
-     * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskKey 任务key
@@ -184,9 +177,8 @@ public class ItemInterfaceApiImpl implements ItemInterfaceApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<TaskTimeConfModel> getTaskTimeConf(@RequestParam @NotBlank String tenantId,
-        @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String itemId, String taskKey) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<TaskTimeConfModel> getTaskTimeConf(@RequestParam @NotBlank String processDefinitionId,
+        @RequestParam @NotBlank String itemId, String taskKey) {
         TaskTimeConf conf = taskTimeConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
             processDefinitionId, taskKey);
         TaskTimeConfModel taskTimeConf = null;

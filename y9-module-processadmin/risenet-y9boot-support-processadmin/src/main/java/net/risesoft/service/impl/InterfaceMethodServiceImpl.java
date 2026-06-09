@@ -88,93 +88,95 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         this.errorLogApi = errorLogApi;
     }
 
-    @Override
-    public void dataHandling(String processSerialNumber, String processInstanceId, Map<String, Object> map,
-        List<InterfaceParamsModel> paramsList, InterfaceModel info, final Integer loopCounter) throws Exception {
-        if (map == null || paramsList == null || paramsList.isEmpty()) {
-            return;
+    /**
+     * 添加固定字段
+     */
+    private void appendFixedFields(StringBuilder sqlStr, StringBuilder valuesStr, String guid,
+        String parentProcessSerialNumber, boolean hasPreviousFields) {
+        if (hasPreviousFields) {
+            sqlStr.append(",");
+            valuesStr.append(",");
         }
 
-        try {
-            List<Map<String, Object>> tableList = getResponseTableList(paramsList);
-            DataSource database = Objects.requireNonNull(jdbcTemplate.getDataSource());
-            String dialect = DbMetaDataUtil.getDatabaseDialectName(database);
+        // guid字段
+        sqlStr.append("guid");
+        valuesStr.append("'").append(guid).append("'");
 
-            for (Map<String, Object> tableInfo : tableList) {
-                handleTableData(processSerialNumber, map, paramsList, tableInfo, dialect, loopCounter);
-            }
-        } catch (Exception e) {
-            handleDataHandlingException(e, processInstanceId, info);
-        }
+        // parentProcessSerialNumber字段
+        sqlStr.append(",parentProcessSerialNumber");
+        valuesStr.append(",'").append(parentProcessSerialNumber).append("'");
+
+        // y9_userId字段
+        sqlStr.append(",y9_userId");
+        valuesStr.append(",'").append(Y9FlowableHolder.getPositionId()).append("'");
     }
 
     /**
-     * 获取响应参数对应的表列表
+     * 添加响应字段
      */
-    private List<Map<String, Object>> getResponseTableList(List<InterfaceParamsModel> paramsList) {
-        List<Map<String, Object>> tableList = new ArrayList<>();
+    private boolean appendResponseFields(StringBuilder sqlStr, StringBuilder valuesStr, Map<String, Object> map,
+        List<InterfaceParamsModel> paramsList, String parentProcessSerialNumber) throws Exception {
+        boolean isHaveField = false;
+
         for (InterfaceParamsModel model : paramsList) {
             if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE)) {
-                Map<String, Object> tableMap = new HashMap<>();
-                tableMap.put(SysVariables.TABLENAME_KEY, model.getTableName());
-                tableMap.put(SysVariables.TABLETYPE_KEY, model.getTableType());
-                if (!tableList.contains(tableMap)) {
-                    tableList.add(tableMap);
+                String value = getResponseValue(map, model);
+
+                // 处理文件字段
+                if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
+                    LOGGER.info("********************文件字段处理:{}", model.getParameterName());
+                    value = this.saveFile(parentProcessSerialNumber, value, model.getFileType());
+                }
+
+                if (isHaveField) {
+                    sqlStr.append(",");
+                    valuesStr.append(",");
+                }
+
+                sqlStr.append(model.getColumnName());
+                valuesStr.append("'").append(value).append("'");
+                isHaveField = true;
+            }
+        }
+
+        return isHaveField;
+    }
+
+    /**
+     * 构建插入SQL语句
+     */
+    private InsertSqlInfo buildInsertSql(String dialect, String tableName, Map<String, Object> map,
+        List<InterfaceParamsModel> paramsList, String guid, String parentProcessSerialNumber) throws Exception {
+        StringBuilder sqlStr = createInsertHeader(dialect, tableName);
+        StringBuilder valuesStr = new StringBuilder(") values (");
+        // 添加响应字段
+        boolean hasFields = appendResponseFields(sqlStr, valuesStr, map, paramsList, parentProcessSerialNumber);
+        // 添加固定字段
+        appendFixedFields(sqlStr, valuesStr, guid, parentProcessSerialNumber, hasFields);
+        valuesStr.append(")");
+        sqlStr.append(valuesStr);
+        return new InsertSqlInfo(sqlStr);
+    }
+
+    /**
+     * 构建请求参数映射
+     */
+    private Map<String, Object> buildParamsMap(List<InterfaceParamsModel> paramsList,
+        List<Map<String, Object>> requestParamsList, Integer loopCounter) {
+        Map<String, Object> paramsMap = new HashMap<>();
+
+        for (InterfaceParamsModel model : paramsList) {
+            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
+                // 请求参数
+                if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS)
+                    || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY)) {
+                    String parameterValue = getParameterValue(model, requestParamsList, loopCounter);
+                    paramsMap.put(model.getParameterName(), parameterValue);
                 }
             }
         }
-        return tableList;
-    }
 
-    /**
-     * 处理单个表的数据
-     */
-    private void handleTableData(String processSerialNumber, Map<String, Object> responseMap,
-        List<InterfaceParamsModel> paramsList, Map<String, Object> tableInfo, String dialect, Integer loopCounter)
-        throws Exception {
-        String tableName = (String)tableInfo.get(SysVariables.TABLENAME_KEY);
-        String tableType =
-            tableInfo.get(SysVariables.TABLETYPE_KEY) != null ? (String)tableInfo.get(SysVariables.TABLETYPE_KEY) : "1";
-
-        // 处理子表
-        if (tableType.equals("2")) {
-            handleSubTableData(processSerialNumber, responseMap, paramsList, tableInfo, dialect, loopCounter);
-        } else {
-            // 处理主表
-            updateTableData(processSerialNumber, responseMap, paramsList, tableName, dialect);
-        }
-    }
-
-    /**
-     * 处理子表数据
-     */
-    private void handleSubTableData(String processSerialNumber, Map<String, Object> responseMap,
-        List<InterfaceParamsModel> paramsList, Map<String, Object> tableInfo, String dialect, Integer loopCounter)
-        throws Exception {
-        String tableName = (String)tableInfo.get(SysVariables.TABLENAME_KEY);
-        String guid = processSerialNumber + LOOP_COUNTER + loopCounter;
-
-        StringBuilder sqlStr = getSqlStr(dialect, tableName);
-        List<Map<String, Object>> resList = jdbcTemplate.queryForList(sqlStr.toString(), guid);
-
-        if (resList.isEmpty()) {
-            // 新增数据
-            this.insertData(tableName, processSerialNumber, responseMap, paramsList, guid);
-        } else {
-            // 更新数据
-            updateTableData(guid, responseMap, paramsList, tableName, dialect);
-        }
-    }
-
-    /**
-     * 更新表数据
-     */
-    private void updateTableData(String guid, Map<String, Object> responseMap, List<InterfaceParamsModel> paramsList,
-        String tableName, String dialect) {
-        StringBuilder sqlStr = buildUpdateSql(dialect, tableName, responseMap, paramsList, tableName, guid);
-        sqlStr.append(" where guid ='").append(guid).append("'");
-        String sql = sqlStr.toString();
-        jdbcTemplate.execute(sql);
+        return paramsMap;
     }
 
     /**
@@ -202,6 +204,91 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     }
 
     /**
+     * 配置GET请求超时参数
+     */
+    private void configureGetRequestTimeout(HttpClient client, String processDefinitionId, String itemId,
+        String taskKey) {
+        int time = 10000;
+        TaskTimeConfModel taskTimeConf =
+            itemInterfaceApi.getTaskTimeConf(processDefinitionId, itemId, taskKey).getData();
+        if (taskTimeConf != null && taskTimeConf.getTimeoutInterrupt() != null
+            && taskTimeConf.getTimeoutInterrupt() > 0) {
+            time = taskTimeConf.getTimeoutInterrupt();
+        }
+
+        LOGGER.info("*********************设置请求超时参数:" + time);
+        // 设置请求超时时间
+        client.getHttpConnectionManager().getParams().setConnectionTimeout(time);
+        // 设置读取数据超时时间
+        client.getHttpConnectionManager().getParams().setSoTimeout(time);
+    }
+
+    /**
+     * 配置请求超时参数
+     */
+    private void configureRequestTimeout(HttpPost httpPost, String processDefinitionId, String itemId, String taskKey)
+        throws Exception {
+        int time = 10000;
+        TaskTimeConfModel taskTimeConf =
+            itemInterfaceApi.getTaskTimeConf(processDefinitionId, itemId, taskKey).getData();
+        if (taskTimeConf != null && taskTimeConf.getTimeoutInterrupt() != null
+            && taskTimeConf.getTimeoutInterrupt() > 0) {
+            time = taskTimeConf.getTimeoutInterrupt();
+        }
+        String urlStr = httpPost.getURI().toString();
+        httpPost.setURI(new URI(urlStr));
+        LOGGER.info("*********************设置请求超时参数:{}", time);
+        RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectTimeout(time)
+            .setConnectionRequestTimeout(time)
+            .setSocketTimeout(time)
+            .build();
+        httpPost.setConfig(requestConfig);
+    }
+
+    /**
+     * 创建GetMethod请求对象
+     */
+    private GetMethod createGetMethod(InterfaceModel info) {
+        GetMethod method = new GetMethod();
+        method.setPath(info.getInterfaceAddress());
+        // 默认添加请求头
+        method.addRequestHeader("auth-positionId", Y9FlowableHolder.getPositionId());
+        method.addRequestHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
+        return method;
+    }
+
+    /**
+     * 创建HttpPost请求对象
+     */
+    private HttpPost createHttpPost(InterfaceModel info) {
+        HttpPost httpPost = new HttpPost(info.getInterfaceAddress());
+        httpPost.addHeader("Content-Type", "application/json;charset=utf-8");
+        // 默认添加请求头
+        httpPost.addHeader("auth-positionId", Y9FlowableHolder.getPositionId());
+        httpPost.addHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
+        return httpPost;
+    }
+
+    /**
+     * 创建INSERT语句头部
+     */
+    private StringBuilder createInsertHeader(String dialect, String tableName) {
+        StringBuilder sqlStr = new StringBuilder();
+        switch (dialect) {
+            case SysVariables.ORACLE_KEY:
+            case "dm":
+            case SysVariables.KINGBASE_KEY:
+                sqlStr.append("insert into \"").append(tableName).append("\" (");
+                break;
+            default:
+                sqlStr.append("insert into ").append(tableName).append(" (");
+                break;
+        }
+        return sqlStr;
+    }
+
+    /**
      * 创建UPDATE语句头部
      */
     private StringBuilder createUpdateHeader(String dialect, String tableName) {
@@ -219,74 +306,144 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         return sqlStr;
     }
 
-    /**
-     * 检查是否为目标响应模型
-     */
-    private boolean isTargetResponseModel(InterfaceParamsModel model, String targetTableName) {
-        return model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE)
-            && model.getTableName().equals(targetTableName);
+    @Override
+    public void dataHandling(String processSerialNumber, String processInstanceId, Map<String, Object> map,
+        List<InterfaceParamsModel> paramsList, InterfaceModel info, final Integer loopCounter) throws Exception {
+        if (map == null || paramsList == null || paramsList.isEmpty()) {
+            return;
+        }
+
+        try {
+            List<Map<String, Object>> tableList = getResponseTableList(paramsList);
+            DataSource database = Objects.requireNonNull(jdbcTemplate.getDataSource());
+            String dialect = DbMetaDataUtil.getDatabaseDialectName(database);
+
+            for (Map<String, Object> tableInfo : tableList) {
+                handleTableData(processSerialNumber, map, paramsList, tableInfo, dialect, loopCounter);
+            }
+        } catch (Exception e) {
+            handleDataHandlingException(e, processInstanceId, info);
+        }
     }
 
     /**
-     * 处理文件值（如果需要）
+     * 执行GET请求
      */
-    private String processFileValueIfNeeded(InterfaceParamsModel model, String value, String guid) {
-        // 处理文件，保存文件，表单存fileStoreId
-        if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
-            LOGGER.info("********************文件字段处理:{}", model.getParameterName());
-            try {
-                value = this.saveFile(getProcessSerialNumberFromGuid(guid), value, model.getFileType());
-            } catch (Exception e) {
-                LOGGER.warn("文件处理失败:{} ", model.getParameterName(), e);
+    private void executeGetRequest(HttpClient client, GetMethod method, String processInstanceId,
+        String processDefinitionId, String itemId, String taskKey, InterfaceModel info, String processSerialNumber,
+        Y9Result<List<InterfaceParamsModel>> y9Result, Integer loopCounter) throws Exception {
+        configureGetRequestTimeout(client, processDefinitionId, itemId, taskKey);
+        int httpCode = client.executeMethod(method);
+        if (httpCode == HttpStatus.SC_OK) {
+            String response =
+                new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
+            processGetResponse(response, processInstanceId, processSerialNumber, y9Result, info, loopCounter);
+        } else {
+            handleGetErrorResponse(httpCode, processInstanceId, taskKey, info);
+        }
+    }
+
+    /**
+     * 执行HTTP请求
+     */
+    private void executeHttpRequest(CloseableHttpClient httpclient, HttpPost httpPost, String processInstanceId,
+        String processDefinitionId, String itemId, String taskKey, InterfaceModel info, String processSerialNumber,
+        Y9Result<List<InterfaceParamsModel>> y9Result, Integer loopCounter) throws Exception {
+        configureRequestTimeout(httpPost, processDefinitionId, itemId, taskKey);
+        CloseableHttpResponse response = httpclient.execute(httpPost);
+        int httpCode = response.getStatusLine().getStatusCode();
+        if (httpCode == HttpStatus.SC_OK) {
+            String resp = EntityUtils.toString(response.getEntity(), "utf-8");
+            processResponse(resp, processInstanceId, processSerialNumber, y9Result, info, loopCounter);
+        } else {
+            handleErrorResponse(httpCode, processInstanceId, taskKey, info);
+        }
+    }
+
+    /**
+     * 提取基础参数值
+     */
+    private String extractBaseParameterValue(Map<String, Object> paramMap, String columnName) {
+        Object value = paramMap.get(columnName);
+        if (value instanceof ArrayList) {
+            return Y9JsonUtil.writeValueAsString(value);
+        } else {
+            return value != null ? value.toString() : "";
+        }
+    }
+
+    /**
+     * 提取参数值
+     */
+    private String extractParameterValue(Map<String, Object> paramMap, String columnName) {
+        Object value = paramMap.get(columnName);
+        if (value instanceof ArrayList) {
+            return Y9JsonUtil.writeValueAsString(value);
+        } else {
+            return value != null ? value.toString() : "";
+        }
+    }
+
+    /**
+     * 查找目标请求头参数映射
+     */
+    private Map<String, Object> findTargetHeaderParamMap(InterfaceParamsModel model,
+        List<Map<String, Object>> requestParamsList) {
+        for (Map<String, Object> map : requestParamsList) {
+            String tableName = map.get(SysVariables.TABLENAME_KEY).toString();
+            if (!model.getTableName().equals(tableName)) {
+                continue;
+            }
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> paramsList = (List<Map<String, Object>>)map.get(SysVariables.PARAMSLIST_KEY);
+            for (Map<String, Object> paramMap : paramsList) {
+                if (paramMap.containsKey(model.getColumnName())) {
+                    return paramMap;
+                }
             }
         }
-        return value;
+        return null;
     }
 
     /**
-     * 从guid中提取processSerialNumber
+     * 查找目标参数映射
      */
-    private String getProcessSerialNumberFromGuid(String guid) {
-        if (guid.contains(LOOP_COUNTER)) {
-            return guid.substring(0, guid.indexOf(LOOP_COUNTER));
-        }
-        return guid;
-    }
+    private Map<String, Object> findTargetParamMap(InterfaceParamsModel model,
+        List<Map<String, Object>> requestParamsList) {
+        for (Map<String, Object> map : requestParamsList) {
+            String tableName = map.get(SysVariables.TABLENAME_KEY).toString();
+            if (!model.getTableName().equals(tableName)) {
+                continue;
+            }
 
-    /**
-     * 获取响应参数值
-     */
-    private String getResponseValue(Map<String, Object> responseMap, InterfaceParamsModel model) {
-        String parameterName = model.getParameterName();
-        String value = "";
+            @SuppressWarnings("unchecked")
+            List<Map<String, Object>> paramsList = (List<Map<String, Object>>)map.get(SysVariables.PARAMSLIST_KEY);
 
-        if (responseMap.get(parameterName) != null) {
-            if (responseMap.get(parameterName) instanceof ArrayList) {
-                value = Y9JsonUtil.writeValueAsString(responseMap.get(parameterName));
-            } else {
-                value = String.valueOf(responseMap.get(parameterName));
+            for (Map<String, Object> paramMap : paramsList) {
+                if (paramMap.containsKey(model.getColumnName())) {
+                    return paramMap;
+                }
             }
         }
-
-        return value;
+        return null;
     }
 
     /**
-     * 处理数据处理异常
+     * 获取请求头参数值
      */
-    private void handleDataHandlingException(Exception e, String processInstanceId, InterfaceModel info)
-        throws Exception {
-        final Writer msgResult = new StringWriter();
-        final PrintWriter print = new PrintWriter(msgResult);
-        e.printStackTrace(print);
-        String msg = msgResult.toString();
-
-        saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "dataHandling", "", info.getInterfaceAddress(),
-            msg);
-
-        if (info.getAbnormalStop().equals("1")) {
-            throw new Exception("调用接口失败_dataHandling：" + info.getInterfaceAddress());
+    private String getHeaderParameterValue(InterfaceParamsModel model, List<Map<String, Object>> requestParamsList) {
+        Map<String, Object> targetParamMap = findTargetHeaderParamMap(model, requestParamsList);
+        if (targetParamMap == null) {
+            return "";
         }
+        return extractParameterValue(targetParamMap, model.getColumnName());
+    }
+
+    /**
+     * 获取接口参数
+     */
+    private Y9Result<List<InterfaceParamsModel>> getInterfaceParams(String itemId, InterfaceModel info) {
+        return itemInterfaceApi.getInterfaceParams(itemId, info.getId());
     }
 
     @Override
@@ -309,138 +466,37 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     }
 
     /**
-     * 创建GetMethod请求对象
+     * 获取参数值
      */
-    private GetMethod createGetMethod(InterfaceModel info) {
-        GetMethod method = new GetMethod();
-        method.setPath(info.getInterfaceAddress());
-        // 默认添加请求头
-        method.addRequestHeader("auth-positionId", Y9FlowableHolder.getPositionId());
-        method.addRequestHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
-        return method;
+    private String getParameterValue(InterfaceParamsModel model, List<Map<String, Object>> requestParamsList,
+        Integer loopCounter) {
+        String parameterValue = "";
+
+        Map<String, Object> targetParamMap = findTargetParamMap(model, requestParamsList);
+        if (targetParamMap == null) {
+            return parameterValue;
+        }
+
+        // 提取基础参数值
+        parameterValue = extractBaseParameterValue(targetParamMap, model.getColumnName());
+
+        // 处理数组类型的特殊逻辑
+        String tableType = getTableTypeFromParams(targetParamMap);
+        if (!"2".equals(tableType) && loopCounter != null) {
+            parameterValue = processArrayParameterValue(targetParamMap, model.getColumnName(), loopCounter);
+        }
+
+        return parameterValue;
     }
 
     /**
-     * 处理GET请求参数
+     * 从guid中提取processSerialNumber
      */
-    private void processGetRequestParameters(GetMethod method, Y9Result<List<InterfaceParamsModel>> y9Result,
-        String processSerialNumber, String processInstanceId, InterfaceModel info, Integer loopCounter)
-        throws Exception {
-        List<Map<String, Object>> list =
-            getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info, loopCounter);
-        List<NameValuePair> nameValuePairs = new ArrayList<>();
-        // 处理请求参数和请求头
-        for (InterfaceParamsModel model : y9Result.getData()) {
-            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
-                if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS)
-                    || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY)) {
-                    String parameterValue = getParameterValue(model, list, loopCounter);
-                    nameValuePairs.add(new NameValuePair(model.getParameterName(), parameterValue));
-                }
-                if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS)) {
-                    String parameterValue = getHeaderParameterValue(model, list);
-                    method.addRequestHeader(model.getParameterName(), parameterValue);
-                }
-            }
+    private String getProcessSerialNumberFromGuid(String guid) {
+        if (guid.contains(LOOP_COUNTER)) {
+            return guid.substring(0, guid.indexOf(LOOP_COUNTER));
         }
-        if (!nameValuePairs.isEmpty()) {
-            method.setQueryString(nameValuePairs.toArray(new NameValuePair[0]));
-        }
-    }
-
-    /**
-     * 执行GET请求
-     */
-    private void executeGetRequest(HttpClient client, GetMethod method, String processInstanceId,
-        String processDefinitionId, String itemId, String taskKey, InterfaceModel info, String processSerialNumber,
-        Y9Result<List<InterfaceParamsModel>> y9Result, Integer loopCounter) throws Exception {
-        configureGetRequestTimeout(client, processDefinitionId, itemId, taskKey);
-        int httpCode = client.executeMethod(method);
-        if (httpCode == HttpStatus.SC_OK) {
-            String response =
-                new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-            processGetResponse(response, processInstanceId, processSerialNumber, y9Result, info, loopCounter);
-        } else {
-            handleGetErrorResponse(httpCode, processInstanceId, taskKey, info);
-        }
-    }
-
-    /**
-     * 配置GET请求超时参数
-     */
-    private void configureGetRequestTimeout(HttpClient client, String processDefinitionId, String itemId,
-        String taskKey) {
-        int time = 10000;
-        TaskTimeConfModel taskTimeConf =
-            itemInterfaceApi.getTaskTimeConf(Y9LoginUserHolder.getTenantId(), processDefinitionId, itemId, taskKey)
-                .getData();
-        if (taskTimeConf != null && taskTimeConf.getTimeoutInterrupt() != null
-            && taskTimeConf.getTimeoutInterrupt() > 0) {
-            time = taskTimeConf.getTimeoutInterrupt();
-        }
-
-        LOGGER.info("*********************设置请求超时参数:" + time);
-        // 设置请求超时时间
-        client.getHttpConnectionManager().getParams().setConnectionTimeout(time);
-        // 设置读取数据超时时间
-        client.getHttpConnectionManager().getParams().setSoTimeout(time);
-    }
-
-    /**
-     * 处理GET响应结果
-     */
-    private void processGetResponse(String response, String processInstanceId, String processSerialNumber,
-        Y9Result<List<InterfaceParamsModel>> y9Result, InterfaceModel info, Integer loopCounter) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Y9Result<Map<String, Object>> result = objectMapper.readValue(response, Y9Result.class);
-
-        if (!result.isSuccess()) {
-            handleFailedGetResponse(response, processInstanceId, info);
-        } else {
-            dataHandling(processSerialNumber, processInstanceId, result.getData(), y9Result.getData(), info,
-                loopCounter);
-        }
-    }
-
-    /**
-     * 处理失败的GET响应
-     */
-    private void handleFailedGetResponse(String response, String processInstanceId, InterfaceModel info)
-        throws Exception {
-        saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "", "", info.getInterfaceAddress(), response);
-        if (info.getAbnormalStop().equals("1")) {
-            throw new Exception("调用接口失败_返回结果：" + response + "|" + info.getInterfaceAddress());
-        }
-    }
-
-    /**
-     * 处理GET错误响应状态码
-     */
-    private void handleGetErrorResponse(int httpCode, String processInstanceId, String taskKey, InterfaceModel info)
-        throws Exception {
-        saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "", taskKey, info.getInterfaceAddress(),
-            "httpCode:" + httpCode);
-        if (info.getAbnormalStop().equals("1")) {
-            throw new Exception("调用接口失败_返回状态：" + httpCode + "|" + info.getInterfaceAddress());
-        }
-    }
-
-    /**
-     * 处理GET方法异常
-     */
-    private void handleGetMethodException(Exception e, String processInstanceId, String taskId, String taskKey,
-        InterfaceModel info) throws Exception {
-        final Writer msgResult = new StringWriter();
-        final PrintWriter print = new PrintWriter(msgResult);
-        e.printStackTrace(print);
-        String msg = msgResult.toString();
-
-        saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey, info.getInterfaceAddress(),
-            msg);
-
-        if (info.getAbnormalStop().equals("1")) {
-            throw new Exception("调用接口失败_getMethod：" + info.getInterfaceAddress());
-        }
+        return guid;
     }
 
     @Override
@@ -488,6 +544,42 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         return new ArrayList<>();
     }
 
+    /**
+     * 获取响应参数对应的表列表
+     */
+    private List<Map<String, Object>> getResponseTableList(List<InterfaceParamsModel> paramsList) {
+        List<Map<String, Object>> tableList = new ArrayList<>();
+        for (InterfaceParamsModel model : paramsList) {
+            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE)) {
+                Map<String, Object> tableMap = new HashMap<>();
+                tableMap.put(SysVariables.TABLENAME_KEY, model.getTableName());
+                tableMap.put(SysVariables.TABLETYPE_KEY, model.getTableType());
+                if (!tableList.contains(tableMap)) {
+                    tableList.add(tableMap);
+                }
+            }
+        }
+        return tableList;
+    }
+
+    /**
+     * 获取响应参数值
+     */
+    private String getResponseValue(Map<String, Object> responseMap, InterfaceParamsModel model) {
+        String parameterName = model.getParameterName();
+        String value = "";
+
+        if (responseMap.get(parameterName) != null) {
+            if (responseMap.get(parameterName) instanceof ArrayList) {
+                value = Y9JsonUtil.writeValueAsString(responseMap.get(parameterName));
+            } else {
+                value = String.valueOf(responseMap.get(parameterName));
+            }
+        }
+
+        return value;
+    }
+
     private StringBuilder getSqlStr(String dialect, String tableName) {
         StringBuilder sqlStr;
         switch (dialect) {
@@ -504,236 +596,6 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         return sqlStr;
     }
 
-    @Override
-    public void insertData(String tableName, String parentProcessSerialNumber, Map<String, Object> map,
-        List<InterfaceParamsModel> paramsList, String guid) throws Exception {
-        DataSource database = Objects.requireNonNull(jdbcTemplate.getDataSource());
-        String dialect = DbMetaDataUtil.getDatabaseDialectName(database);
-        InsertSqlInfo sqlInfo = buildInsertSql(dialect, tableName, map, paramsList, guid, parentProcessSerialNumber);
-        jdbcTemplate.execute(sqlInfo.sql.toString());
-    }
-
-    /**
-     * 构建插入SQL语句
-     */
-    private InsertSqlInfo buildInsertSql(String dialect, String tableName, Map<String, Object> map,
-        List<InterfaceParamsModel> paramsList, String guid, String parentProcessSerialNumber) throws Exception {
-        StringBuilder sqlStr = createInsertHeader(dialect, tableName);
-        StringBuilder valuesStr = new StringBuilder(") values (");
-        // 添加响应字段
-        boolean hasFields = appendResponseFields(sqlStr, valuesStr, map, paramsList, parentProcessSerialNumber);
-        // 添加固定字段
-        appendFixedFields(sqlStr, valuesStr, guid, parentProcessSerialNumber, hasFields);
-        valuesStr.append(")");
-        sqlStr.append(valuesStr);
-        return new InsertSqlInfo(sqlStr);
-    }
-
-    /**
-     * 创建INSERT语句头部
-     */
-    private StringBuilder createInsertHeader(String dialect, String tableName) {
-        StringBuilder sqlStr = new StringBuilder();
-        switch (dialect) {
-            case SysVariables.ORACLE_KEY:
-            case "dm":
-            case SysVariables.KINGBASE_KEY:
-                sqlStr.append("insert into \"").append(tableName).append("\" (");
-                break;
-            default:
-                sqlStr.append("insert into ").append(tableName).append(" (");
-                break;
-        }
-        return sqlStr;
-    }
-
-    /**
-     * 添加响应字段
-     */
-    private boolean appendResponseFields(StringBuilder sqlStr, StringBuilder valuesStr, Map<String, Object> map,
-        List<InterfaceParamsModel> paramsList, String parentProcessSerialNumber) throws Exception {
-        boolean isHaveField = false;
-
-        for (InterfaceParamsModel model : paramsList) {
-            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE)) {
-                String value = getResponseValue(map, model);
-
-                // 处理文件字段
-                if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
-                    LOGGER.info("********************文件字段处理:{}", model.getParameterName());
-                    value = this.saveFile(parentProcessSerialNumber, value, model.getFileType());
-                }
-
-                if (isHaveField) {
-                    sqlStr.append(",");
-                    valuesStr.append(",");
-                }
-
-                sqlStr.append(model.getColumnName());
-                valuesStr.append("'").append(value).append("'");
-                isHaveField = true;
-            }
-        }
-
-        return isHaveField;
-    }
-
-    /**
-     * 添加固定字段
-     */
-    private void appendFixedFields(StringBuilder sqlStr, StringBuilder valuesStr, String guid,
-        String parentProcessSerialNumber, boolean hasPreviousFields) {
-        if (hasPreviousFields) {
-            sqlStr.append(",");
-            valuesStr.append(",");
-        }
-
-        // guid字段
-        sqlStr.append("guid");
-        valuesStr.append("'").append(guid).append("'");
-
-        // parentProcessSerialNumber字段
-        sqlStr.append(",parentProcessSerialNumber");
-        valuesStr.append(",'").append(parentProcessSerialNumber).append("'");
-
-        // y9_userId字段
-        sqlStr.append(",y9_userId");
-        valuesStr.append(",'").append(Y9FlowableHolder.getPositionId()).append("'");
-    }
-
-    @Override
-    public void postMethod(final String processSerialNumber, final String itemId, final InterfaceModel info,
-        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey,
-        final Integer loopCounter) throws Exception {
-        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
-            HttpPost httpPost = createHttpPost(info);
-            Y9Result<List<InterfaceParamsModel>> y9Result = getInterfaceParams(itemId, info);
-            if (y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
-                processRequestParameters(httpPost, y9Result, processSerialNumber, processInstanceId, info, loopCounter);
-            }
-            executeHttpRequest(httpclient, httpPost, processInstanceId, processDefinitionId, itemId, taskKey, info,
-                processSerialNumber, y9Result, loopCounter);
-        } catch (Exception e) {
-            handlePostMethodException(e, processInstanceId, taskId, taskKey, info);
-        }
-    }
-
-    /**
-     * 创建HttpPost请求对象
-     */
-    private HttpPost createHttpPost(InterfaceModel info) {
-        HttpPost httpPost = new HttpPost(info.getInterfaceAddress());
-        httpPost.addHeader("Content-Type", "application/json;charset=utf-8");
-        // 默认添加请求头
-        httpPost.addHeader("auth-positionId", Y9FlowableHolder.getPositionId());
-        httpPost.addHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
-        return httpPost;
-    }
-
-    /**
-     * 获取接口参数
-     */
-    private Y9Result<List<InterfaceParamsModel>> getInterfaceParams(String itemId, InterfaceModel info) {
-        return itemInterfaceApi.getInterfaceParams(Y9LoginUserHolder.getTenantId(), itemId, info.getId());
-    }
-
-    /**
-     * 处理请求参数
-     */
-    private void processRequestParameters(HttpPost httpPost, Y9Result<List<InterfaceParamsModel>> y9Result,
-        String processSerialNumber, String processInstanceId, InterfaceModel info, Integer loopCounter)
-        throws Exception {
-        List<Map<String, Object>> list =
-            getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info, loopCounter);
-        Map<String, Object> paramsMap = buildParamsMap(y9Result.getData(), list, loopCounter);
-        // 设置请求头参数
-        setRequestHeaders(httpPost, y9Result.getData(), list);
-        // 参数加入body
-        JSONObject jsonString = new JSONObject(paramsMap);
-        StringEntity entity = new StringEntity(jsonString.toString(), Consts.UTF_8);
-        httpPost.setEntity(entity);
-    }
-
-    /**
-     * 构建请求参数映射
-     */
-    private Map<String, Object> buildParamsMap(List<InterfaceParamsModel> paramsList,
-        List<Map<String, Object>> requestParamsList, Integer loopCounter) {
-        Map<String, Object> paramsMap = new HashMap<>();
-
-        for (InterfaceParamsModel model : paramsList) {
-            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
-                // 请求参数
-                if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS)
-                    || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY)) {
-                    String parameterValue = getParameterValue(model, requestParamsList, loopCounter);
-                    paramsMap.put(model.getParameterName(), parameterValue);
-                }
-            }
-        }
-
-        return paramsMap;
-    }
-
-    /**
-     * 获取参数值
-     */
-    private String getParameterValue(InterfaceParamsModel model, List<Map<String, Object>> requestParamsList,
-        Integer loopCounter) {
-        String parameterValue = "";
-
-        Map<String, Object> targetParamMap = findTargetParamMap(model, requestParamsList);
-        if (targetParamMap == null) {
-            return parameterValue;
-        }
-
-        // 提取基础参数值
-        parameterValue = extractBaseParameterValue(targetParamMap, model.getColumnName());
-
-        // 处理数组类型的特殊逻辑
-        String tableType = getTableTypeFromParams(targetParamMap);
-        if (!"2".equals(tableType) && loopCounter != null) {
-            parameterValue = processArrayParameterValue(targetParamMap, model.getColumnName(), loopCounter);
-        }
-
-        return parameterValue;
-    }
-
-    /**
-     * 查找目标参数映射
-     */
-    private Map<String, Object> findTargetParamMap(InterfaceParamsModel model,
-        List<Map<String, Object>> requestParamsList) {
-        for (Map<String, Object> map : requestParamsList) {
-            String tableName = map.get(SysVariables.TABLENAME_KEY).toString();
-            if (!model.getTableName().equals(tableName)) {
-                continue;
-            }
-
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> paramsList = (List<Map<String, Object>>)map.get(SysVariables.PARAMSLIST_KEY);
-
-            for (Map<String, Object> paramMap : paramsList) {
-                if (paramMap.containsKey(model.getColumnName())) {
-                    return paramMap;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 提取基础参数值
-     */
-    private String extractBaseParameterValue(Map<String, Object> paramMap, String columnName) {
-        Object value = paramMap.get(columnName);
-        if (value instanceof ArrayList) {
-            return Y9JsonUtil.writeValueAsString(value);
-        } else {
-            return value != null ? value.toString() : "";
-        }
-    }
-
     /**
      * 从参数映射中获取表类型
      */
@@ -743,137 +605,43 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     }
 
     /**
-     * 处理数组参数值
+     * 处理数据处理异常
      */
-    private String processArrayParameterValue(Map<String, Object> paramMap, String columnName, Integer loopCounter) {
-        try {
-            Object columnValue = paramMap.get(columnName);
-            if (columnValue instanceof String) {
-                JSONArray array = JSON.parseArray((String)columnValue);
-                String result = array.size() > loopCounter ? array.get(loopCounter).toString() : "";
-                LOGGER.info("*****************{}是数组:{}", columnName, Y9JsonUtil.writeValueAsString(columnValue));
-                return result;
-            }
-        } catch (Exception e) {
-            LOGGER.warn("解析数组参数失败: {}", columnName, e);
-        }
-        return "";
-    }
-
-    /**
-     * 设置请求头参数
-     */
-    private void setRequestHeaders(HttpPost httpPost, List<InterfaceParamsModel> paramsList,
-        List<Map<String, Object>> requestParamsList) {
-        for (InterfaceParamsModel model : paramsList) {
-            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
-                // 请求头
-                if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS)) {
-                    String parameterValue = getHeaderParameterValue(model, requestParamsList);
-                    httpPost.addHeader(model.getParameterName(), parameterValue);
-                }
-            }
-        }
-    }
-
-    /**
-     * 获取请求头参数值
-     */
-    private String getHeaderParameterValue(InterfaceParamsModel model, List<Map<String, Object>> requestParamsList) {
-        Map<String, Object> targetParamMap = findTargetHeaderParamMap(model, requestParamsList);
-        if (targetParamMap == null) {
-            return "";
-        }
-        return extractParameterValue(targetParamMap, model.getColumnName());
-    }
-
-    /**
-     * 查找目标请求头参数映射
-     */
-    private Map<String, Object> findTargetHeaderParamMap(InterfaceParamsModel model,
-        List<Map<String, Object>> requestParamsList) {
-        for (Map<String, Object> map : requestParamsList) {
-            String tableName = map.get(SysVariables.TABLENAME_KEY).toString();
-            if (!model.getTableName().equals(tableName)) {
-                continue;
-            }
-            @SuppressWarnings("unchecked")
-            List<Map<String, Object>> paramsList = (List<Map<String, Object>>)map.get(SysVariables.PARAMSLIST_KEY);
-            for (Map<String, Object> paramMap : paramsList) {
-                if (paramMap.containsKey(model.getColumnName())) {
-                    return paramMap;
-                }
-            }
-        }
-        return null;
-    }
-
-    /**
-     * 提取参数值
-     */
-    private String extractParameterValue(Map<String, Object> paramMap, String columnName) {
-        Object value = paramMap.get(columnName);
-        if (value instanceof ArrayList) {
-            return Y9JsonUtil.writeValueAsString(value);
-        } else {
-            return value != null ? value.toString() : "";
-        }
-    }
-
-    /**
-     * 执行HTTP请求
-     */
-    private void executeHttpRequest(CloseableHttpClient httpclient, HttpPost httpPost, String processInstanceId,
-        String processDefinitionId, String itemId, String taskKey, InterfaceModel info, String processSerialNumber,
-        Y9Result<List<InterfaceParamsModel>> y9Result, Integer loopCounter) throws Exception {
-        configureRequestTimeout(httpPost, processDefinitionId, itemId, taskKey);
-        CloseableHttpResponse response = httpclient.execute(httpPost);
-        int httpCode = response.getStatusLine().getStatusCode();
-        if (httpCode == HttpStatus.SC_OK) {
-            String resp = EntityUtils.toString(response.getEntity(), "utf-8");
-            processResponse(resp, processInstanceId, processSerialNumber, y9Result, info, loopCounter);
-        } else {
-            handleErrorResponse(httpCode, processInstanceId, taskKey, info);
-        }
-    }
-
-    /**
-     * 配置请求超时参数
-     */
-    private void configureRequestTimeout(HttpPost httpPost, String processDefinitionId, String itemId, String taskKey)
+    private void handleDataHandlingException(Exception e, String processInstanceId, InterfaceModel info)
         throws Exception {
-        int time = 10000;
-        TaskTimeConfModel taskTimeConf =
-            itemInterfaceApi.getTaskTimeConf(Y9LoginUserHolder.getTenantId(), processDefinitionId, itemId, taskKey)
-                .getData();
-        if (taskTimeConf != null && taskTimeConf.getTimeoutInterrupt() != null
-            && taskTimeConf.getTimeoutInterrupt() > 0) {
-            time = taskTimeConf.getTimeoutInterrupt();
+        final Writer msgResult = new StringWriter();
+        final PrintWriter print = new PrintWriter(msgResult);
+        e.printStackTrace(print);
+        String msg = msgResult.toString();
+
+        saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "dataHandling", "", info.getInterfaceAddress(),
+            msg);
+
+        if (info.getAbnormalStop().equals("1")) {
+            throw new Exception("调用接口失败_dataHandling：" + info.getInterfaceAddress());
         }
-        String urlStr = httpPost.getURI().toString();
-        httpPost.setURI(new URI(urlStr));
-        LOGGER.info("*********************设置请求超时参数:{}", time);
-        RequestConfig requestConfig = RequestConfig.custom()
-            .setConnectTimeout(time)
-            .setConnectionRequestTimeout(time)
-            .setSocketTimeout(time)
-            .build();
-        httpPost.setConfig(requestConfig);
     }
 
     /**
-     * 处理响应结果
+     * 处理错误响应状态码
      */
-    private void processResponse(String resp, String processInstanceId, String processSerialNumber,
-        Y9Result<List<InterfaceParamsModel>> y9Result, InterfaceModel info, Integer loopCounter) throws Exception {
-        ObjectMapper objectMapper = new ObjectMapper();
-        Y9Result<Map<String, Object>> result = objectMapper.readValue(resp, Y9Result.class);
+    private void handleErrorResponse(int httpCode, String processInstanceId, String taskKey, InterfaceModel info)
+        throws Exception {
+        saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "", taskKey, info.getInterfaceAddress(),
+            "httpCode:" + httpCode);
+        if (info.getAbnormalStop().equals("1")) {
+            throw new Exception("调用接口失败_返回状态：" + httpCode + "|" + info.getInterfaceAddress());
+        }
+    }
 
-        if (!result.isSuccess()) {
-            handleFailedResponse(resp, processInstanceId, info);
-        } else {
-            dataHandling(processSerialNumber, processInstanceId, result.getData(), y9Result.getData(), info,
-                loopCounter);
+    /**
+     * 处理失败的GET响应
+     */
+    private void handleFailedGetResponse(String response, String processInstanceId, InterfaceModel info)
+        throws Exception {
+        saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "", "", info.getInterfaceAddress(), response);
+        if (info.getAbnormalStop().equals("1")) {
+            throw new Exception("调用接口失败_返回结果：" + response + "|" + info.getInterfaceAddress());
         }
     }
 
@@ -888,14 +656,32 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     }
 
     /**
-     * 处理错误响应状态码
+     * 处理GET错误响应状态码
      */
-    private void handleErrorResponse(int httpCode, String processInstanceId, String taskKey, InterfaceModel info)
+    private void handleGetErrorResponse(int httpCode, String processInstanceId, String taskKey, InterfaceModel info)
         throws Exception {
         saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, "", taskKey, info.getInterfaceAddress(),
             "httpCode:" + httpCode);
         if (info.getAbnormalStop().equals("1")) {
             throw new Exception("调用接口失败_返回状态：" + httpCode + "|" + info.getInterfaceAddress());
+        }
+    }
+
+    /**
+     * 处理GET方法异常
+     */
+    private void handleGetMethodException(Exception e, String processInstanceId, String taskId, String taskKey,
+        InterfaceModel info) throws Exception {
+        final Writer msgResult = new StringWriter();
+        final PrintWriter print = new PrintWriter(msgResult);
+        e.printStackTrace(print);
+        String msg = msgResult.toString();
+
+        saveErrorLog(Y9LoginUserHolder.getTenantId(), processInstanceId, taskId, taskKey, info.getInterfaceAddress(),
+            msg);
+
+        if (info.getAbnormalStop().equals("1")) {
+            throw new Exception("调用接口失败_getMethod：" + info.getInterfaceAddress());
         }
     }
 
@@ -917,6 +703,191 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         }
     }
 
+    /**
+     * 处理子表数据
+     */
+    private void handleSubTableData(String processSerialNumber, Map<String, Object> responseMap,
+        List<InterfaceParamsModel> paramsList, Map<String, Object> tableInfo, String dialect, Integer loopCounter)
+        throws Exception {
+        String tableName = (String)tableInfo.get(SysVariables.TABLENAME_KEY);
+        String guid = processSerialNumber + LOOP_COUNTER + loopCounter;
+
+        StringBuilder sqlStr = getSqlStr(dialect, tableName);
+        List<Map<String, Object>> resList = jdbcTemplate.queryForList(sqlStr.toString(), guid);
+
+        if (resList.isEmpty()) {
+            // 新增数据
+            this.insertData(tableName, processSerialNumber, responseMap, paramsList, guid);
+        } else {
+            // 更新数据
+            updateTableData(guid, responseMap, paramsList, tableName, dialect);
+        }
+    }
+
+    /**
+     * 处理单个表的数据
+     */
+    private void handleTableData(String processSerialNumber, Map<String, Object> responseMap,
+        List<InterfaceParamsModel> paramsList, Map<String, Object> tableInfo, String dialect, Integer loopCounter)
+        throws Exception {
+        String tableName = (String)tableInfo.get(SysVariables.TABLENAME_KEY);
+        String tableType =
+            tableInfo.get(SysVariables.TABLETYPE_KEY) != null ? (String)tableInfo.get(SysVariables.TABLETYPE_KEY) : "1";
+
+        // 处理子表
+        if (tableType.equals("2")) {
+            handleSubTableData(processSerialNumber, responseMap, paramsList, tableInfo, dialect, loopCounter);
+        } else {
+            // 处理主表
+            updateTableData(processSerialNumber, responseMap, paramsList, tableName, dialect);
+        }
+    }
+
+    @Override
+    public void insertData(String tableName, String parentProcessSerialNumber, Map<String, Object> map,
+        List<InterfaceParamsModel> paramsList, String guid) throws Exception {
+        DataSource database = Objects.requireNonNull(jdbcTemplate.getDataSource());
+        String dialect = DbMetaDataUtil.getDatabaseDialectName(database);
+        InsertSqlInfo sqlInfo = buildInsertSql(dialect, tableName, map, paramsList, guid, parentProcessSerialNumber);
+        jdbcTemplate.execute(sqlInfo.sql.toString());
+    }
+
+    /**
+     * 检查是否为目标响应模型
+     */
+    private boolean isTargetResponseModel(InterfaceParamsModel model, String targetTableName) {
+        return model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_RESPONSE)
+            && model.getTableName().equals(targetTableName);
+    }
+
+    @Override
+    public void postMethod(final String processSerialNumber, final String itemId, final InterfaceModel info,
+        final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey,
+        final Integer loopCounter) throws Exception {
+        try (CloseableHttpClient httpclient = HttpClients.createDefault()) {
+            HttpPost httpPost = createHttpPost(info);
+            Y9Result<List<InterfaceParamsModel>> y9Result = getInterfaceParams(itemId, info);
+            if (y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
+                processRequestParameters(httpPost, y9Result, processSerialNumber, processInstanceId, info, loopCounter);
+            }
+            executeHttpRequest(httpclient, httpPost, processInstanceId, processDefinitionId, itemId, taskKey, info,
+                processSerialNumber, y9Result, loopCounter);
+        } catch (Exception e) {
+            handlePostMethodException(e, processInstanceId, taskId, taskKey, info);
+        }
+    }
+
+    /**
+     * 处理数组参数值
+     */
+    private String processArrayParameterValue(Map<String, Object> paramMap, String columnName, Integer loopCounter) {
+        try {
+            Object columnValue = paramMap.get(columnName);
+            if (columnValue instanceof String) {
+                JSONArray array = JSON.parseArray((String)columnValue);
+                String result = array.size() > loopCounter ? array.get(loopCounter).toString() : "";
+                LOGGER.info("*****************{}是数组:{}", columnName, Y9JsonUtil.writeValueAsString(columnValue));
+                return result;
+            }
+        } catch (Exception e) {
+            LOGGER.warn("解析数组参数失败: {}", columnName, e);
+        }
+        return "";
+    }
+
+    /**
+     * 处理文件值（如果需要）
+     */
+    private String processFileValueIfNeeded(InterfaceParamsModel model, String value, String guid) {
+        // 处理文件，保存文件，表单存fileStoreId
+        if (StringUtils.isNotBlank(model.getFileType()) && StringUtils.isNotBlank(value)) {
+            LOGGER.info("********************文件字段处理:{}", model.getParameterName());
+            try {
+                value = this.saveFile(getProcessSerialNumberFromGuid(guid), value, model.getFileType());
+            } catch (Exception e) {
+                LOGGER.warn("文件处理失败:{} ", model.getParameterName(), e);
+            }
+        }
+        return value;
+    }
+
+    /**
+     * 处理GET请求参数
+     */
+    private void processGetRequestParameters(GetMethod method, Y9Result<List<InterfaceParamsModel>> y9Result,
+        String processSerialNumber, String processInstanceId, InterfaceModel info, Integer loopCounter)
+        throws Exception {
+        List<Map<String, Object>> list =
+            getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info, loopCounter);
+        List<NameValuePair> nameValuePairs = new ArrayList<>();
+        // 处理请求参数和请求头
+        for (InterfaceParamsModel model : y9Result.getData()) {
+            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
+                if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS)
+                    || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY)) {
+                    String parameterValue = getParameterValue(model, list, loopCounter);
+                    nameValuePairs.add(new NameValuePair(model.getParameterName(), parameterValue));
+                }
+                if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS)) {
+                    String parameterValue = getHeaderParameterValue(model, list);
+                    method.addRequestHeader(model.getParameterName(), parameterValue);
+                }
+            }
+        }
+        if (!nameValuePairs.isEmpty()) {
+            method.setQueryString(nameValuePairs.toArray(new NameValuePair[0]));
+        }
+    }
+
+    /**
+     * 处理GET响应结果
+     */
+    private void processGetResponse(String response, String processInstanceId, String processSerialNumber,
+        Y9Result<List<InterfaceParamsModel>> y9Result, InterfaceModel info, Integer loopCounter) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Y9Result<Map<String, Object>> result = objectMapper.readValue(response, Y9Result.class);
+
+        if (!result.isSuccess()) {
+            handleFailedGetResponse(response, processInstanceId, info);
+        } else {
+            dataHandling(processSerialNumber, processInstanceId, result.getData(), y9Result.getData(), info,
+                loopCounter);
+        }
+    }
+
+    /**
+     * 处理请求参数
+     */
+    private void processRequestParameters(HttpPost httpPost, Y9Result<List<InterfaceParamsModel>> y9Result,
+        String processSerialNumber, String processInstanceId, InterfaceModel info, Integer loopCounter)
+        throws Exception {
+        List<Map<String, Object>> list =
+            getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info, loopCounter);
+        Map<String, Object> paramsMap = buildParamsMap(y9Result.getData(), list, loopCounter);
+        // 设置请求头参数
+        setRequestHeaders(httpPost, y9Result.getData(), list);
+        // 参数加入body
+        JSONObject jsonString = new JSONObject(paramsMap);
+        StringEntity entity = new StringEntity(jsonString.toString(), Consts.UTF_8);
+        httpPost.setEntity(entity);
+    }
+
+    /**
+     * 处理响应结果
+     */
+    private void processResponse(String resp, String processInstanceId, String processSerialNumber,
+        Y9Result<List<InterfaceParamsModel>> y9Result, InterfaceModel info, Integer loopCounter) throws Exception {
+        ObjectMapper objectMapper = new ObjectMapper();
+        Y9Result<Map<String, Object>> result = objectMapper.readValue(resp, Y9Result.class);
+
+        if (!result.isSuccess()) {
+            handleFailedResponse(resp, processInstanceId, info);
+        } else {
+            dataHandling(processSerialNumber, processInstanceId, result.getData(), y9Result.getData(), info,
+                loopCounter);
+        }
+    }
+
     @Override
     public Future<Boolean> saveErrorLog(final String tenantId, final String processInstanceId, final String taskId,
         final String taskKey, final String interfaceAddress, final String msg) {
@@ -930,7 +901,8 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
             errorLogModel.setProcessInstanceId(processInstanceId);
             errorLogModel.setTaskId(taskId);
             errorLogModel.setText(msg);
-            errorLogApi.saveErrorLog(tenantId, errorLogModel);
+            Y9LoginUserHolder.setTenantId(tenantId);
+            errorLogApi.saveErrorLog(errorLogModel);
             return new AsyncResult<>(true);
         } catch (Exception e) {
             LOGGER.error("保存错误日志失败", e);
@@ -948,6 +920,33 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
             downloadUrl = y9Config.getCommon().getProcessAdminBaseUrl() + "/s/" + y9FileStore.getId() + "." + fileType;
         }
         return downloadUrl;
+    }
+
+    /**
+     * 设置请求头参数
+     */
+    private void setRequestHeaders(HttpPost httpPost, List<InterfaceParamsModel> paramsList,
+        List<Map<String, Object>> requestParamsList) {
+        for (InterfaceParamsModel model : paramsList) {
+            if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
+                // 请求头
+                if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS)) {
+                    String parameterValue = getHeaderParameterValue(model, requestParamsList);
+                    httpPost.addHeader(model.getParameterName(), parameterValue);
+                }
+            }
+        }
+    }
+
+    /**
+     * 更新表数据
+     */
+    private void updateTableData(String guid, Map<String, Object> responseMap, List<InterfaceParamsModel> paramsList,
+        String tableName, String dialect) {
+        StringBuilder sqlStr = buildUpdateSql(dialect, tableName, responseMap, paramsList, tableName, guid);
+        sqlStr.append(" where guid ='").append(guid).append("'");
+        String sql = sqlStr.toString();
+        jdbcTemplate.execute(sql);
     }
 
     /**

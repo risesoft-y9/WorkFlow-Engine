@@ -42,20 +42,46 @@ public class Task4ListenerServiceImpl implements Task4ListenerService {
     @javax.annotation.Resource(name = "jdbcTemplate4Tenant")
     private JdbcTemplate jdbcTemplate;
 
-    private static Writer getWriter() {
-        return new StringWriter();
-    }
-
-    private static PrintWriter getPrintWriter(Writer msgResult) {
-        return new PrintWriter(msgResult);
-    }
-
     private static void extracted(Exception e, PrintWriter print) {
         e.printStackTrace(print);
     }
 
     private static String getMsg(Writer msgResult) {
         return msgResult.toString();
+    }
+
+    private static PrintWriter getPrintWriter(Writer msgResult) {
+        return new PrintWriter(msgResult);
+    }
+
+    private static Writer getWriter() {
+        return new StringWriter();
+    }
+
+    /**
+     * 处理任务删除监听器异常
+     *
+     * @param e 异常对象
+     * @param task 委托任务
+     * @param orgUnitName 组织单元名称
+     * @param tenantId 租户ID
+     */
+    private void handleTaskDeleteException(Exception e, DelegateTask task, String orgUnitName, String tenantId) {
+        final Writer msgResult = getWriter();
+        final PrintWriter print = getPrintWriter(msgResult);
+        extracted(e, print);
+        Y9LoginUserHolder.setTenantId(tenantId);
+        String msg = getMsg(msgResult);
+        ErrorLogModel errorLogModel = new ErrorLogModel();
+        errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        errorLogModel.setErrorFlag("update orgUnitName");
+        errorLogModel.setErrorType(ErrorLogModel.ERROR_TASK);
+        errorLogModel.setExtendField(
+            "更新SCOPE_TYPE_,TENANT_ID_字段失败:任务key【" + task.getTaskDefinitionKey() + "】,orgUnitName【" + orgUnitName + "】");
+        errorLogModel.setProcessInstanceId(task.getProcessInstanceId());
+        errorLogModel.setTaskId(task.getId());
+        errorLogModel.setText(msg);
+        errorLogApi.saveErrorLog(errorLogModel);
     }
 
     @Override
@@ -84,17 +110,6 @@ public class Task4ListenerServiceImpl implements Task4ListenerService {
     }
 
     /**
-     * 更新ACT_HI_TASKINST表的SCOPE_TYPE_字段，记录岗位/人员名称，历程显示该字段名称，避免岗位换人或人员删除历程显示问题
-     *
-     * @param taskId 任务ID
-     * @param orgUnitName 组织单元名称
-     */
-    private void updateTaskInstScopeType(String taskId, String orgUnitName) {
-        String updateSql = "UPDATE ACT_HI_TASKINST T SET T.SCOPE_TYPE_ = ? WHERE T.ID_= ?";
-        jdbcTemplate.update(updateSql, orgUnitName, taskId);
-    }
-
-    /**
      * 更新ACT_HI_ACTINST表的TENANT_ID_字段，记录岗位/人员名称，历程显示该字段名称，避免岗位换人或人员删除历程显示问题
      *
      * @param taskId 任务ID
@@ -106,27 +121,13 @@ public class Task4ListenerServiceImpl implements Task4ListenerService {
     }
 
     /**
-     * 处理任务删除监听器异常
+     * 更新ACT_HI_TASKINST表的SCOPE_TYPE_字段，记录岗位/人员名称，历程显示该字段名称，避免岗位换人或人员删除历程显示问题
      *
-     * @param e 异常对象
-     * @param task 委托任务
+     * @param taskId 任务ID
      * @param orgUnitName 组织单元名称
-     * @param tenantId 租户ID
      */
-    private void handleTaskDeleteException(Exception e, DelegateTask task, String orgUnitName, String tenantId) {
-        final Writer msgResult = getWriter();
-        final PrintWriter print = getPrintWriter(msgResult);
-        extracted(e, print);
-        String msg = getMsg(msgResult);
-        ErrorLogModel errorLogModel = new ErrorLogModel();
-        errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        errorLogModel.setErrorFlag("update orgUnitName");
-        errorLogModel.setErrorType(ErrorLogModel.ERROR_TASK);
-        errorLogModel.setExtendField(
-            "更新SCOPE_TYPE_,TENANT_ID_字段失败:任务key【" + task.getTaskDefinitionKey() + "】,orgUnitName【" + orgUnitName + "】");
-        errorLogModel.setProcessInstanceId(task.getProcessInstanceId());
-        errorLogModel.setTaskId(task.getId());
-        errorLogModel.setText(msg);
-        errorLogApi.saveErrorLog(tenantId, errorLogModel);
+    private void updateTaskInstScopeType(String taskId, String orgUnitName) {
+        String updateSql = "UPDATE ACT_HI_TASKINST T SET T.SCOPE_TYPE_ = ? WHERE T.ID_= ?";
+        jdbcTemplate.update(updateSql, orgUnitName, taskId);
     }
 }

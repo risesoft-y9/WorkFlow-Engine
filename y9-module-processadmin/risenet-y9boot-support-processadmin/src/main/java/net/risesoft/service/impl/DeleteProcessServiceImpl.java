@@ -146,7 +146,7 @@ public class DeleteProcessServiceImpl implements DeleteProcessService {
         errorLogModel.setProcessInstanceId(processInstanceId);
         errorLogModel.setTaskId("");
         errorLogModel.setText(msg);
-        errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+        errorLogApi.saveErrorLog(errorLogModel);
         LOGGER.error("**********删除年度表数据失败", e);
     }
 }

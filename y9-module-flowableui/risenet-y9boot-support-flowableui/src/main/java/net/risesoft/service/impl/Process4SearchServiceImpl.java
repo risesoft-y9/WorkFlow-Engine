@@ -63,7 +63,8 @@ public class Process4SearchServiceImpl implements Process4SearchService {
         errorLogModel.setTaskId(taskId);
         errorLogModel.setText(msg);
         try {
-            errorLogApi.saveErrorLog(tenantId, errorLogModel);
+            Y9LoginUserHolder.setTenantId(tenantId);
+            errorLogApi.saveErrorLog(errorLogModel);
         } catch (Exception e1) {
             LOGGER.warn("#################保存错误日志失败#################", e1);
         }

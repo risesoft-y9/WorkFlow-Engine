@@ -601,7 +601,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             errorLogModel.setProcessInstanceId(processInstanceId);
             errorLogModel.setTaskId("");
             errorLogModel.setText(errorMsg);
-            errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+            errorLogApi.saveErrorLog(errorLogModel);
         } catch (Exception e) {
             LOGGER.error("保存错误日志失败", e);
         }

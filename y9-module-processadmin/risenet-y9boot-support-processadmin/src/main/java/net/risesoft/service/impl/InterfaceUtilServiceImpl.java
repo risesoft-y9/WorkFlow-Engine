@@ -25,6 +25,7 @@ import net.risesoft.service.InterfaceMethodService;
 import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.y9.FlowableTenantInfoHolder;
 import net.risesoft.y9.Y9FlowableHolder;
+import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 
 /**
@@ -59,12 +60,12 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
         }
         try {
             tenantId = FlowableTenantInfoHolder.getTenantId();
+            Y9LoginUserHolder.setTenantId(tenantId);
             processSerialNumber = (String)variables.get("processSerialNumber");
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             itemId = processParamModel.getItemId();
-            y9Result =
-                itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
+            y9Result = itemInterfaceApi.getInterface(itemId, taskDefinitionKey, processDefinitionId, condition);
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
@@ -105,6 +106,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
         }
         try {
             tenantId = FlowableTenantInfoHolder.getTenantId();
+            Y9LoginUserHolder.setTenantId(tenantId);
             processInstanceId = flow.getProcessInstanceId();
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
@@ -114,8 +116,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
             }
             itemId = processParamModel.getItemId();
             processSerialNumber = processParamModel.getProcessSerialNumber();
-            y9Result =
-                itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
+            y9Result = itemInterfaceApi.getInterface(itemId, taskDefinitionKey, processDefinitionId, condition);
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
@@ -157,13 +158,13 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
         }
         try {
             tenantId = FlowableTenantInfoHolder.getTenantId();
+            Y9LoginUserHolder.setTenantId(tenantId);
             processSerialNumber = (String)variables.get("processSerialNumber");
             loopCounter = variables.get("loopCounter") != null ? (Integer)variables.get("loopCounter") : null;
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             itemId = processParamModel.getItemId();
-            y9Result =
-                itemInterfaceApi.getInterface(tenantId, itemId, taskDefinitionKey, processDefinitionId, condition);
+            y9Result = itemInterfaceApi.getInterface(itemId, taskDefinitionKey, processDefinitionId, condition);
         } catch (Exception e) {
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);

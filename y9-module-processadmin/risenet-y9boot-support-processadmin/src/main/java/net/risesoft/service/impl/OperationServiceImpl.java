@@ -318,7 +318,7 @@ public class OperationServiceImpl implements OperationService {
             errorLogModel.setTaskId(taskId);
             errorLogModel.setText(msg);
             try {
-                this.errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+                this.errorLogApi.saveErrorLog(errorLogModel);
             } catch (Exception e1) {
                 LOGGER.error("保存错误日志失败", e1);
             }
