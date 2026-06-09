@@ -93,18 +93,15 @@ public class WorkListServiceImpl implements WorkListService {
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 if (isOrg) {
-                    itemPage = itemAllApi.findBySystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                    itemPage = itemAllApi.findBySystemName(item.getSystemName(), page, rows);
                 } else {
-                    itemPage =
-                        itemAllApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                    itemPage = itemAllApi.findByUserIdAndSystemName(item.getSystemName(), page, rows);
                 }
             } else {
                 if (isOrg) {
-                    itemPage = itemAllApi.searchBySystemName(tenantId, positionId, item.getSystemName(), searchMapStr,
-                        page, rows);
+                    itemPage = itemAllApi.searchBySystemName(item.getSystemName(), searchMapStr, page, rows);
                 } else {
-                    itemPage = itemAllApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                        searchMapStr, page, rows);
+                    itemPage = itemAllApi.searchByUserIdAndSystemName(item.getSystemName(), searchMapStr, page, rows);
                 }
             }
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();

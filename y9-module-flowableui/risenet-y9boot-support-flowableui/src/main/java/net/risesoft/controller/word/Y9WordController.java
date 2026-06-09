@@ -483,7 +483,7 @@ public class Y9WordController {
         try {
             String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =

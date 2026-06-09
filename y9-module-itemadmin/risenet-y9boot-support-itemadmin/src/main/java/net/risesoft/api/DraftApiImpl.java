@@ -27,7 +27,6 @@ import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.DraftEntityService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -51,32 +50,26 @@ public class DraftApiImpl implements DraftApi {
     /**
      * 根据系统名称和组织id获取草稿数量
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param systemName 系统id
      * @return {@code Y9Result<Integer>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countBySystemName(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String systemName) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
-        int num = draftEntityRepository.countByTypeAndCreaterIdAndDelFlagFalse(systemName, orgUnitId);
+    public Y9Result<Integer> countBySystemName(@RequestParam String systemName) {
+        int num =
+            draftEntityRepository.countByTypeAndCreaterIdAndDelFlagFalse(systemName, Y9FlowableHolder.getPositionId());
         return Y9Result.success(num);
     }
 
     /**
      * 彻底删除草稿
      *
-     * @param tenantId 租户id
      * @param ids 草稿ids
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteDraft(@RequestParam String tenantId, @RequestParam("ids") String ids) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> deleteDraft(@RequestParam("ids") String ids) {
         draftEntityService.deleteDraft(ids);
         return Y9Result.success();
     }
@@ -84,17 +77,14 @@ public class DraftApiImpl implements DraftApi {
     /**
      * 根据岗位id和事项id获取删除草稿数量
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @return {@code Y9Result<Integer>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getDeleteDraftCount(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Integer> getDeleteDraftCount(@RequestParam String itemId) {
         int count;
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         if (StringUtils.isEmpty(itemId)) {
             count = draftEntityRepository.countByCreaterIdAndDelFlagTrue(orgUnitId);
         } else {
@@ -106,15 +96,12 @@ public class DraftApiImpl implements DraftApi {
     /**
      * 根据流程编号获取草稿详情信息
      *
-     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<DraftModel>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<DraftModel> getDraftByProcessSerialNumber(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<DraftModel> getDraftByProcessSerialNumber(@RequestParam String processSerialNumber) {
         DraftEntity draftEntity = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
         DraftModel model = null;
         if (draftEntity != null) {
@@ -127,17 +114,13 @@ public class DraftApiImpl implements DraftApi {
     /**
      * 根据岗位id和事项id获取草稿箱数量
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @return {@code Y9Result<Integer>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getDraftCount(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Result<Integer> getDraftCount(@RequestParam String itemId) {
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         int count;
         if (StringUtils.isEmpty(itemId)) {
             count = draftEntityRepository.countByCreaterIdAndDelFlagFalse(orgUnitId);
@@ -150,8 +133,6 @@ public class DraftApiImpl implements DraftApi {
     /**
      * 获取草稿箱列表
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param page 页码
      * @param rows 条数
      * @param title 标题
@@ -161,13 +142,12 @@ public class DraftApiImpl implements DraftApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<Map<String, Object>> getDraftList(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam int page, @RequestParam int rows, String title, @RequestParam String itemId, boolean delFlag) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Page<Map<String, Object>> getDraftList(@RequestParam int page, @RequestParam int rows, String title,
+        @RequestParam String itemId, boolean delFlag) {
         if (StringUtils.isEmpty(title)) {
             title = "";
         }
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         Page<DraftEntity> pageList = draftEntityService.pageDraftList(itemId, orgUnitId, page, rows, title, delFlag);
         List<Map<String, Object>> draftList = new ArrayList<>();
         int number = (page - 1) * rows;
@@ -204,8 +184,6 @@ public class DraftApiImpl implements DraftApi {
     /**
      * 获取系统名称对应的草稿箱列表
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param page 页码
      * @param rows 条数
      * @param title 标题
@@ -215,14 +193,12 @@ public class DraftApiImpl implements DraftApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<DraftModel> getDraftListBySystemName(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam int page, @RequestParam int rows, String title, @RequestParam String systemName,
-        @RequestParam boolean delFlag) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Page<DraftModel> getDraftListBySystemName(@RequestParam int page, @RequestParam int rows, String title,
+        @RequestParam String systemName, @RequestParam boolean delFlag) {
         if (StringUtils.isEmpty(title)) {
             title = "";
         }
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         Page<DraftEntity> pageList =
             draftEntityService.pageDraftListBySystemName(systemName, orgUnitId, page, rows, title, delFlag);
         int number = (page - 1) * rows;
@@ -256,10 +232,8 @@ public class DraftApiImpl implements DraftApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<OpenDataModel> openDraft(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId, @RequestParam String processSerialNumber, @RequestParam boolean mobile) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Result<OpenDataModel> openDraft(@RequestParam String itemId, @RequestParam String processSerialNumber,
+        @RequestParam boolean mobile) {
         OpenDataModel model = null;
         if (StringUtils.isNotBlank(itemId) && StringUtils.isNotBlank(processSerialNumber)) {
             model = draftEntityService.openDraft(processSerialNumber, itemId, mobile);
@@ -270,14 +244,12 @@ public class DraftApiImpl implements DraftApi {
     /**
      * 还原草稿
      *
-     * @param tenantId 租户id
      * @param ids 草稿ids
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> reduction(@RequestParam String tenantId, @RequestParam("ids") String ids) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> reduction(@RequestParam("ids") String ids) {
         draftEntityService.reduction(ids);
         return Y9Result.success();
     }
@@ -285,14 +257,12 @@ public class DraftApiImpl implements DraftApi {
     /**
      * 删除草稿（标记删除）
      *
-     * @param tenantId 租户id
      * @param ids 草稿ids
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> removeDraft(@RequestParam String tenantId, @RequestParam("ids") String ids) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> removeDraft(@RequestParam("ids") String ids) {
         draftEntityService.removeDraft(ids);
         return Y9Result.success();
     }
@@ -300,8 +270,6 @@ public class DraftApiImpl implements DraftApi {
     /**
      * 保存草稿
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
@@ -312,11 +280,8 @@ public class DraftApiImpl implements DraftApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveDraft(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId, @RequestParam String processSerialNumber,
+    public Y9Result<Object> saveDraft(@RequestParam String itemId, @RequestParam String processSerialNumber,
         @RequestParam String processDefinitionKey, String number, String level, @RequestParam String title) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
         draftEntityService.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, title, "");
         return Y9Result.successMsg("保存成功");
     }
