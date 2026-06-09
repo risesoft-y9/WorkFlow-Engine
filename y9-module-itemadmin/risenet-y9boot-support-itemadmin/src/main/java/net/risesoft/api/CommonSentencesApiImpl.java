@@ -15,7 +15,6 @@ import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.commonsentences.CommonSentences;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.opinion.CommonSentencesService;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -42,14 +41,12 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     /**
      * 删除常用语
      *
-     * @param tenantId 租户id
      * @param id 常用语id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delete(@RequestParam String tenantId, @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> delete(@RequestParam String id) {
         commonSentencesService.deleteById(id);
         return Y9Result.success();
     }
@@ -57,17 +54,11 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     /**
      * 获取常用语列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @return {@code Y9Result<List<CommonSentencesModel>>} 通用请求返回对象 - data 是常用语列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<CommonSentencesModel>> listSentencesService(@RequestParam String tenantId,
-        @RequestParam String userId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
+    public Y9Result<List<CommonSentencesModel>> listSentencesService() {
         List<CommonSentences> list = commonSentencesService.listSentencesService();
         List<CommonSentencesModel> res_list = new ArrayList<>();
         for (CommonSentences item : list) {
@@ -81,18 +72,12 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     /**
      * 根据排序号tabIndex删除常用语
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param tabIndex 排序号
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> removeCommonSentences(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam int tabIndex) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
+    public Y9Result<Object> removeCommonSentences(@RequestParam int tabIndex) {
         commonSentencesService.removeCommonSentences(tabIndex);
         return Y9Result.success();
     }
@@ -100,15 +85,11 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     /**
      * 清空常用语使用次数
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> removeUseNumber(@RequestParam String tenantId, @RequestParam String userId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setPersonId(userId);
+    public Y9Result<Object> removeUseNumber() {
         commonSentencesService.removeUseNumber();
         return Y9Result.success();
     }
@@ -116,19 +97,13 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     /**
      * 根据id保存更新常用语
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param id 常用语的唯一标识
      * @param content 内容
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> save(@RequestParam String tenantId, @RequestParam String userId, @RequestParam String id,
-        @RequestParam String content) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
+    public Y9Result<Object> save(@RequestParam String id, @RequestParam String content) {
         commonSentencesService.save(id, content);
         return Y9Result.success();
     }
@@ -136,34 +111,26 @@ public class CommonSentencesApiImpl implements CommonSentencesApi {
     /**
      * 根据排序号tabIndex保存更新常用语
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param content 常用语内容
      * @param tabIndex 排序号
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveCommonSentences(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String content, @RequestParam int tabIndex) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        commonSentencesService.saveCommonSentences(userId, content, tabIndex);
+    public Y9Result<Object> saveCommonSentences(@RequestParam String content, @RequestParam int tabIndex) {
+        commonSentencesService.saveCommonSentences(Y9LoginUserHolder.getPersonId(), content, tabIndex);
         return Y9Result.success();
     }
 
     /**
      * 更新常用语使用次数
      *
-     * @param tenantId 租户id
      * @param id 常用语id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> updateUseNumber(@RequestParam String tenantId, @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> updateUseNumber(@RequestParam String id) {
         commonSentencesService.updateUseNumber(id);
         return Y9Result.success();
     }

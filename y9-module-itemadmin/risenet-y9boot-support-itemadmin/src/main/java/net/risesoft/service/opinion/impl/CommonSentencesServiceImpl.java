@@ -134,7 +134,6 @@ public class CommonSentencesServiceImpl implements CommonSentencesService {
         } else {
             self.save(content);
         }
-
     }
 
     @Override

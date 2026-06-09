@@ -18,12 +18,10 @@ public interface CalendarConfigApi {
     /**
      * 获取年节假日配置信息
      *
-     * @param tenantId 租户id
      * @param year 年份
      * @return {@code Y9Result<CalendarConfigModel>} 通用请求返回对象 - data 是日历配置
      * @since 9.6.6
      */
     @GetMapping("/findByYear")
-    Y9Result<CalendarConfigModel> findByYear(@RequestParam("tenantId") String tenantId,
-        @RequestParam("year") String year);
+    Y9Result<CalendarConfigModel> findByYear(@RequestParam("year") String year);
 }
