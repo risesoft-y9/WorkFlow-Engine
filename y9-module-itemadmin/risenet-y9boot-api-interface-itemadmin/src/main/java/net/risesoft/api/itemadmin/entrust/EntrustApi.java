@@ -48,7 +48,7 @@ public interface EntrustApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/findByAssigneeId")
-    Y9Result<List<EntrustModel>> findByAssigneeId(String assigneeId);
+    Y9Result<List<EntrustModel>> findByAssigneeId(@RequestParam String assigneeId);
 
     /**
      * 保存或更新委托

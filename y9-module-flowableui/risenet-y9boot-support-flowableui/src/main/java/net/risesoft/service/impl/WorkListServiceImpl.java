@@ -159,7 +159,8 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
             mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            // FIXME: 获取表单数据抽取为私有方法
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             List<UrgeInfoModel> urgeInfoList = urgeInfoApi.findByProcessSerialNumber(processSerialNumber).getData();
             List<TaskRelatedModel> taskRelatedList;
@@ -246,7 +247,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
             mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, ardModel.getProcessDefinitionId());
             mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             List<UrgeInfoModel> urgeInfoList = urgeInfoApi.findByProcessSerialNumber(processSerialNumber).getData();
             mapTemp.put(SysVariables.TASK_RELATED_LIST,
@@ -285,7 +286,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
             mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, ardModel.getProcessDefinitionId());
             mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.MONITOR_DOING.getValue());
             List<UrgeInfoModel> urgeInfoList = urgeInfoApi.findByProcessSerialNumber(processSerialNumber).getData();
@@ -322,7 +323,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
             mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.MONITOR_DOING.getValue());
             List<UrgeInfoModel> urgeInfoList = urgeInfoApi.findByProcessSerialNumber(processSerialNumber).getData();
@@ -357,7 +358,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
             mapTemp.put(FlowableUiConsts.COMPLETER_KEY,
                 StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             List<UrgeInfoModel> urgeInfoList = urgeInfoApi.findByProcessSerialNumber(processSerialNumber).getData();
             mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Done(ardModel, false, urgeInfoList));
@@ -393,7 +394,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
             mapTemp.put(FlowableUiConsts.COMPLETER_KEY,
                 StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.ITEM_BOX, isBureau ? ItemBoxTypeEnum.MONITOR_DONE_BUREAU.getValue()
                 : ItemBoxTypeEnum.MONITOR_DONE_DEPT.getValue());
@@ -431,7 +432,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
             mapTemp.put(FlowableUiConsts.COMPLETER_KEY,
                 StringUtils.isBlank(processParam.getCompleter()) ? "无" : processParam.getCompleter());
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.DONE.getValue());
         } catch (Exception e) {
@@ -458,7 +459,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
             mapTemp.put(FlowableUiConsts.EXECUTIONID_KEY, ardModel.getExecutionId());
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.ITEM_BOX, StringUtils.isBlank(processParam.getCompleter())
                 ? ItemBoxTypeEnum.DOING.getValue() : ItemBoxTypeEnum.DONE.getValue());
@@ -510,7 +511,7 @@ public class WorkListServiceImpl implements WorkListService {
                 mapTemp.put(FlowableUiConsts.TASKNAME_KEY, taskList.get(0).getName());
                 mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList, null));
             }
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.MONITOR_RECYCLE.getValue());
             mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Recycle(ardModel));
@@ -540,7 +541,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             mapTemp.put(FlowableUiConsts.TASKNAME_KEY, taskList.get(0).getName());
             mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList, null));
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.DONE.getValue());
             mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Recycle(ardModel));
@@ -570,7 +571,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             mapTemp.put(FlowableUiConsts.TASKNAME_KEY, taskList.get(0).getName());
             mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList, null));
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.DONE.getValue());
             mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Recycle(ardModel));
@@ -599,7 +600,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
             mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
             mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, ardModel.getAssigneeName());
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Todo(ardModel));
             mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
@@ -631,7 +632,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
             mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, ardModel.getAssigneeName());
 
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Todo(ardModel));
             mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());
@@ -661,7 +662,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
             mapTemp.put(FlowableUiConsts.TASKID_KEY, taskId);
             mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, ardModel.getAssigneeName());
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             mapTemp.putAll(handleFormData(formData));
             mapTemp.put(SysVariables.TASK_RELATED_LIST, getTaskRelated4Todo(ardModel));
             mapTemp.put(SysVariables.ITEM_BOX, ItemBoxTypeEnum.TODO.getValue());

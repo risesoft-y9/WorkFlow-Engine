@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -62,7 +61,7 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
         String processSerialNumber) {
         try {
             // 暂时取表单所有字段数据
-            Map<String, Object> formData = formDataApi.getData(tenantId, itemId, processSerialNumber).getData();
+            Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
             if (formData != null) {
                 mapTemp.putAll(formData);
             }

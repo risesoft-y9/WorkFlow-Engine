@@ -26,8 +26,8 @@ public interface EntrustHistoryApi {
      * @since 9.6.6
      */
     @GetMapping("/findByOwnerIdAndItemId")
-    Y9Result<List<EntrustHistoryModel>> findByOwnerIdAndItemId(@RequestParam("ownerId") String ownerId,
-        @RequestParam("itemId") String itemId);
+    Y9Result<List<EntrustHistoryModel>> findByOwnerIdAndItemId(@RequestParam String ownerId,
+        @RequestParam String itemId);
 
     /**
      * 获取某个用户的委托历史对象集合
@@ -37,6 +37,6 @@ public interface EntrustHistoryApi {
      * @since 9.6.6
      */
     @GetMapping("/findOneByOwnerId")
-    Y9Result<List<EntrustHistoryModel>> findByOwnerId(@RequestParam("ownerId") String ownerId);
+    Y9Result<List<EntrustHistoryModel>> findByOwnerId(@RequestParam String ownerId);
 
 }
