@@ -34,7 +34,7 @@ import net.risesoft.service.form.Y9TableService;
 import net.risesoft.service.util.ItemPageService;
 import net.risesoft.util.CommonUtils;
 import net.risesoft.util.ItemAdminModelConvertUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -68,54 +68,6 @@ public class ItemAllApiImpl implements ItemAllApi {
     }
 
     /**
-     * 根据用户id和系统名称查询待办数量
-     *
-     * @param tenantId 租户id
-     * @param userId 用户id
-     * @param systemName 系统名称
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String systemName) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(
-            actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId, ActRuDetailStatusEnum.TODO));
-    }
-
-    /**
-     * 根据用户id和系统名称查询(以发送时间排序)
-     *
-     * @param tenantId 租户id
-     * @param userId 用户id
-     * @param systemName 系统名称
-     * @param page page
-     * @param rows rows
-     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam @NotBlank String systemName, @RequestParam Integer page,
-        @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Page<ActRuDetail> ardPage =
-            actRuDetailService.pageBySystemNameAndAssignee(systemName, userId, rows, page, sort);
-        return convertToY9Page(ardPage, page);
-    }
-
-    @Override
-    public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam @NotBlank String systemName, @RequestParam Integer page, @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemName(systemName, rows, page, sort);
-        return convertToY9Page(ardPage, page);
-    }
-
-    /**
      * 将 Page<ActRuDetail> 转换为 Y9Page<ActRuDetailModel>
      */
     private Y9Page<ActRuDetailModel> convertToY9Page(Page<ActRuDetail> ardPage, int page) {
@@ -125,21 +77,39 @@ public class ItemAllApiImpl implements ItemAllApi {
     }
 
     /**
+     * 根据用户id和系统名称查询待办数量
+     *
+     * @param systemName 系统名称
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String systemName) {
+        return Y9Result.success(actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName,
+            Y9FlowableHolder.getPositionId(), ActRuDetailStatusEnum.TODO));
+    }
+
+    @Override
+    public Y9Page<ActRuDetailModel> findBySystemName(@RequestParam @NotBlank String systemName,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
+        Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemName(systemName, rows, page, sort);
+        return convertToY9Page(ardPage, page);
+    }
+
+    /**
      * 根据用户id查询待办列表(以发送时间排序)
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param queryParamModel 查询参数
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
      * @since 9.6.8
      */
     @Override
-    public Y9Page<ActRuDetailModel> findByUserId(@RequestParam String tenantId, @RequestParam String userId,
-        QueryParamModel queryParamModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<ActRuDetailModel> findByUserId(QueryParamModel queryParamModel) {
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         int page = queryParamModel.getPage(), rows = queryParamModel.getRows();
         Page<ActRuDetail> ardPage;
+        String userId = Y9FlowableHolder.getPositionId();
         boolean isEmpty = CommonUtils.checkObjAllFieldsIsNull(queryParamModel);
         if (isEmpty) {
             ardPage = actRuDetailService.pageByAssigneeAndStatus(userId, ActRuDetailStatusEnum.TODO, rows, page, sort);
@@ -170,45 +140,47 @@ public class ItemAllApiImpl implements ItemAllApi {
     }
 
     /**
-     * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)
+     * 根据用户id和系统名称查询(以发送时间排序)
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
-     * @param searchMapStr 搜索集合
      * @param page page
      * @param rows rows
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName,
-        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
-        assert searchMap != null;
-        List<String> sqlList = y9TableService.getSql(searchMap);
-        String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
-            assigneeNameWhereSql = sqlList.get(3);
-        String sql = COMMON_SQL + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql
-            + " ORDER BY T.CREATETIME DESC";
-        String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
-            + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql;
-        Object[] args = new Object[2];
-        args[0] = systemName;
-        args[1] = userId;
-        ItemPage<ActRuDetailModel> ardPage = itemPageService.page(sql, args,
-            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
-        return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
+    public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam @NotBlank String systemName,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
+        Page<ActRuDetail> ardPage = actRuDetailService.pageBySystemNameAndAssignee(systemName,
+            Y9FlowableHolder.getPositionId(), rows, page, sort);
+        return convertToY9Page(ardPage, page);
+    }
+
+    @SuppressWarnings("java:S2077")
+    @Override
+    public Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(@RequestParam String[] processSerialNumbers) {
+        if (processSerialNumbers == null || processSerialNumbers.length == 0) {
+            return Y9Result.success(new ArrayList<>());
+        }
+        StringBuilder placeholders = new StringBuilder();
+        for (int i = 0; i < processSerialNumbers.length; i++) {
+            if (i > 0) {
+                placeholders.append(",");
+            }
+            placeholders.append("?");
+        }
+        String sql =
+            "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.PROCESSSERIALNUMBER IN ("
+                + placeholders + ") ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+        List<ActRuDetailModel> content = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class),
+            (Object[])processSerialNumbers);
+        return Y9Result.success(content);
     }
 
     @Override
-    public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam @NotBlank String systemName, @RequestBody String searchMapStr, @RequestParam Integer page,
-        @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
         List<String> sqlList = y9TableService.getSql(searchMap);
@@ -229,11 +201,43 @@ public class ItemAllApiImpl implements ItemAllApi {
             itemPage.getRows());
     }
 
+    /**
+     * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)
+     *
+     * @param tenantId 租户id
+     * @param userId 用户id
+     * @param systemName 系统名称
+     * @param searchMapStr 搜索集合
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+        assert searchMap != null;
+        List<String> sqlList = y9TableService.getSql(searchMap);
+        String innerSql = sqlList.get(0), whereSql = sqlList.get(1), assigneeNameInnerSql = sqlList.get(2),
+            assigneeNameWhereSql = sqlList.get(3);
+        String sql = COMMON_SQL + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql
+            + " ORDER BY T.CREATETIME DESC";
+        String countSql = "SELECT COUNT(*) FROM FF_ACT_RU_DETAIL T " + innerSql + assigneeNameInnerSql
+            + " WHERE T.DELETED = FALSE AND T.SYSTEMNAME = ? AND T.ASSIGNEE = ? " + whereSql + assigneeNameWhereSql;
+        Object[] args = new Object[2];
+        args[0] = systemName;
+        args[1] = Y9FlowableHolder.getPositionId();
+        ItemPage<ActRuDetailModel> ardPage = itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
+    }
+
     @SuppressWarnings("java:S2077")
     @Override
-    public Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam @NotBlank String systemName, @RequestBody String searchMapStr) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam @NotBlank String systemName,
+        @RequestBody String searchMapStr) {
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         assert searchMap != null;
         List<String> sqlList = y9TableService.getSql(searchMap);
@@ -251,10 +255,8 @@ public class ItemAllApiImpl implements ItemAllApi {
 
     @SuppressWarnings("java:S2077")
     @Override
-    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam @NotBlank String userId, @RequestParam @NotBlank String systemName,
+    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam @NotBlank String systemName,
         @RequestBody(required = false) String searchMapStr) {
-        Y9LoginUserHolder.setTenantId(tenantId);
         String innerSql = "", whereSql = "", assigneeNameInnerSql = "", assigneeNameWhereSql = "";
         if (StringUtils.isNotBlank(searchMapStr)) {
             Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
@@ -268,32 +270,9 @@ public class ItemAllApiImpl implements ItemAllApi {
         String sql = COMMON_SQL + innerSql + assigneeNameInnerSql
             + " WHERE T.DELETED = FALSE AND T.ASSIGNEE = ? AND T.SYSTEMNAME = ?  " + whereSql + assigneeNameWhereSql
             + " ORDER BY T.CREATETIME DESC";
-        Object[] args = {userId, systemName};
+        Object[] args = {Y9FlowableHolder.getPositionId(), systemName};
         List<ActRuDetailModel> content =
             jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class), args);
-        return Y9Result.success(content);
-    }
-
-    @SuppressWarnings("java:S2077")
-    @Override
-    public Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String[] processSerialNumbers) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        if (processSerialNumbers == null || processSerialNumbers.length == 0) {
-            return Y9Result.success(new ArrayList<>());
-        }
-        StringBuilder placeholders = new StringBuilder();
-        for (int i = 0; i < processSerialNumbers.length; i++) {
-            if (i > 0) {
-                placeholders.append(",");
-            }
-            placeholders.append("?");
-        }
-        String sql =
-            "SELECT A.* FROM (SELECT T.*,ROW_NUMBER() OVER (PARTITION BY T.PROCESSSERIALNUMBER ORDER BY T.LASTTIME DESC) AS RS_NUM FROM FF_ACT_RU_DETAIL T WHERE T.PROCESSSERIALNUMBER IN ("
-                + placeholders + ") ORDER BY T.CREATETIME DESC) A WHERE A.RS_NUM = 1";
-        List<ActRuDetailModel> content = jdbcTemplate.query(sql, new BeanPropertyRowMapper<>(ActRuDetailModel.class),
-            (Object[])processSerialNumbers);
         return Y9Result.success(content);
     }
 }

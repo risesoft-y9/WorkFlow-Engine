@@ -130,7 +130,7 @@ public class VueNTKOController {
             Y9WordInfo wordInfo = y9WordApi.showWord(processSerialNumber, itemId, itembox, taskId, bindValue).getData();
             String documentTitle = null;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(processSerialNumber).getData();
                 if (draftModel != null) {
                     documentTitle = draftModel.getTitle();
                 }

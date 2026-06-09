@@ -171,8 +171,8 @@ public class MainRestController {
             String processDefinitionKey = itemModel.getWorkflowGuid();
             if (itemModel.getId() != null) {
                 map.put("processDefinitionKey", processDefinitionKey);
-                draftCount = draftApi.getDraftCount(tenantId, positionId, itemId).getData();
-                draftRecycleCount = draftApi.getDeleteDraftCount(tenantId, positionId, itemId).getData();
+                draftCount = draftApi.getDraftCount(itemId).getData();
+                draftRecycleCount = draftApi.getDeleteDraftCount(itemId).getData();
                 Y9FlowableCountModel flowableCountModel =
                     processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
                         .getData();
@@ -237,8 +237,8 @@ public class MainRestController {
         map.put(MONITOR_DOING_KEY, monitorDoing);
         map.put(MONITOR_DONE_KEY, monitorDone);
         try {
-            draftCount = draftApi.countBySystemName(tenantId, positionId, systemName).getData();
-            draftRecycleCount = draftApi.getDeleteDraftCount(tenantId, positionId, systemName).getData();
+            draftCount = draftApi.countBySystemName(systemName).getData();
+            draftRecycleCount = draftApi.getDeleteDraftCount(systemName).getData();
             Y9FlowableCountModel flowableCountModel =
                 processTodoApi.getCountByUserIdAndSystemName(tenantId, positionId, systemName).getData();
             todoCount = flowableCountModel.getTodoCount();
