@@ -267,7 +267,7 @@ public class FormNTKOController {
     private String getDocumentTitle(String tenantId, String processSerialNumber, String processInstanceId) {
         try {
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(processSerialNumber).getData();
                 return draftModel != null ? draftModel.getTitle() : "正文";
             } else {
                 ProcessParamModel processModel =

@@ -25,50 +25,16 @@ public interface ItemAllApi {
     /**
      * 根据用户id和系统名称查询待办数量 #TODO
      * 
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
      * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
      * @since 9.6.6
      */
     @GetMapping("/countByUserIdAndSystemName")
-    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName);
-
-    /**
-     * 根据用户id和系统名称查询待办列表(以发送时间排序)#TODO
-     *
-     * @param tenantId 租户id
-     * @param userId 用户id
-     * @param queryParamModel 查询参数
-     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
-     * @since 9.6.6
-     */
-    @PostMapping("/findByUserId")
-    Y9Page<ActRuDetailModel> findByUserId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestBody QueryParamModel queryParamModel);
+    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("systemName") @NotBlank String systemName);
 
     /**
      * 根据用户id和系统名称查询待办列表(以发送时间排序)
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
-     * @param systemName 系统名称
-     * @param page page
-     * @param rows rows
-     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
-     * @since 9.6.6
-     */
-    @GetMapping("/findByUserIdAndSystemName")
-    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
-
-    /**
-     * 根据用户id和系统名称查询待办列表(以发送时间排序)
-     *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
@@ -76,32 +42,45 @@ public interface ItemAllApi {
      * @since 9.6.6
      */
     @GetMapping("/findBySystemName")
-    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam("systemName") @NotBlank String systemName,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
-     * 根据用户id和系统名称、 搜索集合查询待办列表(以发送时间排序)#TODO
+     * 根据用户id和系统名称查询待办列表(以发送时间排序)#TODO
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
-     * @param systemName 系统名称
-     * @param searchMapStr 搜索集合
-     * @param page page
-     * @param rows rows
-     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是流转详细信息列表
+     * @param queryParamModel 查询参数
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
      * @since 9.6.6
      */
-    @PostMapping("/searchByUserIdAndSystemName")
-    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    @PostMapping("/findByUserId")
+    Y9Page<ActRuDetailModel> findByUserId(@RequestBody QueryParamModel queryParamModel);
+
+    /**
+     * 根据用户id和系统名称查询待办列表(以发送时间排序)
+     *
+     * @param systemName 系统名称
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @GetMapping("/findByUserIdAndSystemName")
+    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("systemName") @NotBlank String systemName,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    /**
+     *
+     * @param processSerialNumbers 流程序列号数组
+     * @return {@code List<ActRuDetailModel>} 通用请求返回对象 -data 流转详细信息列表
+     * @since 9.6.6
+     */
+    @PostMapping("/searchByProcessSerialNumbers")
+    Y9Result<List<ActRuDetailModel>>
+        searchByProcessSerialNumbers(@RequestParam("processSerialNumbers") String[] processSerialNumbers);
 
     /**
      * 根据用户id和系统名称、 搜索集合查询流程列表(以发送时间排序)
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
      * @param searchMapStr 搜索集合
      * @param page page
@@ -110,48 +89,43 @@ public interface ItemAllApi {
      * @since 9.6.6
      */
     @PostMapping("/searchBySystemName")
-    Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+    Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("systemName") @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    /**
+     * 根据用户id和系统名称、 搜索集合查询待办列表(以发送时间排序)#TODO
+     *
+     * @param systemName 系统名称
+     * @param searchMapStr 搜索集合
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是流转详细信息列表
+     * @since 9.6.6
+     */
+    @PostMapping("/searchByUserIdAndSystemName")
+    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("systemName") @NotBlank String systemName,
         @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 根据用户id和系统名称、 搜索集合查询列表(以发送时间排序)
-     * 
-     * @param tenantId 租户id
-     * @param userId 用户id
+     *
      * @param systemName 系统名称
      * @param searchMapStr 搜索集合
      * @return {@code Y9Result<List<ActRuDetailModel>>} 通用请求返回对象 -data 流转详细信息列表
      */
     @PostMapping("/searchListBySystemName")
-    Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+    Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam("systemName") @NotBlank String systemName,
         @RequestBody String searchMapStr);
 
     /**
      * 根据用户id和系统名称、 搜索集合查询列表(以发送时间排序)
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
      * @param searchMapStr 搜索集合
      * @return {@code Y9Result<List<ActRuDetailModel>>} 通用请求返回对象 -data 流转详细信息列表
      */
     @PostMapping("/searchListByUserIdAndSystemName")
-    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") @NotBlank String userId, @RequestParam("systemName") @NotBlank String systemName,
-        @RequestBody(required = false) String searchMapStr);
-
-    /**
-     *
-     * @param tenantId 租户id
-     * @param userId 用户id
-     * @param processSerialNumbers 流程序列号数组
-     * @return {@code List<ActRuDetailModel>} 通用请求返回对象 -data 流转详细信息列表
-     * @since 9.6.6
-     */
-    @PostMapping("/searchByProcessSerialNumbers")
-    Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("processSerialNumbers") String[] processSerialNumbers);
+    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(
+        @RequestParam("systemName") @NotBlank String systemName, @RequestBody(required = false) String searchMapStr);
 
 }

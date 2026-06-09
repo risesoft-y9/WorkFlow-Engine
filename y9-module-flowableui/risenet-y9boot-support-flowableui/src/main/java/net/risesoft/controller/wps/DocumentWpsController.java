@@ -280,7 +280,7 @@ public class DocumentWpsController {
     private String getDocumentTitle(String tenantId, String processSerialNumber, String processInstanceId) {
         try {
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(processSerialNumber).getData();
                 return model.getTitle();
             } else {
                 ProcessParamModel processModel =
@@ -485,8 +485,7 @@ public class DocumentWpsController {
             // 获取WPS API实例
             AppFilesApi apiInstance = getWpsApiInstance();
             // 查找现有文档
-            DocumentWpsModel documentWps =
-                documentWpsApi.findByProcessSerialNumber(processSerialNumber).getData();
+            DocumentWpsModel documentWps = documentWpsApi.findByProcessSerialNumber(processSerialNumber).getData();
             if (documentWps != null) {
                 // 处理已存在的文档
                 handleExistingDocument(documentWps, itembox, apiInstance, user, wpsSid, model);
@@ -543,7 +542,7 @@ public class DocumentWpsController {
             }
             String documentTitle;
             if (StringUtils.isBlank(processInstanceId)) {
-                DraftModel model = draftApi.getDraftByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                DraftModel model = draftApi.getDraftByProcessSerialNumber(processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =

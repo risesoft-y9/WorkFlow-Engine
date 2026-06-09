@@ -5,6 +5,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +25,6 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -52,8 +52,7 @@ public class DraftRestController {
     @FlowableLog(operationName = "彻底删除草稿", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteDraft")
     public Y9Result<Object> deleteDraft(@RequestParam @NotBlank String ids) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return draftApi.deleteDraft(tenantId, ids);
+        return draftApi.deleteDraft(ids);
     }
 
     /**
@@ -68,8 +67,7 @@ public class DraftRestController {
     @GetMapping(value = "/draftList")
     public Y9Page<Map<String, Object>> draftList(@RequestParam int page, @RequestParam int rows,
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
-        return draftApi.getDraftList(tenantId, positionId, page, rows, title, itemId, false);
+        return draftApi.getDraftList(page, rows, title, itemId, false);
     }
 
     /**
@@ -84,8 +82,7 @@ public class DraftRestController {
     @GetMapping(value = "/draftRecycleList")
     public Y9Page<Map<String, Object>> draftRecycleList(@RequestParam int page, @RequestParam int rows,
         @RequestParam @NotBlank String itemId, @RequestParam(required = false) String title) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return draftApi.getDraftList(tenantId, Y9FlowableHolder.getPositionId(), page, rows, title, itemId, true);
+        return draftApi.getDraftList(page, rows, title, itemId, true);
     }
 
     /**
@@ -111,8 +108,7 @@ public class DraftRestController {
     @FlowableLog(operationName = "还原草稿", operationType = FlowableOperationTypeEnum.RESUME)
     @PostMapping(value = "/reduction")
     public Y9Result<Object> reduction(@RequestParam @NotBlank String id) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return draftApi.reduction(tenantId, id);
+        return draftApi.reduction(id);
     }
 
     /**
@@ -124,8 +120,7 @@ public class DraftRestController {
     @FlowableLog(operationName = "批量删除草稿", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/removeDraft")
     public Y9Result<Object> removeDraft(@RequestParam @NotBlank String ids) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return draftApi.removeDraft(tenantId, ids);
+        return draftApi.removeDraft(ids);
     }
 
     /**
@@ -145,11 +140,9 @@ public class DraftRestController {
         @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String processDefinitionKey,
         @RequestParam(required = false) String number, @RequestParam(required = false) String level,
         @RequestParam(required = false) String title) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         if (StringUtils.isBlank(title)) {
             title = "未定义标题";
         }
-        return draftApi.saveDraft(tenantId, positionId, itemId, processSerialNumber, processDefinitionKey, number,
-            level, title);
+        return draftApi.saveDraft(itemId, processSerialNumber, processDefinitionKey, number, level, title);
     }
 }
