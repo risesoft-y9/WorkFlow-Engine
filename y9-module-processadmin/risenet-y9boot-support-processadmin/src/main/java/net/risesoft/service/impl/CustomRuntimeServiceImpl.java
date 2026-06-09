@@ -481,7 +481,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     private void restoreActRuDetail(String processInstanceId) {
         try {
             // 恢复整个流程的办件详情,恢复为未办结
-            actRuDetailApi.recoveryByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
+            actRuDetailApi.recoveryByProcessInstanceId(processInstanceId);
         } catch (Exception e) {
             saveErrorLog(processInstanceId, "恢复办件详情失败", e);
         }

@@ -1155,7 +1155,7 @@ public class ButtonOperationRestController {
                 }
             }
             taskApi.deleteCandidateUser(tenantId, taskId, activitiUser);
-            actRuDetailApi.refuseClaim(tenantId, taskId, positionId);
+            actRuDetailApi.refuseClaim(taskId, positionId);
             asyncUtilService.refuseClaimAuditLog(tenantId, taskId, positionId);
             return Y9Result.successMsg("拒签成功");
         } catch (Exception e) {

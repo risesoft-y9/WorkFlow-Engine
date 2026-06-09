@@ -97,7 +97,7 @@ public class DeleteProcessServiceImpl implements DeleteProcessService {
             LOGGER.error("************************************删除关注数据失败", e1);
         }
         try {
-            actRuDetailApi.removeByProcessInstanceId(tenantId, processInstanceId);
+            actRuDetailApi.removeByProcessInstanceId(processInstanceId);
         } catch (Exception e) {
             LOGGER.error("************************************删除办理情况数据失败", e);
         }
