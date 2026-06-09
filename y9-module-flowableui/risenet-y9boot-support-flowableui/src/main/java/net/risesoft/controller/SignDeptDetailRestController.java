@@ -84,7 +84,7 @@ public class SignDeptDetailRestController {
         /*
          * 1、删除流程参与信息
          */
-        actRuDetailApi.deleteByExecutionId(tenantId, signDeptDetail.getExecutionId());
+        actRuDetailApi.deleteByExecutionId(signDeptDetail.getExecutionId());
         /*
          * 2、删除会签详情信息
          */
@@ -201,7 +201,7 @@ public class SignDeptDetailRestController {
         /*
          * 1、恢复流程参与信息
          */
-        actRuDetailApi.recoveryByExecutionId(tenantId, ssd.getExecutionId());
+        actRuDetailApi.recoveryByExecutionId(ssd.getExecutionId());
         /*
          * 2、恢复会签信息
          */

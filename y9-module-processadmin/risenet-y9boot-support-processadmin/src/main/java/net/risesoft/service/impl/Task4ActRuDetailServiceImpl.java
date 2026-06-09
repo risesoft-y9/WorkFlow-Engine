@@ -50,7 +50,7 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
-                actRuDetailApi.todo2doing(tenantId, taskEntity.getId(), taskEntity.getAssignee());
+                actRuDetailApi.todo2doing(taskEntity.getId(), taskEntity.getAssignee());
             }
         } catch (Exception e) {
             LOGGER.warn(
@@ -67,8 +67,8 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
                 String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
-                actRuDetailApi.saveOrUpdate(tenantId,
-                    getModel(tenantId, processSerialNumber, taskEntity, taskEntity.getAssignee()));
+                actRuDetailApi
+                    .saveOrUpdate(getModel(tenantId, processSerialNumber, taskEntity, taskEntity.getAssignee()));
             }
         } catch (Exception e) {
             LOGGER.warn(
@@ -123,7 +123,7 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
-                actRuDetailApi.claim(tenantId, taskEntity.getId(), taskEntity.getAssignee());
+                actRuDetailApi.claim(taskEntity.getId(), taskEntity.getAssignee());
             }
         } catch (Exception e) {
             LOGGER.warn(
@@ -141,7 +141,7 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
                 FlowableTenantInfoHolder.setTenantId(tenantId);
                 Set<IdentityLink> linkSet = taskEntity.getCandidates();
                 for (IdentityLink link : linkSet) {
-                    actRuDetailApi.todo2doing(tenantId, taskEntity.getId(), link.getUserId());
+                    actRuDetailApi.todo2doing(taskEntity.getId(), link.getUserId());
                 }
             }
         } catch (Exception e) {
@@ -158,7 +158,7 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
             if (StringUtils.isNotBlank(tenantId)) {
                 Y9LoginUserHolder.setTenantId(tenantId);
                 FlowableTenantInfoHolder.setTenantId(tenantId);
-                actRuDetailApi.unClaim(tenantId, taskEntity.getId());
+                actRuDetailApi.unClaim(taskEntity.getId());
             }
         } catch (Exception e) {
             LOGGER.warn("##########################unClaim抢占式节点-保存流程流转信息失败-taskId:{}##########################",
@@ -185,7 +185,7 @@ public class Task4ActRuDetailServiceImpl implements Task4ActRuDetailService {
                     ActRuDetailModel model = getModel(tenantId, processSerialNumber, taskEntity, link.getUserId());
                     model.setSignStatus(ActRuDetailSignStatusEnum.TODO);
                     model.setAssigneeName(names);
-                    actRuDetailApi.saveOrUpdate(tenantId, model);
+                    actRuDetailApi.saveOrUpdate(model);
                 });
             }
         } catch (Exception e) {

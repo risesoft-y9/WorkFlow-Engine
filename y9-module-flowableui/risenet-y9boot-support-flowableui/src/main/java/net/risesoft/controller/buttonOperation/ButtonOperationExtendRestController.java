@@ -250,9 +250,9 @@ public class ButtonOperationExtendRestController {
         targetTaskRelated.setSenderName(position.getName());
         Y9Result<Object> fuResult = taskRelatedApi.saveOrUpdate(targetTaskRelated);
 
-        List<ActRuDetailModel> actRuDetailList = actRuDetailApi
-            .findByProcessSerialNumberAndStatus(tenantId, targetProcessSerialNumber, ActRuDetailStatusEnum.TODO)
-            .getData();
+        List<ActRuDetailModel> actRuDetailList =
+            actRuDetailApi.findByProcessSerialNumberAndStatus(targetProcessSerialNumber, ActRuDetailStatusEnum.TODO)
+                .getData();
         ActRuDetailModel actRuDetail = actRuDetailList.stream()
             .filter(actRuDetailModel -> actRuDetailModel.getTaskId().equals(startProcess.getTaskId()))
             .findFirst()

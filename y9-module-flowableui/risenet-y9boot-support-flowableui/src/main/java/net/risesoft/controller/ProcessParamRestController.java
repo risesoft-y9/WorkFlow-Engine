@@ -110,7 +110,7 @@ public class ProcessParamRestController {
      */
     @PostMapping(value = "/setRead")
     public Y9Result<Object> setRead(@RequestParam @NotBlank String actRuDetailId) {
-        return actRuDetailApi.setRead(Y9LoginUserHolder.getTenantId(), actRuDetailId);
+        return actRuDetailApi.setRead(actRuDetailId);
     }
 
     /**

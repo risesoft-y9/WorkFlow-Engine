@@ -161,7 +161,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         AtomicInteger error = new AtomicInteger();
         for (String processSerialNumber : processSerialNumbers) {
             try {
-                if (actRuDetailApi.deleteByProcessSerialNumber(tenantId, processSerialNumber).isSuccess()) {
+                if (actRuDetailApi.deleteByProcessSerialNumber(processSerialNumber).isSuccess()) {
                     asyncUtilService.deleteToDoAuditLog(tenantId, positionId, processSerialNumber);
                     success.getAndIncrement();
                 } else {
@@ -202,7 +202,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 boolean canDelete =
                     nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
                 if (canDelete) {
-                    actRuDetailApi.deleteByProcessSerialNumber(tenantId, tpArr[1]);
+                    actRuDetailApi.deleteByProcessSerialNumber(tpArr[1]);
                     asyncUtilService.deleteToDoAuditLog(tenantId, positionId, tpArr[1]);
                     success.getAndIncrement();
                 } else {
@@ -264,7 +264,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         String positionId = position.getId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         for (String processSerialNumber : processSerialNumbers) {
-            actRuDetailApi.recoveryByProcessSerialNumber(tenantId, processSerialNumber);
+            actRuDetailApi.recoveryByProcessSerialNumber(processSerialNumber);
             asyncUtilService.recoveryToDoAuditLog(tenantId, positionId, processSerialNumber);
         }
         return Y9Result.successMsg("成功恢复" + processSerialNumbers.length + "条待办");
@@ -277,7 +277,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParamModel processParamModel;
         for (String processSerialNumber : processSerialNumbers) {
-            actRuDetailApi.removeByProcessSerialNumber(tenantId, processSerialNumber);
+            actRuDetailApi.removeByProcessSerialNumber(processSerialNumber);
             processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
             // 删除流程实例
             historicProcessApi.deleteProcessInstance(tenantId, processParamModel.getProcessInstanceId());
