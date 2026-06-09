@@ -8,6 +8,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.ManagementService;
@@ -37,7 +38,6 @@ import net.risesoft.service.CustomTaskService;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -149,7 +149,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             errorLogModel.setTaskId(taskId);
             errorLogModel.setText(msg);
             try {
-                errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+                errorLogApi.saveErrorLog(errorLogModel);
             } catch (Exception e1) {
                 LOGGER.error("保存错误日志失败", e1);
             }
@@ -200,7 +200,7 @@ public class CustomTaskServiceImpl implements CustomTaskService {
             errorLogModel.setTaskId(taskId);
             errorLogModel.setText(msg);
             try {
-                errorLogApi.saveErrorLog(Y9LoginUserHolder.getTenantId(), errorLogModel);
+                errorLogApi.saveErrorLog(errorLogModel);
             } catch (Exception e1) {
                 LOGGER.error("保存错误日志失败", e1);
             }

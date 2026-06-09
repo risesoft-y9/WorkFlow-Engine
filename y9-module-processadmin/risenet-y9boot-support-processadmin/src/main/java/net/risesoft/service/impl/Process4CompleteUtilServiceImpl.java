@@ -194,7 +194,7 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
         if (e instanceof InterruptedException) {
             Thread.currentThread().interrupt();
         }
-
+        Y9LoginUserHolder.setTenantId(tenantId);
         final Writer result = new StringWriter();
         final PrintWriter print = new PrintWriter(result);
         e.printStackTrace(print);
@@ -208,7 +208,7 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
         errorLogModel.setTaskId("");
         errorLogModel.setText(msg);
         try {
-            errorLogApi.saveErrorLog(tenantId, errorLogModel);
+            errorLogApi.saveErrorLog(errorLogModel);
         } catch (Exception e1) {
             LOGGER.error("保存错误日志失败", e1);
         }
