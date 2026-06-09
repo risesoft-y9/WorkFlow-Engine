@@ -1159,15 +1159,12 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> haveDoneList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9FlowableHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage =
-                    itemHaveDoneApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                itemPage = itemHaveDoneApi.findByUserIdAndSystemName(item.getSystemName(), page, rows);
             } else {
-                itemPage = itemHaveDoneApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                    searchMapStr, page, rows);
+                itemPage = itemHaveDoneApi.searchByUserIdAndSystemName(item.getSystemName(), searchMapStr, page, rows);
             }
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();

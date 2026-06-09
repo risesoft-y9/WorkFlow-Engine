@@ -19,8 +19,6 @@ public interface ItemMonitorApi {
     /**
      * 根据系统名称查询所有件列表(以发送时间排序)
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
      * @param page page
      * @param rows rows
@@ -28,7 +26,6 @@ public interface ItemMonitorApi {
      * @since 9.6.6
      */
     @GetMapping("/findBySystemName")
-    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") @NotBlank String systemName,
+    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam("systemName") @NotBlank String systemName,
         @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 }
