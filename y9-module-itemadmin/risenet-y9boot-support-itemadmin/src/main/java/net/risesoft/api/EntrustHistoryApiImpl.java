@@ -15,7 +15,6 @@ import net.risesoft.model.itemadmin.EntrustHistoryModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.entrust.EntrustHistoryService;
 import net.risesoft.util.ItemAdminModelConvertUtil;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 出差委托历史接口
@@ -34,17 +33,14 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
     /**
      * 获取某个用户的某个事项委托历史对象集合
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param ownerId 委托人id
      * @param itemId 事项id
      * @return {@code Y9Result<List<EntrustHistoryModel>>} 通用请求返回对象 - data 是委托历史列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<EntrustHistoryModel>> findByOwnerIdAndItemId(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String ownerId, @RequestParam String itemId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<EntrustHistoryModel>> findByOwnerIdAndItemId(@RequestParam String ownerId,
+        @RequestParam String itemId) {
         List<EntrustHistory> ehList = entrustHistoryService.listByOwnerIdAndItemId(ownerId, itemId);
         List<EntrustHistoryModel> list = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
         return Y9Result.success(list, "获取成功");
@@ -53,16 +49,12 @@ public class EntrustHistoryApiImpl implements EntrustHistoryApi {
     /**
      * 获取某个用户的委托历史对象集合
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param ownerId 委托人id
      * @return {@code Y9Result<List<EntrustHistoryModel>>} 通用请求返回对象 - data 是委托历史列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<EntrustHistoryModel>> findOneByOwnerId(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String ownerId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<EntrustHistoryModel>> findByOwnerId(@RequestParam String ownerId) {
         List<EntrustHistory> ehList = entrustHistoryService.listByOwnerId(ownerId);
         List<EntrustHistoryModel> list = ItemAdminModelConvertUtil.entrustHistoryList2ModelList(ehList);
         return Y9Result.success(list, "获取成功");
