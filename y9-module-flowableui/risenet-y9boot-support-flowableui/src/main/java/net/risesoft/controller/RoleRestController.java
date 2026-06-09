@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 
 import jakarta.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -29,7 +30,6 @@ import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.org.Department;
 import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -80,8 +80,6 @@ public class RoleRestController {
         if (StringUtils.isBlank(id)) {
             id = "";
         }
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = Y9LoginUserHolder.getPersonId(),
-            positionId = Y9FlowableHolder.getPositionId();
         // 正在会签和减签的部门
         List<SignDeptDetailModel> sddList = signDeptDetailApi.findByProcessSerialNumber(processSerialNumber)
             .getData()
@@ -89,13 +87,12 @@ public class RoleRestController {
             .filter(ssd -> ssd.getStatus().equals(SignDeptDetailStatusEnum.DOING)
                 || ssd.getStatus().equals(SignDeptDetailStatusEnum.DELETED))
             .collect(Collectors.toList());
-        List<ItemRoleOrgUnitModel> list =
-            itemRoleApi.findByRoleId(tenantId, personId, positionId, roleId, principalType, id)
-                .getData()
-                .stream()
-                .filter(itemRoleOrgUnitModel -> sddList.stream()
-                    .noneMatch(ssd -> itemRoleOrgUnitModel.getGuidPath().contains(ssd.getDeptId())))
-                .collect(Collectors.toList());
+        List<ItemRoleOrgUnitModel> list = itemRoleApi.findByRoleId(roleId, principalType, id)
+            .getData()
+            .stream()
+            .filter(itemRoleOrgUnitModel -> sddList.stream()
+                .noneMatch(ssd -> itemRoleOrgUnitModel.getGuidPath().contains(ssd.getDeptId())))
+            .collect(Collectors.toList());
         return Y9Result.success(list);
     }
 
@@ -117,8 +114,7 @@ public class RoleRestController {
     @Deprecated
     public Y9Result<List<ItemRoleOrgUnitModel>> findAll(@RequestParam(required = false) String id,
         @RequestParam OrgTreeTypeEnum treeType, @RequestParam(required = false) String name) {
-        return itemRoleApi.getOrgTree(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), id, treeType,
-            name);
+        return itemRoleApi.getOrgTree(id, treeType, name);
     }
 
     /**
@@ -135,8 +131,7 @@ public class RoleRestController {
         if (StringUtils.isBlank(id)) {
             id = "";
         }
-        return itemRoleApi.findByRoleId(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9FlowableHolder.getPositionId(), roleId, principalType, id);
+        return itemRoleApi.findByRoleId(roleId, principalType, id);
     }
 
     /**
@@ -150,8 +145,7 @@ public class RoleRestController {
     @GetMapping(value = "/findCsUser")
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam(required = false) String id,
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId) {
-        return itemRoleApi.findCsUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9FlowableHolder.getPositionId(), id, principalType, processInstanceId);
+        return itemRoleApi.findCsUser(id, principalType, processInstanceId);
     }
 
     /**
@@ -165,8 +159,7 @@ public class RoleRestController {
     @GetMapping(value = "/findCsUserSearch")
     public Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(@RequestParam(required = false) String name,
         @RequestParam Integer principalType, @RequestParam(required = false) String processInstanceId) {
-        return itemRoleApi.findCsUserSearch(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9FlowableHolder.getPositionId(), name, principalType, processInstanceId);
+        return itemRoleApi.findCsUserSearch(name, principalType, processInstanceId);
     }
 
     /**
@@ -188,9 +181,7 @@ public class RoleRestController {
         if (StringUtils.isBlank(id)) {
             id = "";
         }
-        return itemRoleApi.findPermUser(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9FlowableHolder.getPositionId(), itemId, processDefinitionId, taskDefKey, principalType, id,
-            processInstanceId);
+        return itemRoleApi.findPermUser(itemId, processDefinitionId, taskDefKey, principalType, id, processInstanceId);
     }
 
     /**
@@ -209,9 +200,7 @@ public class RoleRestController {
         @RequestParam Integer principalType, @RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey,
         @RequestParam(required = false) String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return itemRoleApi.findPermUserByName(tenantId, Y9LoginUserHolder.getPersonId(),
-            Y9FlowableHolder.getPositionId(), name, principalType, itemId, processDefinitionId, taskDefKey,
+        return itemRoleApi.findPermUserByName(name, principalType, itemId, processDefinitionId, taskDefKey,
             processInstanceId);
     }
 

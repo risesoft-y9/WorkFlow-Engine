@@ -21,9 +21,6 @@ public interface ItemRoleApi {
     /**
      * 获取发送人gfg
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义Id
      * @param taskDefKey 流程定义中节点Id
@@ -35,26 +32,27 @@ public interface ItemRoleApi {
      * @since 9.6.6
      */
     @GetMapping("/findAllPermUser")
-    Y9Result<List<ItemRoleOrgUnitModel>> findAllPermUser(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey, @RequestParam("principalType") Integer principalType,
-        @RequestParam(value = "id", required = false) String id,
+    Y9Result<List<ItemRoleOrgUnitModel>> findAllPermUser(@RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey,
+        @RequestParam("principalType") Integer principalType, @RequestParam(value = "id", required = false) String id,
         @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
         @RequestParam(value = "taskId", required = false) String taskId);
 
+    /**
+     * 根据角色id获取发送人
+     * 
+     * @param roleId 角色id
+     * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
+     * @param id 唯一标识
+     * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
+     */
     @GetMapping("/findByRoleId")
-    Y9Result<List<ItemRoleOrgUnitModel>> findByRoleId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("roleId") String roleId, @RequestParam("principalType") Integer principalType,
-        @RequestParam(value = "id", required = false) String id);
+    Y9Result<List<ItemRoleOrgUnitModel>> findByRoleId(@RequestParam("roleId") String roleId,
+        @RequestParam("principalType") Integer principalType, @RequestParam(value = "id", required = false) String id);
 
     /**
      * 获取抄送选人
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param orgUnitId 岗位id
      * @param id 唯一标识
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param processInstanceId 流程实例id
@@ -62,45 +60,33 @@ public interface ItemRoleApi {
      * @since 9.6.6
      */
     @GetMapping("/findCsUser")
-    Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam(value = "id", required = false) String id, @RequestParam("principalType") Integer principalType,
+    Y9Result<List<ItemRoleOrgUnitModel>> findCsUser(@RequestParam(value = "id", required = false) String id,
+        @RequestParam("principalType") Integer principalType,
         @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
     /**
      * 获取抄送选人
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param orgUnitId 岗位id
      * @param id 唯一标识
      * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      * @since 9.6.6
      */
     @GetMapping("/findCsUser4Bureau")
-    Y9Result<List<ItemRoleOrgUnitModel>> findCsUser4Bureau(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam(value = "id", required = false) String id);
+    Y9Result<List<ItemRoleOrgUnitModel>> findCsUser4Bureau(@RequestParam(value = "id", required = false) String id);
 
     /**
      * 获取委办局
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      * @since 9.6.6
      */
     @GetMapping("/findCsUserBureau")
-    Y9Result<List<ItemRoleOrgUnitModel>> findCsUserBureau(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("principalType") Integer principalType);
+    Y9Result<List<ItemRoleOrgUnitModel>> findCsUserBureau(@RequestParam("principalType") Integer principalType);
 
     /**
      * 抄送选人搜索
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param orgUnitId 人员、岗位id
      * @param name 人员名称
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param processInstanceId 流程实例Id
@@ -108,17 +94,13 @@ public interface ItemRoleApi {
      * @since 9.6.6
      */
     @GetMapping("/findCsUserSearch")
-    Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam(value = "name") String name, @RequestParam("principalType") Integer principalType,
+    Y9Result<List<ItemRoleOrgUnitModel>> findCsUserSearch(@RequestParam(value = "name") String name,
+        @RequestParam("principalType") Integer principalType,
         @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
     /**
      * 获取发送人
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义Id
      * @param taskDefKey 流程定义中节点Id
@@ -129,19 +111,14 @@ public interface ItemRoleApi {
      * @since 9.6.6
      */
     @GetMapping("/findPermUser")
-    Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey, @RequestParam("principalType") Integer principalType,
-        @RequestParam(value = "id", required = false) String id,
+    Y9Result<List<ItemRoleOrgUnitModel>> findPermUser(@RequestParam("itemId") String itemId,
+        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey,
+        @RequestParam("principalType") Integer principalType, @RequestParam(value = "id", required = false) String id,
         @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
 
     /**
      * 发送选人搜索
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param orgUnitId 人员、岗位id
      * @param name 人员名称
      * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
      * @param itemId 事项id
@@ -152,9 +129,7 @@ public interface ItemRoleApi {
      * @since 9.6.6
      */
     @GetMapping("/findPermUserByName")
-    Y9Result<List<ItemRoleOrgUnitModel>> findPermUserByName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam(value = "name", required = false) String name,
+    Y9Result<List<ItemRoleOrgUnitModel>> findPermUserByName(@RequestParam(value = "name", required = false) String name,
         @RequestParam("principalType") Integer principalType, @RequestParam("itemId") String itemId,
         @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey,
         @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
@@ -162,21 +137,17 @@ public interface ItemRoleApi {
     /**
      * 获取发送人（收发单位）
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param id 父节点id
      * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      * @since 9.6.6
      */
     @GetMapping("/findPermUserSendReceive")
-    Y9Result<List<ItemRoleOrgUnitModel>> findPermUserSendReceive(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "id", required = false) String id);
+    Y9Result<List<ItemRoleOrgUnitModel>>
+        findPermUserSendReceive(@RequestParam(value = "id", required = false) String id);
 
     /**
      * 获取组织机构树
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param id 组织架构id
      * @param treeType 树的类型
      * @param name 人员名称
@@ -184,8 +155,7 @@ public interface ItemRoleApi {
      * @since 9.6.6
      */
     @GetMapping("/getOrgTree")
-    Y9Result<List<ItemRoleOrgUnitModel>> getOrgTree(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam(value = "id", required = false) String id,
+    Y9Result<List<ItemRoleOrgUnitModel>> getOrgTree(@RequestParam(value = "id", required = false) String id,
         @RequestParam("treeType") OrgTreeTypeEnum treeType,
         @RequestParam(value = "name", required = false) String name);
 
