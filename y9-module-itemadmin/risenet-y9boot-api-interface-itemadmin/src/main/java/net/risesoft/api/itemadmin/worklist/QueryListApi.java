@@ -18,8 +18,6 @@ public interface QueryListApi {
     /**
      * 综合搜索
      *
-     * @param tenantId 租户id
-     * @param userId 岗位id
      * @param systemName 系统名称
      * @param state 状态
      * @param createDate 开始日期
@@ -31,8 +29,7 @@ public interface QueryListApi {
      * @since 9.6.6
      */
     @PostMapping("/getQueryList")
-    Y9Page<ActRuDetailModel> getQueryList(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("systemName") String systemName,
+    Y9Page<ActRuDetailModel> getQueryList(@RequestParam("systemName") String systemName,
         @RequestParam(value = "state", required = false) String state,
         @RequestParam(value = "createDate", required = false) String createDate,
         @RequestParam(value = "tableName", required = false) String tableName, @RequestBody String searchMapStr,
