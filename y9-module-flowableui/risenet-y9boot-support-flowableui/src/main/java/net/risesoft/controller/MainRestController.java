@@ -386,7 +386,7 @@ public class MainRestController {
                 resList.add(positionInfo.positionMap);
                 allCount += positionInfo.todoCount;
                 // 处理委托岗位
-                List<EntrustModel> entrustList = entrustApi.getMyEntrustList(tenantId, position.getId()).getData();
+                List<EntrustModel> entrustList = entrustApi.findByAssigneeId(position.getId()).getData();
                 for (EntrustModel model : entrustList) {
                     if (model.getUsed().equals(1)) { // 使用中的委托
                         PositionInfo entrustInfo = buildEntrustPositionInfo(model, tenantId, count, itemId, systemName);
