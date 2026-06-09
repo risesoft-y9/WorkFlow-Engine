@@ -190,13 +190,11 @@ public class UtilServiceImpl implements UtilService {
                     chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                 speakInfoNum = speakInfoApi.getNotReadCount(processInstanceId).getData();
                 remindInstanceModel = remindInstanceApi.getRemindInstance(processInstanceId).getData();
-                countFollow =
-                    officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                countFollow = officeFollowApi.countByProcessInstanceId(processInstanceId).getData();
                 isReminder = String.valueOf(taskList.get(0).getPriority()).contains("8");
                 break;
             case DONE:
-                countFollow =
-                    officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                countFollow = officeFollowApi.countByProcessInstanceId(processInstanceId).getData();
                 chaosongNum =
                     chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
                 break;
@@ -204,8 +202,7 @@ public class UtilServiceImpl implements UtilService {
                 isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
                 break;
             case QUERY:
-                countFollow =
-                    officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                countFollow = officeFollowApi.countByProcessInstanceId(processInstanceId).getData();
                 break;
             default:
                 LOGGER.warn("未定义的itemBoxTypeEnum:{}", itemBoxTypeEnum);

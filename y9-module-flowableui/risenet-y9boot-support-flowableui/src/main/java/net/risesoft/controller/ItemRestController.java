@@ -80,9 +80,7 @@ public class ItemRestController {
             map.put("itemMap", listMap);
             map.put("notReadCount",
                 chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData());
-            int followCount =
-                officeFollowApi.getFollowCount(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId())
-                    .getData();
+            int followCount = officeFollowApi.getFollowCount().getData();
             map.put("followCount", followCount);
             // 公共角色
             boolean b =

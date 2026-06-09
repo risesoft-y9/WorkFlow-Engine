@@ -49,6 +49,33 @@ public class DeleteProcessServiceImpl implements DeleteProcessService {
     @Qualifier("jdbcTemplate4Tenant")
     private final JdbcTemplate jdbcTemplate;
 
+    /**
+     * 删除年度字节数组数据
+     *
+     * @param year 年度
+     * @param processInstanceId 流程实例ID
+     */
+    @SuppressWarnings("java:S2077")
+    private void deleteByteArrayYearData(String year, String processInstanceId) {
+        String sql =
+            "DELETE FROM ACT_GE_BYTEARRAY_" + year + " WHERE ID_ IN (SELECT * FROM (SELECT b.ID_ FROM ACT_GE_BYTEARRAY_"
+                + year + " b LEFT JOIN ACT_HI_VARINST_" + year
+                + " v ON v.BYTEARRAY_ID_ = b.ID_ WHERE v.PROC_INST_ID_ = ? AND v.NAME_ = 'users') TT)";
+        jdbcTemplate.update(sql, processInstanceId);
+    }
+
+    /**
+     * 根据流程实例ID删除指定表中的数据
+     *
+     * @param tableName 表名
+     * @param processInstanceId 流程实例ID
+     */
+    @SuppressWarnings("java:S2077")
+    private void deleteFromTableByProcessInstanceId(String tableName, String processInstanceId) {
+        String sql = "DELETE FROM " + tableName + " WHERE PROC_INST_ID_ = ?";
+        jdbcTemplate.update(sql, processInstanceId);
+    }
+
     @Async
     @Override
     public void deleteProcess(final String tenantId, final String processInstanceId) {
@@ -65,7 +92,7 @@ public class DeleteProcessServiceImpl implements DeleteProcessService {
             LOGGER.error("************************************删除抄送数据失败", e1);
         }
         try {
-            officeFollowApi.deleteByProcessInstanceId(tenantId, processInstanceId);
+            officeFollowApi.deleteByProcessInstanceId(processInstanceId);
         } catch (Exception e1) {
             LOGGER.error("************************************删除关注数据失败", e1);
         }
@@ -98,33 +125,6 @@ public class DeleteProcessServiceImpl implements DeleteProcessService {
         } catch (Exception e) {
             handleDeleteYearDataException(e, processInstanceId);
         }
-    }
-
-    /**
-     * 根据流程实例ID删除指定表中的数据
-     *
-     * @param tableName 表名
-     * @param processInstanceId 流程实例ID
-     */
-    @SuppressWarnings("java:S2077")
-    private void deleteFromTableByProcessInstanceId(String tableName, String processInstanceId) {
-        String sql = "DELETE FROM " + tableName + " WHERE PROC_INST_ID_ = ?";
-        jdbcTemplate.update(sql, processInstanceId);
-    }
-
-    /**
-     * 删除年度字节数组数据
-     *
-     * @param year 年度
-     * @param processInstanceId 流程实例ID
-     */
-    @SuppressWarnings("java:S2077")
-    private void deleteByteArrayYearData(String year, String processInstanceId) {
-        String sql =
-            "DELETE FROM ACT_GE_BYTEARRAY_" + year + " WHERE ID_ IN (SELECT * FROM (SELECT b.ID_ FROM ACT_GE_BYTEARRAY_"
-                + year + " b LEFT JOIN ACT_HI_VARINST_" + year
-                + " v ON v.BYTEARRAY_ID_ = b.ID_ WHERE v.PROC_INST_ID_ = ? AND v.NAME_ = 'users') TT)";
-        jdbcTemplate.update(sql, processInstanceId);
     }
 
     /**

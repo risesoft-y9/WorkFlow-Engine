@@ -43,30 +43,6 @@ public class SearchServiceImpl implements SearchService {
 
     private final UtilService utilService;
 
-    @Override
-    public Y9Page<Map<String, Object>> pageSearchList(String searchTerm, String itemId, String userName, String state,
-        String year, String startDate, String endDate, Integer page, Integer rows) {
-        try {
-            String positionId = Y9FlowableHolder.getPositionId();
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserId(tenantId, positionId, searchTerm,
-                itemId, userName, state, year, startDate, endDate, page, rows);
-            List<Map<String, Object>> items = new ArrayList<>();
-            List<OfficeDoneInfoModel> officeDoneInfoList = y9Page.getRows();
-            int serialNumber = (page - 1) * rows;
-            for (OfficeDoneInfoModel model : officeDoneInfoList) {
-                Map<String, Object> itemMap = buildSearchListItem(model, tenantId, positionId);
-                itemMap.put("serialNumber", serialNumber + 1);
-                serialNumber++;
-                items.add(itemMap);
-            }
-            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取个人所有件列表失败，异常：", e);
-        }
-        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取个人所有件列表失败！");
-    }
-
     private Map<String, Object> buildSearchListItem(OfficeDoneInfoModel model, String tenantId, String positionId) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = model.getProcessInstanceId();
@@ -106,13 +82,36 @@ public class SearchServiceImpl implements SearchService {
                 mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, itemBoxAndTaskId.getItemBox());
                 mapTemp.put(FlowableUiConsts.TASKID_KEY, itemBoxAndTaskId.getTaskId());
             }
-            int countFollow =
-                officeFollowApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+            int countFollow = officeFollowApi.countByProcessInstanceId(processInstanceId).getData();
             mapTemp.put("follow", countFollow > 0);
         } catch (Exception e) {
             LOGGER.error("获取任务信息失败{}", processInstanceId, e);
         }
         return mapTemp;
+    }
+
+    @Override
+    public Y9Page<Map<String, Object>> pageSearchList(String searchTerm, String itemId, String userName, String state,
+        String year, String startDate, String endDate, Integer page, Integer rows) {
+        try {
+            String positionId = Y9FlowableHolder.getPositionId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserId(tenantId, positionId, searchTerm,
+                itemId, userName, state, year, startDate, endDate, page, rows);
+            List<Map<String, Object>> items = new ArrayList<>();
+            List<OfficeDoneInfoModel> officeDoneInfoList = y9Page.getRows();
+            int serialNumber = (page - 1) * rows;
+            for (OfficeDoneInfoModel model : officeDoneInfoList) {
+                Map<String, Object> itemMap = buildSearchListItem(model, tenantId, positionId);
+                itemMap.put("serialNumber", serialNumber + 1);
+                serialNumber++;
+                items.add(itemMap);
+            }
+            return Y9Page.success(page, y9Page.getTotalPages(), y9Page.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取个人所有件列表失败，异常：", e);
+        }
+        return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取个人所有件列表失败！");
     }
 
     @Override
