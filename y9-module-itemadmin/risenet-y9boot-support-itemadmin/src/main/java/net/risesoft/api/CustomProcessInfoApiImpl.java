@@ -16,7 +16,6 @@ import net.risesoft.entity.CustomProcessInfo;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomProcessInfoService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -36,15 +35,12 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
     /**
      * 获取当前运行任务的下一个节点
      *
-     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<CustomProcessInfoModel>} 通用请求返回对象 - data 是自定义流程信息
      * @since 9.6.6
      */
     @Override
-    public Y9Result<CustomProcessInfoModel> getCurrentTaskNextNode(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<CustomProcessInfoModel> getCurrentTaskNextNode(@RequestParam String processSerialNumber) {
         CustomProcessInfo info = customProcessInfoService.getCurrentTaskNextNode(processSerialNumber);
         CustomProcessInfoModel model = null;
         if (info != null) {
@@ -57,7 +53,6 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
     /**
      * 保存流程定制信息
      *
-     * @param tenantId 租户id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param taskList 任务列表
@@ -65,9 +60,8 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveOrUpdate(@RequestParam String tenantId, @RequestParam String itemId,
-        @RequestParam String processSerialNumber, @RequestBody List<Map<String, Object>> taskList) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> saveOrUpdate(@RequestParam String itemId, @RequestParam String processSerialNumber,
+        @RequestBody List<Map<String, Object>> taskList) {
         customProcessInfoService.saveOrUpdate(itemId, processSerialNumber, taskList);
         return Y9Result.success();
     }
@@ -75,14 +69,12 @@ public class CustomProcessInfoApiImpl implements CustomProcessInfoApi {
     /**
      * 更新当前运行节点
      *
-     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> updateCurrentTask(@RequestParam String tenantId, @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> updateCurrentTask(@RequestParam String processSerialNumber) {
         customProcessInfoService.updateCurrentTask(processSerialNumber);
         return Y9Result.success();
     }

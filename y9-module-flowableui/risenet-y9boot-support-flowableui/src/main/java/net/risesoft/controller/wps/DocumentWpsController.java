@@ -186,7 +186,7 @@ public class DocumentWpsController {
             documentWps.setUserId(userId);
             documentWps.setVolumeId(result.getVolumeId());
 
-            documentWpsApi.saveDocumentWps(tenantId, documentWps);
+            documentWpsApi.saveDocumentWps(documentWps);
 
             return documentWps;
         } catch (Exception e) {
@@ -220,8 +220,7 @@ public class DocumentWpsController {
     @GetMapping(value = "/download")
     public void download(@RequestParam String id, HttpServletResponse response, HttpServletRequest request) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            DocumentWpsModel documentWps = documentWpsApi.findById(tenantId, id).getData();
+            DocumentWpsModel documentWps = documentWpsApi.findById(id).getData();
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, documentWps.getFileName());
             OutputStream out = response.getOutputStream();
             HttpURLConnection conn;
@@ -426,9 +425,8 @@ public class DocumentWpsController {
     public Map<String, Object> saveWps(@RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         map.put(UtilConsts.SUCCESS, true);
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            documentWpsApi.saveWpsContent(tenantId, processSerialNumber, "1");
+            documentWpsApi.saveWpsContent(processSerialNumber, "1");
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             LOGGER.error("保存正文异常", e);
@@ -488,7 +486,7 @@ public class DocumentWpsController {
             AppFilesApi apiInstance = getWpsApiInstance();
             // 查找现有文档
             DocumentWpsModel documentWps =
-                documentWpsApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                documentWpsApi.findByProcessSerialNumber(processSerialNumber).getData();
             if (documentWps != null) {
                 // 处理已存在的文档
                 handleExistingDocument(documentWps, itembox, apiInstance, user, wpsSid, model);
@@ -568,7 +566,7 @@ public class DocumentWpsController {
             documentWps.setTenantId(tenantId);
             documentWps.setUserId(userId);
             documentWps.setVolumeId(File.getVolumeId());
-            documentWpsApi.saveDocumentWps(tenantId, documentWps);
+            documentWpsApi.saveDocumentWps(documentWps);
         } catch (Exception e) {
             map.put(UtilConsts.SUCCESS, false);
             map.put("msg", "上传失败");

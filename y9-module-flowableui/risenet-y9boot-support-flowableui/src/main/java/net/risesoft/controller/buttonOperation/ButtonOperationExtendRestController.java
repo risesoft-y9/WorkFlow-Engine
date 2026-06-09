@@ -208,9 +208,9 @@ public class ButtonOperationExtendRestController {
         // 2修改表单流水号
 
         // 3复制正文数据 正文类别,1:办文要报，2：发文稿纸
-        Y9Result<Object> word1 = documentWordApi.copyByProcessSerialNumberAndWordType(tenantId, processSerialNumber,
+        Y9Result<Object> word1 = documentWordApi.copyByProcessSerialNumberAndWordType(processSerialNumber,
             targetProcessSerialNumber, "1");
-        Y9Result<Object> word2 = documentWordApi.copyByProcessSerialNumberAndWordType(tenantId, processSerialNumber,
+        Y9Result<Object> word2 = documentWordApi.copyByProcessSerialNumberAndWordType(processSerialNumber,
             targetProcessSerialNumber, "2");
         if (!word1.isSuccess() || !word2.isSuccess()) {
             return Y9Result.failure("操作失败：复制正文失败!");

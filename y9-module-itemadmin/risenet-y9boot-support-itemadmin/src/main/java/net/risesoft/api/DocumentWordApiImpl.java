@@ -21,7 +21,7 @@ import net.risesoft.repository.documentword.DocumentHistoryWordRepository;
 import net.risesoft.service.config.ItemWordConfService;
 import net.risesoft.service.word.DocumentHisWordService;
 import net.risesoft.service.word.DocumentWordService;
-import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -46,10 +46,8 @@ public class DocumentWordApiImpl implements DocumentWordApi {
     private final DocumentHisWordService documentHisWordService;
 
     @Override
-    public Y9Result<Object> copyByProcessSerialNumberAndWordType(@RequestParam String tenantId,
-        @RequestParam String sourceProcessSerialNumber, @RequestParam String targetProcessSerialNumber,
-        @RequestParam String wordType) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> copyByProcessSerialNumberAndWordType(@RequestParam String sourceProcessSerialNumber,
+        @RequestParam String targetProcessSerialNumber, @RequestParam String wordType) {
         return documentWordService.copyByProcessSerialNumberAndWordType(sourceProcessSerialNumber,
             targetProcessSerialNumber, wordType);
     }
@@ -57,15 +55,13 @@ public class DocumentWordApiImpl implements DocumentWordApi {
     /**
      * 根据流程编号和正文类型查询正文
      *
-     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param wordType 正文类型
      * @return {@code Y9Result<List<DocumentWordModel>>}
      */
     @Override
-    public Y9Result<List<DocumentWordModel>> findByProcessSerialNumberAndWordType(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber, @RequestParam String wordType) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<DocumentWordModel>> findByProcessSerialNumberAndWordType(@RequestParam String processSerialNumber,
+        @RequestParam String wordType) {
         List<DocumentWordModel> list =
             documentWordService.findByProcessSerialNumberAndWordType(processSerialNumber, wordType);
         return Y9Result.success(list);
@@ -74,15 +70,13 @@ public class DocumentWordApiImpl implements DocumentWordApi {
     /**
      * 根据流程编号和正文类型查询历史正文
      *
-     * @param tenantId 租户id
      * @param processSerialNumber 流程编号
      * @param wordType 正文类型
      * @return {@code Y9Result<List<DocumentWordModel>>}
      */
     @Override
-    public Y9Result<List<DocumentWordModel>> findHisByProcessSerialNumberAndWordType(@RequestParam String tenantId,
-        @RequestParam String processSerialNumber, @RequestParam String wordType) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<DocumentWordModel>> findHisByProcessSerialNumberAndWordType(@RequestParam String processSerialNumber,
+        @RequestParam String wordType) {
         List<DocumentHistoryWord> list = documentHistoryWordRepository
             .findByProcessSerialNumberAndWordTypeOrderByCreateTimeAsc(processSerialNumber, wordType);
         List<DocumentWordModel> resultList = new ArrayList<>();
@@ -97,13 +91,11 @@ public class DocumentWordApiImpl implements DocumentWordApi {
     /**
      * 根据id查询历史正文
      *
-     * @param tenantId 租户id
      * @param id 主键
      * @return {@code Y9Result<DocumentWordModel>}
      */
     @Override
-    public Y9Result<DocumentWordModel> findHisWordById(@RequestParam String tenantId, @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<DocumentWordModel> findHisWordById(@RequestParam String id) {
         DocumentHistoryWord documentWord = documentHisWordService.findWordById(id);
         DocumentWordModel documentWordModel = null;
         if (documentWord != null) {
@@ -116,13 +108,11 @@ public class DocumentWordApiImpl implements DocumentWordApi {
     /**
      * 根据id查询正文
      *
-     * @param tenantId 租户id
      * @param id 主键
      * @return {@code Y9Result<DocumentWordModel>}
      */
     @Override
-    public Y9Result<DocumentWordModel> findWordById(@RequestParam String tenantId, @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<DocumentWordModel> findWordById(@RequestParam String id) {
         DocumentWord documentWord = documentWordService.findWordById(id);
         DocumentWordModel documentWordModel = null;
         if (documentWord != null) {
@@ -135,8 +125,6 @@ public class DocumentWordApiImpl implements DocumentWordApi {
     /**
      * 根据流程定义id和任务key获取正文权限
      *
-     * @param tenantId 租户id
-     * @param positionId 岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
@@ -144,27 +132,24 @@ public class DocumentWordApiImpl implements DocumentWordApi {
      * @return {@code Y9Result<Boolean>}
      */
     @Override
-    public Y9Result<Boolean> getPermissionWord(@RequestParam String tenantId, @RequestParam String positionId,
-        @RequestParam String itemId, @RequestParam String processDefinitionId,
-        @RequestParam(required = false) String taskDefKey, @RequestParam String wordType) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(
-            itemWordConfService.getPermissionWord(positionId, itemId, processDefinitionId, taskDefKey, wordType));
+    public Y9Result<Boolean> getPermissionWord(@RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey,
+        @RequestParam String wordType) {
+        return Y9Result.success(itemWordConfService.getPermissionWord(Y9FlowableHolder.getPositionId(), itemId,
+            processDefinitionId, taskDefKey, wordType));
     }
 
     /**
      * 替换正文
      *
-     * @param tenantId 租户id
      * @param documentWordModel 正文实体
      * @param oldId 原正文id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>}
      */
     @Override
-    public Y9Result<Object> replaceWord(@RequestParam String tenantId, @RequestBody DocumentWordModel documentWordModel,
-        @RequestParam String oldId, @RequestParam String taskId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> replaceWord(@RequestBody DocumentWordModel documentWordModel, @RequestParam String oldId,
+        @RequestParam String taskId) {
         DocumentWord documentWord = new DocumentWord();
         Y9BeanUtil.copyProperties(documentWordModel, documentWord);
         documentWordService.replaceWord(documentWord, oldId, taskId);
@@ -174,14 +159,11 @@ public class DocumentWordApiImpl implements DocumentWordApi {
     /**
      * 保存正文
      *
-     * @param tenantId 租户id
      * @param documentWordModel 正文实体
      * @return {@code Y9Result<DocumentWordModel>}
      */
     @Override
-    public Y9Result<DocumentWordModel> saveWord(@RequestParam String tenantId,
-        @RequestBody DocumentWordModel documentWordModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<DocumentWordModel> saveWord(@RequestBody DocumentWordModel documentWordModel) {
         DocumentWord documentWord = new DocumentWord();
         Y9BeanUtil.copyProperties(documentWordModel, documentWord);
         DocumentWord newWord = documentWordService.saveWord(documentWord);
