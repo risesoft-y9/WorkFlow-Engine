@@ -115,7 +115,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
                 if (his == null) {
                     // 数据中心办结件
                     OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
                     if (officeDoneInfoModel != null) {
                         String year = officeDoneInfoModel.getStartTime().substring(0, 4);
                         // 删除年度数据
@@ -126,7 +126,7 @@ public class CustomHistoricProcessServiceImpl implements CustomHistoricProcessSe
                 }
             }
             try {
-                officeDoneInfoApi.deleteOfficeDoneInfo(tenantId, processInstanceId);
+                officeDoneInfoApi.deleteOfficeDoneInfo(processInstanceId);
             } catch (Exception e1) {
                 LOGGER.warn("************************************删除数据中心办结件数据失败", e1);
             }

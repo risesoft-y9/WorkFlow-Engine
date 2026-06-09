@@ -74,7 +74,7 @@ public class OfficeFollowRestController {
             Y9Result<Object> y9Result;
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9FlowableHolder.getPositionId();
-            y9Result = officeFollowApi.delOfficeFollow(tenantId, positionId, processInstanceIds);
+            y9Result = officeFollowApi.delOfficeFollow(processInstanceIds);
             if (y9Result.isSuccess()) {
                 asyncUtilService.delOfficeFollowAuditLog(tenantId, positionId, processInstanceIds);
                 return Y9Result.successMsg("取消关注成功");
@@ -96,8 +96,7 @@ public class OfficeFollowRestController {
     @GetMapping(value = "/followList")
     public Y9Page<OfficeFollowModel> followList(@RequestParam Integer page, @RequestParam Integer rows,
         @RequestParam(required = false) String searchName) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return officeFollowApi.getOfficeFollowList(tenantId, Y9FlowableHolder.getPositionId(), searchName, page, rows);
+        return officeFollowApi.getOfficeFollowList(searchName, page, rows);
     }
 
     /**
@@ -107,8 +106,7 @@ public class OfficeFollowRestController {
      */
     @GetMapping(value = "/getFollowCount")
     public Y9Result<Integer> getFollowCount() {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        int followCount = officeFollowApi.getFollowCount(tenantId, Y9FlowableHolder.getPositionId()).getData();
+        int followCount = officeFollowApi.getFollowCount().getData();
         return Y9Result.success(followCount, "获取成功");
     }
 
@@ -146,7 +144,7 @@ public class OfficeFollowRestController {
                     historicProcessApi.getById(tenantId, processInstanceId).getData();
                 if (historicProcessInstanceModel == null) {
                     OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
                     officeFollow.setStartTime(officeDoneInfoModel != null ? officeDoneInfoModel.getStartTime() : "");
                 } else {
                     officeFollow
@@ -154,7 +152,7 @@ public class OfficeFollowRestController {
                 }
                 officeFollow.setUserId(positionId);
                 officeFollow.setUserName(position.getName());
-                Y9Result<Object> y9Result = officeFollowApi.saveOfficeFollow(tenantId, officeFollow);
+                Y9Result<Object> y9Result = officeFollowApi.saveOfficeFollow(officeFollow);
                 if (y9Result.isSuccess()) {
                     asyncUtilService.saveOfficeFollowAuditLog(tenantId, positionId, processInstanceId,
                         processParamModel.getTitle());

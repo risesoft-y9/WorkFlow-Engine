@@ -82,6 +82,30 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
         jdbcTemplate.update(deleteSql, processInstanceId);
     }
 
+    /**
+     * 确定目标年份
+     */
+    private String determineTargetYear(String year, String startTime) {
+        if (StringUtils.isBlank(year)) {
+            return startTime.substring(0, 4);
+        }
+        return year;
+    }
+
+    /**
+     * 执行数据迁移SQL
+     */
+    private void executeDataMigration(String sql, String tableName) {
+        try {
+            jdbcTemplate.execute(sql);
+            LOGGER.debug("数据迁移成功: {} -> {}_{}", tableName, tableName,
+                sql.substring(sql.indexOf("INTO ") + 5, sql.indexOf(" (")));
+        } catch (Exception e) {
+            LOGGER.error("数据迁移失败: {}，SQL: {}", tableName, sql, e);
+            throw new RuntimeException("数据迁移失败: " + tableName, e);
+        }
+    }
+
     private String getActGeBytearraySql(String year, String processInstanceId) {
         return "INSERT INTO ACT_GE_BYTEARRAY_" + year + " ( ID_, REV_, NAME_, DEPLOYMENT_ID_,BYTES_,GENERATED_ ) "
             + "SELECT b.ID_, b.REV_,b.NAME_,b.DEPLOYMENT_ID_,b.BYTES_,b.GENERATED_ FROM ACT_GE_BYTEARRAY b "
@@ -139,43 +163,6 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
             + "' and v.NAME_ not in ('nrOfActiveInstances','nrOfCompletedInstances','nrOfInstances','loopCounter','elementUser')";
     }
 
-    @Async
-    @Override
-    public void saveToEs(final String tenantId, final String year, final String userId, final String processInstanceId,
-        final String personName) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        try {
-            // 更新流程参数中的完成人信息
-            updateProcessCompleter(personName, processInstanceId);
-            // 获取流程基本信息
-            ProcessBasicInfo processInfo = getProcessBasicInfo(processInstanceId);
-            // 保存办结数据到数据中心
-            saveOfficeDoneInfo(tenantId, processInstanceId, personName, processInfo);
-            // 确定年份并执行数据迁移
-            String targetYear = determineTargetYear(year, processInfo.startTime);
-            // 延时执行数据迁移和清理
-            Thread.sleep(3000);
-            this.saveYearData(targetYear, processInstanceId);
-            this.deleteDoneData(processInstanceId);
-            LOGGER.info("#################保存办结件数据到数据中心成功#################");
-        } catch (Exception e) {
-            handleException(tenantId, processInstanceId, e);
-        }
-    }
-
-    /**
-     * 更新流程参数中的完成人信息
-     */
-    private void updateProcessCompleter(String personName, String processInstanceId) {
-        try {
-            String sql = "UPDATE ff_process_param f set f.COMPLETER = ? where f.PROCESSINSTANCEID = ?";
-            jdbcTemplate.update(sql, personName, processInstanceId);
-        } catch (Exception e) {
-            LOGGER.warn("更新流程完成人信息失败", e);
-        }
-    }
-
     /**
      * 获取流程基本信息
      */
@@ -201,23 +188,47 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
     }
 
     /**
-     * 保存办结数据到数据中心
+     * 异常处理
      */
-    private void saveOfficeDoneInfo(String tenantId, String processInstanceId, String personName,
-        ProcessBasicInfo processInfo) throws Exception {
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-        OfficeDoneInfoModel officeDoneInfo =
-            officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-        if (officeDoneInfo == null) {
-            officeDoneInfo = new OfficeDoneInfoModel();
-            officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+    private void handleException(String tenantId, String processInstanceId, Exception e) {
+        if (e instanceof InterruptedException) {
+            Thread.currentThread().interrupt();
         }
-        // 填充办结信息
-        populateOfficeDoneInfo(officeDoneInfo, processParamModel, personName, processInfo, tenantId, processInstanceId);
-        // 处理参与人信息
-        handleParticipants(officeDoneInfo, processInstanceId);
-        officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
+
+        final Writer result = new StringWriter();
+        final PrintWriter print = new PrintWriter(result);
+        e.printStackTrace(print);
+        String msg = result.toString();
+        ErrorLogModel errorLogModel = new ErrorLogModel();
+        errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_OFFICE_DONE);
+        errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
+        errorLogModel.setExtendField("办结截转数据失败");
+        errorLogModel.setProcessInstanceId(processInstanceId);
+        errorLogModel.setTaskId("");
+        errorLogModel.setText(msg);
+        try {
+            errorLogApi.saveErrorLog(tenantId, errorLogModel);
+        } catch (Exception e1) {
+            LOGGER.error("保存错误日志失败", e1);
+        }
+        LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
+    }
+
+    /**
+     * 处理参与人信息
+     */
+    private void handleParticipants(OfficeDoneInfoModel officeDoneInfo, String processInstanceId) {
+        String sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = ?";
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, processInstanceId);
+        String allUserId = "";
+        for (Map<String, Object> m : list) {
+            String ownerId = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
+            if (!"".equals(ownerId) && !allUserId.contains(ownerId)) {
+                allUserId = Y9Util.genCustomStr(allUserId, ownerId);
+            }
+        }
+        officeDoneInfo.setAllUserId(allUserId);
     }
 
     /**
@@ -252,57 +263,47 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
     }
 
     /**
-     * 处理参与人信息
+     * 保存办结数据到数据中心
      */
-    private void handleParticipants(OfficeDoneInfoModel officeDoneInfo, String processInstanceId) {
-        String sql = "SELECT i.USER_ID_ from ACT_HI_IDENTITYLINK i where i.PROC_INST_ID_ = ?";
-        List<Map<String, Object>> list = jdbcTemplate.queryForList(sql, processInstanceId);
-        String allUserId = "";
-        for (Map<String, Object> m : list) {
-            String ownerId = m.get("USER_ID_") != null ? (String)m.get("USER_ID_") : "";
-            if (!"".equals(ownerId) && !allUserId.contains(ownerId)) {
-                allUserId = Y9Util.genCustomStr(allUserId, ownerId);
-            }
+    private void saveOfficeDoneInfo(String tenantId, String processInstanceId, String personName,
+        ProcessBasicInfo processInfo) throws Exception {
+        ProcessParamModel processParamModel =
+            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
+        if (officeDoneInfo == null) {
+            officeDoneInfo = new OfficeDoneInfoModel();
+            officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         }
-        officeDoneInfo.setAllUserId(allUserId);
+        // 填充办结信息
+        populateOfficeDoneInfo(officeDoneInfo, processParamModel, personName, processInfo, tenantId, processInstanceId);
+        // 处理参与人信息
+        handleParticipants(officeDoneInfo, processInstanceId);
+        officeDoneInfoApi.saveOfficeDone(officeDoneInfo);
     }
 
-    /**
-     * 确定目标年份
-     */
-    private String determineTargetYear(String year, String startTime) {
-        if (StringUtils.isBlank(year)) {
-            return startTime.substring(0, 4);
-        }
-        return year;
-    }
-
-    /**
-     * 异常处理
-     */
-    private void handleException(String tenantId, String processInstanceId, Exception e) {
-        if (e instanceof InterruptedException) {
-            Thread.currentThread().interrupt();
-        }
-
-        final Writer result = new StringWriter();
-        final PrintWriter print = new PrintWriter(result);
-        e.printStackTrace(print);
-        String msg = result.toString();
-        ErrorLogModel errorLogModel = new ErrorLogModel();
-        errorLogModel.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        errorLogModel.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_OFFICE_DONE);
-        errorLogModel.setErrorType(ErrorLogModel.ERROR_PROCESS_INSTANCE);
-        errorLogModel.setExtendField("办结截转数据失败");
-        errorLogModel.setProcessInstanceId(processInstanceId);
-        errorLogModel.setTaskId("");
-        errorLogModel.setText(msg);
+    @Async
+    @Override
+    public void saveToEs(final String tenantId, final String year, final String userId, final String processInstanceId,
+        final String personName) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        FlowableTenantInfoHolder.setTenantId(tenantId);
         try {
-            errorLogApi.saveErrorLog(tenantId, errorLogModel);
-        } catch (Exception e1) {
-            LOGGER.error("保存错误日志失败", e1);
+            // 更新流程参数中的完成人信息
+            updateProcessCompleter(personName, processInstanceId);
+            // 获取流程基本信息
+            ProcessBasicInfo processInfo = getProcessBasicInfo(processInstanceId);
+            // 保存办结数据到数据中心
+            saveOfficeDoneInfo(tenantId, processInstanceId, personName, processInfo);
+            // 确定年份并执行数据迁移
+            String targetYear = determineTargetYear(year, processInfo.startTime);
+            // 延时执行数据迁移和清理
+            Thread.sleep(3000);
+            this.saveYearData(targetYear, processInstanceId);
+            this.deleteDoneData(processInstanceId);
+            LOGGER.info("#################保存办结件数据到数据中心成功#################");
+        } catch (Exception e) {
+            handleException(tenantId, processInstanceId, e);
         }
-        LOGGER.warn("#################保存办结件数据到数据中心失败#################", e);
     }
 
     @Override
@@ -321,16 +322,14 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
     }
 
     /**
-     * 执行数据迁移SQL
+     * 更新流程参数中的完成人信息
      */
-    private void executeDataMigration(String sql, String tableName) {
+    private void updateProcessCompleter(String personName, String processInstanceId) {
         try {
-            jdbcTemplate.execute(sql);
-            LOGGER.debug("数据迁移成功: {} -> {}_{}", tableName, tableName,
-                sql.substring(sql.indexOf("INTO ") + 5, sql.indexOf(" (")));
+            String sql = "UPDATE ff_process_param f set f.COMPLETER = ? where f.PROCESSINSTANCEID = ?";
+            jdbcTemplate.update(sql, personName, processInstanceId);
         } catch (Exception e) {
-            LOGGER.error("数据迁移失败: {}，SQL: {}", tableName, sql, e);
-            throw new RuntimeException("数据迁移失败: " + tableName, e);
+            LOGGER.warn("更新流程完成人信息失败", e);
         }
     }
 

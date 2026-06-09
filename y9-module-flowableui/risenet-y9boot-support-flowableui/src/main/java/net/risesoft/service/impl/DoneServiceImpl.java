@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +27,6 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.DoneService;
 import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.UtilService;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @RequiredArgsConstructor
@@ -48,10 +48,10 @@ public class DoneServiceImpl implements DoneService {
     @Override
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
-        String userId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
         String itemName = item.getName();
-        y9Page = officeDoneInfoApi.searchByUserId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
+        y9Page = officeDoneInfoApi.searchByUserId(searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
         List<OfficeDoneInfoModel> list = y9Page.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
@@ -100,10 +100,10 @@ public class DoneServiceImpl implements DoneService {
     @Override
     public Y9Page<Map<String, Object>> list4Mobile(String itemId, String searchTerm, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
-        String userId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
         String itemName = item.getName();
-        y9Page = officeDoneInfoApi.searchByUserId(tenantId, userId, searchTerm, itemId, "", "", page, rows);
+        y9Page = officeDoneInfoApi.searchByUserId(searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
         List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
