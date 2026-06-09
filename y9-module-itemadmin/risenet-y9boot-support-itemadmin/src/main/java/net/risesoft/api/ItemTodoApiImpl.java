@@ -36,6 +36,7 @@ import net.risesoft.service.form.Y9TableService;
 import net.risesoft.service.util.ItemPageService;
 import net.risesoft.util.CommonUtils;
 import net.risesoft.util.ItemAdminModelConvertUtil;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
@@ -74,21 +75,53 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    /**
-     * 根据用户id和系统名称查询待办数量
-     *
-     * @param tenantId 租户id
-     * @param userId 用户id
-     * @param systemName 系统名称
-     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam @NotBlank String systemName) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        return Y9Result.success(this.actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName, userId,
-            ActRuDetailStatusEnum.TODO));
+    private void buildCommonSearchConditions(Map<String, Object> searchMap, StringBuilder assigneeNameSql,
+        StringBuilder signSql, List<Object> params) {
+        // 处理办理人姓名搜索条件
+        if (null != searchMap.get(ItemConsts.ASSIGNEENAME_KEY)) {
+            assigneeNameSql.append(" AND INSTR(T.ASSIGNEENAME, ?) > 0 ");
+            params.add(searchMap.get(ItemConsts.ASSIGNEENAME_KEY).toString());
+        }
+        // 处理会签状态搜索条件
+        boolean sign = null != searchMap.get("sign");
+        boolean noSign = null != searchMap.get(ItemConsts.NOSIGN_KEY);
+        if (sign || noSign) {
+            if (sign && noSign) {
+                // 同时包含已会签和未会签
+                signSql.append(" AND T.SIGNSTATUS >= 0");
+            } else {
+                // 只包含已会签或未会签
+                signSql.append(" AND T.SIGNSTATUS = ?");
+                params
+                    .add(sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
+            }
+        }
+    }
+
+    private void buildSearchConditions(Map<String, Object> searchMap, StringBuilder assigneeNameSql,
+        StringBuilder signSql, List<Object> params) {
+        if (null != searchMap.get(ItemConsts.ASSIGNEENAME_KEY)) {
+            assigneeNameSql.append(" AND INSTR(T.ASSIGNEENAME, ?) > 0 ");
+            params.add(searchMap.get(ItemConsts.ASSIGNEENAME_KEY).toString());
+        }
+        boolean sign = null != searchMap.get("sign");
+        boolean noSign = null != searchMap.get(ItemConsts.NOSIGN_KEY);
+        if (sign || noSign) {
+            if (sign && noSign) {
+                signSql.append(" AND T.SIGNSTATUS>=0");
+            } else {
+                signSql.append(" AND T.SIGNSTATUS=?");
+                params
+                    .add(sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
+            }
+        }
+    }
+
+    private void buildTaskDefKeyCondition(String taskDefKey, StringBuilder taskDefKeySql, List<Object> params) {
+        if (StringUtils.isNotBlank(taskDefKey)) {
+            taskDefKeySql.append(" AND T.taskDefKey=?");
+            params.add(taskDefKey);
+        }
     }
 
     /**
@@ -106,74 +139,31 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     }
 
     /**
-     * 根据用户id和系统名称查询待办列表(以发送时间排序)
+     * 根据用户id和系统名称查询待办数量
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
-     * @param page page
-     * @param rows rows
-     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @return {@code Y9Result<Integer>} 通用请求返回对象 -data 是待办任务数量
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam @NotBlank String systemName, @RequestParam Integer page,
-        @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Page<ActRuDetail> ardPage = this.actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName, userId,
-            ActRuDetailStatusEnum.TODO, rows, page, sort);
-        List<ActRuDetailModel> modelList = ItemAdminModelConvertUtil.convertActRuDetailsToModels(ardPage.getContent());
-        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
-    }
-
-    /**
-     * 根据用户id和系统名称查询待办列表(以发送时间排序)
-     *
-     * @param tenantId 租户id
-     * @param userId 用户id
-     * @param systemName 系统名称
-     * @param taskDefKey 任务key
-     * @param page page
-     * @param rows rows
-     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Page<ActRuDetailModel> findByUserIdAndSystemNameAndTaskDefKey(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam @NotBlank String systemName, @RequestParam String taskDefKey,
-        @RequestParam Integer page, @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Page<ActRuDetail> ardPage;
-        if (StringUtils.isNotBlank(taskDefKey)) {
-            ardPage = this.actRuDetailService.pageBySystemNameAndAssigneeAndStatusAndTaskDefKey(systemName, userId,
-                ActRuDetailStatusEnum.TODO, taskDefKey, rows, page, sort);
-        } else {
-            ardPage = this.actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName, userId,
-                ActRuDetailStatusEnum.TODO, rows, page, sort);
-        }
-        List<ActRuDetailModel> modelList = ItemAdminModelConvertUtil.convertActRuDetailsToModels(ardPage.getContent());
-        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
+    public Y9Result<Integer> countByUserIdAndSystemName(@RequestParam @NotBlank String systemName) {
+        return Y9Result.success(this.actRuDetailService.countBySystemNameAndAssigneeAndStatus(systemName,
+            Y9FlowableHolder.getPositionId(), ActRuDetailStatusEnum.TODO));
     }
 
     /**
      * 根据用户id查询待办列表(以发送时间排序)
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param queryParamModel 查询参数
      * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
      * @since 9.6.8
      */
     @Override
-    public Y9Page<ActRuDetailModel> findByUserId(@RequestParam String tenantId, @RequestParam String userId,
-        QueryParamModel queryParamModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<ActRuDetailModel> findByUserId(QueryParamModel queryParamModel) {
         Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
         int page = queryParamModel.getPage(), rows = queryParamModel.getRows();
         Page<ActRuDetail> ardPage;
+        String userId = Y9FlowableHolder.getPositionId();
         boolean isEmpty = CommonUtils.checkObjAllFieldsIsNull(queryParamModel);
         if (isEmpty) {
             ardPage =
@@ -200,10 +190,59 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     }
 
     /**
+     * 根据用户id和系统名称查询待办列表(以发送时间排序)
+     *
+     * @param systemName 系统名称
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam @NotBlank String systemName,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
+        Page<ActRuDetail> ardPage = this.actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName,
+            Y9FlowableHolder.getPositionId(), ActRuDetailStatusEnum.TODO, rows, page, sort);
+        List<ActRuDetailModel> modelList = ItemAdminModelConvertUtil.convertActRuDetailsToModels(ardPage.getContent());
+        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
+    }
+
+    /**
+     * 根据用户id和系统名称查询待办列表(以发送时间排序)
+     *
+     * @param systemName 系统名称
+     * @param taskDefKey 任务key
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Page<ActRuDetailModel> findByUserIdAndSystemNameAndTaskDefKey(@RequestParam @NotBlank String systemName,
+        @RequestParam String taskDefKey, @RequestParam Integer page, @RequestParam Integer rows) {
+        String userId = Y9FlowableHolder.getPositionId();
+        Sort sort = Sort.by(Sort.Direction.DESC, ItemConsts.CREATETIME_KEY);
+        Page<ActRuDetail> ardPage;
+        if (StringUtils.isNotBlank(taskDefKey)) {
+            ardPage = this.actRuDetailService.pageBySystemNameAndAssigneeAndStatusAndTaskDefKey(systemName, userId,
+                ActRuDetailStatusEnum.TODO, taskDefKey, rows, page, sort);
+        } else {
+            ardPage = this.actRuDetailService.pageBySystemNameAndAssigneeAndStatus(systemName, userId,
+                ActRuDetailStatusEnum.TODO, rows, page, sort);
+        }
+        List<ActRuDetailModel> modelList = ItemAdminModelConvertUtil.convertActRuDetailsToModels(ardPage.getContent());
+        return Y9Page.success(page, ardPage.getTotalPages(), ardPage.getTotalElements(), modelList);
+    }
+
+    private String getSafeStringFromMap(Map<String, Object> map) {
+        Object value = map.get(NUMBER_SQL);
+        return value != null ? value.toString() : "";
+    }
+
+    /**
      * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param systemName 系统名称
      * @param searchMapStr 搜索集合
      * @param page page
@@ -212,10 +251,8 @@ public class ItemTodoApiImpl implements ItemTodoApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam @NotBlank String systemName, @RequestBody String searchMapStr,
-        @RequestParam Integer page, @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         if (searchMap == null) {
             searchMap = new HashMap<>();
@@ -226,7 +263,7 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         StringBuilder signSql = new StringBuilder();
         List<Object> params = new ArrayList<>();
         params.add(systemName);
-        params.add(userId);
+        params.add(Y9FlowableHolder.getPositionId());
         // 构建搜索条件
         buildSearchConditions(searchMap, assigneeNameSql, signSql, params);
         String sql = COMMON_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL + whereSql + assigneeNameSql
@@ -241,76 +278,14 @@ public class ItemTodoApiImpl implements ItemTodoApi {
     }
 
     @Override
-    @SuppressWarnings({"deprecation", "java:S2077"})
-    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemNameAndTaskDefKey(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam @NotBlank String systemName,
-        @RequestParam(required = false) String taskDefKey, @RequestBody(required = false) String searchMapStr) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        String innerSql = "", whereSql = "";
-        StringBuilder assigneeNameSql = new StringBuilder();
-        StringBuilder signSql = new StringBuilder();
-        List<Object> params = new ArrayList<>();
-        params.add(systemName);
-        params.add(userId);
-        if (StringUtils.isNotBlank(searchMapStr)) {
-            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
-            if (searchMap != null) {
-                List<String> sqlList = y9TableService.getSql(searchMap);
-                innerSql = sqlList.get(0);
-                whereSql = sqlList.get(1);
-                buildCommonSearchConditions(searchMap, assigneeNameSql, signSql, params);
-            }
-        }
-        StringBuilder taskDefKeySql = new StringBuilder();
-        buildTaskDefKeyCondition(taskDefKey, taskDefKeySql, params);
-        String sql = COMMON_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL + whereSql + assigneeNameSql
-            + signSql + taskDefKeySql + ORDER_CREATETIME_SQL;
-        List<ActRuDetailModel> content =
-            jdbcTemplate.query(sql, params.toArray(), new BeanPropertyRowMapper<>(ActRuDetailModel.class));
-        return Y9Result.success(content);
-    }
-
-    private void buildCommonSearchConditions(Map<String, Object> searchMap, StringBuilder assigneeNameSql,
-        StringBuilder signSql, List<Object> params) {
-        // 处理办理人姓名搜索条件
-        if (null != searchMap.get(ItemConsts.ASSIGNEENAME_KEY)) {
-            assigneeNameSql.append(" AND INSTR(T.ASSIGNEENAME, ?) > 0 ");
-            params.add(searchMap.get(ItemConsts.ASSIGNEENAME_KEY).toString());
-        }
-        // 处理会签状态搜索条件
-        boolean sign = null != searchMap.get("sign");
-        boolean noSign = null != searchMap.get(ItemConsts.NOSIGN_KEY);
-        if (sign || noSign) {
-            if (sign && noSign) {
-                // 同时包含已会签和未会签
-                signSql.append(" AND T.SIGNSTATUS >= 0");
-            } else {
-                // 只包含已会签或未会签
-                signSql.append(" AND T.SIGNSTATUS = ?");
-                params
-                    .add(sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
-            }
-        }
-    }
-
-    private void buildTaskDefKeyCondition(String taskDefKey, StringBuilder taskDefKeySql, List<Object> params) {
-        if (StringUtils.isNotBlank(taskDefKey)) {
-            taskDefKeySql.append(" AND T.taskDefKey=?");
-            params.add(taskDefKey);
-        }
-    }
-
-    @Override
-    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName4Other(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam @NotBlank String systemName,
+    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemName4Other(@RequestParam @NotBlank String systemName,
         @RequestBody(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
         String innerSql = "", whereSql = "";
         StringBuilder assigneeNameSql = new StringBuilder();
         StringBuilder signSql = new StringBuilder();
         List<Object> params = new ArrayList<>();
         params.add(systemName);
-        params.add(userId);
+        params.add(Y9FlowableHolder.getPositionId());
         Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
         if (searchMap == null) {
             searchMap = new HashMap<>();
@@ -337,39 +312,53 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
     }
 
-    private String getSafeStringFromMap(Map<String, Object> map) {
-        Object value = map.get(NUMBER_SQL);
-        return value != null ? value.toString() : "";
-    }
-
-    private void buildSearchConditions(Map<String, Object> searchMap, StringBuilder assigneeNameSql,
-        StringBuilder signSql, List<Object> params) {
-        if (null != searchMap.get(ItemConsts.ASSIGNEENAME_KEY)) {
-            assigneeNameSql.append(" AND INSTR(T.ASSIGNEENAME, ?) > 0 ");
-            params.add(searchMap.get(ItemConsts.ASSIGNEENAME_KEY).toString());
+    /**
+     * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)
+     *
+     * @param systemName 系统名称
+     * @param taskDefKey 任务key
+     * @param searchMapStr 搜索集合
+     * @param page page
+     * @param rows rows
+     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemNameAndTaskDefKey(@RequestParam @NotBlank String systemName,
+        @RequestParam(required = false) String taskDefKey, @RequestBody String searchMapStr, @RequestParam Integer page,
+        @RequestParam Integer rows) {
+        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+        assert searchMap != null;
+        List<String> sqlList = y9TableService.getSql(searchMap);
+        String innerSql = sqlList.get(0), whereSql = sqlList.get(1);
+        StringBuilder assigneeNameSql = new StringBuilder();
+        StringBuilder signSql = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(systemName);
+        params.add(Y9FlowableHolder.getPositionId());
+        buildSearchConditions(searchMap, assigneeNameSql, signSql, params);
+        StringBuilder taskDefKeySql = new StringBuilder();
+        if (StringUtils.isNotBlank(taskDefKey)) {
+            taskDefKeySql.append(" AND T.taskDefKey=?");
+            params.add(taskDefKey);
         }
-        boolean sign = null != searchMap.get("sign");
-        boolean noSign = null != searchMap.get(ItemConsts.NOSIGN_KEY);
-        if (sign || noSign) {
-            if (sign && noSign) {
-                signSql.append(" AND T.SIGNSTATUS>=0");
-            } else {
-                signSql.append(" AND T.SIGNSTATUS=?");
-                params
-                    .add(sign ? ActRuDetailSignStatusEnum.DONE.getValue() : ActRuDetailSignStatusEnum.TODO.getValue());
-            }
-        }
+        String sql = COMMON_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL + whereSql + assigneeNameSql
+            + signSql + taskDefKeySql + ORDER_CREATETIME_SQL;
+        String countSql = SELECT_FF_ACT_RU_DETAIL_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL
+            + whereSql + assigneeNameSql + signSql + taskDefKeySql;
+        Object[] args = params.toArray();
+        ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
+            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
+        return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
     }
 
     @SuppressWarnings("java:S2077")
     @Override
-    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName4Other(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam @NotBlank String systemName,
-        @RequestBody(required = false) String searchMapStr) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName4Other(
+        @RequestParam @NotBlank String systemName, @RequestBody(required = false) String searchMapStr) {
         List<Object> params = new ArrayList<>();
         params.add(systemName);
-        params.add(userId);
+        params.add(Y9FlowableHolder.getPositionId());
         String innerSql = "", whereSql = "";
         StringBuilder assigneeNameSql = new StringBuilder();
         StringBuilder signSql = new StringBuilder();
@@ -394,47 +383,32 @@ public class ItemTodoApiImpl implements ItemTodoApi {
         return Y9Result.success(content);
     }
 
-    /**
-     * 根据用户id和系统名称、表名称、搜索集合查询待办列表(以发送时间排序)
-     *
-     * @param tenantId 租户id
-     * @param userId 用户id
-     * @param systemName 系统名称
-     * @param taskDefKey 任务key
-     * @param searchMapStr 搜索集合
-     * @param page page
-     * @param rows rows
-     * @return {@code Y9Page<ActRuDetailModel>} 通用分页请求返回对象 -rows 是待办任务
-     * @since 9.6.6
-     */
     @Override
-    public Y9Page<ActRuDetailModel> searchByUserIdAndSystemNameAndTaskDefKey(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam @NotBlank String systemName,
-        @RequestParam(required = false) String taskDefKey, @RequestBody String searchMapStr, @RequestParam Integer page,
-        @RequestParam Integer rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
-        assert searchMap != null;
-        List<String> sqlList = y9TableService.getSql(searchMap);
-        String innerSql = sqlList.get(0), whereSql = sqlList.get(1);
+    @SuppressWarnings({"deprecation", "java:S2077"})
+    public Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemNameAndTaskDefKey(
+        @RequestParam @NotBlank String systemName, @RequestParam(required = false) String taskDefKey,
+        @RequestBody(required = false) String searchMapStr) {
+        String innerSql = "", whereSql = "";
         StringBuilder assigneeNameSql = new StringBuilder();
         StringBuilder signSql = new StringBuilder();
         List<Object> params = new ArrayList<>();
         params.add(systemName);
-        params.add(userId);
-        buildSearchConditions(searchMap, assigneeNameSql, signSql, params);
-        StringBuilder taskDefKeySql = new StringBuilder();
-        if (StringUtils.isNotBlank(taskDefKey)) {
-            taskDefKeySql.append(" AND T.taskDefKey=?");
-            params.add(taskDefKey);
+        params.add(Y9FlowableHolder.getPositionId());
+        if (StringUtils.isNotBlank(searchMapStr)) {
+            Map<String, Object> searchMap = Y9JsonUtil.readHashMap(searchMapStr);
+            if (searchMap != null) {
+                List<String> sqlList = y9TableService.getSql(searchMap);
+                innerSql = sqlList.get(0);
+                whereSql = sqlList.get(1);
+                buildCommonSearchConditions(searchMap, assigneeNameSql, signSql, params);
+            }
         }
+        StringBuilder taskDefKeySql = new StringBuilder();
+        buildTaskDefKeyCondition(taskDefKey, taskDefKeySql, params);
         String sql = COMMON_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL + whereSql + assigneeNameSql
             + signSql + taskDefKeySql + ORDER_CREATETIME_SQL;
-        String countSql = SELECT_FF_ACT_RU_DETAIL_SQL + innerSql + WHERE_DELETED_STATUS_SYSTEMNAME_ASSIGNEE_SQL
-            + whereSql + assigneeNameSql + signSql + taskDefKeySql;
-        Object[] args = params.toArray();
-        ItemPage<ActRuDetailModel> ardPage = this.itemPageService.page(sql, args,
-            new BeanPropertyRowMapper<>(ActRuDetailModel.class), countSql, args, page, rows);
-        return Y9Page.success(page, ardPage.getTotalpages(), ardPage.getTotal(), ardPage.getRows());
+        List<ActRuDetailModel> content =
+            jdbcTemplate.query(sql, params.toArray(), new BeanPropertyRowMapper<>(ActRuDetailModel.class));
+        return Y9Result.success(content);
     }
 }

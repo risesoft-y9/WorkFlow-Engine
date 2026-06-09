@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,6 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.QueryListService;
 import net.risesoft.service.UtilService;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -59,11 +59,11 @@ public class QueryListServiceImpl implements QueryListService {
     public Y9Page<Map<String, Object>> pageQueryList(String itemId, String state, String createDate, String tableName,
         String searchMapStr, Integer page, Integer rows) {
         Y9Page<ActRuDetailModel> itemPage;
-        String userId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            itemPage = queryListApi.getQueryList(tenantId, userId, item.getSystemName(), state, createDate, tableName,
-                searchMapStr, page, rows);
+            itemPage =
+                queryListApi.getQueryList(item.getSystemName(), state, createDate, tableName, searchMapStr, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<ActRuDetailModel> list = itemPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();

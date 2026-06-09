@@ -125,8 +125,7 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> allTodoList(QueryParamModel queryParamModel) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9FlowableHolder.getPositionId();
-            Y9Page<ActRuDetailModel> itemPage = itemTodoApi.findByUserId(tenantId, positionId, queryParamModel);
+            Y9Page<ActRuDetailModel> itemPage = itemTodoApi.findByUserId(queryParamModel);
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (queryParamModel.getPage() - 1) * queryParamModel.getRows();
@@ -1285,15 +1284,12 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9FlowableHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage =
-                    itemTodoApi.findByUserIdAndSystemName(tenantId, positionId, item.getSystemName(), page, rows);
+                itemPage = itemTodoApi.findByUserIdAndSystemName(item.getSystemName(), page, rows);
             } else {
-                itemPage = itemTodoApi.searchByUserIdAndSystemName(tenantId, positionId, item.getSystemName(),
-                    searchMapStr, page, rows);
+                itemPage = itemTodoApi.searchByUserIdAndSystemName(item.getSystemName(), searchMapStr, page, rows);
             }
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
@@ -1313,10 +1309,9 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> todoList4Other(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9FlowableHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
-            Y9Page<ActRuDetailModel> itemPage = itemTodoApi.searchByUserIdAndSystemName4Other(tenantId, positionId,
-                item.getSystemName(), searchMapStr, page, rows);
+            Y9Page<ActRuDetailModel> itemPage =
+                itemTodoApi.searchByUserIdAndSystemName4Other(item.getSystemName(), searchMapStr, page, rows);
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
@@ -1336,15 +1331,14 @@ public class WorkListServiceImpl implements WorkListService {
         Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9FlowableHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
-                itemPage = itemTodoApi.findByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
-                    item.getSystemName(), taskDefKey, page, rows);
+                itemPage =
+                    itemTodoApi.findByUserIdAndSystemNameAndTaskDefKey(item.getSystemName(), taskDefKey, page, rows);
             } else {
-                itemPage = itemTodoApi.searchByUserIdAndSystemNameAndTaskDefKey(tenantId, positionId,
-                    item.getSystemName(), taskDefKey, searchMapStr, page, rows);
+                itemPage = itemTodoApi.searchByUserIdAndSystemNameAndTaskDefKey(item.getSystemName(), taskDefKey,
+                    searchMapStr, page, rows);
             }
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
