@@ -768,7 +768,7 @@ public class ButtonOperationRestController {
         String taskId, String infoOvert) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         CustomProcessInfoModel customProcessInfo =
-            customProcessInfoApi.getCurrentTaskNextNode(tenantId, processSerialNumber).getData();
+            customProcessInfoApi.getCurrentTaskNextNode(processSerialNumber).getData();
         if (customProcessInfo == null) {
             return Y9Result.successMsg("发送成功");
         }
@@ -923,7 +923,7 @@ public class ButtonOperationRestController {
         try {
             buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
             // 办结成功后更新当前运行节点
-            customProcessInfoApi.updateCurrentTask(tenantId, processSerialNumber);
+            customProcessInfoApi.updateCurrentTask(processSerialNumber);
             // 办结后定制流程设为false,恢复待办后不再走定制流程
             processParamApi.updateCustomItem(tenantId, processSerialNumber, false);
             return Y9Result.successMsg("办结成功");
@@ -1053,9 +1053,8 @@ public class ButtonOperationRestController {
         if (!y9Result.isSuccess()) {
             return Y9Result.failure("发送失败");
         }
-
         // 发送成功后更新当前运行节点
-        customProcessInfoApi.updateCurrentTask(tenantId, processSerialNumber);
+        customProcessInfoApi.updateCurrentTask(processSerialNumber);
         return Y9Result.successMsg("发送成功");
     }
 
@@ -1389,7 +1388,7 @@ public class ButtonOperationRestController {
         try {
             String positionId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<Map<String, Object>> list = Y9JsonUtil.readValue(jsonData, List.class);
-            boolean msg = customProcessInfoApi.saveOrUpdate(tenantId, itemId, processSerialNumber, list).isSuccess();
+            boolean msg = customProcessInfoApi.saveOrUpdate(itemId, processSerialNumber, list).isSuccess();
             if (!msg) {
                 return Y9Result.failure("保存失败");
             }
@@ -1413,7 +1412,7 @@ public class ButtonOperationRestController {
                 return Y9Result.failure("保存成功,发送失败");
             }
             // 发送成功后更新当前运行节点
-            customProcessInfoApi.updateCurrentTask(tenantId, processSerialNumber);
+            customProcessInfoApi.updateCurrentTask(processSerialNumber);
             return Y9Result.successMsg("发送成功");
         } catch (Exception e) {
             LOGGER.error("saveCustomProcess error", e);

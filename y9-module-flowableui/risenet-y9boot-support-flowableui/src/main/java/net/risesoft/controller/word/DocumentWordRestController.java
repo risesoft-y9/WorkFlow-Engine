@@ -29,7 +29,6 @@ import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DownloadUtil;
 import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9public.entity.Y9FileStore;
 import net.risesoft.y9public.service.Y9FileStoreService;
@@ -58,8 +57,7 @@ public class DocumentWordRestController {
     @FlowableLog(operationName = "下载正文", operationType = FlowableOperationTypeEnum.DOWNLOAD)
     @GetMapping(value = "/download")
     public void download(@RequestParam @NotBlank String id, HttpServletResponse response, HttpServletRequest request) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        DocumentWordModel model = documentWordApi.findWordById(tenantId, id).getData();
+        DocumentWordModel model = documentWordApi.findWordById(id).getData();
         downloadCommon(model, response, request);
     }
 
@@ -72,8 +70,7 @@ public class DocumentWordRestController {
     @GetMapping(value = "/downloadHis")
     public void downloadHis(@RequestParam @NotBlank String id, HttpServletResponse response,
         HttpServletRequest request) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        DocumentWordModel model = documentWordApi.findHisWordById(tenantId, id).getData();
+        DocumentWordModel model = documentWordApi.findHisWordById(id).getData();
         downloadCommon(model, response, request);
     }
 
@@ -98,7 +95,7 @@ public class DocumentWordRestController {
     public Y9Result<List<DocumentWordModel>> getHisWord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String wordType) {
         List<DocumentWordModel> list = documentWordApi
-            .findHisByProcessSerialNumberAndWordType(Y9LoginUserHolder.getTenantId(), processSerialNumber, wordType)
+            .findHisByProcessSerialNumberAndWordType(processSerialNumber, wordType)
             .getData();
         return Y9Result.success(list, "获取信息成功");
     }
@@ -117,8 +114,8 @@ public class DocumentWordRestController {
     public Y9Result<Boolean> getPermissionWord(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey,
         @RequestParam @NotBlank String wordType) {
-        return documentWordApi.getPermissionWord(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(),
-            itemId, processDefinitionId, taskDefKey, wordType);
+        return documentWordApi.getPermissionWord(itemId, processDefinitionId,
+            taskDefKey, wordType);
     }
 
     /**
@@ -133,7 +130,7 @@ public class DocumentWordRestController {
     public Y9Result<DocumentWordModel> getWord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String wordType) {
         List<DocumentWordModel> list = documentWordApi
-            .findByProcessSerialNumberAndWordType(Y9LoginUserHolder.getTenantId(), processSerialNumber, wordType)
+            .findByProcessSerialNumberAndWordType(processSerialNumber, wordType)
             .getData();
         return Y9Result.success(list.isEmpty() ? null : list.get(0), "获取信息成功");
     }
@@ -154,7 +151,7 @@ public class DocumentWordRestController {
         String userId = person.getPersonId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            DocumentWordModel oldModel = documentWordApi.findWordById(tenantId, oldId).getData();
+            DocumentWordModel oldModel = documentWordApi.findWordById(oldId).getData();
             String originalFilename = file.getOriginalFilename();
             String fileName = FilenameUtils.getName(originalFilename);
             String fullPath =
@@ -173,7 +170,7 @@ public class DocumentWordRestController {
             model.setWordType(oldModel.getWordType());
             model.setTaskId(taskId);
             model.setFileStoreId(y9FileStore.getId());
-            documentWordApi.replaceWord(tenantId, model, oldId, taskId);
+            documentWordApi.replaceWord(model, oldId, taskId);
             return Y9Result.success(model);
         } catch (Exception e) {
             LOGGER.error("上传正文失败", e);
