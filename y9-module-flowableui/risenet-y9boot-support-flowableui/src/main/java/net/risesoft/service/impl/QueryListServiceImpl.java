@@ -107,8 +107,7 @@ public class QueryListServiceImpl implements QueryListService {
                         mapTemp.put(FlowableUiConsts.TASKID_KEY, itemBoxAndTaskId.getTaskId());
                     }
                     mapTemp.put("processInstanceId", processInstanceId);
-                    int countFollow =
-                        officeFollowApi.countByProcessInstanceId(tenantId, userId, processInstanceId).getData();
+                    int countFollow = officeFollowApi.countByProcessInstanceId(processInstanceId).getData();
                     mapTemp.put("follow", countFollow > 0);
                 } catch (Exception e) {
                     LOGGER.error("获取流程实例信息失败title:{},processInstanceId:{}", title, processInstanceId, e);

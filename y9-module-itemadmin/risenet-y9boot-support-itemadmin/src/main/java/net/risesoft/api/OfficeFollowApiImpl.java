@@ -14,8 +14,6 @@ import net.risesoft.model.itemadmin.OfficeFollowModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.OfficeFollowService;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -35,17 +33,12 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     /**
      * 根据流程实例id获取关注数量
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是关注数量
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> countByProcessInstanceId(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String processInstanceId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Result<Integer> countByProcessInstanceId(@RequestParam String processInstanceId) {
         int count = officeFollowService.countByProcessInstanceId(processInstanceId);
         return Y9Result.success(count);
     }
@@ -53,17 +46,12 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     /**
      * 取消关注
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param processInstanceIds 流程实例id列表
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delOfficeFollow(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String processInstanceIds) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Result<Object> delOfficeFollow(@RequestParam String processInstanceIds) {
         officeFollowService.delOfficeFollow(processInstanceIds);
         return Y9Result.successMsg("取消关注成功");
     }
@@ -71,15 +59,12 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     /**
      * 根据流程实例id删除关注数据
      *
-     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteByProcessInstanceId(@RequestParam String tenantId,
-        @RequestParam String processInstanceId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> deleteByProcessInstanceId(@RequestParam String processInstanceId) {
         officeFollowService.deleteByProcessInstanceId(processInstanceId);
         return Y9Result.successMsg("删除关注成功");
     }
@@ -87,15 +72,11 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     /**
      * 获取我的关注数量
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @return {@code Y9Result<Integer>} 通用请求返回对象 - data 是我的关注数量
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Integer> getFollowCount(@RequestParam String tenantId, @RequestParam String orgUnitId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Result<Integer> getFollowCount() {
         int count = officeFollowService.getFollowCount();
         return Y9Result.success(count);
     }
@@ -103,8 +84,6 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     /**
      * 根据系统名称获取关注列表
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param systemName 系统名称
      * @param searchName 搜索词
      * @param page 页码
@@ -113,19 +92,14 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<OfficeFollowModel> getFollowListBySystemName(@RequestParam String tenantId,
-        @RequestParam String orgUnitId, @RequestParam String systemName, String searchName, @RequestParam int page,
-        @RequestParam int rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Page<OfficeFollowModel> getFollowListBySystemName(@RequestParam String systemName, String searchName,
+        @RequestParam int page, @RequestParam int rows) {
         return officeFollowService.pageBySystemNameAndSearchName(systemName, searchName, page, rows);
     }
 
     /**
      * 获取指定人员的关注列表
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param searchName 搜索词
      * @param page 页码
      * @param rows 条数
@@ -133,25 +107,20 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<OfficeFollowModel> getOfficeFollowList(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        String searchName, @RequestParam int page, @RequestParam int rows) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Page<OfficeFollowModel> getOfficeFollowList(String searchName, @RequestParam int page,
+        @RequestParam int rows) {
         return officeFollowService.pageBySearchName(searchName, page, rows);
     }
 
     /**
      * 保存办件关注信息
      *
-     * @param tenantId 租户id
      * @param officeFollowModel 关注信息
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveOfficeFollow(@RequestParam String tenantId,
-        @RequestBody OfficeFollowModel officeFollowModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> saveOfficeFollow(@RequestBody OfficeFollowModel officeFollowModel) {
         OfficeFollow officeFollow = new OfficeFollow();
         if (null != officeFollowModel) {
             Y9BeanUtil.copyProperties(officeFollowModel, officeFollow);
@@ -163,16 +132,13 @@ public class OfficeFollowApiImpl implements OfficeFollowApi {
     /**
      * 更新关注信息的标题
      *
-     * @param tenantId 租户id
      * @param processInstanceId 流程实例id
      * @param documentTitle 文档标题
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> updateTitle(@RequestParam String tenantId, @RequestParam String processInstanceId,
-        @RequestParam String documentTitle) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> updateTitle(@RequestParam String processInstanceId, @RequestParam String documentTitle) {
         officeFollowService.updateTitle(processInstanceId, documentTitle);
         return Y9Result.successMsg("更新成功");
     }
