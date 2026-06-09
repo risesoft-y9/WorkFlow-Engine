@@ -29,14 +29,13 @@ import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.DocumentCopyModel;
 import net.risesoft.model.itemadmin.ItemPage;
 import net.risesoft.model.itemadmin.QueryParamModel;
-import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.service.opinion.OpinionCopyService;
 import net.risesoft.service.util.ItemPageService;
+import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
@@ -82,32 +81,32 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         this.jdbcTemplate = jdbcTemplate;
     }
 
-    @Override
-    public Y9Page<DocumentCopyModel> findByUserId(String tenantId, String userId, String orgUnitId,
-        QueryParamModel queryParamModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        int page = queryParamModel.getPage(), rows = queryParamModel.getRows();
-        StringBuilder whereSql = new StringBuilder();
-        List<Object> params = new ArrayList<>();
-        params.add(orgUnitId);
-        buildQueryConditions(queryParamModel, whereSql, params);
-        String leftJoinSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
-        String bySql = "ORDER BY P.CREATETIME DESC ) A WHERE A.RS_NUM = 1";
-        // 使用参数化SQL
-        String allSql =
-            "SELECT A.* FROM (SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY C "
-                + leftJoinSql + " WHERE C.STATUS < ? AND USERID = ? " + whereSql + bySql;
-        String countSql =
-            "SELECT COUNT(*) FROM ( SELECT ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM  FROM FF_DOCUMENT_COPY C "
-                + leftJoinSql + " WHERE C.STATUS < ? AND USERID = ? " + whereSql + ") ALIAS WHERE RS_NUM = 1";
-        List<Object> countParams = new ArrayList<>();
-        countParams.add(DocumentCopyStatusEnum.CANCEL.getValue());
-        countParams.add(orgUnitId);
-        countParams.addAll(params.subList(1, params.size()));
-        Object[] args = params.toArray();
-        ItemPage<DocumentCopyModel> ardModelPage = itemPageService.page(allSql, args,
-            new BeanPropertyRowMapper<>(DocumentCopyModel.class), countSql, countParams.toArray(), page, rows);
-        return Y9Page.success(page, ardModelPage.getTotalpages(), ardModelPage.getTotal(), ardModelPage.getRows());
+    /**
+     * 根据字段名添加相应的查询条件
+     */
+    private void appendCondition(StringBuilder whereSql, List<Object> params, String fieldName, Object fieldValue) {
+        if ("systemName".equals(fieldName)) {
+            whereSql.append(" AND P.SYSTEMNAME = ? ");
+            params.add(fieldValue);
+        } else if ("bureauIds".equals(fieldName)) {
+            whereSql.append(" AND P.HOSTDEPTID = ? ");
+            params.add(fieldValue);
+        } else {
+            // 使用白名单验证字段名，防止SQL注入
+            String safeFieldName = validateAndSanitizeFieldName(fieldName);
+            if (safeFieldName != null) {
+                whereSql.append(" AND INSTR(P.").append(safeFieldName).append(",?) > 0 ");
+                params.add(fieldValue);
+            }
+        }
+    }
+
+    private String buildAllSql(String whereSql) {
+        String bySql = " ORDER BY P.CREATETIME DESC) A WHERE A.RS_NUM = 1";
+        return "SELECT A.* FROM (SELECT D.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,"
+            + "ROW_NUMBER() OVER (PARTITION BY D.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM "
+            + "FROM FF_DOCUMENT_COPY D LEFT JOIN FF_PROCESS_PARAM P ON D.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER WHERE D.STATUS < ? AND D.USERID = ? "
+            + whereSql + bySql;
     }
 
     /**
@@ -132,52 +131,35 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         }
     }
 
-    /**
-     * 判断是否应该跳过该字段
-     */
-    private boolean shouldSkipField(String fieldName) {
-        return "serialVersionUID".equals(fieldName) || "page".equals(fieldName) || "rows".equals(fieldName);
+    @Override
+    public Y9Result<Object> deleteByProcessSerialNumber(String processSerialNumber) {
+        List<DocumentCopy> dcList = documentCopyService.findByProcessSerialNumberAndUserId(processSerialNumber,
+            Y9FlowableHolder.getPositionId());
+        dcList.stream()
+            .filter(documentCopy -> documentCopy.getStatus().getValue() < DocumentCopyStatusEnum.CANCEL.getValue())
+            .forEach(documentCopy -> {
+                documentCopy.setStatus(DocumentCopyStatusEnum.DELETE);
+                documentCopyService.save(documentCopy);
+            });
+        return Y9Result.success();
     }
 
-    /**
-     * 根据字段名添加相应的查询条件
-     */
-    private void appendCondition(StringBuilder whereSql, List<Object> params, String fieldName, Object fieldValue) {
-        if ("systemName".equals(fieldName)) {
-            whereSql.append(" AND P.SYSTEMNAME = ? ");
-            params.add(fieldValue);
-        } else if ("bureauIds".equals(fieldName)) {
-            whereSql.append(" AND P.HOSTDEPTID = ? ");
-            params.add(fieldValue);
-        } else {
-            // 使用白名单验证字段名，防止SQL注入
-            String safeFieldName = validateAndSanitizeFieldName(fieldName);
-            if (safeFieldName != null) {
-                whereSql.append(" AND INSTR(P.").append(safeFieldName).append(",?) > 0 ");
-                params.add(fieldValue);
-            }
-        }
-    }
-
-    /**
-     * 验证并清理字段名，防止SQL注入
-     */
-    private String validateAndSanitizeFieldName(String fieldName) {
-        // 白名单字段校验
-        List<String> allowedFields = Arrays.asList("TITLE", "HOSTDEPTNAME", "CUSTOMNUMBER");
-        String upperFieldName = fieldName.toUpperCase();
-        if (allowedFields.contains(upperFieldName)) {
-            return upperFieldName;
-        }
-        LOGGER.warn("非法字段名: {}", fieldName);
-        return null;
+    @Override
+    public Y9Result<List<DocumentCopyModel>> findByProcessSerialNumberAndSenderId(String processSerialNumber) {
+        List<DocumentCopy> dcList = documentCopyService.findByProcessSerialNumberAndSenderId(processSerialNumber,
+            Y9FlowableHolder.getPositionId());
+        List<DocumentCopyModel> modelList = new ArrayList<>();
+        dcList.forEach(documentCopy -> {
+            DocumentCopyModel model = new DocumentCopyModel();
+            Y9BeanUtil.copyProperties(documentCopy, model);
+            modelList.add(model);
+        });
+        return Y9Result.success(modelList);
     }
 
     @SuppressWarnings("java:S2077")
     @Override
-    public Y9Result<List<DocumentCopyModel>> findByProcessSerialNumbers(String tenantId, String userId,
-        String orgUnitId, String[] processSerialNumbers) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<DocumentCopyModel>> findByProcessSerialNumbers(String[] processSerialNumbers) {
         StringBuilder sb = new StringBuilder();
         for (int i = 0; i < processSerialNumbers.length; i++) {
             if (i > 0) {
@@ -193,12 +175,37 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
     }
 
     @Override
-    public Y9Result<List<DocumentCopyModel>> findListByUserId(String tenantId, String userId, String orgUnitId,
-        @RequestBody(required = false) QueryParamModel queryParamModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Page<DocumentCopyModel> findByUserId(QueryParamModel queryParamModel) {
+        int page = queryParamModel.getPage(), rows = queryParamModel.getRows();
         StringBuilder whereSql = new StringBuilder();
         List<Object> params = new ArrayList<>();
-        params.add(orgUnitId);
+        params.add(Y9FlowableHolder.getPositionId());
+        buildQueryConditions(queryParamModel, whereSql, params);
+        String leftJoinSql = "LEFT JOIN FF_PROCESS_PARAM P ON C.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER ";
+        String bySql = "ORDER BY P.CREATETIME DESC ) A WHERE A.RS_NUM = 1";
+        // 使用参数化SQL
+        String allSql =
+            "SELECT A.* FROM (SELECT C.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM FROM FF_DOCUMENT_COPY C "
+                + leftJoinSql + " WHERE C.STATUS < ? AND USERID = ? " + whereSql + bySql;
+        String countSql =
+            "SELECT COUNT(*) FROM ( SELECT ROW_NUMBER() OVER (PARTITION BY C.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM  FROM FF_DOCUMENT_COPY C "
+                + leftJoinSql + " WHERE C.STATUS < ? AND USERID = ? " + whereSql + ") ALIAS WHERE RS_NUM = 1";
+        List<Object> countParams = new ArrayList<>();
+        countParams.add(DocumentCopyStatusEnum.CANCEL.getValue());
+        countParams.add(Y9FlowableHolder.getPositionId());
+        countParams.addAll(params.subList(1, params.size()));
+        Object[] args = params.toArray();
+        ItemPage<DocumentCopyModel> ardModelPage = itemPageService.page(allSql, args,
+            new BeanPropertyRowMapper<>(DocumentCopyModel.class), countSql, countParams.toArray(), page, rows);
+        return Y9Page.success(page, ardModelPage.getTotalpages(), ardModelPage.getTotal(), ardModelPage.getRows());
+    }
+
+    @Override
+    public Y9Result<List<DocumentCopyModel>>
+        findListByUserId(@RequestBody(required = false) QueryParamModel queryParamModel) {
+        StringBuilder whereSql = new StringBuilder();
+        List<Object> params = new ArrayList<>();
+        params.add(Y9FlowableHolder.getPositionId());
         if (null != queryParamModel) {
             buildQueryConditions(queryParamModel, whereSql, params);
         }
@@ -211,36 +218,8 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         return Y9Result.success(content);
     }
 
-    private String buildAllSql(String whereSql) {
-        String bySql = " ORDER BY P.CREATETIME DESC) A WHERE A.RS_NUM = 1";
-        return "SELECT A.* FROM (SELECT D.*,P.SYSTEMCNNAME,P.TITLE,P.HOSTDEPTNAME,P.CUSTOMNUMBER,"
-            + "ROW_NUMBER() OVER (PARTITION BY D.PROCESSSERIALNUMBER ORDER BY P.CREATETIME DESC) AS RS_NUM "
-            + "FROM FF_DOCUMENT_COPY D LEFT JOIN FF_PROCESS_PARAM P ON D.PROCESSSERIALNUMBER = P.PROCESSSERIALNUMBER WHERE D.STATUS < ? AND D.USERID = ? "
-            + whereSql + bySql;
-    }
-
     @Override
-    public Y9Result<List<DocumentCopyModel>> findByProcessSerialNumberAndSenderId(String tenantId, String userId,
-        String orgUnitId, String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        List<DocumentCopy> dcList =
-            documentCopyService.findByProcessSerialNumberAndSenderId(processSerialNumber, orgUnitId);
-        List<DocumentCopyModel> modelList = new ArrayList<>();
-        dcList.forEach(documentCopy -> {
-            DocumentCopyModel model = new DocumentCopyModel();
-            Y9BeanUtil.copyProperties(documentCopy, model);
-            modelList.add(model);
-        });
-        return Y9Result.success(modelList);
-    }
-
-    @Override
-    public Y9Result<Object> save(String tenantId, String userId, String orgUnitId, String processSerialNumber,
-        String users, String opinion) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
+    public Y9Result<Object> save(String processSerialNumber, String users, String opinion) {
         OpinionCopy newOc = new OpinionCopy();
         newOc.setId(Y9IdGenerator.genId());
         newOc.setProcessSerialNumber(processSerialNumber);
@@ -260,8 +239,8 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
                 documentCopy.setProcessInstanceId(processParam.getProcessInstanceId());
                 documentCopy.setUserName(nameAndId[0]);
                 documentCopy.setUserId(nameAndId[1]);
-                documentCopy.setSenderId(orgUnitId);
-                documentCopy.setSenderName(orgUnit.getName());
+                documentCopy.setSenderId(Y9FlowableHolder.getPositionId());
+                documentCopy.setSenderName(Y9FlowableHolder.getPosition().getName());
                 documentCopy.setStatus(DocumentCopyStatusEnum.TODO_SIGN);
                 documentCopy.setSystemName(processParam.getSystemName());
                 list.add(documentCopy);
@@ -287,18 +266,24 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         return Y9Result.failure("传签件不存在");
     }
 
-    @Override
-    public Y9Result<Object> deleteByProcessSerialNumber(String tenantId, String userId, String orgUnitId,
-        String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        List<DocumentCopy> dcList =
-            documentCopyService.findByProcessSerialNumberAndUserId(processSerialNumber, orgUnitId);
-        dcList.stream()
-            .filter(documentCopy -> documentCopy.getStatus().getValue() < DocumentCopyStatusEnum.CANCEL.getValue())
-            .forEach(documentCopy -> {
-                documentCopy.setStatus(DocumentCopyStatusEnum.DELETE);
-                documentCopyService.save(documentCopy);
-            });
-        return Y9Result.success();
+    /**
+     * 判断是否应该跳过该字段
+     */
+    private boolean shouldSkipField(String fieldName) {
+        return "serialVersionUID".equals(fieldName) || "page".equals(fieldName) || "rows".equals(fieldName);
+    }
+
+    /**
+     * 验证并清理字段名，防止SQL注入
+     */
+    private String validateAndSanitizeFieldName(String fieldName) {
+        // 白名单字段校验
+        List<String> allowedFields = Arrays.asList("TITLE", "HOSTDEPTNAME", "CUSTOMNUMBER");
+        String upperFieldName = fieldName.toUpperCase();
+        if (allowedFields.contains(upperFieldName)) {
+            return upperFieldName;
+        }
+        LOGGER.warn("非法字段名: {}", fieldName);
+        return null;
     }
 }

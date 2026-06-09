@@ -20,38 +20,29 @@ import net.risesoft.pojo.Y9Result;
  **/
 public interface DocumentCopyApi {
 
-    @PostMapping("/findByUserId")
-    Y9Page<DocumentCopyModel> findByUserId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestBody QueryParamModel queryParamModel);
-
-    @PostMapping("/findByProcessSerialNumbers")
-    Y9Result<List<DocumentCopyModel>> findByProcessSerialNumbers(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("processSerialNumbers") String[] processSerialNumbers);
-
-    @PostMapping("/findListByUserId")
-    Y9Result<List<DocumentCopyModel>> findListByUserId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestBody(required = false) QueryParamModel queryParamModel);
+    @PostMapping("/deleteByProcessSerialNumber")
+    Y9Result<Object> deleteByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
 
     @GetMapping("/findByProcessSerialNumberAndSenderId")
-    Y9Result<List<DocumentCopyModel>> findByProcessSerialNumberAndSenderId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<DocumentCopyModel>>
+        findByProcessSerialNumberAndSenderId(@RequestParam("processSerialNumber") String processSerialNumber);
+
+    @PostMapping("/findByProcessSerialNumbers")
+    Y9Result<List<DocumentCopyModel>>
+        findByProcessSerialNumbers(@RequestParam("processSerialNumbers") String[] processSerialNumbers);
+
+    @PostMapping("/findByUserId")
+    Y9Page<DocumentCopyModel> findByUserId(@RequestBody QueryParamModel queryParamModel);
+
+    @PostMapping("/findListByUserId")
+    Y9Result<List<DocumentCopyModel>> findListByUserId(@RequestBody(required = false) QueryParamModel queryParamModel);
 
     @PostMapping("/save")
-    Y9Result<Object> save(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processSerialNumber") String processSerialNumber,
+    Y9Result<Object> save(@RequestParam("processSerialNumber") String processSerialNumber,
         @RequestParam("users") String users, @RequestParam(value = "opinion", required = false) String opinion);
 
     @PostMapping("/setStatus")
     Y9Result<Object> setStatus(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("orgUnitId") String orgUnitId, @RequestParam("id") String id,
         @RequestParam(value = "status") DocumentCopyStatusEnum status);
-
-    @PostMapping("/deleteByProcessSerialNumber")
-    Y9Result<Object> deleteByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
 }
