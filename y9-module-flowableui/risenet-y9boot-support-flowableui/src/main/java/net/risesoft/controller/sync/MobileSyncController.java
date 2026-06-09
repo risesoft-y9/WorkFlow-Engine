@@ -53,6 +53,26 @@ public class MobileSyncController {
     private final JdbcTemplate jdbcTemplate;
 
     /**
+     * 构建Oracle/PostgresSQL的查询SQL
+     */
+    private String buildProcInstQuerySql() {
+        return "SELECT P.PROC_INST_ID_,TO_CHAR(P.START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
+            + " TO_CHAR(P.END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_ FROM"
+            + " ACT_HI_PROCINST_2020 P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
+            + " ORDER BY P.END_TIME_ DESC";
+    }
+
+    /**
+     * 构建MySQL的查询SQL
+     */
+    private String buildProcInstQuerySqlForMySQL() {
+        return "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
+            + "SUBSTRING(P.END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
+            + " FROM ACT_HI_PROCINST_2020 P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
+            + " ORDER BY P.END_TIME_ DESC";
+    }
+
+    /**
      * 删除历史数据
      *
      * @param processInstanceId 流程实例id
@@ -60,30 +80,6 @@ public class MobileSyncController {
     public void deleteDoneData(String processInstanceId) {
         ACT_HI_TABLES.forEach(tableName -> executeDelete(tableName, processInstanceId));
         executeDeleteActGeBytearray(processInstanceId);
-    }
-
-    /**
-     * 执行删除操作（ACT_HI_PROCINST）
-     * 
-     * @param tableName 表名
-     * @param processInstanceId 流程实例ID
-     */
-    @SuppressWarnings("java:S2077") // 表名来源于内部白名单，processInstanceId使用参数化查询，无SQL注入风险
-    private void executeDelete(String tableName, String processInstanceId) {
-        String sql = "DELETE FROM " + tableName + " WHERE PROC_INST_ID_ = ?";
-        jdbcTemplate.update(sql, processInstanceId);
-    }
-
-    /**
-     * 执行删除操作（包含用户关联数据）
-     *
-     * @param processInstanceId 流程实例ID
-     */
-    private void executeDeleteActGeBytearray(String processInstanceId) {
-        String sql = "DELETE FROM ACT_GE_BYTEARRAY WHERE ID_ IN (SELECT * FROM ( SELECT b.ID_ FROM "
-            + "ACT_GE_BYTEARRAY"
-            + " b LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_ WHERE v.PROC_INST_ID_ = ? AND v.NAME_ = 'users' ) TT )";
-        jdbcTemplate.update(sql, processInstanceId);
     }
 
     /**
@@ -117,6 +113,40 @@ public class MobileSyncController {
             LOGGER.error("同步失败", e);
         }
         Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
+    }
+
+    /**
+     * 执行删除操作（ACT_HI_PROCINST）
+     *
+     * @param tableName 表名
+     * @param processInstanceId 流程实例ID
+     */
+    @SuppressWarnings("java:S2077") // 表名来源于内部白名单，processInstanceId使用参数化查询，无SQL注入风险
+    private void executeDelete(String tableName, String processInstanceId) {
+        String sql = "DELETE FROM " + tableName + " WHERE PROC_INST_ID_ = ?";
+        jdbcTemplate.update(sql, processInstanceId);
+    }
+
+    /**
+     * 执行删除操作（包含用户关联数据）
+     *
+     * @param processInstanceId 流程实例ID
+     */
+    private void executeDeleteActGeBytearray(String processInstanceId) {
+        String sql = "DELETE FROM ACT_GE_BYTEARRAY WHERE ID_ IN (SELECT * FROM ( SELECT b.ID_ FROM "
+            + "ACT_GE_BYTEARRAY"
+            + " b LEFT JOIN ACT_HI_VARINST v ON v.BYTEARRAY_ID_ = b.ID_ WHERE v.PROC_INST_ID_ = ? AND v.NAME_ = 'users' ) TT )";
+        jdbcTemplate.update(sql, processInstanceId);
+    }
+
+    /**
+     * 执行插入操作
+     *
+     * @param sql 插入SQL语句
+     * @param processInstanceId 流程实例ID
+     */
+    private void executeInsert(String sql, String processInstanceId) {
+        jdbcTemplate.update(sql, processInstanceId);
     }
 
     private String getActGeBytearraySql(String year) {
@@ -179,44 +209,6 @@ public class MobileSyncController {
     }
 
     /**
-     * 办结保存年度历史数据
-     * <p>
-     * ACT_HI_TASKINST ACT_HI_VARINST ACT_GE_BYTEARRAY
-     * <p>
-     * ACT_HI_IDENTITYLINK ACT_HI_ACTINST ACT_HI_PROCINST
-     *
-     * @param processInstanceId 流程实例id
-     */
-    public void saveYearData(String year, String processInstanceId) {
-        // 处理 ACT_HI_TASKINST 表
-        if (isTableDataEmpty("ACT_HI_TASKINST_" + year, processInstanceId)) {
-            executeInsert(getActHiTaskinstSql(year), processInstanceId);
-        }
-        // 处理 ACT_HI_VARINST 表
-        if (isTableDataEmpty("ACT_HI_VARINST_" + year, processInstanceId)) {
-            executeInsert(getActHiVarinstSql(year), processInstanceId);
-        }
-        // 处理 ACT_GE_BYTEARRAY 表
-        try {
-            executeInsert(getActGeBytearraySql(year), processInstanceId);
-        } catch (DataAccessException e) {
-            LOGGER.error("保存历史数据失败", e);
-        }
-        // 处理 ACT_HI_IDENTITYLINK 表
-        if (isTableDataEmpty("ACT_HI_IDENTITYLINK_" + year, processInstanceId)) {
-            executeInsert(getActHiIdentiyLinkSql(year), processInstanceId);
-        }
-        // 处理 ACT_HI_ACTINST 表
-        if (isTableDataEmpty("ACT_HI_ACTINST_" + year, processInstanceId)) {
-            executeInsert(getActHiActinstSql(year), processInstanceId);
-        }
-        // 处理 ACT_HI_PROCINST 表
-        if (isTableDataEmpty("ACT_HI_PROCINST_" + year, processInstanceId)) {
-            executeInsert(getActHiProcinstSql(year), processInstanceId);
-        }
-    }
-
-    /**
      * 检查指定表中是否存在指定流程实例的数据
      *
      * @param tableName 表名（包含年份后缀）
@@ -228,99 +220,6 @@ public class MobileSyncController {
         String selectSql = "SELECT * FROM " + tableName + WHERE_PROC_INST_ID_KEY;
         List<Map<String, Object>> list = jdbcTemplate.queryForList(selectSql, processInstanceId);
         return list.isEmpty();
-    }
-
-    /**
-     * 执行插入操作
-     *
-     * @param sql 插入SQL语句
-     * @param processInstanceId 流程实例ID
-     */
-    private void executeInsert(String sql, String processInstanceId) {
-        jdbcTemplate.update(sql, processInstanceId);
-    }
-
-    /**
-     * 同步年度办结件至数据中心
-     *
-     * @param tenantId 租户id
-     */
-    @GetMapping(value = "/sync2DataCenter")
-    public void sync2DataCenter(String tenantId, HttpServletResponse response) {
-        Map<String, Object> resMap = new HashMap<>(16);
-        try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            // 构建查询SQL
-            String sql = buildProcInstQuerySql();
-            DataSource dataSource = jdbcTemplate.getDataSource();
-            String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
-            if (dialectName.equals(MYSQL_KEY)) {
-                sql = buildProcInstQuerySqlForMySQL();
-            }
-            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
-            LOGGER.info("*********************同步年度办结件至数据中心,共{}条数据***************************", list.size());
-            int failedCount = 0;
-            for (Map<String, Object> map : list) {
-                try {
-                    processProcInstanceData(tenantId, map);
-                } catch (Exception e) {
-                    failedCount++;
-                    LOGGER.error("同步单条数据失败, PROC_INST_ID_: {}", map.get(PROC_INST_ID_KEY), e);
-                }
-            }
-            LOGGER.info("********************同步年度办结件至数据中心失败{}条数据***************************", failedCount);
-            resMap.put("总数", list.size());
-            resMap.put("同步失败", failedCount);
-        } catch (Exception e) {
-            LOGGER.error("同步年度办结件至数据中心失败", e);
-            resMap.put("错误", e.getMessage());
-        }
-        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
-    }
-
-    /**
-     * 构建Oracle/PostgresSQL的查询SQL
-     */
-    private String buildProcInstQuerySql() {
-        return "SELECT P.PROC_INST_ID_,TO_CHAR(P.START_TIME_,'yyyy-MM-dd HH:mi:ss') as START_TIME_,"
-            + " TO_CHAR(P.END_TIME_,'yyyy-MM-dd HH:mi:ss') as END_TIME_,P.PROC_DEF_ID_ FROM"
-            + " ACT_HI_PROCINST_2020 P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
-            + " ORDER BY P.END_TIME_ DESC";
-    }
-
-    /**
-     * 构建MySQL的查询SQL
-     */
-    private String buildProcInstQuerySqlForMySQL() {
-        return "SELECT P.PROC_INST_ID_,SUBSTRING(P.START_TIME_,1,19) as START_TIME_,"
-            + "SUBSTRING(P.END_TIME_,1,19) as END_TIME_,P.PROC_DEF_ID_"
-            + " FROM ACT_HI_PROCINST_2020 P WHERE P.END_TIME_ IS NOT NULL and P.DELETE_REASON_ is null"
-            + " ORDER BY P.END_TIME_ DESC";
-    }
-
-    /**
-     * 处理单个流程实例数据
-     */
-    private void processProcInstanceData(String tenantId, Map<String, Object> map) throws Exception {
-        String procInstId = (String)map.get(PROC_INST_ID_KEY);
-        String procDefId = (String)map.get("PROC_DEF_ID_");
-        String startTime = (String)map.get(START_TIME_KEY);
-        String endTime = (String)map.get("END_TIME_");
-        // 获取流程参数和办结信息
-        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, procInstId).getData();
-        OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(tenantId, procInstId).getData();
-        // 初始化办结信息对象
-        if (officeDoneInfo == null) {
-            officeDoneInfo = new OfficeDoneInfoModel();
-            officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        }
-        // 填充办结信息
-        populateOfficeDoneInfo(officeDoneInfo, processParamModel, tenantId, procInstId, procDefId, startTime, endTime);
-        // 处理参与人信息
-        String allUserId = processParticipantUsers(procInstId);
-        officeDoneInfo.setAllUserId(allUserId);
-        // 保存办结信息
-        officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
     }
 
     /**
@@ -373,6 +272,107 @@ public class MobileSyncController {
     }
 
     /**
+     * 处理单个流程实例数据
+     */
+    private void processProcInstanceData(String tenantId, Map<String, Object> map) throws Exception {
+        String procInstId = (String)map.get(PROC_INST_ID_KEY);
+        String procDefId = (String)map.get("PROC_DEF_ID_");
+        String startTime = (String)map.get(START_TIME_KEY);
+        String endTime = (String)map.get("END_TIME_");
+        // 获取流程参数和办结信息
+        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, procInstId).getData();
+        OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(procInstId).getData();
+        // 初始化办结信息对象
+        if (officeDoneInfo == null) {
+            officeDoneInfo = new OfficeDoneInfoModel();
+            officeDoneInfo.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        }
+        // 填充办结信息
+        populateOfficeDoneInfo(officeDoneInfo, processParamModel, tenantId, procInstId, procDefId, startTime, endTime);
+        // 处理参与人信息
+        String allUserId = processParticipantUsers(procInstId);
+        officeDoneInfo.setAllUserId(allUserId);
+        // 保存办结信息
+        officeDoneInfoApi.saveOfficeDone(officeDoneInfo);
+    }
+
+    /**
+     * 办结保存年度历史数据
+     * <p>
+     * ACT_HI_TASKINST ACT_HI_VARINST ACT_GE_BYTEARRAY
+     * <p>
+     * ACT_HI_IDENTITYLINK ACT_HI_ACTINST ACT_HI_PROCINST
+     *
+     * @param processInstanceId 流程实例id
+     */
+    public void saveYearData(String year, String processInstanceId) {
+        // 处理 ACT_HI_TASKINST 表
+        if (isTableDataEmpty("ACT_HI_TASKINST_" + year, processInstanceId)) {
+            executeInsert(getActHiTaskinstSql(year), processInstanceId);
+        }
+        // 处理 ACT_HI_VARINST 表
+        if (isTableDataEmpty("ACT_HI_VARINST_" + year, processInstanceId)) {
+            executeInsert(getActHiVarinstSql(year), processInstanceId);
+        }
+        // 处理 ACT_GE_BYTEARRAY 表
+        try {
+            executeInsert(getActGeBytearraySql(year), processInstanceId);
+        } catch (DataAccessException e) {
+            LOGGER.error("保存历史数据失败", e);
+        }
+        // 处理 ACT_HI_IDENTITYLINK 表
+        if (isTableDataEmpty("ACT_HI_IDENTITYLINK_" + year, processInstanceId)) {
+            executeInsert(getActHiIdentiyLinkSql(year), processInstanceId);
+        }
+        // 处理 ACT_HI_ACTINST 表
+        if (isTableDataEmpty("ACT_HI_ACTINST_" + year, processInstanceId)) {
+            executeInsert(getActHiActinstSql(year), processInstanceId);
+        }
+        // 处理 ACT_HI_PROCINST 表
+        if (isTableDataEmpty("ACT_HI_PROCINST_" + year, processInstanceId)) {
+            executeInsert(getActHiProcinstSql(year), processInstanceId);
+        }
+    }
+
+    /**
+     * 同步年度办结件至数据中心
+     *
+     * @param tenantId 租户id
+     */
+    @GetMapping(value = "/sync2DataCenter")
+    public void sync2DataCenter(String tenantId, HttpServletResponse response) {
+        Map<String, Object> resMap = new HashMap<>(16);
+        try {
+            Y9LoginUserHolder.setTenantId(tenantId);
+            // 构建查询SQL
+            String sql = buildProcInstQuerySql();
+            DataSource dataSource = jdbcTemplate.getDataSource();
+            String dialectName = DbMetaDataUtil.getDatabaseDialectName(dataSource);
+            if (dialectName.equals(MYSQL_KEY)) {
+                sql = buildProcInstQuerySqlForMySQL();
+            }
+            List<Map<String, Object>> list = jdbcTemplate.queryForList(sql);
+            LOGGER.info("*********************同步年度办结件至数据中心,共{}条数据***************************", list.size());
+            int failedCount = 0;
+            for (Map<String, Object> map : list) {
+                try {
+                    processProcInstanceData(tenantId, map);
+                } catch (Exception e) {
+                    failedCount++;
+                    LOGGER.error("同步单条数据失败, PROC_INST_ID_: {}", map.get(PROC_INST_ID_KEY), e);
+                }
+            }
+            LOGGER.info("********************同步年度办结件至数据中心失败{}条数据***************************", failedCount);
+            resMap.put("总数", list.size());
+            resMap.put("同步失败", failedCount);
+        } catch (Exception e) {
+            LOGGER.error("同步年度办结件至数据中心失败", e);
+            resMap.put("错误", e.getMessage());
+        }
+        Y9Util.renderJson(response, Y9JsonUtil.writeValueAsString(resMap));
+    }
+
+    /**
      * 同步办结件至数据中心，办结截转数据失败的件
      *
      * @param tenantId 租户ID
@@ -405,7 +405,7 @@ public class MobileSyncController {
                     ProcessParamModel processParamModel =
                         processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                     OfficeDoneInfoModel officeDoneInfo =
-                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
                     if (officeDoneInfo != null) {
                         if (processParamModel != null) {
                             officeDoneInfo.setUserComplete(StringUtils.isBlank(processParamModel.getCompleter()) ? ""
@@ -413,7 +413,7 @@ public class MobileSyncController {
                         }
                         officeDoneInfo.setEndTime(END_TIME_);
                         officeDoneInfo.setTenantId(tenantId);
-                        officeDoneInfoApi.saveOfficeDone(tenantId, officeDoneInfo);
+                        officeDoneInfoApi.saveOfficeDone(officeDoneInfo);
                         String year = START_TIME_.substring(0, 4);
                         this.saveYearData(year, processInstanceId);
                         this.deleteDoneData(processInstanceId);

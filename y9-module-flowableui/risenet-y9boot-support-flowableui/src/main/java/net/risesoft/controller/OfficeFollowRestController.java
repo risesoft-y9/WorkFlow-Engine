@@ -144,7 +144,7 @@ public class OfficeFollowRestController {
                     historicProcessApi.getById(tenantId, processInstanceId).getData();
                 if (historicProcessInstanceModel == null) {
                     OfficeDoneInfoModel officeDoneInfoModel =
-                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
                     officeFollow.setStartTime(officeDoneInfoModel != null ? officeDoneInfoModel.getStartTime() : "");
                 } else {
                     officeFollow

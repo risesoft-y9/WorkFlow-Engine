@@ -96,8 +96,8 @@ public class SearchServiceImpl implements SearchService {
         try {
             String positionId = Y9FlowableHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserId(tenantId, positionId, searchTerm,
-                itemId, userName, state, year, startDate, endDate, page, rows);
+            Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserId(searchTerm, itemId, userName,
+                state, year, startDate, endDate, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> officeDoneInfoList = y9Page.getRows();
             int serialNumber = (page - 1) * rows;

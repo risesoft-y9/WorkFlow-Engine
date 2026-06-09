@@ -80,7 +80,7 @@ public class QueryListServiceImpl implements QueryListService {
                 String processSerialNumber = actRuDetail.getProcessSerialNumber();
                 try {
                     OfficeDoneInfoModel officeDoneInfo =
-                        officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
                     title = officeDoneInfo.getTitle();
                     String startTime = officeDoneInfo.getStartTime().substring(0, 16);
                     mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);

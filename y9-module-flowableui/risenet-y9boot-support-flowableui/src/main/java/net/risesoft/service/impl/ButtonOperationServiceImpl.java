@@ -299,7 +299,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
              */
             String year;
             OfficeDoneInfoModel officeDoneInfoModel =
-                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
                 title = officeDoneInfoModel.getTitle();
@@ -356,7 +356,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             // 1、恢复待办
             String year;
             OfficeDoneInfoModel officeDoneInfoModel =
-                officeDoneInfoApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
             if (officeDoneInfoModel != null) {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {

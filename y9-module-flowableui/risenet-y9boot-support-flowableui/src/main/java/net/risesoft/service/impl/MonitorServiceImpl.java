@@ -48,6 +48,90 @@ public class MonitorServiceImpl implements MonitorService {
     private final ChaoSongApi chaoSongApi;
     private final UtilService utilService;
 
+    private void buildCommonItemFields(Map<String, Object> mapTemp, OfficeDoneInfoModel model, String itemName) {
+        String processInstanceId = model.getProcessInstanceId();
+        String processDefinitionId = model.getProcessDefinitionId();
+        String processSerialNumber = model.getProcessSerialNumber();
+        String documentTitle = StringUtils.isBlank(model.getTitle()) ? "无标题" : model.getTitle();
+        String level = model.getUrgency();
+        String number = model.getDocNumber();
+        mapTemp.put(FlowableUiConsts.ITEMNAME_KEY, itemName);
+        mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
+        mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
+        mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
+        mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, processDefinitionId);
+        mapTemp.put(ITEMID_KEY, model.getItemId());
+        mapTemp.put(FlowableUiConsts.LEVEL_KEY, StringUtils.defaultString(level));
+        mapTemp.put(FlowableUiConsts.NUMBER_KEY, StringUtils.defaultString(number));
+    }
+
+    private Map<String, Object> buildMonitorBanJianItem(OfficeDoneInfoModel officeDoneInfo, String tenantId) {
+        Map<String, Object> mapTemp = new HashMap<>(16);
+        String processInstanceId = officeDoneInfo.getProcessInstanceId();
+
+        try {
+            buildCommonItemFields(mapTemp, officeDoneInfo, officeDoneInfo.getItemName());
+
+            String startTime = officeDoneInfo.getStartTime();
+            String formattedStartTime =
+                StringUtils.isNotBlank(startTime) && startTime.length() >= 16 ? startTime.substring(0, 16) : startTime;
+
+            mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, officeDoneInfo.getProcessDefinitionKey());
+            mapTemp.put(FlowableUiConsts.STARTTIME_KEY, formattedStartTime);
+            mapTemp.put(FlowableUiConsts.ENDTIME_KEY,
+                StringUtils.isBlank(officeDoneInfo.getEndTime()) ? "--" : officeDoneInfo.getEndTime().substring(0, 16));
+            mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, "");
+            mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, officeDoneInfo.getUserComplete());
+            mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, officeDoneInfo.getCreatUserName());
+            mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, ItemBoxTypeEnum.DONE.getValue());
+
+            if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
+                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                String assigneeNames = utilService.getAssigneeNames(taskList, null);
+                mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
+                mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
+                ItemBoxAndTaskIdModel itemBoxAndTaskId = utilService.getItemBoxAndTaskId(taskList);
+                mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, itemBoxAndTaskId.getItemBox());
+                mapTemp.put(FlowableUiConsts.TASKID_KEY, itemBoxAndTaskId.getTaskId());
+            }
+        } catch (Exception e) {
+            LOGGER.error("获取任务信息失败{}", processInstanceId, e);
+        }
+
+        return mapTemp;
+    }
+
+    private Map<String, Object> buildMonitorDoingItem(OfficeDoneInfoModel model, String tenantId, String itemName,
+        String processDefinitionKey) {
+        Map<String, Object> mapTemp = new HashMap<>(16);
+        String processInstanceId = model.getProcessInstanceId();
+
+        try {
+            buildCommonItemFields(mapTemp, model, itemName);
+
+            mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, processDefinitionKey);
+            mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, model.getCreatUserName());
+            mapTemp.put("status", 1);
+            mapTemp.put("taskDueDate", "");
+
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
+
+            mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
+            mapTemp.put("taskName", taskList.get(0).getName());
+
+            String startTime = model.getStartTime();
+            mapTemp.put("taskCreateTime",
+                StringUtils.isNotBlank(startTime) && startTime.length() >= 16 ? startTime.substring(0, 16) : startTime);
+            mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList, null));
+            mapTemp.put("isReminder", isReminder);
+        } catch (Exception e) {
+            LOGGER.error("获取列表失败{}", processInstanceId, e);
+        }
+
+        return mapTemp;
+    }
+
     @Override
     public Y9Page<Map<String, Object>> pageDeptList(String itemId, String searchName, String userName, String state,
         String year, Integer page, Integer rows) {
@@ -55,8 +139,8 @@ public class MonitorServiceImpl implements MonitorService {
         try {
             Position position = Y9FlowableHolder.getPosition();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            y9Page = officeDoneInfoApi.searchAllByDeptId(tenantId, position.getParentId(), searchName, itemId, userName,
-                state, year, page, rows);
+            y9Page = officeDoneInfoApi.searchAllByDeptId(position.getParentId(), searchName, itemId, userName, state,
+                year, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> list = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
@@ -118,7 +202,7 @@ public class MonitorServiceImpl implements MonitorService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             Y9Page<OfficeDoneInfoModel> y9Page =
-                officeDoneInfoApi.searchAllList(tenantId, searchName, itemId, userName, state, year, page, rows);
+                officeDoneInfoApi.searchAllList(searchName, itemId, userName, state, year, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> officeDoneInfoList = y9Page.getRows();
             int serialNumber = (page - 1) * rows;
@@ -133,59 +217,6 @@ public class MonitorServiceImpl implements MonitorService {
             LOGGER.error("获取监控办件列表失败！出现异常：", e);
         }
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取监控办件列表失败！！！");
-    }
-
-    private Map<String, Object> buildMonitorBanJianItem(OfficeDoneInfoModel officeDoneInfo, String tenantId) {
-        Map<String, Object> mapTemp = new HashMap<>(16);
-        String processInstanceId = officeDoneInfo.getProcessInstanceId();
-
-        try {
-            buildCommonItemFields(mapTemp, officeDoneInfo, officeDoneInfo.getItemName());
-
-            String startTime = officeDoneInfo.getStartTime();
-            String formattedStartTime =
-                StringUtils.isNotBlank(startTime) && startTime.length() >= 16 ? startTime.substring(0, 16) : startTime;
-
-            mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, officeDoneInfo.getProcessDefinitionKey());
-            mapTemp.put(FlowableUiConsts.STARTTIME_KEY, formattedStartTime);
-            mapTemp.put(FlowableUiConsts.ENDTIME_KEY,
-                StringUtils.isBlank(officeDoneInfo.getEndTime()) ? "--" : officeDoneInfo.getEndTime().substring(0, 16));
-            mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, "");
-            mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, officeDoneInfo.getUserComplete());
-            mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, officeDoneInfo.getCreatUserName());
-            mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, ItemBoxTypeEnum.DONE.getValue());
-
-            if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
-                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-                String assigneeNames = utilService.getAssigneeNames(taskList, null);
-                mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
-                mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
-                ItemBoxAndTaskIdModel itemBoxAndTaskId = utilService.getItemBoxAndTaskId(taskList);
-                mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, itemBoxAndTaskId.getItemBox());
-                mapTemp.put(FlowableUiConsts.TASKID_KEY, itemBoxAndTaskId.getTaskId());
-            }
-        } catch (Exception e) {
-            LOGGER.error("获取任务信息失败{}", processInstanceId, e);
-        }
-
-        return mapTemp;
-    }
-
-    private void buildCommonItemFields(Map<String, Object> mapTemp, OfficeDoneInfoModel model, String itemName) {
-        String processInstanceId = model.getProcessInstanceId();
-        String processDefinitionId = model.getProcessDefinitionId();
-        String processSerialNumber = model.getProcessSerialNumber();
-        String documentTitle = StringUtils.isBlank(model.getTitle()) ? "无标题" : model.getTitle();
-        String level = model.getUrgency();
-        String number = model.getDocNumber();
-        mapTemp.put(FlowableUiConsts.ITEMNAME_KEY, itemName);
-        mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-        mapTemp.put(SysVariables.DOCUMENT_TITLE, documentTitle);
-        mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
-        mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONID_KEY, processDefinitionId);
-        mapTemp.put(ITEMID_KEY, model.getItemId());
-        mapTemp.put(FlowableUiConsts.LEVEL_KEY, StringUtils.defaultString(level));
-        mapTemp.put(FlowableUiConsts.NUMBER_KEY, StringUtils.defaultString(number));
     }
 
     @Override
@@ -209,7 +240,7 @@ public class MonitorServiceImpl implements MonitorService {
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             String itemName = item.getName();
-            Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchByItemId(tenantId, searchTerm, itemId,
+            Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchByItemId(searchTerm, itemId,
                 ItemBoxTypeEnum.TODO.getValue(), "", "", page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> officeDoneInfoList = y9Page.getRows();
@@ -227,37 +258,6 @@ public class MonitorServiceImpl implements MonitorService {
         return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取监控在办列表失败");
     }
 
-    private Map<String, Object> buildMonitorDoingItem(OfficeDoneInfoModel model, String tenantId, String itemName,
-        String processDefinitionKey) {
-        Map<String, Object> mapTemp = new HashMap<>(16);
-        String processInstanceId = model.getProcessInstanceId();
-
-        try {
-            buildCommonItemFields(mapTemp, model, itemName);
-
-            mapTemp.put(FlowableUiConsts.PROCESSDEFINITIONKEY_KEY, processDefinitionKey);
-            mapTemp.put(FlowableUiConsts.CREATEUSERNAME_KEY, model.getCreatUserName());
-            mapTemp.put("status", 1);
-            mapTemp.put("taskDueDate", "");
-
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-            Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
-
-            mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
-            mapTemp.put("taskName", taskList.get(0).getName());
-
-            String startTime = model.getStartTime();
-            mapTemp.put("taskCreateTime",
-                StringUtils.isNotBlank(startTime) && startTime.length() >= 16 ? startTime.substring(0, 16) : startTime);
-            mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList, null));
-            mapTemp.put("isReminder", isReminder);
-        } catch (Exception e) {
-            LOGGER.error("获取列表失败{}", processInstanceId, e);
-        }
-
-        return mapTemp;
-    }
-
     @Override
     public Y9Page<Map<String, Object>> pageMonitorDoneList(String itemId, String searchTerm, Integer page,
         Integer rows) {
@@ -266,8 +266,8 @@ public class MonitorServiceImpl implements MonitorService {
         try {
             ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
-            y9Page = officeDoneInfoApi.searchByItemId(tenantId, searchTerm, itemId, ItemBoxTypeEnum.DONE.getValue(), "",
-                "", page, rows);
+            y9Page = officeDoneInfoApi.searchByItemId(searchTerm, itemId, ItemBoxTypeEnum.DONE.getValue(), "", "", page,
+                rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> hpiModelList = y9Page.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
