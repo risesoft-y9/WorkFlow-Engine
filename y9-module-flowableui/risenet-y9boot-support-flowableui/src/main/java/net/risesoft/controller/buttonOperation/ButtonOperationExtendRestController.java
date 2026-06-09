@@ -195,7 +195,7 @@ public class ButtonOperationExtendRestController {
         }
         // 1复制表单数据
         String targetProcessSerialNumber = Y9IdGenerator.genId();
-        Y9Result<Object> copy = formDataApi.copy(tenantId, processSerialNumber, targetProcessSerialNumber);
+        Y9Result<Object> copy = formDataApi.copy(processSerialNumber, targetProcessSerialNumber);
         if (!copy.isSuccess()) {
             return Y9Result.failure("操作失败：表单数据不存在!");
         }
@@ -208,10 +208,10 @@ public class ButtonOperationExtendRestController {
         // 2修改表单流水号
 
         // 3复制正文数据 正文类别,1:办文要报，2：发文稿纸
-        Y9Result<Object> word1 = documentWordApi.copyByProcessSerialNumberAndWordType(processSerialNumber,
-            targetProcessSerialNumber, "1");
-        Y9Result<Object> word2 = documentWordApi.copyByProcessSerialNumberAndWordType(processSerialNumber,
-            targetProcessSerialNumber, "2");
+        Y9Result<Object> word1 =
+            documentWordApi.copyByProcessSerialNumberAndWordType(processSerialNumber, targetProcessSerialNumber, "1");
+        Y9Result<Object> word2 =
+            documentWordApi.copyByProcessSerialNumberAndWordType(processSerialNumber, targetProcessSerialNumber, "2");
         if (!word1.isSuccess() || !word2.isSuccess()) {
             return Y9Result.failure("操作失败：复制正文失败!");
         }
@@ -236,8 +236,7 @@ public class ButtonOperationExtendRestController {
         sourceTaskRelated.setSenderName(position.getName());
         Y9Result<Object> yuanResult = taskRelatedApi.saveOrUpdate(sourceTaskRelated);
         // 6 设置复制件的相关信息
-        Map<String, Object> fwFormDataMap =
-            formDataApi.getData4TableAlias(tenantId, processSerialNumber, "fw").getData();
+        Map<String, Object> fwFormDataMap = formDataApi.getData4TableAlias(processSerialNumber, "fw").getData();
         String sourceLsh = (String)fwFormDataMap.getOrDefault("lsh", "流水号不存在");
         TaskRelatedModel targetTaskRelated = new TaskRelatedModel();
         targetTaskRelated.setInfoType(TaskRelatedEnum.FU.getValue());

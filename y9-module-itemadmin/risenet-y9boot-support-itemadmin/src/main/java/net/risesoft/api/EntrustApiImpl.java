@@ -11,7 +11,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.entrust.EntrustApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.entrust.Entrust;
 import net.risesoft.model.itemadmin.EntrustModel;
 import net.risesoft.pojo.Y9Result;
@@ -31,8 +30,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class EntrustApiImpl implements EntrustApi {
 
     private final EntrustService entrustService;
-
-    private final PositionApi positionApi;
 
     /**
      * 删除委托

@@ -98,9 +98,8 @@ public class Y9FormRestController {
     @PostMapping(value = "/delChildTableRow")
     public Y9Result<String> delChildTableRow(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String tableId, @RequestParam @NotBlank String guid) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            Y9Result<Object> y9Result = formDataApi.delChildTableRow(tenantId, formId, tableId, guid);
+            Y9Result<Object> y9Result = formDataApi.delChildTableRow(formId, tableId, guid);
             if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("删除成功");
             }
@@ -119,8 +118,7 @@ public class Y9FormRestController {
      */
     @PostMapping(value = "/delPreFormData")
     public Y9Result<Object> delPreFormData(@RequestParam @NotBlank String formId, @RequestParam @NotBlank String guid) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return formDataApi.delPreFormData(tenantId, formId, guid);
+        return formDataApi.delPreFormData(formId, guid);
 
     }
 
@@ -135,9 +133,7 @@ public class Y9FormRestController {
     @GetMapping(value = "/getAllFieldPerm")
     public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam @NotBlank String formId,
         @RequestParam(required = false) String taskDefKey, @RequestParam @NotBlank String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9FlowableHolder.getPositionId();
-        return formDataApi.getAllFieldPerm(tenantId, userId, formId, taskDefKey, processDefinitionId);
+        return formDataApi.getAllFieldPerm(Y9FlowableHolder.getPositionId(), formId, taskDefKey, processDefinitionId);
     }
 
     /**
@@ -158,8 +154,7 @@ public class Y9FormRestController {
      */
     @GetMapping(value = "/getBindPreFormByItemId")
     public Y9Result<BindFormModel> getBindPreFormByItemId(@RequestParam @NotBlank String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return formDataApi.getBindPreFormByItemId(tenantId, itemId);
+        return formDataApi.getBindPreFormByItemId(itemId);
     }
 
     /**
@@ -172,10 +167,8 @@ public class Y9FormRestController {
     @GetMapping(value = "/getChildFormData")
     public Y9Result<List<Map<String, Object>>> getChildFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String parentProcessSerialNumber) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            return formDataApi.getChildFormData(tenantId, Y9FlowableHolder.getPositionId(), formId,
-                parentProcessSerialNumber);
+            return formDataApi.getChildFormData(Y9FlowableHolder.getPositionId(), formId, parentProcessSerialNumber);
         } catch (Exception e) {
             LOGGER.error("获取子表单数据失败", e);
         }
@@ -193,9 +186,8 @@ public class Y9FormRestController {
     @GetMapping(value = "/getChildTableData")
     public Y9Result<List<Map<String, Object>>> getChildTableData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String tableId, @RequestParam @NotBlank String processSerialNumber) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            return formDataApi.getChildTableData(tenantId, formId, tableId, processSerialNumber);
+            return formDataApi.getChildTableData(formId, tableId, processSerialNumber);
         } catch (Exception e) {
             LOGGER.error("获取子表单数据失败", e);
         }
@@ -215,9 +207,8 @@ public class Y9FormRestController {
     public Y9Result<FieldPermModel> getFieldPerm(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String fieldName, @RequestParam(required = false) String taskDefKey,
         @RequestParam @NotBlank String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9FlowableHolder.getPositionId();
-        return formDataApi.getFieldPerm(tenantId, userId, formId, fieldName, taskDefKey, processDefinitionId);
+        return formDataApi.getFieldPerm(Y9FlowableHolder.getPositionId(), formId, fieldName, taskDefKey,
+            processDefinitionId);
     }
 
     /**
@@ -233,7 +224,7 @@ public class Y9FormRestController {
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinitionModel =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-        return formDataApi.findFormItemBind(tenantId, itemId, processDefinitionModel.getId(), "");
+        return formDataApi.findFormItemBind(itemId, processDefinitionModel.getId(), "");
     }
 
     /**
@@ -246,8 +237,7 @@ public class Y9FormRestController {
     @GetMapping(value = "/getFormData")
     public Y9Result<Map<String, Object>> getFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String processSerialNumber) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return formDataApi.getFormData(tenantId, formId, processSerialNumber);
+        return formDataApi.getFormData(formId, processSerialNumber);
     }
 
     /**
@@ -258,8 +248,7 @@ public class Y9FormRestController {
      */
     @GetMapping(value = "/getFormField")
     public Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam @NotBlank String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return formDataApi.getFormField(tenantId, itemId);
+        return formDataApi.getFormField(itemId);
 
     }
 
@@ -271,8 +260,7 @@ public class Y9FormRestController {
      */
     @GetMapping(value = "/getFormFieldByFormId")
     public Y9Result<List<FormFieldDefineModel>> getFormFieldByFormId(@RequestParam @NotBlank String formId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return formDataApi.getFormFieldDefine(tenantId, formId);
+        return formDataApi.getFormFieldDefine(formId);
     }
 
     /**
@@ -286,8 +274,7 @@ public class Y9FormRestController {
     @GetMapping(value = "/getFormItemBind")
     public Y9Result<List<BindFormModel>> getFormItemBind(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefinitionKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return formDataApi.findFormItemBind(tenantId, itemId, processDefinitionId, taskDefinitionKey);
+        return formDataApi.findFormItemBind(itemId, processDefinitionId, taskDefinitionKey);
     }
 
     /**
@@ -298,8 +285,7 @@ public class Y9FormRestController {
      */
     @GetMapping(value = "/getFormJson")
     public Y9Result<String> getFormJson(@RequestParam @NotBlank String formId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return formDataApi.getFormJson(tenantId, formId);
+        return formDataApi.getFormJson(formId);
     }
 
     /**
@@ -412,8 +398,7 @@ public class Y9FormRestController {
      */
     @GetMapping(value = "/getPreFormDataByFormId")
     public Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(@RequestParam @NotBlank String formId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return formDataApi.getPreFormDataByFormId(tenantId, formId);
+        return formDataApi.getPreFormDataByFormId(formId);
 
     }
 
@@ -427,9 +412,8 @@ public class Y9FormRestController {
     @PostMapping(value = "/saveChildFormData")
     public Y9Result<String> saveChildFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String jsonData) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            formDataApi.saveChildTableData(tenantId, formId, jsonData);
+            formDataApi.saveChildTableData(formId, jsonData);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("保存子表单数据失败", e);
@@ -452,7 +436,7 @@ public class Y9FormRestController {
         @RequestParam @NotBlank String jsonData) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            formDataApi.saveChildTableData(tenantId, formId, tableId, processSerialNumber, jsonData);
+            formDataApi.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("保存子表单数据失败", e);
@@ -471,9 +455,8 @@ public class Y9FormRestController {
     @PostMapping(value = "/saveFormData")
     public Y9Result<String> saveFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String jsonData) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            formDataApi.saveFormData(tenantId, formId, jsonData);
+            formDataApi.saveFormData(formId, jsonData);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("保存表单数据失败", e);
@@ -494,7 +477,7 @@ public class Y9FormRestController {
         @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String jsonData) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            String processSerialNumber = formDataApi.savePreFormData(tenantId, itemId, formId, jsonData).getData();
+            String processSerialNumber = formDataApi.savePreFormData(itemId, formId, jsonData).getData();
             return Y9Result.success(processSerialNumber, "保存成功");
         } catch (Exception e) {
             LOGGER.error("保存前置表单数据失败", e);
@@ -512,7 +495,7 @@ public class Y9FormRestController {
     @PostMapping(value = "/updateFormData")
     public Y9Result<String> updateFormData(@RequestParam @NotBlank String guid,
         @RequestParam @NotBlank String jsonData) {
-        return formDataApi.updateFormData(Y9LoginUserHolder.getTenantId(), guid, jsonData);
+        return formDataApi.updateFormData(guid, jsonData);
     }
 
 }

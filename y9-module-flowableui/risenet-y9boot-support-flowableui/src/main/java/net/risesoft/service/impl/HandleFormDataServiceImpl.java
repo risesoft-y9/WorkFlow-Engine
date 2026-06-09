@@ -12,7 +12,6 @@ import net.risesoft.api.itemadmin.form.FormDataApi;
 import net.risesoft.enums.ItemLeaveTypeEnum;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.HandleFormDataService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -25,7 +24,7 @@ public class HandleFormDataServiceImpl implements HandleFormDataService {
     @Override
     public void execute(String itemId, List<Map<String, Object>> items, List<String> processSerialNumbers) {
         Y9Result<Map<String, Map<String, Object>>> formDataResult =
-            formDataApi.getDataByProcessSerialNumbers(Y9LoginUserHolder.getTenantId(), itemId, processSerialNumbers);
+            formDataApi.getDataByProcessSerialNumbers(itemId, processSerialNumbers);
         if (formDataResult.isSuccess()) {
             Map<String, Map<String, Object>> formDataResultData = formDataResult.getData();
             items.forEach(map -> {
