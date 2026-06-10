@@ -73,73 +73,13 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
         this.signDeptDetailService = signDeptDetailService;
     }
 
-    @Async
-    @Override
-    public void forwardingHandle(final String tenantId, final String orgUnitId, final TaskModel task,
-        final String executionId, final String processInstanceId, final FlowElementModel flowElementModel,
-        final String sponsorGuid, final ProcessParam processParam, List<String> userList) {
-        try {
-            Y9LoginUserHolder.setTenantId(tenantId);
-            Position position = positionApi.get(tenantId, orgUnitId).getData();
-            Y9FlowableHolder.setPosition(position);
-            // 更新自定义历程结束时间
-            updateProcessTrackEndTime(task);
-            // 处理任务变量和子流程信息
-            handleTaskAndSubProcess(tenantId, position, task, executionId, processInstanceId, flowElementModel,
-                sponsorGuid, processParam);
-        } catch (Exception e) {
-            LOGGER.warn("*****forwardingHandle发送发生异常*****", e);
-        }
-    }
-
-    /**
-     * 更新流程跟踪结束时间
-     */
-    private void updateProcessTrackEndTime(TaskModel task) {
-        try {
-            List<ProcessTrack> ptModelList = processTrackRepository.findByTaskId(task.getId());
-            for (ProcessTrack ptModel : ptModelList) {
-                if (StringUtils.isBlank(ptModel.getEndTime())) {
-                    ptModel.setEndTime(Y9DateTimeUtils.formatCurrentDateTime());
-                    processTrackRepository.save(ptModel);
-                }
-            }
-        } catch (Exception e) {
-            LOGGER.warn("更新流程跟踪结束时间失败, taskId: {}", task.getId(), e);
-        }
-    }
-
-    /**
-     * 处理任务变量和子流程信息
-     */
-    private void handleTaskAndSubProcess(String tenantId, OrgUnit orgUnit, TaskModel task, String executionId,
-        String processInstanceId, FlowElementModel flowElementModel, String sponsorGuid, ProcessParam processParam) {
-        boolean isSubProcess = isSubProcessElement(flowElementModel);
-        List<TaskModel> nextTaskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-        List<SignDeptDetail> detailList = new ArrayList<>();
-        for (TaskModel taskNext : nextTaskList) {
-            // 设置任务变量
-            setTaskVariables(tenantId, orgUnit, taskNext, flowElementModel, sponsorGuid, executionId);
-            // 处理子流程信息
-            if (isSubProcess) {
-                SignDeptDetail signDeptDetail = buildSignDeptDetail(tenantId, orgUnit, task, taskNext, processParam);
-                if (signDeptDetail != null) {
-                    detailList.add(signDeptDetail);
-                }
-            }
-        }
-        // 保存子流程详情
-        if (isSubProcess && !detailList.isEmpty()) {
-            detailList.forEach(signDeptDetailService::saveOrUpdate);
-        }
-    }
-
     /**
      * 构建签署部门详情
      */
-    private SignDeptDetail buildSignDeptDetail(String tenantId, OrgUnit orgUnit, TaskModel task, TaskModel taskNext,
+    private SignDeptDetail buildSignDeptDetail(OrgUnit orgUnit, TaskModel task, TaskModel taskNext,
         ProcessParam processParam) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, taskNext.getAssignee()).getData();
             if (bureau == null) {
                 return null;
@@ -163,34 +103,6 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
     }
 
     /**
-     * 设置任务变量
-     */
-    private void setTaskVariables(String tenantId, OrgUnit orgUnit, TaskModel taskNext,
-        FlowElementModel flowElementModel, String sponsorGuid, String executionId) {
-        Map<String, Object> vars = createTaskVariables(orgUnit, flowElementModel, taskNext, sponsorGuid);
-        Boolean isSubProcessChildNode = processDefinitionApi
-            .isSubProcessChildNode(tenantId, taskNext.getProcessDefinitionId(), taskNext.getTaskDefinitionKey())
-            .getData();
-        boolean isSubProcess = isSubProcessElement(flowElementModel);
-        if (isSubProcessChildNode && !isSubProcess) {
-            // 不是发送子流程，且taskNext是子流程节点，只更新对应的子流程任务变量
-            if (executionId.equals(taskNext.getExecutionId())) {
-                variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
-            }
-        } else {
-            // 发送子流程，或其他子流程外的节点，更新所有任务变量
-            variableApi.setVariablesLocal(tenantId, taskNext.getId(), vars);
-        }
-    }
-
-    /**
-     * 判断是否为子流程元素
-     */
-    private boolean isSubProcessElement(FlowElementModel flowElementModel) {
-        return null != flowElementModel && SysVariables.SUBPROCESS.equals(flowElementModel.getType());
-    }
-
-    /**
      * 创建任务变量
      */
     private Map<String, Object> createTaskVariables(OrgUnit orgUnit, FlowElementModel flowElementModel,
@@ -205,5 +117,96 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
             }
         }
         return vars;
+    }
+
+    @Async
+    @Override
+    public void forwardingHandle(final String tenantId, final String orgUnitId, final TaskModel task,
+        final String executionId, final String processInstanceId, final FlowElementModel flowElementModel,
+        final String sponsorGuid, final ProcessParam processParam, List<String> userList) {
+        try {
+            Y9LoginUserHolder.setTenantId(tenantId);
+            Position position = positionApi.get(tenantId, orgUnitId).getData();
+            Y9FlowableHolder.setPosition(position);
+            // 更新自定义历程结束时间
+            updateProcessTrackEndTime(task);
+            // 处理任务变量和子流程信息
+            handleTaskAndSubProcess(position, task, executionId, processInstanceId, flowElementModel, sponsorGuid,
+                processParam);
+        } catch (Exception e) {
+            LOGGER.warn("*****forwardingHandle发送发生异常*****", e);
+        }
+    }
+
+    /**
+     * 处理任务变量和子流程信息
+     */
+    private void handleTaskAndSubProcess(OrgUnit orgUnit, TaskModel task, String executionId, String processInstanceId,
+        FlowElementModel flowElementModel, String sponsorGuid, ProcessParam processParam) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        boolean isSubProcess = isSubProcessElement(flowElementModel);
+        List<TaskModel> nextTaskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<SignDeptDetail> detailList = new ArrayList<>();
+        for (TaskModel taskNext : nextTaskList) {
+            // 设置任务变量
+            setTaskVariables(orgUnit, taskNext, flowElementModel, sponsorGuid, executionId);
+            // 处理子流程信息
+            if (isSubProcess) {
+                SignDeptDetail signDeptDetail = buildSignDeptDetail(orgUnit, task, taskNext, processParam);
+                if (signDeptDetail != null) {
+                    detailList.add(signDeptDetail);
+                }
+            }
+        }
+        // 保存子流程详情
+        if (isSubProcess && !detailList.isEmpty()) {
+            detailList.forEach(signDeptDetailService::saveOrUpdate);
+        }
+    }
+
+    /**
+     * 判断是否为子流程元素
+     */
+    private boolean isSubProcessElement(FlowElementModel flowElementModel) {
+        return null != flowElementModel && SysVariables.SUBPROCESS.equals(flowElementModel.getType());
+    }
+
+    /**
+     * 设置任务变量
+     */
+    private void setTaskVariables(OrgUnit orgUnit, TaskModel taskNext, FlowElementModel flowElementModel,
+        String sponsorGuid, String executionId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        Map<String, Object> vars = createTaskVariables(orgUnit, flowElementModel, taskNext, sponsorGuid);
+        Boolean isSubProcessChildNode = processDefinitionApi
+            .isSubProcessChildNode(tenantId, taskNext.getProcessDefinitionId(), taskNext.getTaskDefinitionKey())
+            .getData();
+        boolean isSubProcess = isSubProcessElement(flowElementModel);
+        if (isSubProcessChildNode && !isSubProcess) {
+            // 不是发送子流程，且taskNext是子流程节点，只更新对应的子流程任务变量
+            if (executionId.equals(taskNext.getExecutionId())) {
+                variableApi.setVariablesLocal(taskNext.getId(), vars);
+            }
+        } else {
+            // 发送子流程，或其他子流程外的节点，更新所有任务变量
+            variableApi.setVariablesLocal(taskNext.getId(), vars);
+        }
+    }
+
+    /**
+     * 更新流程跟踪结束时间
+     */
+    private void updateProcessTrackEndTime(TaskModel task) {
+        try {
+            List<ProcessTrack> ptModelList = processTrackRepository.findByTaskId(task.getId());
+            for (ProcessTrack ptModel : ptModelList) {
+                if (StringUtils.isBlank(ptModel.getEndTime())) {
+                    ptModel.setEndTime(Y9DateTimeUtils.formatCurrentDateTime());
+                    processTrackRepository.save(ptModel);
+                }
+            }
+        } catch (Exception e) {
+            LOGGER.warn("更新流程跟踪结束时间失败, taskId: {}", task.getId(), e);
+        }
     }
 }

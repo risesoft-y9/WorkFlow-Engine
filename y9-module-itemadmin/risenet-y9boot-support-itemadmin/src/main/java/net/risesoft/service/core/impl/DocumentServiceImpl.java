@@ -888,8 +888,9 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 根据条件表达式筛选符合条件的目标节点
      */
-    private List<TargetModel> filterTargetNodesByCondition(String tenantId, List<TargetModel> targetNodes,
+    private List<TargetModel> filterTargetNodesByCondition(List<TargetModel> targetNodes,
         Map<String, Object> variables) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> matchedTargetNodes = new ArrayList<>();
         for (TargetModel targetNode : targetNodes) {
             try {
@@ -1399,7 +1400,7 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理匹配到的目标节点
      */
     private Y9Result<TargetModel> handleMatchedTargetNodes(Y9Result<TargetModel> result,
-        List<TargetModel> matchedTargetNodes, String tenantId, String taskId, Map<String, Object> variables) {
+        List<TargetModel> matchedTargetNodes, String taskId, Map<String, Object> variables) {
         if (matchedTargetNodes.isEmpty()) {
             result.setMsg("未找到符合要求的目标路由");
             return result;
@@ -1411,7 +1412,7 @@ public class DocumentServiceImpl implements DocumentService {
         // 设置流程变量
         if (StringUtils.isNotBlank(taskId)) {
             try {
-                variableApi.setVariables(tenantId, taskId, variables);
+                variableApi.setVariables(taskId, variables);
             } catch (Exception e) {
                 LOGGER.error("设置流程变量失败: taskId={}", taskId, e);
             }
@@ -2019,9 +2020,9 @@ public class DocumentServiceImpl implements DocumentService {
 
         // 处理退回上一步按钮，通过按钮配置显示后，进一步处理是否显示退回按钮
         if (buttonList.contains(ItemButton.tuiHui)) {
-            String returnDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-            String takeBackDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-            String repositionDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+            String returnDoc = variableApi.getVariableLocal(taskId, SysVariables.ROLLBACK).getData();
+            String takeBackDoc = variableApi.getVariableLocal(taskId, SysVariables.TAKEBACK).getData();
+            String repositionDoc = variableApi.getVariableLocal(taskId, SysVariables.REPOSITION).getData();
             // 当前任务为退回件,或者收回件都不能再退回，不显示退回按钮
             if (returnDoc != null || takeBackDoc != null || repositionDoc != null) {
                 buttonList = buttonList.stream()
@@ -2099,9 +2100,9 @@ public class DocumentServiceImpl implements DocumentService {
             processNumericVariables(variables);
             LOGGER.info("表单变量数据: {}", Y9JsonUtil.writeValueAsString(variables));
             // 根据条件表达式筛选符合条件的目标节点
-            List<TargetModel> matchedTargetNodes = filterTargetNodesByCondition(tenantId, targetNodes, variables);
+            List<TargetModel> matchedTargetNodes = filterTargetNodesByCondition(targetNodes, variables);
             // 处理匹配结果
-            return handleMatchedTargetNodes(result, matchedTargetNodes, tenantId, taskId, variables);
+            return handleMatchedTargetNodes(result, matchedTargetNodes, taskId, variables);
 
         } catch (Exception e) {
             LOGGER.error("解析目标路由失败！", e);
@@ -2280,7 +2281,7 @@ public class DocumentServiceImpl implements DocumentService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             // 设置流程变量
             if (variables != null && !variables.isEmpty()) {
-                variableApi.setVariables(tenantId, taskId, variables);
+                variableApi.setVariables(taskId, variables);
                 handleParallelSubprocess(variables, tenantId, model, routeToTaskId, userList);
             }
             // 执行发送操作
@@ -2306,7 +2307,7 @@ public class DocumentServiceImpl implements DocumentService {
             startProcessByTaskKey(itemId, processSerialNumber, processDefinitionKey, startRouteToTaskId, List.of());
         String taskId = (String)startMap.get("taskId");
         if (!variables.isEmpty()) {
-            variableApi.setVariables(tenantId, taskId, variables);
+            variableApi.setVariables(taskId, variables);
         }
         return start4Forwarding(taskId, routeToTaskId, sponsorGuid, userList);
     }
@@ -2763,8 +2764,7 @@ public class DocumentServiceImpl implements DocumentService {
             Map<String, Object> variables =
                 CommonOpt.setVariables(userId, orgUnit.getName(), routeToTaskId, userList, flowElementModel);
             String subProcessStr =
-                variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, ItemConsts.SUBPROCESSNUM_KEY)
-                    .getData();
+                variableApi.getVariableByProcessInstanceId(processInstanceId, ItemConsts.SUBPROCESSNUM_KEY).getData();
             if (subProcessStr != null && SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {// 并行节点才执行
                 // xxx并行子流程，userChoice只传了一个岗位id,根据subProcessNum，添加同一个岗位id,生成多个并行任务。
                 String userChoice = userList.get(0);

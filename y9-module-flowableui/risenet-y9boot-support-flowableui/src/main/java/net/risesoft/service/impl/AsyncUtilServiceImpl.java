@@ -2,6 +2,7 @@ package net.risesoft.service.impl;
 
 import java.util.List;
 
+
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -11,7 +12,6 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.ChaoSongApi;
 import net.risesoft.api.itemadmin.OfficeFollowApi;
-import net.risesoft.api.itemadmin.core.ActRuDetailApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
@@ -51,8 +51,6 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     private final ProcessDefinitionApi processDefinitionApi;
 
     private final VariableApi variableApi;
-
-    private final ActRuDetailApi actRuDetailApi;
 
     @Async
     @Override
@@ -531,7 +529,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 taskApi.findByProcessInstanceId(tenantId, historicTaskInstanceModel.getProcessInstanceId()).getData();
             TaskModel previousTask = taskList.get(0);
             String taskSenderId =
-                variableApi.getVariableLocal(tenantId, previousTask.getProcessInstanceId(), SysVariables.TASK_SENDER_ID)
+                variableApi.getVariableLocal(previousTask.getProcessInstanceId(), SysVariables.TASK_SENDER_ID)
                     .getData();
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessInstanceId(historicTaskInstanceModel.getProcessInstanceId()).getData();

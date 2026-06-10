@@ -3,7 +3,6 @@ package net.risesoft.api;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -339,7 +338,7 @@ public class DocumentApiImpl implements DocumentApi {
             y9Result = documentService.saveAndForwarding(forwardingDTO);
         } else {
             if (null != forwardingDTO.getVariables()) {
-                variableApi.setVariables(tenantId, forwardingDTO.getTaskId(), forwardingDTO.getVariables());
+                variableApi.setVariables(forwardingDTO.getTaskId(), forwardingDTO.getVariables());
             }
             y9Result = documentService.forwarding(forwardingDTO);
         }
@@ -376,13 +375,12 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam String processDefinitionKey, @RequestParam String userChoice, String sponsorGuid,
         @RequestParam String routeToTaskId, @RequestParam String startRouteToTaskId,
         @RequestBody Map<String, Object> variables) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
             return documentService.saveAndForwardingByTaskKey(itemId, processSerialNumber, processDefinitionKey,
                 userChoice, sponsorGuid, routeToTaskId, startRouteToTaskId, variables);
         } else {
             if (!variables.isEmpty()) {
-                variableApi.setVariables(tenantId, taskId, variables);
+                variableApi.setVariables(taskId, variables);
             }
             ForwardingDTO forwardingDTO = new ForwardingDTO();
             forwardingDTO.setTaskId(taskId);

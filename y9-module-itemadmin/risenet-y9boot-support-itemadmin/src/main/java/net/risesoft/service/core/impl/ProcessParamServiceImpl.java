@@ -35,6 +35,20 @@ public class ProcessParamServiceImpl implements ProcessParamService {
 
     private final VariableApi variableApi;
 
+    /**
+     * 创建新的流程参数
+     */
+    private ProcessParam createNewProcessParam(ProcessParam processParam) {
+        ProcessParam newProcessParam = new ProcessParam();
+        newProcessParam.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        // 设置所有字段
+        updateProcessParamFields(newProcessParam, processParam);
+        // 设置默认标题
+        newProcessParam.setTitle(StringUtils.isBlank(processParam.getTitle()) ? "暂无标题" : processParam.getTitle());
+        processParamRepository.save(newProcessParam);
+        return newProcessParam;
+    }
+
     @Override
     @Transactional
     public void deleteByPprocessInstanceId(String processInstanceId) {
@@ -55,6 +69,28 @@ public class ProcessParamServiceImpl implements ProcessParamService {
     @Override
     public ProcessParam findByProcessSerialNumber(String processSerialNumber) {
         return processParamRepository.findByProcessSerialNumber(processSerialNumber);
+    }
+
+    /**
+     * 处理搜索字段更新
+     */
+    private void handleSearchTermUpdate(ProcessParam oldProcessParam, ProcessParam processParam) {
+        String processInstanceId = processParam.getProcessInstanceId();
+        if (StringUtils.isBlank(processInstanceId)) {
+            return;
+        }
+        try {
+            boolean shouldUpdate = oldProcessParam.getSearchTerm() != null && processParam.getSearchTerm() != null
+                && !oldProcessParam.getSearchTerm().equals(processParam.getSearchTerm());
+            // 搜索字段不一样才修改
+            if (shouldUpdate) {
+                Map<String, Object> val = new HashMap<>();
+                val.put("val", processParam.getSearchTerm());
+                variableApi.setVariableByProcessInstanceId(processInstanceId, "searchTerm", val);
+            }
+        } catch (Exception e) {
+            LOGGER.error("更新搜索字段失败: processInstanceId={}", processInstanceId, e);
+        }
     }
 
     @Override
@@ -86,6 +122,40 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         }
     }
 
+    @Override
+    @Transactional
+    public void setUpCompleter(String processInstanceId) {
+        ProcessParam pp = processParamRepository.findByProcessInstanceId(processInstanceId);
+        if (null != pp) {
+            UserInfo person = Y9LoginUserHolder.getUserInfo();
+            pp.setCompleter(person.getName());
+            processParamRepository.save(pp);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateByProcessSerialNumber(String processSerialNumber, String processInstanceId) {
+        ProcessParam pp = processParamRepository.findByProcessSerialNumber(processSerialNumber);
+        if (null != pp) {
+            pp.setProcessInstanceId(processInstanceId);
+            processParamRepository.save(pp);
+            Map<String, Object> val = new HashMap<>();
+            val.put("val", pp.getSearchTerm());
+            variableApi.setVariableByProcessInstanceId(processInstanceId, "searchTerm", val);
+        }
+    }
+
+    @Override
+    @Transactional
+    public void updateCustomItem(String processSerialNumber, boolean b) {
+        try {
+            processParamRepository.updateCustomItem(processSerialNumber, b);
+        } catch (Exception e) {
+            LOGGER.error("更新自定义项失败: processSerialNumber={}", processSerialNumber, e);
+        }
+    }
+
     /**
      * 更新已存在的流程参数
      */
@@ -97,20 +167,6 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         // 处理搜索字段更新
         handleSearchTermUpdate(oldProcessParam, processParam);
         return oldProcessParam;
-    }
-
-    /**
-     * 创建新的流程参数
-     */
-    private ProcessParam createNewProcessParam(ProcessParam processParam) {
-        ProcessParam newProcessParam = new ProcessParam();
-        newProcessParam.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        // 设置所有字段
-        updateProcessParamFields(newProcessParam, processParam);
-        // 设置默认标题
-        newProcessParam.setTitle(StringUtils.isBlank(processParam.getTitle()) ? "暂无标题" : processParam.getTitle());
-        processParamRepository.save(newProcessParam);
-        return newProcessParam;
     }
 
     /**
@@ -152,63 +208,5 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         target.setItemId(source.getItemId());
         target.setItemName(source.getItemName());
         target.setProcessSerialNumber(source.getProcessSerialNumber());
-    }
-
-    /**
-     * 处理搜索字段更新
-     */
-    private void handleSearchTermUpdate(ProcessParam oldProcessParam, ProcessParam processParam) {
-        String processInstanceId = processParam.getProcessInstanceId();
-        if (StringUtils.isBlank(processInstanceId)) {
-            return;
-        }
-        try {
-            boolean shouldUpdate = oldProcessParam.getSearchTerm() != null && processParam.getSearchTerm() != null
-                && !oldProcessParam.getSearchTerm().equals(processParam.getSearchTerm());
-            // 搜索字段不一样才修改
-            if (shouldUpdate) {
-                Map<String, Object> val = new HashMap<>();
-                val.put("val", processParam.getSearchTerm());
-                variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId,
-                    "searchTerm", val);
-            }
-        } catch (Exception e) {
-            LOGGER.error("更新搜索字段失败: processInstanceId={}", processInstanceId, e);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void setUpCompleter(String processInstanceId) {
-        ProcessParam pp = processParamRepository.findByProcessInstanceId(processInstanceId);
-        if (null != pp) {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            pp.setCompleter(person.getName());
-            processParamRepository.save(pp);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void updateByProcessSerialNumber(String processSerialNumber, String processInstanceId) {
-        ProcessParam pp = processParamRepository.findByProcessSerialNumber(processSerialNumber);
-        if (null != pp) {
-            pp.setProcessInstanceId(processInstanceId);
-            processParamRepository.save(pp);
-            Map<String, Object> val = new HashMap<>();
-            val.put("val", pp.getSearchTerm());
-            variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId, "searchTerm",
-                val);
-        }
-    }
-
-    @Override
-    @Transactional
-    public void updateCustomItem(String processSerialNumber, boolean b) {
-        try {
-            processParamRepository.updateCustomItem(processSerialNumber, b);
-        } catch (Exception e) {
-            LOGGER.error("更新自定义项失败: processSerialNumber={}", processSerialNumber, e);
-        }
     }
 }

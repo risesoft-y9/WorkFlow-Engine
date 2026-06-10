@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -176,7 +175,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
                 hti.getTaskDefinitionKey(), userAndDeptIdList, flowElementModel);
             Map<String, Object> val = new HashMap<>();
             val.put("val", SysVariables.REFUSE_CLAIM_ROLLBACK);
-            variableApi.setVariableLocal(tenantId, taskId, SysVariables.REFUSE_CLAIM_ROLLBACK, val);
+            variableApi.setVariableLocal(taskId, SysVariables.REFUSE_CLAIM_ROLLBACK, val);
             taskApi.completeWithVariables(tenantId, taskId, orgUnitId, variables);
             /*
              * 如果上一任务是并行，则回退时设置主办人
@@ -187,7 +186,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
                 for (TaskModel taskModelNext : taskNextList1) {
                     Map<String, Object> val1 = new HashMap<>();
                     val1.put("val", assignee.split(SysVariables.COLON)[0]);
-                    variableApi.setVariableLocal(tenantId, taskModelNext.getId(), SysVariables.PARALLEL_SPONSOR, val1);
+                    variableApi.setVariableLocal(taskModelNext.getId(), SysVariables.PARALLEL_SPONSOR, val1);
                 }
             }
         } catch (Exception e) {
