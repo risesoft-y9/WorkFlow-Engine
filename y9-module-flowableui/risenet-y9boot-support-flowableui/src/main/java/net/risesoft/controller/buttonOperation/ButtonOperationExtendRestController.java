@@ -296,9 +296,8 @@ public class ButtonOperationExtendRestController {
                 }
                 processParamModel.setDescription(description);
                 processParamApi.saveOrUpdate(processParamModel);
-
-                Y9Result<String> y9Result = documentApi.forwarding(Y9LoginUserHolder.getTenantId(),
-                    Y9FlowableHolder.getPositionId(), tpArr[0], userChoice, routeToTaskId, sponsorHandle, sponsorGuid);
+                Y9Result<String> y9Result =
+                    documentApi.forwarding(tpArr[0], userChoice, routeToTaskId, sponsorHandle, sponsorGuid);
                 if (y9Result.isSuccess()) {
                     success.getAndIncrement();
                 } else {
@@ -324,9 +323,7 @@ public class ButtonOperationExtendRestController {
             if (null == task) {
                 return Y9Result.failure("当前待办已处理！");
             }
-            List<ItemButtonModel> buttonList =
-                documentApi.getButtons(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), taskId)
-                    .getData();
+            List<ItemButtonModel> buttonList = documentApi.getButtons(taskId).getData();
             return Y9Result.success(buttonList, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取编辑办件数据失败", e);

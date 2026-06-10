@@ -27,8 +27,6 @@ import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 抄送
@@ -154,8 +152,8 @@ public class ChaoSongRestController {
         try {
             Map<String, Object> resMap = new HashMap<>(16);
             if (StringUtils.isBlank(processInstanceId)) {
-                Y9Result<StartProcessResultModel> y9Result = documentApi.startProcess(Y9LoginUserHolder.getTenantId(),
-                    Y9FlowableHolder.getPositionId(), itemId, processSerialNumber, processDefinitionKey);
+                Y9Result<StartProcessResultModel> y9Result =
+                    documentApi.startProcess(itemId, processSerialNumber, processDefinitionKey);
                 if (y9Result.isSuccess()) {
                     processInstanceId = y9Result.getData().getProcessInstanceId();
                     String taskId = y9Result.getData().getTaskId();

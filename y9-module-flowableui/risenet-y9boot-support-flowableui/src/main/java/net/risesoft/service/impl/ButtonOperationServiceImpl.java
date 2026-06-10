@@ -71,7 +71,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     @Transactional
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9FlowableHolder.getPositionId();
         String userName = Y9FlowableHolder.getPosition().getName();
         Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotBlank(infoOvert)) {
@@ -84,7 +83,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         /*
           1办结
          */
-        documentApi.complete(tenantId, positionId, taskId);
+        documentApi.complete(taskId);
 
         boolean isSubProcessChildNode = processDefinitionApi
             .isSubProcessChildNode(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
@@ -134,8 +133,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public Y9Result<String> complete4Sub(String taskId, String taskDefName, String desc) throws Exception {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9FlowableHolder.getPositionId();
         String mainSenderId =
             variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAIN_SENDER_ID).getData();
         if (StringUtils.isBlank(mainSenderId)) {
@@ -146,7 +143,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
          */
         List<String> userList = new ArrayList<>();
         userList.add(Y9JsonUtil.readValue(mainSenderId, String.class));
-        documentApi.completeSub(tenantId, positionId, taskId, userList);
+        documentApi.completeSub(taskId, userList);
         return Y9Result.successMsg("办结成功！");
     }
 

@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -13,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.core.DocumentApi;
-import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.dto.itemadmin.ForwardingDTO;
@@ -27,8 +26,6 @@ import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.itemadmin.core.DocumentDetailModel;
-import net.risesoft.model.platform.org.Position;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.chaosong.ChaoSongInfoService;
@@ -52,8 +49,6 @@ public class DocumentApiImpl implements DocumentApi {
 
     private final DocumentService documentService;
 
-    private final PositionApi positionApi;
-
     private final VariableApi variableApi;
 
     private final AsyncUtilService asyncUtilService;
@@ -64,23 +59,15 @@ public class DocumentApiImpl implements DocumentApi {
 
     private final ChaoSongInfoService chaoSongInfoService;
 
-    private final UserApi userApi;
-
     /**
      * 新建办件
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
      * @since 9.6.6
      */
     @Override
-    public Y9Result<DocumentDetailModel> add(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<DocumentDetailModel> add(@RequestParam String itemId) {
         DocumentDetailModel model = documentService.add(itemId);
         return Y9Result.success(model);
     }
@@ -88,19 +75,13 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 新建办件
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param mobile 是否手机端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情
      * @since 9.6.6
      */
     @Override
-    public Y9Result<OpenDataModel> add4Old(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId, @RequestParam boolean mobile) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<OpenDataModel> add4Old(@RequestParam String itemId, @RequestParam boolean mobile) {
         OpenDataModel model = documentService.add4Old(itemId, mobile);
         return Y9Result.success(model);
     }
@@ -108,8 +89,6 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 新建 用于一个开始节点经过排他网关到达多个任务节点的情况，具体到达哪个任务节点开始，需要由用户选择
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param startTaskDefKey 开始任务节点
      * @param mobile 是否手机端
@@ -117,12 +96,8 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.8
      */
     @Override
-    public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam String tenantId,
-        @RequestParam String orgUnitId, @RequestParam String itemId, @RequestParam String startTaskDefKey,
-        @RequestParam boolean mobile) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam String itemId,
+        @RequestParam String startTaskDefKey, @RequestParam boolean mobile) {
         DocumentDetailModel model = documentService.addWithStartTaskDefKey(itemId, startTaskDefKey, mobile);
         return Y9Result.success(model);
     }
@@ -130,19 +105,13 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 办件办结
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> complete(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String taskId) throws Exception {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<Object> complete(@RequestParam String taskId) throws Exception {
         documentService.complete(taskId);
         return Y9Result.success();
     }
@@ -150,19 +119,14 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 办件办结
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> completeSub(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String taskId, @RequestParam("userList") List<String> userList) throws Exception {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<Object> completeSub(@RequestParam String taskId, @RequestParam("userList") List<String> userList)
+        throws Exception {
         documentService.completeSub(taskId, userList);
         return Y9Result.success();
     }
@@ -170,9 +134,6 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 获取发送选人信息
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionKey 流程定义key
      * @param processDefinitionId 流程定义Id
@@ -183,15 +144,9 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<DocUserChoiseModel> docUserChoise(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String orgUnitId, @RequestParam String itemId, @RequestParam String processDefinitionKey,
-        @RequestParam String processDefinitionId, String taskId, @RequestParam String routeToTask,
-        String processInstanceId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<DocUserChoiseModel> docUserChoise(@RequestParam String itemId,
+        @RequestParam String processDefinitionKey, @RequestParam String processDefinitionId, String taskId,
+        @RequestParam String routeToTask, String processInstanceId) {
         DocUserChoiseModel model = documentService.docUserChoise(itemId, processDefinitionKey, processDefinitionId,
             taskId, routeToTask, processInstanceId);
         return Y9Result.success(model);
@@ -200,8 +155,6 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 编辑办件
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
      * @param taskId 任务id
      * @param processInstanceId 流程实例id
@@ -211,104 +164,15 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<OpenDataModel> edit(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itembox, @RequestParam(required = false) String taskId,
+    public Y9Result<OpenDataModel> edit(@RequestParam String itembox, @RequestParam(required = false) String taskId,
         @RequestParam String processInstanceId, @RequestParam String itemId, @RequestParam boolean mobile) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
         OpenDataModel model = documentService.edit(itembox, taskId, processInstanceId, itemId, mobile);
-        return Y9Result.success(model);
-    }
-
-    /**
-     * 编辑草稿
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param itemId 事项id
-     * @param processSerialNumber 流程编号
-     * @param mobile 是否手机端
-     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data 是流程详情数据
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<DocumentDetailModel> editDraft(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId, @RequestParam String processSerialNumber, @RequestParam boolean mobile) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        DocumentDetailModel model = documentService.editDraft(processSerialNumber, itemId, mobile);
-        return Y9Result.success(model);
-    }
-
-    /**
-     * 编辑办件
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<DocumentDetailModel> editDoing(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String processInstanceId, @RequestParam String documentId, @RequestParam boolean isAdmin,
-        @RequestParam ItemBoxTypeEnum itemBox, @RequestParam boolean mobile) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        DocumentDetailModel model = documentService.editDoing(processInstanceId, documentId, isAdmin, itemBox, mobile);
-        return Y9Result.success(model);
-    }
-
-    /**
-     * 编辑办件
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param processInstanceId 流程实例id
-     * @param documentId 打开的办件的id，主件的这个id为processSerialNumber，子件的这个id为signDeptDetailId
-     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<DocumentDetailModel> editDone(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String processInstanceId, @RequestParam String documentId, @RequestParam boolean isAdmin,
-        @RequestParam ItemBoxTypeEnum itemBox, @RequestParam boolean mobile) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        DocumentDetailModel model = documentService.editDone(processInstanceId, documentId, isAdmin, itemBox, mobile);
-        return Y9Result.success(model);
-    }
-
-    /**
-     * 编辑办件
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param processInstanceId 流程实例id
-     * @param mobile 是否手机端
-     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<DocumentDetailModel> editRecycle(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String processInstanceId, @RequestParam boolean mobile) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        DocumentDetailModel model = documentService.editRecycle(processInstanceId, mobile);
         return Y9Result.success(model);
     }
 
     /**
      * 抄送件详情
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param id 抄送id
      * @param processInstanceId 抄送的流程实例id
      * @param mobile 是否为移动端
@@ -316,11 +180,8 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<DocumentDetailModel> editChaoSong(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String id, @RequestParam String processInstanceId, @RequestParam boolean mobile,
-        @RequestParam String itembox) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Y9FlowableHolder.setPositionId(orgUnitId);
+    public Y9Result<DocumentDetailModel> editChaoSong(@RequestParam String id, @RequestParam String processInstanceId,
+        @RequestParam boolean mobile, @RequestParam String itembox) {
         DocumentDetailModel model = documentService.editChaoSong(id, processInstanceId, mobile, itembox);
         chaoSongInfoService.setRead(id);
         return Y9Result.success(model);
@@ -329,39 +190,122 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 编辑办件
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
+     * @param processInstanceId 流程实例id
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<DocumentDetailModel> editDoing(@RequestParam String processInstanceId,
+        @RequestParam String documentId, @RequestParam boolean isAdmin, @RequestParam ItemBoxTypeEnum itemBox,
+        @RequestParam boolean mobile) {
+        DocumentDetailModel model = documentService.editDoing(processInstanceId, documentId, isAdmin, itemBox, mobile);
+        return Y9Result.success(model);
+    }
+
+    /**
+     * 编辑办件
+     *
+     * @param processInstanceId 流程实例id
+     * @param documentId 打开的办件的id，主件的这个id为processSerialNumber，子件的这个id为signDeptDetailId
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<DocumentDetailModel> editDone(@RequestParam String processInstanceId,
+        @RequestParam String documentId, @RequestParam boolean isAdmin, @RequestParam ItemBoxTypeEnum itemBox,
+        @RequestParam boolean mobile) {
+        DocumentDetailModel model = documentService.editDone(processInstanceId, documentId, isAdmin, itemBox, mobile);
+        return Y9Result.success(model);
+    }
+
+    /**
+     * 编辑草稿
+     *
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
+     * @param mobile 是否手机端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data 是流程详情数据
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<DocumentDetailModel> editDraft(@RequestParam String itemId,
+        @RequestParam String processSerialNumber, @RequestParam boolean mobile) {
+        DocumentDetailModel model = documentService.editDraft(processSerialNumber, itemId, mobile);
+        return Y9Result.success(model);
+    }
+
+    /**
+     * 编辑办件
+     *
+     * @param processInstanceId 流程实例id
+     * @param mobile 是否手机端
+     * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<DocumentDetailModel> editRecycle(@RequestParam String processInstanceId,
+        @RequestParam boolean mobile) {
+        DocumentDetailModel model = documentService.editRecycle(processInstanceId, mobile);
+        return Y9Result.success(model);
+    }
+
+    /**
+     * 编辑办件
+     *
      * @param taskId 任务id
      * @param mobile 是否手机端
      * @return {@code Y9Result<OpenDataModel>} 通用请求返回对象 - data是流程详情数据
      * @since 9.6.6
      */
     @Override
-    public Y9Result<DocumentDetailModel> editTodo(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String orgUnitId, @RequestParam String taskId, @RequestParam boolean mobile) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
+    public Y9Result<DocumentDetailModel> editTodo(@RequestParam String taskId, @RequestParam boolean mobile) {
         DocumentDetailModel model = documentService.editTodo(taskId, mobile);
         return Y9Result.success(model);
     }
 
+    /**
+     * 带自定义变量发送
+     *
+     * @param taskId 任务id
+     * @param sponsorHandle 是否主办人办理
+     * @param userChoice 选择的发送人员
+     * @param sponsorGuid 主办人id
+     * @param routeToTaskId 任务key
+     * @return {@code Y9Result<String>} 通用请求返回对象
+     * @since 9.6.6
+     */
     @Override
-    public Y9Result<List<ItemButtonModel>> getButtons(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String taskId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<String> forwarding(@RequestParam String taskId, @RequestParam String userChoice,
+        @RequestParam String routeToTaskId, @RequestParam(required = false) String sponsorHandle,
+        @RequestParam(required = false) String sponsorGuid) {
+        ForwardingDTO forwardingDTO = new ForwardingDTO();
+        forwardingDTO.setTaskId(taskId);
+        forwardingDTO.setUserChoice(userChoice);
+        forwardingDTO.setRouteToTaskId(routeToTaskId);
+        forwardingDTO.setSponsorHandle(sponsorHandle);
+        forwardingDTO.setSponsorGuid(sponsorGuid);
+        Y9Result<String> y9Result = documentService.forwarding(forwardingDTO);
+        if (y9Result.isSuccess()) {
+            ProcessParam processParam = processParamService.findByProcessInstanceId(y9Result.getData());
+            asyncUtilService.sendAuditLog(Y9LoginUserHolder.getTenantId(), processParam.getTitle(), userChoice);
+        }
+        return y9Result;
+    }
+
+    @Override
+    public Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam String itemId) {
+        List<ItemStartNodeRoleModel> modelList = itemStartNodeRoleService.getAllStartTaskDefKey(itemId);
+        return Y9Result.success(modelList);
+    }
+
+    @Override
+    public Y9Result<List<ItemButtonModel>> getButtons(@RequestParam String taskId) {
         return Y9Result.success(documentService.getButtons(taskId));
     }
 
     /**
      * 解析当前任务节点配置的用户数据
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param routeToTaskId 任务key
@@ -372,13 +316,10 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<String>> parserUser(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId, @RequestParam String processDefinitionId, @RequestParam String routeToTaskId,
-        @RequestParam(required = false) String taskDefName, @RequestParam(required = false) String processInstanceId,
+    public Y9Result<List<String>> parserUser(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String routeToTaskId, @RequestParam(required = false) String taskDefName,
+        @RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String multiInstance) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
         return documentService.parserUser(itemId, processDefinitionId, routeToTaskId, taskDefName, processInstanceId,
             multiInstance);
     }
@@ -386,16 +327,13 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 带自定义变量发送
      *
-     * @param orgUnitId 人员、岗位 id
      * @return {@code Y9Result<String>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveAndForwarding(@RequestParam String orgUnitId,
-        @RequestBody ForwardingDTO forwardingDTO) {
+    public Y9Result<String> saveAndForwarding(@RequestBody ForwardingDTO forwardingDTO) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         Y9Result<String> y9Result;
         if (StringUtils.isBlank(forwardingDTO.getTaskId()) || UtilConsts.NULL.equals(forwardingDTO.getTaskId())) {
             y9Result = documentService.saveAndForwarding(forwardingDTO);
@@ -416,44 +354,8 @@ public class DocumentApiImpl implements DocumentApi {
     }
 
     /**
-     * 带自定义变量发送
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位 id
-     * @param taskId 任务id
-     * @param sponsorHandle 是否主办人办理
-     * @param userChoice 选择的发送人员
-     * @param sponsorGuid 主办人id
-     * @param routeToTaskId 任务key
-     * @return {@code Y9Result<String>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<String> forwarding(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String taskId, @RequestParam String userChoice, @RequestParam String routeToTaskId,
-        @RequestParam(required = false) String sponsorHandle, @RequestParam(required = false) String sponsorGuid) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        ForwardingDTO forwardingDTO = new ForwardingDTO();
-        forwardingDTO.setTaskId(taskId);
-        forwardingDTO.setUserChoice(userChoice);
-        forwardingDTO.setRouteToTaskId(routeToTaskId);
-        forwardingDTO.setSponsorHandle(sponsorHandle);
-        forwardingDTO.setSponsorGuid(sponsorGuid);
-        Y9Result<String> y9Result = documentService.forwarding(forwardingDTO);
-        if (y9Result.isSuccess()) {
-            ProcessParam processParam = processParamService.findByProcessInstanceId(y9Result.getData());
-            asyncUtilService.sendAuditLog(tenantId, processParam.getTitle(), userChoice);
-        }
-        return y9Result;
-    }
-
-    /**
      * 指定任务节点发送
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
      * @param sponsorHandle 是否主办人办理
@@ -469,14 +371,12 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> saveAndForwardingByTaskKey(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        String processInstanceId, String taskId, String sponsorHandle, @RequestParam String itemId,
-        @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey,
-        @RequestParam String userChoice, String sponsorGuid, @RequestParam String routeToTaskId,
-        @RequestParam String startRouteToTaskId, @RequestBody Map<String, Object> variables) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<String> saveAndForwardingByTaskKey(String processInstanceId, String taskId, String sponsorHandle,
+        @RequestParam String itemId, @RequestParam String processSerialNumber,
+        @RequestParam String processDefinitionKey, @RequestParam String userChoice, String sponsorGuid,
+        @RequestParam String routeToTaskId, @RequestParam String startRouteToTaskId,
+        @RequestBody Map<String, Object> variables) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isBlank(processInstanceId) || UtilConsts.NULL.equals(processInstanceId)) {
             return documentService.saveAndForwardingByTaskKey(itemId, processSerialNumber, processDefinitionKey,
                 userChoice, sponsorGuid, routeToTaskId, startRouteToTaskId, variables);
@@ -497,8 +397,6 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 提交并发送
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位 id
      * @param taskId 任务id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
@@ -506,11 +404,10 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveAndSubmitTo(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        String taskId, @RequestParam String itemId, @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<Object> saveAndSubmitTo(String taskId, @RequestParam String itemId,
+        @RequestParam String processSerialNumber) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         Y9Result<Object> y9Result;
         if (StringUtils.isBlank(taskId) || UtilConsts.NULL.equals(taskId)) {
             y9Result = documentService.saveAndSubmitTo(itemId, processSerialNumber);
@@ -527,8 +424,6 @@ public class DocumentApiImpl implements DocumentApi {
     /**
      * 获取签收任务配置
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefinitionKey 任务key
@@ -537,32 +432,17 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId, @RequestParam String processDefinitionId, @RequestParam String taskDefinitionKey,
+    public Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam String taskDefinitionKey,
         @RequestParam String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
         SignTaskConfigModel model =
             documentService.signTaskConfig(itemId, processDefinitionId, taskDefinitionKey, processSerialNumber);
         return Y9Result.success(model);
     }
 
-    @Override
-    public Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam String tenantId,
-        @RequestParam String orgUnitId, @RequestParam String itemId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        List<ItemStartNodeRoleModel> modelList = itemStartNodeRoleService.getAllStartTaskDefKey(itemId);
-        return Y9Result.success(modelList);
-    }
-
     /**
      * 启动流程
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
@@ -570,45 +450,15 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<StartProcessResultModel> startProcess(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId, @RequestParam String processSerialNumber,
-        @RequestParam String processDefinitionKey) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<StartProcessResultModel> startProcess(@RequestParam String itemId,
+        @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey) {
         StartProcessResultModel model = documentService.startProcess(itemId, processSerialNumber);
-        return Y9Result.success(model);
-    }
-
-    /**
-     * 启动流程
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param itemId 事项id
-     * @param processSerialNumber 流程编号
-     * @param processDefinitionKey 流程定义key
-     * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<StartProcessResultModel> startProcessByTheTaskKey(@RequestParam String tenantId,
-        @RequestParam String orgUnitId, @RequestParam String itemId, @RequestParam String processSerialNumber,
-        @RequestParam String processDefinitionKey, @RequestParam(required = false) String startTaskDefKey,
-        @RequestBody List<String> startOrgUnitIdList) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-        StartProcessResultModel model = documentService.startProcessByTheTaskKey(itemId, processSerialNumber,
-            processDefinitionKey, startTaskDefKey, startOrgUnitIdList);
         return Y9Result.success(model);
     }
 
     /**
      * 启动流程（多人）
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param processDefinitionKey 流程定义key
@@ -617,14 +467,29 @@ public class DocumentApiImpl implements DocumentApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<StartProcessResultModel> startProcess(@RequestParam String tenantId, @RequestParam String orgUnitId,
-        @RequestParam String itemId, @RequestParam String processSerialNumber,
-        @RequestParam String processDefinitionKey, @RequestParam String userIds) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<StartProcessResultModel> startProcess(@RequestParam String itemId,
+        @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey,
+        @RequestParam String userIds) {
         StartProcessResultModel model =
             documentService.startProcess(itemId, processSerialNumber, processDefinitionKey, userIds);
+        return Y9Result.success(model);
+    }
+
+    /**
+     * 启动流程
+     *
+     * @param itemId 事项id
+     * @param processSerialNumber 流程编号
+     * @param processDefinitionKey 流程定义key
+     * @return {@code Y9Result<StartProcessResultModel>} 通用请求返回对象 - data是启动流程返回信息
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<StartProcessResultModel> startProcessByTheTaskKey(@RequestParam String itemId,
+        @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey,
+        @RequestParam(required = false) String startTaskDefKey, @RequestBody List<String> startOrgUnitIdList) {
+        StartProcessResultModel model = documentService.startProcessByTheTaskKey(itemId, processSerialNumber,
+            processDefinitionKey, startTaskDefKey, startOrgUnitIdList);
         return Y9Result.success(model);
     }
 }

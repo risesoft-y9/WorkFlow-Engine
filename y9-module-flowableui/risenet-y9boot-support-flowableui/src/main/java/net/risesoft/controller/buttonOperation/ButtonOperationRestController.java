@@ -469,7 +469,7 @@ public class ButtonOperationRestController {
             if (!result.isSuccess()) {
                 return Y9Result.failure("保存短信详情失败！");
             }
-            Y9Result<String> y9Result = documentApi.saveAndForwarding(Y9FlowableHolder.getPositionId(), forwardingDTO);
+            Y9Result<String> y9Result = documentApi.saveAndForwarding(forwardingDTO);
             if (y9Result.isSuccess()) {
                 map.put("processInstanceId", y9Result.getData());
                 return Y9Result.success(map, y9Result.getMsg());
@@ -1031,9 +1031,6 @@ public class ButtonOperationRestController {
      */
     private Y9Result<String> handleTaskForwarding(String itemId, String processSerialNumber, String processInstanceId,
         String taskId, CustomProcessInfoModel customProcessInfo) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9FlowableHolder.getPositionId();
-
         String userChoice = customProcessInfo.getOrgId();
         String routeToTaskId = customProcessInfo.getTaskKey();
         ForwardingDTO forwardingDTO = new ForwardingDTO();
@@ -1042,7 +1039,7 @@ public class ButtonOperationRestController {
         forwardingDTO.setUserChoice(userChoice);
         forwardingDTO.setRouteToTaskId(routeToTaskId);
         forwardingDTO.setTaskId(taskId);
-        Y9Result<String> y9Result = documentApi.saveAndForwarding(positionId, forwardingDTO);
+        Y9Result<String> y9Result = documentApi.saveAndForwarding(forwardingDTO);
         if (!y9Result.isSuccess()) {
             return Y9Result.failure("发送失败");
         }
@@ -1379,7 +1376,6 @@ public class ButtonOperationRestController {
     public Y9Result<String> saveCustomProcess(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam @NotBlank String jsonData) {
         try {
-            String positionId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
             List<Map<String, Object>> list = Y9JsonUtil.readValue(jsonData, List.class);
             boolean msg = customProcessInfoApi.saveOrUpdate(itemId, processSerialNumber, list).isSuccess();
             if (!msg) {
@@ -1400,7 +1396,7 @@ public class ButtonOperationRestController {
             forwardingDTO.setItemId(itemId);
             forwardingDTO.setUserChoice(userChoice);
             forwardingDTO.setRouteToTaskId(routeToTaskId);
-            Y9Result<String> y9Result = documentApi.saveAndForwarding(positionId, forwardingDTO);
+            Y9Result<String> y9Result = documentApi.saveAndForwarding(forwardingDTO);
             if (!y9Result.isSuccess()) {
                 return Y9Result.failure("保存成功,发送失败");
             }
@@ -1466,7 +1462,7 @@ public class ButtonOperationRestController {
             forwardingDTO.setRouteToTaskId(routeToTaskId);
             forwardingDTO.setSponsorHandle(sponsorHandle);
             forwardingDTO.setTaskId(taskId);
-            documentApi.saveAndForwarding(positionId, forwardingDTO);
+            documentApi.saveAndForwarding(forwardingDTO);
             asyncUtilService.rollbackToStartorAuditLog(tenantId, positionId, taskId, "sendback");
             return Y9Result.successMsg("发送拟稿人成功");
         } catch (Exception e) {
@@ -1510,9 +1506,7 @@ public class ButtonOperationRestController {
     public Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam @NotBlank String taskDefinitionKey,
         @RequestParam @NotBlank String processSerialNumber) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return documentApi.signTaskConfig(tenantId, Y9FlowableHolder.getPositionId(), itemId, processDefinitionId,
-            taskDefinitionKey, processSerialNumber);
+        return documentApi.signTaskConfig(itemId, processDefinitionId, taskDefinitionKey, processSerialNumber);
     }
 
     /**
@@ -1575,8 +1569,7 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/submitTo")
     public Y9Result<Object> submitTo(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {
-        return documentApi.saveAndSubmitTo(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), taskId,
-            itemId, processSerialNumber);
+        return documentApi.saveAndSubmitTo(taskId, itemId, processSerialNumber);
     }
 
     /**
