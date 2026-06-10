@@ -413,11 +413,10 @@ public class MainRestController {
      */
     @GetMapping(value = "/getReadCount")
     public Y9Result<Map<String, Object>> getReadCount() {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         Map<String, Object> map = new HashMap<>(16);
-        map.put("notReadCount", chaoSongApi.getTodoCount(tenantId, positionId).getData());
-        map.put("hasReadCount", chaoSongApi.getDoneCount(tenantId, positionId).getData());
-        map.put("hasOpinionCount", chaoSongApi.getDone4OpinionCountByUserId(tenantId, positionId).getData());
+        map.put("notReadCount", chaoSongApi.getTodoCount().getData());
+        map.put("hasReadCount", chaoSongApi.getDoneCount().getData());
+        map.put("hasOpinionCount", chaoSongApi.getDone4OpinionCountByUserId().getData());
         return Y9Result.success(map, "获取成功");
     }
 

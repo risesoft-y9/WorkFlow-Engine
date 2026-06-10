@@ -118,9 +118,7 @@ public class SearchServiceImpl implements SearchService {
     public Y9Page<ChaoSongModel> pageYuejianList(String searchName, String itemId, String userName, String state,
         String year, Integer page, Integer rows) {
         try {
-            String positionId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
-            return chaoSongApi.searchAllByUserId(tenantId, positionId, searchName, itemId, userName, state, year, page,
-                rows);
+            return chaoSongApi.searchAllByUserId(searchName, itemId, userName, state, year, page, rows);
         } catch (Exception e) {
             LOGGER.error("获取阅件列表失败，异常：", e);
         }
