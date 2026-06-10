@@ -194,7 +194,7 @@ public class TodoServiceImpl implements TodoService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             String positionId = Y9FlowableHolder.getPositionId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             String itemName = item.getName();
             Y9Page<TaskModel> taskPage;

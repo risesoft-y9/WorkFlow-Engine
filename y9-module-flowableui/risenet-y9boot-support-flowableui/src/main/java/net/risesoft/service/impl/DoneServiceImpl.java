@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -49,7 +48,7 @@ public class DoneServiceImpl implements DoneService {
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+        ItemModel item = itemApi.getByItemId(itemId).getData();
         String itemName = item.getName();
         y9Page = officeDoneInfoApi.searchByUserId(searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();
@@ -101,7 +100,7 @@ public class DoneServiceImpl implements DoneService {
     public Y9Page<Map<String, Object>> list4Mobile(String itemId, String searchTerm, Integer page, Integer rows) {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+        ItemModel item = itemApi.getByItemId(itemId).getData();
         String itemName = item.getName();
         y9Page = officeDoneInfoApi.searchByUserId(searchTerm, itemId, "", "", page, rows);
         List<Map<String, Object>> items = new ArrayList<>();

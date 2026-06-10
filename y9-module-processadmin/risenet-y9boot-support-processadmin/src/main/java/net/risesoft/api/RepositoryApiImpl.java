@@ -22,6 +22,7 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomRepositoryService;
 import net.risesoft.util.FlowableModelConvertUtil;
 import net.risesoft.y9.FlowableTenantInfoHolder;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 部署流程相关接口
@@ -179,6 +180,7 @@ public class RepositoryApiImpl implements RepositoryApi {
     @Override
     public Y9Result<List<ProcessDefinitionModel>> list(@RequestParam String tenantId) {
         FlowableTenantInfoHolder.setTenantId(tenantId);
+        Y9LoginUserHolder.setTenantId(tenantId);
         return customRepositoryService.list("");
     }
 

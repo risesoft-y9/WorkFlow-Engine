@@ -88,8 +88,7 @@ public class WorkListServiceImpl implements WorkListService {
         Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9FlowableHolder.getPositionId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 if (isOrg) {
@@ -660,7 +659,7 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> doingList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemDoingApi.findBySystemName(item.getSystemName(), page, rows);
@@ -689,7 +688,7 @@ public class WorkListServiceImpl implements WorkListService {
             String positionId = Y9FlowableHolder.getPositionId();
             Position position = Y9FlowableHolder.getPosition();
             OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, positionId).getData();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             String deptId = isBureau ? bureau.getId() : position.getParentId();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
@@ -717,7 +716,7 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> doingList4DuBan(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemDoingApi.searchBySystemName(item.getSystemName(), searchMapStr, page, rows);
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
@@ -738,7 +737,7 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> doneList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage = itemDoneApi.findByUserIdAndSystemName(item.getSystemName(), page, rows);
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
@@ -758,7 +757,7 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> doneList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemDoneApi.findBySystemName(item.getSystemName(), page, rows);
@@ -787,7 +786,7 @@ public class WorkListServiceImpl implements WorkListService {
             String positionId = Y9FlowableHolder.getPositionId();
             Position position = Y9FlowableHolder.getPosition();
             OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, positionId).getData();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             String deptId = isBureau ? bureau.getId() : position.getParentId();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
@@ -1136,7 +1135,7 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> haveDoneList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemHaveDoneApi.findByUserIdAndSystemName(item.getSystemName(), page, rows);
@@ -1161,7 +1160,7 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> recycleList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemRecycleApi.findByUserIdAndSystemName(item.getSystemName(), page, rows);
@@ -1186,7 +1185,7 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> recycleList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemRecycleApi.findBySystemName(item.getSystemName(), page, rows);
@@ -1215,7 +1214,7 @@ public class WorkListServiceImpl implements WorkListService {
             String positionId = Y9FlowableHolder.getPositionId();
             Position position = Y9FlowableHolder.getPosition();
             OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, positionId).getData();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             String deptId = isBureau ? bureau.getId() : position.getParentId();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
@@ -1254,7 +1253,7 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage = itemTodoApi.findByUserIdAndSystemName(item.getSystemName(), page, rows);
@@ -1279,7 +1278,7 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> todoList4Other(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemTodoApi.searchByUserIdAndSystemName4Other(item.getSystemName(), searchMapStr, page, rows);
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
@@ -1301,7 +1300,7 @@ public class WorkListServiceImpl implements WorkListService {
         Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
                 itemPage =

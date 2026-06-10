@@ -133,7 +133,7 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
     public Y9Page<Map<String, Object>> pageAllList(String itemId, Integer page, Integer rows) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage = itemMonitorApi.findBySystemName(item.getSystemName(), page, rows);
             List<Map<String, Object>> items = processActRuDetails(itemPage.getRows(), tenantId, itemId, page, rows);
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");

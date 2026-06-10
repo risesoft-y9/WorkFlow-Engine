@@ -64,6 +64,8 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
             case PROCESS_STARTED:
                 FlowableEntityEventImpl entityEventStart = (FlowableEntityEventImpl)event;
                 ExecutionEntityImpl executionEntityStart = (ExecutionEntityImpl)entityEventStart.getEntity();
+                String tenantIdTemp = (String)executionEntityStart.getVariable(SysVariables.TENANT_ID);
+                Y9LoginUserHolder.setTenantId(tenantIdTemp);
                 // 1、接口调用
                 InterfaceUtilService interfaceUtilService1 = Y9Context.getBean(InterfaceUtilService.class);
                 try {
@@ -74,11 +76,8 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 }
                 // 2、子流程启动,初始化callActivity的流程参数信息
                 ItemApi itemApi = Y9Context.getBean(ItemApi.class);
-                String tenantIdTemp = (String)executionEntityStart.getVariable(SysVariables.TENANT_ID);
-                Y9LoginUserHolder.setTenantId(tenantIdTemp);
                 ItemModel itemModel =
-                    itemApi.findByProcessDefinitionKey(tenantIdTemp, executionEntityStart.getProcessDefinitionKey())
-                        .getData();
+                    itemApi.findByProcessDefinitionKey(executionEntityStart.getProcessDefinitionKey()).getData();
                 if (StringUtils.isNotEmpty(itemModel.getType()) && "sub".equals(itemModel.getType())) {
                     String processSerialNumber =
                         (String)executionEntityStart.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);

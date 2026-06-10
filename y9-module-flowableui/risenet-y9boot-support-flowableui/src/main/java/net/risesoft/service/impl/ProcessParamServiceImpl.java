@@ -45,7 +45,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         String documentTitle, String number, String level, Boolean customItem) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             ProcessParamModel processParamModel =
                 processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             if (StringUtils.isNotBlank(processInstanceId)) {
@@ -86,7 +86,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
         String startTaskDefKey) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             ProcessParamModel oldProcessParam =
                 processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             if (StringUtils.isNotBlank(processInstanceId)) {

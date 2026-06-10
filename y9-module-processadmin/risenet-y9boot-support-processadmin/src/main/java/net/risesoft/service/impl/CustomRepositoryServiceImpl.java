@@ -168,8 +168,7 @@ public class CustomRepositoryServiceImpl implements CustomRepositoryService {
                     .setDeploymentTime(DateFormatUtils.format(deployment.getDeploymentTime(), "yyyy-MM-dd HH:mm:ss"));
                 processDefinitionModel.setSortTime(deployment.getDeploymentTime().getTime());
                 List<ItemModel> itemModelList =
-                    itemApi.findByProcessDefinitionKeyList(Y9LoginUserHolder.getTenantId(), processDefinition.getKey())
-                        .getData();
+                    itemApi.findByProcessDefinitionKeyList(processDefinition.getKey()).getData();
                 List<String> itemNames = itemModelList.stream()
                     .map(ItemModel::getName)
                     .filter(Objects::nonNull)

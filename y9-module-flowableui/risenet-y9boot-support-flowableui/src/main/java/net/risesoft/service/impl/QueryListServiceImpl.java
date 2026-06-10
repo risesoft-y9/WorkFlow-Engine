@@ -5,7 +5,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -61,7 +60,7 @@ public class QueryListServiceImpl implements QueryListService {
         Y9Page<ActRuDetailModel> itemPage;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             itemPage =
                 queryListApi.getQueryList(item.getSystemName(), state, createDate, tableName, searchMapStr, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
