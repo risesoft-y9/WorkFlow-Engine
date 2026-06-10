@@ -117,62 +117,41 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     }
 
     /**
-     * 异步循环发送
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param itemId 事项id
-     * @param processInstanceId 流程实例id
+     * 创建错误日志
      */
-    @Async
+    private ErrorLog createErrorLog(String errorFlag, String extendField, String processInstanceId, String taskId,
+        String text) {
+        String time = Y9DateTimeUtils.formatCurrentDateTime();
+        ErrorLog errorLog = new ErrorLog();
+        errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        errorLog.setErrorFlag(errorFlag);
+        errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
+        errorLog.setExtendField(extendField);
+        errorLog.setProcessInstanceId(processInstanceId);
+        errorLog.setTaskId(taskId);
+        errorLog.setText(text);
+        return errorLog;
+    }
+
     @Override
-    public void loopSending(final String tenantId, final String orgUnitId, final String itemId,
-        final String processInstanceId) {
-        String taskDefinitionKey = "";
-        String taskId = "";
+    public void deleteAssociatedFileAuditLog(String processInstanceIds) {
         try {
-            // 设置登录用户上下文
-            setupUserContext(tenantId, orgUnitId);
-            // 获取当前任务信息
-            TaskInfo taskInfo = getCurrentTaskInfo(tenantId, processInstanceId);
-            if (taskInfo == null) {
-                return;
+            String[] processInstanceIdArray = processInstanceIds.split(SysVariables.COMMA);
+            for (String processInstanceId : processInstanceIdArray) {
+                ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getDescription(),
+                        processParam.getTitle()))
+                    .objectId(processInstanceId)
+                    .oldObject(processParam)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
             }
-            taskDefinitionKey = taskInfo.getTaskDefinitionKey();
-            taskId = taskInfo.getTaskId();
-            String processDefinitionId = taskInfo.getProcessDefinitionId();
-            // 延时执行
-            executeWithDelay(itemId, taskDefinitionKey, processDefinitionId);
-            // 检查是否需要自动跳过并处理
-            handleAutoSkip(tenantId, orgUnitId, itemId, processInstanceId, taskDefinitionKey, taskId,
-                processDefinitionId);
-        } catch (InterruptedException e) {
-            handleInterruptedException(processInstanceId, taskDefinitionKey, taskId);
         } catch (Exception e) {
-            handleGeneralException(e, processInstanceId, taskDefinitionKey, taskId);
+            LOGGER.error("保存关联文件审计日志失败 processInstanceIds：" + processInstanceIds, e);
         }
-    }
-
-    /**
-     * 设置用户上下文
-     */
-    private void setupUserContext(String tenantId, String orgUnitId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
-    }
-
-    /**
-     * 获取当前任务信息
-     */
-    private TaskInfo getCurrentTaskInfo(String tenantId, String processInstanceId) {
-        List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-        if (taskModelList != null && !taskModelList.isEmpty()) {
-            TaskModel taskModel = taskModelList.get(0);
-            return new TaskInfo(taskModel.getTaskDefinitionKey(), taskModel.getId(),
-                taskModel.getProcessDefinitionId());
-        }
-        return null;
     }
 
     /**
@@ -190,71 +169,34 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     }
 
     /**
+     * 获取当前任务信息
+     */
+    private TaskInfo getCurrentTaskInfo(String processInstanceId) {
+        List<TaskModel> taskModelList =
+            taskApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+        if (taskModelList != null && !taskModelList.isEmpty()) {
+            TaskModel taskModel = taskModelList.get(0);
+            return new TaskInfo(taskModel.getTaskDefinitionKey(), taskModel.getId(),
+                taskModel.getProcessDefinitionId());
+        }
+        return null;
+    }
+
+    /**
      * 处理自动跳过逻辑
      */
-    private void handleAutoSkip(String tenantId, String orgUnitId, String itemId, String processInstanceId,
-        String taskDefinitionKey, String taskId, String processDefinitionId) {
-        String stopProcess =
-            variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, "stopProcess").getData();
+    private void handleAutoSkip(String orgUnitId, String itemId, String processInstanceId, String taskDefinitionKey,
+        String taskId, String processDefinitionId) {
+        String stopProcess = variableApi.getVariableByProcessInstanceId(processInstanceId, "stopProcess").getData();
         if (taskDefinitionKey.contains("skip_") && (stopProcess == null || "false".equals(stopProcess))) {
-            List<TargetModel> targetModelList =
-                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefinitionKey).getData();
+            List<TargetModel> targetModelList = processDefinitionApi
+                .getTargetNodes(Y9LoginUserHolder.getTenantId(), processDefinitionId, taskDefinitionKey)
+                .getData();
             if (targetModelList != null && !targetModelList.isEmpty()) {
                 TargetModel targetModel = targetModelList.get(0);
-                processTargetNode(tenantId, orgUnitId, itemId, processInstanceId, taskId, targetModel);
+                processTargetNode(orgUnitId, itemId, processInstanceId, taskId, targetModel);
             }
         }
-    }
-
-    /**
-     * 处理目标节点
-     */
-    private void processTargetNode(String tenantId, String orgUnitId, String itemId, String processInstanceId,
-        String taskId, TargetModel targetModel) {
-        String routeToTaskId = targetModel.getTaskDefKey();
-        String multiInstance = targetModel.getMultiInstance();
-        List<String> userChoiceList =
-            documentService
-                .parserUser(itemId, targetModel.getProcessDefinitionId(), routeToTaskId, targetModel.getTaskDefName(),
-                    processInstanceId, multiInstance)
-                .getData();
-        if (userChoiceList != null && !userChoiceList.isEmpty()) {
-            handleSubProcessUsers(tenantId, processInstanceId, multiInstance, userChoiceList);
-            Y9Result<String> result = documentService.start4Forwarding(taskId, routeToTaskId, "", userChoiceList);
-            if (result.isSuccess()) {
-                // 异步循环发送
-                self.loopSending(tenantId, orgUnitId, itemId, processInstanceId);
-            }
-        }
-    }
-
-    /**
-     * 处理子流程用户列表
-     */
-    private void handleSubProcessUsers(String tenantId, String processInstanceId, String multiInstance,
-        List<String> userChoiceList) {
-        String subProcessStr =
-            variableApi.getVariableByProcessInstanceId(tenantId, processInstanceId, "subProcessNum").getData();
-        if (subProcessStr != null && SysVariables.PARALLEL.equals(multiInstance)) {
-            String userChoice = userChoiceList.get(0);
-            int subProcessNum = Integer.parseInt(subProcessStr);
-            if (subProcessNum > 1 && userChoiceList.size() == 1) {
-                for (int i = 1; i < subProcessNum; i++) {
-                    userChoiceList.add(userChoice);
-                }
-            }
-        }
-    }
-
-    /**
-     * 处理中断异常
-     */
-    private void handleInterruptedException(String processInstanceId, String taskDefinitionKey, String taskId) {
-        Thread.currentThread().interrupt();
-        LOGGER.info("*****loopSending循环发送被中断*****");
-        ErrorLog errorLog = createErrorLog("loopSending循环发送被中断", "loopSending循环发送被中断:" + taskDefinitionKey,
-            processInstanceId, taskId, "Thread was interrupted during execution");
-        errorLogService.saveErrorLog(errorLog);
     }
 
     /**
@@ -273,50 +215,87 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     }
 
     /**
-     * 创建错误日志
+     * 处理中断异常
      */
-    private ErrorLog createErrorLog(String errorFlag, String extendField, String processInstanceId, String taskId,
-        String text) {
-        String time = Y9DateTimeUtils.formatCurrentDateTime();
-        ErrorLog errorLog = new ErrorLog();
-        errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        errorLog.setErrorFlag(errorFlag);
-        errorLog.setErrorType(ErrorLogModel.ERROR_TASK);
-        errorLog.setExtendField(extendField);
-        errorLog.setProcessInstanceId(processInstanceId);
-        errorLog.setTaskId(taskId);
-        errorLog.setText(text);
-        return errorLog;
+    private void handleInterruptedException(String processInstanceId, String taskDefinitionKey, String taskId) {
+        Thread.currentThread().interrupt();
+        LOGGER.info("*****loopSending循环发送被中断*****");
+        ErrorLog errorLog = createErrorLog("loopSending循环发送被中断", "loopSending循环发送被中断:" + taskDefinitionKey,
+            processInstanceId, taskId, "Thread was interrupted during execution");
+        errorLogService.saveErrorLog(errorLog);
     }
 
+    /**
+     * 处理子流程用户列表
+     */
+    private void handleSubProcessUsers(String processInstanceId, String multiInstance, List<String> userChoiceList) {
+        String subProcessStr = variableApi.getVariableByProcessInstanceId(processInstanceId, "subProcessNum").getData();
+        if (subProcessStr != null && SysVariables.PARALLEL.equals(multiInstance)) {
+            String userChoice = userChoiceList.get(0);
+            int subProcessNum = Integer.parseInt(subProcessStr);
+            if (subProcessNum > 1 && userChoiceList.size() == 1) {
+                for (int i = 1; i < subProcessNum; i++) {
+                    userChoiceList.add(userChoice);
+                }
+            }
+        }
+    }
+
+    /**
+     * 异步循环发送
+     *
+     * @param tenantId 租户id
+     * @param orgUnitId 人员、岗位id
+     * @param itemId 事项id
+     * @param processInstanceId 流程实例id
+     */
     @Async
     @Override
-    @Transactional
-    public void takeBackTwoTaskDefKeyAuditLog(String tenantId, String orgUnitId, String taskId, String targetTaskKey) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public void loopSending(final String tenantId, final String orgUnitId, final String itemId,
+        final String processInstanceId) {
+        String taskDefinitionKey = "";
+        String taskId = "";
         try {
-            HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
-            List<TargetModel> targetModelList =
-                processDefinitionApi.getNodes(tenantId, historicTaskInstanceModel.getProcessDefinitionId()).getData();
-            TargetModel targetModel = targetModelList.stream()
-                .filter(model -> targetTaskKey.equals(model.getTaskDefKey()))
-                .findFirst()
-                .orElse(null);
-            ProcessParam processParam =
-                processParamService.findByProcessInstanceId(historicTaskInstanceModel.getProcessInstanceId());
-            Position position = positionApi.get(tenantId, orgUnitId).getData();
-            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-                .action(ItemAdminAuditLogEnum.BUTTON_TAKEBACK_TASK_DEF_KEY.getAction())
-                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.BUTTON_TAKEBACK_TASK_DEF_KEY.getDescription(),
-                    position.getName(), historicTaskInstanceModel.getName(), processParam.getTitle(),
-                    targetModel.getTaskDefName()))
-                .objectId(taskId)
-                .oldObject(historicTaskInstanceModel)
-                .currentObject(null)
-                .build();
-            Y9Context.publishEvent(auditLogEvent);
+            // 设置登录用户上下文
+            setupUserContext(tenantId, orgUnitId);
+            // 获取当前任务信息
+            TaskInfo taskInfo = getCurrentTaskInfo(processInstanceId);
+            if (taskInfo == null) {
+                return;
+            }
+            taskDefinitionKey = taskInfo.getTaskDefinitionKey();
+            taskId = taskInfo.getTaskId();
+            String processDefinitionId = taskInfo.getProcessDefinitionId();
+            // 延时执行
+            executeWithDelay(itemId, taskDefinitionKey, processDefinitionId);
+            // 检查是否需要自动跳过并处理
+            handleAutoSkip(orgUnitId, itemId, processInstanceId, taskDefinitionKey, taskId, processDefinitionId);
+        } catch (InterruptedException e) {
+            handleInterruptedException(processInstanceId, taskDefinitionKey, taskId);
         } catch (Exception e) {
-            LOGGER.error("保存指定任务收回审计日志失败", e);
+            handleGeneralException(e, processInstanceId, taskDefinitionKey, taskId);
+        }
+    }
+
+    /**
+     * 处理目标节点
+     */
+    private void processTargetNode(String orgUnitId, String itemId, String processInstanceId, String taskId,
+        TargetModel targetModel) {
+        String routeToTaskId = targetModel.getTaskDefKey();
+        String multiInstance = targetModel.getMultiInstance();
+        List<String> userChoiceList =
+            documentService
+                .parserUser(itemId, targetModel.getProcessDefinitionId(), routeToTaskId, targetModel.getTaskDefName(),
+                    processInstanceId, multiInstance)
+                .getData();
+        if (userChoiceList != null && !userChoiceList.isEmpty()) {
+            handleSubProcessUsers(processInstanceId, multiInstance, userChoiceList);
+            Y9Result<String> result = documentService.start4Forwarding(taskId, routeToTaskId, "", userChoiceList);
+            if (result.isSuccess()) {
+                // 异步循环发送
+                self.loopSending(Y9LoginUserHolder.getTenantId(), orgUnitId, itemId, processInstanceId);
+            }
         }
     }
 
@@ -441,6 +420,30 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     }
 
     @Async
+    @Transactional
+    @Override
+    public void saveAssociatedFileAuditLog(String tenantId, String processInstanceIds) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        try {
+            String[] processInstanceIdArray = processInstanceIds.split(SysVariables.COMMA);
+            for (String processInstanceId : processInstanceIdArray) {
+                ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
+                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                    .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_SAVE.getAction())
+                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_SAVE.getDescription(),
+                        processParam.getTitle()))
+                    .objectId(processInstanceId)
+                    .oldObject(processParam)
+                    .currentObject(null)
+                    .build();
+                Y9Context.publishEvent(auditLogEvent);
+            }
+        } catch (Exception e) {
+            LOGGER.error("保存关联文件审计日志失败 processInstanceIds：" + processInstanceIds, e);
+        }
+    }
+
+    @Async
     @Override
     @Transactional
     public void sendAuditLog(String tenantId, String title, String userChoice) {
@@ -492,6 +495,15 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         }
     }
 
+    /**
+     * 设置用户上下文
+     */
+    private void setupUserContext(String tenantId, String orgUnitId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        Position position = positionApi.get(tenantId, orgUnitId).getData();
+        Y9FlowableHolder.setPosition(position);
+    }
+
     @Async
     @Transactional
     @Override
@@ -516,47 +528,33 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     }
 
     @Async
-    @Transactional
     @Override
-    public void saveAssociatedFileAuditLog(String tenantId, String processInstanceIds) {
+    @Transactional
+    public void takeBackTwoTaskDefKeyAuditLog(String tenantId, String orgUnitId, String taskId, String targetTaskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            String[] processInstanceIdArray = processInstanceIds.split(SysVariables.COMMA);
-            for (String processInstanceId : processInstanceIdArray) {
-                ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-                    .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_SAVE.getAction())
-                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_SAVE.getDescription(),
-                        processParam.getTitle()))
-                    .objectId(processInstanceId)
-                    .oldObject(processParam)
-                    .currentObject(null)
-                    .build();
-                Y9Context.publishEvent(auditLogEvent);
-            }
+            HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
+            List<TargetModel> targetModelList =
+                processDefinitionApi.getNodes(tenantId, historicTaskInstanceModel.getProcessDefinitionId()).getData();
+            TargetModel targetModel = targetModelList.stream()
+                .filter(model -> targetTaskKey.equals(model.getTaskDefKey()))
+                .findFirst()
+                .orElse(null);
+            ProcessParam processParam =
+                processParamService.findByProcessInstanceId(historicTaskInstanceModel.getProcessInstanceId());
+            Position position = positionApi.get(tenantId, orgUnitId).getData();
+            AuditLogEvent auditLogEvent = AuditLogEvent.builder()
+                .action(ItemAdminAuditLogEnum.BUTTON_TAKEBACK_TASK_DEF_KEY.getAction())
+                .description(Y9StringUtil.format(ItemAdminAuditLogEnum.BUTTON_TAKEBACK_TASK_DEF_KEY.getDescription(),
+                    position.getName(), historicTaskInstanceModel.getName(), processParam.getTitle(),
+                    targetModel.getTaskDefName()))
+                .objectId(taskId)
+                .oldObject(historicTaskInstanceModel)
+                .currentObject(null)
+                .build();
+            Y9Context.publishEvent(auditLogEvent);
         } catch (Exception e) {
-            LOGGER.error("保存关联文件审计日志失败 processInstanceIds：" + processInstanceIds, e);
-        }
-    }
-
-    @Override
-    public void deleteAssociatedFileAuditLog(String processInstanceIds) {
-        try {
-            String[] processInstanceIdArray = processInstanceIds.split(SysVariables.COMMA);
-            for (String processInstanceId : processInstanceIdArray) {
-                ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-                    .action(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getAction())
-                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.ASSOCIATED_FILE_DELETE.getDescription(),
-                        processParam.getTitle()))
-                    .objectId(processInstanceId)
-                    .oldObject(processParam)
-                    .currentObject(null)
-                    .build();
-                Y9Context.publishEvent(auditLogEvent);
-            }
-        } catch (Exception e) {
-            LOGGER.error("保存关联文件审计日志失败 processInstanceIds：" + processInstanceIds, e);
+            LOGGER.error("保存指定任务收回审计日志失败", e);
         }
     }
 

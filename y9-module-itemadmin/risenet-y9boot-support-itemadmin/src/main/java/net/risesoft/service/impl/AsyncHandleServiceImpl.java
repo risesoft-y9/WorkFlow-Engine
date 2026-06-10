@@ -219,7 +219,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         Map<String, Object> vmap = new HashMap<>(16);
         // 解决协作状态串行办理历程的所有人员显示
         vmap.put(SysVariables.USERS, userList);
-        variableApi.setVariables(tenantId, taskId, vmap);
+        variableApi.setVariables(taskId, vmap);
         processParam.setSended("true");
         processParam.setSponsorGuid(sponsorGuid);
         processParamService.saveOrUpdate(processParam);
@@ -313,7 +313,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
             try {
                 Map<String, Object> val = new HashMap<>();
                 val.put("val", searchTerm);
-                variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId, "searchTerm", val);
+                variableApi.setVariableByProcessInstanceId(processInstanceId, "searchTerm", val);
             } catch (Exception e) {
                 LOGGER.warn("*****startProcessHandle发生异常*****", e);
             }

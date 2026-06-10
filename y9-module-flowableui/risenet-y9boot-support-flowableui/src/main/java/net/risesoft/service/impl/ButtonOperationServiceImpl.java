@@ -76,7 +76,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         if (StringUtils.isNotBlank(infoOvert)) {
             map.put("infoOvert", infoOvert);
         }
-        variableApi.setVariables(tenantId, taskId, map);
+        variableApi.setVariables(taskId, map);
         TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
         String processInstanceId = taskModel.getProcessInstanceId();
 
@@ -133,8 +133,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public Y9Result<String> complete4Sub(String taskId, String taskDefName, String desc) throws Exception {
-        String mainSenderId =
-            variableApi.getVariable(Y9LoginUserHolder.getTenantId(), taskId, SysVariables.MAIN_SENDER_ID).getData();
+        String mainSenderId = variableApi.getVariable(taskId, SysVariables.MAIN_SENDER_ID).getData();
         if (StringUtils.isBlank(mainSenderId)) {
             return Y9Result.failure("办结失败：缺少主流程的发送人！");
         }
@@ -368,8 +367,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             // 2、添加动作名称
             Map<String, Object> vars = new HashMap<>();
             vars.put("val", desc);
-            variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId,
-                SysVariables.ACTION_NAME + ":" + positionId, vars);
+            variableApi.setVariableByProcessInstanceId(processInstanceId, SysVariables.ACTION_NAME + ":" + positionId,
+                vars);
             // 3、重定位，谁激活就重定位给谁
             buttonOperationApi.reposition(hisTaskModel.getId(), hisTaskModel.getTaskDefinitionKey(),
                 List.of(positionId), desc, "");

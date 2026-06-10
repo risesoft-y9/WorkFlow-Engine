@@ -195,7 +195,7 @@ public class MultiInstanceRestController {
         String sponsorTaskId = "";
         for (TaskModel task : list) {
             String parallelSponsor =
-                variableApi.getVariableLocal(tenantId, task.getId(), SysVariables.PARALLEL_SPONSOR).getData();
+                variableApi.getVariableLocal(task.getId(), SysVariables.PARALLEL_SPONSOR).getData();
             if (parallelSponsor != null) {
                 sponsorTaskId = task.getId();
                 break;
@@ -203,13 +203,13 @@ public class MultiInstanceRestController {
         }
         if (StringUtils.isNotBlank(sponsorTaskId)) {
             // 删除任务变量
-            variableApi.deleteVariableLocal(tenantId, sponsorTaskId, SysVariables.PARALLEL_SPONSOR);
+            variableApi.deleteVariableLocal(sponsorTaskId, SysVariables.PARALLEL_SPONSOR);
         }
 
         // 重设任务变量
         Map<String, Object> val = new HashMap<>();
         val.put("val", taskModel.getAssignee());
-        variableApi.setVariableLocal(tenantId, taskId, SysVariables.PARALLEL_SPONSOR, val);
+        variableApi.setVariableLocal(taskId, SysVariables.PARALLEL_SPONSOR, val);
 
         // 修改自定义变量主办人字段
         ProcessParamModel processParam =

@@ -133,8 +133,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         String positionId = Y9FlowableHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String[] userChoiceArr = userChoice.split(";");
-        String usersObj =
-            variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.USERS).getData();
+        String usersObj = variableApi.getVariableByProcessInstanceId(executionId, SysVariables.USERS).getData();
         // 计算添加后的users
         List<String> usersList = new ArrayList<>();
         List<String> usersListTemp = new ArrayList<>();
@@ -159,11 +158,11 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         val.put("val", usersListTemp);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.USERS, val);
         // 改变任务变量中的users
-        variableApi.setVariableLocal(tenantId, taskId, SysVariables.USERS, val);
+        variableApi.setVariableLocal(taskId, SysVariables.USERS, val);
 
         // 改变多实例的标量
-        int nrOfInstances = Integer.parseInt(
-            variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NR_OF_INSTANCES).getData());
+        int nrOfInstances = Integer
+            .parseInt(variableApi.getVariableByProcessInstanceId(executionId, SysVariables.NR_OF_INSTANCES).getData());
         Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances + userChoiceArr.length);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.NR_OF_INSTANCES, val1);
@@ -210,7 +209,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
         String currentAssignee = taskModel.getAssignee();
-        String usersObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
+        String usersObj = variableApi.getVariable(taskId, SysVariables.USERS).getData();
         List<String> users = Y9JsonUtil.readList(usersObj, String.class);
         List<Map<String, Object>> listMap = new ArrayList<>();
         boolean notStart = false;
@@ -263,8 +262,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9FlowableHolder.getPositionId();
-        String usersObj =
-            variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.USERS).getData();
+        String usersObj = variableApi.getVariableByProcessInstanceId(executionId, SysVariables.USERS).getData();
         // 计算删除后的users
         List<String> usersList = new ArrayList<>();
         List<String> usersListTemp = new ArrayList<>();
@@ -290,10 +288,10 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         val.put("val", usersListTemp);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.USERS, val);
         // 改变任务变量中的users
-        variableApi.setVariableLocal(tenantId, taskId, SysVariables.USERS, val);
+        variableApi.setVariableLocal(taskId, SysVariables.USERS, val);
         // 改变多实例的标量
-        int nrOfInstances = Integer.parseInt(
-            variableApi.getVariableByProcessInstanceId(tenantId, executionId, SysVariables.NR_OF_INSTANCES).getData());
+        int nrOfInstances = Integer
+            .parseInt(variableApi.getVariableByProcessInstanceId(executionId, SysVariables.NR_OF_INSTANCES).getData());
         Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances - 1);
         runtimeApi.setVariable(tenantId, executionId, SysVariables.NR_OF_INSTANCES, val1);

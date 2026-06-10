@@ -41,12 +41,12 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         /*
          * 改变流程变量中users的值
          */
-        String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
+        String userObj = variableApi.getVariable(taskId, SysVariables.USERS).getData();
         List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
         users.add(elementUser);
         Map<String, Object> val = new HashMap<>();
         val.put("val", users);
-        variableApi.setVariable(tenantId, taskId, SysVariables.USERS, val);
+        variableApi.setVariable(taskId, SysVariables.USERS, val);
         /*
          * 新增执行实例
          */
@@ -84,7 +84,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         /*
          * 改变流程变量中users的值
          */
-        String userObj = variableApi.getVariable(tenantId, taskId, SysVariables.USERS).getData();
+        String userObj = variableApi.getVariable(taskId, SysVariables.USERS).getData();
         List<Object> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
         List<String> usersTemp = new ArrayList<>();
         boolean isDelete = false;
@@ -103,7 +103,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         }
         Map<String, Object> vmap = new HashMap<>(16);
         vmap.put(SysVariables.USERS, usersTemp);
-        variableApi.setVariables(tenantId, taskId, vmap);
+        variableApi.setVariables(taskId, vmap);
         /*
          * 新删除执行实例
          */

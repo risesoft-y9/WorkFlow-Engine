@@ -77,10 +77,10 @@ public class ButtonServiceImpl implements ButtonService {
      * 添加流程节点按钮
      *
      * @param buttonModelList 按钮列表
-     * @param tenantId 租户ID
      * @param task 任务模型
      */
-    private void addProcessNodeButtons(List<ItemButtonModel> buttonModelList, String tenantId, TaskModel task) {
+    private void addProcessNodeButtons(List<ItemButtonModel> buttonModelList, TaskModel task) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> taskNodes = processDefinitionApi.getNodes(tenantId, task.getProcessDefinitionId()).getData();
         AtomicInteger index = new AtomicInteger(100);
 
@@ -150,7 +150,7 @@ public class ButtonServiceImpl implements ButtonService {
         context.showSubmitButton = item.isShowSubmitButton();
 
         if (context.task != null) {
-            context.vars = variableApi.getVariables(tenantId, taskId).getData();
+            context.vars = variableApi.getVariables(taskId).getData();
             context.varsUsers = (List<String>)context.vars.get(SysVariables.USERS);
             context.varsSponsorGuid = String.valueOf(context.vars.get(SysVariables.PARALLEL_SPONSOR));
             context.taskSenderId = String.valueOf(context.vars.get(SysVariables.TASK_SENDER_ID));
@@ -179,7 +179,7 @@ public class ButtonServiceImpl implements ButtonService {
         context.customItem = (null != item.getCustomItem()) ? item.getCustomItem() : false;
         context.showSubmitButton = item.isShowSubmitButton();
 
-        context.vars = variableApi.getVariables(tenantId, taskId).getData();
+        context.vars = variableApi.getVariables(taskId).getData();
         context.varsUsers = (List<String>)context.vars.get(SysVariables.USERS);
         context.varsSponsorGuid = String.valueOf(context.vars.get(SysVariables.PARALLEL_SPONSOR));
         context.taskSenderId = String.valueOf(context.vars.get(SysVariables.TASK_SENDER_ID));
@@ -391,15 +391,14 @@ public class ButtonServiceImpl implements ButtonService {
         }
     }
 
-    private void handleDoingBox(boolean[] isButtonShow, TaskContext taskContext, String taskId, String tenantId,
-        String orgUnitId) {
+    private void handleDoingBox(boolean[] isButtonShow, TaskContext taskContext, String taskId, String orgUnitId) {
         isButtonShow[2] = true; // 返回
-
+        String tenantId = Y9LoginUserHolder.getTenantId();
         // 收回按钮
         isButtonShow[12] = false;
-        String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-        String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-        String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+        String takeBackObj = variableApi.getVariableLocal(taskId, SysVariables.TAKEBACK).getData();
+        String rollbackObj = variableApi.getVariableLocal(taskId, SysVariables.ROLLBACK).getData();
+        String repositionObj = variableApi.getVariableLocal(taskId, SysVariables.REPOSITION).getData();
 
         if (StringUtils.isNotBlank(taskContext.taskSenderId) && taskContext.taskSenderId.contains(orgUnitId)
             && takeBackObj == null && rollbackObj == null && repositionObj == null) {
@@ -501,7 +500,7 @@ public class ButtonServiceImpl implements ButtonService {
                 handleTodoBox(result, isButtonShow, taskContext, itemId, taskId, tenantId, orgUnitId);
                 break;
             case DOING:
-                handleDoingBox(isButtonShow, taskContext, taskId, tenantId, orgUnitId);
+                handleDoingBox(isButtonShow, taskContext, taskId, orgUnitId);
                 break;
             case DONE:
                 handleDoneBox(isButtonShow);
@@ -822,13 +821,12 @@ public class ButtonServiceImpl implements ButtonService {
         }
     }
 
-    private void handleReturnButton(boolean[] isButtonShow, TaskContext taskContext, String taskId, String tenantId,
-        String orgUnitId) {
+    private void handleReturnButton(boolean[] isButtonShow, TaskContext taskContext, String taskId, String orgUnitId) {
         boolean isAssignee = StringUtils.isNotBlank(taskContext.task.getAssignee());
         if (isAssignee && !taskContext.customItem) {
-            String returnDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-            String takeBackDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-            String repositionDoc = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+            String returnDoc = variableApi.getVariableLocal(taskId, SysVariables.ROLLBACK).getData();
+            String takeBackDoc = variableApi.getVariableLocal(taskId, SysVariables.TAKEBACK).getData();
+            String repositionDoc = variableApi.getVariableLocal(taskId, SysVariables.REPOSITION).getData();
 
             // 当前任务为退回件,或者收回件都不能再退回，不显示退回按钮
             if (returnDoc != null || takeBackDoc != null || repositionDoc != null) {
@@ -1070,14 +1068,14 @@ public class ButtonServiceImpl implements ButtonService {
      * 处理加减签按钮显示逻辑
      *
      * @param buttonModelList 按钮列表
-     * @param tenantId 租户ID
      * @param taskId 任务ID
      * @param orgUnitId 组织单元ID
      * @param task 任务模型
      */
-    private void handleSignButtons4Doing(List<ItemButtonModel> buttonModelList, String tenantId, String taskId,
-        String orgUnitId, TaskModel task) {
-        Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();
+    private void handleSignButtons4Doing(List<ItemButtonModel> buttonModelList, String taskId, String orgUnitId,
+        TaskModel task) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        Map<String, Object> vars = variableApi.getVariables(taskId).getData();
         String taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
 
         String multiInstance =
@@ -1165,12 +1163,12 @@ public class ButtonServiceImpl implements ButtonService {
      * 处理特殊办结按钮显示逻辑
      *
      * @param buttonModelList 按钮列表
-     * @param tenantId 租户ID
      * @param task 任务模型
      * @param orgUnitId 组织单元ID
      */
-    private void handleSpecialCompletionButton(List<ItemButtonModel> buttonModelList, String tenantId, TaskModel task,
+    private void handleSpecialCompletionButton(List<ItemButtonModel> buttonModelList, TaskModel task,
         String orgUnitId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessInstanceModel processInstanceModel =
             runtimeApi.getProcessInstance(tenantId, task.getProcessInstanceId()).getData();
 
@@ -1213,19 +1211,19 @@ public class ButtonServiceImpl implements ButtonService {
      * 处理收回按钮显示逻辑
      *
      * @param buttonModelList 按钮列表
-     * @param tenantId 租户ID
      * @param taskId 任务ID
      * @param orgUnitId 组织单元ID
      * @param task 任务模型
      */
-    private void handleTakeBackButton(List<ItemButtonModel> buttonModelList, String tenantId, String taskId,
-        String orgUnitId, TaskModel task) {
-        Map<String, Object> vars = variableApi.getVariables(tenantId, taskId).getData();
+    private void handleTakeBackButton(List<ItemButtonModel> buttonModelList, String taskId, String orgUnitId,
+        TaskModel task) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        Map<String, Object> vars = variableApi.getVariables(taskId).getData();
         String taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
 
-        String takeBackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TAKEBACK).getData();
-        String rollbackObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.ROLLBACK).getData();
-        String repositionObj = variableApi.getVariableLocal(tenantId, taskId, SysVariables.REPOSITION).getData();
+        String takeBackObj = variableApi.getVariableLocal(taskId, SysVariables.TAKEBACK).getData();
+        String rollbackObj = variableApi.getVariableLocal(taskId, SysVariables.ROLLBACK).getData();
+        String repositionObj = variableApi.getVariableLocal(taskId, SysVariables.REPOSITION).getData();
 
         if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
             && rollbackObj == null && repositionObj == null) {
@@ -1255,7 +1253,7 @@ public class ButtonServiceImpl implements ButtonService {
         // 返回按钮
         isButtonShow[2] = true;
         // 退回按钮
-        handleReturnButton(isButtonShow, taskContext, taskId, tenantId, orgUnitId);
+        handleReturnButton(isButtonShow, taskContext, taskId, orgUnitId);
         // 协办状态下的完成按钮
         handleDelegationCompleteButton(isButtonShow, taskContext);
         // 送下一人按钮
@@ -1519,19 +1517,19 @@ public class ButtonServiceImpl implements ButtonService {
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         if (task != null) {
             // 处理加减签按钮
-            handleSignButtons4Doing(buttonModelList, tenantId, taskId, orgUnitId, task);
+            handleSignButtons4Doing(buttonModelList, taskId, orgUnitId, task);
 
             // 添加重定向按钮
             buttonModelList.add(ItemButton.chongDingWei);
 
             // 添加流程节点按钮
-            addProcessNodeButtons(buttonModelList, tenantId, task);
+            addProcessNodeButtons(buttonModelList, task);
 
             // 处理特殊办结按钮
-            handleSpecialCompletionButton(buttonModelList, tenantId, task, orgUnitId);
+            handleSpecialCompletionButton(buttonModelList, task, orgUnitId);
 
             // 处理收回按钮
-            handleTakeBackButton(buttonModelList, tenantId, taskId, orgUnitId, task);
+            handleTakeBackButton(buttonModelList, taskId, orgUnitId, task);
         }
 
         return buttonModelList.stream()

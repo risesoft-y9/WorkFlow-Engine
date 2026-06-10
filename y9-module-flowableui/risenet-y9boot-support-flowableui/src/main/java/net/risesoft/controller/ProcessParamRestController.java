@@ -5,6 +5,7 @@ import java.util.Map;
 
 import jakarta.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -25,7 +26,6 @@ import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 自定义流程变量
@@ -74,7 +74,7 @@ public class ProcessParamRestController {
         if (StringUtils.isNotBlank(processInstanceId) && StringUtils.isNotBlank(actionName)) {
             Map<String, Object> vars = new HashMap<>();
             vars.put("val", actionName);
-            variableApi.setVariableByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId,
+            variableApi.setVariableByProcessInstanceId(processInstanceId,
                 SysVariables.ACTION_NAME + ":" + Y9FlowableHolder.getPositionId(), vars);
         }
         return Y9Result.success(null);
