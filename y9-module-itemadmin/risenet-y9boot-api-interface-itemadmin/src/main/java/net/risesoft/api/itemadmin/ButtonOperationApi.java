@@ -20,7 +20,6 @@ public interface ButtonOperationApi {
     /**
      * 加签
      *
-     * @param tenantId 租户id
      * @param activityId 活动Id
      * @param parentExecutionId 父执行实例id
      * @param taskId 任务id
@@ -29,14 +28,13 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/addMultiInstanceExecution")
-    Y9Result<Object> addMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
-        @RequestParam("activityId") String activityId, @RequestParam("parentExecutionId") String parentExecutionId,
-        @RequestParam("taskId") String taskId, @RequestParam("elementUser") String elementUser);
+    Y9Result<Object> addMultiInstanceExecution(@RequestParam("activityId") String activityId,
+        @RequestParam("parentExecutionId") String parentExecutionId, @RequestParam("taskId") String taskId,
+        @RequestParam("elementUser") String elementUser);
 
     /**
      * 加签
      *
-     * @param tenantId 租户id
      * @param activityId 活动Id
      * @param parentExecutionId 父执行实例id
      * @param elementUser 选择人id
@@ -44,14 +42,12 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/addMultiInstanceExecutionByActivityId")
-    Y9Result<Object> addMultiInstanceExecutionByActivityId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("activityId") String activityId, @RequestParam("parentExecutionId") String parentExecutionId,
-        @RequestParam("elementUser") String elementUser);
+    Y9Result<Object> addMultiInstanceExecutionByActivityId(@RequestParam("activityId") String activityId,
+        @RequestParam("parentExecutionId") String parentExecutionId, @RequestParam("elementUser") String elementUser);
 
     /**
      * 减签
      *
-     * @param tenantId 租户id
      * @param executionId 执行实例id
      * @param taskId 任务id
      * @param elementUser 选择人id
@@ -59,15 +55,12 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteMultiInstanceExecution")
-    Y9Result<Object> deleteMultiInstanceExecution(@RequestParam("tenantId") String tenantId,
-        @RequestParam("executionId") String executionId, @RequestParam("taskId") String taskId,
-        @RequestParam("elementUser") String elementUser);
+    Y9Result<Object> deleteMultiInstanceExecution(@RequestParam("executionId") String executionId,
+        @RequestParam("taskId") String taskId, @RequestParam("elementUser") String elementUser);
 
     /**
      * 直接发送至流程启动人
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @param routeToTask 任务key
      * @param processInstanceId 流程实例ID
@@ -75,28 +68,22 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/directSend")
-    Y9Result<Object> directSend(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("taskId") String taskId, @RequestParam("routeToTask") String routeToTask,
+    Y9Result<Object> directSend(@RequestParam("taskId") String taskId, @RequestParam("routeToTask") String routeToTask,
         @RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 最后一人拒签退回
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/refuseClaimRollback")
-    Y9Result<Object> refuseClaimRollback(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("taskId") String taskId);
+    Y9Result<Object> refuseClaimRollback(@RequestParam("taskId") String taskId);
 
     /**
      * 重定位
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @param repositionToTaskId 重定位任务key
      * @param userChoice 选择人id
@@ -106,17 +93,27 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/reposition", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> reposition(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("taskId") String taskId, @RequestParam("repositionToTaskId") String repositionToTaskId,
+    Y9Result<Object> reposition(@RequestParam("taskId") String taskId,
+        @RequestParam("repositionToTaskId") String repositionToTaskId,
         @RequestParam("userChoice") List<String> userChoice,
         @RequestParam(value = "reason", required = false) String reason,
         @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
 
     /**
+     * 退回操作
+     *
+     * @param taskId 任务id
+     * @param reason 原因
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/rollBack")
+    Y9Result<Object> rollBack(@RequestParam("taskId") String taskId,
+        @RequestParam(value = "reason", required = false) String reason);
+
+    /**
      * 退回至流转过的节点
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @param routeToTaskId 任务key
      * @param userChoice 岗位id集合
@@ -126,96 +123,67 @@ public interface ButtonOperationApi {
      * @since 9.6.8
      */
     @PostMapping(value = "/rollBack2History", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> rollBack2History(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("taskId") String taskId,
+    Y9Result<Object> rollBack2History(@RequestParam("taskId") String taskId,
         @RequestParam("routeToTaskId") String routeToTaskId, @RequestParam("userChoice") List<String> userChoice,
         @RequestParam(value = "reason", required = false) String reason,
         @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
 
     /**
-     * 退回操作
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param taskId 任务id
-     * @param reason 原因
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @PostMapping("/rollBack")
-    Y9Result<Object> rollBack(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("taskId") String taskId, @RequestParam(value = "reason", required = false) String reason);
-
-    /**
      * 发回给上一步的发送人
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/rollbackToSender")
-    Y9Result<Object> rollbackToSender(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("taskId") String taskId);
+    Y9Result<Object> rollbackToSender(@RequestParam("taskId") String taskId);
 
     /**
      * 退回操作，直接退回到办件登记人
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @param reason 原因
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/rollbackToStartor")
-    Y9Result<Object> rollbackToStartor(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("taskId") String taskId,
+    Y9Result<Object> rollbackToStartor(@RequestParam("taskId") String taskId,
         @RequestParam(value = "reason", required = false) String reason);
 
     /**
      * 特殊办结
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @param reason 原因
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/specialComplete")
-    Y9Result<Object> specialComplete(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("taskId") String taskId,
+    Y9Result<Object> specialComplete(@RequestParam("taskId") String taskId,
         @RequestParam(value = "reason", required = false) String reason);
 
     /**
      * 收回操作
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
-     * @param taskId 任务id
-     * @param reason 原因
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @PostMapping("/takeback")
-    Y9Result<Object> takeback(@RequestParam("tenantId") String tenantId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("taskId") String taskId, @RequestParam(value = "reason", required = false) String reason);
-
-    /**
-     * 收回操作
-     *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param taskId 任务id
      * @param reason 原因
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/takeBack2TaskDefKey")
-    Y9Result<Object> takeBack2TaskDefKey(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("taskId") String taskId,
+    Y9Result<Object> takeBack2TaskDefKey(@RequestParam("taskId") String taskId,
+        @RequestParam(value = "reason", required = false) String reason);
+
+    /**
+     * 收回操作
+     *
+     * @param taskId 任务id
+     * @param reason 原因
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @PostMapping("/takeback")
+    Y9Result<Object> takeback(@RequestParam("taskId") String taskId,
         @RequestParam(value = "reason", required = false) String reason);
 
 }
