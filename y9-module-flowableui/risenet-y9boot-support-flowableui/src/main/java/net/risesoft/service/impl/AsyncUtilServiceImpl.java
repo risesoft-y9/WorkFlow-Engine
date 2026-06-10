@@ -59,8 +59,8 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Transactional
     public void addExecutionIdSequentialAuditLog(String tenantId, String userId, String processInstanceId,
         String taskId, List<String> users) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, userId).getData();
@@ -88,6 +88,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Transactional
     public void addMultiInstanceParallelAuditLog(String tenantId, String userName, String title, String taskId,
         String taskName, String users) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, users).getData();
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
@@ -108,6 +109,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void claimAuditLog(String tenantId, String orgUnitId, String taskId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
@@ -156,6 +158,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Transactional
     public void deleteMultiInstanceParallelAuditLog(String tenantId, String userId, String processInstanceId,
         String taskId, String users) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
@@ -299,6 +302,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void reAssignAuditLog(String tenantId, String taskId, String orgUnitId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
@@ -343,6 +347,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void refuseClaimAuditLog(String tenantId, String taskId, String orgUnitId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
@@ -364,6 +369,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void refuseClaimRollbackAuditLog(String tenantId, String taskId, String orgUnitId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
@@ -385,6 +391,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void removeToDoAuditLog(String tenantId, String orgUnitId, String processSerialNumber, String title) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
@@ -406,6 +413,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Transactional
     public void repositionAuditLog(String tenantId, String orgUnitId, String taskId, String targetTaskKey,
         List<String> users) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
@@ -438,6 +446,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void resumeToDoAuditLog(String tenantId, String processInstanceId, String title) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                 .action(FlowableUiAuditLogEnum.DOCUMENT_RESUMETODO.getAction())
@@ -457,6 +466,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Transactional
     public void rollBackTwoHistoryAuditLog(String tenantId, String orgUnitId, String taskId, String targetTaskKey,
         List<String> users) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
@@ -489,6 +499,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void rollbackAuditLog(String tenantId, String orgUnitId, String taskId, String reason) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             List<TaskModel> taskList =
@@ -513,8 +524,8 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void rollbackToSenderAuditLog(String tenantId, String orgUnitId, String taskId, String optType) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            Y9LoginUserHolder.setTenantId(tenantId);
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             List<TaskModel> taskList =
                 taskApi.findByProcessInstanceId(tenantId, historicTaskInstanceModel.getProcessInstanceId()).getData();
@@ -594,6 +605,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void saveOfficeFollowAuditLog(String tenantId, String orgUnitId, String processInstanceId, String title) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgUnitId).getData();
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
@@ -614,6 +626,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void sendStarterAuditLog(String tenantId, String orgUnitId, String taskId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
@@ -635,6 +648,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void setSponsorAuditLog(String tenantId, String orgUnitId, String taskId, String sponsorGuid, String title) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
