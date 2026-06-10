@@ -20,13 +20,12 @@ public interface ConditionParserApi {
     /**
      * 解析表达式条件是否满足
      *
-     * @param tenantId 租户id
      * @param conditionExpression 网关上的表达式
      * @param variables 流程变量
      * @return {@code Y9Result<Boolean>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping(value = "/parser", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Boolean> parser(@RequestParam("tenantId") String tenantId,
-        @RequestParam("conditionExpression") String conditionExpression, @RequestBody Map<String, Object> variables);
+    Y9Result<Boolean> parser(@RequestParam("conditionExpression") String conditionExpression,
+        @RequestBody Map<String, Object> variables);
 }

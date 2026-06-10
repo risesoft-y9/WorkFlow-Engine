@@ -684,7 +684,7 @@ public class DocumentServiceImpl implements DocumentService {
         } else {
             // callActivity
             List<HistoricActivityInstanceModel> haiList =
-                historicActivityApi.getByProcessInstanceId(tenantId, processInstanceId).getData();
+                historicActivityApi.getByProcessInstanceId(processInstanceId).getData();
             HistoricActivityInstanceModel last = haiList.stream().reduce((first, second) -> second).orElse(null);
             assert last != null;
             taskDefinitionKey = last.getActivityId();
@@ -890,12 +890,10 @@ public class DocumentServiceImpl implements DocumentService {
      */
     private List<TargetModel> filterTargetNodesByCondition(List<TargetModel> targetNodes,
         Map<String, Object> variables) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<TargetModel> matchedTargetNodes = new ArrayList<>();
         for (TargetModel targetNode : targetNodes) {
             try {
-                boolean matches =
-                    conditionParserApi.parser(tenantId, targetNode.getConditionExpression(), variables).getData();
+                boolean matches = conditionParserApi.parser(targetNode.getConditionExpression(), variables).getData();
                 if (matches) {
                     matchedTargetNodes.add(targetNode);
                 }

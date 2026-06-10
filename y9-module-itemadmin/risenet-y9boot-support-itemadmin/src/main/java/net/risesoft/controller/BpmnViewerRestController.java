@@ -51,6 +51,18 @@ public class BpmnViewerRestController {
     private final HistoricVariableApi historicVariableApi;
 
     /**
+     * 获取办理人名称
+     */
+    private String getEmployeeName(HistoricActivityInstanceModel task, OrgUnit employee) {
+        // 如果tenantId字段已包含名称，则优先使用
+        if (StringUtils.isNotBlank(task.getTenantId())) {
+            return task.getTenantId();
+        }
+
+        return employee != null ? employee.getName() : "";
+    }
+
+    /**
      * 获取流程实例节点列表
      *
      * @param processInstanceId 流程实例id
@@ -58,18 +70,17 @@ public class BpmnViewerRestController {
      */
     @GetMapping(value = "/getTaskList")
     public Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricActivityInstanceModel> list;
         try {
             String year = "";
-            list = historicActivityApi.getByProcessInstanceId(tenantId, processInstanceId).getData();
+            list = historicActivityApi.getByProcessInstanceId(processInstanceId).getData();
             if (list == null || list.isEmpty()) {
                 OfficeDoneInfo info = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
                 year = info.getStartTime().substring(0, 4);
-                list = historicActivityApi.getByProcessInstanceIdAndYear(tenantId, processInstanceId, year).getData();
+                list = historicActivityApi.getByProcessInstanceIdAndYear(processInstanceId, year).getData();
             }
             for (HistoricActivityInstanceModel task : list) {
-                processTaskDetails(tenantId, task, year);
+                processTaskDetails(task, year);
             }
         } catch (Exception e) {
             LOGGER.error("获取流程实例节点列表失败，processInstanceId: {}", processInstanceId, e);
@@ -80,11 +91,41 @@ public class BpmnViewerRestController {
     }
 
     /**
+     * 获取主办人信息
+     */
+    private HistoricVariableInstanceModel getZhuBanInfo(String tenantId, HistoricActivityInstanceModel task,
+        String year) {
+        try {
+            return historicVariableApi
+                .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLEL_SPONSOR, year)
+                .getData();
+        } catch (Exception e) {
+            LOGGER.error("获取主办人失败，taskId: {}", task.getTaskId(), e);
+            return null;
+        }
+    }
+
+    private String longTime(Date startTime, Date endTime) {
+        if (endTime == null) {
+            return "";
+        } else {
+            long time = endTime.getTime() - startTime.getTime();
+            time = time / 1000;
+            int s = (int)(time % 60);
+            int m = (int)(time / 60 % 60);
+            int h = (int)(time / 3600 % 24);
+            int d = (int)(time / 86400);
+            return d + "天" + h + "小时" + m + "分" + s + "秒";
+        }
+    }
+
+    /**
      * 处理任务详情信息
      */
-    private void processTaskDetails(String tenantId, HistoricActivityInstanceModel task, String year) {
+    private void processTaskDetails(HistoricActivityInstanceModel task, String year) {
         String assignee = task.getAssignee();
         task.setExecutionId(""); // 重用字段存储办理时长
+        String tenantId = Y9LoginUserHolder.getTenantId();
         if (assignee != null) {
             try {
                 // 获取意见信息
@@ -107,47 +148,6 @@ public class BpmnViewerRestController {
             } catch (Exception e) {
                 LOGGER.error("处理任务详情信息失败，taskId: {}", task.getTaskId(), e);
             }
-        }
-    }
-
-    /**
-     * 获取主办人信息
-     */
-    private HistoricVariableInstanceModel getZhuBanInfo(String tenantId, HistoricActivityInstanceModel task,
-        String year) {
-        try {
-            return historicVariableApi
-                .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLEL_SPONSOR, year)
-                .getData();
-        } catch (Exception e) {
-            LOGGER.error("获取主办人失败，taskId: {}", task.getTaskId(), e);
-            return null;
-        }
-    }
-
-    /**
-     * 获取办理人名称
-     */
-    private String getEmployeeName(HistoricActivityInstanceModel task, OrgUnit employee) {
-        // 如果tenantId字段已包含名称，则优先使用
-        if (StringUtils.isNotBlank(task.getTenantId())) {
-            return task.getTenantId();
-        }
-
-        return employee != null ? employee.getName() : "";
-    }
-
-    private String longTime(Date startTime, Date endTime) {
-        if (endTime == null) {
-            return "";
-        } else {
-            long time = endTime.getTime() - startTime.getTime();
-            time = time / 1000;
-            int s = (int)(time % 60);
-            int m = (int)(time / 60 % 60);
-            int h = (int)(time / 3600 % 24);
-            int d = (int)(time / 86400);
-            return d + "天" + h + "小时" + m + "分" + s + "秒";
         }
     }
 
