@@ -20,12 +20,11 @@ public interface ItemOpinionFrameRoleApi {
     /**
      * 获取意见框绑定角色
      *
-     * @param tenantId 租户id
      * @param itemOpinionFrameId 意见框绑定id
      * @return {@code Y9Result<List<ItemOpinionFrameRoleModel>>} 通用请求返回对象 - data 是意见框绑定角色列表
      * @since 9.6.6
      */
     @GetMapping("/findByItemOpinionFrameId")
-    Y9Result<List<ItemOpinionFrameRoleModel>> findByItemOpinionFrameId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("itemOpinionFrameId") String itemOpinionFrameId);
+    Y9Result<List<ItemOpinionFrameRoleModel>>
+        findByItemOpinionFrameId(@RequestParam("itemOpinionFrameId") String itemOpinionFrameId);
 }

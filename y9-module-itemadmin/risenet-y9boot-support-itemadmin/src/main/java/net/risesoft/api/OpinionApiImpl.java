@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,13 +22,9 @@ import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionListModel;
 import net.risesoft.model.itemadmin.OpinionModel;
-import net.risesoft.model.platform.org.Position;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.opinion.OpinionService;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -53,17 +50,13 @@ public class OpinionApiImpl implements OpinionApi {
     /**
      * 验证当前taskId任务节点是否已经签写意见
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param taskId 任务id
      * @return {@code Y9Result<Boolean>} 通用请求返回对象 - data 是是否已经签写意见
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Boolean> checkSignOpinion(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String processSerialNumber, String taskId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Boolean> checkSignOpinion(@RequestParam String processSerialNumber, String taskId) {
         Boolean result = opinionService.checkSignOpinion(processSerialNumber, taskId);
         return Y9Result.success(result);
     }
@@ -71,15 +64,13 @@ public class OpinionApiImpl implements OpinionApi {
     /**
      * 删除意见数据
      *
-     * @param tenantId 租户id
      * @param id 唯一标识
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> delete(@RequestParam String tenantId, @RequestParam String id) throws Exception {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> delete(@RequestParam String id) throws Exception {
         opinionService.delete(id);
         return Y9Result.successMsg("删除成功");
     }
@@ -87,16 +78,14 @@ public class OpinionApiImpl implements OpinionApi {
     /**
      * 获取事项绑定的意见框列表
      *
-     * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义Id
      * @return {@code Y9Result<List<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是事项意见框绑定信息
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(@RequestParam String tenantId,
-        @RequestParam String itemId, String processDefinitionId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(@RequestParam String itemId,
+        String processDefinitionId) {
         List<ItemOpinionFrameBindModel> list = new ArrayList<>();
         List<String> opinionFrameList = itemOpinionFrameBindService.getBindOpinionFrame(itemId, processDefinitionId);
         for (String opinionFrame : opinionFrameList) {
@@ -127,8 +116,6 @@ public class OpinionApiImpl implements OpinionApi {
     /**
      * 获取个人意见列表
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processSerialNumber 流程编号
      * @param taskId 任务id
      * @param itembox 办件状态，todo（待办），doing（在办），done（办结）
@@ -139,13 +126,9 @@ public class OpinionApiImpl implements OpinionApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<OpinionListModel>> personCommentList(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String processSerialNumber, String taskId,
+    public Y9Result<List<OpinionListModel>> personCommentList(@RequestParam String processSerialNumber, String taskId,
         @RequestParam String itembox, @RequestParam String opinionFrameMark, @RequestParam String itemId,
         String taskDefinitionKey) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
         List<OpinionListModel> opinionList = opinionService.listPersonComment(processSerialNumber, taskId, itembox,
             opinionFrameMark, itemId, taskDefinitionKey);
         return Y9Result.success(opinionList);
@@ -167,16 +150,13 @@ public class OpinionApiImpl implements OpinionApi {
     /**
      * 保存意见信息
      *
-     * @param tenantId 租户id
      * @param opinionModel 意见信息
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @throws Exception Exception
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> save(@RequestParam String tenantId, @RequestBody OpinionModel opinionModel)
-        throws Exception {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> save(@RequestBody OpinionModel opinionModel) throws Exception {
         Opinion opinion = new Opinion();
         Y9BeanUtil.copyProperties(opinionModel, opinion);
         opinionService.save(opinion);
@@ -186,17 +166,13 @@ public class OpinionApiImpl implements OpinionApi {
     /**
      * 保存或更新意见信息
      *
-     * @param orgUnitId 人员、岗位id
      * @param opinionDTO 意见信息
      * @return {@code Y9Result<OpinionModel>} 通用请求返回对象 - data 是意见信息
      * @throws Exception Exception
      * @since 9.6.6
      */
     @Override
-    public Y9Result<OpinionModel> saveOrUpdate(@RequestParam String orgUnitId, @RequestBody OpinionDTO opinionDTO)
-        throws Exception {
-        Position position = positionApi.get(Y9LoginUserHolder.getTenantId(), orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<OpinionModel> saveOrUpdate(@RequestBody OpinionDTO opinionDTO) throws Exception {
         Opinion opinion = opinionService.saveOrUpdate(opinionDTO);
         OpinionModel opinionModel = new OpinionModel();
         Y9BeanUtil.copyProperties(opinion, opinionModel);
@@ -206,16 +182,13 @@ public class OpinionApiImpl implements OpinionApi {
     /**
      * 更新意见信息
      *
-     * @param tenantId 租户id
      * @param id 意见id
      * @param content 意见内容
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> updateOpinion(@RequestParam String tenantId, @RequestParam String id,
-        @RequestParam String content) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<Object> updateOpinion(@RequestParam String id, @RequestParam String content) {
         opinionService.updateOpinion(id, content);
         return Y9Result.success();
     }

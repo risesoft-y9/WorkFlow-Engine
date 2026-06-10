@@ -20,34 +20,28 @@ public interface ItemOpinionFrameBindApi {
     /**
      * 根据事项id获取所有绑定意见框
      *
-     * @param tenantId 租户id
      * @param itemId 事项id
      * @return {@code Y9Result<List<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是绑定意见框列表
      * @since 9.6.6
      */
     @GetMapping("/findByItemId")
-    Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("itemId") String itemId);
+    Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(@RequestParam("itemId") String itemId);
 
     /**
      * 根据事项id和流程定义id获取所有绑定意见框
      *
-     * @param tenantId 租户id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @return {@code Y9Result<List<ItemOpinionFrameBindModel>>} 通用请求返回对象 - data 是绑定意见框列表
      * @since 9.6.6
      */
     @GetMapping("/findByItemIdAndProcessDefinitionId")
-    Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionId(
-        @RequestParam("tenantId") String tenantId, @RequestParam("itemId") String itemId,
+    Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionId(@RequestParam("itemId") String itemId,
         @RequestParam("processDefinitionId") String processDefinitionId);
 
     /**
      * 根据事项id和任务id获取绑定意见框
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
@@ -56,15 +50,12 @@ public interface ItemOpinionFrameBindApi {
      */
     @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKey")
     Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKey(
-        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam(value = "taskDefKey", required = false) String taskDefKey);
 
     /**
      * 根据事项id和任务id获取绑定意见框（包含角色信息）
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param itemId 事项id
      * @param processDefinitionId 流程定义id
      * @param taskDefKey 任务key
@@ -73,7 +64,6 @@ public interface ItemOpinionFrameBindApi {
      */
     @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole")
     Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(
-        @RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
         @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
         @RequestParam(value = "taskDefKey", required = false) String taskDefKey);
 
