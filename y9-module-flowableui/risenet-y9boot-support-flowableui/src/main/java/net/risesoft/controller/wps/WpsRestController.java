@@ -106,8 +106,7 @@ public class WpsRestController {
      */
     private String getDocumentTitle(String tenantId, String processInstanceId) {
         try {
-            ProcessParamModel processModel =
-                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            ProcessParamModel processModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             return processModel.getTitle() != null ? processModel.getTitle() : "正文";
         } catch (Exception e) {
             LOGGER.warn("获取文档标题失败，使用默认标题", e);
@@ -159,8 +158,7 @@ public class WpsRestController {
     }
 
     private String getTitle(String processSerialNumber) {
-        ProcessParamModel processModel =
-            processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        ProcessParamModel processModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
         return processModel.getTitle() != null ? processModel.getTitle() : "正文";
     }
 
@@ -255,6 +253,7 @@ public class WpsRestController {
         map.put(UtilConsts.SUCCESS, false);
         map.put("msg", "上传失败");
         try {
+            Y9LoginUserHolder.setTenantId(tenantId);
             // 处理文件名
             String fileName = Y9DownloadUtil.extractFileName(file.getOriginalFilename());
             // 获取文件类型

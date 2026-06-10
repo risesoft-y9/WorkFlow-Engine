@@ -63,7 +63,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
             Y9LoginUserHolder.setTenantId(tenantId);
             processSerialNumber = (String)variables.get("processSerialNumber");
             ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             itemId = processParamModel.getItemId();
             y9Result = itemInterfaceApi.getInterface(itemId, taskDefinitionKey, processDefinitionId, condition);
         } catch (Exception e) {
@@ -108,8 +108,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
             tenantId = FlowableTenantInfoHolder.getTenantId();
             Y9LoginUserHolder.setTenantId(tenantId);
             processInstanceId = flow.getProcessInstanceId();
-            ProcessParamModel processParamModel =
-                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             if (processParamModel == null) {// 起草第一步的线，processParamModel为null，不需要调用接口
                 LOGGER.info("*********************流程实例ID:{}", processInstanceId);
                 return;
@@ -162,7 +161,7 @@ public class InterfaceUtilServiceImpl implements InterfaceUtilService {
             processSerialNumber = (String)variables.get("processSerialNumber");
             loopCounter = variables.get("loopCounter") != null ? (Integer)variables.get("loopCounter") : null;
             ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             itemId = processParamModel.getItemId();
             y9Result = itemInterfaceApi.getInterface(itemId, taskDefinitionKey, processDefinitionId, condition);
         } catch (Exception e) {

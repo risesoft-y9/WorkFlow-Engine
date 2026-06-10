@@ -188,8 +188,7 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
         try {
             String processSerialNumber = ardModel.getProcessSerialNumber();
             mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
-            ProcessParamModel processParam =
-                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            ProcessParamModel processParam = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             // 处理任务信息
             handleTaskInfo(mapTemp, tenantId, processInstanceId);
             // 处理流程参数相关信息

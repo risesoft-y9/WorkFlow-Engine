@@ -56,16 +56,26 @@ public class FlowableLogAdvice implements MethodInterceptor {
         this.processParamApi = processParamApi;
     }
 
-    private ExceptionInfo handleException(Exception e) {
-        String stackTrace = getStackTraceAsString(e);
-        return new ExceptionInfo("出错", e.getMessage(), stackTrace);
+    private FlowableAccessLog buildFlowableAccessLog(Method method, FlowableLog flowableLog,
+        MethodInvocation invocation, long elapsedTime, RequestInfo requestInfo, ExceptionInfo exceptionInfo) {
+        FlowableAccessLog flowableAccessLog = new FlowableAccessLog();
+        initializeBasicLogInfo(flowableAccessLog, method, flowableLog, elapsedTime, requestInfo, exceptionInfo);
+        setMethodArguments(flowableAccessLog, method, invocation, requestInfo);
+        setTitleInformation(flowableAccessLog, requestInfo.getProcessSerialNumber());
+        setUserInfo(flowableAccessLog);
+        setOperationName(flowableAccessLog, flowableLog, method, requestInfo.getOptName());
+        setLogLevel(flowableAccessLog, flowableLog);
+        return flowableAccessLog;
     }
 
-    private String getStackTraceAsString(Exception e) {
-        StringWriter stringWriter = new StringWriter();
-        PrintWriter printWriter = new PrintWriter(stringWriter);
-        e.printStackTrace(printWriter);
-        return stringWriter.toString();
+    private Map<String, Object> buildParameterMap(String[] paramNames, Object[] args, RequestInfo requestInfo) {
+        Map<String, Object> paramMap = new HashMap<>();
+        for (int i = 0; i < args.length; i++) {
+            String paramName = getParameterName(paramNames, i);
+            Object paramValue = processParameterValue(args[i], paramName, requestInfo);
+            paramMap.put(paramName, paramValue);
+        }
+        return paramMap;
     }
 
     private RequestInfo collectRequestInfo() {
@@ -87,104 +97,20 @@ public class FlowableLogAdvice implements MethodInterceptor {
         return requestInfo;
     }
 
-    private FlowableAccessLog buildFlowableAccessLog(Method method, FlowableLog flowableLog,
-        MethodInvocation invocation, long elapsedTime, RequestInfo requestInfo, ExceptionInfo exceptionInfo) {
-        FlowableAccessLog flowableAccessLog = new FlowableAccessLog();
-        initializeBasicLogInfo(flowableAccessLog, method, flowableLog, elapsedTime, requestInfo, exceptionInfo);
-        setMethodArguments(flowableAccessLog, method, invocation, requestInfo);
-        setTitleInformation(flowableAccessLog, requestInfo.getProcessSerialNumber());
-        setUserInfo(flowableAccessLog);
-        setOperationName(flowableAccessLog, flowableLog, method, requestInfo.getOptName());
-        setLogLevel(flowableAccessLog, flowableLog);
-        return flowableAccessLog;
-    }
-
-    private void setTitleInformation(FlowableAccessLog flowableAccessLog, String processSerialNumber) {
-        if (StringUtils.hasText(processSerialNumber)) {
-            try {
-                ProcessParamModel processParam =
-                    processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber)
-                        .getData();
-                if (null != processParam) {
-                    flowableAccessLog.setSystemName(processParam.getSystemCnName());
-                    flowableAccessLog.setModularName(processParam.getItemName());
-                    flowableAccessLog.setTitle(processParam.getTitle());
-                }
-            } catch (Exception e) {
-                LOGGER.warn("获取流程参数信息失败", e);
-            }
-        }
-    }
-
-    private void setUserInfo(FlowableAccessLog flowableAccessLog) {
-        UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
-        if (null != userInfo) {
-            flowableAccessLog.setUserId(userInfo.getPersonId());
-            flowableAccessLog.setGuidPath(userInfo.getGuidPath());
-            flowableAccessLog.setUserName(userInfo.getName());
-            flowableAccessLog.setLoginName(userInfo.getLoginName());
-            flowableAccessLog.setPersonType(userInfo.getPersonType());
-            flowableAccessLog.setDn(userInfo.getDn());
-            flowableAccessLog.setTenantId(userInfo.getTenantId());
-            flowableAccessLog.setTenantName(Y9LoginUserHolder.getTenantName());
-        }
-    }
-
-    private void setOperationName(FlowableAccessLog flowableAccessLog, FlowableLog flowableLog, Method method,
-        String optName) {
-        if (StringUtils.hasText(optName)) {
-            flowableAccessLog.setOperateName(optName);
-        } else if (StringUtils.hasText(flowableLog.operationName())) {
-            flowableAccessLog.setOperateName(flowableLog.operationName());
-        } else {
-            flowableAccessLog.setOperateName(method.getName());
-        }
-    }
-
-    private void setLogLevel(FlowableAccessLog flowableAccessLog, FlowableLog flowableLog) {
-        if (null != flowableLog.logLevel()) {
-            flowableAccessLog.setLogLevel(flowableLog.logLevel().toString());
-        } else {
-            flowableAccessLog.setLogLevel(FlowableLogLevelEnum.COMMON.toString());
-        }
-    }
-
-    private void setMethodArguments(FlowableAccessLog flowableAccessLog, Method method, MethodInvocation invocation,
-        RequestInfo requestInfo) {
-        ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
-        String[] paramNames = parameterNameDiscoverer.getParameterNames(method);
-        if (null != paramNames) {
-            Object[] args = invocation.getArguments();
-            Map<String, Object> paramMap = buildParameterMap(paramNames, args, requestInfo);
-            if (!paramMap.isEmpty()) {
-                flowableAccessLog.setArguments(Y9JsonUtil.writeValueAsString(paramMap));
-            }
-        }
-    }
-
-    private Map<String, Object> buildParameterMap(String[] paramNames, Object[] args, RequestInfo requestInfo) {
-        Map<String, Object> paramMap = new HashMap<>();
-        for (int i = 0; i < args.length; i++) {
-            String paramName = getParameterName(paramNames, i);
-            Object paramValue = processParameterValue(args[i], paramName, requestInfo);
-            paramMap.put(paramName, paramValue);
-        }
-        return paramMap;
-    }
-
     private String getParameterName(String[] paramNames, int index) {
         return paramNames.length > index ? paramNames[index] : "arg" + index;
     }
 
-    private Object processParameterValue(Object value, String paramName, RequestInfo requestInfo) {
-        if (value instanceof MultipartFile) {
-            return ((MultipartFile)value).getOriginalFilename();
-        } else {
-            if ("processSerialNumber".equalsIgnoreCase(paramName)) {
-                requestInfo.setProcessSerialNumber((String)value);
-            }
-            return value;
-        }
+    private String getStackTraceAsString(Exception e) {
+        StringWriter stringWriter = new StringWriter();
+        PrintWriter printWriter = new PrintWriter(stringWriter);
+        e.printStackTrace(printWriter);
+        return stringWriter.toString();
+    }
+
+    private ExceptionInfo handleException(Exception e) {
+        String stackTrace = getStackTraceAsString(e);
+        return new ExceptionInfo("出错", e.getMessage(), stackTrace);
     }
 
     private void initializeBasicLogInfo(FlowableAccessLog log, Method method, FlowableLog flowableLog, long elapsedTime,
@@ -259,6 +185,79 @@ public class FlowableLogAdvice implements MethodInterceptor {
             if (requestInfo.getResponse() != null) {
                 requestInfo.getResponse().setHeader("y9aoplog", "true");
             }
+        }
+    }
+
+    private Object processParameterValue(Object value, String paramName, RequestInfo requestInfo) {
+        if (value instanceof MultipartFile) {
+            return ((MultipartFile)value).getOriginalFilename();
+        } else {
+            if ("processSerialNumber".equalsIgnoreCase(paramName)) {
+                requestInfo.setProcessSerialNumber((String)value);
+            }
+            return value;
+        }
+    }
+
+    private void setLogLevel(FlowableAccessLog flowableAccessLog, FlowableLog flowableLog) {
+        if (null != flowableLog.logLevel()) {
+            flowableAccessLog.setLogLevel(flowableLog.logLevel().toString());
+        } else {
+            flowableAccessLog.setLogLevel(FlowableLogLevelEnum.COMMON.toString());
+        }
+    }
+
+    private void setMethodArguments(FlowableAccessLog flowableAccessLog, Method method, MethodInvocation invocation,
+        RequestInfo requestInfo) {
+        ParameterNameDiscoverer parameterNameDiscoverer = new DefaultParameterNameDiscoverer();
+        String[] paramNames = parameterNameDiscoverer.getParameterNames(method);
+        if (null != paramNames) {
+            Object[] args = invocation.getArguments();
+            Map<String, Object> paramMap = buildParameterMap(paramNames, args, requestInfo);
+            if (!paramMap.isEmpty()) {
+                flowableAccessLog.setArguments(Y9JsonUtil.writeValueAsString(paramMap));
+            }
+        }
+    }
+
+    private void setOperationName(FlowableAccessLog flowableAccessLog, FlowableLog flowableLog, Method method,
+        String optName) {
+        if (StringUtils.hasText(optName)) {
+            flowableAccessLog.setOperateName(optName);
+        } else if (StringUtils.hasText(flowableLog.operationName())) {
+            flowableAccessLog.setOperateName(flowableLog.operationName());
+        } else {
+            flowableAccessLog.setOperateName(method.getName());
+        }
+    }
+
+    private void setTitleInformation(FlowableAccessLog flowableAccessLog, String processSerialNumber) {
+        if (StringUtils.hasText(processSerialNumber)) {
+            try {
+                ProcessParamModel processParam =
+                    processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
+                if (null != processParam) {
+                    flowableAccessLog.setSystemName(processParam.getSystemCnName());
+                    flowableAccessLog.setModularName(processParam.getItemName());
+                    flowableAccessLog.setTitle(processParam.getTitle());
+                }
+            } catch (Exception e) {
+                LOGGER.warn("获取流程参数信息失败", e);
+            }
+        }
+    }
+
+    private void setUserInfo(FlowableAccessLog flowableAccessLog) {
+        UserInfo userInfo = Y9LoginUserHolder.getUserInfo();
+        if (null != userInfo) {
+            flowableAccessLog.setUserId(userInfo.getPersonId());
+            flowableAccessLog.setGuidPath(userInfo.getGuidPath());
+            flowableAccessLog.setUserName(userInfo.getName());
+            flowableAccessLog.setLoginName(userInfo.getLoginName());
+            flowableAccessLog.setPersonType(userInfo.getPersonType());
+            flowableAccessLog.setDn(userInfo.getDn());
+            flowableAccessLog.setTenantId(userInfo.getTenantId());
+            flowableAccessLog.setTenantName(Y9LoginUserHolder.getTenantName());
         }
     }
 

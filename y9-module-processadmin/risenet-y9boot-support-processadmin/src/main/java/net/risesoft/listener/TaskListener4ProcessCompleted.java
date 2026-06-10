@@ -75,6 +75,7 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 // 2、子流程启动,初始化callActivity的流程参数信息
                 ItemApi itemApi = Y9Context.getBean(ItemApi.class);
                 String tenantIdTemp = (String)executionEntityStart.getVariable(SysVariables.TENANT_ID);
+                Y9LoginUserHolder.setTenantId(tenantIdTemp);
                 ItemModel itemModel =
                     itemApi.findByProcessDefinitionKey(tenantIdTemp, executionEntityStart.getProcessDefinitionKey())
                         .getData();
@@ -85,7 +86,7 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                     executionEntityStart.setVariable(SysVariables.PROCESS_SERIAL_NUMBER, subProcessSerialNumber);
 
                     ProcessParamApi processParamApi = Y9Context.getBean(ProcessParamApi.class);
-                    processParamApi.initCallActivity(tenantIdTemp, processSerialNumber, subProcessSerialNumber,
+                    processParamApi.initCallActivity(processSerialNumber, subProcessSerialNumber,
                         executionEntityStart.getProcessInstanceId(), itemModel.getId(), itemModel.getName());
                 }
                 break;

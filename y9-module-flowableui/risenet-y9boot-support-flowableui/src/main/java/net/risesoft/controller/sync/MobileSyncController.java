@@ -279,7 +279,7 @@ public class MobileSyncController {
         String startTime = (String)map.get(START_TIME_KEY);
         String endTime = (String)map.get("END_TIME_");
         // 获取流程参数和办结信息
-        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(tenantId, procInstId).getData();
+        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(procInstId).getData();
         OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(procInstId).getData();
         // 初始化办结信息对象
         if (officeDoneInfo == null) {
@@ -402,7 +402,7 @@ public class MobileSyncController {
                     String START_TIME_ = (String)map.get(START_TIME_KEY);
                     String END_TIME_ = (String)map.get("END_TIME_");
                     ProcessParamModel processParamModel =
-                        processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        processParamApi.findByProcessInstanceId(processInstanceId).getData();
                     OfficeDoneInfoModel officeDoneInfo =
                         officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
                     if (officeDoneInfo != null) {

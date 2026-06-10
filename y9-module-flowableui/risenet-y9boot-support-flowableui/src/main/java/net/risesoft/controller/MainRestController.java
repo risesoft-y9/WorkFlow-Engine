@@ -465,7 +465,7 @@ public class MainRestController {
                     }
                 }
                 ProcessParamModel processParamModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParamApi.findByProcessInstanceId(processInstanceId).getData();
                 processSerialNumber = processParamModel.getProcessSerialNumber();
                 ItemModel itemModel = itemApi.getByItemId(tenantId, processParamModel.getItemId()).getData();
                 map.put("itemModel", itemModel);

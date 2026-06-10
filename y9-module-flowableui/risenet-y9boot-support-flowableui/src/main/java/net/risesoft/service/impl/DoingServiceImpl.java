@@ -52,6 +52,18 @@ public class DoingServiceImpl implements DoingService {
     private final UtilService utilService;
 
     /**
+     * 获取流程参数
+     */
+    private ProcessParamModel getProcessParam(String tenantId, String processInstanceId) {
+        try {
+            return this.processParamApi.findByProcessInstanceId(processInstanceId).getData();
+        } catch (Exception e) {
+            LOGGER.warn("获取流程参数失败，processInstanceId: {}", processInstanceId, e);
+            return null;
+        }
+    }
+
+    /**
      * 获取任务列表
      */
     private List<TaskModel> getTaskList(String tenantId, String processInstanceId) {
@@ -60,18 +72,6 @@ public class DoingServiceImpl implements DoingService {
         } catch (Exception e) {
             LOGGER.warn("获取任务列表失败，processInstanceId: {}", processInstanceId, e);
             return new ArrayList<>();
-        }
-    }
-
-    /**
-     * 获取流程参数
-     */
-    private ProcessParamModel getProcessParam(String tenantId, String processInstanceId) {
-        try {
-            return this.processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
-        } catch (Exception e) {
-            LOGGER.warn("获取流程参数失败，processInstanceId: {}", processInstanceId, e);
-            return null;
         }
     }
 
@@ -95,18 +95,61 @@ public class DoingServiceImpl implements DoingService {
         return new ProcessParamData(processSerialNumber, documentTitle, level, number);
     }
 
+    @Override
+    public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
+        try {
+            String positionId = Y9FlowableHolder.getPositionId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            String processDefinitionKey = item.getWorkflowGuid();
+            String itemName = item.getName();
+            Y9Page<ProcessInstanceModel> piPage;
+            boolean isSearch = StringUtils.isNotBlank(searchTerm);
+            if (isSearch) {
+                piPage = this.processDoingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
+                    processDefinitionKey, searchTerm, page, rows);
+            } else {
+                piPage = this.processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId,
+                    positionId, processDefinitionKey, page, rows);
+            }
+            // 处理数据列表
+            List<Map<String, Object>> items =
+                processInstanceList(piPage.getRows(), itemId, itemName, isSearch, page, rows);
+            return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
+        } catch (Exception e) {
+            LOGGER.error("获取在办件列表失败", e);
+            return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
+        }
+    }
+
     /**
-     * 设置基础数据
+     * 处理流程实例列表，转换为前端需要的数据格式
+     *
+     * @param piModelList 流程实例列表
+     * @param itemName 事项名称
+     * @param isSearch 是否为搜索模式
+     * @param page 页码
+     * @param rows 每页条数
+     * @return 转换后的数据列表
      */
-    private void setBasicData(Map<String, Object> mapTemp, ProcessParamData paramData, String processDefinitionId,
-        String processInstanceId, String itemName) {
-        mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, paramData.processSerialNumber);
-        mapTemp.put(PROCESSDEFINITIONID_KEY, processDefinitionId);
-        mapTemp.put(PROCESSINSTANCEID_KEY, processInstanceId);
-        mapTemp.put(ITEMNAME_KEY, itemName);
-        mapTemp.put(SysVariables.DOCUMENT_TITLE, paramData.documentTitle);
-        mapTemp.put(SysVariables.LEVEL, paramData.level);
-        mapTemp.put(SysVariables.NUMBER, paramData.number);
+    private List<Map<String, Object>> processInstanceList(List<ProcessInstanceModel> piModelList, String itemId,
+        String itemName, boolean isSearch, int page, int rows) {
+        List<Map<String, Object>> items = new ArrayList<>();
+        List<String> processSerialNumbers = new ArrayList<>();
+        int serialNumber = (page - 1) * rows;
+        for (ProcessInstanceModel piModel : piModelList) {
+            Map<String, Object> mapTemp = processSingleInstance(piModel, itemName, isSearch, serialNumber);
+            // 收集流程序列号用于表单数据处理
+            Object processSerialNumberObj = mapTemp.get(SysVariables.PROCESS_SERIAL_NUMBER);
+            if (processSerialNumberObj != null && !processSerialNumberObj.toString().isEmpty()) {
+                processSerialNumbers.add(processSerialNumberObj.toString());
+            }
+            items.add(mapTemp);
+            serialNumber += 1;
+        }
+        // 执行表单数据处理
+        handleFormDataService.execute(itemId, items, processSerialNumbers);
+        return items;
     }
 
     /**
@@ -156,60 +199,17 @@ public class DoingServiceImpl implements DoingService {
     }
 
     /**
-     * 处理流程实例列表，转换为前端需要的数据格式
-     *
-     * @param piModelList 流程实例列表
-     * @param itemName 事项名称
-     * @param isSearch 是否为搜索模式
-     * @param page 页码
-     * @param rows 每页条数
-     * @return 转换后的数据列表
+     * 设置基础数据
      */
-    private List<Map<String, Object>> processInstanceList(List<ProcessInstanceModel> piModelList, String itemId,
-        String itemName, boolean isSearch, int page, int rows) {
-        List<Map<String, Object>> items = new ArrayList<>();
-        List<String> processSerialNumbers = new ArrayList<>();
-        int serialNumber = (page - 1) * rows;
-        for (ProcessInstanceModel piModel : piModelList) {
-            Map<String, Object> mapTemp = processSingleInstance(piModel, itemName, isSearch, serialNumber);
-            // 收集流程序列号用于表单数据处理
-            Object processSerialNumberObj = mapTemp.get(SysVariables.PROCESS_SERIAL_NUMBER);
-            if (processSerialNumberObj != null && !processSerialNumberObj.toString().isEmpty()) {
-                processSerialNumbers.add(processSerialNumberObj.toString());
-            }
-            items.add(mapTemp);
-            serialNumber += 1;
-        }
-        // 执行表单数据处理
-        handleFormDataService.execute(itemId, items, processSerialNumbers);
-        return items;
-    }
-
-    @Override
-    public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
-        try {
-            String positionId = Y9FlowableHolder.getPositionId();
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
-            String processDefinitionKey = item.getWorkflowGuid();
-            String itemName = item.getName();
-            Y9Page<ProcessInstanceModel> piPage;
-            boolean isSearch = StringUtils.isNotBlank(searchTerm);
-            if (isSearch) {
-                piPage = this.processDoingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                    processDefinitionKey, searchTerm, page, rows);
-            } else {
-                piPage = this.processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId,
-                    positionId, processDefinitionKey, page, rows);
-            }
-            // 处理数据列表
-            List<Map<String, Object>> items =
-                processInstanceList(piPage.getRows(), itemId, itemName, isSearch, page, rows);
-            return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
-        } catch (Exception e) {
-            LOGGER.error("获取在办件列表失败", e);
-            return Y9Page.success(page, 0, 0, new ArrayList<>(), "获取列表失败");
-        }
+    private void setBasicData(Map<String, Object> mapTemp, ProcessParamData paramData, String processDefinitionId,
+        String processInstanceId, String itemName) {
+        mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, paramData.processSerialNumber);
+        mapTemp.put(PROCESSDEFINITIONID_KEY, processDefinitionId);
+        mapTemp.put(PROCESSINSTANCEID_KEY, processInstanceId);
+        mapTemp.put(ITEMNAME_KEY, itemName);
+        mapTemp.put(SysVariables.DOCUMENT_TITLE, paramData.documentTitle);
+        mapTemp.put(SysVariables.LEVEL, paramData.level);
+        mapTemp.put(SysVariables.NUMBER, paramData.number);
     }
 
     /**

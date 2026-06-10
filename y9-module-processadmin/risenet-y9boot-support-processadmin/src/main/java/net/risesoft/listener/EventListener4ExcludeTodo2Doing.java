@@ -25,6 +25,7 @@ import net.risesoft.service.CustomHistoricProcessService;
 import net.risesoft.service.CustomProcessDefinitionService;
 import net.risesoft.service.InterfaceUtilService;
 import net.risesoft.y9.Y9Context;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -133,10 +134,9 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
         String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
         String taskSenderId = (String)taskEntity.getVariable(SysVariables.TASK_SENDER_ID);
         String taskSender = (String)taskEntity.getVariable(SysVariables.TASK_SENDER);
-
+        Y9LoginUserHolder.setTenantId(tenantId);
         ProcessParamApi processParamApi = Y9Context.getBean(ProcessParamApi.class);
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+        ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
 
         CustomProcessDefinitionService customProcessDefinitionService =
             Y9Context.getBean(CustomProcessDefinitionService.class);
@@ -247,11 +247,9 @@ public class EventListener4ExcludeTodo2Doing extends AbstractFlowableEventListen
     private void setTaskDueDate(TaskEntityImpl taskEntity) {
         String tenantId = (String)taskEntity.getVariable(SysVariables.TENANT_ID);
         String processSerialNumber = (String)taskEntity.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
-
+        Y9LoginUserHolder.setTenantId(tenantId);
         ProcessParamApi processParamApi = Y9Context.getBean(ProcessParamApi.class);
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-
+        ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
         if (null != processParamModel.getDueDate()) {
             taskEntity.setDueDate(processParamModel.getDueDate());
         }

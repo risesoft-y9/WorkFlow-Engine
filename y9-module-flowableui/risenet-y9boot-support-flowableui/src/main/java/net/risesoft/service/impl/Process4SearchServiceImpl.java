@@ -98,8 +98,7 @@ public class Process4SearchServiceImpl implements Process4SearchService {
     public void saveToDataCenter(final String tenantId, final String taskId, final String processInstanceId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            ProcessParamModel processParam =
-                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            ProcessParamModel processParam = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
             if (officeDoneInfo != null) {
                 updateOfficeDoneInfo(officeDoneInfo, processParam, tenantId, processInstanceId);

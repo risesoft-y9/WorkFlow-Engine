@@ -79,8 +79,7 @@ public class TodoServiceImpl implements TodoService {
             int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
 
             // 流程参数信息
-            ProcessParamModel processParam =
-                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            ProcessParamModel processParam = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             String processSerialNumber = processParam.getProcessSerialNumber();
             processSerialNumbers.add(processSerialNumber);
 

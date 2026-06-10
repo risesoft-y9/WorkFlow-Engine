@@ -67,6 +67,13 @@ public class AttachmentServiceImpl implements AttachmentService {
 
     @Override
     @Transactional
+    public Y9Result<String> delFile(IdsDTO deleteEntityDTO) {
+        attachmentApi.delFile(deleteEntityDTO);
+        return Y9Result.successMsg("删除成功");
+    }
+
+    @Override
+    @Transactional
     public void download(String id, String fileName, OutputStream out) {
         try {
             y9FileStoreService.downloadFileToOutputStream(id, out);
@@ -83,13 +90,6 @@ public class AttachmentServiceImpl implements AttachmentService {
         } catch (Exception e) {
             LOGGER.error("附件下载失败", e);
         }
-    }
-
-    @Override
-    @Transactional
-    public Y9Result<String> delFile(IdsDTO deleteEntityDTO) {
-        attachmentApi.delFile(deleteEntityDTO);
-        return Y9Result.successMsg("删除成功");
     }
 
     @Override
@@ -149,7 +149,7 @@ public class AttachmentServiceImpl implements AttachmentService {
                 }
                 out.flush();
                 ProcessParamModel processParamModel =
-                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
                 AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                     .action(FlowableUiAuditLogEnum.ATTACHMENT_PACK_DOWNLOAD.getAction())
                     .description(Y9StringUtil.format(FlowableUiAuditLogEnum.ATTACHMENT_PACK_DOWNLOAD.getDescription(),

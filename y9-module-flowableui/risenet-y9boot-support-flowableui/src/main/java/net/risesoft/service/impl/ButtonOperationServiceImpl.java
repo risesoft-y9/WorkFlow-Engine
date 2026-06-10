@@ -120,8 +120,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         /**
          * 记录审计日志
          */
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
         AuditLogEvent auditLogEvent = AuditLogEvent.builder()
             .action(FlowableUiAuditLogEnum.DOCUMENT_COMPLETE.getAction())
             .description(Y9StringUtil.format(FlowableUiAuditLogEnum.DOCUMENT_COMPLETE.getDescription(),
@@ -278,7 +277,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         ProcessParamModel processParamModel;
         for (String processSerialNumber : processSerialNumbers) {
             actRuDetailApi.removeByProcessSerialNumber(processSerialNumber);
-            processParamModel = processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            processParamModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             // 删除流程实例
             historicProcessApi.deleteProcessInstance(tenantId, processParamModel.getProcessInstanceId());
             asyncUtilService.removeToDoAuditLog(tenantId, positionId, processParamModel.getProcessSerialNumber(),
@@ -305,7 +304,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 title = officeDoneInfoModel.getTitle();
             } else {
                 ProcessParamModel processParamModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParamApi.findByProcessInstanceId(processInstanceId).getData();
                 year = getYear(processParamModel.getCreateTime());
                 title = processParamModel.getTitle();
             }
@@ -361,7 +360,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 year = officeDoneInfoModel.getStartTime().substring(0, 4);
             } else {
                 ProcessParamModel processParamModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParamApi.findByProcessInstanceId(processInstanceId).getData();
                 year = getYear(processParamModel.getCreateTime());
             }
             HistoricTaskInstanceModel hisTaskModel =
