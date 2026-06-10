@@ -190,7 +190,7 @@ public class DoingServiceImpl implements DoingService {
         try {
             String positionId = Y9FlowableHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            ItemModel item = this.itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = this.itemApi.getByItemId(itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             String itemName = item.getName();
             Y9Page<ProcessInstanceModel> piPage;
