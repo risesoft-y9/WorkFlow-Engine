@@ -293,6 +293,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void takeBackTwoTaskDefKeyAuditLog(String tenantId, String orgUnitId, String taskId, String targetTaskKey) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
             List<TargetModel> targetModelList =
@@ -324,6 +325,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Transactional
     public void quickSendAuditLog(String tenantId, String orgUnitId, String itemId, String taskKey, String assignee,
         String optType) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             Item item = itemService.findById(itemId);
             ProcessDefinitionModel processDefinitionModel =
@@ -368,6 +370,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Transactional
     public void remindMsgAuditLog(String tenantId, String orgUnitId, String taskIds, String processInstanceId,
         Boolean process, String arriveTaskKey, String completeTaskKey) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             String[] ids = taskIds.split(",");
             for (String id : ids) {
@@ -441,6 +444,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Override
     @Transactional
     public void sendAuditLog(String tenantId, String title, String userChoice) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
             for (String choice : userChoices) {
@@ -469,6 +473,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Transactional
     @Override
     public void sendAuditLog(String tenantId, String title, List<String> userIdList) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             for (String userId : userIdList) {
                 Position position = positionApi.get(tenantId, userId).getData();
@@ -491,6 +496,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Transactional
     @Override
     public void submitSendAuditLog(String tenantId, String title, List<String> userIdList) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             for (String userId : userIdList) {
                 Position position = positionApi.get(tenantId, userId).getData();
@@ -513,6 +519,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Transactional
     @Override
     public void saveAssociatedFileAuditLog(String tenantId, String processInstanceIds) {
+        Y9LoginUserHolder.setTenantId(tenantId);
         try {
             String[] processInstanceIdArray = processInstanceIds.split(SysVariables.COMMA);
             for (String processInstanceId : processInstanceIdArray) {
