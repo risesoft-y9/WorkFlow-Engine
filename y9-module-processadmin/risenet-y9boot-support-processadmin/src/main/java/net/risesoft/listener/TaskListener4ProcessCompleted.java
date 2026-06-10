@@ -64,8 +64,6 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
             case PROCESS_STARTED:
                 FlowableEntityEventImpl entityEventStart = (FlowableEntityEventImpl)event;
                 ExecutionEntityImpl executionEntityStart = (ExecutionEntityImpl)entityEventStart.getEntity();
-                String tenantIdTemp = (String)executionEntityStart.getVariable(SysVariables.TENANT_ID);
-                Y9LoginUserHolder.setTenantId(tenantIdTemp);
                 // 1、接口调用
                 InterfaceUtilService interfaceUtilService1 = Y9Context.getBean(InterfaceUtilService.class);
                 try {
@@ -76,8 +74,11 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 }
                 // 2、子流程启动,初始化callActivity的流程参数信息
                 ItemApi itemApi = Y9Context.getBean(ItemApi.class);
+                String tenantIdTemp = (String)executionEntityStart.getVariable(SysVariables.TENANT_ID);
+                Y9LoginUserHolder.setTenantId(tenantIdTemp);
                 ItemModel itemModel =
-                    itemApi.findByProcessDefinitionKey(executionEntityStart.getProcessDefinitionKey()).getData();
+                    itemApi.findByProcessDefinitionKey(tenantIdTemp, executionEntityStart.getProcessDefinitionKey())
+                        .getData();
                 if (StringUtils.isNotEmpty(itemModel.getType()) && "sub".equals(itemModel.getType())) {
                     String processSerialNumber =
                         (String)executionEntityStart.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);
@@ -85,7 +86,7 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                     executionEntityStart.setVariable(SysVariables.PROCESS_SERIAL_NUMBER, subProcessSerialNumber);
 
                     ProcessParamApi processParamApi = Y9Context.getBean(ProcessParamApi.class);
-                    processParamApi.initCallActivity(tenantIdTemp, processSerialNumber, subProcessSerialNumber,
+                    processParamApi.initCallActivity(processSerialNumber, subProcessSerialNumber,
                         executionEntityStart.getProcessInstanceId(), itemModel.getId(), itemModel.getName());
                 }
                 break;

@@ -136,8 +136,7 @@ public class VueNTKOController {
                 }
             } else {
                 String[] pInstanceId = processInstanceId.split(",");
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, pInstanceId[0]).getData();
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(pInstanceId[0]).getData();
                 documentTitle = processModel.getTitle();
                 processInstanceId = pInstanceId[0];
             }

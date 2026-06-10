@@ -154,7 +154,7 @@ public class DocumentWpsController {
     private DocumentWpsModel createNewDocument(String tenantId, String processSerialNumber, String processInstanceId,
         String userId, AppFilesApi apiInstance, User result0, Model model) {
         try {
-            String documentTitle = getDocumentTitle(tenantId, processSerialNumber, processInstanceId);
+            String documentTitle = getDocumentTitle(processSerialNumber, processInstanceId);
             documentTitle = StringUtils.isNotBlank(documentTitle) ? documentTitle : "正文";
 
             // 创建空文件
@@ -272,19 +272,18 @@ public class DocumentWpsController {
     /**
      * 获取文档标题
      *
-     * @param tenantId 租户ID
      * @param processSerialNumber 流程编号
      * @param processInstanceId 流程实例ID
      * @return 文档标题
      */
-    private String getDocumentTitle(String tenantId, String processSerialNumber, String processInstanceId) {
+    private String getDocumentTitle(String processSerialNumber, String processInstanceId) {
         try {
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel model = draftApi.getDraftByProcessSerialNumber(processSerialNumber).getData();
                 return model.getTitle();
             } else {
                 ProcessParamModel processModel =
-                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
                 return processModel.getTitle();
             }
         } catch (Exception e) {
@@ -546,7 +545,7 @@ public class DocumentWpsController {
                 documentTitle = model.getTitle();
             } else {
                 ProcessParamModel processModel =
-                    processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                    processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
                 documentTitle = processModel.getTitle();
                 processInstanceId = processModel.getProcessInstanceId();
             }

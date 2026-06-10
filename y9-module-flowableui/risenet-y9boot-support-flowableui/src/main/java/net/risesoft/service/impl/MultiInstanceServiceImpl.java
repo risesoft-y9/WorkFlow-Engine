@@ -70,8 +70,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         String activityId = task.getTaskDefinitionKey();
         String[] users = userChoice.split(";");
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
         try {
             SmsDetailModel smsDetailModel = SmsDetailModel.builder()
                 .processSerialNumber(processParamModel.getProcessSerialNumber())
@@ -177,8 +176,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         List<Map<String, Object>> listMap = new ArrayList<>();
         int num = 0;
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
         String parallelSponsor = processParamModel == null ? "" : processParamModel.getSponsorGuid();
         List<String> assigneeIdList = taskList.stream().map(TaskModel::getAssignee).collect(Collectors.toList());
         Map<String,

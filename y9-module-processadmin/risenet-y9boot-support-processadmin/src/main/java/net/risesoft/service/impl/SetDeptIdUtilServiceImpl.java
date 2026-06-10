@@ -32,6 +32,23 @@ public class SetDeptIdUtilServiceImpl implements SetDeptIdUtilService {
 
     private final OrgUnitApi orgUnitApi;
 
+    /**
+     * 处理部门信息
+     */
+    private void processDepartmentInfo(DelegateTask taskEntity, String assignee, String processSerialNumber,
+        String tenantId) {
+        Y9LoginUserHolder.setTenantId(tenantId);
+        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
+        OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, orgUnit.getParentId()).getData();
+        OrgUnit parent = orgUnitApi.getOrgUnit(tenantId, orgUnit.getParentId()).getData();
+        ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
+        boolean isUpdated = updateDepartmentIds(processParamModel, parent, bureau);
+        if (isUpdated) {
+            processParamModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
+            processParamApi.saveOrUpdate(processParamModel);
+        }
+    }
+
     @Override
     public void setDeptId(final DelegateTask taskEntity, final Map<String, Object> map) {
         try {
@@ -48,26 +65,24 @@ public class SetDeptIdUtilServiceImpl implements SetDeptIdUtilService {
     }
 
     /**
-     * 处理部门信息
+     * 更新司局ID
+     *
+     * @return 是否有更新
      */
-    private void processDepartmentInfo(DelegateTask taskEntity, String assignee, String processSerialNumber,
-        String tenantId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
-        OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, orgUnit.getParentId()).getData();
-        OrgUnit parent = orgUnitApi.getOrgUnit(tenantId, orgUnit.getParentId()).getData();
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
-        boolean isUpdated = updateDepartmentIds(processParamModel, parent, bureau);
-        if (isUpdated) {
-            processParamModel.setProcessInstanceId(taskEntity.getProcessInstanceId());
-            processParamApi.saveOrUpdate(tenantId, processParamModel);
+    private boolean updateBureauId(ProcessParamModel processParamModel, OrgUnit bureau) {
+        String oldBureauId = StringUtils.defaultString(processParamModel.getBureauIds());
+        String newBureauId;
+        if (bureau != null && !oldBureauId.contains(bureau.getId())) {
+            newBureauId = Y9Util.genCustomStr(oldBureauId, bureau.getId());
+            processParamModel.setBureauIds(newBureauId);
+            return true;
         }
+        return false;
     }
 
     /**
      * 更新部门ID信息
-     * 
+     *
      * @return 是否有更新
      */
     private boolean updateDepartmentIds(ProcessParamModel processParamModel, OrgUnit parent, OrgUnit bureau) {
@@ -78,7 +93,7 @@ public class SetDeptIdUtilServiceImpl implements SetDeptIdUtilService {
 
     /**
      * 更新科室ID
-     * 
+     *
      * @return 是否有更新
      */
     private boolean updateDeptId(ProcessParamModel processParamModel, OrgUnit parent) {
@@ -87,22 +102,6 @@ public class SetDeptIdUtilServiceImpl implements SetDeptIdUtilService {
         if (!oldDeptId.contains(parent.getId())) {
             newDeptId = Y9Util.genCustomStr(oldDeptId, parent.getId());
             processParamModel.setDeptIds(newDeptId);
-            return true;
-        }
-        return false;
-    }
-
-    /**
-     * 更新司局ID
-     * 
-     * @return 是否有更新
-     */
-    private boolean updateBureauId(ProcessParamModel processParamModel, OrgUnit bureau) {
-        String oldBureauId = StringUtils.defaultString(processParamModel.getBureauIds());
-        String newBureauId;
-        if (bureau != null && !oldBureauId.contains(bureau.getId())) {
-            newBureauId = Y9Util.genCustomStr(oldBureauId, bureau.getId());
-            processParamModel.setBureauIds(newBureauId);
             return true;
         }
         return false;

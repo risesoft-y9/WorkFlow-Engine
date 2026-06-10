@@ -205,7 +205,7 @@ public class ButtonOperationRestController {
             String[] tpArr = taskIdAndProcessSerialNumber.split(":");
             TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
             if (task == null) {
-                handleNullTask(tenantId, tpArr, result.processedTaskMsg);
+                handleNullTask(tpArr, result.processedTaskMsg);
             } else {
                 result.taskList.add(task);
                 checkTaskStatus(tenantId, task, result);
@@ -768,7 +768,7 @@ public class ButtonOperationRestController {
         }
 
         if (customProcessInfo.getTaskType().equals(SysVariables.END_EVENT)) {// 办结
-            return handleProcessCompletion(taskId, infoOvert, tenantId, processSerialNumber);
+            return handleProcessCompletion(taskId, infoOvert, processSerialNumber);
         }
         return handleTaskForwarding(itemId, processSerialNumber, processInstanceId, taskId, customProcessInfo);
     }
@@ -776,9 +776,9 @@ public class ButtonOperationRestController {
     /**
      * 处理空任务
      */
-    private void handleNullTask(String tenantId, String[] tpArr, StringBuilder msg) {
+    private void handleNullTask(String[] tpArr, StringBuilder msg) {
         try {
-            ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
+            ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tpArr[1]).getData();
             if (StringUtils.isBlank(msg.toString())) {
                 msg.append(ppModel.getTitle());
             } else {
@@ -912,14 +912,13 @@ public class ButtonOperationRestController {
     /**
      * 处理流程办结情况
      */
-    private Y9Result<String> handleProcessCompletion(String taskId, String infoOvert, String tenantId,
-        String processSerialNumber) {
+    private Y9Result<String> handleProcessCompletion(String taskId, String infoOvert, String processSerialNumber) {
         try {
             buttonOperationService.complete(taskId, "办结", "已办结", infoOvert);
             // 办结成功后更新当前运行节点
             customProcessInfoApi.updateCurrentTask(processSerialNumber);
             // 办结后定制流程设为false,恢复待办后不再走定制流程
-            processParamApi.updateCustomItem(tenantId, processSerialNumber, false);
+            processParamApi.updateCustomItem(processSerialNumber, false);
             return Y9Result.successMsg("办结成功");
         } catch (Exception e) {
             LOGGER.error("办结失败", e);
@@ -1448,8 +1447,7 @@ public class ButtonOperationRestController {
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             String routeToTaskId = taskModel.getTaskDefinitionKey();
             String processInstanceId = taskModel.getProcessInstanceId();
-            ProcessParamModel processParamModel =
-                processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             String itemId = processParamModel.getItemId();
             String processSerialNumber = processParamModel.getProcessSerialNumber();
             String user = variableApi.getVariableLocal(tenantId, taskId, SysVariables.TASK_SENDER_ID).getData();

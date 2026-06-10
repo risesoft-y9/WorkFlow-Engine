@@ -499,10 +499,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             officeDoneInfo.setUserComplete("");
             officeDoneInfo.setEndTime(null);
             officeDoneInfoApi.saveOfficeDone(officeDoneInfo);
-            ProcessParamModel processParamModel =
-                processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+            ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             processParamModel.setCompleter("");
-            processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
+            processParamApi.saveOrUpdate(processParamModel);
         } catch (Exception e) {
             saveErrorLog(processInstanceId, "恢复办件信息数据失败", e);
         }

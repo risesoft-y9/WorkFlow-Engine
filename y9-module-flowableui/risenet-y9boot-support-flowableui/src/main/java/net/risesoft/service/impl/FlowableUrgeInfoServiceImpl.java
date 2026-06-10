@@ -73,7 +73,7 @@ public class FlowableUrgeInfoServiceImpl implements FlowableUrgeInfoService {
             urgeList.removeIf(urge -> !executorIds.contains(urge.getExecutionId()));
         } else {
             ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             if (StringUtils.isNotBlank(processParamModel.getCompleter())) {
                 /*
                  * 已办结：主办看所有主办的催办信息

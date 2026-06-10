@@ -9,6 +9,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.ManagementService;
@@ -48,7 +49,6 @@ import net.risesoft.service.CustomVariableService;
 import net.risesoft.service.OperationService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -125,17 +125,16 @@ public class OperationServiceImpl implements OperationService {
                 if (task.getAssignee().equals(sponsorGuid)) {
                     vars.put(SysVariables.PARALLEL_SPONSOR, sponsorGuid);
                     ProcessParamModel processParam =
-                        this.processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId)
-                            .getData();
+                        this.processParamApi.findByProcessInstanceId(processInstanceId).getData();
                     processParam.setSponsorGuid(sponsorGuid);
-                    this.processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
+                    this.processParamApi.saveOrUpdate(processParam);
                 }
                 // } else {
                 // // 出差委托更换主办人
                 // if (ownerId.contains(sponsorGuid)) {
                 // vars.put(SysVariables.PARALLEL_SPONSOR, task.getAssignee().split(SysVariables.COLON)[0]);
                 // ProcessParamModel processParam =
-                // processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId);
+                // processParamApi.findByProcessInstanceId(processInstanceId);
                 // processParam.setSponsorGuid(task.getAssignee().split(SysVariables.COLON)[0]);
                 // processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParam);
                 // }

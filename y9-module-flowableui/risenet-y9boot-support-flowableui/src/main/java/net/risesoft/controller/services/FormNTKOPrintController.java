@@ -68,8 +68,7 @@ public class FormNTKOPrintController {
             Y9LoginUserHolder.setTenantId(tenantId);
             UserInfo userInfo = userApi.get(tenantId, userId).getData();
             Y9LoginUserHolder.setUserInfo(userInfo);
-            ProcessParamModel processModel =
-                processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+            ProcessParamModel processModel = processParamApi.findByProcessInstanceId(processSerialNumber).getData();
             String title = StringUtils.isNotBlank(processModel.getTitle()) ? processModel.getTitle() : "正文";
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, title + fileType);
             y9FileStoreService.downloadFileToOutputStream(id, out);

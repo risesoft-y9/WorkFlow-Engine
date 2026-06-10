@@ -67,11 +67,10 @@ public class ProcessInstanceVueController {
      */
     @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParamModel processParamModel;
         List<String> list = new ArrayList<>();
         try {
-            processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             if (processParamModel != null) {
                 list.add(processParamModel.getProcessSerialNumber());
             }

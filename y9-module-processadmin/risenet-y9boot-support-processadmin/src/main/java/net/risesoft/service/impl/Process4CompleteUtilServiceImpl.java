@@ -267,8 +267,7 @@ public class Process4CompleteUtilServiceImpl implements Process4CompleteUtilServ
      */
     private void saveOfficeDoneInfo(String tenantId, String processInstanceId, String personName,
         ProcessBasicInfo processInfo) throws Exception {
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
         OfficeDoneInfoModel officeDoneInfo = officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
         if (officeDoneInfo == null) {
             officeDoneInfo = new OfficeDoneInfoModel();

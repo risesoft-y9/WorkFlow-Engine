@@ -117,8 +117,7 @@ public class ButtonOperationExtendRestController {
         @RequestParam @NotBlank String documentId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ProcessParamModel ppModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             String processInstanceId = ppModel.getProcessInstanceId();
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (taskList.isEmpty()) {
@@ -200,7 +199,7 @@ public class ButtonOperationExtendRestController {
             return Y9Result.failure("操作失败：表单数据不存在!");
         }
         Y9Result<ProcessParamModel> processParamY9Result =
-            processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber);
+            processParamApi.findByProcessSerialNumber(processSerialNumber);
         if (!processParamY9Result.isSuccess()) {
             return Y9Result.failure("操作失败：流程参数不存在!");
         }
@@ -290,14 +289,13 @@ public class ButtonOperationExtendRestController {
         Arrays.stream(taskIdAndProcessSerialNumbers).forEach(tp -> {
             String[] tpArr = tp.split(":");
             try {
-                ProcessParamModel processParamModel =
-                    processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), tpArr[1]).getData();
+                ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(tpArr[1]).getData();
                 processParamModel.setDueDate(null);
                 if (StringUtils.isNotBlank(dueDate)) {
                     processParamModel.setDueDate(Y9DateTimeUtils.parseDate(dueDate));
                 }
                 processParamModel.setDescription(description);
-                processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
+                processParamApi.saveOrUpdate(processParamModel);
 
                 Y9Result<String> y9Result = documentApi.forwarding(Y9LoginUserHolder.getTenantId(),
                     Y9FlowableHolder.getPositionId(), tpArr[0], userChoice, routeToTaskId, sponsorHandle, sponsorGuid);
@@ -357,7 +355,7 @@ public class ButtonOperationExtendRestController {
      */
     private void handleNullTask(String tenantId, String[] tpArr, StringBuilder msg) {
         try {
-            ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tenantId, tpArr[1]).getData();
+            ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tpArr[1]).getData();
             if (StringUtils.isBlank(msg.toString())) {
                 msg.append(ppModel.getTitle());
             } else {

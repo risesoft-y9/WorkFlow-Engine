@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.task.service.delegate.DelegateTask;
 import org.springframework.stereotype.Service;
@@ -21,6 +22,7 @@ import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Person;
 import net.risesoft.service.PushNormalToAndroidService;
+import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.y9processadmin.Y9ProcessAdminProperties;
 
 /**
@@ -56,8 +58,9 @@ public class PushNormalToAndroidServiceImpl implements PushNormalToAndroidServic
             String assignee = task.getAssignee();
             String processSerialNumber = (String)map.get(SysVariables.PROCESS_SERIAL_NUMBER);
             String tenantId = (String)map.get("tenantId");
+            Y9LoginUserHolder.setTenantId(tenantId);
             ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             String title = processParamModel.getTitle();
             String itemName = processParamModel.getItemName();
             List<String> list = new ArrayList<>();

@@ -213,9 +213,9 @@ public class MultiInstanceRestController {
 
         // 修改自定义变量主办人字段
         ProcessParamModel processParam =
-            processParamApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
+            processParamApi.findByProcessInstanceId(taskModel.getProcessInstanceId()).getData();
         processParam.setSponsorGuid(taskModel.getAssignee());
-        processParamApi.saveOrUpdate(tenantId, processParam);
+        processParamApi.saveOrUpdate(processParam);
         ascyncUtilService.setSponsorAuditLog(tenantId, positionId, taskId, taskModel.getAssignee(),
             processParam.getTitle());
         return Y9Result.successMsg("设置成功");

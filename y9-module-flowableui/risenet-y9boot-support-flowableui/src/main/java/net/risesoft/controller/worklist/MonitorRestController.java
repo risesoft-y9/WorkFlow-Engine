@@ -164,7 +164,7 @@ public class MonitorRestController {
                 list = new ArrayList<>();
                 String[] ids = processInstanceIds.split(SysVariables.COMMA);
                 for (String processInstanceId : ids) {
-                    processParamModel = processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
                     if (processParamModel != null) {
                         list.add(processParamModel.getProcessSerialNumber());
                     }

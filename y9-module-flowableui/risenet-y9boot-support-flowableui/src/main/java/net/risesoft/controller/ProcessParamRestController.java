@@ -55,8 +55,7 @@ public class ProcessParamRestController {
      */
     @GetMapping(value = "/getProcessParam")
     public Y9Result<ProcessParamModel> getProcessParam(@RequestParam String processInstanceId) {
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+        ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
         if (processParamModel != null) {
             return Y9Result.success(processParamModel);
         }
@@ -124,12 +123,11 @@ public class ProcessParamRestController {
     @PostMapping(value = "/updateHostDept")
     public Y9Result<Object> updateHostDept(@RequestParam String deptId, @RequestParam String deptName,
         @RequestParam String processSerialNumber) {
-        ProcessParamModel processParamModel =
-            processParamApi.findByProcessSerialNumber(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        ProcessParamModel processParamModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
         if (processParamModel != null) {
             processParamModel.setHostDeptId(deptId);
             processParamModel.setHostDeptName(deptName);
-            processParamApi.saveOrUpdate(Y9LoginUserHolder.getTenantId(), processParamModel);
+            processParamApi.saveOrUpdate(processParamModel);
         }
         return Y9Result.success();
     }

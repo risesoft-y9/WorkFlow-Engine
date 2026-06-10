@@ -47,7 +47,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             ProcessParamModel processParamModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             if (StringUtils.isNotBlank(processInstanceId)) {
                 if (StringUtils.isNotBlank(documentTitle) && (StringUtils.isBlank(processParamModel.getTitle())
                     || !processParamModel.getTitle().equals(documentTitle))) {
@@ -72,7 +72,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             pp.setStartorName(processParamModel != null ? processParamModel.getStartorName() : "");
             pp.setCustomItem(processParamModel != null ? processParamModel.getCustomItem() : customItem);
             pp.setSearchTerm(documentTitle + "|" + number + "|" + level + "|" + item.getName());
-            processParamApi.saveOrUpdate(tenantId, pp);
+            processParamApi.saveOrUpdate(pp);
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
             LOGGER.error("保存失败", e);
@@ -88,7 +88,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             ProcessParamModel oldProcessParam =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+                processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             if (StringUtils.isNotBlank(processInstanceId)) {
                 if (StringUtils.isNotBlank(documentTitle) && (StringUtils.isBlank(oldProcessParam.getTitle())
                     || !oldProcessParam.getTitle().equals(documentTitle))) {
@@ -128,7 +128,7 @@ public class ProcessParamServiceImpl implements ProcessParamService {
                     pp.setHostDeptName(bureau.getName());
                 }
             }
-            processParamApi.saveOrUpdate(tenantId, pp);
+            processParamApi.saveOrUpdate(pp);
 
             if (StringUtils.isBlank(processInstanceId)) {
                 return documentApi.startProcessByTheTaskKey(tenantId, Y9FlowableHolder.getPositionId(), itemId,

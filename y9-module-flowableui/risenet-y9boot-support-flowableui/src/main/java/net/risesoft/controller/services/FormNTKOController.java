@@ -266,12 +266,12 @@ public class FormNTKOController {
      */
     private String getDocumentTitle(String tenantId, String processSerialNumber, String processInstanceId) {
         try {
+            Y9LoginUserHolder.setTenantId(tenantId);
             if (StringUtils.isBlank(processInstanceId)) {
                 DraftModel draftModel = draftApi.getDraftByProcessSerialNumber(processSerialNumber).getData();
                 return draftModel != null ? draftModel.getTitle() : "正文";
             } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
                 return processModel != null ? processModel.getTitle() : "正文";
             }
         } catch (Exception e) {
@@ -299,8 +299,7 @@ public class FormNTKOController {
      */
     private String getTitle(String processSerialNumber) {
         // 获取流程参数模型
-        ProcessParamModel processModel =
-            processParamApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processSerialNumber).getData();
+        ProcessParamModel processModel = processParamApi.findByProcessInstanceId(processSerialNumber).getData();
         return StringUtils.isNotBlank(processModel.getTitle()) ? processModel.getTitle() : "正文";
     }
 

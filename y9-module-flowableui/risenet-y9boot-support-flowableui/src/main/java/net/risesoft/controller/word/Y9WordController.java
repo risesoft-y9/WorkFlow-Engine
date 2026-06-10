@@ -109,7 +109,7 @@ public class Y9WordController {
         String fileStoreId = y9WordHistoryModel.getFileStoreId();
         try (ServletOutputStream out = response.getOutputStream()) {
             Y9DownloadUtil.setDownloadResponseHeaders(response, request,
-                getDocumentTitle(tenantId, processSerialNumber) + fileType);
+                getDocumentTitle(processSerialNumber) + fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
             auditLogSaveService.downLoadWordLog(fileStoreId, y9WordHistoryModel.getTitle(), "downloadHis");
         } catch (Exception e) {
@@ -128,8 +128,7 @@ public class Y9WordController {
         @RequestParam(required = false) String processSerialNumber, HttpServletResponse response,
         HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            String title = getDocumentTitle(tenantId, processSerialNumber);
+            String title = getDocumentTitle(processSerialNumber);
             Y9DownloadUtil.setDownloadResponseHeaders(response, request, title + fileType);
             y9FileStoreService.downloadFileToOutputStream(id, out);
             auditLogSaveService.downLoadWordLog(id, title, "downloadWord");
@@ -150,11 +149,10 @@ public class Y9WordController {
         @RequestParam(required = false) String processSerialNumber, HttpServletResponse response,
         HttpServletRequest request) {
         try (OutputStream out = response.getOutputStream()) {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             Y9WordModel y9WordModel = y9WordApi.findWordByProcessSerialNumber(processSerialNumber).getData();
             String fileStoreId = y9WordModel.getFileStoreId();
             Y9DownloadUtil.setDownloadResponseHeaders(response, request,
-                getDocumentTitle(tenantId, processSerialNumber) + fileType);
+                getDocumentTitle(processSerialNumber) + fileType);
             y9FileStoreService.downloadFileToOutputStream(fileStoreId, out);
             auditLogSaveService.downLoadWordLog(fileStoreId, y9WordModel.getTitle(), "downloadCs");
         } catch (Exception e) {
@@ -165,10 +163,9 @@ public class Y9WordController {
     /**
      * 获取文档标题
      */
-    private String getDocumentTitle(String tenantId, String processSerialNumber) {
+    private String getDocumentTitle(String processSerialNumber) {
         try {
-            ProcessParamModel processModel =
-                processParamApi.findByProcessSerialNumber(tenantId, processSerialNumber).getData();
+            ProcessParamModel processModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             return processModel != null ? processModel.getTitle() : "正文";
         } catch (Exception e) {
             LOGGER.warn("获取文档标题失败，使用默认标题", e);
@@ -342,7 +339,7 @@ public class Y9WordController {
         MultipartFile multipartFile = multipartRequest.getFile("currentDoc");
         String result = "success:false";
         try {
-            String title = getDocumentTitle(tenantId, processSerialNumber);
+            String title = getDocumentTitle(processSerialNumber);
             String fullPath = Y9FileStore.buildPath(Y9Context.getSystemName(), tenantId, "PDF", processSerialNumber);
             Y9FileStore y9FileStore =
                 y9FileStoreService.uploadFile(multipartFile.getInputStream(), fullPath, title + fileType);
@@ -425,7 +422,7 @@ public class Y9WordController {
                 return result;
             }
             // 获取文档标题
-            String title = getDocumentTitle(tenantId, processSerialNumber);
+            String title = getDocumentTitle(processSerialNumber);
             // 确定是否套红
             String isTaoHong = determineTaoHongStatus(fileType);
             // 上传文件
@@ -486,8 +483,7 @@ public class Y9WordController {
                 DraftModel model = draftApi.getDraftByProcessSerialNumber(processSerialNumber).getData();
                 documentTitle = model.getTitle();
             } else {
-                ProcessParamModel processModel =
-                    processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                ProcessParamModel processModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
                 documentTitle = processModel.getTitle();
             }
             title = documentTitle != null ? documentTitle : "正文";
