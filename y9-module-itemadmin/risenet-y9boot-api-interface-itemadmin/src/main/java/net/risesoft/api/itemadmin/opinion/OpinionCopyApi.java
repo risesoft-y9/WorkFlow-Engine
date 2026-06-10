@@ -18,34 +18,27 @@ import net.risesoft.pojo.Y9Result;
  **/
 public interface OpinionCopyApi {
 
-    @GetMapping("/findByProcessSerialNumber")
-    Y9Result<List<OpinionCopyModel>> findByProcessSerialNumber(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
-
-    /**
-     * 保存或更新意见
-     *
-     * @param tenantId 租户id
-     * @param userId 人员id
-     * @param orgUnitId 人员、岗位id
-     * @param opinionCopyModel 意见信息
-     * @return {@code Y9Result<OpinionCopyModel>} 通用请求返回对象 - data 是意见信息
-     * @since 9.6.6
-     */
-    @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<OpinionCopyModel> saveOrUpdate(@RequestParam("tenantId") String tenantId,
-        @RequestParam("userId") String userId, @RequestParam("orgUnitId") String orgUnitId,
-        @RequestBody OpinionCopyModel opinionCopyModel);
-
     /**
      * 删除意见
      *
-     * @param tenantId 租户id
      * @param id 唯一标识
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/deleteById")
-    Y9Result<Object> deleteById(@RequestParam("tenantId") String tenantId, @RequestParam("id") String id);
+    Y9Result<Object> deleteById(@RequestParam("id") String id);
+
+    @GetMapping("/findByProcessSerialNumber")
+    Y9Result<List<OpinionCopyModel>>
+        findByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+
+    /**
+     * 保存或更新意见
+     *
+     * @param opinionCopyModel 意见信息
+     * @return {@code Y9Result<OpinionCopyModel>} 通用请求返回对象 - data 是意见信息
+     * @since 9.6.6
+     */
+    @PostMapping(value = "/saveOrUpdate", consumes = MediaType.APPLICATION_JSON_VALUE)
+    Y9Result<OpinionCopyModel> saveOrUpdate(@RequestBody OpinionCopyModel opinionCopyModel);
 }

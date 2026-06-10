@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -23,11 +24,8 @@ import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.OpinionSignListModel;
 import net.risesoft.model.itemadmin.OpinionSignModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
@@ -57,10 +55,7 @@ public class OpinionSignRestController {
         @RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String userId = person.getPersonId(), tenantId = person.getTenantId();
-            Boolean checkSignOpinion =
-                opinionSignApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
+            Boolean checkSignOpinion = opinionSignApi.checkSignOpinion(processSerialNumber, taskId).getData();
             map.put("checkSignOpinion", checkSignOpinion);
         } catch (Exception e) {
             LOGGER.error("查询{}是否签写意见失败！", taskId, e);
@@ -78,7 +73,7 @@ public class OpinionSignRestController {
     @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam @NotBlank String id) {
         try {
-            opinionSignApi.delete(Y9LoginUserHolder.getTenantId(), id);
+            opinionSignApi.delete(id);
             return Y9Result.successMsg("刪除成功");
         } catch (Exception e) {
             LOGGER.error("删除意见失败！", e);
@@ -99,11 +94,8 @@ public class OpinionSignRestController {
     public Y9Result<List<OpinionSignListModel>> personCommentList(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String signDeptDetailId, @RequestParam @NotBlank String itembox,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String opinionFrameMark) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), tenantId = person.getTenantId();
-        String positionId = Y9FlowableHolder.getPositionId();
-        return opinionSignApi.personCommentList(tenantId, userId, positionId, processSerialNumber, signDeptDetailId,
-            itembox, taskId, opinionFrameMark);
+        return opinionSignApi.personCommentList(processSerialNumber, signDeptDetailId, itembox, taskId,
+            opinionFrameMark);
     }
 
     /**
@@ -115,10 +107,9 @@ public class OpinionSignRestController {
     @GetMapping(value = "/newOrModify/personalComment")
     public Y9Result<Map<String, Object>> personalComment(@RequestParam(required = false) String id) {
         Map<String, Object> map = new HashMap<>(16);
-        String tenantId = Y9LoginUserHolder.getTenantId();
         map.put("date", Y9DateTimeUtils.formatCurrentDateTime());
         if (StringUtils.isNotBlank(id)) {
-            OpinionSignModel opinion = opinionSignApi.getById(tenantId, id).getData();
+            OpinionSignModel opinion = opinionSignApi.getById(id).getData();
             map.put("opinion", opinion);
             map.put("date", opinion.getCreateTime());
         }
@@ -135,12 +126,8 @@ public class OpinionSignRestController {
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<OpinionSignModel> save(@RequestParam @NotBlank String jsonData) {
         try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String userId = person.getPersonId(), tenantId = person.getTenantId();
             OpinionSignModel opinion = Y9JsonUtil.readValue(jsonData, OpinionSignModel.class);
-            String positionId = Y9FlowableHolder.getPositionId();
-            OpinionSignModel opinionModel =
-                opinionSignApi.saveOrUpdate(tenantId, userId, positionId, opinion).getData();
+            OpinionSignModel opinionModel = opinionSignApi.saveOrUpdate(opinion).getData();
             return Y9Result.success(opinionModel, "保存成功");
         } catch (Exception e) {
             LOGGER.error("保存意见失败", e);

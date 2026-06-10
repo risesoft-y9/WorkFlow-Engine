@@ -5,6 +5,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -15,19 +16,14 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.opinion.OpinionCopyApi;
-import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.DocumentCopy;
 import net.risesoft.entity.opinion.OpinionCopy;
 import net.risesoft.enums.DocumentCopyStatusEnum;
 import net.risesoft.model.itemadmin.OpinionCopyModel;
-import net.risesoft.model.platform.org.Position;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentCopyService;
 import net.risesoft.service.opinion.OpinionCopyService;
 import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -45,14 +41,14 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
 
     private final OpinionCopyService opinionCopyService;
 
-    private final PositionApi positionApi;
-
-    private final UserApi userApi;
+    @Override
+    public Y9Result<Object> deleteById(@RequestParam String id) {
+        opinionCopyService.deleteById(id);
+        return Y9Result.successMsg("删除成功");
+    }
 
     @Override
-    public Y9Result<List<OpinionCopyModel>> findByProcessSerialNumber(String tenantId, String userId, String orgUnitId,
-        String processSerialNumber) {
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<OpinionCopyModel>> findByProcessSerialNumber(String processSerialNumber) {
         List<OpinionCopy> ocList = opinionCopyService.findByProcessSerialNumber(processSerialNumber);
         List<OpinionCopyModel> modelList = new ArrayList<>();
         ocList.forEach(opinionCopy -> {
@@ -79,19 +75,14 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
     }
 
     @Override
-    public Y9Result<OpinionCopyModel> saveOrUpdate(@RequestParam String tenantId, @RequestParam String userId,
-        @RequestParam String orgUnitId, @RequestBody OpinionCopyModel opinionCopyModel) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        UserInfo userInfo = userApi.get(tenantId, userId).getData();
-        Y9LoginUserHolder.setUserInfo(userInfo);
-        Position position = positionApi.get(tenantId, orgUnitId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<OpinionCopyModel> saveOrUpdate(@RequestBody OpinionCopyModel opinionCopyModel) {
         OpinionCopy opinionCopy = new OpinionCopy();
         Y9BeanUtil.copyProperties(opinionCopyModel, opinionCopy);
         Optional<OpinionCopy> optional = opinionCopyService.saveOrUpdate(opinionCopy);
         if (optional.isPresent()) {
-            List<DocumentCopy> dcList = documentCopyService.findByProcessSerialNumberAndUserIdAndStatus(
-                opinionCopy.getProcessSerialNumber(), orgUnitId, DocumentCopyStatusEnum.TODO_SIGN);
+            List<DocumentCopy> dcList =
+                documentCopyService.findByProcessSerialNumberAndUserIdAndStatus(opinionCopy.getProcessSerialNumber(),
+                    Y9FlowableHolder.getPositionId(), DocumentCopyStatusEnum.TODO_SIGN);
             dcList.forEach(dc -> {
                 dc.setStatus(DocumentCopyStatusEnum.SIGN);
                 documentCopyService.save(dc);
@@ -100,12 +91,5 @@ public class OpinionCopyApiImpl implements OpinionCopyApi {
             return Y9Result.success(opinionCopyModel);
         }
         return Y9Result.failure("保存失败");
-    }
-
-    @Override
-    public Y9Result<Object> deleteById(@RequestParam String tenantId, @RequestParam String id) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        opinionCopyService.deleteById(id);
-        return Y9Result.successMsg("删除成功");
     }
 }

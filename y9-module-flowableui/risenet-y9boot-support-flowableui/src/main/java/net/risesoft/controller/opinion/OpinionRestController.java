@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -28,10 +29,8 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemOpinionFrameBindModel;
 import net.risesoft.model.itemadmin.OpinionFrameModel;
 import net.risesoft.model.itemadmin.OpinionModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 办理意见
@@ -60,10 +59,7 @@ public class OpinionRestController {
         @RequestParam String processSerialNumber) {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String userId = person.getPersonId(), tenantId = person.getTenantId();
-            Boolean checkSignOpinion =
-                opinionApi.checkSignOpinion(tenantId, userId, processSerialNumber, taskId).getData();
+            Boolean checkSignOpinion = opinionApi.checkSignOpinion(processSerialNumber, taskId).getData();
             map.put("checkSignOpinion", checkSignOpinion);
         } catch (Exception e) {
             LOGGER.error("查询{}是否签写意见失败！", taskId, e);
@@ -81,8 +77,7 @@ public class OpinionRestController {
     @PostMapping(value = "/delete")
     public Y9Result<String> delete(@RequestParam @NotBlank String id) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            opinionApi.delete(tenantId, id);
+            opinionApi.delete(id);
             return Y9Result.successMsg("刪除成功");
         } catch (Exception e) {
             LOGGER.error("删除意见失败！", e);
@@ -100,8 +95,7 @@ public class OpinionRestController {
     @GetMapping(value = "/getBindOpinionFrame")
     public Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return opinionApi.getBindOpinionFrame(tenantId, itemId, processDefinitionId);
+        return opinionApi.getBindOpinionFrame(itemId, processDefinitionId);
     }
 
     /**
@@ -141,7 +135,7 @@ public class OpinionRestController {
     public Y9Result<OpinionModel> saveOrUpdate(@RequestBody @Valid OpinionDTO opinionDTO) {
         try {
             String positionId = Y9FlowableHolder.getPositionId();
-            OpinionModel opinionModel = opinionApi.saveOrUpdate(positionId, opinionDTO).getData();
+            OpinionModel opinionModel = opinionApi.saveOrUpdate(opinionDTO).getData();
             return Y9Result.success(opinionModel, "保存成功");
         } catch (Exception e) {
             LOGGER.error("保存意见失败", e);
@@ -159,7 +153,6 @@ public class OpinionRestController {
     @FlowableLog(operationName = "更新意见", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/updateOpinion")
     public Y9Result<Object> updateOpinion(@RequestParam @NotBlank String content, @RequestParam @NotBlank String id) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        return opinionApi.updateOpinion(tenantId, id, content);
+        return opinionApi.updateOpinion(id, content);
     }
 }
