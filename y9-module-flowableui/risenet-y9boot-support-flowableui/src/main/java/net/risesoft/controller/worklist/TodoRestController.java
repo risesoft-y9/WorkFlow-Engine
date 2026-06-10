@@ -5,6 +5,7 @@ import java.util.Map;
 
 import jakarta.validation.Valid;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,6 @@ import net.risesoft.model.itemadmin.QueryParamModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.WorkListService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 待办，在办，办结列表
@@ -42,6 +42,18 @@ public class TodoRestController {
     private final WorkListService workListService;
 
     private final ItemViewConfApi itemViewConfApi;
+
+    /**
+     * 获取待办件列表
+     *
+     * @param queryParamModel 查询参数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @FlowableLog(operationName = "我的待办")
+    @GetMapping(value = "/allTodoList")
+    public Y9Page<Map<String, Object>> allTodoList(@Valid QueryParamModel queryParamModel) {
+        return workListService.allTodoList(queryParamModel);
+    }
 
     /**
      * 获取待办件列表
@@ -90,21 +102,8 @@ public class TodoRestController {
      */
     @GetMapping(value = "/viewConf")
     public Y9Result<List<ItemViewConfModel>> viewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
-            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.TODO.getValue())
-            .getData();
+        List<ItemViewConfModel> itemViewConfList =
+            itemViewConfApi.findByItemIdAndViewType(itemId, ItemBoxTypeEnum.TODO.getValue()).getData();
         return Y9Result.success(itemViewConfList, "获取成功");
-    }
-
-    /**
-     * 获取待办件列表
-     *
-     * @param queryParamModel 查询参数
-     * @return Y9Page<Map < String, Object>>
-     */
-    @FlowableLog(operationName = "我的待办")
-    @GetMapping(value = "/allTodoList")
-    public Y9Page<Map<String, Object>> allTodoList(@Valid QueryParamModel queryParamModel) {
-        return workListService.allTodoList(queryParamModel);
     }
 }

@@ -3,6 +3,7 @@ package net.risesoft.controller.worklist;
 import java.util.List;
 import java.util.Map;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,6 @@ import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.WorkListService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 待办，在办，办结列表
@@ -40,20 +40,6 @@ public class RecycleRestController {
     private final WorkListService workListService;
 
     private final ItemViewConfApi itemViewConfApi;
-
-    /**
-     * 获取回收站列表视图配置
-     *
-     * @param itemId 事项id
-     * @return Y9Result<List < ItemViewConfModel>>
-     */
-    @GetMapping(value = "/recycleViewConf")
-    public Y9Result<List<ItemViewConfModel>> recycleViewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = this.itemViewConfApi
-            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue())
-            .getData();
-        return Y9Result.success(itemViewConfList, "获取成功");
-    }
 
     /**
      * 获取回收站列表
@@ -78,11 +64,11 @@ public class RecycleRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @FlowableLog(operationName = "监控部门回收站列表", logLevel = FlowableLogLevelEnum.ADMIN)
-    @PostMapping(value = "/recycleList4Dept")
-    public Y9Page<Map<String, Object>> recycleList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
+    @FlowableLog(operationName = "监控所有回收站列表", logLevel = FlowableLogLevelEnum.ADMIN)
+    @PostMapping(value = "/recycleList4All")
+    public Y9Page<Map<String, Object>> recycleList4All(@RequestParam String itemId,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workListService.recycleList4Dept(itemId, isBureau, searchMapStr, page, rows);
+        return this.workListService.recycleList4All(itemId, searchMapStr, page, rows);
     }
 
     /**
@@ -93,10 +79,23 @@ public class RecycleRestController {
      * @param rows 条数
      * @return Y9Page<Map < String, Object>>
      */
-    @FlowableLog(operationName = "监控所有回收站列表", logLevel = FlowableLogLevelEnum.ADMIN)
-    @PostMapping(value = "/recycleList4All")
-    public Y9Page<Map<String, Object>> recycleList4All(@RequestParam String itemId,
+    @FlowableLog(operationName = "监控部门回收站列表", logLevel = FlowableLogLevelEnum.ADMIN)
+    @PostMapping(value = "/recycleList4Dept")
+    public Y9Page<Map<String, Object>> recycleList4Dept(@RequestParam String itemId, @RequestParam boolean isBureau,
         @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return this.workListService.recycleList4All(itemId, searchMapStr, page, rows);
+        return this.workListService.recycleList4Dept(itemId, isBureau, searchMapStr, page, rows);
+    }
+
+    /**
+     * 获取回收站列表视图配置
+     *
+     * @param itemId 事项id
+     * @return Y9Result<List < ItemViewConfModel>>
+     */
+    @GetMapping(value = "/recycleViewConf")
+    public Y9Result<List<ItemViewConfModel>> recycleViewConf(@RequestParam String itemId) {
+        List<ItemViewConfModel> itemViewConfList =
+            this.itemViewConfApi.findByItemIdAndViewType(itemId, ItemBoxTypeEnum.DRAFT.getValue()).getData();
+        return Y9Result.success(itemViewConfList, "获取成功");
     }
 }

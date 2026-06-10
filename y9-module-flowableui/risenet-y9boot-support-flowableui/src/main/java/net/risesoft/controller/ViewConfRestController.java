@@ -4,6 +4,7 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.view.ItemViewConfApi;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 视图类型
@@ -45,7 +45,7 @@ public class ViewConfRestController {
     public Y9Result<List<ItemViewConfModel>> list(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String viewType) {
         List<ItemViewConfModel> itemViewConfList =
-            this.itemViewConfApi.findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, viewType).getData();
+            this.itemViewConfApi.findByItemIdAndViewType(itemId, viewType).getData();
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 }
