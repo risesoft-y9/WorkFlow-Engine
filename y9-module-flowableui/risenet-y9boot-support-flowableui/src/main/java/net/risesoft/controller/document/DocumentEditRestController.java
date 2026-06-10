@@ -20,7 +20,6 @@ import net.risesoft.log.FlowableLogLevelEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.processadmin.TaskModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -45,24 +44,48 @@ public class DocumentEditRestController {
     private final HistoricVariableApi historicVariableApi;
 
     /**
-     * 获取草稿详细信息（打开草稿时调用）
+     * 获取抄送件详情数据
      *
-     * @param processSerialNumber 流程编号
-     * @param itemId 事项id
-     * @return Y9Result<DocumentDetailModel>
+     * @param id 抄送id
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<Map < String, Object>>
      */
-    @GetMapping("/draft")
-    public Y9Result<DocumentDetailModel> draft(@RequestParam @NotBlank String processSerialNumber,
-        @RequestParam @NotBlank String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
-        DocumentDetailModel model =
-            documentApi.editDraft(tenantId, positionId, itemId, processSerialNumber, false).getData();
-        return Y9Result.success(model, "获取成功");
+    @GetMapping(value = "/chaoSong")
+    public Y9Result<DocumentDetailModel> chaoSong(@RequestParam @NotBlank String id,
+        @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String itembox) {
+        try {
+            DocumentDetailModel model = documentApi.editChaoSong(id, processInstanceId, false, itembox).getData();
+            return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("detail error", e);
+        }
+        return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取抄送件详情数据
+     *
+     * @param id 抄送id
+     * @param processInstanceId 流程实例id
+     * @return Y9Result<Map < String, Object>>
+     */
+    @GetMapping(value = "/chaoSongAdmin")
+    public Y9Result<DocumentDetailModel> chaoSongAdmin(@RequestParam @NotBlank String id,
+        @RequestParam @NotBlank String processInstanceId) {
+        try {
+            DocumentDetailModel model =
+                documentApi.editChaoSong(id, processInstanceId, false, ItemBoxTypeEnum.MONITOR_CHAOSONG.getValue())
+                    .getData();
+            return Y9Result.success(model, "获取成功");
+        } catch (Exception e) {
+            LOGGER.error("detail error", e);
+        }
+        return Y9Result.failure("获取失败");
     }
 
     /**
      * 获取编辑在办件数据
-     * 
+     *
      * @param documentId 打开的办件的id，主件的这个id为processSerialNumber，子件的这个id为signDeptDetailId
      * @param processInstanceId 流程实例id
      * @return Y9Result<DocumentDetailModel>
@@ -72,10 +95,8 @@ public class DocumentEditRestController {
     public Y9Result<DocumentDetailModel> doing(@RequestParam @NotBlank String documentId,
         @RequestParam @NotBlank String processInstanceId) {
         try {
-            DocumentDetailModel model = documentApi
-                .editDoing(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), processInstanceId,
-                    documentId, false, ItemBoxTypeEnum.DOING, false)
-                .getData();
+            DocumentDetailModel model =
+                documentApi.editDoing(processInstanceId, documentId, false, ItemBoxTypeEnum.DOING, false).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取在办件数据失败", e);
@@ -94,10 +115,9 @@ public class DocumentEditRestController {
     public Y9Result<DocumentDetailModel> doingAdmin(@RequestParam @NotBlank String documentId,
         @RequestParam @NotBlank String processInstanceId) {
         try {
-            DocumentDetailModel model = documentApi
-                .editDoing(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), processInstanceId,
-                    documentId, true, ItemBoxTypeEnum.MONITOR_DOING, false)
-                .getData();
+            DocumentDetailModel model =
+                documentApi.editDoing(processInstanceId, documentId, true, ItemBoxTypeEnum.MONITOR_DOING, false)
+                    .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取监控在办件数据失败", e);
@@ -116,10 +136,8 @@ public class DocumentEditRestController {
     public Y9Result<DocumentDetailModel> done(@RequestParam @NotBlank String documentId,
         @RequestParam @NotBlank String processInstanceId) {
         try {
-            DocumentDetailModel model = documentApi
-                .editDone(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), processInstanceId,
-                    documentId, false, ItemBoxTypeEnum.DONE, false)
-                .getData();
+            DocumentDetailModel model =
+                documentApi.editDone(processInstanceId, documentId, false, ItemBoxTypeEnum.DONE, false).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取办结办件数据失败", e);
@@ -138,15 +156,29 @@ public class DocumentEditRestController {
     public Y9Result<DocumentDetailModel> doneAdmin(@RequestParam @NotBlank String documentId,
         @RequestParam @NotBlank String processInstanceId) {
         try {
-            DocumentDetailModel model = documentApi
-                .editDone(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), processInstanceId,
-                    documentId, true, ItemBoxTypeEnum.MONITOR_DONE, false)
-                .getData();
+            DocumentDetailModel model =
+                documentApi.editDone(processInstanceId, documentId, true, ItemBoxTypeEnum.MONITOR_DONE, false)
+                    .getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取监控办结办件数据失败", e);
         }
         return Y9Result.failure("获取失败");
+    }
+
+    /**
+     * 获取草稿详细信息（打开草稿时调用）
+     *
+     * @param processSerialNumber 流程编号
+     * @param itemId 事项id
+     * @return Y9Result<DocumentDetailModel>
+     */
+    @GetMapping("/draft")
+    public Y9Result<DocumentDetailModel> draft(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam @NotBlank String itemId) {
+        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
+        DocumentDetailModel model = documentApi.editDraft(itemId, processSerialNumber, false).getData();
+        return Y9Result.success(model, "获取成功");
     }
 
     /**
@@ -159,11 +191,7 @@ public class DocumentEditRestController {
     @GetMapping(value = "/recycle")
     public Y9Result<DocumentDetailModel> recycle(@RequestParam @NotBlank String processInstanceId) {
         try {
-            DocumentDetailModel model =
-                documentApi
-                    .editRecycle(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), processInstanceId,
-                        false)
-                    .getData();
+            DocumentDetailModel model = documentApi.editRecycle(processInstanceId, false).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取回收办件数据失败", e);
@@ -185,62 +213,10 @@ public class DocumentEditRestController {
             if (null == task) {
                 return Y9Result.failure("当前待办已处理！");
             }
-            DocumentDetailModel model =
-                documentApi
-                    .editTodo(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-                        Y9FlowableHolder.getPositionId(), taskId, false)
-                    .getData();
+            DocumentDetailModel model = documentApi.editTodo(taskId, false).getData();
             return Y9Result.success(model, "获取成功");
         } catch (Exception e) {
             LOGGER.error("获取待办件数据失败", e);
-        }
-        return Y9Result.failure("获取失败");
-    }
-
-    /**
-     * 获取抄送件详情数据
-     *
-     * @param id 抄送id
-     * @param processInstanceId 流程实例id
-     * @return Y9Result<Map < String, Object>>
-     */
-    @GetMapping(value = "/chaoSong")
-    public Y9Result<DocumentDetailModel> chaoSong(@RequestParam @NotBlank String id,
-        @RequestParam @NotBlank String processInstanceId, @RequestParam @NotBlank String itembox) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String positionId = Y9FlowableHolder.getPositionId();
-        try {
-            DocumentDetailModel model =
-                documentApi.editChaoSong(person.getTenantId(), positionId, id, processInstanceId, false, itembox)
-                    .getData();
-            return Y9Result.success(model, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("detail error", e);
-        }
-        return Y9Result.failure("获取失败");
-    }
-
-    /**
-     * 获取抄送件详情数据
-     *
-     * @param id 抄送id
-     * @param processInstanceId 流程实例id
-     * @return Y9Result<Map < String, Object>>
-     */
-    @GetMapping(value = "/chaoSongAdmin")
-    public Y9Result<DocumentDetailModel> chaoSongAdmin(@RequestParam @NotBlank String id,
-        @RequestParam @NotBlank String processInstanceId) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String positionId = Y9FlowableHolder.getPositionId();
-        try {
-            DocumentDetailModel model =
-                documentApi
-                    .editChaoSong(person.getTenantId(), positionId, id, processInstanceId, false,
-                        ItemBoxTypeEnum.MONITOR_CHAOSONG.getValue())
-                    .getData();
-            return Y9Result.success(model, "获取成功");
-        } catch (Exception e) {
-            LOGGER.error("detail error", e);
         }
         return Y9Result.failure("获取失败");
     }

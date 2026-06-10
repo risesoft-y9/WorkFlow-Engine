@@ -2,6 +2,7 @@ package net.risesoft.controller;
 
 import javax.validation.constraints.NotBlank;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -15,8 +16,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.core.DocumentApi;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 发送，办结相关
@@ -47,7 +46,6 @@ public class UserChoiseRestController {
     public Y9Result<DocUserChoiseModel> userChoiseData(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String routeToTask, @RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskId, @RequestParam(required = false) String processInstanceId) {
-        return documentApi.docUserChoise(Y9LoginUserHolder.getTenantId(), Y9LoginUserHolder.getPersonId(),
-            Y9FlowableHolder.getPositionId(), itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
+        return documentApi.docUserChoise(itemId, "", processDefinitionId, taskId, routeToTask, processInstanceId);
     }
 }

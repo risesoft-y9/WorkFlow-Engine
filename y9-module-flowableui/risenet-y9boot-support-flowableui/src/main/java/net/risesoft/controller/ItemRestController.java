@@ -62,8 +62,7 @@ public class ItemRestController {
      */
     @GetMapping(value = "/getAllStartTaskDefKey")
     public Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam @NotBlank String itemId) {
-        return documentApi.getAllStartTaskDefKey(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(),
-            itemId);
+        return documentApi.getAllStartTaskDefKey(itemId);
     }
 
     /**

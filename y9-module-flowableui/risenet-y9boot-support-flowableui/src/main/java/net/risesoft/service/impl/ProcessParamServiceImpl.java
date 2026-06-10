@@ -131,8 +131,8 @@ public class ProcessParamServiceImpl implements ProcessParamService {
             processParamApi.saveOrUpdate(pp);
 
             if (StringUtils.isBlank(processInstanceId)) {
-                return documentApi.startProcessByTheTaskKey(tenantId, Y9FlowableHolder.getPositionId(), itemId,
-                    processSerialNumber, item.getWorkflowGuid(), startTaskDefKey, List.of());
+                return documentApi.startProcessByTheTaskKey(itemId, processSerialNumber, item.getWorkflowGuid(),
+                    startTaskDefKey, List.of());
             }
             return Y9Result.successMsg("保存成功");
         } catch (Exception e) {
