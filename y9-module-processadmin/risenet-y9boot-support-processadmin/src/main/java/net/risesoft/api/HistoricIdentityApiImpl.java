@@ -12,8 +12,6 @@ import net.risesoft.api.processadmin.HistoricIdentityApi;
 import net.risesoft.model.processadmin.IdentityLinkModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricTaskService;
-import net.risesoft.y9.FlowableTenantInfoHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 历史流转用户信息接口
@@ -31,16 +29,12 @@ public class HistoricIdentityApiImpl implements HistoricIdentityApi {
     /**
      * 获取任务的用户信息
      *
-     * @param tenantId 租户id
      * @param taskId 任务id
      * @return {@code Y9Result<List<IdentityLinkModel>>} 通用请求返回对象 - data 历任务的用户信息
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<IdentityLinkModel>> getIdentityLinksForTask(@RequestParam String tenantId,
-        @RequestParam String taskId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        Y9LoginUserHolder.setTenantId(tenantId);
+    public Y9Result<List<IdentityLinkModel>> getIdentityLinksForTask(@RequestParam String taskId) {
         List<IdentityLinkModel> list = customHistoricTaskService.listIdentityLinksForTaskByTaskId(taskId);
         return Y9Result.success(list);
     }
