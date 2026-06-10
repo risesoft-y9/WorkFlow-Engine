@@ -133,7 +133,7 @@ public class Y9FormRestController {
     @GetMapping(value = "/getAllFieldPerm")
     public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam @NotBlank String formId,
         @RequestParam(required = false) String taskDefKey, @RequestParam @NotBlank String processDefinitionId) {
-        return formDataApi.getAllFieldPerm(Y9FlowableHolder.getPositionId(), formId, taskDefKey, processDefinitionId);
+        return formDataApi.getAllFieldPerm(formId, taskDefKey, processDefinitionId);
     }
 
     /**
@@ -168,7 +168,7 @@ public class Y9FormRestController {
     public Y9Result<List<Map<String, Object>>> getChildFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String parentProcessSerialNumber) {
         try {
-            return formDataApi.getChildFormData(Y9FlowableHolder.getPositionId(), formId, parentProcessSerialNumber);
+            return formDataApi.getChildFormData(formId, parentProcessSerialNumber);
         } catch (Exception e) {
             LOGGER.error("获取子表单数据失败", e);
         }
@@ -207,8 +207,7 @@ public class Y9FormRestController {
     public Y9Result<FieldPermModel> getFieldPerm(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String fieldName, @RequestParam(required = false) String taskDefKey,
         @RequestParam @NotBlank String processDefinitionId) {
-        return formDataApi.getFieldPerm(Y9FlowableHolder.getPositionId(), formId, fieldName, taskDefKey,
-            processDefinitionId);
+        return formDataApi.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
     }
 
     /**
