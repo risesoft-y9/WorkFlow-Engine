@@ -87,7 +87,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             LOGGER.error("保存短信详情失败", e);
         }
         for (String user : users) {
-            buttonOperationApi.addMultiInstanceExecution(tenantId, activityId, processInstanceId, taskId, user);
+            buttonOperationApi.addMultiInstanceExecution(activityId, processInstanceId, taskId, user);
             asyncUtilService.addMultiInstanceParallelAuditLog(tenantId, positionName, processParamModel.getTitle(),
                 taskId, task.getName(), user);
         }
@@ -102,7 +102,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             processSerialNumber = processParamModel.getProcessSerialNumber();
         String[] users = userChoice.split(";");
         for (String user : users) {
-            buttonOperationApi.addMultiInstanceExecutionByActivityId(tenantId, activityId, processInstanceId, user);
+            buttonOperationApi.addMultiInstanceExecutionByActivityId(activityId, processInstanceId, user);
         }
         List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
         List<SignDeptDetailModel> signDeptDetailModels =
@@ -255,7 +255,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     public void removeExecution(String executionId, String taskId, String elementUser) throws Exception {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = Y9FlowableHolder.getPositionId();
-        buttonOperationApi.deleteMultiInstanceExecution(tenantId, executionId, taskId, elementUser);
+        buttonOperationApi.deleteMultiInstanceExecution(executionId, taskId, elementUser);
         asyncUtilService.deleteMultiInstanceParallelAuditLog(tenantId, positionId, executionId, taskId, elementUser);
     }
 

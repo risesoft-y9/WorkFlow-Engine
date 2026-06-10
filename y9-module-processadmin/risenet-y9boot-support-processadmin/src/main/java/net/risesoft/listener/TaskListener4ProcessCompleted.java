@@ -45,6 +45,7 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 FlowableEntityEventImpl entityEvent = (FlowableEntityEventImpl)event;
                 ExecutionEntityImpl executionEntity = (ExecutionEntityImpl)entityEvent.getEntity();
                 String tenantId = (String)executionEntity.getVariable(SysVariables.TENANT_ID);
+                Y9LoginUserHolder.setTenantId(tenantId);
                 // 1、接口调用
                 InterfaceUtilService interfaceUtilService = Y9Context.getBean(InterfaceUtilService.class);
                 try {
@@ -53,8 +54,7 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                     throw new RuntimeException("调用接口失败 TaskListener4ProcessCompleted_PROCESS_COMPLETED");
                 }
                 // 2、标记流转详情为办结状态
-                Y9Context.getBean(ActRuDetailApi.class)
-                    .endByProcessInstanceId(tenantId, executionEntity.getProcessInstanceId());
+                Y9Context.getBean(ActRuDetailApi.class).endByProcessInstanceId(executionEntity.getProcessInstanceId());
                 // 3、保存流程数据到ES，截转年度数据
                 Process4CompleteUtilService process4CompleteUtilService =
                     Y9Context.getBean(Process4CompleteUtilService.class);

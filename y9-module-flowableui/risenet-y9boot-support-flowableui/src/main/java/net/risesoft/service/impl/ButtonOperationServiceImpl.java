@@ -375,8 +375,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             variableApi.setVariableByProcessInstanceId(tenantId, processInstanceId,
                 SysVariables.ACTION_NAME + ":" + positionId, vars);
             // 3、重定位，谁激活就重定位给谁
-            buttonOperationApi.reposition(tenantId, positionId, hisTaskModel.getId(),
-                hisTaskModel.getTaskDefinitionKey(), List.of(positionId), desc, "");
+            buttonOperationApi.reposition(hisTaskModel.getId(), hisTaskModel.getTaskDefinitionKey(),
+                List.of(positionId), desc, "");
             return Y9Result.successMsg(desc + "成功");
         } catch (Exception e) {
             LOGGER.error("{}异常", desc, e);

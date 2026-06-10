@@ -77,8 +77,7 @@ public class ItemRestController {
         try {
             List<ItemListModel> listMap = itemApi.getItemList(Y9FlowableHolder.getPositionId()).getData();
             map.put("itemMap", listMap);
-            map.put("notReadCount",
-                chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData());
+            map.put("notReadCount", chaoSongApi.getTodoCount().getData());
             int followCount = officeFollowApi.getFollowCount().getData();
             map.put("followCount", followCount);
             // 公共角色
@@ -139,8 +138,7 @@ public class ItemRestController {
             }
 
             map.put("systemList", list);
-            map.put("notReadCount",
-                chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData());
+            map.put("notReadCount", chaoSongApi.getTodoCount().getData());
             // 公共角色
             boolean b =
                 positionRoleApi

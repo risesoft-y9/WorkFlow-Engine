@@ -18,7 +18,6 @@ import net.risesoft.enums.ActRuDetailStatusEnum;
 import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.core.ActRuDetailService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -37,19 +36,16 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     private final ActRuDetailService actRuDetailService;
 
     /**
-     * 流程办结监听-->根据流程实例id标记流程为办结状态
+     * 签收
      *
-     * @param tenantId 租户id
-     * @param processInstanceId 流程实例id
+     * @param taskId 任务id
+     * @param assignee 办理人id
      * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
+     * @since 9.6.8
      */
     @Override
-    public Y9Result<Object> endByProcessInstanceId(@RequestParam String tenantId,
-        @RequestParam String processInstanceId) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        actRuDetailService.endByProcessInstanceId(processInstanceId);
-        return Y9Result.success();
+    public Y9Result<Object> claim(@RequestParam String taskId, @RequestParam String assignee) {
+        return actRuDetailService.claim(taskId, assignee);
     }
 
     /**
@@ -62,6 +58,32 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     @Override
     public Y9Result<Object> deleteByExecutionId(@RequestParam String executionId) {
         actRuDetailService.deleteByExecutionId(executionId);
+        return Y9Result.success();
+    }
+
+    /**
+     * 根据流程编号删除整个流程的办件详情(逻辑删除)
+     *
+     * @param processSerialNumber 流程编号
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> deleteByProcessSerialNumber(@RequestParam String processSerialNumber) {
+        actRuDetailService.deletedByProcessSerialNumber(processSerialNumber);
+        return Y9Result.success();
+    }
+
+    /**
+     * 流程办结监听-->根据流程实例id标记流程为办结状态
+     *
+     * @param processInstanceId 流程实例id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> endByProcessInstanceId(@RequestParam String processInstanceId) {
+        actRuDetailService.endByProcessInstanceId(processInstanceId);
         return Y9Result.success();
     }
 
@@ -132,6 +154,19 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
+     * 恢复会签流程的流转信息（通过改变流程是否结束状态恢复）
+     *
+     * @param executionId 执行实例id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.6
+     */
+    @Override
+    public Y9Result<Object> recoveryByExecutionId(@RequestParam String executionId) {
+        actRuDetailService.recoveryByExecutionId(executionId);
+        return Y9Result.success();
+    }
+
+    /**
      * 恢复整个流程的流转信息（通过改变流程是否结束状态恢复）
      *
      * @param processInstanceId 流程实例id
@@ -158,16 +193,16 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 恢复会签流程的流转信息（通过改变流程是否结束状态恢复）
+     * 撤销签收
      *
-     * @param executionId 执行实例id
+     * @param taskId 任务id
+     * @param assignee 办理人id
      * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
+     * @since 9.6.8
      */
     @Override
-    public Y9Result<Object> recoveryByExecutionId(@RequestParam String executionId) {
-        actRuDetailService.recoveryByExecutionId(executionId);
-        return Y9Result.success();
+    public Y9Result<Object> refuseClaim(@RequestParam String taskId, @RequestParam String assignee) {
+        return actRuDetailService.refuseClaim(taskId, assignee);
     }
 
     /**
@@ -197,19 +232,6 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     /**
-     * 根据流程编号删除整个流程的办件详情(逻辑删除)
-     *
-     * @param processSerialNumber 流程编号
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.6
-     */
-    @Override
-    public Y9Result<Object> deleteByProcessSerialNumber(@RequestParam String processSerialNumber) {
-        actRuDetailService.deletedByProcessSerialNumber(processSerialNumber);
-        return Y9Result.success();
-    }
-
-    /**
      * 保存或者更新流转信息
      *
      * @param actRuDetailModel 详情对象
@@ -224,47 +246,10 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
         return Y9Result.success();
     }
 
-    /**
-     * 签收
-     *
-     * @param taskId 任务id
-     * @param assignee 办理人id
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.8
-     */
     @Override
-    public Y9Result<Object> claim(@RequestParam String taskId, @RequestParam String assignee) {
-        return actRuDetailService.claim(taskId, assignee);
-    }
-
-    /**
-     * 撤销签收
-     *
-     * @param taskId 任务id
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.8
-     */
-    @Override
-    public Y9Result<Object> unClaim(@RequestParam String taskId) {
-        return actRuDetailService.unClaim(taskId);
-    }
-
-    /**
-     * 撤销签收
-     *
-     * @param taskId 任务id
-     * @param assignee 办理人id
-     * @return {@code Y9Result<Object>} 通用请求返回对象
-     * @since 9.6.8
-     */
-    @Override
-    public Y9Result<Object> refuseClaim(@RequestParam String taskId, @RequestParam String assignee) {
-        return actRuDetailService.refuseClaim(taskId, assignee);
-    }
-
-    @Override
-    public Y9Result<Object> todo2doing(@RequestParam String taskId, @RequestParam String assignee) {
-        return actRuDetailService.todo2doing(taskId, assignee);
+    public Y9Result<Object> setRead(String id) {
+        actRuDetailService.setRead(id);
+        return Y9Result.success();
     }
 
     /**
@@ -281,8 +266,19 @@ public class ActRuDetailApiImpl implements ActRuDetailApi {
     }
 
     @Override
-    public Y9Result<Object> setRead(String id) {
-        actRuDetailService.setRead(id);
-        return Y9Result.success();
+    public Y9Result<Object> todo2doing(@RequestParam String taskId, @RequestParam String assignee) {
+        return actRuDetailService.todo2doing(taskId, assignee);
+    }
+
+    /**
+     * 撤销签收
+     *
+     * @param taskId 任务id
+     * @return {@code Y9Result<Object>} 通用请求返回对象
+     * @since 9.6.8
+     */
+    @Override
+    public Y9Result<Object> unClaim(@RequestParam String taskId) {
+        return actRuDetailService.unClaim(taskId);
     }
 }

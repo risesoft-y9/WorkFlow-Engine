@@ -2,7 +2,6 @@ package net.risesoft.service.impl;
 
 import java.util.List;
 
-
 import org.springframework.scheduling.annotation.Async;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -728,7 +727,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     public void updateTitle(final String tenantId, final String processInstanceId, final String documentTitle) {
         try {
             Y9LoginUserHolder.setTenantId(tenantId);
-            chaoSongApi.updateTitle(tenantId, processInstanceId, documentTitle);
+            chaoSongApi.updateTitle(processInstanceId, documentTitle);
             officeFollowApi.updateTitle(processInstanceId, documentTitle);
         } catch (Exception e) {
             LOGGER.error("更新统一待办，抄送件标题", e);
