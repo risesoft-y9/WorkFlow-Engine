@@ -25,39 +25,30 @@ public interface CustomViewApi {
     /**
      * 删除自定义视图
      *
-     * @param tenantId 租户id
-     * @param positionId 人员id
      * @param viewType 视图类型
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/delCustomView")
-    Y9Result<Object> delCustomView(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("positionId") @NotBlank String positionId, @RequestParam("viewType") String viewType);
+    Y9Result<Object> delCustomView(@RequestParam("viewType") String viewType);
 
     /**
      * 获取自定义视图列表
      *
-     * @param tenantId 租户id
-     * @param positionId 人员id
      * @param viewType 视图类型
      * @return {@code Y9Result<List<CustomViewModel>>} 通用请求返回对象
      * @since 9.6.6
      */
     @GetMapping("/listCustomView")
-    Y9Result<List<CustomViewModel>> listCustomView(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("positionId") @NotBlank String positionId, @RequestParam("viewType") @NotBlank String viewType);
+    Y9Result<List<CustomViewModel>> listCustomView(@RequestParam("viewType") @NotBlank String viewType);
 
     /**
      * 保存自定义视图
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param jsonData json数据
      * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/saveCustomView")
-    Y9Result<Object> saveCustomView(@RequestParam("tenantId") @NotBlank String tenantId,
-        @RequestParam("orgUnitId") @NotBlank String orgUnitId, @RequestParam("jsonData") String jsonData);
+    Y9Result<Object> saveCustomView(@RequestParam("jsonData") String jsonData);
 
 }

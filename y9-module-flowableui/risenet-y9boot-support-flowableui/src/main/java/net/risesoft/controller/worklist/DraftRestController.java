@@ -25,7 +25,6 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 草稿箱
@@ -93,9 +92,8 @@ public class DraftRestController {
      */
     @GetMapping(value = "/draftViewConf")
     public Y9Result<List<ItemViewConfModel>> draftViewConf(@RequestParam @NotBlank String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
-            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DRAFT.getValue())
-            .getData();
+        List<ItemViewConfModel> itemViewConfList =
+            itemViewConfApi.findByItemIdAndViewType(itemId, ItemBoxTypeEnum.DRAFT.getValue()).getData();
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 

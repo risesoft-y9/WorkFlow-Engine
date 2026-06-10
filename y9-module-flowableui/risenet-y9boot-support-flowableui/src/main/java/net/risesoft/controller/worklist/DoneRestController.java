@@ -3,6 +3,7 @@ package net.risesoft.controller.worklist;
 import java.util.List;
 import java.util.Map;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -22,7 +23,6 @@ import net.risesoft.model.itemadmin.ItemViewConfModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.WorkListService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 待办，在办，办结列表
@@ -56,6 +56,21 @@ public class DoneRestController {
     }
 
     /**
+     * 获取所有办结件列表
+     *
+     * @param itemId 事项id
+     * @param page 页码
+     * @param rows 条数
+     * @return Y9Page<Map < String, Object>>
+     */
+    @FlowableLog(operationName = "监控所有办结件列表", logLevel = FlowableLogLevelEnum.ADMIN)
+    @PostMapping(value = "/doneList4All")
+    public Y9Page<Map<String, Object>> doneList4All(@RequestParam String itemId,
+        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
+        return workListService.doneList4All(itemId, searchMapStr, page, rows);
+    }
+
+    /**
      * 获取科室办结件列表
      *
      * @param itemId 事项id
@@ -72,21 +87,6 @@ public class DoneRestController {
     }
 
     /**
-     * 获取所有办结件列表
-     *
-     * @param itemId 事项id
-     * @param page 页码
-     * @param rows 条数
-     * @return Y9Page<Map < String, Object>>
-     */
-    @FlowableLog(operationName = "监控所有办结件列表", logLevel = FlowableLogLevelEnum.ADMIN)
-    @PostMapping(value = "/doneList4All")
-    public Y9Page<Map<String, Object>> doneList4All(@RequestParam String itemId,
-        @RequestParam(required = false) String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows) {
-        return workListService.doneList4All(itemId, searchMapStr, page, rows);
-    }
-
-    /**
      * 获取办结列表视图配置
      *
      * @param itemId 事项id
@@ -94,9 +94,8 @@ public class DoneRestController {
      */
     @GetMapping(value = "/viewConf")
     public Y9Result<List<ItemViewConfModel>> viewConf(@RequestParam String itemId) {
-        List<ItemViewConfModel> itemViewConfList = itemViewConfApi
-            .findByItemIdAndViewType(Y9LoginUserHolder.getTenantId(), itemId, ItemBoxTypeEnum.DONE.getValue())
-            .getData();
+        List<ItemViewConfModel> itemViewConfList =
+            itemViewConfApi.findByItemIdAndViewType(itemId, ItemBoxTypeEnum.DONE.getValue()).getData();
         return Y9Result.success(itemViewConfList, "获取成功");
     }
 }
