@@ -241,12 +241,11 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 获取已分配人员列表
      */
-    private List<Person> getAssignedPersonList(HistoricTaskInstanceModel hai, String tenantId, String taskId,
-        String assignee) {
+    private List<Person> getAssignedPersonList(HistoricTaskInstanceModel hai, String taskId, String assignee) {
         List<Person> personList;
 
         if (null != hai.getClaimTime()) {
-            personList = getClaimedPersonList(hai, tenantId, taskId, assignee);
+            personList = getClaimedPersonList(hai, taskId, assignee);
         } else {
             personList = getUnclaimedPersonList(hai, assignee);
         }
@@ -281,12 +280,10 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 获取已签收人员列表
      */
-    private List<Person> getClaimedPersonList(HistoricTaskInstanceModel hai, String tenantId, String taskId,
-        String assignee) {
+    private List<Person> getClaimedPersonList(HistoricTaskInstanceModel hai, String taskId, String assignee) {
         List<Person> personList = new ArrayList<>();
         try {
-            List<IdentityLinkModel> iList =
-                this.historicIdentityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+            List<IdentityLinkModel> iList = this.historicIdentityApi.getIdentityLinksForTask(taskId).getData();
             iList.stream().filter(i -> i.getType().equals(IdentityLinkType.CANDIDATE)).forEach(i -> {
                 List<Person> personListTemp =
                     this.positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), i.getUserId()).getData();
@@ -358,16 +355,15 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      * 获取历史流程模型
      */
     private HistoryProcessModel getHistoryProcessModel(HistoricTaskInstanceModel hai, int tabIndex) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         HistoryProcessModel model = createBaseHistoryModel(hai, tabIndex);
         String taskId = hai.getId();
         try {
             // 设置任务相关信息
             setTaskRelatedInfo(model, taskId);
             // 设置待办状态
-            setNewToDoStatus(model, tenantId, taskId, hai);
+            setNewToDoStatus(model, taskId, hai);
             // 设置办理人信息
-            setAssignee(model, hai, tenantId, taskId);
+            setAssignee(model, hai, taskId);
             // 设置时间信息
             setTimeInfo(model, hai);
         } catch (Exception e) {
@@ -419,7 +415,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 获取回退原因
      */
-    private String getRollBackReason(String tenantId, String taskId, String year) {
+    private String getRollBackReason(String taskId, String year) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             HistoricVariableInstanceModel rollBackReason =
                 this.historicVariableApi.getByTaskIdAndVariableName(tenantId, taskId, "rollBackReason", year).getData();
@@ -435,8 +432,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 获取子流程节点列表
      */
-    private List<TargetModel> getSubProcessNodeList(String tenantId, String taskId, String year) {
+    private List<TargetModel> getSubProcessNodeList(String taskId, String year) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             HistoricTaskInstanceModel historicTaskInstanceModel =
                 this.historictaskApi.getById(tenantId, taskId, year).getData();
             return this.processDefinitionApi
@@ -477,7 +475,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 获取任务发送者信息
      */
-    private String getTaskSender(String tenantId, String taskId, String year) {
+    private String getTaskSender(String taskId, String year) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             HistoricVariableInstanceModel taskSenderModel =
                 this.historicVariableApi.getByTaskIdAndVariableName(tenantId, taskId, SysVariables.TASK_SENDER, year)
@@ -532,8 +531,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 获取主办人信息
      */
-    private HistoricVariableInstanceModel getZhuBanInfo(String tenantId, String taskId, String year) {
+    private HistoricVariableInstanceModel getZhuBanInfo(String taskId, String year) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             return this.historicVariableApi
                 .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLEL_SPONSOR, year)
                 .getData();
@@ -547,15 +547,15 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      * 处理Delete MI execution类型的描述信息
      */
     private void handleDeleteMIExecutionDescription(HistoryProcessModel model, HistoricTaskInstanceModel hai,
-        String tenantId, String year) {
+        String year) {
         // 获取任务发送者信息
-        String taskSender = getTaskSender(tenantId, hai.getId(), year);
+        String taskSender = getTaskSender(hai.getId(), year);
         if (StringUtils.isNotBlank(taskSender)) {
             model.setDescription("该任务由" + taskSender + "删除");
         }
 
         // 获取回退原因并更新描述
-        String rollBackReason = getRollBackReason(tenantId, hai.getId(), year);
+        String rollBackReason = getRollBackReason(hai.getId(), year);
         if (StringUtils.isNotBlank(rollBackReason)) {
             model.setDescription(rollBackReason);
         }
@@ -697,7 +697,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             }
 
             // 获取子流程节点列表
-            List<TargetModel> subNodeList = getSubProcessNodeList(tenantId, results.get(0).getId(), year);
+            List<TargetModel> subNodeList = getSubProcessNodeList(results.get(0).getId(), year);
 
             // 分离主流程和子流程任务
             TaskSeparationResult separationResult = separateMainAndSubTasks(results, subNodeList);
@@ -808,16 +808,16 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             setHistoryVersion(model, hai.getId());
 
             // 设置办理人信息
-            setAssigneeInfo(model, hai, tenantId, year);
+            setAssigneeInfo(model, hai, year);
 
             // 设置待办状态
-            setNewToDoStatus(model, hai, tenantId);
+            setNewToDoStatus(model, hai);
 
             // 设置结束标识
             model.setEndFlag(StringUtils.isBlank(hai.getTenantId()) ? "" : hai.getTenantId());
 
             // 设置描述信息
-            setDescriptionInfo(model, hai, tenantId, year);
+            setDescriptionInfo(model, hai, year);
 
             // 设置意见信息
             setOpinionInfo(model, hai);
@@ -1033,8 +1033,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 设置已分配用户信息
      */
-    private void setAssignedInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String tenantId,
-        String taskId, String assignee) {
+    private void setAssignedInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String taskId,
+        String assignee) {
         OrgUnit employee = this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
         model.setAssigneeId(assignee);
         model.setAssignee(null == employee ? "" : employee.getName());
@@ -1047,22 +1047,22 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             model.setAssignee(model.getAssignee() + newtrList.get(0).getMsgContent());
         }
         // 设置人员列表
-        List<Person> personList = getAssignedPersonList(hai, tenantId, taskId, assignee);
+        List<Person> personList = getAssignedPersonList(hai, taskId, assignee);
         model.setPersonList(personList);
     }
 
     /**
      * 设置已分配用户信息
      */
-    private void setAssignedUserInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String tenantId,
-        String year, String assignee) {
+    private void setAssignedUserInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String year,
+        String assignee) {
         try {
             OrgUnit employee = this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
             model.setAssigneeId(assignee);
             // 承办人id,用于数据中心保存
             model.setUndertakerId(assignee);
 
-            HistoricVariableInstanceModel zhuBan = getZhuBanInfo(tenantId, hai.getId(), year);
+            HistoricVariableInstanceModel zhuBan = getZhuBanInfo(hai.getId(), year);
             String employeeName = getEmployeeName(employee, hai);
 
             if (zhuBan != null) {
@@ -1078,34 +1078,33 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 设置办理人信息
      */
-    private void setAssignee(HistoryProcessModel model, HistoricTaskInstanceModel hai, String tenantId, String taskId) {
+    private void setAssignee(HistoryProcessModel model, HistoricTaskInstanceModel hai, String taskId) {
         String assignee = hai.getAssignee();
         if (StringUtils.isNotBlank(assignee)) {
-            setAssignedInfo(model, hai, tenantId, taskId, assignee);
+            setAssignedInfo(model, hai, taskId, assignee);
         } else {
-            setUnassignedInfo(model, hai, tenantId, taskId);
+            setUnassignedInfo(model, hai, taskId);
         }
     }
 
     /**
      * 设置办理人信息
      */
-    private void setAssigneeInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String tenantId,
-        String year) {
+    private void setAssigneeInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String year) {
         String assignee = hai.getAssignee();
 
         if (StringUtils.isNotBlank(assignee)) {
-            setAssignedUserInfo(model, hai, tenantId, year, assignee);
+            setAssignedUserInfo(model, hai, year, assignee);
         } else {
-            setUnassignedUserInfo(model, hai, tenantId);
+            setUnassignedUserInfo(model, hai);
         }
     }
 
     /**
      * 设置候选人办理人信息
      */
-    private void setCandidateAssigneeInfo(HistoryProcessModel model, String tenantId,
-        List<IdentityLinkModel> candidateList) {
+    private void setCandidateAssigneeInfo(HistoryProcessModel model, List<IdentityLinkModel> candidateList) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         String positionId = candidateList.get(0).getUserId();
         OrgUnit orgUnit = this.orgUnitApi.getOrgUnit(tenantId, positionId).getData();
 
@@ -1120,8 +1119,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 设置描述信息
      */
-    private void setDescriptionInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String tenantId,
-        String year) {
+    private void setDescriptionInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String year) {
         String description = hai.getDeleteReason();
         if (StringUtils.isBlank(description) || "MI_END".equals(description)) {
             return;
@@ -1135,7 +1133,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         }
 
         try {
-            handleDeleteMIExecutionDescription(model, hai, tenantId, year);
+            handleDeleteMIExecutionDescription(model, hai, year);
         } catch (Exception e) {
             LOGGER.warn("设置任务删除描述信息失败，taskId: {}", hai.getId(), e);
         }
@@ -1158,9 +1156,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 设置待办状态
      */
-    private void setNewToDoStatus(HistoryProcessModel model, String tenantId, String taskId,
-        HistoricTaskInstanceModel hai) {
+    private void setNewToDoStatus(HistoryProcessModel model, String taskId, HistoricTaskInstanceModel hai) {
         if (hai.getEndTime() == null) {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             TaskModel taskModel = this.taskApi.findById(tenantId, taskId).getData();
             int newToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
                 : (Integer.parseInt(taskModel.getFormKey()));
@@ -1173,8 +1171,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 设置待办状态
      */
-    private void setNewToDoStatus(HistoryProcessModel model, HistoricTaskInstanceModel hai, String tenantId) {
+    private void setNewToDoStatus(HistoryProcessModel model, HistoricTaskInstanceModel hai) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             int newToDo = 0;
             if (hai.getEndTime() == null) {
                 TaskModel taskModel = this.taskApi.findById(tenantId, hai.getId()).getData();
@@ -1241,7 +1240,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             }
 
             history.setAssigneeId(assignee);
-            HistoricVariableInstanceModel zhuBan = getZhuBanInfo(tenantId, hai.getId(), year);
+            HistoricVariableInstanceModel zhuBan = getZhuBanInfo(hai.getId(), year);
 
             if (zhuBan != null) {
                 history.setAssignee(employeeName + "(主办)");
@@ -1398,15 +1397,14 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 设置未分配用户信息
      */
-    private void setUnassignedInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String tenantId,
-        String taskId) {
+    private void setUnassignedInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String taskId) {
         try {
-            List<IdentityLinkModel> iList =
-                this.historicIdentityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            List<IdentityLinkModel> iList = this.historicIdentityApi.getIdentityLinksForTask(taskId).getData();
             List<IdentityLinkModel> candidateList =
                 iList.stream().filter(i -> i.getType().equals(IdentityLinkType.CANDIDATE)).collect(Collectors.toList());
             if (!candidateList.isEmpty()) {
-                setCandidateAssigneeInfo(model, tenantId, candidateList);
+                setCandidateAssigneeInfo(model, candidateList);
             }
             // 设置候选人列表
             List<Person> personList = new ArrayList<>();
@@ -1436,8 +1434,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 设置未分配用户信息
      */
-    private void setUnassignedUserInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai, String tenantId) {
+    private void setUnassignedUserInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             List<IdentityLinkModel> iList = this.identityApi.getIdentityLinksForTask(tenantId, hai.getId()).getData();
             if (iList != null && !iList.isEmpty()) {
                 StringBuilder assignees = new StringBuilder();
