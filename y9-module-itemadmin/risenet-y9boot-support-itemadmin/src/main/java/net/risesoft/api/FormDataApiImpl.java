@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -21,12 +22,9 @@ import net.risesoft.model.itemadmin.BindFormModel;
 import net.risesoft.model.itemadmin.FieldPermModel;
 import net.risesoft.model.itemadmin.FormFieldDefineModel;
 import net.risesoft.model.itemadmin.Y9FormFieldModel;
-import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.form.FormDataService;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -114,7 +112,6 @@ public class FormDataApiImpl implements FormDataApi {
     /**
      * 获取表单所有字段权限
      *
-     * @param positionId 岗位id
      * @param formId 表单id
      * @param taskDefKey 任务key
      * @param processDefinitionId 流程定义id
@@ -122,10 +119,8 @@ public class FormDataApiImpl implements FormDataApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam String positionId, @RequestParam String formId,
-        @RequestParam String taskDefKey, @RequestParam String processDefinitionId) {
-        Position position = positionApi.get(Y9LoginUserHolder.getTenantId(), positionId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<List<FieldPermModel>> getAllFieldPerm(@RequestParam String formId, @RequestParam String taskDefKey,
+        @RequestParam String processDefinitionId) {
         List<FieldPermModel> list = formDataService.listAllFieldPerm(formId, taskDefKey, processDefinitionId);
         return Y9Result.success(list);
     }
@@ -150,16 +145,14 @@ public class FormDataApiImpl implements FormDataApi {
      * 获取子表数据（一个表单为一个子表）
      *
      * @param formId 表单id
-     * @param positionId 岗位id
      * @param parentProcessSerialNumber 父流程编号
      * @return {@code Y9Result<List<Map<String, Object>>>} 通用请求返回对象 - data 是子表数据
      * @throws Exception Exception
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<Map<String, Object>>> getChildFormData(@RequestParam String positionId,
-        @RequestParam String formId, @RequestParam String parentProcessSerialNumber) throws Exception {
-        Y9FlowableHolder.setPositionId(positionId);
+    public Y9Result<List<Map<String, Object>>> getChildFormData(@RequestParam String formId,
+        @RequestParam String parentProcessSerialNumber) throws Exception {
         List<Map<String, Object>> list = formDataService.listChildFormData(formId, parentProcessSerialNumber);
         return Y9Result.success(list);
     }
@@ -197,6 +190,12 @@ public class FormDataApiImpl implements FormDataApi {
     }
 
     @Override
+    public Y9Result<Map<String, Object>> getData4TableAlias(@RequestParam String guid,
+        @RequestParam String tableAlias) {
+        return formDataService.getData4TableAlias(guid, tableAlias);
+    }
+
+    @Override
     public Y9Result<Map<String, Map<String, Object>>> getDataByProcessSerialNumbers(@RequestParam String itemId,
         @RequestParam List<String> processSerialNumbers) {
         Map<String, Map<String, Object>> map =
@@ -207,7 +206,6 @@ public class FormDataApiImpl implements FormDataApi {
     /**
      * 获取字段权限
      *
-     * @param positionId 岗位id
      * @param formId 表单id
      * @param fieldName 字段名
      * @param taskDefKey 任务key
@@ -216,10 +214,8 @@ public class FormDataApiImpl implements FormDataApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<FieldPermModel> getFieldPerm(@RequestParam String positionId, @RequestParam String formId,
-        @RequestParam String fieldName, @RequestParam String taskDefKey, @RequestParam String processDefinitionId) {
-        Position position = positionApi.get(Y9LoginUserHolder.getTenantId(), positionId).getData();
-        Y9FlowableHolder.setPosition(position);
+    public Y9Result<FieldPermModel> getFieldPerm(@RequestParam String formId, @RequestParam String fieldName,
+        @RequestParam String taskDefKey, @RequestParam String processDefinitionId) {
         FieldPermModel model = formDataService.getFieldPerm(formId, fieldName, taskDefKey, processDefinitionId);
         return Y9Result.success(model);
     }
@@ -295,6 +291,12 @@ public class FormDataApiImpl implements FormDataApi {
         return Y9Result.success(list);
     }
 
+    @Override
+    public Y9Result<String> insertFormData(@RequestParam String tableName, @RequestParam String guid,
+        @RequestBody String formJsonData) {
+        return formDataService.insertFormData(tableName, guid, formJsonData);
+    }
+
     /**
      * 保存子表数据
      *
@@ -345,23 +347,6 @@ public class FormDataApiImpl implements FormDataApi {
         return Y9Result.success();
     }
 
-    @Override
-    public Y9Result<String> updateFormData(@RequestParam String guid, @RequestBody String formJsonData) {
-        return formDataService.updateFormData(guid, formJsonData);
-    }
-
-    @Override
-    public Y9Result<String> insertFormData(@RequestParam String tableName, @RequestParam String guid,
-        @RequestBody String formJsonData) {
-        return formDataService.insertFormData(tableName, guid, formJsonData);
-    }
-
-    @Override
-    public Y9Result<Map<String, Object>> getData4TableAlias(@RequestParam String guid,
-        @RequestParam String tableAlias) {
-        return formDataService.getData4TableAlias(guid, tableAlias);
-    }
-
     /**
      * 保存前置表单数据
      *
@@ -377,5 +362,10 @@ public class FormDataApiImpl implements FormDataApi {
         @RequestBody String formJsonData) throws Exception {
         String processSerialNumber = formDataService.saveAFormData(itemId, formJsonData, formId);
         return Y9Result.success(processSerialNumber);
+    }
+
+    @Override
+    public Y9Result<String> updateFormData(@RequestParam String guid, @RequestBody String formJsonData) {
+        return formDataService.updateFormData(guid, formJsonData);
     }
 }
