@@ -75,8 +75,7 @@ public class ItemRestController {
     public Y9Result<Map<String, Object>> getItemList() {
         Map<String, Object> map = new HashMap<>(16);
         try {
-            List<ItemListModel> listMap =
-                itemApi.getItemList(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData();
+            List<ItemListModel> listMap = itemApi.getItemList(Y9FlowableHolder.getPositionId()).getData();
             map.put("itemMap", listMap);
             map.put("notReadCount",
                 chaoSongApi.getTodoCount(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData());
@@ -114,7 +113,7 @@ public class ItemRestController {
         try {
             String positionId = Y9FlowableHolder.getPositionId();
             List<Map<String, Object>> list = new ArrayList<>();
-            List<ItemModel> listMap = itemApi.getAllItem(Y9LoginUserHolder.getTenantId()).getData();
+            List<ItemModel> listMap = itemApi.getAllItem().getData();
             for (ItemModel itemModel : listMap) {
                 Map<String, Object> newmap = new HashMap<>(16);
                 newmap.put(FlowableUiConsts.SYSTEMNAME_KEY, itemModel.getSystemName());

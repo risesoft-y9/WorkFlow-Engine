@@ -219,7 +219,7 @@ public class Y9FormRestController {
     @GetMapping(value = "/getFormBindByItemId")
     public Y9Result<List<BindFormModel>> getFormBindByItemId(@RequestParam @NotBlank String itemId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+        ItemModel item = itemApi.getByItemId(itemId).getData();
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinitionModel =
             repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();

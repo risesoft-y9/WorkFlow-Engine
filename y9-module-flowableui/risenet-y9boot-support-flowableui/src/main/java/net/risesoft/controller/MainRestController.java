@@ -132,7 +132,7 @@ public class MainRestController {
      */
     @GetMapping(value = "/getAllItemList")
     public Y9Result<List<ItemModel>> getAllItemList() {
-        return itemApi.getAllItemList(Y9LoginUserHolder.getTenantId());
+        return itemApi.getAllItem();
     }
 
     /**
@@ -167,7 +167,7 @@ public class MainRestController {
         map.put(MONITOR_DONE_KEY, monitorDone);
         map.put(MONITOR_RECYCLE_KEY, recycleCount);
         try {
-            ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel itemModel = itemApi.getByItemId(itemId).getData();
             String processDefinitionKey = itemModel.getWorkflowGuid();
             if (itemModel.getId() != null) {
                 map.put("processDefinitionKey", processDefinitionKey);
@@ -272,7 +272,7 @@ public class MainRestController {
         String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>(16);
         map.put("tenantManager", person.isGlobalManager());
-        ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
+        ItemModel itemModel = itemApi.getByItemId(itemId).getData();
         map.put("itemModel", itemModel);
         map.put("tenantId", tenantId);
         boolean b = positionRoleApi
@@ -299,7 +299,7 @@ public class MainRestController {
     @GetMapping(value = "/getItemBySystemName")
     public Y9Result<Map<String, Object>> getItemBySystemName(@RequestParam @NotBlank String systemName) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ItemModel> itemList = itemApi.findAll(tenantId, systemName).getData();
+        List<ItemModel> itemList = itemApi.findAll(systemName).getData();
         Map<String, Object> map = new HashMap<>(16);
         boolean b = positionRoleApi
             .hasPublicRole(tenantId, y9FlowableProperties.getMonitorManageRoleName(), Y9FlowableHolder.getPositionId())
@@ -361,9 +361,7 @@ public class MainRestController {
      */
     @GetMapping(value = "/getMyItemList")
     public Y9Result<List<ItemListModel>> getMyItemList() {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9LoginUserHolder.getPersonId();
-        return itemApi.getMyItemList(tenantId, userId);
+        return itemApi.getMyItemList(Y9FlowableHolder.getPositionId());
     }
 
     /**
@@ -468,7 +466,7 @@ public class MainRestController {
                 ProcessParamModel processParamModel =
                     processParamApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
                 processSerialNumber = processParamModel.getProcessSerialNumber();
-                ItemModel itemModel = itemApi.getByItemId(tenantId, processParamModel.getItemId()).getData();
+                ItemModel itemModel = itemApi.getByItemId(processParamModel.getItemId()).getData();
                 map.put("itemModel", itemModel);
             }
         } catch (Exception e) {
@@ -487,7 +485,7 @@ public class MainRestController {
         try {
             if (StringUtils.isNotBlank(itemId)) {
                 // 单个事项获取待办数量
-                ItemModel itemModel = itemApi.getByItemId(tenantId, itemId).getData();
+                ItemModel itemModel = itemApi.getByItemId(itemId).getData();
                 return processTodoApi
                     .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId, itemModel.getWorkflowGuid())
                     .getData();

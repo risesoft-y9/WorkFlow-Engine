@@ -237,7 +237,7 @@ public class MonitorServiceImpl implements MonitorService {
         Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             String itemName = item.getName();
             Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchByItemId(searchTerm, itemId,
@@ -264,7 +264,7 @@ public class MonitorServiceImpl implements MonitorService {
         Y9Page<OfficeDoneInfoModel> y9Page;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            ItemModel item = itemApi.getByItemId(tenantId, itemId).getData();
+            ItemModel item = itemApi.getByItemId(itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid(), itemName = item.getName();
             y9Page = officeDoneInfoApi.searchByItemId(searchTerm, itemId, ItemBoxTypeEnum.DONE.getValue(), "", "", page,
                 rows);
