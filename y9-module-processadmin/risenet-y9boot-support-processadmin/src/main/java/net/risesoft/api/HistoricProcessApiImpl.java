@@ -52,7 +52,7 @@ public class HistoricProcessApiImpl implements HistoricProcessApi {
         boolean b = customHistoricProcessService.deleteProcessInstance(processInstanceId);
         if (b) {
             try {
-                boolean msg3 = chaoSongApi.deleteByProcessInstanceId(tenantId, processInstanceId).isSuccess();
+                boolean msg3 = chaoSongApi.deleteByProcessInstanceId(processInstanceId).isSuccess();
                 LOGGER.error("##############################抄送件删除：{}#################################", msg3);
             } catch (Exception e) {
                 LOGGER.error("##########抄送件删除失败：{}#", e.getMessage());

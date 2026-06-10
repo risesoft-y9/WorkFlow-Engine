@@ -186,8 +186,7 @@ public class UtilServiceImpl implements UtilService {
         switch (itemBoxTypeEnum) {
             case TODO:
             case DOING:
-                chaosongNum =
-                    chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                chaosongNum = chaoSongApi.countByUserIdAndProcessInstanceId(processInstanceId).getData();
                 speakInfoNum = speakInfoApi.getNotReadCount(processInstanceId).getData();
                 remindInstanceModel = remindInstanceApi.getRemindInstance(processInstanceId).getData();
                 countFollow = officeFollowApi.countByProcessInstanceId(processInstanceId).getData();
@@ -195,8 +194,7 @@ public class UtilServiceImpl implements UtilService {
                 break;
             case DONE:
                 countFollow = officeFollowApi.countByProcessInstanceId(processInstanceId).getData();
-                chaosongNum =
-                    chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+                chaosongNum = chaoSongApi.countByUserIdAndProcessInstanceId(processInstanceId).getData();
                 break;
             case MONITOR_DOING:
                 isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");

@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -23,9 +24,7 @@ import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.itemadmin.HistoryProcessModel;
-import net.risesoft.model.platform.org.Position;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
@@ -91,14 +90,10 @@ public class ProcessTrackRestController {
      */
     @GetMapping(value = "/historyList")
     public Y9Result<Map<String, Object>> historyList(@RequestParam @NotBlank String processInstanceId) {
-        Position position = Y9FlowableHolder.getPosition();
-        String positionId = position.getId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> map = new HashMap<>();
         List<HistoryProcessModel> items = processTrackApi.processTrackList(processInstanceId).getData();
-        int mychaosongNum =
-            chaoSongApi.countByUserIdAndProcessInstanceId(tenantId, positionId, processInstanceId).getData();
-        int otherchaosongNum = chaoSongApi.countByProcessInstanceId(tenantId, positionId, processInstanceId).getData();
+        int mychaosongNum = chaoSongApi.countByUserIdAndProcessInstanceId(processInstanceId).getData();
+        int otherchaosongNum = chaoSongApi.countByProcessInstanceId(processInstanceId).getData();
         map.put("rows", items);
         map.put("mychaosongNum", mychaosongNum);
         map.put("otherchaosongNum", otherchaosongNum);

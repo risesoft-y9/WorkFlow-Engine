@@ -6,6 +6,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +25,6 @@ import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
-import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.Y9FlowableHolder;
@@ -59,7 +59,7 @@ public class ChaoSongRestController {
     public Y9Result<String> changeChaoSongState(@RequestParam @NotBlank String id,
         @RequestParam @NotBlank String type) {
         try {
-            chaoSongApi.changeChaoSongState(Y9LoginUserHolder.getTenantId(), id, type);
+            chaoSongApi.changeChaoSongState(id, type);
             return Y9Result.successMsg("操作成功");
         } catch (Exception e) {
             LOGGER.error("changeChaoSongState error", e);
@@ -77,7 +77,7 @@ public class ChaoSongRestController {
     @PostMapping(value = "/changeStatus")
     public Y9Result<String> changeStatus(@RequestParam String[] ids) {
         try {
-            chaoSongApi.changeStatus(Y9LoginUserHolder.getTenantId(), ids);
+            chaoSongApi.changeStatus(ids);
             return Y9Result.successMsg("操作成功");
         } catch (Exception e) {
             LOGGER.error("changeStatus error", e);
@@ -94,9 +94,8 @@ public class ChaoSongRestController {
     @FlowableLog(operationName = "批量删除抄送件", operationType = FlowableOperationTypeEnum.DELETE)
     @PostMapping(value = "/deleteList")
     public Y9Result<String> deleteList(@RequestParam String[] ids) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            chaoSongApi.deleteByIds(tenantId, ids);
+            chaoSongApi.deleteByIds(ids);
             return Y9Result.successMsg("删除成功");
         } catch (Exception e) {
             LOGGER.error("deleteList error", e);
@@ -118,14 +117,11 @@ public class ChaoSongRestController {
     public Y9Page<ChaoSongModel> list(@RequestParam @NotBlank String type,
         @RequestParam(required = false) String userName, @RequestParam @NotBlank String processInstanceId,
         @RequestParam int rows, @RequestParam int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         try {
             if (type.equals("my")) {
-                return chaoSongApi.getListBySenderIdAndProcessInstanceId(tenantId, positionId, processInstanceId,
-                    userName, rows, page);
+                return chaoSongApi.getListBySenderIdAndProcessInstanceId(processInstanceId, userName, rows, page);
             } else {
-                return chaoSongApi.getListByProcessInstanceId(tenantId, positionId, processInstanceId, userName, rows,
-                    page);
+                return chaoSongApi.getListByProcessInstanceId(processInstanceId, userName, rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("获取抄送信息", e);
@@ -155,8 +151,6 @@ public class ChaoSongRestController {
         @RequestParam(required = false) String smsPersonId, @RequestParam(required = false) String itemId,
         @RequestParam(required = false) String processSerialNumber,
         @RequestParam(required = false) String processDefinitionKey) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId();
         try {
             Map<String, Object> resMap = new HashMap<>(16);
             if (StringUtils.isBlank(processInstanceId)) {
@@ -171,8 +165,8 @@ public class ChaoSongRestController {
                     return Y9Result.failure("抄送失败，流程启动失败");
                 }
             }
-            Y9Result<Object> y9Result = chaoSongApi.save(person.getTenantId(), userId, Y9FlowableHolder.getPositionId(),
-                processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
+            Y9Result<Object> y9Result =
+                chaoSongApi.save(processInstanceId, users, isSendSms, isShuMing, smsContent, smsPersonId);
             if (y9Result.isSuccess()) {
                 return Y9Result.success(resMap, "抄送成功");
             }
@@ -195,14 +189,13 @@ public class ChaoSongRestController {
     @GetMapping(value = "/search")
     public Y9Page<ChaoSongModel> search(@RequestParam(required = false) String documentTitle,
         @RequestParam Integer status, @RequestParam int rows, @RequestParam int page) {
-        String positionId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
             if (status == 0) {
-                return chaoSongApi.getTodoList(tenantId, positionId, documentTitle, rows, page);
+                return chaoSongApi.getTodoList(documentTitle, rows, page);
             } else if (status == 1) {
-                return chaoSongApi.getDoneList(tenantId, positionId, documentTitle, rows, page);
+                return chaoSongApi.getDoneList(documentTitle, rows, page);
             } else if (status == 2) {
-                return chaoSongApi.getOpinionChaosongByUserId(tenantId, positionId, documentTitle, rows, page);
+                return chaoSongApi.getOpinionChaosongByUserId(documentTitle, rows, page);
             }
         } catch (Exception e) {
             LOGGER.error("获取抄送信息", e);

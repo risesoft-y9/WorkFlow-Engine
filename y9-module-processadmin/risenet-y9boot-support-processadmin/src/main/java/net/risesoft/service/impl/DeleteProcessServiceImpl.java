@@ -87,7 +87,7 @@ public class DeleteProcessServiceImpl implements DeleteProcessService {
             LOGGER.error("**********删除流程实例", e3);
         }
         try {
-            chaoSongApi.deleteByProcessInstanceId(tenantId, processInstanceId);
+            chaoSongApi.deleteByProcessInstanceId(processInstanceId);
         } catch (Exception e1) {
             LOGGER.error("************************************删除抄送数据失败", e1);
         }

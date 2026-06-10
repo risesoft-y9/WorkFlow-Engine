@@ -223,9 +223,7 @@ public class MonitorServiceImpl implements MonitorService {
     public Y9Page<ChaoSongModel> pageMonitorChaosongList(String searchName, String itemId, String senderName,
         String userName, String state, String year, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            return chaoSongApi.searchAllList(tenantId, searchName, itemId, senderName, userName, state, year, page,
-                rows);
+            return chaoSongApi.searchAllList(searchName, itemId, senderName, userName, state, year, page, rows);
         } catch (Exception e) {
             LOGGER.error("获取监控抄送列表失败", e);
         }
