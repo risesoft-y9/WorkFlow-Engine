@@ -178,11 +178,9 @@ public class OpinionSignServiceImpl implements OpinionSignService {
 
     private void handleTakeBackOpinion(OpinionSignListModel model, OpinionSignListModel opinionSignListModel,
         OpinionSign opinionSign, String takeBack, TaskModel task) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (Boolean.parseBoolean(takeBack) && Y9LoginUserHolder.getPersonId().equals(opinionSign.getUserId())) {
             List<HistoricTaskInstanceModel> tlist =
-                historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
-                    .getData();
+                historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(task.getProcessInstanceId(), "").getData();
             tlist.stream()
                 .filter(hisTask -> hisTask.getEndTime() != null && hisTask.getId().equals(opinionSign.getTaskId()))
                 .findFirst()

@@ -150,7 +150,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
             for (TaskModel taskNext : taskNextList1) {
                 if (!(taskId.equals(taskNext.getId()))) {
                     taskApi.complete(tenantId, taskNext.getId());
-                    historictaskApi.setTenantId(tenantId, taskNext.getId());
+                    historictaskApi.setTenantId(taskNext.getId());
                 }
             }
         }
@@ -198,7 +198,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
             for (TaskModel taskNext : taskNextList1) {
                 if (!(taskId.equals(taskNext.getId()))) {
                     taskApi.complete(tenantId, taskNext.getId());
-                    historictaskApi.setTenantId(tenantId, taskNext.getId());
+                    historictaskApi.setTenantId(taskNext.getId());
                 }
             }
         }

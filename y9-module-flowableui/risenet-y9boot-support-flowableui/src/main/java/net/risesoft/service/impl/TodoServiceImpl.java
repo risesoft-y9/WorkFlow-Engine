@@ -142,13 +142,11 @@ public class TodoServiceImpl implements TodoService {
 
     private void handleTakeBackFlag(Map<String, Object> mapTemp, TaskModel task, String processInstanceId) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             String taskId = task.getId();
             String takeBack = variableApi.getVariableLocal(taskId, SysVariables.TAKEBACK).getData();
             if (Boolean.parseBoolean(takeBack)) {
                 List<HistoricTaskInstanceModel> hlist =
-                    historicTaskApi.findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "")
-                        .getData();
+                    historicTaskApi.findTaskByProcessInstanceIdOrderByStartTimeAsc(processInstanceId, "").getData();
                 if (!hlist.isEmpty() && hlist.get(0).getTaskDefinitionKey().equals(task.getTaskDefinitionKey())) {
                     mapTemp.put("takeBack", true);
                 }

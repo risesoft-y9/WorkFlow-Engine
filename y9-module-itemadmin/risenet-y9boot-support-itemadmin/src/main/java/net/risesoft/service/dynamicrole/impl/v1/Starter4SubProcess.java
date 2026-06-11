@@ -43,9 +43,9 @@ public class Starter4SubProcess extends AbstractDynamicRoleMember {
         List<Position> orgUnitList = new ArrayList<>();
         if (StringUtils.isNotBlank(taskId)) {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
-            List<HistoricTaskInstanceModel> hisTaskList = historicTaskApi
-                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, task.getProcessInstanceId(), "")
-                .getData();
+            List<HistoricTaskInstanceModel> hisTaskList =
+                historicTaskApi.findTaskByProcessInstanceIdOrderByStartTimeAsc(task.getProcessInstanceId(), "")
+                    .getData();
             String assignee = "";
             for (HistoricTaskInstanceModel hisTask : hisTaskList) {
                 if (hisTask.getExecutionId().equals(task.getExecutionId())) {

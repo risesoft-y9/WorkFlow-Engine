@@ -338,14 +338,14 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 获取历史任务实例结果
      */
-    private HistoricTaskInstanceResult getHistoricTaskInstances(String tenantId, String processInstanceId) {
+    private HistoricTaskInstanceResult getHistoricTaskInstances(String processInstanceId) {
         List<HistoricTaskInstanceModel> results =
-            this.historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, "").getData();
+            this.historictaskApi.getByProcessInstanceId(processInstanceId, "").getData();
         String year = "";
 
         if (results == null || results.isEmpty()) {
             year = getProcessYear(processInstanceId);
-            results = this.historictaskApi.getByProcessInstanceId(tenantId, processInstanceId, year).getData();
+            results = this.historictaskApi.getByProcessInstanceId(processInstanceId, year).getData();
         }
 
         return new HistoricTaskInstanceResult(results, year);
@@ -436,7 +436,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
             HistoricTaskInstanceModel historicTaskInstanceModel =
-                this.historictaskApi.getById(tenantId, taskId, year).getData();
+                this.historictaskApi.getByIdAndYear(taskId, year).getData();
             return this.processDefinitionApi
                 .getSubProcessChildNode(tenantId, historicTaskInstanceModel.getProcessDefinitionId())
                 .getData();
@@ -569,8 +569,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 处理串行办理情况
      */
-    private void handleSequentialProcessing(List<HistoryProcessModel> items, String tenantId,
-        String processInstanceId) {
+    private void handleSequentialProcessing(List<HistoryProcessModel> items, String processInstanceId) {
         if (items == null || items.isEmpty()) {
             return;
         }
@@ -583,7 +582,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 return;
             }
 
-            processSequentialUsers(items, tenantId, processInstanceId);
+            processSequentialUsers(items, processInstanceId);
         } catch (Exception e) {
             LOGGER.warn("处理串行办理情况失败，processInstanceId: {}", processInstanceId, e);
         }
@@ -610,7 +609,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
 
         try {
             // 获取历史任务实例列表
-            HistoricTaskInstanceResult result = getHistoricTaskInstances(tenantId, processInstanceId);
+            HistoricTaskInstanceResult result = getHistoricTaskInstances(processInstanceId);
             List<HistoricTaskInstanceModel> results = result.getTaskInstances();
             String year = result.getYear();
             if (results == null || results.isEmpty()) {
@@ -622,7 +621,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                 if (hai == null) {
                     continue;
                 }
-                HistoryProcessModel model = processHistoricTaskInstance(hai, tenantId, year);
+                HistoryProcessModel model = processHistoricTaskInstance(hai, year);
                 items.add(model);
                 // 处理流程跟踪信息
                 List<ProcessTrack> ptList = this.listByTaskId(hai.getId());
@@ -633,7 +632,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             Collections.sort(items);
 
             // 处理串行办理情况
-            handleSequentialProcessing(items, tenantId, processInstanceId);
+            handleSequentialProcessing(items, processInstanceId);
 
             return items;
         } catch (Exception e) {
@@ -647,7 +646,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             // 获取历史任务实例结果
-            HistoricTaskInstanceResult result = getHistoricTaskInstances(tenantId, processInstanceId);
+            HistoricTaskInstanceResult result = getHistoricTaskInstances(processInstanceId);
             List<HistoricTaskInstanceModel> results = result.getTaskInstances();
             String year = result.getYear();
             if (results == null || results.isEmpty()) {
@@ -661,7 +660,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
                     continue;
                 }
 
-                HistoryProcessModel history = processSimpleHistoricTaskInstance(hai, tenantId, year);
+                HistoryProcessModel history = processSimpleHistoricTaskInstance(hai, year);
                 items.add(history);
 
                 // 处理流程跟踪信息
@@ -673,7 +672,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             Collections.sort(items);
 
             // 处理串行办理情况
-            handleSequentialProcessing(items, tenantId, processInstanceId);
+            handleSequentialProcessing(items, processInstanceId);
 
             return items;
         } catch (Exception e) {
@@ -684,11 +683,10 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
 
     @Override
     public List<HistoryProcessModel> listByProcessInstanceIdWithActionName(String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
 
         try {
             // 获取历史任务实例结果
-            HistoricTaskInstanceResult result = getHistoricTaskInstances(tenantId, processInstanceId);
+            HistoricTaskInstanceResult result = getHistoricTaskInstances(processInstanceId);
             List<HistoricTaskInstanceModel> results = result.getTaskInstances();
             String year = result.getYear();
 
@@ -799,8 +797,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 处理历史任务实例
      */
-    private HistoryProcessModel processHistoricTaskInstance(HistoricTaskInstanceModel hai, String tenantId,
-        String year) {
+    private HistoryProcessModel processHistoricTaskInstance(HistoricTaskInstanceModel hai, String year) {
         HistoryProcessModel model = createBaseHistoryModel(hai);
 
         try {
@@ -857,8 +854,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 处理串行用户列表
      */
-    private void processSequentialUsers(List<HistoryProcessModel> items, String tenantId, String processInstanceId) {
+    private void processSequentialUsers(List<HistoryProcessModel> items, String processInstanceId) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             HistoricVariableInstanceModel users = this.historicVariableApi
                 .getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, SysVariables.USERS, "")
                 .getData();
@@ -931,13 +929,12 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 处理简单历史任务实例
      */
-    private HistoryProcessModel processSimpleHistoricTaskInstance(HistoricTaskInstanceModel hai, String tenantId,
-        String year) {
+    private HistoryProcessModel processSimpleHistoricTaskInstance(HistoricTaskInstanceModel hai, String year) {
         HistoryProcessModel history = createSimpleBaseModel(hai);
 
         try {
             // 设置办理人信息
-            setSimpleAssigneeInfo(history, hai, tenantId, year);
+            setSimpleAssigneeInfo(history, hai, year);
 
             // 设置时间信息
             setSimpleTimeInfo(history, hai);
@@ -1217,19 +1214,19 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 设置简单已分配用户信息
      */
-    private void setSimpleAssignedUserInfo(HistoryProcessModel history, HistoricTaskInstanceModel hai, String tenantId,
-        String year, String assignee) {
+    private void setSimpleAssignedUserInfo(HistoryProcessModel history, HistoricTaskInstanceModel hai, String year,
+        String assignee) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             String employeeName = "";
-            OrgUnit employee = this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assignee).getData();
+            OrgUnit employee = this.orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
 
             if (employee != null) {
                 String ownerId = hai.getOwner();
                 employeeName = employee.getName();
                 // 恢复待办，如不是办结人恢复，Owner有值，需显示Owner
                 if (StringUtils.isNotBlank(ownerId)) {
-                    OrgUnit ownerUser =
-                        this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), ownerId).getData();
+                    OrgUnit ownerUser = this.orgUnitApi.getPersonOrPosition(tenantId, ownerId).getData();
                     employeeName = ownerUser != null ? ownerUser.getName() : employeeName;
                 }
             }
@@ -1255,14 +1252,13 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 设置简单办理人信息
      */
-    private void setSimpleAssigneeInfo(HistoryProcessModel history, HistoricTaskInstanceModel hai, String tenantId,
-        String year) {
+    private void setSimpleAssigneeInfo(HistoryProcessModel history, HistoricTaskInstanceModel hai, String year) {
         String assignee = hai.getAssignee();
 
         if (StringUtils.isNotBlank(assignee)) {
-            setSimpleAssignedUserInfo(history, hai, tenantId, year, assignee);
+            setSimpleAssignedUserInfo(history, hai, year, assignee);
         } else {
-            setSimpleUnassignedUserInfo(history, hai, tenantId);
+            setSimpleUnassignedUserInfo(history, hai);
         }
     }
 
@@ -1280,17 +1276,16 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 设置简单未分配用户信息
      */
-    private void setSimpleUnassignedUserInfo(HistoryProcessModel history, HistoricTaskInstanceModel hai,
-        String tenantId) {
+    private void setSimpleUnassignedUserInfo(HistoryProcessModel history, HistoricTaskInstanceModel hai) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             List<IdentityLinkModel> iList = this.identityApi.getIdentityLinksForTask(tenantId, hai.getId()).getData();
             if (iList != null && !iList.isEmpty()) {
                 StringBuilder assignees = new StringBuilder();
                 int j = 0;
                 for (IdentityLinkModel identityLink : iList) {
                     String assigneeId = identityLink.getUserId();
-                    OrgUnit ownerUser =
-                        this.orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                    OrgUnit ownerUser = this.orgUnitApi.getPersonOrPosition(tenantId, assigneeId).getData();
                     if (j < 5) {
                         Y9Util.genCustomStr(assignees, ownerUser != null ? ownerUser.getName() : "岗位数据不存在", "、");
                     } else {
@@ -1411,8 +1406,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             candidateList.forEach(candidate -> {
                 try {
                     List<Person> personListTemp =
-                        this.positionApi.listPersonsByPositionId(Y9LoginUserHolder.getTenantId(), candidate.getUserId())
-                            .getData();
+                        this.positionApi.listPersonsByPositionId(tenantId, candidate.getUserId()).getData();
                     personListTemp.forEach(p -> {
                         if (null != hai.getEndTime()) {
                             p.setTabIndex(ProcessTrackStatusEnum.UNCLAIMED.getValue());

@@ -291,14 +291,13 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     private void handleAssignedTaskNew(String itemId, String opinionFrameMark, OpinionFrameModel opinionFrameModel,
-        List<Opinion> opinionList, String taskId, TaskModel task, String tenantId, String personId,
-        List<OpinionModel> modelList) {
+        List<Opinion> opinionList, String taskId, TaskModel task, String personId, List<OpinionModel> modelList) {
         opinionFrameModel.setAddable(true);
         String takeBack = variableApi.getVariableLocal(taskId, SysVariables.TAKEBACK).getData();
         List<HistoricTaskInstanceModel> hisTaskList = new ArrayList<>();
 
-        processOpinionsForAssignedTaskNew(opinionList, opinionFrameModel, taskId, personId, takeBack, tenantId, task,
-            hisTaskList, modelList);
+        processOpinionsForAssignedTaskNew(opinionList, opinionFrameModel, taskId, personId, takeBack, task, hisTaskList,
+            modelList);
 
         handleOpinionFrameBindNew(itemId, opinionFrameModel, task, opinionFrameMark);
     }
@@ -370,12 +369,10 @@ public class OpinionServiceImpl implements OpinionService {
 
     private void handleTakeBackOpinion(OpinionListModel modelTemp, OpinionListModel opinionListModel, Opinion opinion,
         String takeBack, String personId, List<HistoricTaskInstanceModel> hisTaskList, TaskModel task) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (Boolean.parseBoolean(takeBack) && personId.equals(opinion.getUserId())) {
             if (hisTaskList.isEmpty()) {
-                hisTaskList =
-                    historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
-                        .getData();
+                hisTaskList = historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(task.getProcessInstanceId(), "")
+                    .getData();
             }
             hisTaskList.stream()
                 .filter(htiModel -> htiModel.getEndTime() != null && htiModel.getId().equals(opinion.getTaskId()))
@@ -388,13 +385,11 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     private void handleTakeBackOpinionNew(OpinionModel model, OpinionFrameModel opinionFrameModel, Opinion opinion,
-        String takeBack, String personId, List<HistoricTaskInstanceModel> hisTaskList, String tenantId,
-        TaskModel task) {
+        String takeBack, String personId, List<HistoricTaskInstanceModel> hisTaskList, TaskModel task) {
         if (Boolean.parseBoolean(takeBack) && personId.equals(opinion.getUserId())) {
             if (hisTaskList.isEmpty()) {
-                hisTaskList =
-                    historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, task.getProcessInstanceId(), "")
-                        .getData();
+                hisTaskList = historicTaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(task.getProcessInstanceId(), "")
+                    .getData();
             }
             // 使用Stream API优化历史任务查找
             hisTaskList.stream()
@@ -663,8 +658,8 @@ public class OpinionServiceImpl implements OpinionService {
         if (StringUtils.isBlank(task.getAssignee())) {
             handleUnassignedTaskNew(opinionFrameModel, opinionList, modelList);
         } else {
-            handleAssignedTaskNew(itemId, opinionFrameMark, opinionFrameModel, opinionList, taskId, task, tenantId,
-                personId, modelList);
+            handleAssignedTaskNew(itemId, opinionFrameMark, opinionFrameModel, opinionList, taskId, task, personId,
+                modelList);
         }
 
         modelList = this.order(modelList, opinionOrderBy);
@@ -771,8 +766,8 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     private void processOpinionsForAssignedTaskNew(List<Opinion> opinionList, OpinionFrameModel opinionFrameModel,
-        String taskId, String personId, String takeBack, String tenantId, TaskModel task,
-        List<HistoricTaskInstanceModel> hisTaskList, List<OpinionModel> modelList) {
+        String taskId, String personId, String takeBack, TaskModel task, List<HistoricTaskInstanceModel> hisTaskList,
+        List<OpinionModel> modelList) {
         for (Opinion opinion : opinionList) {
             this.format(opinion);
             OpinionModel model = new OpinionModel();
@@ -783,8 +778,7 @@ public class OpinionServiceImpl implements OpinionService {
                 }
             } else {
                 // 收回件可编辑意见
-                handleTakeBackOpinionNew(model, opinionFrameModel, opinion, takeBack, personId, hisTaskList, tenantId,
-                    task);
+                handleTakeBackOpinionNew(model, opinionFrameModel, opinion, takeBack, personId, hisTaskList, task);
             }
             modelList.add(this.getOpinionModelNew(opinion, model));
         }
