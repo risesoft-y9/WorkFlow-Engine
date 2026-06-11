@@ -70,21 +70,19 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
     @Override
     @Transactional
     public void copyWordConf(String itemId, String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId=" + itemId + "事项";
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latest = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel latest = repositoryApi.getLatestProcessDefinitionByKey(proDefKey).getData();
         String latestId = latest.getId();
         String previousId = processDefinitionId;
         if (processDefinitionId.equals(latestId)) {
             if (latest.getVersion() > 1) {
-                ProcessDefinitionModel previous =
-                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestId).getData();
+                ProcessDefinitionModel previous = repositoryApi.getPreviousProcessDefinitionById(latestId).getData();
                 previousId = previous.getId();
             }
         }
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(latestId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             List<ItemWordConf> bindList = itemWordConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
@@ -156,18 +154,6 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
         return false;
     }
 
-    @Override
-    public List<ItemWordConf> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
-        String taskDefKey) {
-        List<ItemWordConf> bindList = itemWordConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
-            processDefinitionId, taskDefKey);
-        for (ItemWordConf bind : bindList) {
-            String roleNames = getRoleNames(bind.getRoleIds());
-            bind.setRoleNames(roleNames);
-        }
-        return bindList;
-    }
-
     /**
      * 根据角色ID列表获取角色名称
      *
@@ -187,6 +173,18 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
             Role role = idRoleMap.get(id);
             return (role == null) ? "角色不存在" : role.getName();
         }).collect(Collectors.joining("、"));
+    }
+
+    @Override
+    public List<ItemWordConf> listByItemIdAndProcessDefinitionIdAndTaskDefKey(String itemId, String processDefinitionId,
+        String taskDefKey) {
+        List<ItemWordConf> bindList = itemWordConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
+            processDefinitionId, taskDefKey);
+        for (ItemWordConf bind : bindList) {
+            String roleNames = getRoleNames(bind.getRoleIds());
+            bind.setRoleNames(roleNames);
+        }
+        return bindList;
     }
 
     @Override

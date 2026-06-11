@@ -73,6 +73,31 @@ public class DraftEntityServiceImpl implements DraftEntityService {
 
     private final FormDataService formDataService;
 
+    /**
+     * 创建新的草稿
+     */
+    private DraftEntity createNewDraft(String itemId, String processSerialNumber, String processDefinitionKey,
+        String number, String urgency, String title, String type) {
+        DraftEntity draft = new DraftEntity();
+        draft.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        draft.setProcessSerialNumber(processSerialNumber);
+        draft.setItemId(itemId);
+        draft.setProcessDefinitionKey(processDefinitionKey);
+        draft.setCreaterId(Y9FlowableHolder.getPositionId());
+
+        OrgUnit orgUnit =
+            orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData();
+        draft.setCreater(orgUnit.getName());
+        draft.setDelFlag(false);
+        draft.setUrgency(urgency);
+        draft.setDocNumber(number);
+        draft.setTitle(title);
+        // 设置类型信息
+        setTypeAndSystemInfo(draft, type, itemId);
+
+        return draft;
+    }
+
     @Transactional
     @Override
     public void deleteByProcessSerialNumber(String processSerialNumber) {
@@ -105,17 +130,46 @@ public class DraftEntityServiceImpl implements DraftEntityService {
         }
     }
 
+    void formatFormData(Map<String, Object> map) {
+        if (map.get(ItemConsts.LEAVETYPE_KEY) != null) {
+            String leaveType = (String)map.get(ItemConsts.LEAVETYPE_KEY);
+            ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
+            for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
+                if (leaveType.equals(leaveTypeEnum.getValue())) {
+                    map.put(ItemConsts.LEAVETYPE_KEY, leaveTypeEnum.getName());
+                    break;
+                }
+            }
+        }
+    }
+
+    @Override
+    public void handelFormData(String itemId, List<Map<String, Object>> items, List<String> processSerialNumbers) {
+        Map<String, Map<String, Object>> formDataResultData =
+            formDataService.getDataByProcessSerialNumbers(itemId, processSerialNumbers);
+        items.forEach(map -> {
+            Map<String, Object> formDataMap = formDataResultData.get(map.get("processSerialNumber").toString());
+            if (null != formDataMap) {
+                formatFormData(formDataMap);
+                map.putAll(formDataMap);
+            } else {
+                LOGGER.error("流程序列号{}对应的表单数据为null！", map.get("processSerialNumber"));
+            }
+        });
+
+    }
+
     @Override
     @Transactional
     public OpenDataModel openDraft(String processSerialNumber, String itemId, boolean mobile) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getPositionId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         OpenDataModel model = new OpenDataModel();
         Item item = itemService.findById(itemId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
         String processDefinitionId =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData().getId();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData().getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
         DraftEntity draft = draftEntityRepository.findByProcessSerialNumber(processSerialNumber);
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
@@ -156,35 +210,6 @@ public class DraftEntityServiceImpl implements DraftEntityService {
             }
         }
         return list;
-    }
-
-    @Override
-    public void handelFormData(String itemId, List<Map<String, Object>> items, List<String> processSerialNumbers) {
-        Map<String, Map<String, Object>> formDataResultData =
-            formDataService.getDataByProcessSerialNumbers(itemId, processSerialNumbers);
-        items.forEach(map -> {
-            Map<String, Object> formDataMap = formDataResultData.get(map.get("processSerialNumber").toString());
-            if (null != formDataMap) {
-                formatFormData(formDataMap);
-                map.putAll(formDataMap);
-            } else {
-                LOGGER.error("流程序列号{}对应的表单数据为null！", map.get("processSerialNumber"));
-            }
-        });
-
-    }
-
-    void formatFormData(Map<String, Object> map) {
-        if (map.get(ItemConsts.LEAVETYPE_KEY) != null) {
-            String leaveType = (String)map.get(ItemConsts.LEAVETYPE_KEY);
-            ItemLeaveTypeEnum[] arr = ItemLeaveTypeEnum.values();
-            for (ItemLeaveTypeEnum leaveTypeEnum : arr) {
-                if (leaveType.equals(leaveTypeEnum.getValue())) {
-                    map.put(ItemConsts.LEAVETYPE_KEY, leaveTypeEnum.getName());
-                    break;
-                }
-            }
-        }
     }
 
     @Override
@@ -255,44 +280,6 @@ public class DraftEntityServiceImpl implements DraftEntityService {
     }
 
     /**
-     * 更新已存在的草稿
-     */
-    private void updateExistingDraft(DraftEntity draft, String number, String urgency, String title, String type) {
-        draft.setUrgency(urgency);
-        draft.setDocNumber(number);
-        draft.setTitle(title);
-        if (StringUtils.isNotBlank(type)) {
-            draft.setType(type);
-        }
-        draft.setSerialNumber(1);
-    }
-
-    /**
-     * 创建新的草稿
-     */
-    private DraftEntity createNewDraft(String itemId, String processSerialNumber, String processDefinitionKey,
-        String number, String urgency, String title, String type) {
-        DraftEntity draft = new DraftEntity();
-        draft.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        draft.setProcessSerialNumber(processSerialNumber);
-        draft.setItemId(itemId);
-        draft.setProcessDefinitionKey(processDefinitionKey);
-        draft.setCreaterId(Y9FlowableHolder.getPositionId());
-
-        OrgUnit orgUnit =
-            orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId()).getData();
-        draft.setCreater(orgUnit.getName());
-        draft.setDelFlag(false);
-        draft.setUrgency(urgency);
-        draft.setDocNumber(number);
-        draft.setTitle(title);
-        // 设置类型信息
-        setTypeAndSystemInfo(draft, type, itemId);
-
-        return draft;
-    }
-
-    /**
      * 设置类型和系统信息
      */
     private void setTypeAndSystemInfo(DraftEntity draft, String type, String itemId) {
@@ -307,5 +294,18 @@ public class DraftEntityServiceImpl implements DraftEntityService {
             }
             draft.setSystemName(item.getSysLevel());
         }
+    }
+
+    /**
+     * 更新已存在的草稿
+     */
+    private void updateExistingDraft(DraftEntity draft, String number, String urgency, String title, String type) {
+        draft.setUrgency(urgency);
+        draft.setDocNumber(number);
+        draft.setTitle(title);
+        if (StringUtils.isNotBlank(type)) {
+            draft.setType(type);
+        }
+        draft.setSerialNumber(1);
     }
 }

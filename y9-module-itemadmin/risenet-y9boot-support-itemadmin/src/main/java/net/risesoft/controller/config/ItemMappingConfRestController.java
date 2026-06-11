@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,6 @@ import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.service.form.Y9TableService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -89,13 +89,12 @@ public class ItemMappingConfRestController {
     public Y9Result<Map<String, Object>> getConfInfo(@RequestParam(required = false) String id,
         @RequestParam String itemId, @RequestParam(required = false) String mappingItemId) {
         Map<String, Object> resMap = new HashMap<>(16);
-        String tenantId = Y9LoginUserHolder.getTenantId();
         // 获取当前事项的表列表
-        List<Y9Table> tableList = getTableListByItemId(tenantId, itemId);
+        List<Y9Table> tableList = getTableListByItemId(itemId);
         resMap.put("tableList", tableList);
         // 获取映射事项的表列表
         if (StringUtils.isNotBlank(mappingItemId)) {
-            List<Y9Table> mappingTableList = getTableListByItemId(tenantId, mappingItemId);
+            List<Y9Table> mappingTableList = getTableListByItemId(mappingItemId);
             resMap.put("mappingTableList", mappingTableList);
         }
         // 获取映射配置信息
@@ -106,11 +105,24 @@ public class ItemMappingConfRestController {
         return Y9Result.success(resMap, "获取成功");
     }
 
-    private List<Y9Table> getTableListByItemId(String tenantId, String itemId) {
+    /**
+     * 获取映射列表
+     *
+     * @param itemId 事项id
+     * @param mappingId 映射标识
+     * @return
+     */
+    @GetMapping(value = "/getList")
+    public Y9Result<List<ItemMappingConf>> getList(@RequestParam String itemId, @RequestParam String mappingId) {
+        List<ItemMappingConf> list = itemMappingConfService.listByItemIdAndMappingId(itemId, mappingId);
+        return Y9Result.success(list, "获取成功");
+    }
+
+    private List<Y9Table> getTableListByItemId(String itemId) {
         Item item = itemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefineKey).getData();
         List<Y9FormItemBind> formList =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         Set<String> tableNameSet = new HashSet<>();
@@ -128,19 +140,6 @@ public class ItemMappingConfRestController {
             }
         }
         return tableList;
-    }
-
-    /**
-     * 获取映射列表
-     *
-     * @param itemId 事项id
-     * @param mappingId 映射标识
-     * @return
-     */
-    @GetMapping(value = "/getList")
-    public Y9Result<List<ItemMappingConf>> getList(@RequestParam String itemId, @RequestParam String mappingId) {
-        List<ItemMappingConf> list = itemMappingConfService.listByItemIdAndMappingId(itemId, mappingId);
-        return Y9Result.success(list, "获取成功");
     }
 
     /**

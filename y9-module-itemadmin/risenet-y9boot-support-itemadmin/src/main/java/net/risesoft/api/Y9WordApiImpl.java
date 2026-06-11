@@ -338,7 +338,7 @@ public class Y9WordApiImpl implements Y9WordApi {
             Item item = itemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinitionModel =
-                repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
             return processDefinitionModel.getId();
         }
     }
@@ -502,7 +502,7 @@ public class Y9WordApiImpl implements Y9WordApi {
             }
         } else {
             // 打开事项配置的正文模板
-            return openTemplateDocument(Y9LoginUserHolder.getTenantId(), itemId, processSerialNumber, bindValue);
+            return openTemplateDocument(itemId, processSerialNumber, bindValue);
         }
     }
 
@@ -633,13 +633,12 @@ public class Y9WordApiImpl implements Y9WordApi {
     /**
      * 打开模板文档
      */
-    private Y9Result<String> openTemplateDocument(String tenantId, String itemId, String processSerialNumber,
-        String bindValue) {
+    private Y9Result<String> openTemplateDocument(String itemId, String processSerialNumber, String bindValue) {
         try {
             Item item = itemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
             String processDefinitionId = processDefinition.getId();
 
             WordTemplate wordTemplate = findWordTemplate(itemId, processDefinitionId, bindValue);

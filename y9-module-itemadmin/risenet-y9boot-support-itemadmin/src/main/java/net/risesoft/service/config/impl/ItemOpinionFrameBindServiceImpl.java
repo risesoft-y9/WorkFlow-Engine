@@ -75,52 +75,49 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
     @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = person.getPersonId();
         String userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId=" + itemId + "事项";
         // 获取最新和前一版本的流程定义
-        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(tenantId, item);
+        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(item);
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         String previousProcessDefinitionId =
-            getPreviousProcessDefinitionId(tenantId, processDefinitionId, latestProcessDefinition);
+            getPreviousProcessDefinitionId(processDefinitionId, latestProcessDefinition);
         // 获取流程节点并复制绑定信息
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestProcessDefinitionId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(latestProcessDefinitionId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
-            copyOpinionFrameBindingsForNode(itemId, tenantId, userId, userName, latestProcessDefinitionId,
+            copyOpinionFrameBindingsForNode(itemId, userId, userName, latestProcessDefinitionId,
                 previousProcessDefinitionId, currentTaskDefKey);
         }
     }
 
-    /**
-     * 获取最新流程定义
-     */
-    private ProcessDefinitionModel getLatestProcessDefinition(String tenantId, Item item) {
-        String processDefinitionKey = item.getWorkflowGuid();
-        return repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-    }
-
-    /**
-     * 获取前一版本流程定义ID
-     */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
-        ProcessDefinitionModel latestProcessDefinition) {
-        String previousProcessDefinitionId = processDefinitionId;
-        String latestProcessDefinitionId = latestProcessDefinition.getId();
-        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
-            ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
-            previousProcessDefinitionId = previousProcessDefinition.getId();
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        UserInfo currentUser = Y9LoginUserHolder.getUserInfo();
+        String userId = currentUser.getPersonId();
+        String userName = currentUser.getName();
+        List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository
+            .findByItemIdAndProcessDefinitionIdOrderByCreateTimeAsc(itemId, lastVersionPid);
+        if (null != bindList && !bindList.isEmpty()) {
+            for (ItemOpinionFrameBind bind : bindList) {
+                // 创建新的意见框绑定
+                String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+                ItemOpinionFrameBind newBind =
+                    createOpinionFrameBind(newBindId, newItemId, userId, userName, lastVersionPid, bind);
+                itemOpinionFrameBindRepository.save(newBind);
+                // 复制意见框一键设置的配置
+                copyOpinionFrameOneClickSettings(bind.getId(), newBindId, userId);
+            }
         }
-        return previousProcessDefinitionId;
     }
 
     /**
      * 为指定节点复制意见框绑定信息
      */
-    private void copyOpinionFrameBindingsForNode(String itemId, String tenantId, String userId, String userName,
+    private void copyOpinionFrameBindingsForNode(String itemId, String userId, String userName,
         String latestProcessDefinitionId, String previousProcessDefinitionId, String currentTaskDefKey) {
         List<ItemOpinionFrameBind> bindList =
             itemOpinionFrameBindRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKeyOrderByCreateTimeAsc(itemId,
@@ -131,55 +128,9 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
                     itemId, latestProcessDefinitionId, currentTaskDefKey, bind.getOpinionFrameMark());
             // 如果不存在，则创建新的绑定
             if (null == existingBind) {
-                createNewOpinionFrameBinding(itemId, tenantId, userId, userName, latestProcessDefinitionId,
-                    currentTaskDefKey, bind);
+                createNewOpinionFrameBinding(itemId, userId, userName, latestProcessDefinitionId, currentTaskDefKey,
+                    bind);
             }
-        }
-    }
-
-    /**
-     * 创建新的意见框绑定
-     */
-    private void createNewOpinionFrameBinding(String itemId, String tenantId, String userId, String userName,
-        String processDefinitionId, String taskDefKey, ItemOpinionFrameBind sourceBind) {
-        String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-        String sourceBindId = sourceBind.getId();
-        // 创建新的意见框绑定
-        ItemOpinionFrameBind newBind = createOpinionFrameBind(newBindId, itemId, tenantId, userId, userName,
-            processDefinitionId, taskDefKey, sourceBind);
-        itemOpinionFrameBindRepository.save(newBind);
-        // 复制意见框授权信息
-        copyOpinionFrameRoles(sourceBindId, newBindId);
-        // 复制意见框一键设置配置
-        copyOpinionFrameOneClickSettings(sourceBindId, newBindId, userId);
-    }
-
-    /**
-     * 创建意见框绑定对象
-     */
-    private ItemOpinionFrameBind createOpinionFrameBind(String bindId, String itemId, String tenantId, String userId,
-        String userName, String processDefinitionId, String taskDefKey, ItemOpinionFrameBind sourceBind) {
-        ItemOpinionFrameBind newBind = new ItemOpinionFrameBind();
-        newBind.setId(bindId);
-        newBind.setItemId(itemId);
-        newBind.setOpinionFrameMark(sourceBind.getOpinionFrameMark());
-        newBind.setOpinionFrameName(sourceBind.getOpinionFrameName());
-        newBind.setProcessDefinitionId(processDefinitionId);
-        newBind.setTaskDefKey(taskDefKey);
-        newBind.setTenantId(tenantId);
-        newBind.setUserId(userId);
-        newBind.setUserName(userName);
-        newBind.setSignOpinion(sourceBind.isSignOpinion());
-        return newBind;
-    }
-
-    /**
-     * 复制意见框角色授权信息
-     */
-    private void copyOpinionFrameRoles(String sourceBindId, String targetBindId) {
-        List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleService.listByItemOpinionFrameId(sourceBindId);
-        for (ItemOpinionFrameRole role : roleList) {
-            itemOpinionFrameRoleService.saveOrUpdate(targetBindId, role.getRoleId());
         }
     }
 
@@ -200,33 +151,57 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         }
     }
 
-    @Override
-    @Transactional
-    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        UserInfo currentUser = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = currentUser.getPersonId();
-        String userName = currentUser.getName();
-        List<ItemOpinionFrameBind> bindList = itemOpinionFrameBindRepository
-            .findByItemIdAndProcessDefinitionIdOrderByCreateTimeAsc(itemId, lastVersionPid);
-        if (null != bindList && !bindList.isEmpty()) {
-            for (ItemOpinionFrameBind bind : bindList) {
-                // 创建新的意见框绑定
-                String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
-                ItemOpinionFrameBind newBind =
-                    createOpinionFrameBind(newBindId, newItemId, tenantId, userId, userName, lastVersionPid, bind);
-                itemOpinionFrameBindRepository.save(newBind);
-                // 复制意见框一键设置的配置
-                copyOpinionFrameOneClickSettings(bind.getId(), newBindId, userId);
-            }
+    /**
+     * 复制意见框角色授权信息
+     */
+    private void copyOpinionFrameRoles(String sourceBindId, String targetBindId) {
+        List<ItemOpinionFrameRole> roleList = itemOpinionFrameRoleService.listByItemOpinionFrameId(sourceBindId);
+        for (ItemOpinionFrameRole role : roleList) {
+            itemOpinionFrameRoleService.saveOrUpdate(targetBindId, role.getRoleId());
         }
+    }
+
+    /**
+     * 创建新的意见框绑定
+     */
+    private void createNewOpinionFrameBinding(String itemId, String userId, String userName, String processDefinitionId,
+        String taskDefKey, ItemOpinionFrameBind sourceBind) {
+        String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
+        String sourceBindId = sourceBind.getId();
+        // 创建新的意见框绑定
+        ItemOpinionFrameBind newBind =
+            createOpinionFrameBind(newBindId, itemId, userId, userName, processDefinitionId, taskDefKey, sourceBind);
+        itemOpinionFrameBindRepository.save(newBind);
+        // 复制意见框授权信息
+        copyOpinionFrameRoles(sourceBindId, newBindId);
+        // 复制意见框一键设置配置
+        copyOpinionFrameOneClickSettings(sourceBindId, newBindId, userId);
+    }
+
+    /**
+     * 创建意见框绑定对象
+     */
+    private ItemOpinionFrameBind createOpinionFrameBind(String bindId, String itemId, String userId, String userName,
+        String processDefinitionId, String taskDefKey, ItemOpinionFrameBind sourceBind) {
+        ItemOpinionFrameBind newBind = new ItemOpinionFrameBind();
+        newBind.setId(bindId);
+        newBind.setItemId(itemId);
+        newBind.setOpinionFrameMark(sourceBind.getOpinionFrameMark());
+        newBind.setOpinionFrameName(sourceBind.getOpinionFrameName());
+        newBind.setProcessDefinitionId(processDefinitionId);
+        newBind.setTaskDefKey(taskDefKey);
+        newBind.setTenantId(Y9LoginUserHolder.getTenantId());
+        newBind.setUserId(userId);
+        newBind.setUserName(userName);
+        newBind.setSignOpinion(sourceBind.isSignOpinion());
+        return newBind;
     }
 
     /**
      * 创建意见框绑定对象（用于复制场景）
      */
-    private ItemOpinionFrameBind createOpinionFrameBind(String bindId, String itemId, String tenantId, String userId,
-        String userName, String processDefinitionId, ItemOpinionFrameBind sourceBind) {
+    private ItemOpinionFrameBind createOpinionFrameBind(String bindId, String itemId, String userId, String userName,
+        String processDefinitionId, ItemOpinionFrameBind sourceBind) {
         ItemOpinionFrameBind newBind = new ItemOpinionFrameBind();
         newBind.setId(bindId);
         newBind.setItemId(itemId);
@@ -234,9 +209,28 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         newBind.setOpinionFrameName(sourceBind.getOpinionFrameName());
         newBind.setProcessDefinitionId(processDefinitionId);
         newBind.setTaskDefKey(sourceBind.getTaskDefKey());
-        newBind.setTenantId(tenantId);
+        newBind.setTenantId(Y9LoginUserHolder.getTenantId());
         newBind.setUserId(userId);
         newBind.setUserName(userName);
+        return newBind;
+    }
+
+    /**
+     * 创建意见框绑定对象
+     */
+    private ItemOpinionFrameBind createOpinionFrameBind(String name, String mark, String itemId,
+        String processDefinitionId, String taskDefKey, String userId, String userName) {
+        ItemOpinionFrameBind newBind = new ItemOpinionFrameBind();
+        newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newBind.setOpinionFrameMark(mark);
+        newBind.setOpinionFrameName(name);
+        newBind.setItemId(itemId);
+        newBind.setTaskDefKey(taskDefKey);
+        newBind.setTenantId(Y9LoginUserHolder.getTenantId());
+        newBind.setUserId(userId);
+        newBind.setUserName(userName);
+        newBind.setProcessDefinitionId(processDefinitionId);
+        newBind.setSignOpinion(true);
         return newBind;
     }
 
@@ -287,6 +281,39 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         return bind;
     }
 
+    @Override
+    public List<String> getBindOpinionFrame(String itemId, String processDefinitionId) {
+        return itemOpinionFrameBindRepository.getBindOpinionFrame(itemId, processDefinitionId);
+    }
+
+    @Override
+    public ItemOpinionFrameBind getById(String id) {
+        return itemOpinionFrameBindRepository.findById(id).orElse(null);
+    }
+
+    /**
+     * 获取最新流程定义
+     */
+    private ProcessDefinitionModel getLatestProcessDefinition(Item item) {
+        String processDefinitionKey = item.getWorkflowGuid();
+        return repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
+    }
+
+    /**
+     * 获取前一版本流程定义ID
+     */
+    private String getPreviousProcessDefinitionId(String processDefinitionId,
+        ProcessDefinitionModel latestProcessDefinition) {
+        String previousProcessDefinitionId = processDefinitionId;
+        String latestProcessDefinitionId = latestProcessDefinition.getId();
+        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
+            ProcessDefinitionModel previousProcessDefinition =
+                repositoryApi.getPreviousProcessDefinitionById(latestProcessDefinitionId).getData();
+            previousProcessDefinitionId = previousProcessDefinition.getId();
+        }
+        return previousProcessDefinitionId;
+    }
+
     /**
      * 根据意见框绑定ID获取角色ID列表
      */
@@ -300,14 +327,23 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         return roleIds;
     }
 
-    @Override
-    public List<String> getBindOpinionFrame(String itemId, String processDefinitionId) {
-        return itemOpinionFrameBindRepository.getBindOpinionFrame(itemId, processDefinitionId);
-    }
-
-    @Override
-    public ItemOpinionFrameBind getById(String id) {
-        return itemOpinionFrameBindRepository.findById(id).orElse(null);
+    /**
+     * 获取意见框绑定的角色信息
+     */
+    private RoleInfo getRoleInfo(String itemOpinionFrameBindId) {
+        List<ItemOpinionFrameRole> roleList =
+            itemOpinionFrameRoleService.listByItemOpinionFrameId(itemOpinionFrameBindId);
+        List<String> roleIdList = roleList.stream().map(ItemOpinionFrameRole::getRoleId).collect(Collectors.toList());
+        String roleNames = "";
+        if (!roleIdList.isEmpty()) {
+            Map<String, Role> idRoleMap =
+                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
+            roleNames = roleList.stream().map(role -> {
+                Role r = idRoleMap.get(role.getRoleId());
+                return (r == null) ? "角色不存在" : r.getName();
+            }).collect(Collectors.joining("、"));
+        }
+        return new RoleInfo(roleIdList, roleNames);
     }
 
     @Override
@@ -345,25 +381,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
         return result;
     }
 
-    /**
-     * 获取意见框绑定的角色信息
-     */
-    private RoleInfo getRoleInfo(String itemOpinionFrameBindId) {
-        List<ItemOpinionFrameRole> roleList =
-            itemOpinionFrameRoleService.listByItemOpinionFrameId(itemOpinionFrameBindId);
-        List<String> roleIdList = roleList.stream().map(ItemOpinionFrameRole::getRoleId).collect(Collectors.toList());
-        String roleNames = "";
-        if (!roleIdList.isEmpty()) {
-            Map<String, Role> idRoleMap =
-                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
-            roleNames = roleList.stream().map(role -> {
-                Role r = idRoleMap.get(role.getRoleId());
-                return (r == null) ? "角色不存在" : r.getName();
-            }).collect(Collectors.joining("、"));
-        }
-        return new RoleInfo(roleIdList, roleNames);
-    }
-
     @Override
     public List<ItemOpinionFrameBind> listByMark(String mark) {
         return StringUtils.isNotEmpty(mark)
@@ -390,7 +407,6 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
             return;
         }
         UserInfo currentUser = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = currentUser.getPersonId();
         String userName = currentUser.getName();
         // 解析并保存意见框绑定信息
@@ -400,28 +416,9 @@ public class ItemOpinionFrameBindServiceImpl implements ItemOpinionFrameBindServ
             String name = nameAndMark[0];
             String mark = nameAndMark[1];
             ItemOpinionFrameBind newBind =
-                createOpinionFrameBind(name, mark, itemId, processDefinitionId, taskDefKey, tenantId, userId, userName);
+                createOpinionFrameBind(name, mark, itemId, processDefinitionId, taskDefKey, userId, userName);
             itemOpinionFrameBindRepository.save(newBind);
         }
-    }
-
-    /**
-     * 创建意见框绑定对象
-     */
-    private ItemOpinionFrameBind createOpinionFrameBind(String name, String mark, String itemId,
-        String processDefinitionId, String taskDefKey, String tenantId, String userId, String userName) {
-        ItemOpinionFrameBind newBind = new ItemOpinionFrameBind();
-        newBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newBind.setOpinionFrameMark(mark);
-        newBind.setOpinionFrameName(name);
-        newBind.setItemId(itemId);
-        newBind.setTaskDefKey(taskDefKey);
-        newBind.setTenantId(tenantId);
-        newBind.setUserId(userId);
-        newBind.setUserName(userName);
-        newBind.setProcessDefinitionId(processDefinitionId);
-        newBind.setSignOpinion(true);
-        return newBind;
     }
 
     /**

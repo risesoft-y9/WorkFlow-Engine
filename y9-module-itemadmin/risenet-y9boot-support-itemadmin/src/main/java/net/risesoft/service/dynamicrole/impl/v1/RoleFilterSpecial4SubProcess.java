@@ -73,9 +73,9 @@ public class RoleFilterSpecial4SubProcess extends AbstractDynamicRoleMember {
             } else {
                 // 管理员打开:[子流程流程启动人]同委办局
                 String subStartUserId = "";
-                List<HistoricTaskInstanceModel> hisTaskList = historicTaskApi
-                    .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, task.getProcessInstanceId(), "")
-                    .getData();
+                List<HistoricTaskInstanceModel> hisTaskList =
+                    historicTaskApi.findTaskByProcessInstanceIdOrderByStartTimeAsc(task.getProcessInstanceId(), "")
+                        .getData();
                 for (HistoricTaskInstanceModel hisTask : hisTaskList) {
                     if (hisTask.getExecutionId().equals(task.getExecutionId())) {
                         subStartUserId = hisTask.getAssignee();

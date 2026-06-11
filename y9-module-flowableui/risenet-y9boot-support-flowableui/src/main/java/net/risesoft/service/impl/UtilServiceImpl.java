@@ -80,11 +80,11 @@ public class UtilServiceImpl implements UtilService {
      * 处理已分配的任务，获取办理人名称
      *
      * @param task 任务对象
-     * @param tenantId 租户ID
      * @return 办理人名称，如果获取失败返回null
      */
-    private String getAssignedTaskAssigneeName(TaskModel task, String tenantId) {
+    private String getAssignedTaskAssigneeName(TaskModel task) {
         String assignee = task.getAssignee();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(assignee)) {
             OrgUnit personTemp = this.orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
             if (personTemp != null) {
@@ -99,13 +99,12 @@ public class UtilServiceImpl implements UtilService {
         if (taskList.isEmpty()) {
             return "";
         }
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<String> assigneeNameList = new ArrayList<>();
         for (TaskModel task : taskList) {
             if (null != signDeptDetail && !task.getExecutionId().equals(signDeptDetail.getExecutionId())) {
                 continue;
             }
-            String name = getTaskAssigneeName(task, tenantId);
+            String name = getTaskAssigneeName(task);
             if (name != null && !name.isEmpty()) {
                 assigneeNameList.add(name);
             }
@@ -133,14 +132,13 @@ public class UtilServiceImpl implements UtilService {
      * 获取任务办理人名称
      *
      * @param task 任务对象
-     * @param tenantId 租户ID
      * @return 办理人名称
      */
-    private String getTaskAssigneeName(TaskModel task, String tenantId) {
+    private String getTaskAssigneeName(TaskModel task) {
         if (StringUtils.isNotBlank(task.getAssignee())) {
-            return getAssignedTaskAssigneeName(task, tenantId);
+            return getAssignedTaskAssigneeName(task);
         } else {
-            return getUnassignedTaskAssigneeNames(task, tenantId);
+            return getUnassignedTaskAssigneeNames(task);
         }
     }
 
@@ -148,13 +146,11 @@ public class UtilServiceImpl implements UtilService {
      * 处理未分配的任务，获取候选办理人名称
      *
      * @param task 任务对象
-     * @param tenantId 租户ID
      * @return 候选办理人名称列表
      */
-    private String getUnassignedTaskAssigneeNames(TaskModel task, String tenantId) {
+    private String getUnassignedTaskAssigneeNames(TaskModel task) {
         StringBuilder assigneeNames = new StringBuilder();
-        List<IdentityLinkModel> identityLinks =
-            this.identityApi.getIdentityLinksForTask(tenantId, task.getId()).getData();
+        List<IdentityLinkModel> identityLinks = this.identityApi.getIdentityLinksForTask(task.getId()).getData();
 
         if (!identityLinks.isEmpty()) {
             int maxDisplayCount = Math.min(identityLinks.size(), 5);

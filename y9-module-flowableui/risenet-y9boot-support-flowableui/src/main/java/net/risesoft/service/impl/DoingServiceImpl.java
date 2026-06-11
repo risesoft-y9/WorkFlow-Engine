@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -28,7 +29,6 @@ import net.risesoft.service.DoingService;
 import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.UtilService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -98,19 +98,17 @@ public class DoingServiceImpl implements DoingService {
     @Override
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
         try {
-            String positionId = Y9FlowableHolder.getPositionId();
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = this.itemApi.getByItemId(itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             String itemName = item.getName();
             Y9Page<ProcessInstanceModel> piPage;
             boolean isSearch = StringUtils.isNotBlank(searchTerm);
             if (isSearch) {
-                piPage = this.processDoingApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                    processDefinitionKey, searchTerm, page, rows);
+                piPage = this.processDoingApi.searchListByUserIdAndProcessDefinitionKey(processDefinitionKey,
+                    searchTerm, page, rows);
             } else {
-                piPage = this.processDoingApi.getListByUserIdAndProcessDefinitionKeyOrderBySendTime(tenantId,
-                    positionId, processDefinitionKey, page, rows);
+                piPage = this.processDoingApi
+                    .getListByUserIdAndProcessDefinitionKeyOrderBySendTime(processDefinitionKey, page, rows);
             }
             // 处理数据列表
             List<Map<String, Object>> items =

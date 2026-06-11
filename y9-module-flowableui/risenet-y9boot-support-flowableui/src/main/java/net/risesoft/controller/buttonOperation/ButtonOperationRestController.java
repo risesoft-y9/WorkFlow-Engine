@@ -147,7 +147,7 @@ public class ButtonOperationRestController {
     /**
      * 检查任务状态
      */
-    private void checkTaskStatus(String tenantId, TaskModel task, TaskCollectionResult result) {
+    private void checkTaskStatus(TaskModel task, TaskCollectionResult result) {
         // 检查是否未签收
         if (StringUtils.isBlank(task.getAssignee())) {
             result.signList.add(task);
@@ -157,7 +157,7 @@ public class ButtonOperationRestController {
         if (result.subTaskList.isEmpty()) {
             try {
                 List<TargetModel> data =
-                    processDefinitionApi.getSubProcessChildNode(tenantId, task.getProcessDefinitionId()).getData();
+                    processDefinitionApi.getSubProcessChildNode(task.getProcessDefinitionId()).getData();
                 if (data.stream().anyMatch(m -> m.getTaskDefKey().equals(task.getTaskDefinitionKey()))) {
                     result.subTaskList.add(task);
                 }
@@ -180,7 +180,7 @@ public class ButtonOperationRestController {
             Position position = Y9FlowableHolder.getPosition();
             String positionId = position.getId();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(taskId).getData();
             for (IdentityLinkModel il : list) {
                 // 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
                 if ("assignee".equals(il.getType())) {
@@ -208,7 +208,7 @@ public class ButtonOperationRestController {
                 handleNullTask(tpArr, result.processedTaskMsg);
             } else {
                 result.taskList.add(task);
-                checkTaskStatus(tenantId, task, result);
+                checkTaskStatus(task, result);
             }
         }
         return result;
@@ -488,9 +488,8 @@ public class ButtonOperationRestController {
     @FlowableLog(operationName = "获取有办结权限的用户任务集合")
     @GetMapping(value = "/getContainEndEvent4UserTask", produces = "application/json")
     public Y9Result<List<TargetModel>> getContainEndEvent4UserTask(@RequestParam @NotBlank String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            return processDefinitionApi.getContainEndEvent4UserTask(tenantId, processDefinitionId);
+            return processDefinitionApi.getContainEndEvent4UserTask(processDefinitionId);
         } catch (Exception e) {
             LOGGER.error("获取失败", e);
         }
@@ -565,9 +564,9 @@ public class ButtonOperationRestController {
                 return Y9Result.failure("任务不存在");
             }
             Map<String, Object> result = new HashMap<>(16);
-            String multiInstance = processDefinitionApi
-                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
-                .getData();
+            String multiInstance =
+                processDefinitionApi.getNodeType(taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+                    .getData();
             if (isParallelInstance(multiInstance)) {
                 handleParallelInstance(result, tenantId, positionId, taskModel);
             } else {
@@ -591,9 +590,7 @@ public class ButtonOperationRestController {
                 return variableApi.getVariableLocal(hai.getId(), FlowableUiConsts.PARALLELSPONSOR).getData();
             } else {
                 HistoricVariableInstanceModel parallelSponsorObj1 =
-                    historicvariableApi
-                        .getByTaskIdAndVariableName(Y9LoginUserHolder.getTenantId(), hai.getId(),
-                            FlowableUiConsts.PARALLELSPONSOR, "")
+                    historicvariableApi.getByTaskIdAndVariableName(hai.getId(), FlowableUiConsts.PARALLELSPONSOR, "")
                         .getData();
                 return parallelSponsorObj1 != null ? parallelSponsorObj1.getValue().toString() : "";
             }
@@ -614,24 +611,21 @@ public class ButtonOperationRestController {
     @GetMapping(value = "/getTargetNodes", produces = "application/json")
     public Y9Result<List<TargetModel>> getTargetNodes(@RequestParam @NotBlank String processDefinitionId,
         @RequestParam(required = false) String taskDefKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             List<TargetModel> routeToTasks;
             if (StringUtils.isBlank(taskDefKey)) {
                 String startNodeKey =
-                    processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
+                    processDefinitionApi.getStartNodeKeyByProcessDefinitionId(processDefinitionId).getData();
                 // 获取起草节点
-                routeToTasks =
-                    processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNodeKey).getData();
+                routeToTasks = processDefinitionApi.getTargetNodes(processDefinitionId, startNodeKey).getData();
                 TargetModel startNode = routeToTasks.get(0);
-                routeToTasks = processDefinitionApi
-                    .getTargetNodes4UserTask(tenantId, processDefinitionId, startNode.getTaskDefKey(), true)
-                    .getData();
+                routeToTasks =
+                    processDefinitionApi.getTargetNodes4UserTask(processDefinitionId, startNode.getTaskDefKey(), true)
+                        .getData();
                 routeToTasks.add(0, startNode);
             } else {
                 routeToTasks =
-                    processDefinitionApi.getTargetNodes4UserTask(tenantId, processDefinitionId, taskDefKey, true)
-                        .getData();
+                    processDefinitionApi.getTargetNodes4UserTask(processDefinitionId, taskDefKey, true).getData();
             }
             return Y9Result.success(routeToTasks, "获取成功");
         } catch (Exception e) {
@@ -643,16 +637,17 @@ public class ButtonOperationRestController {
     /**
      * 获取任务相关信息
      */
-    private TaskInfoHolder getTaskInfo(String tenantId, String taskId) {
+    private TaskInfoHolder getTaskInfo(String taskId) {
         try {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> variables = variableApi.getVariables(taskId).getData();
             TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
             if (variables == null || taskModel == null) {
                 return null;
             }
-            String multiInstance = processDefinitionApi
-                .getNodeType(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
-                .getData();
+            String multiInstance =
+                processDefinitionApi.getNodeType(taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+                    .getData();
 
             List<String> users = (List<String>)variables.get("users");
             return new TaskInfoHolder(taskModel, variables, multiInstance, users);
@@ -674,11 +669,10 @@ public class ButtonOperationRestController {
         try {
             Position position = Y9FlowableHolder.getPosition();
             UserInfo person = Y9LoginUserHolder.getUserInfo();
-            String tenantId = Y9LoginUserHolder.getTenantId();
             Map<String, Object> retMap = new HashMap<>(16);
             retMap.put("employeeName", position.getName());
             retMap.put("employeeMobile", person.getMobile());
-            TaskInfoHolder taskInfo = getTaskInfo(tenantId, taskId);
+            TaskInfoHolder taskInfo = getTaskInfo(taskId);
             if (taskInfo == null) {
                 return Y9Result.failure("获取任务信息失败");
             }
@@ -838,9 +832,7 @@ public class ButtonOperationRestController {
     private void handleParallelInstance(TaskInfoHolder taskInfo, List<Map<String, Object>> listMap) {
         List<HistoricTaskInstanceModel> modelList;
         try {
-            modelList = historictaskApi
-                .getByProcessInstanceId(Y9LoginUserHolder.getTenantId(), taskInfo.taskModel.getProcessInstanceId(), "")
-                .getData();
+            modelList = historictaskApi.getByProcessInstanceId(taskInfo.taskModel.getProcessInstanceId(), "").getData();
         } catch (Exception e) {
             LOGGER.warn("获取历史任务实例失败", e);
             return;
@@ -933,8 +925,7 @@ public class ButtonOperationRestController {
         boolean isEnd = true;
         List<HistoricTaskInstanceModel> modelList = new ArrayList<>();
         try {
-            modelList = historictaskApi.getByProcessInstanceId(tenantId, taskInfo.taskModel.getProcessInstanceId(), "")
-                .getData();
+            modelList = historictaskApi.getByProcessInstanceId(taskInfo.taskModel.getProcessInstanceId(), "").getData();
         } catch (Exception e) {
             LOGGER.warn("获取历史任务实例失败", e);
         }
@@ -1120,7 +1111,7 @@ public class ButtonOperationRestController {
         try {
             Position position = Y9FlowableHolder.getPosition();
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
-            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(taskId).getData();
             for (IdentityLinkModel il : list) {
                 // 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
                 if ("assignee".equals(il.getType())) {
@@ -1277,8 +1268,7 @@ public class ButtonOperationRestController {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, task.getProcessInstanceId()).getData();
             String type =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getData();
+                processDefinitionApi.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             if (SysVariables.PARALLEL.equals(type) && taskList.size() > 1) {// 并行退回，并行多于2人时，退回使用减签方式
                 if (StringUtils.isEmpty(reason)) {
                     reason = "未填写。";
@@ -1441,7 +1431,7 @@ public class ButtonOperationRestController {
             String user = variableApi.getVariableLocal(taskId, SysVariables.TASK_SENDER_ID).getData();
             String userChoice = "6:" + user;
             String multiInstance =
-                processDefinitionApi.getNodeType(tenantId, taskModel.getProcessDefinitionId(), routeToTaskId).getData();
+                processDefinitionApi.getNodeType(taskModel.getProcessDefinitionId(), routeToTaskId).getData();
             String sponsorHandle = "";
             if (multiInstance.equals(SysVariables.PARALLEL)) {
                 sponsorHandle = "true";

@@ -189,9 +189,8 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         String taskId, String processDefinitionId) {
         String stopProcess = variableApi.getVariableByProcessInstanceId(processInstanceId, "stopProcess").getData();
         if (taskDefinitionKey.contains("skip_") && (stopProcess == null || "false".equals(stopProcess))) {
-            List<TargetModel> targetModelList = processDefinitionApi
-                .getTargetNodes(Y9LoginUserHolder.getTenantId(), processDefinitionId, taskDefinitionKey)
-                .getData();
+            List<TargetModel> targetModelList =
+                processDefinitionApi.getTargetNodes(processDefinitionId, taskDefinitionKey).getData();
             if (targetModelList != null && !targetModelList.isEmpty()) {
                 TargetModel targetModel = targetModelList.get(0);
                 processTargetNode(orgUnitId, itemId, processInstanceId, taskId, targetModel);
@@ -308,9 +307,8 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         try {
             Item item = itemService.findById(itemId);
             ProcessDefinitionModel processDefinitionModel =
-                repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
-            List<TargetModel> targetModelList =
-                processDefinitionApi.getNodes(tenantId, processDefinitionModel.getId()).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(item.getWorkflowGuid()).getData();
+            List<TargetModel> targetModelList = processDefinitionApi.getNodes(processDefinitionModel.getId()).getData();
             TargetModel targetModel = targetModelList.stream()
                 .filter(model -> taskKey.equals(model.getTaskDefKey()))
                 .findFirst()
@@ -533,9 +531,9 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     public void takeBackTwoTaskDefKeyAuditLog(String tenantId, String orgUnitId, String taskId, String targetTaskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
+            HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(taskId).getData();
             List<TargetModel> targetModelList =
-                processDefinitionApi.getNodes(tenantId, historicTaskInstanceModel.getProcessDefinitionId()).getData();
+                processDefinitionApi.getNodes(historicTaskInstanceModel.getProcessDefinitionId()).getData();
             TargetModel targetModel = targetModelList.stream()
                 .filter(model -> targetTaskKey.equals(model.getTaskDefKey()))
                 .findFirst()

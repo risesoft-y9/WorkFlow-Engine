@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,7 +25,6 @@ import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemPermissionService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.configuration.app.y9itemadmin.Y9ItemAdminProperties;
 
 /**
@@ -77,8 +77,7 @@ public class ItemPermissionRestController {
     @GetMapping(value = "/getBpmList")
     public Y9Result<List<TargetModel>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+        List<TargetModel> list = processDefinitionApi.getNodes(processDefinitionId).getData();
         /*
          * 自由流程额外添加一个办结角色，规定自由流的办结按钮控制
          */

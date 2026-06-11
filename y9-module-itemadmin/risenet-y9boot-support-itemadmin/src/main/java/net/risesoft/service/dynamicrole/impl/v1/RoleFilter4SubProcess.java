@@ -52,9 +52,9 @@ public class RoleFilter4SubProcess extends AbstractDynamicRoleMember {
         String assignee = "";
         if (StringUtils.isNotBlank(taskId)) {
             TaskModel task = taskApi.findById(tenantId, taskId).getData();
-            List<HistoricTaskInstanceModel> hisTaskList = historicTaskApi
-                .findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, task.getProcessInstanceId(), "")
-                .getData();
+            List<HistoricTaskInstanceModel> hisTaskList =
+                historicTaskApi.findTaskByProcessInstanceIdOrderByStartTimeAsc(task.getProcessInstanceId(), "")
+                    .getData();
             for (HistoricTaskInstanceModel hisTask : hisTaskList) {
                 if (hisTask.getExecutionId().equals(task.getExecutionId())) {
                     assignee = hisTask.getAssignee();

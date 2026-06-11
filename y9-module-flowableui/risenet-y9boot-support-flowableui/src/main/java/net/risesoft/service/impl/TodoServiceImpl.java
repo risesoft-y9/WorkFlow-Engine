@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -36,7 +37,6 @@ import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.TodoService;
 import net.risesoft.service.UtilService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
@@ -113,10 +113,8 @@ public class TodoServiceImpl implements TodoService {
 
     private void handleParallelTaskInfo(Map<String, Object> mapTemp, TaskModel task, ProcessParamModel processParam) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             String multiInstance =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getData();
+                processDefinitionApi.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             mapTemp.put(FlowableUiConsts.ISZHUBAN, "");
             if (SysVariables.PARALLEL.equals(multiInstance)) {
                 mapTemp.put(FlowableUiConsts.ISZHUBAN, "false");
@@ -142,13 +140,11 @@ public class TodoServiceImpl implements TodoService {
 
     private void handleTakeBackFlag(Map<String, Object> mapTemp, TaskModel task, String processInstanceId) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             String taskId = task.getId();
             String takeBack = variableApi.getVariableLocal(taskId, SysVariables.TAKEBACK).getData();
             if (Boolean.parseBoolean(takeBack)) {
                 List<HistoricTaskInstanceModel> hlist =
-                    historicTaskApi.findTaskByProcessInstanceIdOrderByStartTimeAsc(tenantId, processInstanceId, "")
-                        .getData();
+                    historicTaskApi.findTaskByProcessInstanceIdOrderByStartTimeAsc(processInstanceId, "").getData();
                 if (!hlist.isEmpty() && hlist.get(0).getTaskDefinitionKey().equals(task.getTaskDefinitionKey())) {
                     mapTemp.put("takeBack", true);
                 }
@@ -183,18 +179,15 @@ public class TodoServiceImpl implements TodoService {
     @Override
     public Y9Page<Map<String, Object>> list(String itemId, String searchTerm, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            String positionId = Y9FlowableHolder.getPositionId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
             String itemName = item.getName();
             Y9Page<TaskModel> taskPage;
             if (StringUtils.isBlank(searchTerm)) {
-                taskPage = processTodoApi.getListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                    processDefinitionKey, page, rows);
+                taskPage = processTodoApi.getListByUserIdAndProcessDefinitionKey(processDefinitionKey, page, rows);
             } else {
-                taskPage = processTodoApi.searchListByUserIdAndProcessDefinitionKey(tenantId, positionId,
-                    processDefinitionKey, searchTerm, page, rows);
+                taskPage = processTodoApi.searchListByUserIdAndProcessDefinitionKey(processDefinitionKey, searchTerm,
+                    page, rows);
             }
             List<TaskModel> taskList = taskPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();

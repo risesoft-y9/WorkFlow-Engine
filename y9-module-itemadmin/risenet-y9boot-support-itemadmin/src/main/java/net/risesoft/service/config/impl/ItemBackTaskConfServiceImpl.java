@@ -48,21 +48,21 @@ public class ItemBackTaskConfServiceImpl implements ItemBackTaskConfService {
         String processDefinitionKey = processDefinitionId.split(":")[0];
         // 获取最新和前一版本的流程定义
         ProcessDefinitionModel latestProcessDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         if (latestProcessDefinition.getVersion() <= 1) {
             return; // 版本为1时无需复制配置
         }
-        String previousProcessDefinitionId = getPreviousProcessDefinitionId(tenantId, processDefinitionId,
-            latestProcessDefinitionId, latestProcessDefinition);
+        String previousProcessDefinitionId =
+            getPreviousProcessDefinitionId(processDefinitionId, latestProcessDefinitionId, latestProcessDefinition);
         // 获取前一版本的任务配置列表
         List<BackTaskConf> previousTaskConfigs =
             backTaskConfRepository.findByItemIdAndProcessDefinitionId(itemId, previousProcessDefinitionId);
         // 获取最新流程定义的节点并复制任务配置
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestProcessDefinitionId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(latestProcessDefinitionId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
-            copyTaskConfigForNode(itemId, latestProcessDefinitionId, currentTaskDefKey, previousTaskConfigs, tenantId);
+            copyTaskConfigForNode(itemId, latestProcessDefinitionId, currentTaskDefKey, previousTaskConfigs);
         }
     }
 
@@ -70,15 +70,14 @@ public class ItemBackTaskConfServiceImpl implements ItemBackTaskConfService {
      * 为指定节点复制任务配置
      */
     private void copyTaskConfigForNode(String itemId, String latestProcessDefinitionId, String currentTaskDefKey,
-        List<BackTaskConf> previousTaskConfigs, String tenantId) {
+        List<BackTaskConf> previousTaskConfigs) {
         BackTaskConf existingTaskConfig =
             this.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, latestProcessDefinitionId, currentTaskDefKey);
         for (BackTaskConf previousTaskConfig : previousTaskConfigs) {
             String previousTaskDefKey = previousTaskConfig.getTaskDefKey();
             if (previousTaskDefKey.equals(currentTaskDefKey)) {
                 if (null == existingTaskConfig) {
-                    createNewTaskConfig(itemId, latestProcessDefinitionId, currentTaskDefKey, previousTaskConfig,
-                        tenantId);
+                    createNewTaskConfig(itemId, latestProcessDefinitionId, currentTaskDefKey, previousTaskConfig);
                 } else {
                     updateExistingTaskConfig(existingTaskConfig, itemId, latestProcessDefinitionId, currentTaskDefKey,
                         previousTaskConfig);
@@ -92,7 +91,7 @@ public class ItemBackTaskConfServiceImpl implements ItemBackTaskConfService {
      * 创建新的任务配置
      */
     private void createNewTaskConfig(String itemId, String processDefinitionId, String taskDefKey,
-        BackTaskConf sourceTaskConfig, String tenantId) {
+        BackTaskConf sourceTaskConfig) {
         BackTaskConf newTaskConfig = new BackTaskConf();
         newTaskConfig.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         newTaskConfig.setItemId(itemId);
@@ -113,12 +112,12 @@ public class ItemBackTaskConfServiceImpl implements ItemBackTaskConfService {
     /**
      * 获取前一版本流程定义ID
      */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
-        String latestProcessDefinitionId, ProcessDefinitionModel latestProcessDefinition) {
+    private String getPreviousProcessDefinitionId(String processDefinitionId, String latestProcessDefinitionId,
+        ProcessDefinitionModel latestProcessDefinition) {
         String previousProcessDefinitionId = processDefinitionId;
         if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
             ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
+                repositoryApi.getPreviousProcessDefinitionById(latestProcessDefinitionId).getData();
             previousProcessDefinitionId = previousProcessDefinition.getId();
         }
         return previousProcessDefinitionId;
@@ -128,12 +127,11 @@ public class ItemBackTaskConfServiceImpl implements ItemBackTaskConfService {
     public List<BackTaskConf> listByTaskDefKey(String itemId, String processDefinitionId, String taskDefKey) {
         BackTaskConf conf = backTaskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
             processDefinitionId, taskDefKey);
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<BackTaskConf> reslist = new ArrayList<>();
         if (conf != null && StringUtils.isNotBlank(conf.getBackTaskDefKey())) {
             String backTaskDefKey = conf.getBackTaskDefKey();
             String[] taskDefKeys = backTaskDefKey.split(",");
-            List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+            List<TargetModel> list = processDefinitionApi.getNodes(processDefinitionId).getData();
             for (String key : taskDefKeys) {
                 String finalKey = key;
                 TargetModel target =

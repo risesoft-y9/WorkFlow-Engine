@@ -143,37 +143,36 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     @Override
     @Transactional
     public void copyForm(String itemId, String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null;
         String processDefinitionKey = item.getWorkflowGuid();
         // 获取最新流程定义
         ProcessDefinitionModel latestProcessDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         // 获取前一版本流程定义ID
-        String previousProcessDefinitionId = getPreviousProcessDefinitionId(tenantId, processDefinitionId,
-            latestProcessDefinitionId, latestProcessDefinition);
+        String previousProcessDefinitionId =
+            getPreviousProcessDefinitionId(processDefinitionId, latestProcessDefinitionId, latestProcessDefinition);
         // 获取前一版本的表单绑定列表
         List<Y9FormItemBind> previousFormBinds =
             y9FormItemBindRepository.findByItemIdAndProcDefId(itemId, previousProcessDefinitionId);
         // 获取最新流程定义的节点
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestProcessDefinitionId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(latestProcessDefinitionId).getData();
         /*
          * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的表单，没有就保存
          */
         for (Y9FormItemBind formBind : previousFormBinds) {
-            copyFormItemBind(formBind, itemId, latestProcessDefinitionId, nodes, tenantId);
+            copyFormItemBind(formBind, itemId, latestProcessDefinitionId, nodes);
         }
         // 复制手机端表单绑定信息
-        copyMobileBindForm(previousProcessDefinitionId, latestProcessDefinitionId, itemId, tenantId, nodes);
+        copyMobileBindForm(previousProcessDefinitionId, latestProcessDefinitionId, itemId, nodes);
     }
 
     /**
      * 复制表单绑定信息
      */
     private void copyFormItemBind(Y9FormItemBind sourceFormBind, String itemId, String latestProcessDefinitionId,
-        List<TargetModel> nodes, String tenantId) {
+        List<TargetModel> nodes) {
 
         String taskDefKey = sourceFormBind.getTaskDefKey();
         String formId = sourceFormBind.getFormId();
@@ -183,12 +182,11 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             Y9FormItemBind existingFormBind = y9FormItemBindRepository
                 .findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(itemId, latestProcessDefinitionId, formId);
             if (null == existingFormBind) {
-                self.save(sourceFormBind, latestProcessDefinitionId, formId, itemId, taskDefKey, tenantId);
+                self.save(sourceFormBind, latestProcessDefinitionId, formId, itemId, taskDefKey);
             }
         } else {
             // 处理特定任务定义键的情况
-            copyFormItemBindForTask(sourceFormBind, itemId, latestProcessDefinitionId, taskDefKey, formId, nodes,
-                tenantId);
+            copyFormItemBindForTask(sourceFormBind, itemId, latestProcessDefinitionId, taskDefKey, formId, nodes);
         }
     }
 
@@ -196,14 +194,14 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
      * 为特定任务复制表单绑定信息
      */
     private void copyFormItemBindForTask(Y9FormItemBind sourceFormBind, String itemId, String latestProcessDefinitionId,
-        String taskDefKey, String formId, List<TargetModel> nodes, String tenantId) {
+        String taskDefKey, String formId, List<TargetModel> nodes) {
         for (TargetModel targetModel : nodes) {
             if (targetModel.getTaskDefKey().equals(taskDefKey)) {
                 Y9FormItemBind existingFormBind =
                     y9FormItemBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId,
                         latestProcessDefinitionId, taskDefKey, formId);
                 if (null == existingFormBind) {
-                    self.save(sourceFormBind, latestProcessDefinitionId, formId, itemId, taskDefKey, tenantId);
+                    self.save(sourceFormBind, latestProcessDefinitionId, formId, itemId, taskDefKey);
                     break;
                 }
             }
@@ -211,12 +209,12 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     }
 
     public void copyMobileBindForm(String previousProcessDefinitionId, String latestProcessDefinitionId, String itemId,
-        String tenantId, List<TargetModel> nodes) {
+        List<TargetModel> nodes) {
         List<Y9FormItemMobileBind> previousMobileBinds =
             y9FormItemMobileBindRepository.findByItemIdAndProcDefId(itemId, previousProcessDefinitionId);
 
         for (Y9FormItemMobileBind mobileBind : previousMobileBinds) {
-            copyMobileFormItemBind(mobileBind, itemId, latestProcessDefinitionId, nodes, tenantId);
+            copyMobileFormItemBind(mobileBind, itemId, latestProcessDefinitionId, nodes);
         }
     }
 
@@ -224,7 +222,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
      * 复制移动端表单绑定信息
      */
     private void copyMobileFormItemBind(Y9FormItemMobileBind sourceMobileBind, String itemId,
-        String latestProcessDefinitionId, List<TargetModel> nodes, String tenantId) {
+        String latestProcessDefinitionId, List<TargetModel> nodes) {
         String taskDefKey = sourceMobileBind.getTaskDefKey();
         String formId = sourceMobileBind.getFormId();
         if (StringUtils.isEmpty(taskDefKey)) {
@@ -232,12 +230,12 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
             Y9FormItemMobileBind existingMobileBind = y9FormItemMobileBindRepository
                 .findByItemIdAndProcDefIdAndAndFormIdAndTaskDefKeyIsNull(itemId, latestProcessDefinitionId, formId);
             if (null == existingMobileBind) {
-                self.save(sourceMobileBind, latestProcessDefinitionId, formId, itemId, taskDefKey, tenantId);
+                self.save(sourceMobileBind, latestProcessDefinitionId, formId, itemId, taskDefKey);
             }
         } else {
             // 处理特定任务定义键的情况
             copyMobileFormItemBindForTask(sourceMobileBind, itemId, latestProcessDefinitionId, taskDefKey, formId,
-                nodes, tenantId);
+                nodes);
         }
     }
 
@@ -245,7 +243,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
      * 为特定任务复制移动端表单绑定信息
      */
     private void copyMobileFormItemBindForTask(Y9FormItemMobileBind sourceMobileBind, String itemId,
-        String latestProcessDefinitionId, String taskDefKey, String formId, List<TargetModel> nodes, String tenantId) {
+        String latestProcessDefinitionId, String taskDefKey, String formId, List<TargetModel> nodes) {
 
         for (TargetModel targetModel : nodes) {
             if (targetModel.getTaskDefKey().equals(taskDefKey)) {
@@ -253,7 +251,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
                     y9FormItemMobileBindRepository.findByItemIdAndProcDefIdAndTaskDefKeyAndFormId(itemId,
                         latestProcessDefinitionId, taskDefKey, formId);
                 if (null == existingMobileBind) {
-                    self.save(sourceMobileBind, latestProcessDefinitionId, formId, itemId, taskDefKey, tenantId);
+                    self.save(sourceMobileBind, latestProcessDefinitionId, formId, itemId, taskDefKey);
                     break;
                 }
             }
@@ -298,13 +296,13 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
     /**
      * 获取前一版本流程定义ID
      */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
-        String latestProcessDefinitionId, ProcessDefinitionModel latestProcessDefinition) {
+    private String getPreviousProcessDefinitionId(String processDefinitionId, String latestProcessDefinitionId,
+        ProcessDefinitionModel latestProcessDefinition) {
         String previousProcessDefinitionId = processDefinitionId;
 
         if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
             ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
+                repositoryApi.getPreviousProcessDefinitionById(latestProcessDefinitionId).getData();
             previousProcessDefinitionId = previousProcessDefinition.getId();
         }
         return previousProcessDefinitionId;
@@ -352,12 +350,11 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         String taskDefKey) {
         List<Y9FormItemMobileBind> formItemMobileBinds = new ArrayList<>();
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             // 查找本任务的form,在任务上设置的表单有优先权。
             List<TargetModel> list;
             // taskDefKey为空表示为办结件，需要获取最后一个任务的表单。
             if (StringUtils.isBlank(taskDefKey)) {
-                list = processDefinitionApi.getNodes(tenantId, procDefId).getData();
+                list = processDefinitionApi.getNodes(procDefId).getData();
                 taskDefKey = list.get(list.size() - 1).getTaskDefKey();
             }
             formItemMobileBinds =
@@ -434,8 +431,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
 
     @Override
     @Transactional
-    public void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
-        String tenantId) {
+    public void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey) {
         Y9FormItemBind eibTemp = new Y9FormItemBind();
         eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         eibTemp.setProcessDefinitionId(latestpdId);
@@ -447,14 +443,13 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         eibTemp.setShowHistoryTab(eib.isShowHistoryTab());
         eibTemp.setTabIndex(eib.getTabIndex());
         eibTemp.setTaskDefKey(taskDefKey);
-        eibTemp.setTenantId(tenantId);
+        eibTemp.setTenantId(Y9LoginUserHolder.getTenantId());
         y9FormItemBindRepository.save(eibTemp);
     }
 
     @Override
     @Transactional
-    public void save(Y9FormItemMobileBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
-        String tenantId) {
+    public void save(Y9FormItemMobileBind eib, String latestpdId, String formId, String itemId, String taskDefKey) {
         Y9FormItemMobileBind eibTemp = new Y9FormItemMobileBind();
         eibTemp.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         eibTemp.setProcessDefinitionId(latestpdId);
@@ -462,7 +457,7 @@ public class Y9FormItemBindServiceImpl implements Y9FormItemBindService {
         eibTemp.setFormId(formId);
         eibTemp.setItemId(itemId);
         eibTemp.setTaskDefKey(taskDefKey);
-        eibTemp.setTenantId(tenantId);
+        eibTemp.setTenantId(Y9LoginUserHolder.getTenantId());
         y9FormItemMobileBindRepository.save(eibTemp);
     }
 

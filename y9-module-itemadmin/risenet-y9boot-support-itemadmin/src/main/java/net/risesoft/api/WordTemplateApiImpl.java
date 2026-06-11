@@ -17,7 +17,6 @@ import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.template.ItemWordTemplateBindRepository;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.template.WordTemplateService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 正文模板接口
@@ -67,11 +66,10 @@ public class WordTemplateApiImpl implements WordTemplateApi {
     @Override
     public Y9Result<String> getWordTemplateBind(@RequestParam String itemId, @RequestParam String wordType) {
         String y9FilePathId = null;
-        String tenantId = Y9LoginUserHolder.getTenantId();
         Item item = itemService.findById(itemId);
         String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
         String processDefinitionId = processDefinition.getId();
         ItemWordTemplateBind bind = itemWordTemplateBindRepository
             .findByItemIdAndProcessDefinitionIdAndBindValue(itemId, processDefinitionId, wordType);

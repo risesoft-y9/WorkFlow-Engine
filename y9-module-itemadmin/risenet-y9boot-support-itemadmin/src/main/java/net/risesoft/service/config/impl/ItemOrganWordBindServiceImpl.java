@@ -62,18 +62,17 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
     @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = person.getPersonId();
         String userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId=" + itemId + "事项";
         // 获取最新和前一版本的流程定义
-        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(tenantId, item);
+        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(item);
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         String previousProcessDefinitionId =
-            getPreviousProcessDefinitionId(tenantId, processDefinitionId, latestProcessDefinition);
+            getPreviousProcessDefinitionId(processDefinitionId, latestProcessDefinition);
         // 获取流程节点并复制绑定信息
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestProcessDefinitionId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(latestProcessDefinitionId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             copyOrganWordBindingsForNode(itemId, userId, userName, latestProcessDefinitionId,
@@ -81,27 +80,24 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         }
     }
 
-    /**
-     * 获取最新流程定义
-     */
-    private ProcessDefinitionModel getLatestProcessDefinition(String tenantId, Item item) {
-        String processDefinitionKey = item.getWorkflowGuid();
-        return repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-    }
-
-    /**
-     * 获取前一版本流程定义ID
-     */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
-        ProcessDefinitionModel latestProcessDefinition) {
-        String previousProcessDefinitionId = processDefinitionId;
-        String latestProcessDefinitionId = latestProcessDefinition.getId();
-        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
-            ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
-            previousProcessDefinitionId = previousProcessDefinition.getId();
+    @Override
+    @Transactional
+    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
+        UserInfo person = Y9LoginUserHolder.getUserInfo();
+        String userId = person.getPersonId(), userName = person.getName();
+        List<ItemOrganWordBind> bindList =
+            itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
+        for (ItemOrganWordBind bind : bindList) {
+            ItemOrganWordBind itemOrganWordBind = new ItemOrganWordBind();
+            itemOrganWordBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+            itemOrganWordBind.setItemId(newItemId);
+            itemOrganWordBind.setOrganWordCustom(bind.getOrganWordCustom());
+            itemOrganWordBind.setProcessDefinitionId(lastVersionPid);
+            itemOrganWordBind.setTaskDefKey(bind.getTaskDefKey());
+            itemOrganWordBind.setUserId(userId);
+            itemOrganWordBind.setUserName(userName);
+            itemOrganWordBindRepository.save(itemOrganWordBind);
         }
-        return previousProcessDefinitionId;
     }
 
     /**
@@ -119,6 +115,16 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             if (null == existingBind) {
                 createNewOrganWordBinding(itemId, userId, userName, latestProcessDefinitionId, currentTaskDefKey, bind);
             }
+        }
+    }
+
+    /**
+     * 复制编号角色授权信息
+     */
+    private void copyOrganWordRoles(String sourceBindId, String targetBindId) {
+        List<ItemOrganWordRole> roleList = itemOrganWordRoleService.listByItemOrganWordBindId(sourceBindId);
+        for (ItemOrganWordRole role : roleList) {
+            itemOrganWordRoleService.saveOrUpdate(targetBindId, role.getRoleId());
         }
     }
 
@@ -158,36 +164,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
         return newBind;
     }
 
-    /**
-     * 复制编号角色授权信息
-     */
-    private void copyOrganWordRoles(String sourceBindId, String targetBindId) {
-        List<ItemOrganWordRole> roleList = itemOrganWordRoleService.listByItemOrganWordBindId(sourceBindId);
-        for (ItemOrganWordRole role : roleList) {
-            itemOrganWordRoleService.saveOrUpdate(targetBindId, role.getRoleId());
-        }
-    }
-
-    @Override
-    @Transactional
-    public void copyBindInfo(String itemId, String newItemId, String lastVersionPid) {
-        UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String userId = person.getPersonId(), userName = person.getName();
-        List<ItemOrganWordBind> bindList =
-            itemOrganWordBindRepository.findByItemIdAndProcessDefinitionId(itemId, lastVersionPid);
-        for (ItemOrganWordBind bind : bindList) {
-            ItemOrganWordBind itemOrganWordBind = new ItemOrganWordBind();
-            itemOrganWordBind.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-            itemOrganWordBind.setItemId(newItemId);
-            itemOrganWordBind.setOrganWordCustom(bind.getOrganWordCustom());
-            itemOrganWordBind.setProcessDefinitionId(lastVersionPid);
-            itemOrganWordBind.setTaskDefKey(bind.getTaskDefKey());
-            itemOrganWordBind.setUserId(userId);
-            itemOrganWordBind.setUserName(userName);
-            itemOrganWordBindRepository.save(itemOrganWordBind);
-        }
-    }
-
     @Override
     @Transactional
     public void deleteBindInfo(String itemId) {
@@ -224,6 +200,48 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             bind.setRoleIds(roleIds);
         }
         return bind;
+    }
+
+    /**
+     * 获取最新流程定义
+     */
+    private ProcessDefinitionModel getLatestProcessDefinition(Item item) {
+        String processDefinitionKey = item.getWorkflowGuid();
+        return repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
+    }
+
+    /**
+     * 获取前一版本流程定义ID
+     */
+    private String getPreviousProcessDefinitionId(String processDefinitionId,
+        ProcessDefinitionModel latestProcessDefinition) {
+        String previousProcessDefinitionId = processDefinitionId;
+        String latestProcessDefinitionId = latestProcessDefinition.getId();
+        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
+            ProcessDefinitionModel previousProcessDefinition =
+                repositoryApi.getPreviousProcessDefinitionById(latestProcessDefinitionId).getData();
+            previousProcessDefinitionId = previousProcessDefinition.getId();
+        }
+        return previousProcessDefinitionId;
+    }
+
+    /**
+     * 获取编号绑定的角色信息
+     */
+    private RoleInfo getRoleInfo(String itemOrganWordBindId) {
+        List<ItemOrganWordRole> roleList = itemOrganWordRoleService.listByItemOrganWordBindId(itemOrganWordBindId);
+        List<String> roleIdList = roleList.stream().map(ItemOrganWordRole::getRoleId).collect(Collectors.toList());
+        String roleNames = "";
+        if (!roleIdList.isEmpty()) {
+            Map<String, Role> idRoleMap =
+                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
+
+            roleNames = roleList.stream().map(role -> {
+                Role r = idRoleMap.get(role.getRoleId());
+                return (r == null) ? "角色不存在" : r.getName();
+            }).collect(Collectors.joining("、"));
+        }
+        return new RoleInfo(roleIdList, roleNames);
     }
 
     @Override
@@ -276,25 +294,6 @@ public class ItemOrganWordBindServiceImpl implements ItemOrganWordBindService {
             bind.setRoleNames(roleInfo.getRoleNames());
         }
         return result;
-    }
-
-    /**
-     * 获取编号绑定的角色信息
-     */
-    private RoleInfo getRoleInfo(String itemOrganWordBindId) {
-        List<ItemOrganWordRole> roleList = itemOrganWordRoleService.listByItemOrganWordBindId(itemOrganWordBindId);
-        List<String> roleIdList = roleList.stream().map(ItemOrganWordRole::getRoleId).collect(Collectors.toList());
-        String roleNames = "";
-        if (!roleIdList.isEmpty()) {
-            Map<String, Role> idRoleMap =
-                roleApi.listByIds(roleIdList).getData().stream().collect(Collectors.toMap(Role::getId, role -> role));
-
-            roleNames = roleList.stream().map(role -> {
-                Role r = idRoleMap.get(role.getRoleId());
-                return (r == null) ? "角色不存在" : r.getName();
-            }).collect(Collectors.joining("、"));
-        }
-        return new RoleInfo(roleIdList, roleNames);
     }
 
     @Override

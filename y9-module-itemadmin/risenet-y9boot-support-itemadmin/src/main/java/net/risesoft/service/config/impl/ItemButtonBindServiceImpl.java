@@ -75,22 +75,21 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = person.getPersonId();
         String userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null;
         // 获取最新和前一版本的流程定义
-        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(tenantId, item);
+        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(item);
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         String previousProcessDefinitionId =
-            getPreviousProcessDefinitionId(tenantId, processDefinitionId, latestProcessDefinition);
+            getPreviousProcessDefinitionId(processDefinitionId, latestProcessDefinition);
         // 获取流程节点并复制绑定信息
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestProcessDefinitionId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(latestProcessDefinitionId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
-            copyButtonBindingsForNode(itemId, tenantId, userId, userName, latestProcessDefinitionId,
-                previousProcessDefinitionId, currentTaskDefKey);
+            copyButtonBindingsForNode(itemId, userId, userName, latestProcessDefinitionId, previousProcessDefinitionId,
+                currentTaskDefKey);
         }
     }
 
@@ -120,7 +119,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     /**
      * 为指定节点复制按钮绑定信息
      */
-    private void copyButtonBindingsForNode(String itemId, String tenantId, String userId, String userName,
+    private void copyButtonBindingsForNode(String itemId, String userId, String userName,
         String latestProcessDefinitionId, String previousProcessDefinitionId, String currentTaskDefKey) {
         List<ItemButtonBind> bindList = getButtonBindings(itemId, previousProcessDefinitionId, currentTaskDefKey);
         for (ItemButtonBind bind : bindList) {
@@ -128,8 +127,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
                 getExistingButtonBinding(itemId, latestProcessDefinitionId, currentTaskDefKey, bind.getButtonId());
             // 如果不存在，则创建新的绑定
             if (null == existingBind) {
-                createNewButtonBinding(itemId, tenantId, userId, userName, latestProcessDefinitionId, currentTaskDefKey,
-                    bind);
+                createNewButtonBinding(itemId, userId, userName, latestProcessDefinitionId, currentTaskDefKey, bind);
             }
         }
     }
@@ -165,8 +163,8 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     /**
      * 创建按钮绑定对象
      */
-    private ItemButtonBind createButtonItemBind(String bindId, String itemId, String tenantId, String userId,
-        String userName, String processDefinitionId, String taskDefKey, ItemButtonBind sourceBind) {
+    private ItemButtonBind createButtonItemBind(String bindId, String itemId, String userId, String userName,
+        String processDefinitionId, String taskDefKey, ItemButtonBind sourceBind) {
         ItemButtonBind newBind = new ItemButtonBind();
         newBind.setId(bindId);
         newBind.setButtonId(sourceBind.getButtonId());
@@ -174,7 +172,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         newBind.setItemId(itemId);
         newBind.setProcessDefinitionId(processDefinitionId);
         newBind.setTaskDefKey(taskDefKey);
-        newBind.setTenantId(tenantId);
+        newBind.setTenantId(Y9LoginUserHolder.getTenantId());
         newBind.setUserId(userId);
         newBind.setUserName(userName);
         setTabIndex(newBind, itemId, processDefinitionId, taskDefKey, sourceBind.getButtonType());
@@ -184,13 +182,13 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     /**
      * 创建新的按钮绑定
      */
-    private void createNewButtonBinding(String itemId, String tenantId, String userId, String userName,
-        String processDefinitionId, String taskDefKey, ItemButtonBind sourceBind) {
+    private void createNewButtonBinding(String itemId, String userId, String userName, String processDefinitionId,
+        String taskDefKey, ItemButtonBind sourceBind) {
         String newBindId = Y9IdGenerator.genId(IdType.SNOWFLAKE);
         String sourceBindId = sourceBind.getId();
         // 创建新的按钮绑定
-        ItemButtonBind newBind = createButtonItemBind(newBindId, itemId, tenantId, userId, userName,
-            processDefinitionId, taskDefKey, sourceBind);
+        ItemButtonBind newBind =
+            createButtonItemBind(newBindId, itemId, userId, userName, processDefinitionId, taskDefKey, sourceBind);
         buttonItemBindRepository.save(newBind);
         // 复制按钮授权信息
         copyButtonRoles(sourceBindId, newBindId);
@@ -273,22 +271,22 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
     /**
      * 获取最新流程定义
      */
-    private ProcessDefinitionModel getLatestProcessDefinition(String tenantId, Item item) {
+    private ProcessDefinitionModel getLatestProcessDefinition(Item item) {
         String processDefinitionKey = item.getWorkflowGuid();
-        return repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+        return repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
     }
 
     /**
      * 获取前一版本流程定义ID
      */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
+    private String getPreviousProcessDefinitionId(String processDefinitionId,
         ProcessDefinitionModel latestProcessDefinition) {
         String previousProcessDefinitionId = processDefinitionId;
         String latestProcessDefinitionId = latestProcessDefinition.getId();
 
         if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
             ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
+                repositoryApi.getPreviousProcessDefinitionById(latestProcessDefinitionId).getData();
             previousProcessDefinitionId = previousProcessDefinition.getId();
         }
         return previousProcessDefinitionId;

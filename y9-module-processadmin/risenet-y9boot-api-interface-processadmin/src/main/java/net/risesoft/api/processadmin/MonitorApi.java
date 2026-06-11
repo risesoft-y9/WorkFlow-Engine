@@ -17,63 +17,8 @@ import net.risesoft.pojo.Y9Result;
 public interface MonitorApi {
 
     /**
-     * 根据流程定义Key获取监控在办件统计
-     *
-     * @param tenantId 租户Id
-     * @param processDefinitionKey 流程定义Key
-     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 在办件数量
-     * @since 9.6.6
-     */
-    @GetMapping(value = "/getDoingCountByProcessDefinitionKey")
-    Y9Result<Long> getDoingCountByProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processDefinitionKey") String processDefinitionKey);
-
-    /**
-     * 根据系统英文名称获取监控在办件数量
-     *
-     * @param tenantId 租户Id
-     * @param systemName 系统英文名称
-     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 在办件数量
-     * @since 9.6.6
-     */
-    @GetMapping(value = "/getDoingCountBySystemName")
-    Y9Result<Long> getDoingCountBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("systemName") String systemName);
-
-    /**
-     * 根据流程定义Key获取监控在办件
-     *
-     * @param tenantId 租户Id
-     * @param processDefinitionKey 流程定义Key
-     * @param page 页码
-     * @param rows 行数
-     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件列表
-     * @since 9.6.6
-     */
-    @GetMapping(value = "/getDoingListByProcessDefinitionKey")
-    Y9Page<HistoricProcessInstanceModel> getDoingListByProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
-
-    /**
      * 根据系统名称获取监控在办件
      *
-     * @param tenantId 租户Id
-     * @param systemName 系统英文名称
-     * @param page 页码
-     * @param rows 行数
-     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件列表
-     * @since 9.6.6
-     */
-    @GetMapping(value = "/getDoingListBySystemName")
-    Y9Page<HistoricProcessInstanceModel> getDoingListBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("systemName") String systemName, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
-
-    /**
-     * 根据系统名称获取监控在办件
-     *
-     * @param tenantId 租户Id
      * @param systemName 系统英文名称
      * @param page 页码
      * @param rows 行数
@@ -81,26 +26,71 @@ public interface MonitorApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getAllListBySystemName")
-    Y9Page<HistoricProcessInstanceModel> getAllListBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("systemName") String systemName, @RequestParam("page") Integer page,
+    Y9Page<HistoricProcessInstanceModel> getAllListBySystemName(@RequestParam("systemName") String systemName,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+
+    /**
+     * 根据流程定义Key获取监控在办件统计
+     *
+     * @param processDefinitionKey 流程定义Key
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 在办件数量
+     * @since 9.6.6
+     */
+    @GetMapping(value = "/getDoingCountByProcessDefinitionKey")
+    Y9Result<Long>
+        getDoingCountByProcessDefinitionKey(@RequestParam("processDefinitionKey") String processDefinitionKey);
+
+    /**
+     * 根据系统英文名称获取监控在办件数量
+     *
+     * @param systemName 系统英文名称
+     * @return {@code Y9Result<Long>} 通用请求返回对象 - data 在办件数量
+     * @since 9.6.6
+     */
+    @GetMapping(value = "/getDoingCountBySystemName")
+    Y9Result<Long> getDoingCountBySystemName(@RequestParam("systemName") String systemName);
+
+    /**
+     * 根据流程定义Key获取监控在办件
+     *
+     * @param processDefinitionKey 流程定义Key
+     * @param page 页码
+     * @param rows 行数
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件列表
+     * @since 9.6.6
+     */
+    @GetMapping(value = "/getDoingListByProcessDefinitionKey")
+    Y9Page<HistoricProcessInstanceModel> getDoingListByProcessDefinitionKey(
+        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
+
+    /**
+     * 根据系统名称获取监控在办件
+     *
+     * @param systemName 系统英文名称
+     * @param page 页码
+     * @param rows 行数
+     * @return {@code Y9Page<HistoricProcessInstanceModel>} 通用请求返回对象 - rows 在办件列表
+     * @since 9.6.6
+     */
+    @GetMapping(value = "/getDoingListBySystemName")
+    Y9Page<HistoricProcessInstanceModel> getDoingListBySystemName(@RequestParam("systemName") String systemName,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 根据流程定义Key获取监控办结件统计
      *
-     * @param tenantId 租户Id
      * @param processDefinitionKey 流程定义Key
      * @return {@code Y9Result<Long>} 通用请求返回对象 - data 办结件统计
      * @since 9.6.6
      */
     @GetMapping(value = "/getDoneCountByProcessDefinitionKey")
-    Y9Result<Long> getDoneCountByProcessDefinitionKey(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processDefinitionKey") String processDefinitionKey);
+    Y9Result<Long>
+        getDoneCountByProcessDefinitionKey(@RequestParam("processDefinitionKey") String processDefinitionKey);
 
     /**
      * 根据流程定义Key条件搜索在办件
      *
-     * @param tenantId 租户id
      * @param processDefinitionKey 流程定义Key
      * @param searchTerm 搜索词
      * @param page 页码
@@ -110,14 +100,13 @@ public interface MonitorApi {
      */
     @GetMapping(value = "/searchDoingListByProcessDefinitionKey")
     Y9Page<HistoricProcessInstanceModel> searchDoingListByProcessDefinitionKey(
-        @RequestParam("tenantId") String tenantId, @RequestParam("processDefinitionKey") String processDefinitionKey,
+        @RequestParam("processDefinitionKey") String processDefinitionKey,
         @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
         @RequestParam("rows") Integer rows);
 
     /**
      * 根据系统英文名称条件搜索在办件
      *
-     * @param tenantId 租户id
      * @param systemName 系统英文名称
      * @param searchTerm 搜索词
      * @param page 页码
@@ -126,7 +115,7 @@ public interface MonitorApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/searchDoingListBySystemName")
-    Y9Page<HistoricProcessInstanceModel> searchDoingListBySystemName(@RequestParam("tenantId") String tenantId,
-        @RequestParam("systemName") String systemName, @RequestParam("searchTerm") String searchTerm,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<HistoricProcessInstanceModel> searchDoingListBySystemName(@RequestParam("systemName") String systemName,
+        @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
+        @RequestParam("rows") Integer rows);
 }

@@ -163,14 +163,13 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             TaskModel currentTask = taskApi.findById(tenantId, taskId).getData();
             List<String> userAndDeptIdList = new ArrayList<>();
             // 获取当前任务的前一个任务
-            HistoricTaskInstanceModel hti = historictaskApi.getThePreviousTask(tenantId, taskId).getData();
+            HistoricTaskInstanceModel hti = historictaskApi.getThePreviousTask(taskId).getData();
             // 前一任务的受让人，标题
             String assignee = hti.getAssignee();
             userAndDeptIdList.add(assignee);
             Position position = Y9FlowableHolder.getPosition();
             FlowElementModel flowElementModel =
-                processDefinitionApi.getNode(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())
-                    .getData();
+                processDefinitionApi.getNode(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey()).getData();
             Map<String, Object> variables = CommonOpt.setVariables(orgUnitId, position.getName(),
                 hti.getTaskDefinitionKey(), userAndDeptIdList, flowElementModel);
             Map<String, Object> val = new HashMap<>();

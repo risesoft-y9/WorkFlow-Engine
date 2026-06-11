@@ -121,11 +121,9 @@ public class ItemRestController {
                 }
             }
             for (Map<String, Object> nmap : list) {
-                long todoCount =
-                    processTodoApi
-                        .getTodoCountByUserIdAndSystemName(tenantId, positionId,
-                            (String)nmap.get(FlowableUiConsts.SYSTEMNAME_KEY))
-                        .getData();
+                long todoCount = processTodoApi
+                    .getTodoCountByUserIdAndSystemName(positionId, (String)nmap.get(FlowableUiConsts.SYSTEMNAME_KEY))
+                    .getData();
                 nmap.put("todoCount", todoCount);
                 List<ItemModel> itemList = new ArrayList<>();
                 for (ItemModel itemModel : listMap) {

@@ -58,7 +58,7 @@ public class CustomHistoricVariableServiceImpl implements CustomHistoricVariable
     }
 
     @Override
-    public Map<String, Object> getVariables(String tenantId, String processInstanceId, Collection<String> keys) {
+    public Map<String, Object> getVariables(String processInstanceId, Collection<String> keys) {
         List<HistoricVariableInstance> hviList = historyService.createHistoricVariableInstanceQuery()
             .processInstanceId(processInstanceId)
             .excludeTaskVariables()

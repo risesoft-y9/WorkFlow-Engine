@@ -2,6 +2,7 @@ package net.risesoft.service.config.impl;
 
 import java.util.List;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -18,7 +19,6 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.repository.jpa.TaskTimeConfRepository;
 import net.risesoft.service.config.TaskTimeConfService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -56,42 +56,27 @@ public class TaskTimeConfServiceImpl implements TaskTimeConfService {
     @Override
     @Transactional
     public void copyTaskConf(String itemId, String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String processDefinitionKey = processDefinitionId.split(":")[0];
         // 获取最新流程定义
         ProcessDefinitionModel latestProcessDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         // 版本为1时无需复制配置
         if (latestProcessDefinition.getVersion() <= 1) {
             return;
         }
         // 获取前一版本流程定义ID
-        String previousProcessDefinitionId = getPreviousProcessDefinitionId(tenantId, processDefinitionId,
-            latestProcessDefinitionId, latestProcessDefinition);
+        String previousProcessDefinitionId =
+            getPreviousProcessDefinitionId(processDefinitionId, latestProcessDefinitionId, latestProcessDefinition);
         // 获取前一版本的时间配置列表
         List<TaskTimeConf> previousTimeConfigs =
             taskTimeConfRepository.findByItemIdAndProcessDefinitionId(itemId, previousProcessDefinitionId);
         // 获取最新流程定义的节点并复制时间配置
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestProcessDefinitionId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(latestProcessDefinitionId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             copyTimeConfigForNode(itemId, latestProcessDefinitionId, currentTaskDefKey, previousTimeConfigs);
         }
-    }
-
-    /**
-     * 获取前一版本流程定义ID
-     */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
-        String latestProcessDefinitionId, ProcessDefinitionModel latestProcessDefinition) {
-        String previousProcessDefinitionId = processDefinitionId;
-        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
-            ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
-            previousProcessDefinitionId = previousProcessDefinition.getId();
-        }
-        return previousProcessDefinitionId;
     }
 
     /**
@@ -128,20 +113,6 @@ public class TaskTimeConfServiceImpl implements TaskTimeConfService {
         taskTimeConfRepository.save(newTimeConfig);
     }
 
-    /**
-     * 更新现有的时间配置
-     */
-    private void updateExistingTimeConfig(TaskTimeConf existingTimeConfig, String itemId, String processDefinitionId,
-        String taskDefKey, TaskTimeConf sourceTimeConfig) {
-        existingTimeConfig.setItemId(itemId);
-        existingTimeConfig.setProcessDefinitionId(processDefinitionId);
-        existingTimeConfig.setTaskDefKey(taskDefKey);
-        existingTimeConfig.setTimeoutInterrupt(sourceTimeConfig.getTimeoutInterrupt());
-        existingTimeConfig.setLeastTime(sourceTimeConfig.getLeastTime());
-
-        taskTimeConfRepository.save(existingTimeConfig);
-    }
-
     @Override
     @Transactional
     public void deleteBindInfo(String itemId) {
@@ -157,6 +128,20 @@ public class TaskTimeConfServiceImpl implements TaskTimeConfService {
         String taskDefKey) {
         return taskTimeConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
             taskDefKey);
+    }
+
+    /**
+     * 获取前一版本流程定义ID
+     */
+    private String getPreviousProcessDefinitionId(String processDefinitionId, String latestProcessDefinitionId,
+        ProcessDefinitionModel latestProcessDefinition) {
+        String previousProcessDefinitionId = processDefinitionId;
+        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
+            ProcessDefinitionModel previousProcessDefinition =
+                repositoryApi.getPreviousProcessDefinitionById(latestProcessDefinitionId).getData();
+            previousProcessDefinitionId = previousProcessDefinition.getId();
+        }
+        return previousProcessDefinitionId;
     }
 
     @Override
@@ -181,6 +166,20 @@ public class TaskTimeConfServiceImpl implements TaskTimeConfService {
             taskTimeConf.setTaskDefKey(t.getTaskDefKey());
         }
         taskTimeConfRepository.save(taskTimeConf);
+    }
+
+    /**
+     * 更新现有的时间配置
+     */
+    private void updateExistingTimeConfig(TaskTimeConf existingTimeConfig, String itemId, String processDefinitionId,
+        String taskDefKey, TaskTimeConf sourceTimeConfig) {
+        existingTimeConfig.setItemId(itemId);
+        existingTimeConfig.setProcessDefinitionId(processDefinitionId);
+        existingTimeConfig.setTaskDefKey(taskDefKey);
+        existingTimeConfig.setTimeoutInterrupt(sourceTimeConfig.getTimeoutInterrupt());
+        existingTimeConfig.setLeastTime(sourceTimeConfig.getLeastTime());
+
+        taskTimeConfRepository.save(existingTimeConfig);
     }
 
 }

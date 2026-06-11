@@ -86,7 +86,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         documentApi.complete(taskId);
 
         boolean isSubProcessChildNode = processDefinitionApi
-            .isSubProcessChildNode(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+            .isSubProcessChildNode(taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
             .getData();
         if (isSubProcessChildNode) {// 子流程办结，不更新自定义历程信息
             return;
@@ -188,11 +188,10 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                     continue;
                 }
                 if (nodeList.isEmpty()) {
-                    String startNode = processDefinitionApi
-                        .getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId())
-                        .getData();
-                    nodeList = processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode)
-                        .getData();
+                    String startNode =
+                        processDefinitionApi.getStartNodeKeyByProcessDefinitionId(task.getProcessDefinitionId())
+                            .getData();
+                    nodeList = processDefinitionApi.getTargetNodes(task.getProcessDefinitionId(), startNode).getData();
                 }
                 boolean canDelete =
                     nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));
@@ -275,7 +274,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             actRuDetailApi.removeByProcessSerialNumber(processSerialNumber);
             processParamModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             // 删除流程实例
-            historicProcessApi.deleteProcessInstance(tenantId, processParamModel.getProcessInstanceId());
+            historicProcessApi.deleteProcessInstance(processParamModel.getProcessInstanceId());
             asyncUtilService.removeToDoAuditLog(tenantId, positionId, processParamModel.getProcessSerialNumber(),
                 processParamModel.getTitle());
         }
@@ -305,9 +304,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 title = processParamModel.getTitle();
             }
             HistoricTaskInstanceModel hisTaskModelTemp =
-                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
-                    .getData()
-                    .get(0);
+                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year).getData().get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
             /*
               2、添加流程的历程
@@ -360,9 +357,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 year = getYear(processParamModel.getCreateTime());
             }
             HistoricTaskInstanceModel hisTaskModel =
-                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
-                    .getData()
-                    .get(0);
+                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year).getData().get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
             // 2、添加动作名称
             Map<String, Object> vars = new HashMap<>();
