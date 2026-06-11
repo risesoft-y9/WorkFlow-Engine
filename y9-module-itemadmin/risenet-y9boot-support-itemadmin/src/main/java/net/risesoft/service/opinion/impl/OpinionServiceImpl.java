@@ -500,7 +500,7 @@ public class OpinionServiceImpl implements OpinionService {
     private List<OpinionListModel> listPersonComment4AddOrDraft(String itemId, OpinionListModel opinionListModel,
         List<Opinion> opinionList, String opinionFrameMark, String taskDefKey) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        String personId = person.getPersonId();
         List<OpinionListModel> resList = new ArrayList<>();
         if (!opinionList.isEmpty()) {
             for (Opinion opinion : opinionList) {
@@ -520,8 +520,7 @@ public class OpinionServiceImpl implements OpinionService {
          */
         Item item = itemService.findById(itemId);
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel processDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel processDefinition = repositoryApi.getLatestProcessDefinitionByKey(proDefKey).getData();
         String processDefinitionId = processDefinition.getId();
         ItemOpinionFrameBind itemOpinionFrameBind =
             itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
@@ -534,7 +533,7 @@ public class OpinionServiceImpl implements OpinionService {
     private void listPersonComment4AddOrDraftNew(String itemId, OpinionFrameModel opinionFrameModel,
         List<Opinion> opinionList, String opinionFrameMark, String taskDefKey, boolean opinionOrderBy) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        String personId = person.getPersonId();
         if (!opinionList.isEmpty()) {
             List<OpinionModel> modelList = new ArrayList<>();
             for (Opinion opinion : opinionList) {
@@ -553,7 +552,7 @@ public class OpinionServiceImpl implements OpinionService {
             Item item = itemService.findById(itemId);
             String proDefKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(proDefKey).getData();
             String processDefinitionId = processDefinition.getId();
             ItemOpinionFrameBind itemOpinionFrameBind =
                 itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,

@@ -2,6 +2,7 @@ package net.risesoft.service.config.impl;
 
 import java.util.List;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,7 +18,6 @@ import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.config.ItemInterfaceTaskBindService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  *
@@ -38,15 +38,14 @@ public class ItemInterfaceTaskBindServiceImpl implements ItemInterfaceTaskBindSe
     @Override
     @Transactional
     public void copyBind(String itemId, String interfaceId, String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String proDefKey = processDefinitionId.split(":")[0];
-        ProcessDefinitionModel latestPd = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel latestPd = repositoryApi.getLatestProcessDefinitionByKey(proDefKey).getData();
         String latestPdId = latestPd.getId();
         String previousPdId = processDefinitionId;
         if (processDefinitionId.equals(latestPdId)) {
             if (latestPd.getVersion() > 1) {
                 ProcessDefinitionModel previousPd =
-                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestPdId).getData();
+                    repositoryApi.getPreviousProcessDefinitionById(latestPdId).getData();
                 previousPdId = previousPd.getId();
             }
         }

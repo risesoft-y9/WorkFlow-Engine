@@ -130,7 +130,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     @Transactional
     public Y9Result<String> copyItem(String id) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             Item item = this.findById(id);
             if (null != item) {
@@ -153,7 +152,7 @@ public class ItemServiceImpl implements ItemService {
                 }
                 String proDefKey = item.getWorkflowGuid();
                 ProcessDefinitionModel processDefinition =
-                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+                    repositoryApi.getLatestProcessDefinitionByKey(proDefKey).getData();
                 String processDefinitionId = processDefinition.getId();
                 @SuppressWarnings("unused")
                 List<TargetModel> nodes = processDefinitionApi.getNodes(processDefinitionId).getData();

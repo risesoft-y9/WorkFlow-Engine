@@ -137,10 +137,9 @@ public interface Y9FormItemBindService {
      */
     Y9Result<String> save(Y9FormItemBind formItemBind);
 
-    void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey, String tenantId);
+    void save(Y9FormItemBind eib, String latestpdId, String formId, String itemId, String taskDefKey);
 
-    void save(Y9FormItemMobileBind eib, String latestpdId, String formId, String itemId, String taskDefKey,
-        String tenantId);
+    void save(Y9FormItemMobileBind eib, String latestpdId, String formId, String itemId, String taskDefKey);
 
     /**
      * Description:

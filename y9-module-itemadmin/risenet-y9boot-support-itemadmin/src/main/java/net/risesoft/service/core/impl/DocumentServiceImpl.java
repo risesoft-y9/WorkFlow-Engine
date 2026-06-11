@@ -215,8 +215,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setTenantId(tenantId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(processDefinitionKey);
-        ProcessDefinitionModel pdModel =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+        ProcessDefinitionModel pdModel = repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
         String processDefinitionId = pdModel.getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
         model.setProcessDefinitionId(processDefinitionId);
@@ -242,8 +241,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setTenantId(tenantId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(processDefinitionKey);
-        ProcessDefinitionModel pdModel =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+        ProcessDefinitionModel pdModel = repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
         String processDefinitionId = pdModel.getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
         model.setProcessDefinitionId(processDefinitionId);
@@ -381,14 +379,13 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel addWithStartTaskDefKey(String itemId, String startTaskDefKey, boolean mobile) {
-        String userId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9FlowableHolder.getPositionId();
         DocumentDetailModel model = new DocumentDetailModel();
         Item item = itemService.findById(itemId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
-        ProcessDefinitionModel pdModel =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+        ProcessDefinitionModel pdModel = repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
         String processDefinitionId = pdModel.getId();
         model.setItembox(ItemBoxTypeEnum.ADD.getValue());
         model.setProcessDefinitionId(processDefinitionId);
@@ -753,14 +750,14 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel editDraft(String processSerialNumber, String itemId, boolean mobile) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getPositionId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         DocumentDetailModel model = new DocumentDetailModel();
         Item item = itemService.findById(itemId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
         String processDefinitionId =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData().getId();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData().getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         model.setCustomItem(processParam.getCustomItem());
@@ -1109,9 +1106,7 @@ public class DocumentServiceImpl implements DocumentService {
     public String getFormIdByItemId(String itemId, String processDefinitionKey) {
         String formIds = "";
         String processDefinitionId =
-            repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefinitionKey)
-                .getData()
-                .getId();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData().getId();
         List<Y9FormItemBind> binds =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, "");
         if (!binds.isEmpty()) {
@@ -2311,7 +2306,7 @@ public class DocumentServiceImpl implements DocumentService {
             Item item = itemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinitionModel =
-                repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
             String processDefinitionId = processDefinitionModel.getId();
             String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             Y9Result<TargetModel> routeToTaskIdResult =
@@ -2529,7 +2524,7 @@ public class DocumentServiceImpl implements DocumentService {
             assert item != null;
             if (item.isShowSubmitButton()) {
                 ProcessDefinitionModel processDefinitionModel =
-                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
+                    repositoryApi.getLatestProcessDefinitionByKey(item.getWorkflowGuid()).getData();
                 List<Y9FormItemBind> binds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
                     processDefinitionModel.getId(), "");
                 Map<String, Object> variables =
@@ -2679,7 +2674,7 @@ public class DocumentServiceImpl implements DocumentService {
             assert item != null;
             if (item.isShowSubmitButton()) {
                 ProcessDefinitionModel processDefinitionModel =
-                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+                    repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
                 List<Y9FormItemBind> binds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
                     processDefinitionModel.getId(), "");
                 Map<String, Object> variables =

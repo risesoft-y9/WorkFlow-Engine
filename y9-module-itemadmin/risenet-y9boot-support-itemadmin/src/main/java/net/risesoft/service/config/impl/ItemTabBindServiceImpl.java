@@ -43,11 +43,10 @@ public class ItemTabBindServiceImpl implements ItemTabBindService {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId(),
             personName = person.getName();
-        ProcessDefinitionModel currentPd =
-            repositoryApi.getProcessDefinitionById(tenantId, processDefinitionId).getData();
+        ProcessDefinitionModel currentPd = repositoryApi.getProcessDefinitionById(processDefinitionId).getData();
         if (currentPd.getVersion() > 1) {
             ProcessDefinitionModel previouspd =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, processDefinitionId).getData();
+                repositoryApi.getPreviousProcessDefinitionById(processDefinitionId).getData();
             List<ItemTabBind> bindList =
                 tabItemBindRepository.findByItemIdAndProcessDefinitionIdOrderByTabIndexAsc(itemId, previouspd.getId());
             for (ItemTabBind bind : bindList) {

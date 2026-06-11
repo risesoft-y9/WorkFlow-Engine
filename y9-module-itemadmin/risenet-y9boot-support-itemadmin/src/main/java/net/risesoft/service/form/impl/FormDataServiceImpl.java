@@ -109,12 +109,11 @@ public class FormDataServiceImpl implements FormDataService {
     @Transactional
     public Y9Result<Object> copy(String sourceProcessSerialNumber, String targetProcessSerialNumber) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ProcessParam processParam = processParamService.findByProcessSerialNumber(sourceProcessSerialNumber);
             String itemId = processParam.getItemId();
             Item item = itemService.findById(itemId);
             ProcessDefinitionModel processDefinition =
-                repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(item.getWorkflowGuid()).getData();
             // 获取流程绑定的所有表名
             List<String> allTableNameList = getBindTableNames(itemId, processDefinition);
             // 复制数据
@@ -125,30 +124,6 @@ public class FormDataServiceImpl implements FormDataService {
             LOGGER.error("复制流程数据失败", e);
             return Y9Result.failure("复制失败");
         }
-    }
-
-    /**
-     * 获取流程绑定的所有表名
-     *
-     * @param itemId 事项ID
-     * @param processDefinition 流程定义
-     * @return 表名列表
-     */
-    private List<String> getBindTableNames(String itemId, ProcessDefinitionModel processDefinition) {
-        List<String> allTableNameList = new ArrayList<>();
-        List<Y9FormItemBind> formList =
-            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
-
-        formList.forEach(bind -> {
-            // 表单中涉及的表，多个表单有可能会绑定同一张表
-            y9FormRepository.findBindTableName(bind.getFormId()).forEach(tableName -> {
-                if (!allTableNameList.contains(tableName)) {
-                    allTableNameList.add(tableName);
-                }
-            });
-        });
-
-        return allTableNameList;
     }
 
     /**
@@ -192,6 +167,15 @@ public class FormDataServiceImpl implements FormDataService {
         return y9FormService.delPreFormData(formId, guid);
     }
 
+    private String findValueIgnoreCase(Map<String, Object> map, String key) {
+        for (Map.Entry<String, Object> entry : map.entrySet()) {
+            if (entry.getKey().equalsIgnoreCase(key)) {
+                return entry.getValue() != null ? entry.getValue().toString() : null;
+            }
+        }
+        return null;
+    }
+
     @Override
     public Map<String, Object> getBindPreFormByItemId(String itemId) {
         Map<String, Object> map = new HashMap<>(16);
@@ -211,6 +195,30 @@ public class FormDataServiceImpl implements FormDataService {
         return map;
     }
 
+    /**
+     * 获取流程绑定的所有表名
+     *
+     * @param itemId 事项ID
+     * @param processDefinition 流程定义
+     * @return 表名列表
+     */
+    private List<String> getBindTableNames(String itemId, ProcessDefinitionModel processDefinition) {
+        List<String> allTableNameList = new ArrayList<>();
+        List<Y9FormItemBind> formList =
+            y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
+
+        formList.forEach(bind -> {
+            // 表单中涉及的表，多个表单有可能会绑定同一张表
+            y9FormRepository.findBindTableName(bind.getFormId()).forEach(tableName -> {
+                if (!allTableNameList.contains(tableName)) {
+                    allTableNameList.add(tableName);
+                }
+            });
+        });
+
+        return allTableNameList;
+    }
+
     @Override
     @SuppressWarnings("java:S2077")
     public Map<String, Object> getData(String itemId, String processSerialNumber) {
@@ -223,7 +231,7 @@ public class FormDataServiceImpl implements FormDataService {
             }
             String processDefineKey = item.getWorkflowGuid();
             Y9Result<ProcessDefinitionModel> processDefinitionResult =
-                repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey);
+                repositoryApi.getLatestProcessDefinitionByKey(processDefineKey);
             if (!processDefinitionResult.isSuccess() || processDefinitionResult.getData() == null) {
                 LOGGER.warn("未找到事项{}对应的工作流定义", itemId);
                 return retMap;
@@ -251,6 +259,19 @@ public class FormDataServiceImpl implements FormDataService {
         return retMap;
     }
 
+    @Override
+    @SuppressWarnings("java:S2077")
+    public Y9Result<Map<String, Object>> getData4TableAlias(String guid, String tableAlias) {
+        Y9Table y9Table = y9TableService.findByTableAlias(tableAlias);
+        if (null == y9Table) {
+            LOGGER.error("表简称[{}]对应的字段不存在", tableAlias);
+            return Y9Result.failure("表简称[" + tableAlias + "]对应的字段不存在");
+        }
+        String selectSql = SELECT_KEY + y9Table.getTableName() + " WHERE GUID = ?";
+        List<Map<String, Object>> list = jdbcTemplate.queryForList(selectSql, guid);
+        return Y9Result.success(!list.isEmpty() ? list.get(0) : null);
+    }
+
     @SuppressWarnings("java:S2077")
     @Override
     public Map<String, Map<String, Object>> getDataByProcessSerialNumbers(String itemId,
@@ -260,8 +281,7 @@ public class FormDataServiceImpl implements FormDataService {
             Item item = itemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey)
-                    .getData();
+                repositoryApi.getLatestProcessDefinitionByKey(processDefineKey).getData();
             List<Y9FormItemBind> formList =
                 y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             List<Map<String, Object>> mapList = new ArrayList<>();
@@ -283,60 +303,6 @@ public class FormDataServiceImpl implements FormDataService {
             e.printStackTrace();
         }
         return retMap;
-    }
-
-    /**
-     * 合并具有相同key的Map，对于相同字段，优先保留非null值
-     *
-     * @param listMap 要合并的Map列表
-     * @param key 用于判断相等的键名
-     * @return 合并后的Map
-     */
-    public Map<String, Map<String, Object>> mergeMapsByKeyValueNonNullPriority(List<Map<String, Object>> listMap,
-        String key) {
-        Map<String, Map<String, Object>> mergedMap = new HashMap<>();
-        for (Map<String, Object> map : listMap) {
-            String keyValue = findValueIgnoreCase(map, key);
-            if (keyValue != null) {
-                mergedMap.merge(keyValue, new HashMap<>(map),
-                    (existingMap, newMap) -> mergeTwoMaps(existingMap, newMap));
-            }
-        }
-        return mergedMap;
-    }
-
-    private Map<String, Object> mergeTwoMaps(Map<String, Object> existingMap, Map<String, Object> newMap) {
-        for (Map.Entry<String, Object> entry : newMap.entrySet()) {
-            String entryKey = entry.getKey();
-            Object entryValue = entry.getValue();
-            // 如果新值不为null，或者原值为null，则更新
-            if (entryValue != null || existingMap.get(entryKey) == null) {
-                existingMap.put(entryKey, entryValue);
-            }
-        }
-        return existingMap;
-    }
-
-    private String findValueIgnoreCase(Map<String, Object> map, String key) {
-        for (Map.Entry<String, Object> entry : map.entrySet()) {
-            if (entry.getKey().equalsIgnoreCase(key)) {
-                return entry.getValue() != null ? entry.getValue().toString() : null;
-            }
-        }
-        return null;
-    }
-
-    @Override
-    @SuppressWarnings("java:S2077")
-    public Y9Result<Map<String, Object>> getData4TableAlias(String guid, String tableAlias) {
-        Y9Table y9Table = y9TableService.findByTableAlias(tableAlias);
-        if (null == y9Table) {
-            LOGGER.error("表简称[{}]对应的字段不存在", tableAlias);
-            return Y9Result.failure("表简称[" + tableAlias + "]对应的字段不存在");
-        }
-        String selectSql = SELECT_KEY + y9Table.getTableName() + " WHERE GUID = ?";
-        List<Map<String, Object>> list = jdbcTemplate.queryForList(selectSql, guid);
-        return Y9Result.success(!list.isEmpty() ? list.get(0) : null);
     }
 
     @Override
@@ -496,8 +462,7 @@ public class FormDataServiceImpl implements FormDataService {
             Item item = itemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey)
-                    .getData();
+                repositoryApi.getLatestProcessDefinitionByKey(processDefineKey).getData();
             List<Y9FormItemBind> formList =
                 y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             for (Y9FormItemBind form : formList) {
@@ -549,6 +514,38 @@ public class FormDataServiceImpl implements FormDataService {
         return y9FormService.listFormData(formId);
     }
 
+    /**
+     * 合并具有相同key的Map，对于相同字段，优先保留非null值
+     *
+     * @param listMap 要合并的Map列表
+     * @param key 用于判断相等的键名
+     * @return 合并后的Map
+     */
+    public Map<String, Map<String, Object>> mergeMapsByKeyValueNonNullPriority(List<Map<String, Object>> listMap,
+        String key) {
+        Map<String, Map<String, Object>> mergedMap = new HashMap<>();
+        for (Map<String, Object> map : listMap) {
+            String keyValue = findValueIgnoreCase(map, key);
+            if (keyValue != null) {
+                mergedMap.merge(keyValue, new HashMap<>(map),
+                    (existingMap, newMap) -> mergeTwoMaps(existingMap, newMap));
+            }
+        }
+        return mergedMap;
+    }
+
+    private Map<String, Object> mergeTwoMaps(Map<String, Object> existingMap, Map<String, Object> newMap) {
+        for (Map.Entry<String, Object> entry : newMap.entrySet()) {
+            String entryKey = entry.getKey();
+            Object entryValue = entry.getValue();
+            // 如果新值不为null，或者原值为null，则更新
+            if (entryValue != null || existingMap.get(entryKey) == null) {
+                existingMap.put(entryKey, entryValue);
+            }
+        }
+        return existingMap;
+    }
+
     @SuppressWarnings("unchecked")
     @Override
     @Transactional
@@ -579,8 +576,7 @@ public class FormDataServiceImpl implements FormDataService {
             Item item = itemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinition =
-                repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefineKey)
-                    .getData();
+                repositoryApi.getLatestProcessDefinitionByKey(processDefineKey).getData();
             List<Y9FormItemBind> list =
                 y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
             String bindFormId = "";
@@ -730,30 +726,6 @@ public class FormDataServiceImpl implements FormDataService {
     }
 
     /**
-     * 验证字段并提取涉及的表
-     */
-    private List<Y9Table> validateAndExtractTables(Map<String, Object> dataMap) {
-        List<Y9Table> tableList = new ArrayList<>();
-        for (String key : dataMap.keySet()) {
-            if (!key.contains(".")) {
-                LOGGER.warn("字段未包含表简称：{}", key);
-                return null;
-            }
-            String[] aliasColumnNameType = key.split("\\.");
-            String alias = aliasColumnNameType[0];
-            Y9Table y9Table = y9TableService.findByTableAlias(alias);
-            if (null == y9Table) {
-                LOGGER.warn("表简称对应的表不存在：{}", alias);
-                return null;
-            }
-            if (!tableList.contains(y9Table)) {
-                tableList.add(y9Table);
-            }
-        }
-        return tableList;
-    }
-
-    /**
      * 更新单个表的数据
      */
     private Y9Result<String> updateTableData(Y9Table table, String guid, Map<String, Object> dataMap) {
@@ -781,5 +753,29 @@ public class FormDataServiceImpl implements FormDataService {
             LOGGER.error("更新表{}数据失败", table.getTableName(), e);
             return Y9Result.failure("更新表" + table.getTableName() + "数据失败：" + e.getMessage());
         }
+    }
+
+    /**
+     * 验证字段并提取涉及的表
+     */
+    private List<Y9Table> validateAndExtractTables(Map<String, Object> dataMap) {
+        List<Y9Table> tableList = new ArrayList<>();
+        for (String key : dataMap.keySet()) {
+            if (!key.contains(".")) {
+                LOGGER.warn("字段未包含表简称：{}", key);
+                return null;
+            }
+            String[] aliasColumnNameType = key.split("\\.");
+            String alias = aliasColumnNameType[0];
+            Y9Table y9Table = y9TableService.findByTableAlias(alias);
+            if (null == y9Table) {
+                LOGGER.warn("表简称对应的表不存在：{}", alias);
+                return null;
+            }
+            if (!tableList.contains(y9Table)) {
+                tableList.add(y9Table);
+            }
+        }
+        return tableList;
     }
 }

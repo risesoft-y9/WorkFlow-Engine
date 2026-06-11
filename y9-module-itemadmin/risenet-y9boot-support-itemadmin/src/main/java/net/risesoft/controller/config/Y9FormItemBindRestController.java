@@ -3,6 +3,7 @@ package net.risesoft.controller.config;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -32,7 +33,6 @@ import net.risesoft.repository.form.Y9FormRepository;
 import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.template.PrintTemplateService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -160,7 +160,6 @@ public class Y9FormItemBindRestController {
     public Y9Result<Y9FormItemBind> getBindForm(@RequestParam(required = false) String id,
         @RequestParam String procDefId) {
         Y9FormItemBind eformItemBind;
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotBlank(id)) {
             eformItemBind = y9FormItemBindService.getById(id);
             Y9Form form = y9FormRepository.findById(eformItemBind.getFormId()).orElse(null);
@@ -171,8 +170,7 @@ public class Y9FormItemBindRestController {
             eformItemBind.setId(id);
             eformItemBind.setProcessDefinitionId(procDefId);
         }
-        ProcessDefinitionModel processDefinition =
-            repositoryApi.getProcessDefinitionById(tenantId, procDefId).getData();
+        ProcessDefinitionModel processDefinition = repositoryApi.getProcessDefinitionById(procDefId).getData();
         eformItemBind.setProcDefName(processDefinition.getName());
         return Y9Result.success(eformItemBind, "获取成功");
     }

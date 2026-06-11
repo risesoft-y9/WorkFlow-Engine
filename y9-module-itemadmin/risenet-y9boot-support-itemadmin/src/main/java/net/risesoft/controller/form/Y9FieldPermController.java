@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -30,7 +31,6 @@ import net.risesoft.repository.form.Y9FieldPermRepository;
 import net.risesoft.repository.form.Y9FormItemBindRepository;
 import net.risesoft.repository.form.Y9FormItemMobileBindRepository;
 import net.risesoft.service.core.ItemService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -129,7 +129,6 @@ public class Y9FieldPermController {
     @GetMapping(value = "/getBpmList")
     public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam String formId, @RequestParam String fieldName) {
         List<Map<String, Object>> resList = new ArrayList<>();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<String> list = new ArrayList<>();
         list.add(formId);
         List<Y9FormItemBind> bindList = y9FormItemBindRepository.findByFormIdList(list);
@@ -155,7 +154,7 @@ public class Y9FieldPermController {
             return Y9Result.failure("表单绑定的事项未绑定流程定义!");
         }
         ProcessDefinitionModel processDefinitionModel =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(item.getWorkflowGuid()).getData();
         if (null == processDefinitionModel) {
             return Y9Result.failure("事项绑定的流程定义不存在!");
         }

@@ -7,6 +7,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -31,7 +32,6 @@ import net.risesoft.service.config.Y9FormItemBindService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.form.Y9FormFieldService;
 import net.risesoft.service.form.Y9TableService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -54,6 +54,15 @@ public class ItemViewConfRestController {
     private final Y9FormFieldService y9FormFieldService;
 
     private final Y9TableService y9TableService;
+
+    private List<Map<String, Object>> buildTableFieldResult(Map<String, List<Y9FormField>> tableFieldMap) {
+        return tableFieldMap.entrySet().stream().map(entry -> {
+            Map<String, Object> map = new HashMap<>();
+            map.put(ItemConsts.TABLENAME_KEY, entry.getKey());
+            map.put(ItemConsts.FIELDLIST_KEY, entry.getValue());
+            return map;
+        }).collect(Collectors.toList());
+    }
 
     /**
      * 保存或者修改
@@ -90,13 +99,12 @@ public class ItemViewConfRestController {
      */
     @GetMapping(value = "/getColumns")
     public Y9Result<List<Y9FormField>> getColumns(@RequestParam String tableName, @RequestParam String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<Y9FormField> list = new ArrayList<>();
         List<String> fieldNameList = new ArrayList<>();
         Item item = itemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefineKey).getData();
         List<Y9FormItemBind> formList =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         for (Y9FormItemBind bind : formList) {
@@ -124,11 +132,10 @@ public class ItemViewConfRestController {
     public Y9Result<Map<String, Object>> newOrModify(@RequestParam(required = false) String id,
         @RequestParam String itemId) {
         Map<String, Object> resMap = new HashMap<>(16);
-        String tenantId = Y9LoginUserHolder.getTenantId();
         Item item = itemService.findById(itemId);
         String processDefineKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefineKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefineKey).getData();
         List<Y9FormItemBind> formList =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKeyIsNull(itemId, processDefinition.getId());
         // 提取所有字段
@@ -155,21 +162,6 @@ public class ItemViewConfRestController {
         return Y9Result.success(resMap, "获取成功");
     }
 
-    private List<Y9FormField> removeDuplicateFields(List<Y9FormField> fields) {
-        return new ArrayList<>(fields.stream()
-            .collect(Collectors.toMap(Y9FormField::getFieldName, field -> field, (existing, replacement) -> existing))
-            .values());
-    }
-
-    private List<Map<String, Object>> buildTableFieldResult(Map<String, List<Y9FormField>> tableFieldMap) {
-        return tableFieldMap.entrySet().stream().map(entry -> {
-            Map<String, Object> map = new HashMap<>();
-            map.put(ItemConsts.TABLENAME_KEY, entry.getKey());
-            map.put(ItemConsts.FIELDLIST_KEY, entry.getValue());
-            return map;
-        }).collect(Collectors.toList());
-    }
-
     /**
      * 获取自定义列视图
      *
@@ -183,6 +175,12 @@ public class ItemViewConfRestController {
             return Y9Result.success(itemViewConf, "获取成功");
         }
         return Y9Result.success(null, "获取成功");
+    }
+
+    private List<Y9FormField> removeDuplicateFields(List<Y9FormField> fields) {
+        return new ArrayList<>(fields.stream()
+            .collect(Collectors.toMap(Y9FormField::getFieldName, field -> field, (existing, replacement) -> existing))
+            .values());
     }
 
     /**

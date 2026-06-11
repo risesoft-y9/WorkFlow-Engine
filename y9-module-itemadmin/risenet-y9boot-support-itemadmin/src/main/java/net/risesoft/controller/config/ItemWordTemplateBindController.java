@@ -127,9 +127,9 @@ public class ItemWordTemplateBindController {
     public Y9Result<Map<String, Object>> getTemplateBind(@RequestParam String itemId) {
         Map<String, Object> map = new HashMap<>(16);
         Item item = itemService.findById(itemId);
-        String processDefinitionKey = item.getWorkflowGuid(), tenantId = Y9LoginUserHolder.getTenantId();
+        String processDefinitionKey = item.getWorkflowGuid();
         ProcessDefinitionModel processDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
         String processDefinitionId = processDefinition.getId();
         map.put("processDefinitionId", processDefinitionId);
         List<WordTemplate> templateList = wordTemplateService.listAll();
