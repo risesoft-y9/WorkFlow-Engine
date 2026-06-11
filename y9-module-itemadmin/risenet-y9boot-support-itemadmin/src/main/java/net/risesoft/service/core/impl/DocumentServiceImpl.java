@@ -547,7 +547,6 @@ public class DocumentServiceImpl implements DocumentService {
     @Override
     public OpenDataModel edit(String itembox, String taskId, String processInstanceId, String itemId, boolean mobile) {
         OpenDataModel model = new OpenDataModel();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         // 处理监控办理状态
         if (ItemBoxTypeEnum.MONITOR_DOING.getValue().equals(itembox)) {
             itembox = ItemBoxTypeEnum.DOING.getValue();
@@ -557,7 +556,7 @@ public class DocumentServiceImpl implements DocumentService {
         String startor = processParam.getStartor();
         // 根据不同的任务箱类型处理数据
         ProcessInstanceData processInstanceData =
-            handleProcessInstanceData(itembox, taskId, processInstanceId, itemId, processParam, tenantId, model);
+            handleProcessInstanceData(itembox, taskId, processInstanceId, itemId, processParam, model);
         // 设置基础模型数据
         model.setTitle(processParam.getTitle());
         model.setStartor(startor);
@@ -636,8 +635,6 @@ public class DocumentServiceImpl implements DocumentService {
         this.setNum(model);
         this.genTabModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey, false,
             model);
-        // this.genDocumentModel(processParam.getItemId(), processDefinitionKey, processDefinitionId, taskDefinitionKey,
-        // model);
         this.menuControl4ChaoSong(model);
         return model;
     }
@@ -713,7 +710,6 @@ public class DocumentServiceImpl implements DocumentService {
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
             activityUser = "", itemId;
         String starter;
-        String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         starter = processParam.getStartor();
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
@@ -1487,8 +1483,7 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理流程实例数据
      */
     private ProcessInstanceData handleProcessInstanceData(String itembox, String taskId, String processInstanceId,
-        String itemId, ProcessParam processParam, String tenantId, OpenDataModel model) {
-
+        String itemId, ProcessParam processParam, OpenDataModel model) {
         ProcessInstanceData data = new ProcessInstanceData();
         data.processSerialNumber = "";
         data.processDefinitionId = "";
@@ -1497,14 +1492,12 @@ public class DocumentServiceImpl implements DocumentService {
         data.activitiUser = "";
         data.taskId = taskId;
         data.itemId = itemId;
-
         if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
             handleTodoBox(data, taskId, processParam, model);
         } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
             || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
             handleDoingDoneBox(data, processInstanceId, taskId, processParam, model);
         }
-
         return data;
     }
 
@@ -1966,7 +1959,7 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel menuControl4Draft(DocumentDetailModel model) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getPositionId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
             taskDefKey = model.getTaskDefKey();
         List<ItemButtonModel> buttonList = buttonService.showButton4Draft(itemId);
@@ -2017,10 +2010,7 @@ public class DocumentServiceImpl implements DocumentService {
             }
         }
         // 处理多步退回按钮
-        if (buttonList.stream()
-            .filter(itemButtonModel -> itemButtonModel.getKey().equals("back2any"))
-            .collect(Collectors.toList())
-            .size() > 0) {
+        if (buttonList.stream().anyMatch(itemButtonModel -> itemButtonModel.getKey().equals("back2any"))) {
             handleRollbackButtons(itemId, buttonList, taskId, processDefinitionId, taskDefKey);
         }
         // 打印按钮添加到最后
@@ -2280,7 +2270,6 @@ public class DocumentServiceImpl implements DocumentService {
     public Y9Result<String> saveAndForwardingByTaskKey(String itemId, String processSerialNumber,
         String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId,
         String startRouteToTaskId, Map<String, Object> variables) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<String> userList = new ArrayList<>(parseUserChoice(userChoice));
         int num = userList.size();
         boolean tooMuch = num > 100;
