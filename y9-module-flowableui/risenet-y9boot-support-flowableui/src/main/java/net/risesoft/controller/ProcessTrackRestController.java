@@ -25,7 +25,6 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.HistoricActivityInstanceModel;
 import net.risesoft.model.itemadmin.HistoryProcessModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 历程，流程图数据
@@ -58,8 +57,7 @@ public class ProcessTrackRestController {
     public Y9Result<String> getFlowChart(@RequestParam(required = false) String resourceType,
         @RequestParam(required = false) String processInstanceId, @RequestParam @NotBlank String processDefinitionId) {
         try {
-            return repositoryApi.getXmlByProcessInstance(Y9LoginUserHolder.getTenantId(), resourceType,
-                processInstanceId, processDefinitionId);
+            return repositoryApi.getXmlByProcessInstance(resourceType, processInstanceId, processDefinitionId);
         } catch (Exception e) {
             LOGGER.error("获取流程图失败", e);
         }

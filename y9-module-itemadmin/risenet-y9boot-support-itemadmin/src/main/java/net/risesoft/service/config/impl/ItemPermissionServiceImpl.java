@@ -88,14 +88,13 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     @Override
     @Transactional
     public void copyPerm(String itemId, String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null;
         // 获取最新和前一版本的流程定义
-        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(tenantId, item);
+        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(item);
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         String previousProcessDefinitionId =
-            getPreviousProcessDefinitionId(tenantId, processDefinitionId, latestProcessDefinition);
+            getPreviousProcessDefinitionId(processDefinitionId, latestProcessDefinition);
         // 获取前一版本的权限列表
         List<ItemPermission> previousPermissions =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, previousProcessDefinitionId);
@@ -176,21 +175,21 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     /**
      * 获取最新流程定义
      */
-    private ProcessDefinitionModel getLatestProcessDefinition(String tenantId, Item item) {
+    private ProcessDefinitionModel getLatestProcessDefinition(Item item) {
         String processDefinitionKey = item.getWorkflowGuid();
-        return repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+        return repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
     }
 
     /**
      * 获取前一版本流程定义ID
      */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
+    private String getPreviousProcessDefinitionId(String processDefinitionId,
         ProcessDefinitionModel latestProcessDefinition) {
         String previousProcessDefinitionId = processDefinitionId;
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
             ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
+                repositoryApi.getPreviousProcessDefinitionById(latestProcessDefinitionId).getData();
             previousProcessDefinitionId = previousProcessDefinition.getId();
         }
         return previousProcessDefinitionId;

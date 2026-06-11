@@ -2,6 +2,7 @@ package net.risesoft.controller;
 
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -29,9 +29,7 @@ public class ItemProcessDefinitionRestController {
 
     @GetMapping(value = "/getProcessDefinitionList")
     public Y9Result<List<ProcessDefinitionModel>> getProcessDefinitionList(@RequestParam String processDefineKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<ProcessDefinitionModel> pdList =
-            repositoryApi.getProcessDefinitionListByKey(tenantId, processDefineKey).getData();
+        List<ProcessDefinitionModel> pdList = repositoryApi.getProcessDefinitionListByKey(processDefineKey).getData();
         return Y9Result.success(pdList, "获取成功");
     }
 }

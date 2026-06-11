@@ -228,7 +228,7 @@ public class ItemRestController {
         map.put("manager", manager);
         map.put("itemExtendProps", itemExtendProps == null ? new ItemExtendProps() : itemExtendProps);
         List<Map<String, Object>> workflowList = new ArrayList<>();
-        List<ProcessDefinitionModel> pdModelList = repositoryApi.getLatestProcessDefinitionList(tenantId).getData();
+        List<ProcessDefinitionModel> pdModelList = repositoryApi.getLatestProcessDefinitionList().getData();
         for (ProcessDefinitionModel pdModel : pdModelList) {
             Map<String, Object> row = new HashMap<>(16);
             Boolean hasProcessDefinitionByKey = itemService.hasProcessDefinitionByKey(pdModel.getKey());

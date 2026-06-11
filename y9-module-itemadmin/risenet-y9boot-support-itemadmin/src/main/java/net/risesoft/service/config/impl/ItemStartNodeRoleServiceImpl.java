@@ -79,15 +79,14 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     @Transactional
     public void copyBind(String itemId, String processDefinitionId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String userName = person.getName();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在数据itemId=" + itemId + "事项";
         // 获取最新和前一版本的流程定义
-        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(tenantId, item);
+        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(item);
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         String previousProcessDefinitionId =
-            getPreviousProcessDefinitionId(tenantId, processDefinitionId, latestProcessDefinition);
+            getPreviousProcessDefinitionId(processDefinitionId, latestProcessDefinition);
         // 获取前一版本的起始节点角色列表
         List<ItemStartNodeRole> previousStartNodeRoles =
             itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionId(itemId, previousProcessDefinitionId);
@@ -219,8 +218,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId=" + itemId + "事项";
         String processDefinitionKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latestPd =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+        ProcessDefinitionModel latestPd = repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
         String processDefinitionId = latestPd.getId();
         List<ItemStartNodeRole> list = itemStartNodeRoleRepository
             .findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId, processDefinitionId);
@@ -251,9 +249,9 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     /**
      * 获取最新流程定义
      */
-    private ProcessDefinitionModel getLatestProcessDefinition(String tenantId, Item item) {
+    private ProcessDefinitionModel getLatestProcessDefinition(Item item) {
         String processDefinitionKey = item.getWorkflowGuid();
-        return repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+        return repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
     }
 
     /**
@@ -263,13 +261,13 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     /**
      * 获取前一版本流程定义ID
      */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
+    private String getPreviousProcessDefinitionId(String processDefinitionId,
         ProcessDefinitionModel latestProcessDefinition) {
         String previousProcessDefinitionId = processDefinitionId;
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
             ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
+                repositoryApi.getPreviousProcessDefinitionById(latestProcessDefinitionId).getData();
             previousProcessDefinitionId = previousProcessDefinition.getId();
         }
         return previousProcessDefinitionId;
@@ -282,7 +280,7 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId：" + itemId + "事项";
         // 获取最新流程定义
-        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(tenantId, item);
+        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(item);
         String processDefinitionId = latestProcessDefinition.getId();
         // 获取起始节点角色列表
         List<ItemStartNodeRole> startNodeRoles = itemStartNodeRoleRepository

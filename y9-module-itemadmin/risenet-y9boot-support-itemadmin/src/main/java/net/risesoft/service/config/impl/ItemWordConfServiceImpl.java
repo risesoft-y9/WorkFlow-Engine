@@ -70,17 +70,15 @@ public class ItemWordConfServiceImpl implements ItemWordConfService {
     @Override
     @Transactional
     public void copyWordConf(String itemId, String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         Item item = itemRepository.findById(itemId).orElse(null);
         assert item != null : "不存在itemId=" + itemId + "事项";
         String proDefKey = item.getWorkflowGuid();
-        ProcessDefinitionModel latest = repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
+        ProcessDefinitionModel latest = repositoryApi.getLatestProcessDefinitionByKey(proDefKey).getData();
         String latestId = latest.getId();
         String previousId = processDefinitionId;
         if (processDefinitionId.equals(latestId)) {
             if (latest.getVersion() > 1) {
-                ProcessDefinitionModel previous =
-                    repositoryApi.getPreviousProcessDefinitionById(tenantId, latestId).getData();
+                ProcessDefinitionModel previous = repositoryApi.getPreviousProcessDefinitionById(latestId).getData();
                 previousId = previous.getId();
             }
         }

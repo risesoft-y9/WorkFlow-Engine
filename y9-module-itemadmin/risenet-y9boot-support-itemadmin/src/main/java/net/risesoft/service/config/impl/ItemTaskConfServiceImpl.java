@@ -62,13 +62,13 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
         String processDefinitionKey = processDefinitionId.split(":")[0];
         // 获取最新和前一版本的流程定义
         ProcessDefinitionModel latestProcessDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
         String latestProcessDefinitionId = latestProcessDefinition.getId();
         if (latestProcessDefinition.getVersion() <= 1) {
             return; // 版本为1时无需复制配置
         }
-        String previousProcessDefinitionId = getPreviousProcessDefinitionId(tenantId, processDefinitionId,
-            latestProcessDefinitionId, latestProcessDefinition);
+        String previousProcessDefinitionId =
+            getPreviousProcessDefinitionId(processDefinitionId, latestProcessDefinitionId, latestProcessDefinition);
         // 获取前一版本的任务配置列表
         List<ItemTaskConf> previousTaskConfigs =
             taskConfRepository.findByItemIdAndProcessDefinitionId(itemId, previousProcessDefinitionId);
@@ -76,7 +76,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
         List<TargetModel> nodes = processDefinitionApi.getNodes(latestProcessDefinitionId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
-            copyTaskConfigForNode(itemId, latestProcessDefinitionId, currentTaskDefKey, previousTaskConfigs, tenantId);
+            copyTaskConfigForNode(itemId, latestProcessDefinitionId, currentTaskDefKey, previousTaskConfigs);
         }
     }
 
@@ -84,18 +84,17 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
      * 为指定节点复制任务配置
      */
     private void copyTaskConfigForNode(String itemId, String latestProcessDefinitionId, String currentTaskDefKey,
-        List<ItemTaskConf> previousTaskConfigs, String tenantId) {
+        List<ItemTaskConf> previousTaskConfigs) {
         ItemTaskConf existingTaskConfig = this.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId,
             latestProcessDefinitionId, currentTaskDefKey);
         for (ItemTaskConf previousTaskConfig : previousTaskConfigs) {
             String previousTaskDefKey = previousTaskConfig.getTaskDefKey();
             if (previousTaskDefKey.equals(currentTaskDefKey)) {
                 if (null == existingTaskConfig) {
-                    createNewTaskConfig(itemId, latestProcessDefinitionId, currentTaskDefKey, previousTaskConfig,
-                        tenantId);
+                    createNewTaskConfig(itemId, latestProcessDefinitionId, currentTaskDefKey, previousTaskConfig);
                 } else {
                     updateExistingTaskConfig(existingTaskConfig, itemId, latestProcessDefinitionId, currentTaskDefKey,
-                        previousTaskConfig, tenantId);
+                        previousTaskConfig);
                 }
                 break; // 找到匹配项后退出循环
             }
@@ -106,7 +105,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
      * 创建新的任务配置
      */
     private void createNewTaskConfig(String itemId, String processDefinitionId, String taskDefKey,
-        ItemTaskConf sourceTaskConfig, String tenantId) {
+        ItemTaskConf sourceTaskConfig) {
         ItemTaskConf newTaskConfig = new ItemTaskConf();
         newTaskConfig.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
         newTaskConfig.setItemId(itemId);
@@ -114,7 +113,7 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
         newTaskConfig.setSignOpinion(sourceTaskConfig.getSignOpinion());
         newTaskConfig.setSponsor(sourceTaskConfig.getSponsor());
         newTaskConfig.setTaskDefKey(taskDefKey);
-        newTaskConfig.setTenantId(tenantId);
+        newTaskConfig.setTenantId(Y9LoginUserHolder.getTenantId());
         newTaskConfig.setSignTask(sourceTaskConfig.getSignTask());
         taskConfRepository.save(newTaskConfig);
     }
@@ -175,12 +174,12 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
     /**
      * 获取前一版本流程定义ID
      */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
-        String latestProcessDefinitionId, ProcessDefinitionModel latestProcessDefinition) {
+    private String getPreviousProcessDefinitionId(String processDefinitionId, String latestProcessDefinitionId,
+        ProcessDefinitionModel latestProcessDefinition) {
         String previousProcessDefinitionId = processDefinitionId;
         if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
             ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
+                repositoryApi.getPreviousProcessDefinitionById(latestProcessDefinitionId).getData();
             previousProcessDefinitionId = previousProcessDefinition.getId();
         }
         return previousProcessDefinitionId;
@@ -247,13 +246,13 @@ public class ItemTaskConfServiceImpl implements ItemTaskConfService {
      * 更新现有的任务配置
      */
     private void updateExistingTaskConfig(ItemTaskConf existingTaskConfig, String itemId, String processDefinitionId,
-        String taskDefKey, ItemTaskConf sourceTaskConfig, String tenantId) {
+        String taskDefKey, ItemTaskConf sourceTaskConfig) {
         existingTaskConfig.setItemId(itemId);
         existingTaskConfig.setProcessDefinitionId(processDefinitionId);
         existingTaskConfig.setSignOpinion(sourceTaskConfig.getSignOpinion());
         existingTaskConfig.setSponsor(sourceTaskConfig.getSponsor());
         existingTaskConfig.setTaskDefKey(taskDefKey);
-        existingTaskConfig.setTenantId(tenantId);
+        existingTaskConfig.setTenantId(Y9LoginUserHolder.getTenantId());
         existingTaskConfig.setSignTask(sourceTaskConfig.getSignTask());
         taskConfRepository.save(existingTaskConfig);
     }

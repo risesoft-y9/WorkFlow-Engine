@@ -307,7 +307,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         try {
             Item item = itemService.findById(itemId);
             ProcessDefinitionModel processDefinitionModel =
-                repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(item.getWorkflowGuid()).getData();
             List<TargetModel> targetModelList = processDefinitionApi.getNodes(processDefinitionModel.getId()).getData();
             TargetModel targetModel = targetModelList.stream()
                 .filter(model -> taskKey.equals(model.getTaskDefKey()))

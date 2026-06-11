@@ -68,9 +68,8 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
 
     @Override
     public Y9Result<String> dataTransfer(String processDefinitionId, String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessDefinitionModel processDefinition =
-            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionId.split(":")[0]).getData();
+            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionId.split(":")[0]).getData();
         String latestProcessDefinitionId = processDefinition.getId();
         // 迁移所有
         if (StringUtils.isEmpty(processInstanceId)) {
@@ -90,20 +89,6 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
         updateTableByProcessInstanceId("ACT_RU_TASK", latestProcessDefinitionId, processInstanceId);
     }
 
-    /**
-     * 根据流程实例ID更新表中的流程定义ID
-     *
-     * @param tableName 表名
-     * @param latestProcessDefinitionId 新的流程定义ID
-     * @param processInstanceId 流程实例ID
-     */
-    @SuppressWarnings("java:S2077")
-    private void updateTableByProcessInstanceId(String tableName, String latestProcessDefinitionId,
-        String processInstanceId) {
-        String sql = "UPDATE " + tableName + " SET PROC_DEF_ID_ = ? WHERE PROC_INST_ID_ = ?";
-        jdbcTemplate4Tenant.update(sql, latestProcessDefinitionId, processInstanceId);
-    }
-
     private void executeSql0(String latestProcessDefinitionId, String processDefinitionId) {
         updateTableByProcessDefinitionId("ACT_HI_ACTINST", latestProcessDefinitionId, processDefinitionId);
         updateTableByProcessDefinitionId("ACT_HI_PROCINST", latestProcessDefinitionId, processDefinitionId);
@@ -111,20 +96,6 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
         updateTableByProcessDefinitionId("ACT_RU_ACTINST", latestProcessDefinitionId, processDefinitionId);
         updateTableByProcessDefinitionId("ACT_RU_EXECUTION", latestProcessDefinitionId, processDefinitionId);
         updateTableByProcessDefinitionId("ACT_RU_TASK", latestProcessDefinitionId, processDefinitionId);
-    }
-
-    /**
-     * 根据流程定义ID更新表中的流程定义ID
-     *
-     * @param tableName 表名
-     * @param latestProcessDefinitionId 新的流程定义ID
-     * @param processDefinitionId 原始流程定义ID
-     */
-    @SuppressWarnings("java:S2077")
-    private void updateTableByProcessDefinitionId(String tableName, String latestProcessDefinitionId,
-        String processDefinitionId) {
-        String sql = "UPDATE " + tableName + " SET PROC_DEF_ID_ = ? WHERE PROC_DEF_ID_ = ?";
-        jdbcTemplate4Tenant.update(sql, latestProcessDefinitionId, processDefinitionId);
     }
 
     @Override
@@ -159,6 +130,34 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
             items.add(mapTemp);
         }
         return Y9Page.success(page, piPage.getTotalPages(), piPage.getTotal(), items, "获取列表成功");
+    }
+
+    /**
+     * 根据流程定义ID更新表中的流程定义ID
+     *
+     * @param tableName 表名
+     * @param latestProcessDefinitionId 新的流程定义ID
+     * @param processDefinitionId 原始流程定义ID
+     */
+    @SuppressWarnings("java:S2077")
+    private void updateTableByProcessDefinitionId(String tableName, String latestProcessDefinitionId,
+        String processDefinitionId) {
+        String sql = "UPDATE " + tableName + " SET PROC_DEF_ID_ = ? WHERE PROC_DEF_ID_ = ?";
+        jdbcTemplate4Tenant.update(sql, latestProcessDefinitionId, processDefinitionId);
+    }
+
+    /**
+     * 根据流程实例ID更新表中的流程定义ID
+     *
+     * @param tableName 表名
+     * @param latestProcessDefinitionId 新的流程定义ID
+     * @param processInstanceId 流程实例ID
+     */
+    @SuppressWarnings("java:S2077")
+    private void updateTableByProcessInstanceId(String tableName, String latestProcessDefinitionId,
+        String processInstanceId) {
+        String sql = "UPDATE " + tableName + " SET PROC_DEF_ID_ = ? WHERE PROC_INST_ID_ = ?";
+        jdbcTemplate4Tenant.update(sql, latestProcessDefinitionId, processInstanceId);
     }
 
 }
