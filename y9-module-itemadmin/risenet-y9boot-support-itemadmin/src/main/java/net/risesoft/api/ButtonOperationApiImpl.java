@@ -209,10 +209,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     @Override
     public Y9Result<Object> reposition(@RequestParam String taskId, @RequestParam String repositionToTaskId,
         @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getPositionId();
-        specialOperationApi.reposition(tenantId, orgUnitId, taskId, repositionToTaskId, userChoice, reason,
-            sponsorGuid);
+        specialOperationApi.reposition(taskId, repositionToTaskId, userChoice, reason, sponsorGuid);
         return Y9Result.success();
     }
 
@@ -226,9 +223,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
      */
     @Override
     public Y9Result<Object> rollBack(@RequestParam String taskId, String reason) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getPositionId();
-        return Y9Result.success(specialOperationApi.rollBack(tenantId, orgUnitId, taskId, reason).isSuccess());
+        return Y9Result.success(specialOperationApi.rollBack(taskId, reason).isSuccess());
     }
 
     /**
@@ -245,10 +240,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     @Override
     public Y9Result<Object> rollBack2History(@RequestParam String taskId, @RequestParam String routeToTaskId,
         @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getPositionId();
-        specialOperationApi.rollBack2History(tenantId, orgUnitId, taskId, routeToTaskId, userChoice, reason,
-            sponsorGuid);
+        specialOperationApi.rollBack2History(taskId, routeToTaskId, userChoice, reason, sponsorGuid);
         return Y9Result.success();
     }
 
@@ -261,9 +253,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
      */
     @Override
     public Y9Result<Object> rollbackToSender(@RequestParam String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getPositionId();
-        return Y9Result.success(specialOperationApi.rollbackToSender(tenantId, orgUnitId, taskId).isSuccess());
+        return Y9Result.success(specialOperationApi.rollbackToSender(taskId).isSuccess());
     }
 
     /**
@@ -276,9 +266,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
      */
     @Override
     public Y9Result<Object> rollbackToStartor(@RequestParam String taskId, String reason) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getPositionId();
-        return specialOperationApi.rollbackToStartor(tenantId, orgUnitId, taskId, reason);
+        return specialOperationApi.rollbackToStartor(taskId, reason);
     }
 
     /**
@@ -291,9 +279,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
      */
     @Override
     public Y9Result<Object> specialComplete(@RequestParam String taskId, String reason) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getPositionId();
-        return Y9Result.success(specialOperationApi.specialComplete(tenantId, orgUnitId, taskId, reason).isSuccess());
+        return Y9Result.success(specialOperationApi.specialComplete(taskId, reason).isSuccess());
     }
 
     /**
@@ -313,8 +299,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
         ActRuDetail actRuDetail = actRuDetailService
             .findByProcessInstanceIdAndAssigneeAndStatusEquals1(task.getProcessInstanceId(), orgUnitId);
         boolean isSuccess =
-            specialOperationApi.takeBack2TaskDefKey(tenantId, orgUnitId, taskId, actRuDetail.getTaskDefKey(), reason)
-                .isSuccess();
+            specialOperationApi.takeBack2TaskDefKey(taskId, actRuDetail.getTaskDefKey(), reason).isSuccess();
         asyncUtilService.takeBackTwoTaskDefKeyAuditLog(tenantId, orgUnitId, taskId, actRuDetail.getTaskDefKey());
         return Y9Result.success(isSuccess);
     }
@@ -329,8 +314,6 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
      */
     @Override
     public Y9Result<Object> takeback(@RequestParam String taskId, String reason) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String orgUnitId = Y9FlowableHolder.getPositionId();
-        return Y9Result.success(specialOperationApi.takeBack(tenantId, orgUnitId, taskId, reason).isSuccess());
+        return Y9Result.success(specialOperationApi.takeBack(taskId, reason).isSuccess());
     }
 }
