@@ -416,15 +416,14 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      * 获取回退原因
      */
     private String getRollBackReason(String taskId, String year) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             HistoricVariableInstanceModel rollBackReason =
-                this.historicVariableApi.getByTaskIdAndVariableName(tenantId, taskId, "rollBackReason", year).getData();
+                this.historicVariableApi.getByTaskIdAndVariableName(taskId, "rollBackReason", year).getData();
             if (rollBackReason != null) {
                 return String.valueOf(rollBackReason.getValue());
             }
         } catch (Exception e) {
-            LOGGER.debug("获取回退原因失败，taskId: {}, tenantId: {}", taskId, tenantId, e);
+            LOGGER.error("获取回退原因失败，taskId: {}", taskId, e);
         }
         return "";
     }
@@ -476,16 +475,14 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      * 获取任务发送者信息
      */
     private String getTaskSender(String taskId, String year) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             HistoricVariableInstanceModel taskSenderModel =
-                this.historicVariableApi.getByTaskIdAndVariableName(tenantId, taskId, SysVariables.TASK_SENDER, year)
-                    .getData();
+                this.historicVariableApi.getByTaskIdAndVariableName(taskId, SysVariables.TASK_SENDER, year).getData();
             if (taskSenderModel != null) {
                 return taskSenderModel.getValue() == null ? "" : (String)taskSenderModel.getValue();
             }
         } catch (Exception e) {
-            LOGGER.debug("获取任务发送者信息失败，taskId: {}, tenantId: {}", taskId, tenantId, e);
+            LOGGER.error("获取任务发送者信息失败，taskId: {}", taskId, e);
         }
         return "";
     }
@@ -533,9 +530,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      */
     private HistoricVariableInstanceModel getZhuBanInfo(String taskId, String year) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            return this.historicVariableApi
-                .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLEL_SPONSOR, year)
+            return this.historicVariableApi.getByTaskIdAndVariableName(taskId, SysVariables.PARALLEL_SPONSOR, year)
                 .getData();
         } catch (Exception e) {
             LOGGER.warn("获取主办人信息失败，taskId: {}", taskId, e);
@@ -591,11 +586,11 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     /**
      * 检查是否为主办人
      */
-    private boolean isSponsor(String tenantId, String taskId, String year) {
+    private boolean isSponsor(String taskId, String year) {
         try {
-            HistoricVariableInstanceModel zhuBan = this.historicVariableApi
-                .getByTaskIdAndVariableName(tenantId, taskId, SysVariables.PARALLEL_SPONSOR, year)
-                .getData();
+            HistoricVariableInstanceModel zhuBan =
+                this.historicVariableApi.getByTaskIdAndVariableName(taskId, SysVariables.PARALLEL_SPONSOR, year)
+                    .getData();
             return zhuBan != null;
         } catch (Exception e) {
             LOGGER.warn("检查主办人身份失败，taskId: {}", taskId, e);
@@ -782,7 +777,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
             task.setTenantId(!opinion.isEmpty() ? opinion.get(0).getContent() : "");
 
             // 检查是否为主办人
-            boolean isSponsor = isSponsor(tenantId, task.getTaskId(), year);
+            boolean isSponsor = isSponsor(task.getTaskId(), year);
             task.setCalledProcessInstanceId(isSponsor ? employeeName + "(主办)" : employeeName);
 
             // 计算办理时长
@@ -856,9 +851,8 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      */
     private void processSequentialUsers(List<HistoryProcessModel> items, String processInstanceId) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             HistoricVariableInstanceModel users = this.historicVariableApi
-                .getByProcessInstanceIdAndVariableName(tenantId, processInstanceId, SysVariables.USERS, "")
+                .getByProcessInstanceIdAndVariableName(processInstanceId, SysVariables.USERS, "")
                 .getData();
 
             List<String> userList = users != null ? (ArrayList<String>)users.getValue() : new ArrayList<>();
