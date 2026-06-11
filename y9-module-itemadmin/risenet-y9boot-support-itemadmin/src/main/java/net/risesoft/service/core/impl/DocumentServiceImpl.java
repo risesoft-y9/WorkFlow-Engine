@@ -1845,9 +1845,9 @@ public class DocumentServiceImpl implements DocumentService {
                 if (item != null && item.getId() != null) {
                     model.setName(item.getName());
                     model.setItemName(item.getName());
-                    todoCount = processTodoApi
-                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId, item.getWorkflowGuid())
-                        .getData();
+                    todoCount =
+                        processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(userId, item.getWorkflowGuid())
+                            .getData();
                     model.setTodoCount((int)todoCount);
                     model.setAppIcon(StringUtils.isBlank(item.getIconData()) ? "" : item.getIconData());
                     model.setProcessDefinitionKey(item.getWorkflowGuid());
