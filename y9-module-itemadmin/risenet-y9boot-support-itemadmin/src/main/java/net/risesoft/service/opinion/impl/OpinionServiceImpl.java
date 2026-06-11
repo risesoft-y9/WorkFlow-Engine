@@ -303,10 +303,10 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     private void handleChaoSongAddablePermission(OpinionFrameModel opinionFrameModel, String itemId, String taskId,
-        String taskDefinitionKey, String tenantId, String opinionFrameMark) {
+        String taskDefinitionKey, String opinionFrameMark) {
         if (Boolean.TRUE.equals(opinionFrameModel.getAddable())) {
             opinionFrameModel.setAddable(false);
-            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            TaskModel task = taskApi.findById(taskId).getData();
             ItemOpinionFrameBind bind =
                 itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
                     task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
@@ -315,11 +315,11 @@ public class OpinionServiceImpl implements OpinionService {
     }
 
     private void handleChaoSongAddablePermissionOld(OpinionListModel opinionListModel, String itemId, String taskId,
-        String taskDefinitionKey, String tenantId, String opinionFrameMark) {
+        String taskDefinitionKey, String opinionFrameMark) {
         Boolean addableTemp = opinionListModel.getAddable();
         if (Boolean.TRUE.equals(addableTemp)) {
             opinionListModel.setAddable(false);
-            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            TaskModel task = taskApi.findById(taskId).getData();
             ItemOpinionFrameBind bind =
                 itemOpinionFrameBindService.findByItemIdAndProcessDefinitionIdAndTaskDefKeyAndOpinionFrameMark(itemId,
                     task.getProcessDefinitionId(), taskDefinitionKey, opinionFrameMark);
@@ -565,15 +565,14 @@ public class OpinionServiceImpl implements OpinionService {
         OpinionListModel opinionListModel, List<Opinion> opinionList, String opinionFrameMark, String taskId,
         String taskDefinitionKey) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        String personId = person.getPersonId();
         List<OpinionListModel> resList = new ArrayList<>();
         // 处理办结状态检查
         boolean isEnd = checkProcessEndStatusOld(processSerialNumber, opinionListModel);
         // 处理意见列表
         processChaoSongOpinionsOld(opinionList, resList, personId, isEnd, opinionListModel);
         // 处理新增权限检查
-        handleChaoSongAddablePermissionOld(opinionListModel, itemId, taskId, taskDefinitionKey, tenantId,
-            opinionFrameMark);
+        handleChaoSongAddablePermissionOld(opinionListModel, itemId, taskId, taskDefinitionKey, opinionFrameMark);
         resList.add(opinionListModel);
         return resList;
     }
@@ -582,7 +581,7 @@ public class OpinionServiceImpl implements OpinionService {
         OpinionFrameModel opinionFrameModel, List<Opinion> opinionList, String opinionFrameMark, String taskId,
         String taskDefinitionKey, boolean opinionOrderBy) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        String personId = person.getPersonId();
         List<OpinionModel> modelList = new ArrayList<>();
         // 处理办结状态检查
         boolean isEnd = checkProcessEndStatus(processSerialNumber, opinionFrameModel);
@@ -591,8 +590,7 @@ public class OpinionServiceImpl implements OpinionService {
         modelList = this.order(modelList, opinionOrderBy);
         opinionFrameModel.setOpinionList(modelList);
         // 处理新增权限检查
-        handleChaoSongAddablePermission(opinionFrameModel, itemId, taskId, taskDefinitionKey, tenantId,
-            opinionFrameMark);
+        handleChaoSongAddablePermission(opinionFrameModel, itemId, taskId, taskDefinitionKey, opinionFrameMark);
     }
 
     /**
@@ -634,9 +632,9 @@ public class OpinionServiceImpl implements OpinionService {
     private List<OpinionListModel> listPersonComment4Todo(String itemId, OpinionListModel opinionListModel,
         List<Opinion> opinionList, String opinionFrameMark, String taskId) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        String personId = person.getPersonId();
         List<OpinionListModel> resList = new ArrayList<>();
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
         // 用户未签收前打开公文时(办理人为空)，只读所有意见
         if (StringUtils.isBlank(task.getAssignee())) {
             return handleUnassignedTask(opinionListModel, opinionList, resList);
@@ -648,10 +646,10 @@ public class OpinionServiceImpl implements OpinionService {
     private void listPersonComment4TodoNew(String itemId, OpinionFrameModel opinionFrameModel,
         List<Opinion> opinionList, String opinionFrameMark, String taskId, boolean opinionOrderBy) {
         UserInfo person = Y9LoginUserHolder.getUserInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId(), personId = person.getPersonId();
+        String personId = person.getPersonId();
         List<OpinionModel> modelList = new ArrayList<>();
 
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
 
         // 用户未签收前打开公文时(办理人为空)，只读所有意见
         if (StringUtils.isBlank(task.getAssignee())) {

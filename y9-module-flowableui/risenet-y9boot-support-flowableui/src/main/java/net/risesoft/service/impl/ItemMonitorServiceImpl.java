@@ -57,8 +57,7 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
     /**
      * 处理表单数据
      */
-    private void handleFormData(Map<String, Object> mapTemp, String tenantId, String itemId,
-        String processSerialNumber) {
+    private void handleFormData(Map<String, Object> mapTemp, String itemId, String processSerialNumber) {
         try {
             // 暂时取表单所有字段数据
             Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
@@ -86,12 +85,13 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
     /**
      * 处理流程参数相关信息
      */
-    private void handleProcessParamInfo(Map<String, Object> mapTemp, ProcessParamModel processParam, String tenantId) {
+    private void handleProcessParamInfo(Map<String, Object> mapTemp, ProcessParamModel processParam) {
         if (processParam != null) {
             mapTemp.put("systemCNName", processParam.getSystemCnName());
             mapTemp.put("itemId", processParam.getItemId());
             mapTemp.put("processInstanceId", processParam.getProcessInstanceId());
             try {
+                String tenantId = Y9LoginUserHolder.getTenantId();
                 String startor = processParam.getStartor();
                 if (StringUtils.isNotBlank(startor)) {
                     mapTemp.put("bureauName", orgUnitApi.getOrgUnitBureau(tenantId, startor).getData().getName());
@@ -105,9 +105,9 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
     /**
      * 处理任务相关信息
      */
-    private void handleTaskInfo(Map<String, Object> mapTemp, String tenantId, String processInstanceId) {
+    private void handleTaskInfo(Map<String, Object> mapTemp, String processInstanceId) {
         try {
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
             if (taskList != null && !taskList.isEmpty()) {
                 TaskModel firstTask = taskList.get(0);
                 boolean isSubProcessChildNode = processDefinitionApi
@@ -130,10 +130,9 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
     @Override
     public Y9Page<Map<String, Object>> pageAllList(String itemId, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage = itemMonitorApi.findBySystemName(item.getSystemName(), page, rows);
-            List<Map<String, Object>> items = processActRuDetails(itemPage.getRows(), tenantId, itemId, page, rows);
+            List<Map<String, Object>> items = processActRuDetails(itemPage.getRows(), itemId, page, rows);
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
             LOGGER.error("获取监控列表异常", e);
@@ -164,12 +163,12 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
     /**
      * 处理 ActRuDetailModel 列表
      */
-    private List<Map<String, Object>> processActRuDetails(List<ActRuDetailModel> actRuDetails, String tenantId,
-        String itemId, Integer page, Integer rows) {
+    private List<Map<String, Object>> processActRuDetails(List<ActRuDetailModel> actRuDetails, String itemId,
+        Integer page, Integer rows) {
         List<Map<String, Object>> items = new ArrayList<>();
         int serialNumber = (page - 1) * rows;
         for (ActRuDetailModel ardModel : actRuDetails) {
-            Map<String, Object> itemMap = processSingleActRuDetail(ardModel, tenantId, itemId, ++serialNumber);
+            Map<String, Object> itemMap = processSingleActRuDetail(ardModel, itemId, ++serialNumber);
             items.add(itemMap);
         }
 
@@ -179,8 +178,7 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
     /**
      * 处理单个 ActRuDetailModel
      */
-    private Map<String, Object> processSingleActRuDetail(ActRuDetailModel ardModel, String tenantId, String itemId,
-        int serialNumber) {
+    private Map<String, Object> processSingleActRuDetail(ActRuDetailModel ardModel, String itemId, int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         try {
@@ -188,11 +186,11 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
             mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
             ProcessParamModel processParam = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             // 处理任务信息
-            handleTaskInfo(mapTemp, tenantId, processInstanceId);
+            handleTaskInfo(mapTemp, processInstanceId);
             // 处理流程参数相关信息
-            handleProcessParamInfo(mapTemp, processParam, tenantId);
+            handleProcessParamInfo(mapTemp, processParam);
             // 处理表单数据
-            handleFormData(mapTemp, tenantId, itemId, processSerialNumber);
+            handleFormData(mapTemp, itemId, processSerialNumber);
             // 设置状态
             handleItemBoxStatus(mapTemp, ardModel, processParam);
         } catch (Exception e) {

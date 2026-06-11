@@ -1147,8 +1147,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      */
     private void setNewToDoStatus(HistoryProcessModel model, String taskId, HistoricTaskInstanceModel hai) {
         if (hai.getEndTime() == null) {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            TaskModel taskModel = this.taskApi.findById(tenantId, taskId).getData();
+            TaskModel taskModel = this.taskApi.findById(taskId).getData();
             int newToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
                 : (Integer.parseInt(taskModel.getFormKey()));
             model.setNewToDo(newToDo);
@@ -1162,10 +1161,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      */
     private void setNewToDoStatus(HistoryProcessModel model, HistoricTaskInstanceModel hai) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             int newToDo = 0;
             if (hai.getEndTime() == null) {
-                TaskModel taskModel = this.taskApi.findById(tenantId, hai.getId()).getData();
+                TaskModel taskModel = this.taskApi.findById(hai.getId()).getData();
                 newToDo = (taskModel == null || StringUtils.isBlank(taskModel.getFormKey())) ? 1
                     : (Integer.parseInt(taskModel.getFormKey()));
             }

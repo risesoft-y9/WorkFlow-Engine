@@ -160,11 +160,10 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
      */
     @Override
     public Y9Result<Object> refuseClaimRollback(@RequestParam String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9FlowableHolder.getPositionId();
         try {
-            taskApi.claim(tenantId, orgUnitId, taskId);
-            TaskModel currentTask = taskApi.findById(tenantId, taskId).getData();
+            taskApi.claim(taskId);
+            TaskModel currentTask = taskApi.findById(taskId).getData();
             List<String> userAndDeptIdList = new ArrayList<>();
             // 获取当前任务的前一个任务
             HistoricTaskInstanceModel hti = historictaskApi.getThePreviousTask(taskId).getData();
@@ -179,13 +178,13 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             Map<String, Object> val = new HashMap<>();
             val.put("val", SysVariables.REFUSE_CLAIM_ROLLBACK);
             variableApi.setVariableLocal(taskId, SysVariables.REFUSE_CLAIM_ROLLBACK, val);
-            taskApi.completeWithVariables(tenantId, taskId, orgUnitId, variables);
+            taskApi.completeWithVariables(taskId, variables);
             /*
              * 如果上一任务是并行，则回退时设置主办人
              */
             if (SysVariables.PARALLEL.equals(flowElementModel.getMultiInstance())) {
                 List<TaskModel> taskNextList1 =
-                    taskApi.findByProcessInstanceId(tenantId, currentTask.getProcessInstanceId()).getData();
+                    taskApi.findByProcessInstanceId(currentTask.getProcessInstanceId()).getData();
                 for (TaskModel taskModelNext : taskNextList1) {
                     Map<String, Object> val1 = new HashMap<>();
                     val1.put("val", assignee.split(SysVariables.COLON)[0]);
@@ -193,7 +192,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
                 }
             }
         } catch (Exception e) {
-            taskApi.unClaim(tenantId, taskId);
+            taskApi.unClaim(taskId);
             LOGGER.error("退回失败", e);
             return Y9Result.failure("退回失败");
         }
@@ -300,7 +299,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public Y9Result<Object> takeBack2TaskDefKey(@RequestParam String taskId, String reason) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9FlowableHolder.getPositionId();
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
         ActRuDetail actRuDetail = actRuDetailService
             .findByProcessInstanceIdAndAssigneeAndStatusEquals1(task.getProcessInstanceId(), orgUnitId);
         boolean isSuccess =

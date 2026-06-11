@@ -3,7 +3,6 @@ package net.risesoft.api;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -136,7 +135,6 @@ public class ReminderApiImpl implements ReminderApi {
     public Y9Result<String> saveReminder(@RequestParam String processInstanceId, @RequestBody String[] taskIds,
         @RequestParam String msgContent) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             Reminder reminder;
             for (String taskId : taskIds) {
                 reminder = new Reminder();
@@ -145,9 +143,9 @@ public class ReminderApiImpl implements ReminderApi {
                 reminder.setTaskId(taskId);
                 reminderService.saveOrUpdate(reminder);
 
-                TaskModel task = taskApi.findById(tenantId, taskId).getData();
+                TaskModel task = taskApi.findById(taskId).getData();
                 if (!String.valueOf(task.getPriority()).contains("8")) {
-                    taskApi.setPriority(tenantId, taskId, task.getPriority() + 8);
+                    taskApi.setPriority(taskId, task.getPriority() + 8);
                 }
             }
             return Y9Result.successMsg("保存成功!");

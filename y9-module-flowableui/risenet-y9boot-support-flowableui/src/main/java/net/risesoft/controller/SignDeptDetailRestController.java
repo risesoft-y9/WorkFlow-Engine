@@ -72,7 +72,6 @@ public class SignDeptDetailRestController {
     @FlowableLog(operationType = FlowableOperationTypeEnum.DELETE, operationName = "删除会签信息")
     @PostMapping(value = "/deleteById")
     Y9Result<Object> deleteById(@RequestParam @NotBlank String id) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         SignDeptDetailModel signDeptDetail = signDeptDetailApi.findById(id).getData();
         List<SignDeptDetailModel> signDeptDetailModels =
             signDeptDetailApi.findByProcessSerialNumber(signDeptDetail.getProcessSerialNumber()).getData();
@@ -93,7 +92,7 @@ public class SignDeptDetailRestController {
          * 3、修改历程信息
          */
         List<TaskModel> taskModelList =
-            taskApi.findByProcessInstanceId(tenantId, signDeptDetail.getProcessInstanceId()).getData();
+            taskApi.findByProcessInstanceId(signDeptDetail.getProcessInstanceId()).getData();
         taskModelList.stream()
             .filter(tm -> StringUtils.equals(tm.getExecutionId(), signDeptDetail.getExecutionId()))
             .forEach(tm -> {
@@ -154,7 +153,7 @@ public class SignDeptDetailRestController {
     @GetMapping(value = "/getSignDeptDetail4Todo")
     Y9Result<SignDeptDetailModel> getSignDeptDetail4Todo(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String taskId) {
-        TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
         if (null == task) {
             return Y9Result.failure("当前待办已被处理");
         }
@@ -196,7 +195,6 @@ public class SignDeptDetailRestController {
     @FlowableLog(operationName = "恢复会签信息", operationType = FlowableOperationTypeEnum.RESUME)
     @PostMapping(value = "/recoverById")
     Y9Result<Object> recoverById(@RequestParam @NotBlank String id) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         SignDeptDetailModel ssd = signDeptDetailApi.findById(id).getData();
         /*
          * 1、恢复流程参与信息
@@ -209,7 +207,7 @@ public class SignDeptDetailRestController {
         /*
          * 3、修改历程信息
          */
-        List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(tenantId, ssd.getProcessInstanceId()).getData();
+        List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(ssd.getProcessInstanceId()).getData();
         taskModelList.stream()
             .filter(tm -> StringUtils.equals(tm.getExecutionId(), ssd.getExecutionId()))
             .forEach(tm -> {

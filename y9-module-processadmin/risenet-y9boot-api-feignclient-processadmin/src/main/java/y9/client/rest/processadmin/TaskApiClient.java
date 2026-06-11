@@ -26,8 +26,6 @@ public interface TaskApiClient extends TaskApi {
     /**
      * 创建变量
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位Id
      * @param routeToTaskId 任务id
      * @param vars 变量map
      * @param orgUnitIdList 人员、岗位ids
@@ -35,8 +33,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping(value = "/createWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> createWithVariables(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("routeToTaskId") String routeToTaskId,
+    Y9Result<Object> createWithVariables(@RequestParam("routeToTaskId") String routeToTaskId,
         @SpringQueryMap Map<String, Object> vars, @RequestBody List<String> orgUnitIdList);
 
 }

@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
@@ -16,7 +17,6 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.service.ActivitiOptService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -37,7 +37,7 @@ public class ActivitiOptServiceImpl implements ActivitiOptService {
         List<String> startOrgUnitIdList, Map<String, Object> map) {
         TaskModel task = new TaskModel();
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9FlowableHolder.getPositionId();
+            String userId = Y9FlowableHolder.getPositionId();
             if (startOrgUnitIdList == null || startOrgUnitIdList.isEmpty()) {
                 startOrgUnitIdList = new ArrayList<>();
                 startOrgUnitIdList.add(userId);
@@ -48,7 +48,7 @@ public class ActivitiOptServiceImpl implements ActivitiOptService {
                 runtimeApi.startProcessInstanceByKey(processDefinitionKey, systemName, map).getData();
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况
             String processInstanceId = piModel.getId();
-            task = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData().get(0);
+            task = taskApi.findByProcessInstanceId(processInstanceId).getData().get(0);
         } catch (Exception e) {
             LOGGER.error("启动流程失败", e);
         }

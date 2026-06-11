@@ -500,7 +500,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(taskId).getData();
             List<TaskModel> taskList =
-                taskApi.findByProcessInstanceId(tenantId, historicTaskInstanceModel.getProcessInstanceId()).getData();
+                taskApi.findByProcessInstanceId(historicTaskInstanceModel.getProcessInstanceId()).getData();
             TaskModel previousTask = taskList.get(0);
             OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, orgUnitId).getData();
             AuditLogEvent auditLogEvent = AuditLogEvent.builder()
@@ -525,7 +525,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         try {
             HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(taskId).getData();
             List<TaskModel> taskList =
-                taskApi.findByProcessInstanceId(tenantId, historicTaskInstanceModel.getProcessInstanceId()).getData();
+                taskApi.findByProcessInstanceId(historicTaskInstanceModel.getProcessInstanceId()).getData();
             TaskModel previousTask = taskList.get(0);
             String taskSenderId =
                 variableApi.getVariableLocal(previousTask.getProcessInstanceId(), SysVariables.TASK_SENDER_ID)

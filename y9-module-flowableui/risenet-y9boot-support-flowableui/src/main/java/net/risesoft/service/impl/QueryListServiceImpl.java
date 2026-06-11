@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -32,7 +33,6 @@ import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.QueryListService;
 import net.risesoft.service.UtilService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -58,7 +58,6 @@ public class QueryListServiceImpl implements QueryListService {
     public Y9Page<Map<String, Object>> pageQueryList(String itemId, String state, String createDate, String tableName,
         String searchMapStr, Integer page, Integer rows) {
         Y9Page<ActRuDetailModel> itemPage;
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             ItemModel item = itemApi.getByItemId(itemId).getData();
             itemPage =
@@ -96,8 +95,7 @@ public class QueryListServiceImpl implements QueryListService {
                     mapTemp.put("number", StringUtils.defaultString(officeDoneInfo.getDocNumber()));
                     mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
-                        List<TaskModel> taskList =
-                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
                         String assigneeNames = utilService.getAssigneeNames(taskList, null);
                         mapTemp.put("taskAssignee", assigneeNames);
                         mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());

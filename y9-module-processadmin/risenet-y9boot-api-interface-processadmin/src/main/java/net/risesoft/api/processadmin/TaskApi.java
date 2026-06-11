@@ -26,71 +26,58 @@ public interface TaskApi {
     /**
      * 签收任务
      *
-     * @param tenantId 租户id
-     * @param userId 人员、岗位id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/claim")
-    Y9Result<Object> claim(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("taskId") String taskId);
+    Y9Result<Object> claim(@RequestParam("taskId") String taskId);
 
     /**
      * 完成任务（不设置流程变量）
      *
-     * @param tenantId 租户id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/complete")
-    Y9Result<Object> complete(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    Y9Result<Object> complete(@RequestParam("taskId") String taskId);
 
     /**
      * 完成按钮的任务完结
      *
-     * @param tenantId 租户id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/completeTask")
-    Y9Result<Object> completeTask(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    Y9Result<Object> completeTask(@RequestParam("taskId") String taskId);
 
     /**
      * 完成按钮的任务完结
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位Id
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/completeTaskWithoutAssignee")
-    Y9Result<Object> completeTaskWithoutAssignee(@RequestParam("tenantId") String tenantId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> completeTaskWithoutAssignee(@RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 完成任务（设置流程变量）
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位Id
      * @param taskId 任务id
      * @param vars 变量map
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping(value = "/completeWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> completeWithVariables(@RequestParam("tenantId") String tenantId,
-        @RequestParam("taskId") String taskId, @RequestParam("orgUnitId") String orgUnitId,
+    Y9Result<Object> completeWithVariables(@RequestParam("taskId") String taskId,
         @RequestBody Map<String, Object> vars);
 
     /**
      * 创建变量
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位Id
      * @param routeToTaskId 任务id
      * @param vars 变量map
      * @param orgUnitIdList 人员、岗位ids
@@ -98,85 +85,75 @@ public interface TaskApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/createWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> createWithVariables(String tenantId, String orgUnitId, String routeToTaskId,
-        Map<String, Object> vars, List<String> orgUnitIdList);
+    Y9Result<Object> createWithVariables(String routeToTaskId, Map<String, Object> vars, List<String> orgUnitIdList);
 
     /**
      * 设置任务代理
      *
-     * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/delegateTask")
-    Y9Result<Object> delegateTask(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("assignee") String assignee);
+    Y9Result<Object> delegateTask(@RequestParam("taskId") String taskId, @RequestParam("assignee") String assignee);
 
     /**
      * 删除任务的候选人
      *
-     * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/deleteCandidateUser")
-    Y9Result<Object> deleteCandidateUser(@RequestParam("tenantId") String tenantId,
-        @RequestParam("taskId") String taskId, @RequestParam("assignee") String assignee);
-
-    /**
-     * 查找所有的任务实例
-     *
-     * @param tenantId 租户id
-     * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
-     * @since 9.6.6
-     */
-    @GetMapping("/findAll")
-    Y9Result<List<TaskModel>> findAll(@RequestParam("tenantId") String tenantId);
-
-    /**
-     * 根据任务id查找任务
-     *
-     * @param tenantId 租户id
-     * @param taskId 任务id
-     * @return {@code Y9Result<TaskModel>} 通用请求返回对象 - data 任务信息
-     * @since 9.6.6
-     */
-    @GetMapping("/findById")
-    Y9Result<TaskModel> findById(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
-
-    /**
-     * 根据流程实例Id查找任务
-     *
-     * @param tenantId 租户id
-     * @param processInstanceId 流程实例id
-     * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
-     * @since 9.6.6
-     */
-    @GetMapping("/findByProcessInstanceId")
-    Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> deleteCandidateUser(@RequestParam("taskId") String taskId,
+        @RequestParam("assignee") String assignee);
 
     /**
      * 根据流程实例Id和是否激活状态查找任务
      *
-     * @param tenantId 租户id
      * @param processInstanceId 流程实例Id
      * @param active 是否存活
      * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
      * @since 9.6.6
      */
-    @GetMapping("/findByProcessInstanceId1")
-    Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("active") boolean active);
+    @GetMapping("/findActiveByProcessInstanceId")
+    Y9Result<List<TaskModel>> findActiveByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("active") boolean active);
+
+    /**
+     * 查找所有的任务实例
+     *
+     * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
+     * @since 9.6.6
+     */
+    @GetMapping("/findAll")
+    Y9Result<List<TaskModel>> findAll();
+
+    /**
+     * 根据任务id查找任务
+     *
+     * @param taskId 任务id
+     * @return {@code Y9Result<TaskModel>} 通用请求返回对象 - data 任务信息
+     * @since 9.6.6
+     */
+    @GetMapping("/findById")
+    Y9Result<TaskModel> findById(@RequestParam("taskId") String taskId);
+
+    /**
+     * 根据流程实例Id查找任务
+     *
+     * @param processInstanceId 流程实例id
+     * @return {@code Y9Result<List<TaskModel>>} 通用请求返回对象 - data 任务列表
+     * @since 9.6.6
+     */
+    @GetMapping("/findByProcessInstanceId")
+    Y9Result<List<TaskModel>> findByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
 
     /**
      * 根据流程实例id获取用户的待办任务(分页)
      *
-     * @param tenantId 租户Id
      * @param processInstanceId 流程实例Id
      * @param page 页码
      * @param rows 行数
@@ -184,69 +161,60 @@ public interface TaskApi {
      * @since 9.6.6
      */
     @GetMapping("/findListByProcessInstanceId")
-    Y9Page<TaskModel> findListByProcessInstanceId(@RequestParam("tenantId") String tenantId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<TaskModel> findListByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId,
+        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
 
     /**
      * 保存任务
      *
-     * @param tenantId 租户id
      * @param taskModel 任务实体
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping(value = "/saveTask", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> saveTask(@RequestParam("tenantId") String tenantId, @RequestBody TaskModel taskModel);
+    Y9Result<Object> saveTask(@RequestBody TaskModel taskModel);
 
     /**
      * 设置任务委托人
      *
-     * @param tenantId 租户id
      * @param taskId 任务id
      * @param assignee 受让人
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/setAssignee")
-    Y9Result<Object> setAssignee(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("assignee") String assignee);
+    Y9Result<Object> setAssignee(@RequestParam("taskId") String taskId, @RequestParam("assignee") String assignee);
 
     /**
      * 设置任务的过期时间
      *
-     * @param tenantId 租户id
      * @param taskId 任务id
      * @param date 日期
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/setDueDate")
-    Y9Result<Object> setDueDate(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("date") Date date);
+    Y9Result<Object> setDueDate(@RequestParam("taskId") String taskId, @RequestParam("date") Date date);
 
     /**
      * 设置任务的优先级
      *
-     * @param tenantId 租户id
      * @param taskId 任务id
      * @param priority 优先级
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/setPriority")
-    Y9Result<Object> setPriority(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId,
-        @RequestParam("priority") Integer priority);
+    Y9Result<Object> setPriority(@RequestParam("taskId") String taskId, @RequestParam("priority") Integer priority);
 
     /**
      * 撤销签收任务
      *
-     * @param tenantId 租户id
      * @param taskId 任务id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @PostMapping("/unClaim")
-    Y9Result<Object> unClaim(@RequestParam("tenantId") String tenantId, @RequestParam("taskId") String taskId);
+    Y9Result<Object> unClaim(@RequestParam("taskId") String taskId);
 
 }

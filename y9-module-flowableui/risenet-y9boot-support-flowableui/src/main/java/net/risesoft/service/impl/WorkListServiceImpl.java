@@ -87,7 +87,6 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> allList(String itemId, String searchMapStr, boolean isOrg, Integer page,
         Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
@@ -107,7 +106,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
-                Map<String, Object> itemMap = buildAllListItem(ardModel, tenantId, itemId, isOrg, ++serialNumber);
+                Map<String, Object> itemMap = buildAllListItem(ardModel, itemId, isOrg, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取所有与当前人相关的办件列表成功！");
@@ -120,7 +119,6 @@ public class WorkListServiceImpl implements WorkListService {
     @Override
     public Y9Page<Map<String, Object>> allTodoList(QueryParamModel queryParamModel) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             Y9Page<ActRuDetailModel> itemPage = itemTodoApi.findByUserId(queryParamModel);
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
@@ -137,8 +135,8 @@ public class WorkListServiceImpl implements WorkListService {
         return Y9Page.success(queryParamModel.getPage(), 0, 0, new ArrayList<>(), "获取所有待办列表失败！");
     }
 
-    private Map<String, Object> buildAllListItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        boolean isOrg, int serialNumber) {
+    private Map<String, Object> buildAllListItem(ActRuDetailModel ardModel, String itemId, boolean isOrg,
+        int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         String taskId = ardModel.getTaskId();
@@ -173,7 +171,7 @@ public class WorkListServiceImpl implements WorkListService {
                     mapTemp.put(SysVariables.ITEM_BOX,
                         isOrg ? ItemBoxTypeEnum.MONITOR_DOING.getValue() : ItemBoxTypeEnum.DOING.getValue());
                     taskRelatedList = getTaskRelated4Doing(processSerialNumber, "", ardModel.isSub(), urgeInfoList);
-                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                    List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
                     mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
                     mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                         getChildren(ardModel, mapTemp, taskList, urgeInfoList, signDeptDetailList, false));
@@ -221,8 +219,7 @@ public class WorkListServiceImpl implements WorkListService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildDoingList4AllItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        int serialNumber) {
+    private Map<String, Object> buildDoingList4AllItem(ActRuDetailModel ardModel, String itemId, int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         String taskId = ardModel.getTaskId();
@@ -233,7 +230,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.CANOPEN_KEY, true);
             mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
             ProcessParamModel processParam = processParamApi.findByProcessInstanceId(processInstanceId).getData();
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
             List<SignDeptDetailModel> signDeptDetailList =
                 signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
             mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
@@ -257,8 +254,8 @@ public class WorkListServiceImpl implements WorkListService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildDoingList4DeptItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        OrgUnit bureau, int serialNumber) {
+    private Map<String, Object> buildDoingList4DeptItem(ActRuDetailModel ardModel, String itemId, OrgUnit bureau,
+        int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         String taskId = ardModel.getTaskId();
@@ -271,7 +268,7 @@ public class WorkListServiceImpl implements WorkListService {
             ProcessParamModel processParam = processParamApi.findByProcessInstanceId(processInstanceId).getData();
             List<SignDeptDetailModel> signDeptDetailList =
                 signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
             boolean isSignDept = signDeptDetailList.stream()
                 .anyMatch(signDeptDetailModel -> signDeptDetailModel.getDeptId().equals(bureau.getId()));
             mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
@@ -296,8 +293,7 @@ public class WorkListServiceImpl implements WorkListService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildDoingList4DuBanItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        int serialNumber) {
+    private Map<String, Object> buildDoingList4DuBanItem(ActRuDetailModel ardModel, String itemId, int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         String taskId = ardModel.getTaskId();
@@ -308,7 +304,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.CANOPEN_KEY, true);
             mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
             ProcessParamModel processParam = processParamApi.findByProcessInstanceId(processInstanceId).getData();
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
             List<SignDeptDetailModel> signDeptDetailList =
                 signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
             mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
@@ -432,8 +428,7 @@ public class WorkListServiceImpl implements WorkListService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildHaveDoneListItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        int serialNumber) {
+    private Map<String, Object> buildHaveDoneListItem(ActRuDetailModel ardModel, String itemId, int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         try {
@@ -464,7 +459,7 @@ public class WorkListServiceImpl implements WorkListService {
                 mapTemp.put(FlowableUiConsts.CHILDREN_KEY,
                     getChildren(ardModel, mapTemp, List.of(), urgeInfoList, signDeptDetailList, false));
             } else {
-                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
                 taskRelatedList =
                     getTaskRelated4Doing(processSerialNumber, ardModel.getExecutionId(), false, urgeInfoList);
                 mapTemp.putAll(getTaskNameAndUserName4Doing(processParam, taskList, signDeptDetailList));
@@ -478,8 +473,7 @@ public class WorkListServiceImpl implements WorkListService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildRecycleList4AllItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        int serialNumber) {
+    private Map<String, Object> buildRecycleList4AllItem(ActRuDetailModel ardModel, String itemId, int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         try {
@@ -496,7 +490,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, "无");
             mapTemp.put(FlowableUiConsts.TASKNAME_KEY, "已办结");
             if (!ardModel.isEnded()) {
-                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
                 mapTemp.put(FlowableUiConsts.TASKNAME_KEY, taskList.get(0).getName());
                 mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList, null));
             }
@@ -510,8 +504,7 @@ public class WorkListServiceImpl implements WorkListService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildRecycleList4DeptItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        int serialNumber) {
+    private Map<String, Object> buildRecycleList4DeptItem(ActRuDetailModel ardModel, String itemId, int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         String taskId = ardModel.getTaskId();
@@ -526,7 +519,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
             mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
             mapTemp.put(FlowableUiConsts.TASKNAME_KEY, taskList.get(0).getName());
             mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList, null));
             Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
@@ -539,8 +532,7 @@ public class WorkListServiceImpl implements WorkListService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildRecycleListItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        int serialNumber) {
+    private Map<String, Object> buildRecycleListItem(ActRuDetailModel ardModel, String itemId, int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         String taskId = ardModel.getTaskId();
@@ -555,7 +547,7 @@ public class WorkListServiceImpl implements WorkListService {
             mapTemp.put(FlowableUiConsts.BUREAUNAME_KEY, processParam.getHostDeptName());
             mapTemp.put(FlowableUiConsts.ITEMID_KEY, processParam.getItemId());
             mapTemp.put(FlowableUiConsts.PROCESSINSTANCEID_KEY, processInstanceId);
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
             mapTemp.put(FlowableUiConsts.TASKNAME_KEY, taskList.get(0).getName());
             mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, utilService.getAssigneeNames(taskList, null));
             Map<String, Object> formData = formDataApi.getData(itemId, processSerialNumber).getData();
@@ -658,7 +650,6 @@ public class WorkListServiceImpl implements WorkListService {
     @Override
     public Y9Page<Map<String, Object>> doingList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
@@ -670,7 +661,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
-                Map<String, Object> itemMap = buildDoingList4AllItem(ardModel, tenantId, itemId, ++serialNumber);
+                Map<String, Object> itemMap = buildDoingList4AllItem(ardModel, itemId, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取所有在办件列表成功！");
@@ -701,8 +692,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
-                Map<String, Object> itemMap =
-                    buildDoingList4DeptItem(ardModel, tenantId, itemId, bureau, ++serialNumber);
+                Map<String, Object> itemMap = buildDoingList4DeptItem(ardModel, itemId, bureau, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取部门在办件列表成功!");
@@ -715,7 +705,6 @@ public class WorkListServiceImpl implements WorkListService {
     @Override
     public Y9Page<Map<String, Object>> doingList4DuBan(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemDoingApi.searchBySystemName(item.getSystemName(), searchMapStr, page, rows);
@@ -723,7 +712,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
-                Map<String, Object> itemMap = buildDoingList4DuBanItem(ardModel, tenantId, itemId, ++serialNumber);
+                Map<String, Object> itemMap = buildDoingList4DuBanItem(ardModel, itemId, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取督办列表成功!");
@@ -873,7 +862,7 @@ public class WorkListServiceImpl implements WorkListService {
 
     private Map<String, Object> getTaskNameAndUserName4Doing(ProcessParamModel processParam, List<TaskModel> taskList,
         List<SignDeptDetailModel> signDeptDetailList) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), processInstanceId = processParam.getProcessInstanceId();
+        String processInstanceId = processParam.getProcessInstanceId();
         String userName, taskName;
         Map<String, Object> map = new HashMap<>();
         boolean isSign =
@@ -884,7 +873,7 @@ public class WorkListServiceImpl implements WorkListService {
             userName = signDeptDetailList.get(0).getSenderName();
         } else {
             if (taskList.isEmpty()) {
-                taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
             }
             taskName = taskList.get(0).getName();
             userName = utilService.getAssigneeNames(taskList, null);
@@ -1134,7 +1123,6 @@ public class WorkListServiceImpl implements WorkListService {
     @Override
     public Y9Page<Map<String, Object>> haveDoneList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
@@ -1146,7 +1134,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
-                Map<String, Object> itemMap = buildHaveDoneListItem(ardModel, tenantId, itemId, ++serialNumber);
+                Map<String, Object> itemMap = buildHaveDoneListItem(ardModel, itemId, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取已办列表成功!");
@@ -1159,7 +1147,6 @@ public class WorkListServiceImpl implements WorkListService {
     @Override
     public Y9Page<Map<String, Object>> recycleList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
@@ -1171,7 +1158,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
-                Map<String, Object> itemMap = buildRecycleListItem(ardModel, tenantId, itemId, ++serialNumber);
+                Map<String, Object> itemMap = buildRecycleListItem(ardModel, itemId, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取回收站列表成功");
@@ -1184,7 +1171,6 @@ public class WorkListServiceImpl implements WorkListService {
     @Override
     public Y9Page<Map<String, Object>> recycleList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
@@ -1196,7 +1182,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
-                Map<String, Object> itemMap = buildRecycleList4AllItem(ardModel, tenantId, itemId, ++serialNumber);
+                Map<String, Object> itemMap = buildRecycleList4AllItem(ardModel, itemId, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取所有回收站列表成功！");
@@ -1227,7 +1213,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
-                Map<String, Object> itemMap = buildRecycleList4DeptItem(ardModel, tenantId, itemId, ++serialNumber);
+                Map<String, Object> itemMap = buildRecycleList4DeptItem(ardModel, itemId, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取部门回收站列表成功！");

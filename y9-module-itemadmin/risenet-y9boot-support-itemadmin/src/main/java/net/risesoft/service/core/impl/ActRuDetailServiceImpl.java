@@ -756,13 +756,12 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     public boolean syncByProcessInstanceId(String processInstanceId) {
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         String systemName = processParam.getSystemName();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<HistoricTaskInstanceModel> htiList =
             historictaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(processInstanceId, "").getData();
         for (HistoricTaskInstanceModel hti : htiList) {
             String assignee = hti.getAssignee();
             String owner = hti.getOwner();
-            TaskModel taskTemp = taskApi.findById(tenantId, hti.getId()).getData();
+            TaskModel taskTemp = taskApi.findById(hti.getId()).getData();
             if (StringUtils.isNotBlank(assignee)) {
                 handleNotBlankAssignee(hti, systemName, assignee, owner, taskTemp);
             } else {
@@ -803,7 +802,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Transactional
     public Y9Result<Object> unClaim(String taskId) {
         List<ActRuDetail> ardList = actRuDetailRepository.findByTaskId(taskId);
-        TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
         StringBuilder names = new StringBuilder();
         ardList.forEach(ard -> {
             if (StringUtils.isBlank(names)) {
