@@ -298,7 +298,6 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 }
                 break;
             case DEPARTMENT:
-            case USER:
             case POSITION:
                 OrgUnit orgUnit = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), ip.getRoleId()).getData();
                 if (null != orgUnit) {

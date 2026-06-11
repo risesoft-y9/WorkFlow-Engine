@@ -46,7 +46,7 @@ import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ChaoSongStatusEnum;
 import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.enums.ItemPermissionEnum;
+import net.risesoft.enums.ItemUserChoiceEnum;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
@@ -667,7 +667,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
         for (String orgUnitStr : orgUnitList) {
             String[] orgUnitArr = orgUnitStr.split(":");
-            ItemPermissionEnum type = ItemPermissionEnum.valueOf(Integer.parseInt(orgUnitArr[0]));
+            ItemUserChoiceEnum type = ItemUserChoiceEnum.valueOf(Integer.parseInt(orgUnitArr[0]));
             String orgUnitId = orgUnitArr[1];
             switch (type) {
                 case DEPARTMENT:

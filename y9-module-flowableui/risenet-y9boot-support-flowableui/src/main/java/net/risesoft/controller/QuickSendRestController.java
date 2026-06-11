@@ -7,7 +7,6 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -23,7 +22,7 @@ import net.risesoft.api.itemadmin.QuickSendApi;
 import net.risesoft.api.platform.org.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.enums.ItemPermissionEnum;
+import net.risesoft.enums.ItemUserChoiceEnum;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
@@ -71,19 +70,19 @@ public class QuickSendRestController {
                 String type = id.split(":")[0];
                 String orgId = id.split(":")[1];
                 int principalType = Integer.parseInt(type);
-                if (principalType == ItemPermissionEnum.POSITION.getValue()) {
+                if (principalType == ItemUserChoiceEnum.POSITION.getValue()) {
                     OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, orgId).getData();
                     map.put("id", orgUnit.getId());
                     map.put("name", orgUnit.getName());
                     map.put(ORGTYPE_KEY, OrgTypeEnum.POSITION.getEnName());
                     list.add(map);
-                } else if (principalType == ItemPermissionEnum.DEPARTMENT.getValue()) {
+                } else if (principalType == ItemUserChoiceEnum.DEPARTMENT.getValue()) {
                     Department dept = departmentApi.get(tenantId, orgId).getData();
                     map.put("id", dept.getId());
                     map.put("name", dept.getName());
                     map.put(ORGTYPE_KEY, OrgTypeEnum.DEPARTMENT.getEnName());
                     list.add(map);
-                } else if (principalType == ItemPermissionEnum.GROUP_CUSTOM.getValue()) {
+                } else if (principalType == ItemUserChoiceEnum.GROUP_CUSTOM.getValue()) {
                     CustomGroup customGroup =
                         customGroupApi.findCustomGroupById(tenantId, Y9LoginUserHolder.getPersonId(), orgId).getData();
                     map.put("id", customGroup.getId());
