@@ -453,8 +453,7 @@ public class MainRestController {
         String processSerialNumber = "";
         try {
             if (type.equals("fromHistory")) {
-                HistoricProcessInstanceModel processModel =
-                    historicProcessApi.getById(tenantId, processInstanceId).getData();
+                HistoricProcessInstanceModel processModel = historicProcessApi.getById(processInstanceId).getData();
                 if (processModel == null || processModel.getId() == null) {
                     OfficeDoneInfoModel officeDoneInfoModel =
                         officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();

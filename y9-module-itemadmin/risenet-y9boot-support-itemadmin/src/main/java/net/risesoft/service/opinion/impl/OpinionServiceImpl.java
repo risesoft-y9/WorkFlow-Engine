@@ -113,8 +113,7 @@ public class OpinionServiceImpl implements OpinionService {
         // 办结件，阅件不可填写意见
         if (processParam != null) {
             HistoricProcessInstanceModel historicProcessInstanceModel =
-                historicProcessApi.getById(Y9LoginUserHolder.getTenantId(), processParam.getProcessInstanceId())
-                    .getData();
+                historicProcessApi.getById(processParam.getProcessInstanceId()).getData();
             boolean b = historicProcessInstanceModel == null || historicProcessInstanceModel.getEndTime() != null;
             if (b) {
                 opinionFrameModel.setAddable(false);
@@ -131,8 +130,7 @@ public class OpinionServiceImpl implements OpinionService {
             // 办结件，阅件不可填写意见
             if (processParam != null) {
                 HistoricProcessInstanceModel historicProcessInstanceModel =
-                    historicProcessApi.getById(Y9LoginUserHolder.getTenantId(), processParam.getProcessInstanceId())
-                        .getData();
+                    historicProcessApi.getById(processParam.getProcessInstanceId()).getData();
                 boolean b = historicProcessInstanceModel == null || historicProcessInstanceModel.getEndTime() != null;
                 if (b) {
                     opinionListModel.setAddable(false);

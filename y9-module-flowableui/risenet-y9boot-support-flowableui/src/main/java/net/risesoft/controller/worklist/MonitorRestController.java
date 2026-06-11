@@ -170,7 +170,7 @@ public class MonitorRestController {
                     }
                 }
             }
-            boolean b = historicProcessApi.removeProcess(tenantId, processInstanceIds).isSuccess();
+            boolean b = historicProcessApi.removeProcess(processInstanceIds).isSuccess();
             if (b) {
                 // 批量删除附件表
                 attachmentApi.delBatchByProcessSerialNumbers(list);

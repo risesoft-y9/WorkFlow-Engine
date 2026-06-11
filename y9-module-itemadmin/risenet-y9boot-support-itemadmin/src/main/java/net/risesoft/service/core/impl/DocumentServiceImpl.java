@@ -599,12 +599,12 @@ public class DocumentServiceImpl implements DocumentService {
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
             activitiUser = "", startor;
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(processInstanceId).getData();
         if (hpi == null) {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
                 String year = getYear(processParam.getCreateTime());
-                hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
+                hpi = historicProcessApi.getByIdAndYear(processInstanceId, year).getData();
                 processDefinitionId = hpi.getProcessDefinitionId();
                 processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
             } else {
@@ -661,7 +661,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setDocumentId(documentId);
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         startor = processParam.getStartor();
-        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(processInstanceId).getData();
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
         processDefinitionId = hpi.getProcessDefinitionId();
         processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
@@ -726,8 +726,7 @@ public class DocumentServiceImpl implements DocumentService {
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
         if (officeDoneInfo == null) {
             String year = getYear(processParam.getCreateTime());
-            HistoricProcessInstanceModel hpi =
-                historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
+            HistoricProcessInstanceModel hpi = historicProcessApi.getByIdAndYear(processInstanceId, year).getData();
             processDefinitionId = hpi.getProcessDefinitionId();
             processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
         } else {
@@ -790,14 +789,12 @@ public class DocumentServiceImpl implements DocumentService {
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
             activitiUser = "", itemId;
         String startor;
-        String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         startor = processParam.getStartor();
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
         if (officeDoneInfo == null) {
             String year = getYear(processParam.getCreateTime());
-            HistoricProcessInstanceModel hpi =
-                historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
+            HistoricProcessInstanceModel hpi = historicProcessApi.getByIdAndYear(processInstanceId, year).getData();
             processDefinitionId = hpi.getProcessDefinitionId();
             processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
         } else {
@@ -1234,15 +1231,15 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理在办箱和办结箱数据
      */
     private void handleDoingDoneBox(ProcessInstanceData data, String processInstanceId, String taskId,
-        ProcessParam processParam, String tenantId, OpenDataModel model) {
-
-        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
+        ProcessParam processParam, OpenDataModel model) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(processInstanceId).getData();
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
 
         if (hpi == null) {
             if (officeDoneInfo == null) {
                 String year = getYear(processParam.getCreateTime());
-                hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
+                hpi = historicProcessApi.getByIdAndYear(processInstanceId, year).getData();
                 data.processDefinitionId = hpi.getProcessDefinitionId();
                 data.processDefinitionKey = data.processDefinitionId.split(SysVariables.COLON)[0];
             } else {
@@ -1513,10 +1510,10 @@ public class DocumentServiceImpl implements DocumentService {
         data.itemId = itemId;
 
         if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
-            handleTodoBox(data, taskId, processParam, tenantId, model);
+            handleTodoBox(data, taskId, processParam, model);
         } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
             || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
-            handleDoingDoneBox(data, processInstanceId, taskId, processParam, tenantId, model);
+            handleDoingDoneBox(data, processInstanceId, taskId, processParam, model);
         }
 
         return data;
@@ -1770,8 +1767,9 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 处理待办箱数据
      */
-    private void handleTodoBox(ProcessInstanceData data, String taskId, ProcessParam processParam, String tenantId,
+    private void handleTodoBox(ProcessInstanceData data, String taskId, ProcessParam processParam,
         OpenDataModel model) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         data.processInstanceId = task.getProcessInstanceId();
         data.processSerialNumber = processParam.getProcessSerialNumber();

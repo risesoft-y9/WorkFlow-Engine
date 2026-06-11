@@ -141,7 +141,7 @@ public class OfficeFollowRestController {
                 officeFollow.setSendDept("");
                 officeFollow.setSystemName(processParamModel.getSystemName());
                 HistoricProcessInstanceModel historicProcessInstanceModel =
-                    historicProcessApi.getById(tenantId, processInstanceId).getData();
+                    historicProcessApi.getById(processInstanceId).getData();
                 if (historicProcessInstanceModel == null) {
                     OfficeDoneInfoModel officeDoneInfoModel =
                         officeDoneInfoApi.findByProcessInstanceId(processInstanceId).getData();
