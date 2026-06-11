@@ -80,8 +80,7 @@ public class ButtonServiceImpl implements ButtonService {
      * @param task 任务模型
      */
     private void addProcessNodeButtons(List<ItemButtonModel> buttonModelList, TaskModel task) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> taskNodes = processDefinitionApi.getNodes(tenantId, task.getProcessDefinitionId()).getData();
+        List<TargetModel> taskNodes = processDefinitionApi.getNodes(task.getProcessDefinitionId()).getData();
         AtomicInteger index = new AtomicInteger(100);
 
         taskNodes.stream()
@@ -154,10 +153,10 @@ public class ButtonServiceImpl implements ButtonService {
             context.varsSponsorGuid = String.valueOf(context.vars.get(SysVariables.PARALLEL_SPONSOR));
             context.taskSenderId = String.valueOf(context.vars.get(SysVariables.TASK_SENDER_ID));
             context.multiInstance = processDefinitionApi
-                .getNodeType(tenantId, context.task.getProcessDefinitionId(), context.task.getTaskDefinitionKey())
+                .getNodeType(context.task.getProcessDefinitionId(), context.task.getTaskDefinitionKey())
                 .getData();
             // 处理串行和并行状态
-            handleMultiInstanceStatus(context, tenantId);
+            handleMultiInstanceStatus(context);
         }
         return context;
     }
@@ -165,9 +164,9 @@ public class ButtonServiceImpl implements ButtonService {
     /**
      * 构建待办任务上下文
      */
-    private TodoTaskContext buildTodoTaskContext(String itemId, String taskId, String tenantId, String orgUnitId,
-        TaskModel task) {
+    private TodoTaskContext buildTodoTaskContext(String itemId, String taskId, String orgUnitId, TaskModel task) {
         TodoTaskContext context = new TodoTaskContext();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         context.itemId = itemId;
         context.taskId = taskId;
         context.tenantId = tenantId;
@@ -183,16 +182,15 @@ public class ButtonServiceImpl implements ButtonService {
         context.varsSponsorGuid = String.valueOf(context.vars.get(SysVariables.PARALLEL_SPONSOR));
         context.taskSenderId = String.valueOf(context.vars.get(SysVariables.TASK_SENDER_ID));
         context.multiInstance =
-            processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                .getData();
+            processDefinitionApi.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
 
         // 处理多实例状态
         handleMultiInstanceStatus(context, orgUnitId);
 
         context.assignee = task.getAssignee();
         context.isAssignee = StringUtils.isNotBlank(context.assignee);
-        context.endNode = processDefinitionApi.getEndNode(tenantId, taskId).getData();
-        context.outPutNodeCount = processDefinitionApi.getOutPutNodeCount(tenantId, taskId).getData();
+        context.endNode = processDefinitionApi.getEndNode(taskId).getData();
+        context.outPutNodeCount = processDefinitionApi.getOutPutNodeCount(taskId).getData();
         context.processDefinitionId = task.getProcessDefinitionId();
         context.taskDefKey = task.getTaskDefinitionKey();
 
@@ -535,14 +533,13 @@ public class ButtonServiceImpl implements ButtonService {
      * 处理多实例状态
      *
      * @param context 任务上下文
-     * @param tenantId 租户ID
      */
-    private void handleMultiInstanceStatus(TaskContext context, String tenantId) {
+    private void handleMultiInstanceStatus(TaskContext context) {
         String multiInstance = context.multiInstance;
         String orgUnitId = Y9FlowableHolder.getPositionId();
 
         if (SysVariables.SEQUENTIAL.equals(multiInstance)) {
-            handleSequentialStatus(context, tenantId, orgUnitId);
+            handleSequentialStatus(context, orgUnitId);
         } else if (SysVariables.PARALLEL.equals(multiInstance)) {
             handleParallelStatus(context, orgUnitId);
         }
@@ -615,10 +612,9 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private void handleNormalProcessReturn(List<ItemButtonModel> buttonList, TodoTaskContext context, String taskId) {
         List<HistoricTaskInstanceModel> hisTaskList = historictaskApi.getThePreviousTasks(taskId).getData();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (!hisTaskList.isEmpty()) {
             Boolean isSubProcess4Send = processDefinitionApi
-                .isSubProcessChildNode(tenantId, context.processDefinitionId, hisTaskList.get(0).getTaskDefinitionKey())
+                .isSubProcessChildNode(context.processDefinitionId, hisTaskList.get(0).getTaskDefinitionKey())
                 .getData();
 
             if (Boolean.FALSE.equals(isSubProcess4Send)) {
@@ -636,13 +632,10 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private void handleNormalProcessTakeBack(List<ItemButtonModel> buttonModelList, String taskId, TaskModel task) {
         List<HistoricTaskInstanceModel> hisTaskList = historictaskApi.getThePreviousTasks(taskId).getData();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (!hisTaskList.isEmpty()) {
-            Boolean isSubProcess4Send =
-                processDefinitionApi
-                    .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(),
-                        hisTaskList.get(0).getTaskDefinitionKey())
-                    .getData();
+            Boolean isSubProcess4Send = processDefinitionApi
+                .isSubProcessChildNode(task.getProcessDefinitionId(), hisTaskList.get(0).getTaskDefinitionKey())
+                .getData();
 
             if (Boolean.FALSE.equals(isSubProcess4Send)) {
                 buttonModelList.add(ItemButton.shouHui);
@@ -799,16 +792,15 @@ public class ButtonServiceImpl implements ButtonService {
     /**
      * 处理回收站按钮
      */
-    private void handleRecycleBinButton(TodoTaskContext context, String tenantId) {
+    private void handleRecycleBinButton(TodoTaskContext context) {
         if (context.isAssignee) {
             // 目前注释掉的逻辑，可根据需要启用
             if (nodeList.isEmpty()) {
-                String startNode = processDefinitionApi
-                    .getStartNodeKeyByProcessDefinitionId(tenantId, context.task.getProcessDefinitionId())
-                    .getData();
-                nodeList =
-                    processDefinitionApi.getTargetNodes(tenantId, context.task.getProcessDefinitionId(), startNode)
+                String startNode =
+                    processDefinitionApi.getStartNodeKeyByProcessDefinitionId(context.task.getProcessDefinitionId())
                         .getData();
+                nodeList =
+                    processDefinitionApi.getTargetNodes(context.task.getProcessDefinitionId(), startNode).getData();
             }
         }
     }
@@ -844,10 +836,8 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private void handleReturnButton(List<ItemButtonModel> buttonList, TodoTaskContext context, String taskId) {
         if (context.isAssignee && !context.customItem && !containsTuiQian(buttonList)) {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             Boolean isSub4Current =
-                processDefinitionApi.isSubProcessChildNode(tenantId, context.processDefinitionId, context.taskDefKey)
-                    .getData();
+                processDefinitionApi.isSubProcessChildNode(context.processDefinitionId, context.taskDefKey).getData();
 
             if (Boolean.TRUE.equals(isSub4Current)) {
                 handleSubProcessReturn(buttonList, context);
@@ -958,10 +948,9 @@ public class ButtonServiceImpl implements ButtonService {
      * 处理串行状态
      *
      * @param context 任务上下文
-     * @param tenantId 租户ID
      * @param orgUnitId 组织机构ID
      */
-    private void handleSequentialStatus(TaskContext context, String tenantId, String orgUnitId) {
+    private void handleSequentialStatus(TaskContext context, String orgUnitId) {
         context.isSequential = true;
         Map<String, Object> vars = context.vars;
 
@@ -1065,13 +1054,11 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private void handleSignButtons4Doing(List<ItemButtonModel> buttonModelList, String taskId, String orgUnitId,
         TaskModel task) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> vars = variableApi.getVariables(taskId).getData();
         String taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
 
         String multiInstance =
-            processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                .getData();
+            processDefinitionApi.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
 
         boolean showSignButton =
             (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL))
@@ -1090,8 +1077,7 @@ public class ButtonServiceImpl implements ButtonService {
      * @param taskId 任务ID
      */
     private void handleSignTaskCompleteButton(boolean[] isButtonShow, TaskContext taskContext, String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(tenantId, taskId).getData();
+        int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(taskId).getData();
         if (outPutNodeCount > 0) {
             if (taskContext.showSubmitButton) {
                 isButtonShow[20] = true; // 提交按钮
@@ -1207,7 +1193,6 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private void handleTakeBackButton(List<ItemButtonModel> buttonModelList, String taskId, String orgUnitId,
         TaskModel task) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> vars = variableApi.getVariables(taskId).getData();
         String taskSenderId = String.valueOf(vars.get(SysVariables.TASK_SENDER_ID));
 
@@ -1218,9 +1203,9 @@ public class ButtonServiceImpl implements ButtonService {
         if (StringUtils.isNotBlank(taskSenderId) && taskSenderId.contains(orgUnitId) && takeBackObj == null
             && rollbackObj == null && repositionObj == null) {
 
-            Boolean isSub4Current = processDefinitionApi
-                .isSubProcessChildNode(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                .getData();
+            Boolean isSub4Current =
+                processDefinitionApi.isSubProcessChildNode(task.getProcessDefinitionId(), task.getTaskDefinitionKey())
+                    .getData();
 
             if (Boolean.TRUE.equals(isSub4Current)) {
                 handleSubProcessTakeBack(buttonModelList, orgUnitId, task);
@@ -1410,8 +1395,7 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private boolean shouldShowEndButton(TaskContext taskContext, String taskId) {
         boolean isAssignee = StringUtils.isNotBlank(taskContext.task.getAssignee());
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        Boolean isContainEndEvent = processDefinitionApi.isContainEndEvent(tenantId, taskId).getData();
+        Boolean isContainEndEvent = processDefinitionApi.isContainEndEvent(taskId).getData();
 
         // 办结 - 当前节点的目标节点存在ENDEVENT类型节点时，显示办结按钮
         return isAssignee && Boolean.TRUE.equals(isContainEndEvent);
@@ -1439,9 +1423,8 @@ public class ButtonServiceImpl implements ButtonService {
      * @return true表示应该显示发送按钮，false表示不应该显示
      */
     private boolean shouldShowSendButton(TaskContext taskContext, String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         boolean isAssignee = StringUtils.isNotBlank(taskContext.task.getAssignee());
-        int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(tenantId, taskId).getData();
+        int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(taskId).getData();
 
         // DelegationState.PENDING != task.getDelegationState()：表示当前用户是在协办状态，发送按钮不再显示，完成按钮显示
         // outPutNodeCount>0表示存在发送节点
@@ -1532,15 +1515,13 @@ public class ButtonServiceImpl implements ButtonService {
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         if (task != null) {
             String multiInstance =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getData();
+                processDefinitionApi.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             boolean b = (multiInstance.equals(SysVariables.PARALLEL) || multiInstance.equals(SysVariables.SEQUENTIAL));
             if (b) {
                 buttonModelList.add(ItemButton.jiaJianQian);
             }
             buttonModelList.add(ItemButton.chongDingWei);
-            List<TargetModel> taskNodes =
-                processDefinitionApi.getNodes(tenantId, task.getProcessDefinitionId()).getData();
+            List<TargetModel> taskNodes = processDefinitionApi.getNodes(task.getProcessDefinitionId()).getData();
             AtomicInteger index = new AtomicInteger(100);
             taskNodes.stream()
                 .filter(node -> StringUtils.isNotBlank(node.getTaskDefKey()))
@@ -1628,7 +1609,7 @@ public class ButtonServiceImpl implements ButtonService {
         }
 
         // 构建任务上下文
-        TodoTaskContext context = buildTodoTaskContext(itemId, taskId, tenantId, orgUnitId, task);
+        TodoTaskContext context = buildTodoTaskContext(itemId, taskId, orgUnitId, task);
 
         // 处理保存按钮
         handleSaveButton(buttonList, context);
@@ -1656,7 +1637,7 @@ public class ButtonServiceImpl implements ButtonService {
         handleEndButton(buttonList, context);
 
         // 处理回收站按钮
-        handleRecycleBinButton(context, tenantId);
+        handleRecycleBinButton(context);
 
         // 添加基础按钮
         // buttonList.add(ItemButton.chaoSong);//通过按钮配置

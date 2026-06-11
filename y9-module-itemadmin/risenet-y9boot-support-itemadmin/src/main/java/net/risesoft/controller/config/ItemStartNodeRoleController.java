@@ -2,6 +2,7 @@ package net.risesoft.controller.config;
 
 import java.util.List;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -18,7 +19,6 @@ import net.risesoft.model.platform.Role;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemStartNodeRoleService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -50,14 +50,11 @@ public class ItemStartNodeRoleController {
     @GetMapping(value = "/getBpmList")
     public Y9Result<List<ItemStartNodeRole>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemStartNodeRole> oldList =
             itemStartNodeRoleService.listByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         if (oldList.isEmpty()) {
-            String startNode =
-                processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
-            List<TargetModel> nodeList =
-                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
+            String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(processDefinitionId).getData();
+            List<TargetModel> nodeList = processDefinitionApi.getTargetNodes(processDefinitionId, startNode).getData();
             for (TargetModel targetModel : nodeList) {
                 itemStartNodeRoleService.initRole(itemId, processDefinitionId, targetModel.getTaskDefKey(),
                     targetModel.getTaskDefName());
@@ -84,14 +81,11 @@ public class ItemStartNodeRoleController {
     @GetMapping(value = "/getNodeList")
     public Y9Result<List<ItemStartNodeRole>> getNodeList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemStartNodeRole> oldList =
             itemStartNodeRoleService.listByItemIdAndProcessDefinitionId(itemId, processDefinitionId);
         if (oldList.isEmpty()) {
-            String startNode =
-                processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
-            List<TargetModel> nodeList =
-                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
+            String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(processDefinitionId).getData();
+            List<TargetModel> nodeList = processDefinitionApi.getTargetNodes(processDefinitionId, startNode).getData();
             for (TargetModel targetModel : nodeList) {
                 itemStartNodeRoleService.initRole(itemId, processDefinitionId, targetModel.getTaskDefKey(),
                     targetModel.getTaskDefName());

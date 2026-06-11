@@ -117,8 +117,7 @@ public class MultiInstanceRestController {
         List<Map<String, Object>> listMap = new ArrayList<>();
         if (task != null) {
             String type =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getData();
+                processDefinitionApi.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             if (SysVariables.PARALLEL.equals(type)) {
                 listMap = multiInstanceService.listAssignee4Parallel(processInstanceId);
             } else if (SysVariables.SEQUENTIAL.equals(type)) {

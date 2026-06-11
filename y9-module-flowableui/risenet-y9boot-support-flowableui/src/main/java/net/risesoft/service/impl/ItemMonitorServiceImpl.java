@@ -110,11 +110,9 @@ public class ItemMonitorServiceImpl implements ItemMonitorService {
             List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
             if (taskList != null && !taskList.isEmpty()) {
                 TaskModel firstTask = taskList.get(0);
-                boolean isSubProcessChildNode =
-                    processDefinitionApi
-                        .isSubProcessChildNode(tenantId, firstTask.getProcessDefinitionId(),
-                            firstTask.getTaskDefinitionKey())
-                        .getData();
+                boolean isSubProcessChildNode = processDefinitionApi
+                    .isSubProcessChildNode(firstTask.getProcessDefinitionId(), firstTask.getTaskDefinitionKey())
+                    .getData();
                 if (isSubProcessChildNode) {
                     // 针对SubProcess
                     mapTemp.put("taskName", "送会签");

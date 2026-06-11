@@ -156,7 +156,7 @@ public class ItemServiceImpl implements ItemService {
                     repositoryApi.getLatestProcessDefinitionByKey(tenantId, proDefKey).getData();
                 String processDefinitionId = processDefinition.getId();
                 @SuppressWarnings("unused")
-                List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+                List<TargetModel> nodes = processDefinitionApi.getNodes(processDefinitionId).getData();
                 // 复制表单绑定信息
                 y9FormItemBindService.copyBindInfo(id, newItemId, processDefinitionId);
 

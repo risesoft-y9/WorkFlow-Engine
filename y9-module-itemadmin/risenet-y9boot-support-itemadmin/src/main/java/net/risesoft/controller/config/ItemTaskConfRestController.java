@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,6 @@ import net.risesoft.entity.ItemTaskConf;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemTaskConfService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -60,8 +60,7 @@ public class ItemTaskConfRestController {
     public Y9Result<List<Map<String, Object>>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         List<Map<String, Object>> resList = new ArrayList<>();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+        List<TargetModel> list = processDefinitionApi.getNodes(processDefinitionId).getData();
         Map<String, Object> map;
         for (TargetModel targetModel : list) {
             map = new HashMap<>(16);

@@ -188,8 +188,7 @@ public class Y9FormItemBindRestController {
     public Y9Result<List<Y9FormItemBindVO>> getBpmList(@RequestParam String processDefinitionId,
         @RequestParam String itemId) {
         List<Y9FormItemBindVO> list = new ArrayList<>();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> targetModelList = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+        List<TargetModel> targetModelList = processDefinitionApi.getNodes(processDefinitionId).getData();
         Y9FormItemBindVO map;
         List<Y9FormItemBind> pcBindList;
         List<Y9FormItemMobileBind> mobileBindList;
@@ -304,26 +303,6 @@ public class Y9FormItemBindRestController {
         return y9FormItemBindService.save(eformItem);
     }
 
-    /**
-     * 保存表单标签页设置
-     *
-     * @param eformItem 绑定信息
-     * @return
-     */
-    @PostMapping(value = "/saveTabSetting")
-    public Y9Result<String> saveTabSetting(Y9FormItemBind eformItem) {
-        List<Y9FormItemBind> list = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4Own(
-            eformItem.getItemId(), eformItem.getProcessDefinitionId(), eformItem.getTaskDefKey());
-        for (Y9FormItemBind bind : list) {
-            bind.setShowDocumentTab(eformItem.isShowDocumentTab());
-            bind.setShowFileTab(eformItem.isShowFileTab());
-            bind.setShowHistoryTab(eformItem.isShowHistoryTab());
-            y9FormItemBindService.save(bind);
-        }
-        return Y9Result.success("保存设置成功");
-
-    }
-
     @PostMapping(value = "/saveFormBind")
     public Y9Result<String> saveFormBind(String bindType, String[] formInfos, String itemId, String processDefinitionId,
         String taskDefKey) {
@@ -356,6 +335,17 @@ public class Y9FormItemBindRestController {
     }
 
     /**
+     * 保存手机端绑定表单
+     *
+     * @param eformItem 绑定信息
+     * @return
+     */
+    @PostMapping(value = "/saveMobileBind")
+    public Y9Result<String> saveMobileBind(Y9FormItemMobileBind eformItem) {
+        return y9FormItemBindService.save(eformItem);
+    }
+
+    /**
      * 保存排序
      *
      * @param idAndTabIndexs 视图id和排序索引
@@ -367,13 +357,22 @@ public class Y9FormItemBindRestController {
     }
 
     /**
-     * 保存手机端绑定表单
+     * 保存表单标签页设置
      *
      * @param eformItem 绑定信息
      * @return
      */
-    @PostMapping(value = "/saveMobileBind")
-    public Y9Result<String> saveMobileBind(Y9FormItemMobileBind eformItem) {
-        return y9FormItemBindService.save(eformItem);
+    @PostMapping(value = "/saveTabSetting")
+    public Y9Result<String> saveTabSetting(Y9FormItemBind eformItem) {
+        List<Y9FormItemBind> list = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey4Own(
+            eformItem.getItemId(), eformItem.getProcessDefinitionId(), eformItem.getTaskDefKey());
+        for (Y9FormItemBind bind : list) {
+            bind.setShowDocumentTab(eformItem.isShowDocumentTab());
+            bind.setShowFileTab(eformItem.isShowFileTab());
+            bind.setShowHistoryTab(eformItem.isShowHistoryTab());
+            y9FormItemBindService.save(bind);
+        }
+        return Y9Result.success("保存设置成功");
+
     }
 }

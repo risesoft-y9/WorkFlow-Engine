@@ -433,11 +433,9 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      */
     private List<TargetModel> getSubProcessNodeList(String taskId, String year) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             HistoricTaskInstanceModel historicTaskInstanceModel =
                 this.historictaskApi.getByIdAndYear(taskId, year).getData();
-            return this.processDefinitionApi
-                .getSubProcessChildNode(tenantId, historicTaskInstanceModel.getProcessDefinitionId())
+            return this.processDefinitionApi.getSubProcessChildNode(historicTaskInstanceModel.getProcessDefinitionId())
                 .getData();
         } catch (Exception e) {
             LOGGER.warn("获取子流程节点列表失败，taskId: {}", taskId, e);

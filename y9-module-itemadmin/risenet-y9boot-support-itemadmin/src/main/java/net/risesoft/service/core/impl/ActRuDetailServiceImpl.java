@@ -342,12 +342,11 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
         if (null != SUB_NODE_MAP.get(processDefinitionId)) {
             return;
         }
-        List<String> subTaskDefKeys =
-            processDefinitionApi.getSubProcessChildNode(Y9LoginUserHolder.getTenantId(), processDefinitionId)
-                .getData()
-                .stream()
-                .map(TargetModel::getTaskDefKey)
-                .collect(Collectors.toList());
+        List<String> subTaskDefKeys = processDefinitionApi.getSubProcessChildNode(processDefinitionId)
+            .getData()
+            .stream()
+            .map(TargetModel::getTaskDefKey)
+            .collect(Collectors.toList());
         SUB_NODE_MAP.put(processDefinitionId, subTaskDefKeys);
     }
 

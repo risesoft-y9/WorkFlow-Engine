@@ -86,7 +86,7 @@ public class ItemButtonBindServiceImpl implements ItemButtonBindService {
         String previousProcessDefinitionId =
             getPreviousProcessDefinitionId(tenantId, processDefinitionId, latestProcessDefinition);
         // 获取流程节点并复制绑定信息
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestProcessDefinitionId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(latestProcessDefinitionId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             copyButtonBindingsForNode(itemId, tenantId, userId, userName, latestProcessDefinitionId,

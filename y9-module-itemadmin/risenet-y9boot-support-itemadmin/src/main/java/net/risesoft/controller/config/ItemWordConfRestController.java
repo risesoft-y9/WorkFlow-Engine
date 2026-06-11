@@ -2,6 +2,7 @@ package net.risesoft.controller.config;
 
 import java.util.List;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,6 @@ import net.risesoft.entity.documentword.ItemWordConf;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemWordConfService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -86,8 +86,7 @@ public class ItemWordConfRestController {
     public Y9Result<List<TargetModel>> getBpmList(@RequestParam String processDefinitionId,
         @RequestParam String itemId) {
         List<TargetModel> list;
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+        list = processDefinitionApi.getNodes(processDefinitionId).getData();
         for (TargetModel targetModel : list) {
             StringBuilder names = new StringBuilder();
             List<ItemWordConf> bindList = itemWordConfService.listByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
