@@ -143,8 +143,6 @@ public class MainRestController {
      */
     @GetMapping(value = "/getCount4Item")
     public Y9Result<Map<String, Object>> getCount4Item(@RequestParam @NotBlank String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9FlowableHolder.getPositionId();
         UserInfo person = Y9LoginUserHolder.getUserInfo();
         Map<String, Object> map = new HashMap<>(16);
         int draftCount = 0;
@@ -174,8 +172,7 @@ public class MainRestController {
                 draftCount = draftApi.getDraftCount(itemId).getData();
                 draftRecycleCount = draftApi.getDeleteDraftCount(itemId).getData();
                 Y9FlowableCountModel flowableCountModel =
-                    processTodoApi.getCountByUserIdAndProcessDefinitionKey(tenantId, positionId, processDefinitionKey)
-                        .getData();
+                    processTodoApi.getCountByUserIdAndProcessDefinitionKey(processDefinitionKey).getData();
                 todoCount = flowableCountModel.getTodoCount();
                 doingCount = flowableCountModel.getDoingCount();
                 try {
@@ -216,8 +213,6 @@ public class MainRestController {
      */
     @GetMapping(value = "/getCount4SystemName")
     public Y9Result<Map<String, Object>> getCount4SystemName(@RequestParam @NotBlank String systemName) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String positionId = Y9FlowableHolder.getPositionId();
         Map<String, Object> map = new HashMap<>(16);
         int draftCount = 0;
         long todoCount = 0;
@@ -240,7 +235,7 @@ public class MainRestController {
             draftCount = draftApi.countBySystemName(systemName).getData();
             draftRecycleCount = draftApi.getDeleteDraftCount(systemName).getData();
             Y9FlowableCountModel flowableCountModel =
-                processTodoApi.getCountByUserIdAndSystemName(tenantId, positionId, systemName).getData();
+                processTodoApi.getCountByUserIdAndSystemName(systemName).getData();
             todoCount = flowableCountModel.getTodoCount();
             doingCount = flowableCountModel.getDoingCount();
             try {
@@ -484,12 +479,11 @@ public class MainRestController {
             if (StringUtils.isNotBlank(itemId)) {
                 // 单个事项获取待办数量
                 ItemModel itemModel = itemApi.getByItemId(itemId).getData();
-                return processTodoApi
-                    .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId, itemModel.getWorkflowGuid())
+                return processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(userId, itemModel.getWorkflowGuid())
                     .getData();
             } else if (StringUtils.isNotBlank(systemName)) {
                 // 按系统名称获取待办数量
-                return processTodoApi.getTodoCountByUserIdAndSystemName(tenantId, userId, systemName).getData();
+                return processTodoApi.getTodoCountByUserIdAndSystemName(userId, systemName).getData();
             } else {
                 // 工作台获取所有待办数量
                 return itemTodoApi.countByUserId(tenantId, userId).getData();
