@@ -54,7 +54,7 @@ public interface ItemRoleApi {
      * 获取抄送选人
      *
      * @param id 唯一标识
-     * @param principalType 类型:2(部门)、3 (人员)、5(用户组)、6 (岗位)
+     * @param principalType 类型:2(部门)、5(用户组)、6 (岗位)
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<List<ItemRoleOrgUnitModel>>} 通用请求返回对象 - data 是发送选人组织架构
      * @since 9.6.6

@@ -63,7 +63,7 @@ import net.risesoft.entity.template.ItemPrintTemplateBind;
 import net.risesoft.enums.DynamicRoleKindsEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemButtonTypeEnum;
-import net.risesoft.enums.ItemPermissionEnum;
+import net.risesoft.enums.ItemUserChoiceEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.SignStatusEnum;
 import net.risesoft.enums.TodoTaskEventActionEnum;
@@ -215,7 +215,8 @@ public class DocumentServiceImpl implements DocumentService {
         model.setTenantId(tenantId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(processDefinitionKey);
-        ProcessDefinitionModel pdModel = repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
+        ProcessDefinitionModel pdModel =
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
         String processDefinitionId = pdModel.getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
         model.setProcessDefinitionId(processDefinitionId);
@@ -241,7 +242,8 @@ public class DocumentServiceImpl implements DocumentService {
         model.setTenantId(tenantId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(processDefinitionKey);
-        ProcessDefinitionModel pdModel = repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
+        ProcessDefinitionModel pdModel =
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
         String processDefinitionId = pdModel.getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
         model.setProcessDefinitionId(processDefinitionId);
@@ -274,8 +276,7 @@ public class DocumentServiceImpl implements DocumentService {
      * 添加自定义发送按钮
      */
     private void addCustomSendButtons(ButtonControlData controlData, String itemId, String processDefinitionId,
-        String taskDefKey, String orgUnitId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
+        String taskDefKey, String tenantId, String orgUnitId) {
         List<ItemButtonBind> bibList =
             buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND, processDefinitionId, taskDefKey);
         for (ItemButtonBind bind : bibList) {
@@ -309,14 +310,14 @@ public class DocumentServiceImpl implements DocumentService {
      * 添加自定义发送按钮
      */
     private void addCustomSendButtons(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
-        String taskDefKey, String orgUnitId) {
+        String taskDefKey, String tenantId, String orgUnitId) {
         List<ItemButtonBind> sendButtons =
             buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.SEND, processDefinitionId, taskDefKey);
         for (ItemButtonBind bind : sendButtons) {
             List<String> roleIds = bind.getRoleIds();
             String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
             // 检查用户是否有权限访问该按钮
-            if (hasButtonPermission(roleIds, orgUnitId)) {
+            if (hasButtonPermission(roleIds, tenantId, orgUnitId)) {
                 buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.SEND));
             }
         }
@@ -325,8 +326,10 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 添加发送路由
      */
-    private void addSendRoutes(ButtonControlData controlData, String processDefinitionId, String taskDefKey) {
-        List<TargetModel> routeToTasks = processDefinitionApi.getTargetNodes(processDefinitionId, taskDefKey).getData();
+    private void addSendRoutes(ButtonControlData controlData, String processDefinitionId, String taskDefKey,
+        String tenantId) {
+        List<TargetModel> routeToTasks =
+            processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
         for (TargetModel target : routeToTasks) {
             // 退回、路由网关不显示在发送下面
             if (!"退回".equals(target.getTaskDefName())
@@ -344,8 +347,10 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 添加发送路由按钮
      */
-    private void addSendRoutes(List<ItemButtonModel> buttonList, String processDefinitionId, String taskDefKey) {
-        List<TargetModel> routeToTasks = processDefinitionApi.getTargetNodes(processDefinitionId, taskDefKey).getData();
+    private void addSendRoutes(List<ItemButtonModel> buttonList, String processDefinitionId, String taskDefKey,
+        String tenantId) {
+        List<TargetModel> routeToTasks =
+            processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
         for (TargetModel target : routeToTasks) {
             // 退回、路由网关不显示在发送下面
             if (!"退回".equals(target.getTaskDefName())
@@ -379,13 +384,14 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel addWithStartTaskDefKey(String itemId, String startTaskDefKey, boolean mobile) {
-        String userId = Y9FlowableHolder.getPositionId();
+        String userId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
         DocumentDetailModel model = new DocumentDetailModel();
         Item item = itemService.findById(itemId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
-        ProcessDefinitionModel pdModel = repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
+        ProcessDefinitionModel pdModel =
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
         String processDefinitionId = pdModel.getId();
         model.setItembox(ItemBoxTypeEnum.ADD.getValue());
         model.setProcessDefinitionId(processDefinitionId);
@@ -427,12 +433,12 @@ public class DocumentServiceImpl implements DocumentService {
      * 检查是否存在自定义发送按钮
      */
     private boolean checkCustomSendButton(ButtonControlData controlData, String itemId, String processDefinitionId,
-        String taskDefKey, String orgUnitId) {
+        String taskDefKey, String tenantId, String orgUnitId) {
         List<ItemButtonBind> bibList =
             buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId, taskDefKey);
         for (ItemButtonBind bib : bibList) {
             if ("发送".equals(bib.getButtonName())) {
-                return handleSendButtonPermission(controlData, bib, orgUnitId);
+                return handleSendButtonPermission(controlData, bib, tenantId, orgUnitId);
             }
         }
         return false;
@@ -513,7 +519,7 @@ public class DocumentServiceImpl implements DocumentService {
         DocUserChoiseModel model = new DocUserChoiseModel();
         String tenantId = Y9LoginUserHolder.getTenantId();
 
-        String multiInstance = processDefinitionApi.getNodeType(processDefinitionId, taskDefKey).getData();
+        String multiInstance = processDefinitionApi.getNodeType(tenantId, processDefinitionId, taskDefKey).getData();
         Map<String, Object> tabMap =
             itemPermissionService.getTabMap(itemId, processDefinitionId, taskDefKey, processInstanceId, taskId);
 
@@ -535,7 +541,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setTenantId(tenantId);
         model.setItemId(itemId);
         model.setRouteToTask(taskDefKey);
-        boolean isSubProcess = processDefinitionApi.isSubProcess(processDefinitionId, taskDefKey).getData();
+        boolean isSubProcess = processDefinitionApi.isSubProcess(tenantId, processDefinitionId, taskDefKey).getData();
         model.setType(isSubProcess ? "SubProcess" : "UserTask");
         model.setSponsorStatus(false);
         if (SysVariables.PARALLEL.equals(multiInstance)) {// 并行节点，查询是否具有主协办状态
@@ -593,12 +599,12 @@ public class DocumentServiceImpl implements DocumentService {
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
             activitiUser = "", startor;
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
-        HistoricProcessInstanceModel hpi = historicProcessApi.getById(processInstanceId).getData();
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
         if (hpi == null) {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
                 String year = getYear(processParam.getCreateTime());
-                hpi = historicProcessApi.getByIdAndYear(processInstanceId, year).getData();
+                hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
                 processDefinitionId = hpi.getProcessDefinitionId();
                 processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
             } else {
@@ -655,7 +661,7 @@ public class DocumentServiceImpl implements DocumentService {
         model.setDocumentId(documentId);
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         startor = processParam.getStartor();
-        HistoricProcessInstanceModel hpi = historicProcessApi.getById(processInstanceId).getData();
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
         processDefinitionId = hpi.getProcessDefinitionId();
         processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
@@ -720,7 +726,8 @@ public class DocumentServiceImpl implements DocumentService {
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
         if (officeDoneInfo == null) {
             String year = getYear(processParam.getCreateTime());
-            HistoricProcessInstanceModel hpi = historicProcessApi.getByIdAndYear(processInstanceId, year).getData();
+            HistoricProcessInstanceModel hpi =
+                historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
             processDefinitionId = hpi.getProcessDefinitionId();
             processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
         } else {
@@ -750,14 +757,14 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel editDraft(String processSerialNumber, String itemId, boolean mobile) {
-        String orgUnitId = Y9FlowableHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getPositionId();
         DocumentDetailModel model = new DocumentDetailModel();
         Item item = itemService.findById(itemId);
         model.setItemId(itemId);
         model.setProcessDefinitionKey(item.getWorkflowGuid());
         String processDefinitionKey = item.getWorkflowGuid();
         String processDefinitionId =
-            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData().getId();
+            repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData().getId();
         String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
         ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
         model.setCustomItem(processParam.getCustomItem());
@@ -783,12 +790,14 @@ public class DocumentServiceImpl implements DocumentService {
         String processSerialNumber, processDefinitionId, taskDefinitionKey = "", processDefinitionKey,
             activitiUser = "", itemId;
         String startor;
+        String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         startor = processParam.getStartor();
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
         if (officeDoneInfo == null) {
             String year = getYear(processParam.getCreateTime());
-            HistoricProcessInstanceModel hpi = historicProcessApi.getByIdAndYear(processInstanceId, year).getData();
+            HistoricProcessInstanceModel hpi =
+                historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
             processDefinitionId = hpi.getProcessDefinitionId();
             processDefinitionKey = processDefinitionId.split(SysVariables.COLON)[0];
         } else {
@@ -840,8 +849,10 @@ public class DocumentServiceImpl implements DocumentService {
         }
         // 获取第一节点任务key,可能多个,用于非权限表单时，是否是起草节点，用来开启编辑所有表单所有字段的权限
         String startTaskDefKey = "";
-        String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(processDefinitionId).getData();
-        List<TargetModel> nodeList = processDefinitionApi.getTargetNodes(processDefinitionId, startNode).getData();
+        String startNode =
+            processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
+        List<TargetModel> nodeList =
+            processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
         for (TargetModel map : nodeList) {
             startTaskDefKey = Y9Util.genCustomStr(startTaskDefKey, map.getTaskDefKey());
         }
@@ -916,7 +927,7 @@ public class DocumentServiceImpl implements DocumentService {
             Position position = Y9FlowableHolder.getPosition();
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
             FlowElementModel flowElementModel =
-                processDefinitionApi.getNode(task.getProcessDefinitionId(), routeToTaskId).getData();
+                processDefinitionApi.getNode(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
             Map<String, Object> variables =
                 CommonOpt.setVariables(orgUnitId, position.getName(), routeToTaskId, userList, flowElementModel);
             // 处理并行发送逻辑
@@ -1106,7 +1117,9 @@ public class DocumentServiceImpl implements DocumentService {
     public String getFormIdByItemId(String itemId, String processDefinitionKey) {
         String formIds = "";
         String processDefinitionId =
-            repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData().getId();
+            repositoryApi.getLatestProcessDefinitionByKey(Y9LoginUserHolder.getTenantId(), processDefinitionKey)
+                .getData()
+                .getId();
         List<Y9FormItemBind> binds =
             y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId, processDefinitionId, "");
         if (!binds.isEmpty()) {
@@ -1160,7 +1173,6 @@ public class DocumentServiceImpl implements DocumentService {
             switch (permission.getRoleType()) {
                 case DEPARTMENT:
                 case POSITION:
-                case USER:
                     handleOrgUnitPermission(orgUnitList, tenantId, permission);
                     break;
                 case ROLE:
@@ -1187,14 +1199,14 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理保存按钮相关的自定义普通按钮
      */
     private void handleCommonButtons(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
-        String taskDefKey, String orgUnitId) {
+        String taskDefKey, String tenantId, String orgUnitId) {
         List<ItemButtonBind> commonButtons =
             buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId, taskDefKey);
         for (ItemButtonBind bind : commonButtons) {
             String buttonName = bind.getButtonName(), buttonCustomId = bind.getButtonCustomId();
             List<String> roleIds = bind.getRoleIds();
             // 检查用户是否有权限访问该按钮
-            if (hasButtonPermission(roleIds, orgUnitId)) {
+            if (hasButtonPermission(roleIds, tenantId, orgUnitId)) {
                 buttonList.add(new ItemButtonModel(buttonCustomId, buttonName, ItemButtonTypeEnum.COMMON));
             }
         }
@@ -1204,8 +1216,7 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理保存按钮相关的自定义普通按钮（待办场景）
      */
     private void handleCommonButtonsForTodo(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
-        String taskDefKey, String orgUnitId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
+        String taskDefKey, String tenantId, String orgUnitId) {
         List<ItemButtonBind> commonButtons =
             buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId, taskDefKey);
         commonButtons.stream().filter(bind -> !"发送".equals(bind.getButtonName())).forEach(bind -> {
@@ -1222,15 +1233,15 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理在办箱和办结箱数据
      */
     private void handleDoingDoneBox(ProcessInstanceData data, String processInstanceId, String taskId,
-        ProcessParam processParam, OpenDataModel model) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        HistoricProcessInstanceModel hpi = historicProcessApi.getById(processInstanceId).getData();
+        ProcessParam processParam, String tenantId, OpenDataModel model) {
+
+        HistoricProcessInstanceModel hpi = historicProcessApi.getById(tenantId, processInstanceId).getData();
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
 
         if (hpi == null) {
             if (officeDoneInfo == null) {
                 String year = getYear(processParam.getCreateTime());
-                hpi = historicProcessApi.getByIdAndYear(processInstanceId, year).getData();
+                hpi = historicProcessApi.getByIdAndYear(tenantId, processInstanceId, year).getData();
                 data.processDefinitionId = hpi.getProcessDefinitionId();
                 data.processDefinitionKey = data.processDefinitionId.split(SysVariables.COLON)[0];
             } else {
@@ -1341,13 +1352,12 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理主流程退回按钮
      */
     private void handleMainProcessRollback(String itemId, List<ItemButtonModel> buttonList, TaskModel task,
-        List<HistoricTaskInstanceModel> results) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<HistoricTaskInstanceModel> results, String tenantId) {
         // 查询多步退回配置
         BackTaskConf backTaskConf = itemBackTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
             task.getProcessDefinitionId(), task.getTaskDefinitionKey());
         List<TargetModel> subNodeList =
-            processDefinitionApi.getSubProcessChildNode(task.getProcessDefinitionId()).getData();
+            processDefinitionApi.getSubProcessChildNode(tenantId, task.getProcessDefinitionId()).getData();
         results.stream()
             .filter(hisTask -> null != hisTask.getEndTime() && StringUtils.isNotBlank(hisTask.getAssignee()))
             .forEach(hisTask -> {
@@ -1463,12 +1473,13 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 处理并行子流程逻辑
      */
-    private void handleParallelSubprocess(Map<String, Object> variables, StartProcessResultModel model,
+    private void handleParallelSubprocess(Map<String, Object> variables, String tenantId, StartProcessResultModel model,
         String routeToTaskId, List<String> userList) {
         Object subprocessNumObj = variables.get(ItemConsts.SUBPROCESSNUM_KEY);
         if (subprocessNumObj != null && !userList.isEmpty()) {
             try {
-                String type = processDefinitionApi.getNodeType(model.getProcessDefinitionId(), routeToTaskId).getData();
+                String type =
+                    processDefinitionApi.getNodeType(tenantId, model.getProcessDefinitionId(), routeToTaskId).getData();
                 if (SysVariables.PARALLEL.equals(type)) {
                     int subProcessNum = Integer.parseInt(subprocessNumObj.toString());
                     if (subProcessNum > 1 && userList.size() == 1) {
@@ -1501,10 +1512,10 @@ public class DocumentServiceImpl implements DocumentService {
         data.itemId = itemId;
 
         if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.TODO.getValue())) {
-            handleTodoBox(data, taskId, processParam, model);
+            handleTodoBox(data, taskId, processParam, tenantId, model);
         } else if (itembox.equalsIgnoreCase(ItemBoxTypeEnum.DOING.getValue())
             || itembox.equalsIgnoreCase(ItemBoxTypeEnum.DONE.getValue())) {
-            handleDoingDoneBox(data, processInstanceId, taskId, processParam, model);
+            handleDoingDoneBox(data, processInstanceId, taskId, processParam, tenantId, model);
         }
 
         return data;
@@ -1513,8 +1524,8 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 处理重定向按钮逻辑
      */
-    private void handleRepositionButton(ButtonControlData controlData, String processDefinitionId) {
-        List<TargetModel> taskNodes = processDefinitionApi.getNodes(processDefinitionId).getData();
+    private void handleRepositionButton(ButtonControlData controlData, String processDefinitionId, String tenantId) {
+        List<TargetModel> taskNodes = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
         for (TargetModel node : taskNodes) {
             // 流程不显示在重定向按钮下面
             if (!"流程".equals(node.getTaskDefName())) {
@@ -1547,16 +1558,15 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理退回按钮
      */
     private void handleRollbackButtons(String itemId, List<ItemButtonModel> buttonList, String taskId,
-        String processDefinitionId, String taskDefKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
+        String processDefinitionId, String taskDefKey, String tenantId) {
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
-        Boolean isSub = processDefinitionApi.isSubProcessChildNode(processDefinitionId, taskDefKey).getData();
+        Boolean isSub = processDefinitionApi.isSubProcessChildNode(tenantId, processDefinitionId, taskDefKey).getData();
         List<HistoricTaskInstanceModel> results =
-            historictaskApi.getByProcessInstanceId(task.getProcessInstanceId(), "").getData();
+            historictaskApi.getByProcessInstanceId(tenantId, task.getProcessInstanceId(), "").getData();
         if (isSub) {
-            handleSubProcessRollback(itemId, buttonList, task, results);
+            handleSubProcessRollback(itemId, buttonList, task, results, tenantId);
         } else {
-            handleMainProcessRollback(itemId, buttonList, task, results);
+            handleMainProcessRollback(itemId, buttonList, task, results, tenantId);
         }
     }
 
@@ -1564,7 +1574,7 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理保存按钮逻辑
      */
     private void handleSaveButton(ButtonControlData controlData, String itemId, String processDefinitionId,
-        String taskDefKey, String orgUnitId) {
+        String taskDefKey, String tenantId, String orgUnitId) {
         List<ItemButtonBind> bibList =
             buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId, taskDefKey);
         for (ItemButtonBind bind : bibList) {
@@ -1575,7 +1585,7 @@ public class DocumentServiceImpl implements DocumentService {
                 continue;
             }
             // 检查用户权限并添加按钮
-            if (hasButtonPermission(bind.getRoleIds(), orgUnitId)) {
+            if (hasButtonPermission(bind.getRoleIds(), tenantId, orgUnitId)) {
                 addButtonToControlData(controlData, buttonName, buttonCustomId);
             }
         }
@@ -1585,9 +1595,11 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理发送按钮逻辑
      */
     private void handleSendButton(ButtonControlData controlData, String itemId, String processDefinitionId,
-        String taskDefKey, String[] buttonNames, String[] buttonIds, int buttonIndex, String orgUnitId) {
+        String taskDefKey, String[] buttonNames, String[] buttonIds, int buttonIndex, String tenantId,
+        String orgUnitId) {
         // 检查是否有自定义"发送"按钮
-        boolean haveSendButton = checkCustomSendButton(controlData, itemId, processDefinitionId, taskDefKey, orgUnitId);
+        boolean haveSendButton =
+            checkCustomSendButton(controlData, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         if (!haveSendButton) {
             // 添加默认发送按钮
             Map<String, Object> defaultSendButton = new HashMap<>(16);
@@ -1597,16 +1609,17 @@ public class DocumentServiceImpl implements DocumentService {
             controlData.menuKey = Y9Util.genCustomStr(controlData.menuKey, buttonIds[buttonIndex]);
             controlData.menuMap.add(defaultSendButton);
             // 添加发送下面的路由
-            addSendRoutes(controlData, processDefinitionId, taskDefKey);
+            addSendRoutes(controlData, processDefinitionId, taskDefKey, tenantId);
             // 添加自定义按钮到发送
-            addCustomSendButtons(controlData, itemId, processDefinitionId, taskDefKey, orgUnitId);
+            addCustomSendButtons(controlData, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
     }
 
     /**
      * 处理发送按钮权限检查
      */
-    private boolean handleSendButtonPermission(ButtonControlData controlData, ItemButtonBind bib, String orgUnitId) {
+    private boolean handleSendButtonPermission(ButtonControlData controlData, ItemButtonBind bib, String tenantId,
+        String orgUnitId) {
         List<String> roleIds = bib.getRoleIds();
         // 如果没有角色限制，直接添加按钮
         if (roleIds.isEmpty()) {
@@ -1614,7 +1627,7 @@ public class DocumentServiceImpl implements DocumentService {
             return true;
         }
         // 检查用户是否有权限访问该按钮
-        if (hasButtonPermission(roleIds, orgUnitId)) {
+        if (hasButtonPermission(roleIds, tenantId, orgUnitId)) {
             addButtonToControlData(controlData, bib.getButtonName(), bib.getButtonCustomId());
             return true;
         }
@@ -1625,19 +1638,18 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理发送按钮相关的路由和自定义按钮
      */
     private void handleSendButtons(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
-        String taskDefKey, String orgUnitId) {
+        String taskDefKey, String tenantId, String orgUnitId) {
         // 添加发送下面的路由
-        addSendRoutes(buttonList, processDefinitionId, taskDefKey);
+        addSendRoutes(buttonList, processDefinitionId, taskDefKey, tenantId);
         // 添加自定义按钮到发送
-        addCustomSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
+        addCustomSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
     }
 
     /**
      * 处理发送按钮相关的路由和自定义按钮（待办场景）
      */
     private void handleSendButtonsForTodo(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
-        String taskDefKey, String orgUnitId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
+        String taskDefKey, String tenantId, String orgUnitId) {
         // 检查是否有自定义"发送"按钮
         AtomicBoolean haveSendButton = new AtomicBoolean(false);
         List<ItemButtonBind> commonButtons =
@@ -1653,8 +1665,8 @@ public class DocumentServiceImpl implements DocumentService {
         });
         // 如果没有自定义发送按钮，则添加默认发送按钮和路由
         if (!haveSendButton.get()) {
-            addSendRoutes(buttonList, processDefinitionId, taskDefKey);
-            addCustomSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
+            addSendRoutes(buttonList, processDefinitionId, taskDefKey, tenantId);
+            addCustomSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
     }
 
@@ -1679,14 +1691,14 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理签收任务逻辑
      */
     private SignTaskConfigModel handleSignTask(SignTaskConfigModel model, ProcessParam processParam, String itemId,
-        String processDefinitionId, String taskDefinitionKey) {
+        String processDefinitionId, String taskDefinitionKey, String tenantId) {
         model.setSignTask(true);
         boolean searchPerson = true;
         // 查找已分配的人员
         if (processParam != null && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
-            List<HistoricTaskInstanceModel> hisTaskList =
-                historictaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(processParam.getProcessInstanceId(), "")
-                    .getData();
+            List<HistoricTaskInstanceModel> hisTaskList = historictaskApi
+                .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processParam.getProcessInstanceId(), "")
+                .getData();
             for (HistoricTaskInstanceModel hisTask : hisTaskList) {
                 if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)
                     && StringUtils.isNotBlank(hisTask.getAssignee())) {
@@ -1725,8 +1737,7 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理子流程退回按钮
      */
     private void handleSubProcessRollback(String itemId, List<ItemButtonModel> buttonList, TaskModel task,
-        List<HistoricTaskInstanceModel> results) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
+        List<HistoricTaskInstanceModel> results, String tenantId) {
         String executionId = task.getExecutionId();
         // 查询多步退回配置
         BackTaskConf backTaskConf = itemBackTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
@@ -1758,9 +1769,8 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 处理待办箱数据
      */
-    private void handleTodoBox(ProcessInstanceData data, String taskId, ProcessParam processParam,
+    private void handleTodoBox(ProcessInstanceData data, String taskId, ProcessParam processParam, String tenantId,
         OpenDataModel model) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         data.processInstanceId = task.getProcessInstanceId();
         data.processSerialNumber = processParam.getProcessSerialNumber();
@@ -1783,7 +1793,7 @@ public class DocumentServiceImpl implements DocumentService {
         }
 
         // 获取第一节点任务key
-        setStartTaskDefKey(model, data.processDefinitionId);
+        setStartTaskDefKey(model, tenantId, data.processDefinitionId);
 
         OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(data.processInstanceId);
         model.setMeeting(officeDoneInfo != null && "1".equals(officeDoneInfo.getMeeting()));
@@ -1792,12 +1802,11 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 检查用户是否有按钮访问权限
      */
-    private boolean hasButtonPermission(List<String> roleIds, String orgUnitId) {
+    private boolean hasButtonPermission(List<String> roleIds, String tenantId, String orgUnitId) {
         // 如果角色ID列表为空，表示无权限限制
         if (roleIds.isEmpty()) {
             return true;
         }
-        String tenantId = Y9LoginUserHolder.getTenantId();
         // 检查用户是否具有任一角色权限
         return roleIds.stream().anyMatch(roleId -> {
             try {
@@ -1840,9 +1849,9 @@ public class DocumentServiceImpl implements DocumentService {
                 if (item != null && item.getId() != null) {
                     model.setName(item.getName());
                     model.setItemName(item.getName());
-                    todoCount =
-                        processTodoApi.getTodoCountByUserIdAndProcessDefinitionKey(userId, item.getWorkflowGuid())
-                            .getData();
+                    todoCount = processTodoApi
+                        .getTodoCountByUserIdAndProcessDefinitionKey(tenantId, userId, item.getWorkflowGuid())
+                        .getData();
                     model.setTodoCount((int)todoCount);
                     model.setAppIcon(StringUtils.isBlank(item.getIconData()) ? "" : item.getIconData());
                     model.setProcessDefinitionKey(item.getWorkflowGuid());
@@ -1897,7 +1906,7 @@ public class DocumentServiceImpl implements DocumentService {
     public OpenDataModel menuControl(OpenDataModel model) {
         String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
             taskDefKey = model.getTaskDefKey(), taskId = model.getTaskId(), itemBox = model.getItembox();
-        String orgUnitId = Y9FlowableHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getPositionId();
         Map<String, Object> buttonMap = buttonService.showButton(itemId, taskId, itemBox);
         String[] buttonIds = (String[])buttonMap.get("buttonIds");
         String[] buttonNames = (String[])buttonMap.get("buttonNames");
@@ -1907,7 +1916,7 @@ public class DocumentServiceImpl implements DocumentService {
         ButtonControlData controlData = new ButtonControlData();
         // 生成按钮数组
         processButtons(controlData, buttonOrders, isButtonShow, itemId, processDefinitionId, taskDefKey, buttonNames,
-            buttonIds, orgUnitId);
+            buttonIds, tenantId, orgUnitId);
         // 设置模型数据
         setModelData(model, controlData, buttonMap, sponsorHandle);
         return model;
@@ -1915,17 +1924,17 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel menuControl4Add(DocumentDetailModel model) {
-        String orgUnitId = Y9FlowableHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getPositionId();
         String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
             taskDefKey = model.getTaskDefKey();
         List<ItemButtonModel> buttonList = buttonService.showButton4Add(itemId);
         // 处理保存按钮相关的自定义普通按钮
         if (buttonList.contains(ItemButton.baoCun)) {
-            handleCommonButtons(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
+            handleCommonButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
         // 处理发送按钮相关的路由和自定义按钮
         if (buttonList.contains(ItemButton.faSong)) {
-            handleSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
+            handleSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
         model.setButtonList(buttonList);
         return model;
@@ -1974,11 +1983,11 @@ public class DocumentServiceImpl implements DocumentService {
         List<ItemButtonModel> buttonList = buttonService.showButton4Draft(itemId);
         // 处理保存按钮相关的自定义普通按钮
         if (buttonList.contains(ItemButton.baoCun)) {
-            handleCommonButtons(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
+            handleCommonButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
         // 处理发送按钮相关的路由和自定义按钮
         if (buttonList.contains(ItemButton.faSong)) {
-            handleSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
+            handleSendButtons(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
         model.setButtonList(buttonList);
         return model;
@@ -1993,17 +2002,17 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel menuControl4Todo(DocumentDetailModel model) {
-        String orgUnitId = Y9FlowableHolder.getPositionId();
+        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getPositionId();
         String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
             taskDefKey = model.getTaskDefKey(), taskId = model.getTaskId();
         List<ItemButtonModel> buttonList = buttonService.showButton4Todo(model);
         // 处理保存按钮相关的自定义普通按钮
         if (buttonList.contains(ItemButton.baoCun)) {
-            handleCommonButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
+            handleCommonButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
         // 处理发送按钮相关的路由和自定义按钮
         if (buttonList.contains(ItemButton.faSong) && StringUtils.isNotBlank(taskDefKey)) {
-            handleSendButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
+            handleSendButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
         }
 
         // 处理退回上一步按钮，通过按钮配置显示后，进一步处理是否显示退回按钮
@@ -2019,11 +2028,8 @@ public class DocumentServiceImpl implements DocumentService {
             }
         }
         // 处理多步退回按钮
-        if (buttonList.stream()
-            .filter(itemButtonModel -> itemButtonModel.getKey().equals("back2any"))
-            .collect(Collectors.toList())
-            .size() > 0) {
-            handleRollbackButtons(itemId, buttonList, taskId, processDefinitionId, taskDefKey);
+        if (buttonList.stream().anyMatch(itemButtonModel -> itemButtonModel.getKey().equals("back2any"))) {
+            handleRollbackButtons(itemId, buttonList, taskId, processDefinitionId, taskDefKey, tenantId);
         }
         // 打印按钮添加到最后
         buttonList.add(ItemButton.daYin);
@@ -2041,7 +2047,7 @@ public class DocumentServiceImpl implements DocumentService {
         String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
         for (String choice : userChoices) {
             String[] parts = choice.split(SysVariables.COLON);
-            int principalType = ItemPermissionEnum.POSITION.getValue();
+            int principalType = ItemUserChoiceEnum.POSITION.getValue();
             String userId = choice;
             if (parts.length == 2) {
                 principalType = Integer.parseInt(parts[0]);
@@ -2056,10 +2062,11 @@ public class DocumentServiceImpl implements DocumentService {
 
     public Y9Result<TargetModel> parserRouteToTaskId(String itemId, String processSerialNumber,
         String processDefinitionId, String taskDefKey, String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         Y9Result<TargetModel> result = Y9Result.failure("解析目标路由失败");
         try {
             List<TargetModel> targetNodes =
-                processDefinitionApi.getTargetNodes(processDefinitionId, taskDefKey).getData();
+                processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, taskDefKey).getData();
             // 检查目标节点是否存在
             if (targetNodes == null || targetNodes.isEmpty()) {
                 return Y9Result.failure("目标路由不存在");
@@ -2125,21 +2132,21 @@ public class DocumentServiceImpl implements DocumentService {
      */
     private void processButtons(ButtonControlData controlData, int[] buttonOrders, boolean[] isButtonShow,
         String itemId, String processDefinitionId, String taskDefKey, String[] buttonNames, String[] buttonIds,
-        String orgUnitId) {
+        String tenantId, String orgUnitId) {
         for (int i = buttonOrders.length - 1; i >= 0; i--) {
             int buttonIndex = buttonOrders[i] - 1;
             // 处理保存按钮（索引为0）
             if (buttonIndex == 0 && isButtonShow[0]) {
-                handleSaveButton(controlData, itemId, processDefinitionId, taskDefKey, orgUnitId);
+                handleSaveButton(controlData, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
             }
             // 处理发送按钮（索引为1）
             else if (buttonIndex == 1 && isButtonShow[1] && StringUtils.isNotBlank(taskDefKey)) {
                 handleSendButton(controlData, itemId, processDefinitionId, taskDefKey, buttonNames, buttonIds,
-                    buttonIndex, orgUnitId);
+                    buttonIndex, tenantId, orgUnitId);
             }
             // 处理重定向按钮（索引为15）
             else if (buttonIndex == 15 && isButtonShow[15]) {
-                handleRepositionButton(controlData, processDefinitionId);
+                handleRepositionButton(controlData, processDefinitionId, tenantId);
             }
             // 处理其他按钮
             else if (buttonIndex != 1 && isButtonShow[buttonIndex]) {
@@ -2223,7 +2230,7 @@ public class DocumentServiceImpl implements DocumentService {
      * 根据用户类型处理用户选择
      */
     private String processUserChoiceByType(String users, String tenantId, int principalType, String userId) {
-        switch (ItemPermissionEnum.valueOf(principalType)) {
+        switch (ItemUserChoiceEnum.valueOf(principalType)) {
             case POSITION:
                 return processPositionUser(users, tenantId, userId);
             case DEPARTMENT:
@@ -2265,10 +2272,11 @@ public class DocumentServiceImpl implements DocumentService {
                 return Y9Result.failure("流程启动失败");
             }
             String taskId = model.getTaskId();
+            String tenantId = Y9LoginUserHolder.getTenantId();
             // 设置流程变量
             if (variables != null && !variables.isEmpty()) {
                 variableApi.setVariables(taskId, variables);
-                handleParallelSubprocess(variables, model, routeToTaskId, userList);
+                handleParallelSubprocess(variables, tenantId, model, routeToTaskId, userList);
             }
             // 执行发送操作
             return start4Forwarding(taskId, routeToTaskId, sponsorGuid, userList);
@@ -2306,7 +2314,7 @@ public class DocumentServiceImpl implements DocumentService {
             Item item = itemService.findById(itemId);
             String processDefinitionKey = item.getWorkflowGuid();
             ProcessDefinitionModel processDefinitionModel =
-                repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
+                repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
             String processDefinitionId = processDefinitionModel.getId();
             String taskDefKey = itemStartNodeRoleService.getStartTaskDefKey(itemId);
             Y9Result<TargetModel> routeToTaskIdResult =
@@ -2317,7 +2325,7 @@ public class DocumentServiceImpl implements DocumentService {
             String routeToTaskId = routeToTaskIdResult.getData().getTaskDefKey(),
                 routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
             FlowElementModel flowElementModel =
-                processDefinitionApi.getNode(processDefinitionId, routeToTaskId).getData();
+                processDefinitionApi.getNode(tenantId, processDefinitionId, routeToTaskId).getData();
             Y9Result<List<String>> userResult = parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName,
                 "", flowElementModel.getMultiInstance());
             if (!userResult.isSuccess()) {
@@ -2402,10 +2410,12 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 设置起始任务定义key
      */
-    private void setStartTaskDefKey(OpenDataModel model, String processDefinitionId) {
+    private void setStartTaskDefKey(OpenDataModel model, String tenantId, String processDefinitionId) {
         String startTaskDefKey = "";
-        String startNode = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(processDefinitionId).getData();
-        List<TargetModel> nodeList = processDefinitionApi.getTargetNodes(processDefinitionId, startNode).getData();
+        String startNode =
+            processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
+        List<TargetModel> nodeList =
+            processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNode).getData();
 
         for (TargetModel map : nodeList) {
             startTaskDefKey = Y9Util.genCustomStr(startTaskDefKey, map.getTaskDefKey());
@@ -2427,7 +2437,9 @@ public class DocumentServiceImpl implements DocumentService {
         model.setUserChoice("");
         model.setOnePerson(false);
         try {
-            String multiInstance = processDefinitionApi.getNodeType(processDefinitionId, taskDefinitionKey).getData();
+            String tenantId = Y9LoginUserHolder.getTenantId();
+            String multiInstance =
+                processDefinitionApi.getNodeType(tenantId, processDefinitionId, taskDefinitionKey).getData();
             // 如果不是COMMON类型，直接返回默认配置
             if (!SysVariables.COMMON.equals(multiInstance)) {
                 return model;
@@ -2437,7 +2449,7 @@ public class DocumentServiceImpl implements DocumentService {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             // 处理签收任务逻辑
             if (itemTaskConf != null && itemTaskConf.getSignTask()) {
-                return handleSignTask(model, processParam, itemId, processDefinitionId, taskDefinitionKey);
+                return handleSignTask(model, processParam, itemId, processDefinitionId, taskDefinitionKey, tenantId);
             } else {
                 // 处理非签收任务逻辑
                 return handleNonSignTask(model, itemId, processDefinitionId, taskDefinitionKey, processParam);
@@ -2460,7 +2472,7 @@ public class DocumentServiceImpl implements DocumentService {
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
             // 得到要发送节点的multiInstance，PARALLEL表示并行，SEQUENTIAL表示串行
             FlowElementModel flowElementModel =
-                processDefinitionApi.getNode(task.getProcessDefinitionId(), routeToTaskId).getData();
+                processDefinitionApi.getNode(tenantId, task.getProcessDefinitionId(), routeToTaskId).getData();
             Map<String, Object> variables =
                 CommonOpt.setVariables(userId, position.getName(), routeToTaskId, userList, flowElementModel);
             int num = userList.size();
@@ -2524,7 +2536,7 @@ public class DocumentServiceImpl implements DocumentService {
             assert item != null;
             if (item.isShowSubmitButton()) {
                 ProcessDefinitionModel processDefinitionModel =
-                    repositoryApi.getLatestProcessDefinitionByKey(item.getWorkflowGuid()).getData();
+                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, item.getWorkflowGuid()).getData();
                 List<Y9FormItemBind> binds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
                     processDefinitionModel.getId(), "");
                 Map<String, Object> variables =
@@ -2674,7 +2686,7 @@ public class DocumentServiceImpl implements DocumentService {
             assert item != null;
             if (item.isShowSubmitButton()) {
                 ProcessDefinitionModel processDefinitionModel =
-                    repositoryApi.getLatestProcessDefinitionByKey(processDefinitionKey).getData();
+                    repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
                 List<Y9FormItemBind> binds = y9FormItemBindService.listByItemIdAndProcDefIdAndTaskDefKey(itemId,
                     processDefinitionModel.getId(), "");
                 Map<String, Object> variables =
@@ -2736,7 +2748,7 @@ public class DocumentServiceImpl implements DocumentService {
             String routeToTaskId = routeToTaskIdResult.getData().getTaskDefKey(),
                 routeToTaskName = routeToTaskIdResult.getData().getTaskDefName();
             FlowElementModel flowElementModel =
-                processDefinitionApi.getNode(processDefinitionId, routeToTaskId).getData();
+                processDefinitionApi.getNode(tenantId, processDefinitionId, routeToTaskId).getData();
             Y9Result<List<String>> userResult = parserUser(itemId, processDefinitionId, routeToTaskId, routeToTaskName,
                 processInstanceId, flowElementModel.getMultiInstance());
             if (!userResult.isSuccess()) {
