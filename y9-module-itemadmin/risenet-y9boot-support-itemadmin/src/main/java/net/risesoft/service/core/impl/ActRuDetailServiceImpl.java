@@ -261,10 +261,10 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     /**
      * 从身份链接中查找办理人
      */
-    private String findAssigneeFromIdentityLinks(String tenantId, String taskId) {
+    private String findAssigneeFromIdentityLinks(String taskId) {
         List<IdentityLinkModel> identityLinkList = new ArrayList<>();
         try {
-            identityLinkList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+            identityLinkList = identityApi.getIdentityLinksForTask(taskId).getData();
         } catch (Exception e) {
             LOGGER.error("Get identity links for task error", e);
         }
@@ -316,10 +316,9 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     /**
      * 处理办理人为空的情况（区长办件）
      */
-    private void handleBlankAssignee(HistoricTaskInstanceModel hti, String systemName, String tenantId,
-        TaskModel taskTemp) {
+    private void handleBlankAssignee(HistoricTaskInstanceModel hti, String systemName, TaskModel taskTemp) {
         ActRuDetail actRuDetail = createBaseActRuDetail(hti, systemName, taskTemp);
-        String assignee = findAssigneeFromIdentityLinks(tenantId, hti.getId());
+        String assignee = findAssigneeFromIdentityLinks(hti.getId());
         actRuDetail.setAssignee(assignee);
         self.saveOrUpdate(actRuDetail);
     }
@@ -769,7 +768,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
             if (StringUtils.isNotBlank(assignee)) {
                 handleNotBlankAssignee(hti, systemName, assignee, owner, taskTemp);
             } else {
-                handleBlankAssignee(hti, systemName, tenantId, taskTemp);
+                handleBlankAssignee(hti, systemName, taskTemp);
             }
         }
         return true;
