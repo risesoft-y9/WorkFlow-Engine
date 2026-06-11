@@ -17,7 +17,7 @@ import net.risesoft.api.processadmin.ProcessDoingApi;
 import net.risesoft.model.processadmin.ProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.CustomDoingService;
-import net.risesoft.y9.FlowableTenantInfoHolder;
+import net.risesoft.y9.Y9FlowableHolder;
 
 /**
  * 在办件列表
@@ -39,8 +39,6 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
     /**
      * 获取已办件列表，按办理的时间排序
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processDefinitionKey 流程定义key
      * @param page 页码
      * @param rows 行数
@@ -49,10 +47,9 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
      */
     @Override
     public Y9Page<ProcessInstanceModel> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(
-        @RequestParam String tenantId, @RequestParam String userId, @RequestParam String processDefinitionKey,
-        @RequestParam Integer page, @RequestParam Integer rows) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
+        @RequestParam String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows) {
         List<ProcessInstanceModel> resList = new ArrayList<>();
+        String userId = Y9FlowableHolder.getPositionId();
         int totalCount;
         // 已办件，以办理时间排序，即发送出去的时间
         List<HistoricProcessInstance> hpiList;
@@ -91,8 +88,6 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
     /**
      * 根据流程定义key和其他条件搜索在办件
      *
-     * @param tenantId 租户id
-     * @param userId 人员id
      * @param processDefinitionKey 流程定义Key
      * @param searchTerm 搜索词
      * @param page 页码
@@ -101,11 +96,10 @@ public class ProcessDoingApiImpl implements ProcessDoingApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(@RequestParam String tenantId,
-        @RequestParam String userId, @RequestParam String processDefinitionKey,
-        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        return customDoingService.pageSearchByUserIdAndProcessDefinitionKey(userId, processDefinitionKey, searchTerm,
-            page, rows);
+    public Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(
+        @RequestParam String processDefinitionKey, @RequestParam(required = false) String searchTerm,
+        @RequestParam Integer page, @RequestParam Integer rows) {
+        return customDoingService.pageSearchByUserIdAndProcessDefinitionKey(Y9FlowableHolder.getPositionId(),
+            processDefinitionKey, searchTerm, page, rows);
     }
 }

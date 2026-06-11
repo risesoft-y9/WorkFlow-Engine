@@ -17,10 +17,11 @@ import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessModelApi;
-import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.y9.FlowableTenantInfoHolder;
+import net.risesoft.util.Y9DateTimeUtils;
+import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 流程设计相关接口
@@ -35,6 +36,7 @@ import net.risesoft.y9.FlowableTenantInfoHolder;
 @RequestMapping(value = "/services/rest/processModel", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ProcessModelApiImpl implements ProcessModelApi {
 
+
     private final RepositoryService repositoryService;
 
     private final OrgUnitApi orgUnitApi;
@@ -42,30 +44,26 @@ public class ProcessModelApiImpl implements ProcessModelApi {
     /**
      * 删除模型
      *
-     * @param tenantId 租户id
      * @param modelId 模型id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteModel(@RequestParam String tenantId, @RequestParam String modelId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        // modelService.deleteModel(modelId);
+    public Y9Result<Object> deleteModel(@RequestParam String modelId) {
+       // modelService.deleteModel(modelId);
         return Y9Result.success();
     }
 
     /**
      * 根据modelId部署流程
      *
-     * @param tenantId 租户id
      * @param modelId 模型id
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deployModel(@RequestParam String tenantId, @RequestParam String modelId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        /*Model modelData = modelService.getModel(modelId);
+    public Y9Result<Object> deployModel(@RequestParam String modelId) {
+       /* Model modelData = modelService.getModel(modelId);
         BpmnModel model = modelService.getBpmnModel(modelData);
         if (model.getProcesses().isEmpty()) {
             return Y9Result.failure("数据模型不符要求，请至少设计一条主线流程。");
@@ -80,13 +78,11 @@ public class ProcessModelApiImpl implements ProcessModelApi {
     /**
      * 获取模型列表
      *
-     * @param tenantId 租户id
      * @return {@code Y9Result<List<FlowableBpmnModel>>} 通用请求返回对象 - data 模型列表
      * @since 9.6.6
      */
     @Override
-    public Y9Result<List<FlowableBpmnModel>> getModelList(@RequestParam String tenantId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
+    public Y9Result<List<FlowableBpmnModel>> getModelList() {
         List<FlowableBpmnModel> items = new ArrayList<>();
         /*      List<AbstractModel> list = modelService.getModelsByModelType(AbstractModel.MODEL_TYPE_BPMN);
         ProcessDefinition processDefinition;
@@ -114,37 +110,30 @@ public class ProcessModelApiImpl implements ProcessModelApi {
     /**
      * 获取模型xml
      *
-     * @param tenantId 租户id
      * @param modelId 模型id
      * @return {@code Y9Result<String>} 通用请求返回对象 - data 模型xml
      * @since 9.6.6
      */
     @Override
-    public Y9Result<String> getModelXml(@RequestParam String tenantId, @RequestParam String modelId) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
-        // byte[] bpmnBytes;
-        // Model model = modelService.getModel(modelId);
-        // bpmnBytes = modelService.getBpmnXML(model);
-        // return Y9Result.success(bpmnBytes == null ? "" : new String(bpmnBytes, StandardCharsets.UTF_8), "获取成功");
+    public Y9Result<String> getModelXml(@RequestParam String modelId) {
+        byte[] bpmnBytes;
+       // Model model = modelService.getModel(modelId);
+       // bpmnBytes = modelService.getBpmnXML(model);
+       // return Y9Result.success(bpmnBytes == null ? "" : new String(bpmnBytes, StandardCharsets.UTF_8), "获取成功");
         return Y9Result.success("", "获取成功");
     }
 
     /**
      * 导入模型文件
      *
-     * @param tenantId 租户id
-     * @param userId 用户id
      * @param file 文件
      * @return {@code Y9Result<Object>} 通用请求返回对象 - success 属性判断操作是否成功
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> saveModelXml(@RequestParam String tenantId, @RequestParam String userId,
-        MultipartFile file) {
-        FlowableTenantInfoHolder.setTenantId(tenantId);
+    public Y9Result<Object> saveModelXml(MultipartFile file) {
         try {
-            OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
-            /*XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
+         /*   XMLInputFactory xif = XmlUtil.createSafeXmlInputFactory();
             InputStreamReader xmlIn = new InputStreamReader(file.getInputStream(), StandardCharsets.UTF_8);
             XMLStreamReader xtr = xif.createXMLStreamReader(xmlIn);
 
@@ -184,12 +173,12 @@ public class ProcessModelApiImpl implements ProcessModelApi {
             newModel.setKey(process.getId());
             newModel.setModelType(AbstractModel.MODEL_TYPE_BPMN);
             newModel.setCreated(Calendar.getInstance().getTime());
-            newModel.setCreatedBy(orgUnit.getName());
+            newModel.setCreatedBy(Y9LoginUserHolder.getUserInfo().getName());
             newModel.setDescription(description);
             newModel.setModelEditorJson(modelNode.toString());
             newModel.setLastUpdated(Calendar.getInstance().getTime());
-            newModel.setLastUpdatedBy(orgUnit.getName());
-            newModel.setTenantId(tenantId);
+            newModel.setLastUpdatedBy(Y9LoginUserHolder.getUserInfo().getName());
+            newModel.setTenantId(Y9LoginUserHolder.getTenantId());
             String createdBy = SecurityUtils.getCurrentUserId();
             modelService.createModel(newModel, createdBy);*/
             return Y9Result.successMsg("保存成功");
