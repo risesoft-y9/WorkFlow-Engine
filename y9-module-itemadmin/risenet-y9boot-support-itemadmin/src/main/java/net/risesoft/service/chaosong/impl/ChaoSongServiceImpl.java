@@ -755,7 +755,7 @@ public class ChaoSongServiceImpl implements ChaoSongService {
             Integer type = Integer.valueOf(orgUnitArr[0]);
             String orgUnitId = orgUnitArr[1];
 
-            switch (ItemPermissionEnum.valueOf(type)) {
+            switch (ItemUserChoiceEnum.valueOf(type)) {
                 case DEPARTMENT:
                     List<Position> positions = positionApi.listByParentId(tenantId, orgUnitId).getData();
                     positions.forEach(position -> userIdListAdd.add(position.getId()));
