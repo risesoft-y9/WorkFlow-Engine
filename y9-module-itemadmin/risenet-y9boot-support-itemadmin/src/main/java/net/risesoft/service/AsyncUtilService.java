@@ -2,6 +2,8 @@ package net.risesoft.service;
 
 import java.util.List;
 
+import net.risesoft.dto.itemadmin.UserChoiceDTO;
+
 /**
  * @author qinman
  * @author zhangchongjie
@@ -63,17 +65,9 @@ public interface AsyncUtilService {
      * 异步保存发送审计日志
      *
      * @param tenantId
-     * @param userIds
+     * @param userChoice
      */
-    void sendAuditLog(final String tenantId, final String title, final String userIds);
-
-    /**
-     * 异步保存发送审计日志
-     *
-     * @param tenantId
-     * @param userIdList
-     */
-    void sendAuditLog(final String tenantId, final String title, final List<String> userIdList);
+    void sendAuditLog(final String tenantId, final String title, final List<UserChoiceDTO> userChoice);
 
     /**
      * 异步保存办件提交发送审计日志

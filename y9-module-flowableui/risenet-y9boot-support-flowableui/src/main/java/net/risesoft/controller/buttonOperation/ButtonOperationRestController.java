@@ -44,6 +44,8 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.dto.itemadmin.ForwardingDTO;
+import net.risesoft.dto.itemadmin.UserChoiceDTO;
+import net.risesoft.enums.ItemUserChoiceEnum;
 import net.risesoft.log.FlowableOperationTypeEnum;
 import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
@@ -64,6 +66,7 @@ import net.risesoft.service.AsyncUtilService;
 import net.risesoft.service.ButtonOperationService;
 import net.risesoft.service.MultiInstanceService;
 import net.risesoft.service.Process4SearchService;
+import net.risesoft.util.UserChoiceUtil;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -319,7 +322,7 @@ public class ButtonOperationRestController {
         @RequestParam @NotBlank String taskId, @RequestParam(required = false) String infoOvert) {
         try {
             if (nextNode) {// 需要发送下一个节点
-                return handleNextNode(itemId, processSerialNumber, processInstanceId, taskId, infoOvert);
+                return handleNextNode(itemId, processSerialNumber, taskId, infoOvert);
             } else {
                 return handleCurrentNode(multiInstance, processInstanceId, taskId);
             }
@@ -460,7 +463,7 @@ public class ButtonOperationRestController {
                 .sign(!StringUtils.isBlank(forwardingDTO.getIsShuMing())
                     && Boolean.parseBoolean(forwardingDTO.getIsShuMing()))
                 .content(forwardingDTO.getSmsContent())
-                .positionIds(forwardingDTO.getUserChoice())
+                .positionIds(Y9JsonUtil.writeValueAsString(forwardingDTO.getUserChoice()))
                 .build();
             Y9Result<Object> result = smsDetailApi.saveOrUpdate(smsDetailModel);
             if (!result.isSuccess()) {
@@ -748,19 +751,17 @@ public class ButtonOperationRestController {
     /**
      * 处理发送到下一节点的情况
      */
-    private Y9Result<String> handleNextNode(String itemId, String processSerialNumber, String processInstanceId,
-        String taskId, String infoOvert) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
+    private Y9Result<String> handleNextNode(String itemId, String processSerialNumber, String taskId,
+        String infoOvert) {
         CustomProcessInfoModel customProcessInfo =
             customProcessInfoApi.getCurrentTaskNextNode(processSerialNumber).getData();
         if (customProcessInfo == null) {
             return Y9Result.successMsg("发送成功");
         }
-
         if (customProcessInfo.getTaskType().equals(SysVariables.END_EVENT)) {// 办结
             return handleProcessCompletion(taskId, infoOvert, processSerialNumber);
         }
-        return handleTaskForwarding(itemId, processSerialNumber, processInstanceId, taskId, customProcessInfo);
+        return handleTaskForwarding(itemId, processSerialNumber, taskId, customProcessInfo);
     }
 
     /**
@@ -1012,14 +1013,14 @@ public class ButtonOperationRestController {
     /**
      * 处理任务转发情况
      */
-    private Y9Result<String> handleTaskForwarding(String itemId, String processSerialNumber, String processInstanceId,
-        String taskId, CustomProcessInfoModel customProcessInfo) {
+    private Y9Result<String> handleTaskForwarding(String itemId, String processSerialNumber, String taskId,
+        CustomProcessInfoModel customProcessInfo) {
         String userChoice = customProcessInfo.getOrgId();
         String routeToTaskId = customProcessInfo.getTaskKey();
         ForwardingDTO forwardingDTO = new ForwardingDTO();
         forwardingDTO.setProcessSerialNumber(processSerialNumber);
         forwardingDTO.setItemId(itemId);
-        forwardingDTO.setUserChoice(userChoice);
+        forwardingDTO.setUserChoice(UserChoiceUtil.parse(userChoice));
         forwardingDTO.setRouteToTaskId(routeToTaskId);
         forwardingDTO.setTaskId(taskId);
         Y9Result<String> y9Result = documentApi.saveAndForwarding(forwardingDTO);
@@ -1370,13 +1371,17 @@ public class ButtonOperationRestController {
             String routeToTaskId = (String)map.get("taskKey");
             List<Map<String, Object>> orgList = (List<Map<String, Object>>)map.get("orgList");
             String userChoice = "";
+            List<UserChoiceDTO> userChoiceDTOList = new ArrayList<>();
             for (Map<String, Object> org : orgList) {
-                userChoice = Y9Util.genCustomStr(userChoice, (String)org.get("id"), ";");
+                UserChoiceDTO userChoiceDTO = new UserChoiceDTO();
+                userChoiceDTO.setId((String)org.get("id"));
+                userChoiceDTO.setType(ItemUserChoiceEnum.POSITION);
+                userChoiceDTOList.add(userChoiceDTO);
             }
             ForwardingDTO forwardingDTO = new ForwardingDTO();
             forwardingDTO.setProcessSerialNumber(processSerialNumber);
             forwardingDTO.setItemId(itemId);
-            forwardingDTO.setUserChoice(userChoice);
+            forwardingDTO.setUserChoice(userChoiceDTOList);
             forwardingDTO.setRouteToTaskId(routeToTaskId);
             Y9Result<String> y9Result = documentApi.saveAndForwarding(forwardingDTO);
             if (!y9Result.isSuccess()) {
@@ -1429,7 +1434,9 @@ public class ButtonOperationRestController {
             String itemId = processParamModel.getItemId();
             String processSerialNumber = processParamModel.getProcessSerialNumber();
             String user = variableApi.getVariableLocal(taskId, SysVariables.TASK_SENDER_ID).getData();
-            String userChoice = "6:" + user;
+            UserChoiceDTO userChoice = new UserChoiceDTO();
+            userChoice.setId(user);
+            userChoice.setType(ItemUserChoiceEnum.POSITION);
             String multiInstance =
                 processDefinitionApi.getNodeType(taskModel.getProcessDefinitionId(), routeToTaskId).getData();
             String sponsorHandle = "";
@@ -1439,7 +1446,7 @@ public class ButtonOperationRestController {
             ForwardingDTO forwardingDTO = new ForwardingDTO();
             forwardingDTO.setProcessSerialNumber(processSerialNumber);
             forwardingDTO.setItemId(itemId);
-            forwardingDTO.setUserChoice(userChoice);
+            forwardingDTO.setUserChoice(List.of(userChoice));
             forwardingDTO.setRouteToTaskId(routeToTaskId);
             forwardingDTO.setSponsorHandle(sponsorHandle);
             forwardingDTO.setTaskId(taskId);

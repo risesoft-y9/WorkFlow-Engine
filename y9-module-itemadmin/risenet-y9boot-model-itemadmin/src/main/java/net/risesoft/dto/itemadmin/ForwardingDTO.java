@@ -1,9 +1,11 @@
 package net.risesoft.dto.itemadmin;
 
 import java.io.Serializable;
+import java.util.List;
 import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotEmpty;
 
 import lombok.Data;
 
@@ -21,8 +23,11 @@ public class ForwardingDTO implements Serializable {
     @NotBlank(message = "事项ID不能为空")
     private String itemId;
 
-    @NotBlank(message = "用户选择不能为空")
-    private String userChoice;
+    // @NotBlank(message = "选择的用户不能为空")
+    // private String userChoice;
+
+    @NotEmpty(message = "选择的用户不能为空")
+    private List<UserChoiceDTO> userChoice;
 
     @NotBlank(message = "目标任务ID不能为空")
     private String routeToTaskId;

@@ -31,6 +31,7 @@ import net.risesoft.service.chaosong.ChaoSongInfoService;
 import net.risesoft.service.config.ItemStartNodeRoleService;
 import net.risesoft.service.core.DocumentService;
 import net.risesoft.service.core.ProcessParamService;
+import net.risesoft.util.UserChoiceUtil;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -279,14 +280,15 @@ public class DocumentApiImpl implements DocumentApi {
         @RequestParam(required = false) String sponsorGuid) {
         ForwardingDTO forwardingDTO = new ForwardingDTO();
         forwardingDTO.setTaskId(taskId);
-        forwardingDTO.setUserChoice(userChoice);
+        forwardingDTO.setUserChoice(UserChoiceUtil.parse(userChoice));
         forwardingDTO.setRouteToTaskId(routeToTaskId);
         forwardingDTO.setSponsorHandle(sponsorHandle);
         forwardingDTO.setSponsorGuid(sponsorGuid);
         Y9Result<String> y9Result = documentService.forwarding(forwardingDTO);
         if (y9Result.isSuccess()) {
             ProcessParam processParam = processParamService.findByProcessInstanceId(y9Result.getData());
-            asyncUtilService.sendAuditLog(Y9LoginUserHolder.getTenantId(), processParam.getTitle(), userChoice);
+            asyncUtilService.sendAuditLog(Y9LoginUserHolder.getTenantId(), processParam.getTitle(),
+                forwardingDTO.getUserChoice());
         }
         return y9Result;
     }
@@ -384,7 +386,7 @@ public class DocumentApiImpl implements DocumentApi {
             }
             ForwardingDTO forwardingDTO = new ForwardingDTO();
             forwardingDTO.setTaskId(taskId);
-            forwardingDTO.setUserChoice(userChoice);
+            forwardingDTO.setUserChoice(UserChoiceUtil.parse(userChoice));
             forwardingDTO.setRouteToTaskId(routeToTaskId);
             forwardingDTO.setSponsorHandle(sponsorHandle);
             forwardingDTO.setSponsorGuid(sponsorGuid);
