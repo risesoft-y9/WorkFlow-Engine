@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -52,7 +53,6 @@ import net.risesoft.service.DocumentHandleService;
 import net.risesoft.service.ProcessParamService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 发送，办结相关
@@ -114,11 +114,10 @@ public class ButtonOperationExtendRestController {
     @PostMapping(value = "/check4Reposition")
     public Y9Result<List<TargetModel>> check4Reposition(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String documentId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             String processInstanceId = ppModel.getProcessInstanceId();
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
             if (taskList.isEmpty()) {
                 return Y9Result.failure("不能重定向，该件已办结。");
             }
@@ -151,10 +150,9 @@ public class ButtonOperationExtendRestController {
      */
     private BatchCheckResult collectBatchTaskInfo(String[] taskIdAndProcessSerialNumbers) {
         BatchCheckResult result = new BatchCheckResult();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         for (String taskIdAndProcessSerialNumber : taskIdAndProcessSerialNumbers) {
             String[] tpArr = taskIdAndProcessSerialNumber.split(":");
-            TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
+            TaskModel task = taskApi.findById(tpArr[0]).getData();
             if (task == null) {
                 handleNullTask(tpArr, result.processedTaskMsg);
             } else {
@@ -317,7 +315,7 @@ public class ButtonOperationExtendRestController {
     @GetMapping(value = "/getButtons")
     public Y9Result<List<ItemButtonModel>> getButtons(@RequestParam @NotBlank String taskId) {
         try {
-            TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+            TaskModel task = taskApi.findById(taskId).getData();
             if (null == task) {
                 return Y9Result.failure("当前待办已处理！");
             }

@@ -29,7 +29,6 @@ import net.risesoft.service.DoingService;
 import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.UtilService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -54,7 +53,7 @@ public class DoingServiceImpl implements DoingService {
     /**
      * 获取流程参数
      */
-    private ProcessParamModel getProcessParam(String tenantId, String processInstanceId) {
+    private ProcessParamModel getProcessParam(String processInstanceId) {
         try {
             return this.processParamApi.findByProcessInstanceId(processInstanceId).getData();
         } catch (Exception e) {
@@ -66,9 +65,9 @@ public class DoingServiceImpl implements DoingService {
     /**
      * 获取任务列表
      */
-    private List<TaskModel> getTaskList(String tenantId, String processInstanceId) {
+    private List<TaskModel> getTaskList(String processInstanceId) {
         try {
-            return this.taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            return this.taskApi.findByProcessInstanceId(processInstanceId).getData();
         } catch (Exception e) {
             LOGGER.warn("获取任务列表失败，processInstanceId: {}", processInstanceId, e);
             return new ArrayList<>();
@@ -162,13 +161,12 @@ public class DoingServiceImpl implements DoingService {
     private Map<String, Object> processSingleInstance(ProcessInstanceModel piModel, String itemName, boolean isSearch,
         int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             String processInstanceId = piModel.getId();
             String processDefinitionId = piModel.getProcessDefinitionId();
             // 获取任务列表和流程参数
-            List<TaskModel> taskList = getTaskList(tenantId, processInstanceId);
-            ProcessParamModel processParam = getProcessParam(tenantId, processInstanceId);
+            List<TaskModel> taskList = getTaskList(processInstanceId);
+            ProcessParamModel processParam = getProcessParam(processInstanceId);
             // 处理流程参数数据
             ProcessParamData paramData = handleProcessParamData(processParam);
             // 设置基础数据

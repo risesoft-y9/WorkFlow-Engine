@@ -330,9 +330,9 @@ public class Y9WordApiImpl implements Y9WordApi {
     /**
      * 获取流程定义ID
      */
-    private String getProcessDefinitionId(String tenantId, String itemId, String taskId) {
+    private String getProcessDefinitionId(String itemId, String taskId) {
         if (StringUtils.isNotBlank(taskId)) {
-            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            TaskModel task = taskApi.findById(taskId).getData();
             return task.getProcessDefinitionId();
         } else {
             Item item = itemService.findById(itemId);
@@ -703,10 +703,9 @@ public class Y9WordApiImpl implements Y9WordApi {
     /**
      * 从模板填充信息
      */
-    private void populateWordInfoFromTemplate(Y9WordInfo wordInfo, String tenantId, String itemId, String taskId,
-        String bindValue) {
+    private void populateWordInfoFromTemplate(Y9WordInfo wordInfo, String itemId, String taskId, String bindValue) {
         try {
-            String processDefinitionId = getProcessDefinitionId(tenantId, itemId, taskId);
+            String processDefinitionId = getProcessDefinitionId(itemId, taskId);
             WordTemplate wordTemplate = findWordTemplate(itemId, processDefinitionId, bindValue);
 
             if (wordTemplate != null && wordTemplate.getId() != null) {
@@ -747,7 +746,7 @@ public class Y9WordApiImpl implements Y9WordApi {
             if (!wordList.isEmpty()) {
                 populateWordInfoFromExistingWord(wordInfo, wordList.get(0));
             } else {
-                populateWordInfoFromTemplate(wordInfo, Y9LoginUserHolder.getTenantId(), itemId, taskId, bindValue);
+                populateWordInfoFromTemplate(wordInfo, itemId, taskId, bindValue);
             }
 
             return Y9Result.success(wordInfo);

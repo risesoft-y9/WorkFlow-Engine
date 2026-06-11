@@ -194,7 +194,7 @@ public class OpinionSignServiceImpl implements OpinionSignService {
     private void handleTodoBox(List<OpinionSignListModel> resList, OpinionSignListModel model, List<OpinionSign> list,
         String taskId, String personId, UserInfo person, String opinionFrameMark) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
         if (StringUtils.isBlank(task.getAssignee())) {
             model.setAddable(false);
             processOpinionSigns(list, resList);

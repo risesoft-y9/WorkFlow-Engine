@@ -172,8 +172,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
      * 获取当前任务信息
      */
     private TaskInfo getCurrentTaskInfo(String processInstanceId) {
-        List<TaskModel> taskModelList =
-            taskApi.findByProcessInstanceId(Y9LoginUserHolder.getTenantId(), processInstanceId).getData();
+        List<TaskModel> taskModelList = taskApi.findByProcessInstanceId(processInstanceId).getData();
         if (taskModelList != null && !taskModelList.isEmpty()) {
             TaskModel taskModel = taskModelList.get(0);
             return new TaskInfo(taskModel.getTaskDefinitionKey(), taskModel.getId(),
@@ -351,7 +350,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         try {
             String[] ids = taskIds.split(",");
             for (String id : ids) {
-                TaskModel taskModel = taskApi.findById(tenantId, id).getData();
+                TaskModel taskModel = taskApi.findById(id).getData();
                 if (StringUtils.isNotBlank(taskIds)) {
                     AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                         .action(ItemAdminAuditLogEnum.REMINDERMSG_SET_TASKCOMPLETE.getAction())

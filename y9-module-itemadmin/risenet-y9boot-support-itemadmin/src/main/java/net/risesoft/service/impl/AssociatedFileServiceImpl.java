@@ -54,6 +54,27 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
 
     private final AsyncUtilService asyncUtilService;
 
+    /**
+     * 构建关联文件模型
+     */
+    private AssociatedFileModel buildAssociatedFileModel(String processInstanceId) {
+        AssociatedFileModel model = new AssociatedFileModel();
+        try {
+            OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
+            if (officeDoneInfo == null) {
+                return null;
+            }
+            populateBasicInfo(model, officeDoneInfo);
+            if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
+                populateTaskInfo(model, officeDoneInfo);
+            }
+            return model;
+        } catch (Exception e) {
+            LOGGER.error("构建关联文件模型失败, processInstanceId: {}", processInstanceId, e);
+            return null;
+        }
+    }
+
     @Override
     public int countAssociatedFile(String processSerialNumber) {
         try {
@@ -140,35 +161,13 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
             return list;
         }
         String[] associatedIds = associatedId.split(SysVariables.COMMA);
-        String tenantId = Y9LoginUserHolder.getTenantId();
         for (String id : associatedIds) {
-            AssociatedFileModel model = buildAssociatedFileModel(id, tenantId);
+            AssociatedFileModel model = buildAssociatedFileModel(id);
             if (model != null) {
                 list.add(model);
             }
         }
         return list.stream().sorted().collect(Collectors.toList());
-    }
-
-    /**
-     * 构建关联文件模型
-     */
-    private AssociatedFileModel buildAssociatedFileModel(String processInstanceId, String tenantId) {
-        AssociatedFileModel model = new AssociatedFileModel();
-        try {
-            OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
-            if (officeDoneInfo == null) {
-                return null;
-            }
-            populateBasicInfo(model, officeDoneInfo);
-            if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
-                populateTaskInfo(model, officeDoneInfo, tenantId);
-            }
-            return model;
-        } catch (Exception e) {
-            LOGGER.error("构建关联文件模型失败, processInstanceId: {}", processInstanceId, e);
-            return null;
-        }
     }
 
     /**
@@ -204,10 +203,10 @@ public class AssociatedFileServiceImpl implements AssociatedFileService {
     /**
      * 填充任务信息
      */
-    private void populateTaskInfo(AssociatedFileModel model, OfficeDoneInfo officeDoneInfo, String tenantId) {
+    private void populateTaskInfo(AssociatedFileModel model, OfficeDoneInfo officeDoneInfo) {
         try {
             String processInstanceId = officeDoneInfo.getProcessInstanceId();
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
 
             if (taskList != null && !taskList.isEmpty()) {
                 String assigneeNames = utilService.getAssigneeNames(taskList, null);

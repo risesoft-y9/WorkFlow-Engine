@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -25,8 +26,6 @@ import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.SearchService;
 import net.risesoft.service.UtilService;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -43,7 +42,7 @@ public class SearchServiceImpl implements SearchService {
 
     private final UtilService utilService;
 
-    private Map<String, Object> buildSearchListItem(OfficeDoneInfoModel model, String tenantId, String positionId) {
+    private Map<String, Object> buildSearchListItem(OfficeDoneInfoModel model) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = model.getProcessInstanceId();
         try {
@@ -74,7 +73,7 @@ public class SearchServiceImpl implements SearchService {
             mapTemp.put("number", StringUtils.defaultString(number));
             mapTemp.put("itembox", ItemBoxTypeEnum.DONE.getValue());
             if (StringUtils.isBlank(model.getEndTime())) {
-                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
                 String assigneeNames = utilService.getAssigneeNames(taskList, null);
                 mapTemp.put("taskDefinitionKey", taskList.get(0).getTaskDefinitionKey());
                 mapTemp.put("taskAssignee", assigneeNames);
@@ -94,15 +93,13 @@ public class SearchServiceImpl implements SearchService {
     public Y9Page<Map<String, Object>> pageSearchList(String searchTerm, String itemId, String userName, String state,
         String year, String startDate, String endDate, Integer page, Integer rows) {
         try {
-            String positionId = Y9FlowableHolder.getPositionId();
-            String tenantId = Y9LoginUserHolder.getTenantId();
             Y9Page<OfficeDoneInfoModel> y9Page = officeDoneInfoApi.searchAllByUserId(searchTerm, itemId, userName,
                 state, year, startDate, endDate, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> officeDoneInfoList = y9Page.getRows();
             int serialNumber = (page - 1) * rows;
             for (OfficeDoneInfoModel model : officeDoneInfoList) {
-                Map<String, Object> itemMap = buildSearchListItem(model, tenantId, positionId);
+                Map<String, Object> itemMap = buildSearchListItem(model);
                 itemMap.put("serialNumber", serialNumber + 1);
                 serialNumber++;
                 items.add(itemMap);

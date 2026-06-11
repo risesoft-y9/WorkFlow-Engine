@@ -138,9 +138,8 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private TaskContext buildTaskContext(String itemId, String taskId, String itemBox) {
         TaskContext context = new TaskContext();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (ItemBoxTypeEnum.TODO.getValue().equals(itemBox) || ItemBoxTypeEnum.DOING.getValue().equals(itemBox)) {
-            context.task = taskApi.findById(tenantId, taskId).getData();
+            context.task = taskApi.findById(taskId).getData();
         }
         Item item = itemService.findById(itemId);
         context.customItem = (null != item.getCustomItem()) ? item.getCustomItem() : false;
@@ -1471,7 +1470,6 @@ public class ButtonServiceImpl implements ButtonService {
 
     @Override
     public List<ItemButtonModel> showButton4Doing(DocumentDetailModel model) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9FlowableHolder.getPositionId();
         String taskId = model.getTaskId();
 
@@ -1479,7 +1477,7 @@ public class ButtonServiceImpl implements ButtonService {
         buttonModelList.add(ItemButton.chaoSong);
         buttonModelList.add(ItemButton.daYin);
 
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
         if (task != null) {
             // 处理加减签按钮
             handleSignButtons4Doing(buttonModelList, taskId, orgUnitId, task);
@@ -1504,12 +1502,12 @@ public class ButtonServiceImpl implements ButtonService {
 
     @Override
     public List<ItemButtonModel> showButton4DoingAdmin(DocumentDetailModel model) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), taskId = model.getTaskId();
+        String taskId = model.getTaskId();
         List<ItemButtonModel> buttonModelList = new ArrayList<>();
         buttonModelList.add(ItemButton.chaoSong);
         buttonModelList.add(ItemButton.daYin);
         buttonModelList.add(ItemButton.teShuBanJie);
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
         if (task != null) {
             String multiInstance =
                 processDefinitionApi.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
@@ -1599,7 +1597,7 @@ public class ButtonServiceImpl implements ButtonService {
         String orgUnitId = Y9FlowableHolder.getPositionId();
 
         List<ItemButtonModel> buttonList = new ArrayList<>();
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
 
         if (task == null) {
             return buttonList;
