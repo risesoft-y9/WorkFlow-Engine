@@ -2,6 +2,7 @@ package net.risesoft.controller.config;
 
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +18,6 @@ import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.interfaceinfo.ItemInterfaceTaskBindRepository;
 import net.risesoft.service.config.ItemInterfaceTaskBindService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  *
@@ -61,8 +61,7 @@ public class ItemInterfaceTaskBindController {
     @GetMapping(value = "/getBpmList")
     public Y9Result<List<FlowElementModel>> getBpmList(@RequestParam String itemId, @RequestParam String interfaceId,
         @RequestParam String processDefinitionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<FlowElementModel> list = processDefinitionApi.listUserTask(tenantId, processDefinitionId).getData();
+        List<FlowElementModel> list = processDefinitionApi.listUserTask(processDefinitionId).getData();
         for (FlowElementModel feModel : list) {
             String elementKey = feModel.getElementKey();
             ItemInterfaceTaskBind bind =

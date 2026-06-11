@@ -3,6 +3,7 @@ package net.risesoft.controller.config;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -19,7 +20,6 @@ import net.risesoft.entity.TaskTimeConf;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.TaskTimeConfService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -59,8 +59,7 @@ public class TaskTimeConfRestController {
     public Y9Result<List<TaskTimeConf>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         List<TaskTimeConf> resList = new ArrayList<>();
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+        List<TargetModel> list = processDefinitionApi.getNodes(processDefinitionId).getData();
         for (TargetModel targetModel : list) {
             if (StringUtils.isNotBlank(targetModel.getTaskDefKey())) {
                 TaskTimeConf conf = taskTimeConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,

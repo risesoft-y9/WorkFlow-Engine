@@ -169,8 +169,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
             userAndDeptIdList.add(assignee);
             Position position = Y9FlowableHolder.getPosition();
             FlowElementModel flowElementModel =
-                processDefinitionApi.getNode(tenantId, hti.getProcessDefinitionId(), hti.getTaskDefinitionKey())
-                    .getData();
+                processDefinitionApi.getNode(hti.getProcessDefinitionId(), hti.getTaskDefinitionKey()).getData();
             Map<String, Object> variables = CommonOpt.setVariables(orgUnitId, position.getName(),
                 hti.getTaskDefinitionKey(), userAndDeptIdList, flowElementModel);
             Map<String, Object> val = new HashMap<>();

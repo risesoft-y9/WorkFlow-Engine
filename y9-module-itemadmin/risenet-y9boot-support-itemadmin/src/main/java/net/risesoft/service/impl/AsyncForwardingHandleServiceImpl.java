@@ -176,10 +176,9 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
      */
     private void setTaskVariables(OrgUnit orgUnit, TaskModel taskNext, FlowElementModel flowElementModel,
         String sponsorGuid, String executionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         Map<String, Object> vars = createTaskVariables(orgUnit, flowElementModel, taskNext, sponsorGuid);
         Boolean isSubProcessChildNode = processDefinitionApi
-            .isSubProcessChildNode(tenantId, taskNext.getProcessDefinitionId(), taskNext.getTaskDefinitionKey())
+            .isSubProcessChildNode(taskNext.getProcessDefinitionId(), taskNext.getTaskDefinitionKey())
             .getData();
         boolean isSubProcess = isSubProcessElement(flowElementModel);
         if (isSubProcessChildNode && !isSubProcess) {

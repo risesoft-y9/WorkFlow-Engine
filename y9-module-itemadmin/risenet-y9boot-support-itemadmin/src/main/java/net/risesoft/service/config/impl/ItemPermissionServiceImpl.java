@@ -100,7 +100,7 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         List<ItemPermission> previousPermissions =
             itemPermissionRepository.findByItemIdAndProcessDefinitionId(itemId, previousProcessDefinitionId);
         // 获取最新流程定义的节点并复制权限
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestProcessDefinitionId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(latestProcessDefinitionId).getData();
         /*
          * 如果最新的流程定义存在当前任务节点，则查找当前事项的最新的流程定义的任务节点有没有绑定对应的角色，没有就保存
          */
@@ -108,29 +108,6 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             copyPermissionsForNode(itemId, latestProcessDefinitionId, currentTaskDefKey, previousPermissions);
         }
-    }
-
-    /**
-     * 获取最新流程定义
-     */
-    private ProcessDefinitionModel getLatestProcessDefinition(String tenantId, Item item) {
-        String processDefinitionKey = item.getWorkflowGuid();
-        return repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-    }
-
-    /**
-     * 获取前一版本流程定义ID
-     */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
-        ProcessDefinitionModel latestProcessDefinition) {
-        String previousProcessDefinitionId = processDefinitionId;
-        String latestProcessDefinitionId = latestProcessDefinition.getId();
-        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
-            ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
-            previousProcessDefinitionId = previousProcessDefinition.getId();
-        }
-        return previousProcessDefinitionId;
     }
 
     /**
@@ -151,6 +128,26 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
                 }
             }
         }
+    }
+
+    /**
+     * 创建事项权限对象
+     */
+    private ItemPermission createItemPermission(String itemId, String processDefinitionId, String taskDefKey,
+        String roleId, ItemPermissionEnum roleType) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        ItemPermission newPermission = new ItemPermission();
+        newPermission.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newPermission.setItemId(itemId);
+        newPermission.setProcessDefinitionId(processDefinitionId);
+        newPermission.setRoleId(roleId);
+        newPermission.setRoleType(roleType);
+        newPermission.setTenantId(tenantId);
+        newPermission.setTaskDefKey(taskDefKey);
+        // 设置标签索引
+        Integer maxTabIndex = itemPermissionRepository.getMaxTabIndex(itemId, processDefinitionId, taskDefKey);
+        newPermission.setTabIndex(maxTabIndex == null ? 1 : maxTabIndex + 1);
+        return newPermission;
     }
 
     @Override
@@ -176,6 +173,59 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             processDefinitionId, taskdefKey, roleId);
     }
 
+    /**
+     * 获取最新流程定义
+     */
+    private ProcessDefinitionModel getLatestProcessDefinition(String tenantId, Item item) {
+        String processDefinitionKey = item.getWorkflowGuid();
+        return repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+    }
+
+    /**
+     * 获取前一版本流程定义ID
+     */
+    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
+        ProcessDefinitionModel latestProcessDefinition) {
+        String previousProcessDefinitionId = processDefinitionId;
+        String latestProcessDefinitionId = latestProcessDefinition.getId();
+        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
+            ProcessDefinitionModel previousProcessDefinition =
+                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
+            previousProcessDefinitionId = previousProcessDefinition.getId();
+        }
+        return previousProcessDefinitionId;
+    }
+
+    private String getRoleName(ItemPermission ip) {
+        String roleName = "角色不存在";
+        switch (ip.getRoleType()) {
+            case ROLE:
+                Role role = roleApi.getRole(ip.getRoleId()).getData();
+                if (null != role) {
+                    roleName = role.getName();
+                }
+                break;
+            case DEPARTMENT:
+            case USER:
+            case POSITION:
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), ip.getRoleId()).getData();
+                if (null != orgUnit) {
+                    roleName = orgUnit.getName();
+                }
+                break;
+            case ROLE_DYNAMIC:
+                DynamicRole dr = dynamicRoleService.getById(ip.getRoleId());
+                if (null != dr) {
+                    roleName = dr.getName();
+                }
+                break;
+            default:
+                roleName = "角色不存在";
+                break;
+        }
+        return roleName;
+    }
+
     @Override
     public Map<String, Object> getTabMap(String itemId, String processDefinitionId, String taskDefKey,
         String processInstanceId, String taskId) {
@@ -193,22 +243,6 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
             }
         }
         return map;
-    }
-
-    /**
-     * 根据权限类型更新tabMap
-     */
-    private void updateTabMapForPermission(Map<String, Object> map, ItemPermission permission, String tenantId,
-        String processInstanceId, String taskId) {
-
-        if (Objects.equals(permission.getRoleType(), ItemPermissionEnum.DEPARTMENT)) {
-            handleDepartmentPermission(map, permission, tenantId);
-        } else if (Objects.equals(permission.getRoleType(), ItemPermissionEnum.ROLE_DYNAMIC)) {
-            handleDynamicRolePermission(map, permission, processInstanceId, taskId);
-        } else {
-            // 其他类型默认设置岗位为true
-            map.put(ItemConsts.EXISTPOSITION_KEY, true);
-        }
     }
 
     /**
@@ -288,36 +322,6 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
         return ipList;
     }
 
-    private String getRoleName(ItemPermission ip) {
-        String roleName = "角色不存在";
-        switch (ip.getRoleType()) {
-            case ROLE:
-                Role role = roleApi.getRole(ip.getRoleId()).getData();
-                if (null != role) {
-                    roleName = role.getName();
-                }
-                break;
-            case DEPARTMENT:
-            case USER:
-            case POSITION:
-                OrgUnit orgUnit = orgUnitApi.getOrgUnit(Y9LoginUserHolder.getTenantId(), ip.getRoleId()).getData();
-                if (null != orgUnit) {
-                    roleName = orgUnit.getName();
-                }
-                break;
-            case ROLE_DYNAMIC:
-                DynamicRole dr = dynamicRoleService.getById(ip.getRoleId());
-                if (null != dr) {
-                    roleName = dr.getName();
-                }
-                break;
-            default:
-                roleName = "角色不存在";
-                break;
-        }
-        return roleName;
-    }
-
     @Override
     @Transactional
     public void removePerm(String itemId, String processDefinitionId) {
@@ -342,22 +346,18 @@ public class ItemPermissionServiceImpl implements ItemPermissionService {
     }
 
     /**
-     * 创建事项权限对象
+     * 根据权限类型更新tabMap
      */
-    private ItemPermission createItemPermission(String itemId, String processDefinitionId, String taskDefKey,
-        String roleId, ItemPermissionEnum roleType) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        ItemPermission newPermission = new ItemPermission();
-        newPermission.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newPermission.setItemId(itemId);
-        newPermission.setProcessDefinitionId(processDefinitionId);
-        newPermission.setRoleId(roleId);
-        newPermission.setRoleType(roleType);
-        newPermission.setTenantId(tenantId);
-        newPermission.setTaskDefKey(taskDefKey);
-        // 设置标签索引
-        Integer maxTabIndex = itemPermissionRepository.getMaxTabIndex(itemId, processDefinitionId, taskDefKey);
-        newPermission.setTabIndex(maxTabIndex == null ? 1 : maxTabIndex + 1);
-        return newPermission;
+    private void updateTabMapForPermission(Map<String, Object> map, ItemPermission permission, String tenantId,
+        String processInstanceId, String taskId) {
+
+        if (Objects.equals(permission.getRoleType(), ItemPermissionEnum.DEPARTMENT)) {
+            handleDepartmentPermission(map, permission, tenantId);
+        } else if (Objects.equals(permission.getRoleType(), ItemPermissionEnum.ROLE_DYNAMIC)) {
+            handleDynamicRolePermission(map, permission, processInstanceId, taskId);
+        } else {
+            // 其他类型默认设置岗位为true
+            map.put(ItemConsts.EXISTPOSITION_KEY, true);
+        }
     }
 }

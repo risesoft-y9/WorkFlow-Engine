@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -27,7 +28,6 @@ import net.risesoft.service.CommonButtonService;
 import net.risesoft.service.SendButtonService;
 import net.risesoft.service.config.ItemButtonBindService;
 import net.risesoft.service.core.ItemService;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 绑定按钮管理
@@ -63,6 +63,21 @@ public class ItemButtonBindRestController {
         return Y9Result.successMsg("复制成功");
     }
 
+    private <T> List<T> filterUnboundButtons(List<T> allButtons, List<ItemButtonBind> boundButtons) {
+        if (boundButtons.isEmpty()) {
+            return new ArrayList<>(allButtons);
+        }
+        List<T> unboundButtons = new ArrayList<>();
+        for (T button : allButtons) {
+            String buttonId = getButtonId(button);
+            boolean isBound = boundButtons.stream().anyMatch(bib -> bib.getButtonId().equals(buttonId));
+            if (!isBound) {
+                unboundButtons.add(button);
+            }
+        }
+        return unboundButtons;
+    }
+
     /**
      * 获取按钮绑定列表
      *
@@ -83,7 +98,6 @@ public class ItemButtonBindRestController {
 
     @GetMapping(value = "/getBindListByButtonId")
     public Y9Result<List<Map<String, Object>>> getBindListByButtonId(@RequestParam String buttonId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemButtonBind> ibbList = itemButtonBindService.listByButtonId(buttonId);
         List<Map<String, Object>> bindList = new ArrayList<>();
         Map<String, Object> map;
@@ -99,8 +113,7 @@ public class ItemButtonBindRestController {
 
             String taskDefName = "整个流程";
             if (StringUtils.isNotEmpty(bind.getTaskDefKey())) {
-                List<TargetModel> list =
-                    processDefinitionApi.getNodes(tenantId, bind.getProcessDefinitionId()).getData();
+                List<TargetModel> list = processDefinitionApi.getNodes(bind.getProcessDefinitionId()).getData();
                 for (TargetModel targetModel : list) {
                     if (targetModel.getTaskDefKey().equals(bind.getTaskDefKey())) {
                         taskDefName = targetModel.getTaskDefName();
@@ -125,8 +138,7 @@ public class ItemButtonBindRestController {
     public Y9Result<List<TargetModel>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         List<TargetModel> list;
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+        list = processDefinitionApi.getNodes(processDefinitionId).getData();
         List<ItemButtonBind> cbList, sbList;
         for (TargetModel targetModel : list) {
             String commonButtonNames = "";
@@ -153,6 +165,15 @@ public class ItemButtonBindRestController {
             targetModel.setSendButtonNames(sendButtonNames);
         }
         return Y9Result.success(list, "获取成功");
+    }
+
+    private String getButtonId(Object button) {
+        if (button instanceof CommonButton) {
+            return ((CommonButton)button).getId();
+        } else if (button instanceof SendButton) {
+            return ((SendButton)button).getId();
+        }
+        return null;
     }
 
     /**
@@ -183,30 +204,6 @@ public class ItemButtonBindRestController {
             map.put("rows", sbListTemp);
         }
         return Y9Result.success(map, "获取成功");
-    }
-
-    private <T> List<T> filterUnboundButtons(List<T> allButtons, List<ItemButtonBind> boundButtons) {
-        if (boundButtons.isEmpty()) {
-            return new ArrayList<>(allButtons);
-        }
-        List<T> unboundButtons = new ArrayList<>();
-        for (T button : allButtons) {
-            String buttonId = getButtonId(button);
-            boolean isBound = boundButtons.stream().anyMatch(bib -> bib.getButtonId().equals(buttonId));
-            if (!isBound) {
-                unboundButtons.add(button);
-            }
-        }
-        return unboundButtons;
-    }
-
-    private String getButtonId(Object button) {
-        if (button instanceof CommonButton) {
-            return ((CommonButton)button).getId();
-        } else if (button instanceof SendButton) {
-            return ((SendButton)button).getId();
-        }
-        return null;
     }
 
     /**

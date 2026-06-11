@@ -59,7 +59,7 @@ public class ItemBackTaskConfServiceImpl implements ItemBackTaskConfService {
         List<BackTaskConf> previousTaskConfigs =
             backTaskConfRepository.findByItemIdAndProcessDefinitionId(itemId, previousProcessDefinitionId);
         // 获取最新流程定义的节点并复制任务配置
-        List<TargetModel> nodes = processDefinitionApi.getNodes(tenantId, latestProcessDefinitionId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getNodes(latestProcessDefinitionId).getData();
         for (TargetModel targetModel : nodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             copyTaskConfigForNode(itemId, latestProcessDefinitionId, currentTaskDefKey, previousTaskConfigs, tenantId);
@@ -128,12 +128,11 @@ public class ItemBackTaskConfServiceImpl implements ItemBackTaskConfService {
     public List<BackTaskConf> listByTaskDefKey(String itemId, String processDefinitionId, String taskDefKey) {
         BackTaskConf conf = backTaskConfRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId,
             processDefinitionId, taskDefKey);
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<BackTaskConf> reslist = new ArrayList<>();
         if (conf != null && StringUtils.isNotBlank(conf.getBackTaskDefKey())) {
             String backTaskDefKey = conf.getBackTaskDefKey();
             String[] taskDefKeys = backTaskDefKey.split(",");
-            List<TargetModel> list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+            List<TargetModel> list = processDefinitionApi.getNodes(processDefinitionId).getData();
             for (String key : taskDefKeys) {
                 String finalKey = key;
                 TargetModel target =

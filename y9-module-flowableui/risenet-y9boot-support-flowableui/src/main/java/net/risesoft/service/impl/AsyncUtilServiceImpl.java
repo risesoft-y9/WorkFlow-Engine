@@ -420,7 +420,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 userNames += orgUser.getName() + "，";
             }
             List<TargetModel> targetModelList =
-                processDefinitionApi.getNodes(tenantId, historicTaskInstanceModel.getProcessDefinitionId()).getData();
+                processDefinitionApi.getNodes(historicTaskInstanceModel.getProcessDefinitionId()).getData();
             TargetModel targetModel = targetModelList.stream()
                 .filter(model -> targetTaskKey.equals(model.getTaskDefKey()))
                 .findFirst()
@@ -473,7 +473,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
                 userNames += orgUser.getName() + "，";
             }
             List<TargetModel> targetModelList =
-                processDefinitionApi.getNodes(tenantId, historicTaskInstanceModel.getProcessDefinitionId()).getData();
+                processDefinitionApi.getNodes(historicTaskInstanceModel.getProcessDefinitionId()).getData();
             TargetModel targetModel = targetModelList.stream()
                 .filter(model -> targetTaskKey.equals(model.getTaskDefKey()))
                 .findFirst()

@@ -2,6 +2,7 @@ package net.risesoft.controller.config;
 
 import java.util.List;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -17,7 +18,6 @@ import net.risesoft.entity.BackTaskConf;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.config.ItemBackTaskConfService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9Util;
 
 /**
@@ -62,8 +62,7 @@ public class ItemBackTaskBindRestController {
     public Y9Result<List<TargetModel>> getBpmList(@RequestParam String itemId,
         @RequestParam String processDefinitionId) {
         List<TargetModel> list;
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+        list = processDefinitionApi.getNodes(processDefinitionId).getData();
         for (TargetModel targetModel : list) {
             String backTask = "";
             String taskDefKey = targetModel.getTaskDefKey();

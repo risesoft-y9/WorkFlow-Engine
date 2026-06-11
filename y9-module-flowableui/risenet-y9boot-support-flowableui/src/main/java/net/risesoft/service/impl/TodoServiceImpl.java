@@ -113,10 +113,8 @@ public class TodoServiceImpl implements TodoService {
 
     private void handleParallelTaskInfo(Map<String, Object> mapTemp, TaskModel task, ProcessParamModel processParam) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             String multiInstance =
-                processDefinitionApi.getNodeType(tenantId, task.getProcessDefinitionId(), task.getTaskDefinitionKey())
-                    .getData();
+                processDefinitionApi.getNodeType(task.getProcessDefinitionId(), task.getTaskDefinitionKey()).getData();
             mapTemp.put(FlowableUiConsts.ISZHUBAN, "");
             if (SysVariables.PARALLEL.equals(multiInstance)) {
                 mapTemp.put(FlowableUiConsts.ISZHUBAN, "false");

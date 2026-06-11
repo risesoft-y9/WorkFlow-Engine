@@ -159,8 +159,7 @@ public class Y9FieldPermController {
         if (null == processDefinitionModel) {
             return Y9Result.failure("事项绑定的流程定义不存在!");
         }
-        List<TargetModel> targetList =
-            processDefinitionApi.getNodes(tenantId, processDefinitionModel.getId()).getData();
+        List<TargetModel> targetList = processDefinitionApi.getNodes(processDefinitionModel.getId()).getData();
         Map<String, Object> map;
         for (TargetModel targetModel : targetList) {
             Y9FieldPerm y9FieldPerm = y9FieldPermRepository.findByFormIdAndFieldNameAndTaskDefKey(formId, fieldName,

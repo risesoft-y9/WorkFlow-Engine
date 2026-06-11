@@ -88,16 +88,15 @@ public class ButtonOperationExtendRestController {
      */
     @PostMapping(value = "/check4Batch")
     public Y9Result<List<TargetModel>> check4Batch(@RequestParam String[] taskIdAndProcessSerialNumbers) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            BatchCheckResult checkResult = collectBatchTaskInfo(tenantId, taskIdAndProcessSerialNumbers);
+            BatchCheckResult checkResult = collectBatchTaskInfo(taskIdAndProcessSerialNumbers);
             // 验证任务状态
             Y9Result<List<TargetModel>> validationResult = validateBatchTasks(checkResult);
             if (validationResult != null) {
                 return validationResult;
             }
             // 获取目标节点
-            List<TargetModel> routeToTasks = getTargetNodesForBatch(tenantId, checkResult.validTasks);
+            List<TargetModel> routeToTasks = getTargetNodesForBatch(checkResult.validTasks);
             return Y9Result.success(routeToTasks);
         } catch (Exception e) {
             LOGGER.error("校验批量发送失败", e);
@@ -125,7 +124,7 @@ public class ButtonOperationExtendRestController {
             }
             if (documentId.equals(processSerialNumber)) {
                 List<TargetModel> mainTargetModelList =
-                    processDefinitionApi.getNodesOnlyMain(tenantId, taskList.get(0).getProcessDefinitionId()).getData();
+                    processDefinitionApi.getNodesOnlyMain(taskList.get(0).getProcessDefinitionId()).getData();
                 boolean isMainProcess = mainTargetModelList.stream()
                     .anyMatch(t -> t.getTaskDefKey().equals(taskList.get(0).getTaskDefinitionKey()));
                 if (!isMainProcess) {
@@ -138,8 +137,7 @@ public class ButtonOperationExtendRestController {
                     return Y9Result.failure("不能重定向，" + signDeptDetail.getDeptName() + "的会签件已被处理。");
                 }
                 List<TargetModel> subTargetModelList =
-                    processDefinitionApi.getSubProcessChildNode(tenantId, taskList.get(0).getProcessDefinitionId())
-                        .getData();
+                    processDefinitionApi.getSubProcessChildNode(taskList.get(0).getProcessDefinitionId()).getData();
                 return Y9Result.success(subTargetModelList);
             }
         } catch (Exception e) {
@@ -151,13 +149,14 @@ public class ButtonOperationExtendRestController {
     /**
      * 收集批量任务信息
      */
-    private BatchCheckResult collectBatchTaskInfo(String tenantId, String[] taskIdAndProcessSerialNumbers) {
+    private BatchCheckResult collectBatchTaskInfo(String[] taskIdAndProcessSerialNumbers) {
         BatchCheckResult result = new BatchCheckResult();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         for (String taskIdAndProcessSerialNumber : taskIdAndProcessSerialNumbers) {
             String[] tpArr = taskIdAndProcessSerialNumber.split(":");
             TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
             if (task == null) {
-                handleNullTask(tenantId, tpArr, result.processedTaskMsg);
+                handleNullTask(tpArr, result.processedTaskMsg);
             } else {
                 result.validTasks.add(task);
                 if (StringUtils.isBlank(task.getAssignee())) {
@@ -181,7 +180,6 @@ public class ButtonOperationExtendRestController {
     @PostMapping(value = "/copy2Todo")
     public Y9Result<Map<String, Object>> copy2Todo(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam(required = false) String startTaskDefKey) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<TaskRelatedModel> processRelatedList =
             taskRelatedApi.findByProcessSerialNumber(processSerialNumber).getData();
         if (processRelatedList.stream()
@@ -334,13 +332,12 @@ public class ButtonOperationExtendRestController {
     /**
      * 获取批量任务的目标节点
      */
-    private List<TargetModel> getTargetNodesForBatch(String tenantId, List<TaskModel> taskList) {
+    private List<TargetModel> getTargetNodesForBatch(List<TaskModel> taskList) {
         if (taskList.isEmpty()) {
             return new ArrayList<>();
         }
         TaskModel firstTask = taskList.get(0);
-        return processDefinitionApi
-            .getTargetNodes(tenantId, firstTask.getProcessDefinitionId(), firstTask.getTaskDefinitionKey())
+        return processDefinitionApi.getTargetNodes(firstTask.getProcessDefinitionId(), firstTask.getTaskDefinitionKey())
             .getData()
             .stream()
             .filter(m -> !"退回".equals(m.getTaskDefName()) && !"Exclusive Gateway".equals(m.getTaskDefName()))
@@ -350,7 +347,7 @@ public class ButtonOperationExtendRestController {
     /**
      * 处理空任务情况
      */
-    private void handleNullTask(String tenantId, String[] tpArr, StringBuilder msg) {
+    private void handleNullTask(String[] tpArr, StringBuilder msg) {
         try {
             ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tpArr[1]).getData();
             if (StringUtils.isBlank(msg.toString())) {

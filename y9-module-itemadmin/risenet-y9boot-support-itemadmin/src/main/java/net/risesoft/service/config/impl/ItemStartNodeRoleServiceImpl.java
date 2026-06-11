@@ -93,38 +93,15 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionId(itemId, previousProcessDefinitionId);
         // 获取起始节点和目标节点
         String startNodeKey =
-            processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, latestProcessDefinitionId).getData();
+            processDefinitionApi.getStartNodeKeyByProcessDefinitionId(latestProcessDefinitionId).getData();
         List<TargetModel> targetNodes =
-            processDefinitionApi.getTargetNodes(tenantId, latestProcessDefinitionId, startNodeKey).getData();
+            processDefinitionApi.getTargetNodes(latestProcessDefinitionId, startNodeKey).getData();
         // 为每个目标节点复制绑定信息
         for (TargetModel targetModel : targetNodes) {
             String currentTaskDefKey = targetModel.getTaskDefKey();
             copyStartNodeRoleForTask(itemId, latestProcessDefinitionId, currentTaskDefKey, previousStartNodeRoles,
                 userName);
         }
-    }
-
-    /**
-     * 获取最新流程定义
-     */
-    private ProcessDefinitionModel getLatestProcessDefinition(String tenantId, Item item) {
-        String processDefinitionKey = item.getWorkflowGuid();
-        return repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
-    }
-
-    /**
-     * 获取前一版本流程定义ID
-     */
-    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
-        ProcessDefinitionModel latestProcessDefinition) {
-        String previousProcessDefinitionId = processDefinitionId;
-        String latestProcessDefinitionId = latestProcessDefinition.getId();
-        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
-            ProcessDefinitionModel previousProcessDefinition =
-                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
-            previousProcessDefinitionId = previousProcessDefinition.getId();
-        }
-        return previousProcessDefinitionId;
     }
 
     /**
@@ -165,27 +142,20 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
     }
 
     /**
-     * 合并起始节点角色配置
+     * 创建新的起始节点角色配置
      */
-    private void mergeStartNodeRole(ItemStartNodeRole existingStartNodeRole, ItemStartNodeRole sourceStartNodeRole) {
-        String existingRoleIds = existingStartNodeRole.getRoleIds();
-        String sourceRoleIds =
-            StringUtils.isNotBlank(sourceStartNodeRole.getRoleIds()) ? sourceStartNodeRole.getRoleIds() : "";
-        String[] sourceRoleIdArray = sourceRoleIds.split(";");
-        for (String sourceRoleId : sourceRoleIdArray) {
-            if (StringUtils.isBlank(existingRoleIds)) {
-                existingRoleIds = sourceRoleId;
-            } else {
-                if (!existingRoleIds.contains(sourceRoleId)) {
-                    Role role = roleApi.getRole(sourceRoleId).getData();
-                    if (null != role) {
-                        existingRoleIds += ";" + sourceRoleId;
-                    }
-                }
-            }
-        }
-        existingStartNodeRole.setRoleIds(existingRoleIds);
-        itemStartNodeRoleRepository.save(existingStartNodeRole);
+    private ItemStartNodeRole createNewStartNodeRole(String itemId, String processDefinitionId, String taskDefKey,
+        String roleIds, String userName) {
+        ItemStartNodeRole newStartNodeRole = new ItemStartNodeRole();
+        newStartNodeRole.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
+        newStartNodeRole.setItemId(itemId);
+        newStartNodeRole.setProcessDefinitionId(processDefinitionId);
+        newStartNodeRole.setTaskDefKey(taskDefKey);
+        newStartNodeRole.setRoleIds(roleIds);
+        newStartNodeRole.setUserName(userName);
+        Integer maxTabIndex = itemStartNodeRoleRepository.getMaxTabIndex(itemId, processDefinitionId);
+        newStartNodeRole.setTabIndex(maxTabIndex == null ? 1 : maxTabIndex + 1);
+        return newStartNodeRole;
     }
 
     @Override
@@ -198,6 +168,39 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         }
     }
 
+    /**
+     * 过滤需要删除的角色ID
+     *
+     * @param originalRoleIds 原始角色ID字符串
+     * @param roleIdsToRemove 需要删除的角色ID字符串
+     * @return 过滤后的角色ID字符串
+     */
+    private String filterRoleIds(String originalRoleIds, String roleIdsToRemove) {
+        if (StringUtils.isEmpty(originalRoleIds)) {
+            return "";
+        }
+        String[] originalRoleIdArray = originalRoleIds.split(";");
+        String[] roleIdToRemoveArray = roleIdsToRemove.split(",");
+        StringBuilder filteredRoleIdsBuilder = new StringBuilder();
+        for (String originalRoleId : originalRoleIdArray) {
+            boolean needToRemove = false;
+            for (String roleIdToRemove : roleIdToRemoveArray) {
+                if (originalRoleId.equals(roleIdToRemove)) {
+                    needToRemove = true;
+                    break;
+                }
+            }
+            // 如果不需要删除，则保留在结果中
+            if (!needToRemove) {
+                if (filteredRoleIdsBuilder.length() > 0) {
+                    filteredRoleIdsBuilder.append(";");
+                }
+                filteredRoleIdsBuilder.append(originalRoleId);
+            }
+        }
+        return filteredRoleIdsBuilder.toString();
+    }
+
     @Override
     public ItemStartNodeRole findById(String id) {
         return itemStartNodeRoleRepository.findById(id).orElse(null);
@@ -208,89 +211,6 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         String taskDefKey) {
         return itemStartNodeRoleRepository.findByItemIdAndProcessDefinitionIdAndTaskDefKey(itemId, processDefinitionId,
             taskDefKey);
-    }
-
-    @Override
-    public String getStartTaskDefKey(String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        String userId = Y9FlowableHolder.getPositionId();
-        Item item = itemRepository.findById(itemId).orElse(null);
-        assert item != null : "不存在itemId：" + itemId + "事项";
-        // 获取最新流程定义
-        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(tenantId, item);
-        String processDefinitionId = latestProcessDefinition.getId();
-        // 获取起始节点角色列表
-        List<ItemStartNodeRole> startNodeRoles = itemStartNodeRoleRepository
-            .findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId, processDefinitionId);
-        // 根据不同情况确定起始任务定义键
-        if (startNodeRoles.size() > 1) {
-            return getStartTaskDefKeyForMultipleRoles(startNodeRoles, tenantId, userId);
-        } else if (startNodeRoles.size() == 1) {
-            return startNodeRoles.get(0).getTaskDefKey();
-        } else {
-            return getStartTaskDefKeyFromProcessDefinition(tenantId, processDefinitionId);
-        }
-    }
-
-    /**
-     * 处理多个起始节点角色的情况
-     */
-    /**
-     * 处理多个起始节点角色的情况
-     */
-    private String getStartTaskDefKeyForMultipleRoles(List<ItemStartNodeRole> startNodeRoles, String tenantId,
-        String userId) {
-        // 优先查找 tabIndex 为 1 的节点
-        ItemStartNodeRole firstTabNode = null;
-        ItemStartNodeRole userAuthorizedNode = null;
-        for (ItemStartNodeRole itemStartNodeRole : startNodeRoles) {
-            // 查找 tabIndex 为 1 的节点
-            if (itemStartNodeRole.getTabIndex() == 1) {
-                firstTabNode = itemStartNodeRole;
-            } else if (userAuthorizedNode == null) {
-                // 查找当前用户有权限的节点（跳过 tabIndex 为 1 的节点）
-                String roleIds = itemStartNodeRole.getRoleIds();
-                if (StringUtils.isNotEmpty(roleIds) && hasUserRole(tenantId, userId, roleIds)) {
-                    userAuthorizedNode = itemStartNodeRole;
-                }
-            }
-        }
-        // 返回找到的节点，优先级：tabIndex为1的节点 > 用户有权限的节点 > 默认第一个节点
-        if (firstTabNode != null) {
-            return firstTabNode.getTaskDefKey();
-        } else if (userAuthorizedNode != null) {
-            return userAuthorizedNode.getTaskDefKey();
-        } else {
-            return startNodeRoles.get(0).getTaskDefKey();
-        }
-    }
-
-    /**
-     * 检查用户是否具有角色权限
-     */
-    private boolean hasUserRole(String tenantId, String userId, String roleIds) {
-        String[] roleIdArr = roleIds.split(";");
-        for (String roleId : roleIdArr) {
-            try {
-                if (positionRoleApi.hasRole(tenantId, roleId, userId).getData()) {
-                    return true;
-                }
-            } catch (Exception e) {
-                LOGGER.warn("检查用户角色权限时发生异常: roleId={}, userId={}", roleId, userId, e);
-            }
-        }
-        return false;
-    }
-
-    /**
-     * 从流程定义获取起始任务定义键
-     */
-    private String getStartTaskDefKeyFromProcessDefinition(String tenantId, String processDefinitionId) {
-        String startNodeKey =
-            processDefinitionApi.getStartNodeKeyByProcessDefinitionId(tenantId, processDefinitionId).getData();
-        List<TargetModel> nodes =
-            processDefinitionApi.getTargetNodes(tenantId, processDefinitionId, startNodeKey).getData();
-        return nodes.get(0).getTaskDefKey();
     }
 
     @Override
@@ -326,6 +246,111 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         }
 
         return itemStartNodeRoleModelList;
+    }
+
+    /**
+     * 获取最新流程定义
+     */
+    private ProcessDefinitionModel getLatestProcessDefinition(String tenantId, Item item) {
+        String processDefinitionKey = item.getWorkflowGuid();
+        return repositoryApi.getLatestProcessDefinitionByKey(tenantId, processDefinitionKey).getData();
+    }
+
+    /**
+     * 处理多个起始节点角色的情况
+     */
+
+    /**
+     * 获取前一版本流程定义ID
+     */
+    private String getPreviousProcessDefinitionId(String tenantId, String processDefinitionId,
+        ProcessDefinitionModel latestProcessDefinition) {
+        String previousProcessDefinitionId = processDefinitionId;
+        String latestProcessDefinitionId = latestProcessDefinition.getId();
+        if (processDefinitionId.equals(latestProcessDefinitionId) && latestProcessDefinition.getVersion() > 1) {
+            ProcessDefinitionModel previousProcessDefinition =
+                repositoryApi.getPreviousProcessDefinitionById(tenantId, latestProcessDefinitionId).getData();
+            previousProcessDefinitionId = previousProcessDefinition.getId();
+        }
+        return previousProcessDefinitionId;
+    }
+
+    @Override
+    public String getStartTaskDefKey(String itemId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
+        String userId = Y9FlowableHolder.getPositionId();
+        Item item = itemRepository.findById(itemId).orElse(null);
+        assert item != null : "不存在itemId：" + itemId + "事项";
+        // 获取最新流程定义
+        ProcessDefinitionModel latestProcessDefinition = getLatestProcessDefinition(tenantId, item);
+        String processDefinitionId = latestProcessDefinition.getId();
+        // 获取起始节点角色列表
+        List<ItemStartNodeRole> startNodeRoles = itemStartNodeRoleRepository
+            .findByItemIdAndProcessDefinitionIdOrderByTabIndexDesc(itemId, processDefinitionId);
+        // 根据不同情况确定起始任务定义键
+        if (startNodeRoles.size() > 1) {
+            return getStartTaskDefKeyForMultipleRoles(startNodeRoles, tenantId, userId);
+        } else if (startNodeRoles.size() == 1) {
+            return startNodeRoles.get(0).getTaskDefKey();
+        } else {
+            return getStartTaskDefKeyFromProcessDefinition(processDefinitionId);
+        }
+    }
+
+    /**
+     * 处理多个起始节点角色的情况
+     */
+    private String getStartTaskDefKeyForMultipleRoles(List<ItemStartNodeRole> startNodeRoles, String tenantId,
+        String userId) {
+        // 优先查找 tabIndex 为 1 的节点
+        ItemStartNodeRole firstTabNode = null;
+        ItemStartNodeRole userAuthorizedNode = null;
+        for (ItemStartNodeRole itemStartNodeRole : startNodeRoles) {
+            // 查找 tabIndex 为 1 的节点
+            if (itemStartNodeRole.getTabIndex() == 1) {
+                firstTabNode = itemStartNodeRole;
+            } else if (userAuthorizedNode == null) {
+                // 查找当前用户有权限的节点（跳过 tabIndex 为 1 的节点）
+                String roleIds = itemStartNodeRole.getRoleIds();
+                if (StringUtils.isNotEmpty(roleIds) && hasUserRole(tenantId, userId, roleIds)) {
+                    userAuthorizedNode = itemStartNodeRole;
+                }
+            }
+        }
+        // 返回找到的节点，优先级：tabIndex为1的节点 > 用户有权限的节点 > 默认第一个节点
+        if (firstTabNode != null) {
+            return firstTabNode.getTaskDefKey();
+        } else if (userAuthorizedNode != null) {
+            return userAuthorizedNode.getTaskDefKey();
+        } else {
+            return startNodeRoles.get(0).getTaskDefKey();
+        }
+    }
+
+    /**
+     * 从流程定义获取起始任务定义键
+     */
+    private String getStartTaskDefKeyFromProcessDefinition(String processDefinitionId) {
+        String startNodeKey = processDefinitionApi.getStartNodeKeyByProcessDefinitionId(processDefinitionId).getData();
+        List<TargetModel> nodes = processDefinitionApi.getTargetNodes(processDefinitionId, startNodeKey).getData();
+        return nodes.get(0).getTaskDefKey();
+    }
+
+    /**
+     * 检查用户是否具有角色权限
+     */
+    private boolean hasUserRole(String tenantId, String userId, String roleIds) {
+        String[] roleIdArr = roleIds.split(";");
+        for (String roleId : roleIdArr) {
+            try {
+                if (positionRoleApi.hasRole(tenantId, roleId, userId).getData()) {
+                    return true;
+                }
+            } catch (Exception e) {
+                LOGGER.warn("检查用户角色权限时发生异常: roleId={}, userId={}", roleId, userId, e);
+            }
+        }
+        return false;
     }
 
     @Override
@@ -390,6 +415,30 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         return list;
     }
 
+    /**
+     * 合并起始节点角色配置
+     */
+    private void mergeStartNodeRole(ItemStartNodeRole existingStartNodeRole, ItemStartNodeRole sourceStartNodeRole) {
+        String existingRoleIds = existingStartNodeRole.getRoleIds();
+        String sourceRoleIds =
+            StringUtils.isNotBlank(sourceStartNodeRole.getRoleIds()) ? sourceStartNodeRole.getRoleIds() : "";
+        String[] sourceRoleIdArray = sourceRoleIds.split(";");
+        for (String sourceRoleId : sourceRoleIdArray) {
+            if (StringUtils.isBlank(existingRoleIds)) {
+                existingRoleIds = sourceRoleId;
+            } else {
+                if (!existingRoleIds.contains(sourceRoleId)) {
+                    Role role = roleApi.getRole(sourceRoleId).getData();
+                    if (null != role) {
+                        existingRoleIds += ";" + sourceRoleId;
+                    }
+                }
+            }
+        }
+        existingStartNodeRole.setRoleIds(existingRoleIds);
+        itemStartNodeRoleRepository.save(existingStartNodeRole);
+    }
+
     @Override
     @Transactional
     public void removeRole(String itemId, String processDefinitionId, String taskDefKey, String roleIds) {
@@ -403,39 +452,6 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
             itemStartNodeRole.setUserName(userName);
             itemStartNodeRoleRepository.save(itemStartNodeRole);
         }
-    }
-
-    /**
-     * 过滤需要删除的角色ID
-     *
-     * @param originalRoleIds 原始角色ID字符串
-     * @param roleIdsToRemove 需要删除的角色ID字符串
-     * @return 过滤后的角色ID字符串
-     */
-    private String filterRoleIds(String originalRoleIds, String roleIdsToRemove) {
-        if (StringUtils.isEmpty(originalRoleIds)) {
-            return "";
-        }
-        String[] originalRoleIdArray = originalRoleIds.split(";");
-        String[] roleIdToRemoveArray = roleIdsToRemove.split(",");
-        StringBuilder filteredRoleIdsBuilder = new StringBuilder();
-        for (String originalRoleId : originalRoleIdArray) {
-            boolean needToRemove = false;
-            for (String roleIdToRemove : roleIdToRemoveArray) {
-                if (originalRoleId.equals(roleIdToRemove)) {
-                    needToRemove = true;
-                    break;
-                }
-            }
-            // 如果不需要删除，则保留在结果中
-            if (!needToRemove) {
-                if (filteredRoleIdsBuilder.length() > 0) {
-                    filteredRoleIdsBuilder.append(";");
-                }
-                filteredRoleIdsBuilder.append(originalRoleId);
-            }
-        }
-        return filteredRoleIdsBuilder.toString();
     }
 
     @Override
@@ -489,22 +505,5 @@ public class ItemStartNodeRoleServiceImpl implements ItemStartNodeRoleService {
         }
         existingStartNodeRole.setRoleIds(currentRoleIds);
         existingStartNodeRole.setUserName(userName);
-    }
-
-    /**
-     * 创建新的起始节点角色配置
-     */
-    private ItemStartNodeRole createNewStartNodeRole(String itemId, String processDefinitionId, String taskDefKey,
-        String roleIds, String userName) {
-        ItemStartNodeRole newStartNodeRole = new ItemStartNodeRole();
-        newStartNodeRole.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
-        newStartNodeRole.setItemId(itemId);
-        newStartNodeRole.setProcessDefinitionId(processDefinitionId);
-        newStartNodeRole.setTaskDefKey(taskDefKey);
-        newStartNodeRole.setRoleIds(roleIds);
-        newStartNodeRole.setUserName(userName);
-        Integer maxTabIndex = itemStartNodeRoleRepository.getMaxTabIndex(itemId, processDefinitionId);
-        newStartNodeRole.setTabIndex(maxTabIndex == null ? 1 : maxTabIndex + 1);
-        return newStartNodeRole;
     }
 }

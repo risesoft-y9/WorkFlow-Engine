@@ -86,7 +86,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         documentApi.complete(taskId);
 
         boolean isSubProcessChildNode = processDefinitionApi
-            .isSubProcessChildNode(tenantId, taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
+            .isSubProcessChildNode(taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
             .getData();
         if (isSubProcessChildNode) {// 子流程办结，不更新自定义历程信息
             return;
@@ -188,11 +188,10 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                     continue;
                 }
                 if (nodeList.isEmpty()) {
-                    String startNode = processDefinitionApi
-                        .getStartNodeKeyByProcessDefinitionId(tenantId, task.getProcessDefinitionId())
-                        .getData();
-                    nodeList = processDefinitionApi.getTargetNodes(tenantId, task.getProcessDefinitionId(), startNode)
-                        .getData();
+                    String startNode =
+                        processDefinitionApi.getStartNodeKeyByProcessDefinitionId(task.getProcessDefinitionId())
+                            .getData();
+                    nodeList = processDefinitionApi.getTargetNodes(task.getProcessDefinitionId(), startNode).getData();
                 }
                 boolean canDelete =
                     nodeList.stream().anyMatch(node -> node.getTaskDefKey().equals(task.getTaskDefinitionKey()));

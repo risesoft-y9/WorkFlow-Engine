@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +31,6 @@ import net.risesoft.service.config.ItemOpinionFrameBindService;
 import net.risesoft.service.config.ItemOpinionFrameRoleService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.opinion.OpinionFrameOneClickSetService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -69,6 +69,30 @@ public class ItemOpinionFrameBindRestController {
         @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey) {
         itemOpinionFrameBindService.save(opinionFrameNameAndMarks, itemId, processDefinitionId, taskDefKey);
         return Y9Result.successMsg("保存成功");
+    }
+
+    private Map<String, Object> buildBindMap(ItemOpinionFrameBind bind) {
+        Map<String, Object> map = new HashMap<>(16);
+        map.put("id", bind.getId());
+        Item item = itemService.findById(bind.getItemId());
+        map.put("itemName", null == item ? "事项不存在" : item.getName());
+        map.put("processDefinitionId", bind.getProcessDefinitionId());
+        // 构建角色名称
+        String roleNames = buildRoleNames(bind.getId());
+        map.put("roleNames", StringUtils.isEmpty(roleNames) ? "未绑定角色（所有人都可以签写）" : roleNames);
+        // 构建任务节点信息
+        String taskDefName = getTaskDefName(bind);
+        map.put("taskDefKey",
+            taskDefName + (StringUtils.isEmpty(bind.getTaskDefKey()) ? "" : "(" + bind.getTaskDefKey() + ")"));
+        return map;
+    }
+
+    private String buildRoleNames(String bindId) {
+        return itemOpinionFrameRoleService.listByItemOpinionFrameIdContainRoleName(bindId)
+            .stream()
+            .map(ItemOpinionFrameRole::getRoleName)
+            .filter(StringUtils::isNotEmpty)
+            .collect(Collectors.joining("、"));
     }
 
     /**
@@ -131,49 +155,10 @@ public class ItemOpinionFrameBindRestController {
 
     @GetMapping(value = "/getBindListByMark")
     public Y9Result<List<Map<String, Object>>> getBindListByMark(@RequestParam String mark) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemOpinionFrameBind> oftrbList = itemOpinionFrameBindService.listByMark(mark);
         List<Map<String, Object>> bindList =
-            oftrbList.stream().map(bind -> buildBindMap(tenantId, bind)).collect(Collectors.toList());
+            oftrbList.stream().map(bind -> buildBindMap(bind)).collect(Collectors.toList());
         return Y9Result.success(bindList, "获取成功");
-    }
-
-    private Map<String, Object> buildBindMap(String tenantId, ItemOpinionFrameBind bind) {
-        Map<String, Object> map = new HashMap<>(16);
-        map.put("id", bind.getId());
-        Item item = itemService.findById(bind.getItemId());
-        map.put("itemName", null == item ? "事项不存在" : item.getName());
-        map.put("processDefinitionId", bind.getProcessDefinitionId());
-        // 构建角色名称
-        String roleNames = buildRoleNames(bind.getId());
-        map.put("roleNames", StringUtils.isEmpty(roleNames) ? "未绑定角色（所有人都可以签写）" : roleNames);
-        // 构建任务节点信息
-        String taskDefName = getTaskDefName(tenantId, bind);
-        map.put("taskDefKey",
-            taskDefName + (StringUtils.isEmpty(bind.getTaskDefKey()) ? "" : "(" + bind.getTaskDefKey() + ")"));
-        return map;
-    }
-
-    private String buildRoleNames(String bindId) {
-        return itemOpinionFrameRoleService.listByItemOpinionFrameIdContainRoleName(bindId)
-            .stream()
-            .map(ItemOpinionFrameRole::getRoleName)
-            .filter(StringUtils::isNotEmpty)
-            .collect(Collectors.joining("、"));
-    }
-
-    private String getTaskDefName(String tenantId, ItemOpinionFrameBind bind) {
-        if (StringUtils.isEmpty(bind.getTaskDefKey())) {
-            return "整个流程";
-        }
-
-        return processDefinitionApi.getNodes(tenantId, bind.getProcessDefinitionId())
-            .getData()
-            .stream()
-            .filter(targetModel -> targetModel.getTaskDefKey().equals(bind.getTaskDefKey()))
-            .findFirst()
-            .map(TargetModel::getTaskDefName)
-            .orElse("整个流程");
     }
 
     /**
@@ -187,8 +172,7 @@ public class ItemOpinionFrameBindRestController {
     public Y9Result<List<TargetModel>> getBpmList(@RequestParam String processDefinitionId,
         @RequestParam String itemId) {
         List<TargetModel> list;
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        list = processDefinitionApi.getNodes(tenantId, processDefinitionId).getData();
+        list = processDefinitionApi.getNodes(processDefinitionId).getData();
         for (TargetModel targetModel : list) {
             StringBuilder opinionFrameNames = new StringBuilder();
             List<ItemOpinionFrameBind> bindList =
@@ -222,6 +206,20 @@ public class ItemOpinionFrameBindRestController {
             Y9Result.failure("获取意见框绑定的一键设置列表失败");
         }
         return Y9Result.success(bindList, "获取意见框绑定的一键设置列表成功");
+    }
+
+    private String getTaskDefName(ItemOpinionFrameBind bind) {
+        if (StringUtils.isEmpty(bind.getTaskDefKey())) {
+            return "整个流程";
+        }
+
+        return processDefinitionApi.getNodes(bind.getProcessDefinitionId())
+            .getData()
+            .stream()
+            .filter(targetModel -> targetModel.getTaskDefKey().equals(bind.getTaskDefKey()))
+            .findFirst()
+            .map(TargetModel::getTaskDefName)
+            .orElse("整个流程");
     }
 
     /**
