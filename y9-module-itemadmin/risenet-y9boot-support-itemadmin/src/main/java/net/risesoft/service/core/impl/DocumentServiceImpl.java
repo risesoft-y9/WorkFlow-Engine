@@ -63,7 +63,6 @@ import net.risesoft.entity.template.ItemPrintTemplateBind;
 import net.risesoft.enums.DynamicRoleKindsEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.enums.ItemButtonTypeEnum;
-import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.ItemUserChoiceEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
 import net.risesoft.enums.SignStatusEnum;
@@ -2040,7 +2039,7 @@ public class DocumentServiceImpl implements DocumentService {
         String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
         for (String choice : userChoices) {
             String[] parts = choice.split(SysVariables.COLON);
-            int principalType = ItemPermissionEnum.POSITION.getValue();
+            int principalType = ItemUserChoiceEnum.POSITION.getValue();
             String userId = choice;
             if (parts.length == 2) {
                 principalType = Integer.parseInt(parts[0]);
