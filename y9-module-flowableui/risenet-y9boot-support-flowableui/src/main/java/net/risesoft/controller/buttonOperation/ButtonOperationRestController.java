@@ -180,7 +180,7 @@ public class ButtonOperationRestController {
             Position position = Y9FlowableHolder.getPosition();
             String positionId = position.getId();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(taskId).getData();
             for (IdentityLinkModel il : list) {
                 // 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
                 if ("assignee".equals(il.getType())) {
@@ -1115,7 +1115,7 @@ public class ButtonOperationRestController {
         try {
             Position position = Y9FlowableHolder.getPosition();
             String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
-            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+            List<IdentityLinkModel> list = identityApi.getIdentityLinksForTask(taskId).getData();
             for (IdentityLinkModel il : list) {
                 // 多人同时打开签收件时，一人签收了，其他人需提示该件已被签收。这里判定该任务是否已被签收。
                 if ("assignee".equals(il.getType())) {

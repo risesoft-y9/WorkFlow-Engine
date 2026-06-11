@@ -1273,7 +1273,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
     private void setSimpleUnassignedUserInfo(HistoryProcessModel history, HistoricTaskInstanceModel hai) {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<IdentityLinkModel> iList = this.identityApi.getIdentityLinksForTask(tenantId, hai.getId()).getData();
+            List<IdentityLinkModel> iList = this.identityApi.getIdentityLinksForTask(hai.getId()).getData();
             if (iList != null && !iList.isEmpty()) {
                 StringBuilder assignees = new StringBuilder();
                 int j = 0;
@@ -1424,8 +1424,7 @@ public class ProcessTrackServiceImpl implements ProcessTrackService {
      */
     private void setUnassignedUserInfo(HistoryProcessModel model, HistoricTaskInstanceModel hai) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            List<IdentityLinkModel> iList = this.identityApi.getIdentityLinksForTask(tenantId, hai.getId()).getData();
+            List<IdentityLinkModel> iList = this.identityApi.getIdentityLinksForTask(hai.getId()).getData();
             if (iList != null && !iList.isEmpty()) {
                 StringBuilder assignees = new StringBuilder();
                 int j = 0;

@@ -286,7 +286,6 @@ public class ButtonServiceImpl implements ButtonService {
 
     private void handleClaimButton(Map<String, Object> result, boolean[] isButtonShow, TaskContext taskContext,
         String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         // 签收、拒签按钮
         // 当user变量没有指定人员时，显示签收
         if (!StringUtils.isNotBlank(taskContext.task.getAssignee())) {
@@ -294,7 +293,7 @@ public class ButtonServiceImpl implements ButtonService {
             isButtonShow[12] = false;
             isButtonShow[13] = true;
             // 是否是最后一个拒签人员，如果是则提示是否拒签，如果拒签，则退回任务给发送人，发送人重新选择人员进行签收办理
-            List<IdentityLinkModel> identityLinkList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+            List<IdentityLinkModel> identityLinkList = identityApi.getIdentityLinksForTask(taskId).getData();
             if (identityLinkList.size() <= 1) {
                 result.put("isLastPerson4RefuseClaim", true);
             }
@@ -568,8 +567,7 @@ public class ButtonServiceImpl implements ButtonService {
      * @param orgUnitId 组织单元ID
      */
     private void handleMultipleTaskInstanceCase(boolean[] isButtonShow, String taskId, String orgUnitId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<IdentityLinkModel> identityLinkList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+        List<IdentityLinkModel> identityLinkList = identityApi.getIdentityLinksForTask(taskId).getData();
         // 只有当候选人员数量大于2时才显示撤销签收按钮
         if (identityLinkList.size() > 2) {
             for (IdentityLinkModel identityLink : identityLinkList) {
@@ -586,8 +584,7 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private void handleMultipleTaskInstanceUnclaim(List<ItemButtonModel> buttonList, TodoTaskContext context,
         String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        List<IdentityLinkModel> identityLinkList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
+        List<IdentityLinkModel> identityLinkList = identityApi.getIdentityLinksForTask(taskId).getData();
 
         // 只有当候选人员数量大于2时才显示退签按钮
         if (identityLinkList.size() > 2) {
