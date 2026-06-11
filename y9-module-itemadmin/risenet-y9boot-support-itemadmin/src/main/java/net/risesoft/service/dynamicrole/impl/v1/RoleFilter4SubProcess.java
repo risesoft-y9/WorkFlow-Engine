@@ -3,13 +3,13 @@ package net.risesoft.service.dynamicrole.impl.v1;
 import java.util.List;
 import java.util.stream.Collectors;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.permission.RoleApi;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.TaskApi;
@@ -38,8 +38,6 @@ public class RoleFilter4SubProcess extends AbstractDynamicRoleMember {
 
     private final TaskApi taskApi;
 
-    private final RoleApi roleApi;
-
     private final PositionRoleApi positionRoleApi;
 
     @Override
@@ -51,7 +49,7 @@ public class RoleFilter4SubProcess extends AbstractDynamicRoleMember {
             positionRoleApi.listPositionsByRoleId(Y9LoginUserHolder.getTenantId(), roleId).getData();
         String assignee = "";
         if (StringUtils.isNotBlank(taskId)) {
-            TaskModel task = taskApi.findById(tenantId, taskId).getData();
+            TaskModel task = taskApi.findById(taskId).getData();
             List<HistoricTaskInstanceModel> hisTaskList =
                 historicTaskApi.findTaskByProcessInstanceIdOrderByStartTimeAsc(task.getProcessInstanceId(), "")
                     .getData();

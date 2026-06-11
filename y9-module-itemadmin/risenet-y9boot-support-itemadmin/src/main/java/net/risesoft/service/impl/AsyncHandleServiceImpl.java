@@ -138,7 +138,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         List<String> userList) {
         OrgUnit orgUnit = Y9FlowableHolder.getPosition();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
         ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(
             processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
         if (null != itemTaskConf && itemTaskConf.getSignTask()) {
@@ -146,10 +146,10 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         }
         // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
         if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
-            List<TaskModel> taskNextList1 = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskNextList1 = taskApi.findByProcessInstanceId(processInstanceId).getData();
             for (TaskModel taskNext : taskNextList1) {
                 if (!(taskId.equals(taskNext.getId()))) {
-                    taskApi.complete(tenantId, taskNext.getId());
+                    taskApi.complete(taskNext.getId());
                     historictaskApi.setTenantId(taskNext.getId());
                 }
             }
@@ -171,7 +171,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         processParam.setSended("true");
         processParam.setSponsorGuid(sponsorGuid);
         processParamService.saveOrUpdate(processParam);
-        taskApi.completeWithVariables(tenantId, taskId, orgUnitId, variables);
+        taskApi.completeWithVariables(taskId, variables);
 
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);
@@ -186,7 +186,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         List<String> userList) {
         OrgUnit orgUnit = Y9FlowableHolder.getPosition();
         String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = orgUnit.getId();
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
         ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(
             processParam.getItemId(), task.getProcessDefinitionId(), task.getTaskDefinitionKey());
         if (null != itemTaskConf && itemTaskConf.getSignTask()) {
@@ -194,10 +194,10 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         }
         // 判断是否是主办办理，如果是，需要将协办未办理的的任务默认办理
         if (StringUtils.isNotBlank(sponsorHandle) && UtilConsts.TRUE.equals(sponsorHandle)) {
-            List<TaskModel> taskNextList1 = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskNextList1 = taskApi.findByProcessInstanceId(processInstanceId).getData();
             for (TaskModel taskNext : taskNextList1) {
                 if (!(taskId.equals(taskNext.getId()))) {
-                    taskApi.complete(tenantId, taskNext.getId());
+                    taskApi.complete(taskNext.getId());
                     historictaskApi.setTenantId(taskNext.getId());
                 }
             }
@@ -223,7 +223,7 @@ public class AsyncHandleServiceImpl implements AsyncHandleService {
         processParam.setSended("true");
         processParam.setSponsorGuid(sponsorGuid);
         processParamService.saveOrUpdate(processParam);
-        taskApi.completeWithVariables(tenantId, taskId, orgUnitId, variables);
+        taskApi.completeWithVariables(taskId, variables);
 
         // 保存流程信息到ES
         process4SearchService.saveToDataCenter1(tenantId, taskId, processParam);

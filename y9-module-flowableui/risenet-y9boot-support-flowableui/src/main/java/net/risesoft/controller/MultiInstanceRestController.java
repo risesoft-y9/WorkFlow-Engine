@@ -108,9 +108,8 @@ public class MultiInstanceRestController {
     public Y9Result<Map<String, Object>> getAddOrDeleteMultiInstance(@RequestParam @NotBlank String processInstanceId) {
         Map<String, Object> map = new HashMap<>(16);
         Position position = Y9FlowableHolder.getPosition();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel task = null;
-        List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<TaskModel> list = taskApi.findByProcessInstanceId(processInstanceId).getData();
         if (!list.isEmpty()) {
             task = list.get(0);
         }
@@ -189,8 +188,8 @@ public class MultiInstanceRestController {
     public Y9Result<String> setSponsor(@RequestParam @NotBlank String taskId) {
         String positionId = Y9FlowableHolder.getPositionId();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
-        List<TaskModel> list = taskApi.findByProcessInstanceId(tenantId, taskModel.getProcessInstanceId()).getData();
+        TaskModel taskModel = taskApi.findById(taskId).getData();
+        List<TaskModel> list = taskApi.findByProcessInstanceId(taskModel.getProcessInstanceId()).getData();
         String sponsorTaskId = "";
         for (TaskModel task : list) {
             String parallelSponsor =

@@ -148,10 +148,9 @@ public class ReminderServiceImpl implements ReminderService {
      * 获取流程实例的任务ID列表
      */
     private List<String> getTaskIds(String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<String> taskIds = new ArrayList<>();
         try {
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
             for (TaskModel task : taskList) {
                 taskIds.add(task.getId());
             }
@@ -219,7 +218,7 @@ public class ReminderServiceImpl implements ReminderService {
         List<Reminder> reminderList = pageList.getContent();
         int num = (page - 1) * rows;
         List<ReminderModel> listMap = new ArrayList<>();
-        TaskModel taskTemp = taskApi.findById(tenantId, taskId).getData();
+        TaskModel taskTemp = taskApi.findById(taskId).getData();
         OrgUnit pTemp = orgUnitApi.getPersonOrPosition(tenantId, taskTemp.getAssignee()).getData();
         for (Reminder reminder : reminderList) {
             ReminderModel model = new ReminderModel();
@@ -242,8 +241,7 @@ public class ReminderServiceImpl implements ReminderService {
      */
     private void populateActiveTaskInfo(ReminderModel model, Reminder reminder) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
-            TaskModel task = taskApi.findById(tenantId, reminder.getTaskId()).getData();
+            TaskModel task = taskApi.findById(reminder.getTaskId()).getData();
             if (task != null) {
                 model.setTaskName(task.getName());
                 setAssigneeInfo(model, task.getAssignee());

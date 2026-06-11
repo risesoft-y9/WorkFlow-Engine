@@ -52,7 +52,7 @@ public class FlowableReminderServiceImpl implements FlowableReminderService {
         Y9Page<TaskModel> taskPage;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            taskPage = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, page, rows);
+            taskPage = taskApi.findListByProcessInstanceId(processInstanceId, page, rows);
             List<TaskModel> list = taskPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<>() {});

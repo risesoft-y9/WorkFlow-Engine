@@ -209,7 +209,7 @@ public class DocumentEditRestController {
     @GetMapping(value = "/todo")
     public Y9Result<DocumentDetailModel> todo(@RequestParam @NotBlank String taskId) {
         try {
-            TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), taskId).getData();
+            TaskModel task = taskApi.findById(taskId).getData();
             if (null == task) {
                 return Y9Result.failure("当前待办已处理！");
             }

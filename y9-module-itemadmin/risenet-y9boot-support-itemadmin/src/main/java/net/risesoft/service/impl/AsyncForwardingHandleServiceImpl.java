@@ -143,9 +143,8 @@ public class AsyncForwardingHandleServiceImpl implements AsyncForwardingHandleSe
      */
     private void handleTaskAndSubProcess(OrgUnit orgUnit, TaskModel task, String executionId, String processInstanceId,
         FlowElementModel flowElementModel, String sponsorGuid, ProcessParam processParam) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         boolean isSubProcess = isSubProcessElement(flowElementModel);
-        List<TaskModel> nextTaskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<TaskModel> nextTaskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
         List<SignDeptDetail> detailList = new ArrayList<>();
         for (TaskModel taskNext : nextTaskList) {
             // 设置任务变量

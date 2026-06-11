@@ -464,12 +464,11 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private String getTaskDefinitionKey(String taskId) {
         String taskDefinitionKey = "";
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotEmpty(taskId)) {
             if (taskId.contains(SysVariables.COMMA)) {
                 taskId = taskId.split(SysVariables.COMMA)[0];
             }
-            TaskModel taskTemp = taskApi.findById(tenantId, taskId).getData();
+            TaskModel taskTemp = taskApi.findById(taskId).getData();
             taskDefinitionKey = taskTemp.getTaskDefinitionKey();
         }
         return taskDefinitionKey;
@@ -477,16 +476,15 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     private TaskInfo getTaskInfo(String processInstanceId) {
         TaskInfo taskInfo = new TaskInfo();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         taskInfo.setItembox(ItemBoxTypeEnum.DOING.getValue());
         taskInfo.setTaskId("");
-        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
         if (taskList.isEmpty()) {
             taskInfo.setItembox(ItemBoxTypeEnum.DONE.getValue());
         }
         if (ItemBoxTypeEnum.DOING.getValue().equals(taskInfo.getItembox())) {
             taskInfo.setTaskId(taskList.get(0).getId());
-            TaskModel task = taskApi.findById(tenantId, taskInfo.getTaskId()).getData();
+            TaskModel task = taskApi.findById(taskInfo.getTaskId()).getData();
             taskInfo.setProcessInstanceId(task.getProcessInstanceId());
         } else {
             taskInfo.setProcessInstanceId(processInstanceId);

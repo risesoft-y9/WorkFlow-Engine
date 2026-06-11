@@ -67,7 +67,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         Position position = Y9FlowableHolder.getPosition();
         String positionName = position.getName();
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TaskModel task = taskApi.findById(tenantId, taskId).getData();
+        TaskModel task = taskApi.findById(taskId).getData();
         String activityId = task.getTaskDefinitionKey();
         String[] users = userChoice.split(";");
         ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
@@ -103,7 +103,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         for (String user : users) {
             buttonOperationApi.addMultiInstanceExecutionByActivityId(activityId, processInstanceId, user);
         }
-        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
         List<SignDeptDetailModel> signDeptDetailModels =
             signDeptDetailApi.findByProcessSerialNumber(processSerialNumber).getData();
         SignDeptDetailModel ssd = signDeptDetailModels.get(0);
@@ -172,7 +172,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public List<Map<String, Object>> listAssignee4Parallel(String processInstanceId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
         List<Map<String, Object>> listMap = new ArrayList<>();
         int num = 0;
         ProcessParamModel processParamModel = processParamApi.findByProcessInstanceId(processInstanceId).getData();
@@ -207,7 +207,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
     @Override
     public List<Map<String, Object>> listAssignee4Sequential(String taskId) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
+        TaskModel taskModel = taskApi.findById(taskId).getData();
         String currentAssignee = taskModel.getAssignee();
         String usersObj = variableApi.getVariable(taskId, SysVariables.USERS).getData();
         List<String> users = Y9JsonUtil.readList(usersObj, String.class);

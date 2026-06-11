@@ -65,7 +65,7 @@ public class MonitorServiceImpl implements MonitorService {
         mapTemp.put(FlowableUiConsts.NUMBER_KEY, StringUtils.defaultString(number));
     }
 
-    private Map<String, Object> buildMonitorBanJianItem(OfficeDoneInfoModel officeDoneInfo, String tenantId) {
+    private Map<String, Object> buildMonitorBanJianItem(OfficeDoneInfoModel officeDoneInfo) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = officeDoneInfo.getProcessInstanceId();
 
@@ -86,7 +86,7 @@ public class MonitorServiceImpl implements MonitorService {
             mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, ItemBoxTypeEnum.DONE.getValue());
 
             if (StringUtils.isBlank(officeDoneInfo.getEndTime())) {
-                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
                 String assigneeNames = utilService.getAssigneeNames(taskList, null);
                 mapTemp.put(FlowableUiConsts.TASKASSIGNEE_KEY, assigneeNames);
                 mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
@@ -101,7 +101,7 @@ public class MonitorServiceImpl implements MonitorService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildMonitorDoingItem(OfficeDoneInfoModel model, String tenantId, String itemName,
+    private Map<String, Object> buildMonitorDoingItem(OfficeDoneInfoModel model, String itemName,
         String processDefinitionKey) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = model.getProcessInstanceId();
@@ -114,7 +114,7 @@ public class MonitorServiceImpl implements MonitorService {
             mapTemp.put("status", 1);
             mapTemp.put("taskDueDate", "");
 
-            List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+            List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
             Boolean isReminder = String.valueOf(taskList.get(0).getPriority()).contains("5");
 
             mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
@@ -138,7 +138,6 @@ public class MonitorServiceImpl implements MonitorService {
         Y9Page<OfficeDoneInfoModel> y9Page;
         try {
             Position position = Y9FlowableHolder.getPosition();
-            String tenantId = Y9LoginUserHolder.getTenantId();
             y9Page = officeDoneInfoApi.searchAllByDeptId(position.getParentId(), searchName, itemId, userName, state,
                 year, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
@@ -175,8 +174,7 @@ public class MonitorServiceImpl implements MonitorService {
                     mapTemp.put(FlowableUiConsts.NUMBER_KEY, StringUtils.defaultString(number));
                     mapTemp.put(FlowableUiConsts.ITEMBOX_KEY, ItemBoxTypeEnum.DONE.getValue());
                     if (StringUtils.isBlank(model.getEndTime())) {
-                        List<TaskModel> taskList =
-                            taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                        List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
                         ItemBoxAndTaskIdModel itemBoxAndTaskId = utilService.getItemBoxAndTaskId(taskList);
                         String assigneeNames = utilService.getAssigneeNames(taskList, null);
                         mapTemp.put(FlowableUiConsts.TASKDEFINITIONKEY_KEY, taskList.get(0).getTaskDefinitionKey());
@@ -200,14 +198,13 @@ public class MonitorServiceImpl implements MonitorService {
     public Y9Page<Map<String, Object>> pageMonitorBanjianList(String searchName, String itemId, String userName,
         String state, String year, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             Y9Page<OfficeDoneInfoModel> y9Page =
                 officeDoneInfoApi.searchAllList(searchName, itemId, userName, state, year, page, rows);
             List<Map<String, Object>> items = new ArrayList<>();
             List<OfficeDoneInfoModel> officeDoneInfoList = y9Page.getRows();
             int serialNumber = (page - 1) * rows;
             for (OfficeDoneInfoModel officeDoneInfo : officeDoneInfoList) {
-                Map<String, Object> itemMap = buildMonitorBanJianItem(officeDoneInfo, tenantId);
+                Map<String, Object> itemMap = buildMonitorBanJianItem(officeDoneInfo);
                 itemMap.put(FlowableUiConsts.SERIALNUMBER_KEY, serialNumber + 1);
                 serialNumber++;
                 items.add(itemMap);
@@ -233,7 +230,6 @@ public class MonitorServiceImpl implements MonitorService {
     @Override
     public Y9Page<Map<String, Object>> pageMonitorDoingList(String itemId, String searchTerm, Integer page,
         Integer rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             ItemModel item = itemApi.getByItemId(itemId).getData();
             String processDefinitionKey = item.getWorkflowGuid();
@@ -244,7 +240,7 @@ public class MonitorServiceImpl implements MonitorService {
             List<OfficeDoneInfoModel> officeDoneInfoList = y9Page.getRows();
             int serialNumber = (page - 1) * rows;
             for (OfficeDoneInfoModel model : officeDoneInfoList) {
-                Map<String, Object> itemMap = buildMonitorDoingItem(model, tenantId, itemName, processDefinitionKey);
+                Map<String, Object> itemMap = buildMonitorDoingItem(model, itemName, processDefinitionKey);
                 itemMap.put(FlowableUiConsts.SERIALNUMBER_KEY, serialNumber + 1);
                 serialNumber++;
                 items.add(itemMap);

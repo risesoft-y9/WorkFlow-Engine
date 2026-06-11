@@ -87,7 +87,7 @@ public class FlowableUrgeInfoServiceImpl implements FlowableUrgeInfoService {
                  *
                  */
                 String processInstanceId = processParamModel.getProcessInstanceId();
-                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
                 boolean isSubNode =
                     processDefinitionApi
                         .isSubProcessChildNode(taskList.get(0).getProcessDefinitionId(),

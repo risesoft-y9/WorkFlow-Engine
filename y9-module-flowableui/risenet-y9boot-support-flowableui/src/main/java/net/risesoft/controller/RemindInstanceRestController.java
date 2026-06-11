@@ -137,7 +137,7 @@ public class RemindInstanceRestController {
         Y9Page<TaskModel> taskPage;
         String tenantId = Y9LoginUserHolder.getTenantId();
         try {
-            taskPage = taskApi.findListByProcessInstanceId(tenantId, processInstanceId, 1, 500);
+            taskPage = taskApi.findListByProcessInstanceId(processInstanceId, 1, 500);
             List<TaskModel> list = taskPage.getRows();
             ObjectMapper objectMapper = new ObjectMapper();
             List<TaskModel> taskList = objectMapper.convertValue(list, new TypeReference<>() {});

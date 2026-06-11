@@ -16,8 +16,6 @@ import net.risesoft.pojo.AuditLogEvent;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.DocumentHandleService;
 import net.risesoft.y9.Y9Context;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.util.Y9StringUtil;
 
 @RequiredArgsConstructor
@@ -68,8 +66,7 @@ public class DocumentHandleServiceImpl implements DocumentHandleService {
      */
     private void executeSingleSign(String taskId, String processSerialNumber, BatchOperationResult result) {
         try {
-            Y9Result<Object> y9Result =
-                taskApi.claim(Y9LoginUserHolder.getTenantId(), Y9FlowableHolder.getPositionId(), taskId);
+            Y9Result<Object> y9Result = taskApi.claim(taskId);
             if (y9Result.isSuccess()) {
                 result.successCount++;
                 ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
@@ -98,7 +95,7 @@ public class DocumentHandleServiceImpl implements DocumentHandleService {
      */
     private void processTaskInfo(String[] tpArr, BatchSignResult result) {
         try {
-            TaskModel task = taskApi.findById(Y9LoginUserHolder.getTenantId(), tpArr[0]).getData();
+            TaskModel task = taskApi.findById(tpArr[0]).getData();
             ProcessParamModel ppModel = processParamApi.findByProcessSerialNumber(tpArr[1]).getData();
             if (task == null) {
                 appendTaskTitle(result.processedTaskMsg, ppModel.getTitle());

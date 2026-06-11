@@ -70,14 +70,13 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     @Override
     @Transactional
     public void complete(String taskId, String taskDefName, String desc, String infoOvert) throws Exception {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String userName = Y9FlowableHolder.getPosition().getName();
         Map<String, Object> map = new HashMap<>(16);
         if (StringUtils.isNotBlank(infoOvert)) {
             map.put("infoOvert", infoOvert);
         }
         variableApi.setVariables(taskId, map);
-        TaskModel taskModel = taskApi.findById(tenantId, taskId).getData();
+        TaskModel taskModel = taskApi.findById(taskId).getData();
         String processInstanceId = taskModel.getProcessInstanceId();
 
         /*
@@ -182,7 +181,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
         for (String taskIdAndProcessSerialNumber : taskIdAndProcessSerialNumbers) {
             try {
                 String[] tpArr = taskIdAndProcessSerialNumber.split(":");
-                TaskModel task = taskApi.findById(tenantId, tpArr[0]).getData();
+                TaskModel task = taskApi.findById(tpArr[0]).getData();
                 if (null == task) {
                     error.getAndIncrement();
                     continue;

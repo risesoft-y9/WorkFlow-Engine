@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;
@@ -28,7 +29,6 @@ import net.risesoft.service.ItemDataTransferService;
 import net.risesoft.service.UtilService;
 import net.risesoft.service.core.ProcessParamService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * @author qinman
@@ -101,7 +101,6 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
     @Override
     public Y9Page<Map<String, Object>> pageByItemIdAndProcessDefinitionId(String itemId, String processDefinitionId,
         Integer page, Integer rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
         Y9Page<ProcessInstanceModel> piPage = runtimeApi.getProcessInstancesByDefId(processDefinitionId, page, rows);
         List<ProcessInstanceModel> list = piPage.getRows();
@@ -120,7 +119,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
                 mapTemp.put("number",
                     StringUtils.isBlank(processParam.getCustomNumber()) ? "" : processParam.getCustomNumber());
                 mapTemp.put("startorName", processParam.getStartorName());
-                List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+                List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
                 String assigneeNames = utilService.getAssigneeNames(taskList, null);
                 mapTemp.put("assigneeNames", assigneeNames);
             } catch (Exception e) {

@@ -11,6 +11,7 @@ import java.util.stream.Collectors;
 
 import javax.persistence.criteria.Predicate;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -581,31 +582,29 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     private String getTaskDefinitionKey(String taskId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (StringUtils.isNotEmpty(taskId)) {
             if (taskId.contains(SysVariables.COMMA)) {
                 taskId = taskId.split(SysVariables.COMMA)[0];
             }
-            TaskModel taskTemp = taskApi.findById(tenantId, taskId).getData();
+            TaskModel taskTemp = taskApi.findById(taskId).getData();
             return taskTemp.getTaskDefinitionKey();
         }
         return "";
     }
 
     private TaskInfo getTaskInfo(String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         TaskInfo taskInfo = new TaskInfo();
         taskInfo.setItembox(ItemBoxTypeEnum.DOING.getValue());
         taskInfo.setTaskId("");
 
-        List<TaskModel> taskList = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData();
+        List<TaskModel> taskList = taskApi.findByProcessInstanceId(processInstanceId).getData();
         if (taskList.isEmpty()) {
             taskInfo.setItembox(ItemBoxTypeEnum.DONE.getValue());
         }
 
         if (ItemBoxTypeEnum.DOING.getValue().equals(taskInfo.getItembox())) {
             taskInfo.setTaskId(taskList.get(0).getId());
-            TaskModel task = taskApi.findById(tenantId, taskInfo.getTaskId()).getData();
+            TaskModel task = taskApi.findById(taskInfo.getTaskId()).getData();
             taskInfo.setProcessInstanceId(task.getProcessInstanceId());
         } else {
             taskInfo.setProcessInstanceId(processInstanceId);
