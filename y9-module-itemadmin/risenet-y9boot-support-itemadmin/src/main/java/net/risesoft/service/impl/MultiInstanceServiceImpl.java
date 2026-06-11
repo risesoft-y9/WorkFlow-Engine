@@ -5,17 +5,16 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.springframework.stereotype.Service;
 
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.processadmin.RuntimeApi;
-import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.MultiInstanceService;
-import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
 
 /**
@@ -31,13 +30,10 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     private final RuntimeApi runtimeApi;
 
-    private final TaskApi taskApi;
-
     @SuppressWarnings("unchecked")
     @Override
     public void addMultiInstanceExecution(String activityId, String parentExecutionId, String taskId,
         String elementUser) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         /*
          * 改变流程变量中users的值
          */
@@ -52,7 +48,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
          */
         Map<String, Object> map = new HashMap<>(16);
         map.put("elementUser", elementUser);
-        runtimeApi.addMultiInstanceExecution(tenantId, activityId, parentExecutionId, map);
+        runtimeApi.addMultiInstanceExecution(activityId, parentExecutionId, map);
 
         // 加签后,活动实例数需修改+1
         // Object nrOfActiveInstances = variableApi.getVariable(tenantId, taskId,
@@ -65,22 +61,18 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
 
     @Override
     public Y9Result<Object> addMultiInstanceExecution(String activityId, String parentExecutionId, String elementUser) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         /*
          * 新增执行实例
          */
         Map<String, Object> map = new HashMap<>(16);
         map.put("elementUser", elementUser);
-        Y9Result<Object> objectY9Result =
-            runtimeApi.addMultiInstanceExecution(tenantId, activityId, parentExecutionId, map);
-
+        Y9Result<Object> objectY9Result = runtimeApi.addMultiInstanceExecution(activityId, parentExecutionId, map);
         return objectY9Result;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public void deleteMultiInstanceExecution(String executionId, String taskId, String elementUser) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         /*
          * 改变流程变量中users的值
          */
@@ -107,6 +99,6 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         /*
          * 新删除执行实例
          */
-        runtimeApi.deleteMultiInstanceExecution(tenantId, executionId);
+        runtimeApi.deleteMultiInstanceExecution(executionId);
     }
 }

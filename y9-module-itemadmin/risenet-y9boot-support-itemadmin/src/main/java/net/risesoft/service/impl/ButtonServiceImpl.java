@@ -115,7 +115,6 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private long adjustSequentialVariablesIfNeeded(TaskContext context, int nrOfInstances, long nrOfCompletedInstances,
         int nrOfActiveInstances, long loopCounter, int usersSize) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (usersSize != nrOfInstances || nrOfCompletedInstances != loopCounter || 1 != nrOfActiveInstances) {
             long finishedCount = historictaskApi.getFinishedCountByExecutionId(context.task.getExecutionId()).getData();
             Map<String, Object> varMapTemp = new HashMap<>(16);
@@ -123,7 +122,7 @@ public class ButtonServiceImpl implements ButtonService {
             varMapTemp.put(SysVariables.NR_OF_COMPLETED_INSTANCES, finishedCount);
             varMapTemp.put(SysVariables.LOOP_COUNTER, finishedCount);
             varMapTemp.put(SysVariables.NR_OF_ACTIVE_INSTANCES, 1);
-            runtimeApi.setVariables(tenantId, context.task.getExecutionId(), varMapTemp);
+            runtimeApi.setVariables(context.task.getExecutionId(), varMapTemp);
             return finishedCount;
         }
         return nrOfCompletedInstances;
@@ -390,7 +389,6 @@ public class ButtonServiceImpl implements ButtonService {
 
     private void handleDoingBox(boolean[] isButtonShow, TaskContext taskContext, String taskId, String orgUnitId) {
         isButtonShow[2] = true; // 返回
-        String tenantId = Y9LoginUserHolder.getTenantId();
         // 收回按钮
         isButtonShow[12] = false;
         String takeBackObj = variableApi.getVariableLocal(taskId, SysVariables.TAKEBACK).getData();
@@ -414,7 +412,7 @@ public class ButtonServiceImpl implements ButtonService {
         isButtonShow[17] = true;
 
         ProcessInstanceModel processInstanceModel =
-            runtimeApi.getProcessInstance(tenantId, taskContext.task.getProcessInstanceId()).getData();
+            runtimeApi.getProcessInstance(taskContext.task.getProcessInstanceId()).getData();
 
         // 重定位按钮
         isButtonShow[15] = true;
@@ -995,7 +993,7 @@ public class ButtonServiceImpl implements ButtonService {
                 varMapTemp.put(SysVariables.NR_OF_COMPLETED_INSTANCES, finishedCount);
                 varMapTemp.put(SysVariables.LOOP_COUNTER, finishedCount);
                 varMapTemp.put(SysVariables.NR_OF_ACTIVE_INSTANCES, 1);
-                runtimeApi.setVariables(context.tenantId, context.task.getExecutionId(), varMapTemp);
+                runtimeApi.setVariables(context.task.getExecutionId(), varMapTemp);
             }
 
             if (nrOfInstances == (nrOfCompletedInstances + 1)
@@ -1144,9 +1142,8 @@ public class ButtonServiceImpl implements ButtonService {
      */
     private void handleSpecialCompletionButton(List<ItemButtonModel> buttonModelList, TaskModel task,
         String orgUnitId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessInstanceModel processInstanceModel =
-            runtimeApi.getProcessInstance(tenantId, task.getProcessInstanceId()).getData();
+            runtimeApi.getProcessInstance(task.getProcessInstanceId()).getData();
 
         if (orgUnitId.equals(processInstanceModel.getStartUserId())) {
             buttonModelList.add(ItemButton.teShuBanJie);

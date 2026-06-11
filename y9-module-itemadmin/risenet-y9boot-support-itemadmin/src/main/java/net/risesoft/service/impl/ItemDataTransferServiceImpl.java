@@ -103,8 +103,7 @@ public class ItemDataTransferServiceImpl implements ItemDataTransferService {
         Integer page, Integer rows) {
         String tenantId = Y9LoginUserHolder.getTenantId();
         List<Map<String, Object>> items = new ArrayList<>();
-        Y9Page<ProcessInstanceModel> piPage =
-            runtimeApi.getProcessInstancesByDefId(tenantId, processDefinitionId, page, rows);
+        Y9Page<ProcessInstanceModel> piPage = runtimeApi.getProcessInstancesByDefId(processDefinitionId, page, rows);
         List<ProcessInstanceModel> list = piPage.getRows();
         ObjectMapper objectMapper = new ObjectMapper();
         List<ProcessInstanceModel> pList = objectMapper.convertValue(list, new TypeReference<>() {});

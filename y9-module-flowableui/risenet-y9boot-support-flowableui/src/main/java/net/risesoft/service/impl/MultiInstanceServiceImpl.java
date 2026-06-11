@@ -156,7 +156,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         // 改变流程变量中的users
         Map<String, Object> val = new HashMap<>();
         val.put("val", usersListTemp);
-        runtimeApi.setVariable(tenantId, executionId, SysVariables.USERS, val);
+        runtimeApi.setVariable(executionId, SysVariables.USERS, val);
         // 改变任务变量中的users
         variableApi.setVariableLocal(taskId, SysVariables.USERS, val);
 
@@ -165,7 +165,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             .parseInt(variableApi.getVariableByProcessInstanceId(executionId, SysVariables.NR_OF_INSTANCES).getData());
         Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances + userChoiceArr.length);
-        runtimeApi.setVariable(tenantId, executionId, SysVariables.NR_OF_INSTANCES, val1);
+        runtimeApi.setVariable(executionId, SysVariables.NR_OF_INSTANCES, val1);
         asyncUtilService.addExecutionIdSequentialAuditLog(tenantId, positionId, executionId, taskId, usersListTemp);
     }
 
@@ -286,7 +286,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
         // 改变流程变量中的users
         Map<String, Object> val = new HashMap<>();
         val.put("val", usersListTemp);
-        runtimeApi.setVariable(tenantId, executionId, SysVariables.USERS, val);
+        runtimeApi.setVariable(executionId, SysVariables.USERS, val);
         // 改变任务变量中的users
         variableApi.setVariableLocal(taskId, SysVariables.USERS, val);
         // 改变多实例的标量
@@ -294,7 +294,7 @@ public class MultiInstanceServiceImpl implements MultiInstanceService {
             .parseInt(variableApi.getVariableByProcessInstanceId(executionId, SysVariables.NR_OF_INSTANCES).getData());
         Map<String, Object> val1 = new HashMap<>();
         val1.put("val", nrOfInstances - 1);
-        runtimeApi.setVariable(tenantId, executionId, SysVariables.NR_OF_INSTANCES, val1);
+        runtimeApi.setVariable(executionId, SysVariables.NR_OF_INSTANCES, val1);
         asyncUtilService.deleteMultiInstanceSequentialAuditLog(tenantId, positionId, executionId, taskId, elementUser);
     }
 }
