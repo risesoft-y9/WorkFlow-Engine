@@ -41,7 +41,7 @@ public class CurrentDeptExtend extends AbstractDynamicRoleMember {
         String orgUnitId = Y9FlowableHolder.getPositionId();
         Department department = null;
         if (StringUtils.isNotBlank(processInstanceId)) {
-            ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
+            ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(processInstanceId).getData();
             orgUnitId = processInstance.getStartUserId();
         }
         OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, orgUnitId).getData();

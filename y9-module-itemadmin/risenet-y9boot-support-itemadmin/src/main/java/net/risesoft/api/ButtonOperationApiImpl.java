@@ -131,8 +131,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     @Override
     public Y9Result<Object> directSend(@RequestParam String taskId, @RequestParam String routeToTask,
         @RequestParam String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
+        ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(processInstanceId).getData();
         String startUserId = "6" + SysVariables.COLON + processInstance.getStartUserId();
         ForwardingDTO forwardingDTO = new ForwardingDTO();
         forwardingDTO.setTaskId(taskId);
