@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import net.risesoft.dto.itemadmin.ForwardingDTO;
+import net.risesoft.dto.itemadmin.UserChoiceDTO;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.model.itemadmin.DocUserChoiseModel;
 import net.risesoft.model.itemadmin.ItemButtonModel;
@@ -296,7 +297,7 @@ public interface DocumentService {
      * @param userChoice
      * @return
      */
-    List<String> parseUserChoice(String userChoice);
+    List<String> parseUserChoice(List<UserChoiceDTO> userChoice);
 
     Y9Result<List<String>> parserUser(String itemId, String processDefinitionId, String routeToTaskId,
         String routeToTaskName, String processInstanceId, String multiInstance);

@@ -23,6 +23,7 @@ import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.dto.itemadmin.UserChoiceDTO;
 import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ProcessParam;
@@ -31,6 +32,7 @@ import net.risesoft.enums.ItemAdminAuditLogEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ErrorLogModel;
+import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
 import net.risesoft.model.processadmin.ProcessDefinitionModel;
@@ -64,6 +66,8 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
 
     private final PositionApi positionApi;
 
+    private final OrgUnitApi orgUnitApi;
+
     private final TaskApi taskApi;
 
     private final ProcessDefinitionApi processDefinitionApi;
@@ -90,6 +94,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         ErrorLogService errorLogService,
         OrgUnitApi orgUnitApi,
         PositionApi positionApi,
+        OrgUnitApi orgUnitApi1,
         TaskApi taskApi,
         ProcessDefinitionApi processDefinitionApi,
         @Lazy DocumentService documentService,
@@ -103,6 +108,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
         HistoricProcessApi historicProcessApi) {
         this.errorLogService = errorLogService;
         this.positionApi = positionApi;
+        this.orgUnitApi = orgUnitApi1;
         this.taskApi = taskApi;
         this.processDefinitionApi = processDefinitionApi;
         this.documentService = documentService;
@@ -443,52 +449,23 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     @Async
     @Override
     @Transactional
-    public void sendAuditLog(String tenantId, String title, String userChoice) {
+    public void sendAuditLog(String tenantId, String title, List<UserChoiceDTO> userChoice) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
-            for (String choice : userChoices) {
-                String[] parts = choice.split(SysVariables.COLON);
-                String userId = choice;
-                if (parts.length == 2) {
-                    userId = parts[1];
-                }
-                Position position = positionApi.get(tenantId, userId).getData();
+            for (UserChoiceDTO choice : userChoice) {
+                OrgUnit orgUnit = orgUnitApi.getOrgUnit(tenantId, choice.getId()).getData();
                 AuditLogEvent auditLogEvent = AuditLogEvent.builder()
                     .action(ItemAdminAuditLogEnum.DOCUMENT_SEND.getAction())
                     .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SEND.getDescription(), title,
-                        position.getName()))
-                    .objectId(userId)
-                    .oldObject(position)
+                        orgUnit.getName()))
+                    .objectId(choice.getId())
+                    .oldObject(orgUnit)
                     .currentObject(null)
                     .build();
                 Y9Context.publishEvent(auditLogEvent);
             }
         } catch (Exception e) {
             LOGGER.error("保存发送审计日志失败", e);
-        }
-    }
-
-    @Async
-    @Transactional
-    @Override
-    public void sendAuditLog(String tenantId, String title, List<String> userIdList) {
-        Y9LoginUserHolder.setTenantId(tenantId);
-        try {
-            for (String userId : userIdList) {
-                Position position = positionApi.get(tenantId, userId).getData();
-                AuditLogEvent auditLogEvent = AuditLogEvent.builder()
-                    .action(ItemAdminAuditLogEnum.DOCUMENT_SEND.getAction())
-                    .description(Y9StringUtil.format(ItemAdminAuditLogEnum.DOCUMENT_SEND.getDescription(), title,
-                        position.getName()))
-                    .objectId(userId)
-                    .oldObject(position)
-                    .currentObject(null)
-                    .build();
-                Y9Context.publishEvent(auditLogEvent);
-            }
-        } catch (Exception e) {
-            LOGGER.error("保存发送审计日志失败 userIdList", e);
         }
     }
 

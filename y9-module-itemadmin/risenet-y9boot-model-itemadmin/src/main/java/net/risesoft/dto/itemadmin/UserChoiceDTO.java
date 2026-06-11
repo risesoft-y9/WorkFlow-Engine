@@ -3,8 +3,11 @@ package net.risesoft.dto.itemadmin;
 import java.io.Serializable;
 
 import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 
 import lombok.Data;
+
+import net.risesoft.enums.ItemUserChoiceEnum;
 
 /**
  * 发送选择的主题
@@ -21,6 +24,6 @@ public class UserChoiceDTO implements Serializable {
     @NotBlank(message = "唯一标识")
     private String id;
 
-    @NotBlank(message = "类型")
-    private String type;
+    @NotNull(message = "类型")
+    private ItemUserChoiceEnum type;
 }

@@ -44,6 +44,7 @@ import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.dto.itemadmin.ForwardingDTO;
+import net.risesoft.dto.itemadmin.UserChoiceDTO;
 import net.risesoft.entity.ActRuDetail;
 import net.risesoft.entity.BackTaskConf;
 import net.risesoft.entity.DynamicRole;
@@ -139,6 +140,7 @@ import net.risesoft.service.word.Y9WordService;
 import net.risesoft.util.CommonOpt;
 import net.risesoft.util.ItemButton;
 import net.risesoft.util.ListUtil;
+import net.risesoft.util.UserChoiceUtil;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
@@ -205,6 +207,25 @@ public class DocumentServiceImpl implements DocumentService {
     private final SpeakInfoService speakInfoService;
     private final OfficeFollowService officeFollowService;
     private final ItemBackTaskConfService itemBackTaskConfService;
+
+    /**
+     * 根据用户类型处理用户选择
+     */
+    private List<String> processUserChoiceByType(String tenantId, ItemUserChoiceEnum principalType, String orgUnitId) {
+        List<String> users = new ArrayList<>();
+        switch (principalType) {
+            case POSITION:
+                users.add(orgUnitId);
+                break;
+            case DEPARTMENT:
+                users = processDepartmentUser(orgUnitId);
+                break;
+            case GROUP_CUSTOM:
+                users = processCustomGroupUser(tenantId, orgUnitId);
+                break;
+        }
+        return users;
+    }
 
     @Override
     public DocumentDetailModel add(String itemId) {
@@ -354,27 +375,6 @@ public class DocumentServiceImpl implements DocumentService {
                     .add(new ItemButtonModel(target.getTaskDefKey(), target.getTaskDefName(), ItemButtonTypeEnum.SEND));
             }
         }
-    }
-
-    /*
-     * 向userIds中添加内容
-     *
-     * @param userIds
-     * @param userId 人员Guid
-     * @return
-     */
-    private String addUserId(String userIds, String userId) {
-        /*
-         * 由于串行、并行的时候人员存在顺序的，所以写在这里，保证人员顺序
-         */
-        if (StringUtils.isNotBlank(userIds)) {
-            if (!userIds.contains(userId)) {
-                userIds = userIds + SysVariables.SEMICOLON + userId;
-            }
-        } else {
-            userIds = userId;
-        }
-        return userIds;
     }
 
     @Override
@@ -889,7 +889,7 @@ public class DocumentServiceImpl implements DocumentService {
     public Y9Result<String> forwarding(ForwardingDTO forwardingDTO) {
         String taskId = forwardingDTO.getTaskId();
         String sponsorHandle = forwardingDTO.getSponsorHandle();
-        String userChoice = forwardingDTO.getUserChoice();
+        List<UserChoiceDTO> userChoice = forwardingDTO.getUserChoice();
         String routeToTaskId = forwardingDTO.getRouteToTaskId();
         String sponsorGuid = forwardingDTO.getSponsorGuid();
         String processInstanceId = "";
@@ -2013,26 +2013,19 @@ public class DocumentServiceImpl implements DocumentService {
     }
 
     @Override
-    public List<String> parseUserChoice(String userChoice) {
-        String users = "";
+    public List<String> parseUserChoice(List<UserChoiceDTO> userChoice) {
         String tenantId = Y9LoginUserHolder.getTenantId();
-        if (StringUtils.isBlank(userChoice)) {
+        if (userChoice.isEmpty()) {
             return new ArrayList<>();
         }
-        String[] userChoices = userChoice.split(SysVariables.SEMICOLON);
-        for (String choice : userChoices) {
-            String[] parts = choice.split(SysVariables.COLON);
-            int principalType = ItemUserChoiceEnum.POSITION.getValue();
-            String userId = choice;
-            if (parts.length == 2) {
-                principalType = Integer.parseInt(parts[0]);
-                userId = parts[1];
-            }
-            users = processUserChoiceByType(users, tenantId, principalType, userId);
+        List<String> users = new ArrayList<>();
+        for (UserChoiceDTO choice : userChoice) {
+            ItemUserChoiceEnum principalType =
+                null == choice.getType() ? ItemUserChoiceEnum.POSITION : choice.getType();
+            users.addAll(processUserChoiceByType(tenantId, principalType, choice.getId()));
         }
-        List<String> result = Y9Util.stringToList(users, SysVariables.SEMICOLON);
-        ListUtil.removeDuplicateWithOrder(result);
-        return result;
+        ListUtil.removeDuplicateWithOrder(users);
+        return users;
     }
 
     public Y9Result<TargetModel> parserRouteToTaskId(String itemId, String processSerialNumber,
@@ -2132,7 +2125,7 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 处理自定义组类型用户
      */
-    private String processCustomGroupUser(String users, String tenantId, String groupId) {
+    private List<String> processCustomGroupUser(String tenantId, String groupId) {
         List<CustomGroupMember> members =
             customGroupApi.listCustomGroupMember(tenantId, new CustomGroupMemberQuery(groupId, OrgTypeEnum.POSITION))
                 .getData();
@@ -2142,10 +2135,11 @@ public class DocumentServiceImpl implements DocumentService {
                 .getData()
                 .stream()
                 .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
+        List<String> users = new ArrayList<>();
         for (CustomGroupMember member : members) {
             OrgUnit orgUnit = idOrgUnitMap.get(member.getMemberId());
             if (orgUnit != null && StringUtils.isNotBlank(orgUnit.getId())) {
-                users = addUserId(users, orgUnit.getId());
+                users.add(orgUnit.getId());
             }
         }
         return users;
@@ -2154,11 +2148,12 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 处理部门类型用户
      */
-    private String processDepartmentUser(String users, String deptId) {
+    private List<String> processDepartmentUser(String deptId) {
         List<Position> positionList = new ArrayList<>();
         getAllPosition(positionList, deptId);
+        List<String> users = new ArrayList<>();
         for (Position position : positionList) {
-            users = addUserId(users, position.getId());
+            users.add(position.getId());
         }
         return users;
     }
@@ -2189,45 +2184,17 @@ public class DocumentServiceImpl implements DocumentService {
         }
     }
 
-    /**
-     * 处理岗位类型用户
-     */
-    private String processPositionUser(String users, String tenantId, String userId) {
-        OrgUnit orgUnit = orgUnitApi.getPersonOrPosition(tenantId, userId).getData();
-        if (orgUnit != null) {
-            users = addUserId(users, userId);
-        }
-        return users;
-    }
-
-    /**
-     * 根据用户类型处理用户选择
-     */
-    private String processUserChoiceByType(String users, String tenantId, int principalType, String userId) {
-        switch (ItemUserChoiceEnum.valueOf(principalType)) {
-            case POSITION:
-                return processPositionUser(users, tenantId, userId);
-            case DEPARTMENT:
-                return processDepartmentUser(users, userId);
-            case GROUP_CUSTOM:
-                return processCustomGroupUser(users, tenantId, userId);
-            default:
-                return users;
-        }
-    }
-
     @Override
     public Y9Result<String> saveAndForwarding(ForwardingDTO forwardingDTO) {
         String itemId = forwardingDTO.getItemId();
         String processSerialNumber = forwardingDTO.getProcessSerialNumber();
-        String userChoice = forwardingDTO.getUserChoice();
+        List<UserChoiceDTO> userChoice = forwardingDTO.getUserChoice();
         String sponsorGuid = forwardingDTO.getSponsorGuid();
         String routeToTaskId = forwardingDTO.getRouteToTaskId();
         Map<String, Object> variables = forwardingDTO.getVariables();
         try {
             // 参数验证
-            if (StringUtils.isBlank(itemId) || StringUtils.isBlank(processSerialNumber)
-                || StringUtils.isBlank(userChoice)) {
+            if (StringUtils.isBlank(itemId) || StringUtils.isBlank(processSerialNumber) || userChoice.isEmpty()) {
                 return Y9Result.failure("必要参数不能为空");
             }
             // 解析用户选择
@@ -2263,7 +2230,7 @@ public class DocumentServiceImpl implements DocumentService {
     public Y9Result<String> saveAndForwardingByTaskKey(String itemId, String processSerialNumber,
         String processDefinitionKey, String userChoice, String sponsorGuid, String routeToTaskId,
         String startRouteToTaskId, Map<String, Object> variables) {
-        List<String> userList = new ArrayList<>(parseUserChoice(userChoice));
+        List<String> userList = new ArrayList<>(parseUserChoice(UserChoiceUtil.parse(userChoice)));
         int num = userList.size();
         boolean tooMuch = num > 100;
         if (tooMuch) {

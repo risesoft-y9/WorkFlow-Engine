@@ -12,11 +12,8 @@ import lombok.Getter;
 @Getter
 @AllArgsConstructor
 public enum ItemUserChoiceEnum implements ValuedEnum<Integer> {
-    /** 部门 */
     DEPARTMENT(2, "部门"),
-    /**  */
     POSITION(6, "岗位"),
-    /**  */
     GROUP_CUSTOM(7, "自定义用户组");
 
     private final Integer value;

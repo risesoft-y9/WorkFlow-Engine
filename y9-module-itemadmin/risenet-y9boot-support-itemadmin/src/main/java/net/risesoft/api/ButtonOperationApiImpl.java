@@ -23,7 +23,9 @@ import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.dto.itemadmin.ForwardingDTO;
+import net.risesoft.dto.itemadmin.UserChoiceDTO;
 import net.risesoft.entity.ActRuDetail;
+import net.risesoft.enums.ItemUserChoiceEnum;
 import net.risesoft.model.platform.org.Position;
 import net.risesoft.model.processadmin.FlowElementModel;
 import net.risesoft.model.processadmin.HistoricTaskInstanceModel;
@@ -132,11 +134,14 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
     public Y9Result<Object> directSend(@RequestParam String taskId, @RequestParam String routeToTask,
         @RequestParam String processInstanceId) {
         ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(processInstanceId).getData();
-        String startUserId = "6" + SysVariables.COLON + processInstance.getStartUserId();
+        String startUserId = processInstance.getStartUserId();
+        UserChoiceDTO startUserChoiceDTO = new UserChoiceDTO();
+        startUserChoiceDTO.setType(ItemUserChoiceEnum.POSITION);
+        startUserChoiceDTO.setId(startUserId);
         ForwardingDTO forwardingDTO = new ForwardingDTO();
         forwardingDTO.setTaskId(taskId);
         forwardingDTO.setRouteToTaskId(routeToTask);
-        forwardingDTO.setUserChoice(startUserId);
+        forwardingDTO.setUserChoice(List.of(startUserChoiceDTO));
         forwardingDTO.setSponsorHandle("true");
         forwardingDTO.setSponsorGuid("");
         Y9Result<String> y9Result = documentService.forwarding(forwardingDTO);
