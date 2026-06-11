@@ -36,7 +36,7 @@ import net.risesoft.entity.ErrorLog;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.enums.ChaoSongStatusEnum;
 import net.risesoft.enums.ItemBoxTypeEnum;
-import net.risesoft.enums.ItemPermissionEnum;
+import net.risesoft.enums.ItemUserChoiceEnum;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
