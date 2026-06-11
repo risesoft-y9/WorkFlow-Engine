@@ -107,7 +107,6 @@ public class ButtonServiceImpl implements ButtonService {
      * 调整串行变量
      *
      * @param context 任务上下文
-     * @param tenantId 租户ID
      * @param nrOfInstances 实例数量
      * @param nrOfCompletedInstances 已完成实例数量
      * @param nrOfActiveInstances 激活实例数量
@@ -115,11 +114,11 @@ public class ButtonServiceImpl implements ButtonService {
      * @param usersSize 用户数量
      * @return 已完成数量
      */
-    private long adjustSequentialVariablesIfNeeded(TaskContext context, String tenantId, int nrOfInstances,
-        long nrOfCompletedInstances, int nrOfActiveInstances, long loopCounter, int usersSize) {
+    private long adjustSequentialVariablesIfNeeded(TaskContext context, int nrOfInstances, long nrOfCompletedInstances,
+        int nrOfActiveInstances, long loopCounter, int usersSize) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         if (usersSize != nrOfInstances || nrOfCompletedInstances != loopCounter || 1 != nrOfActiveInstances) {
-            long finishedCount =
-                historictaskApi.getFinishedCountByExecutionId(tenantId, context.task.getExecutionId()).getData();
+            long finishedCount = historictaskApi.getFinishedCountByExecutionId(context.task.getExecutionId()).getData();
             Map<String, Object> varMapTemp = new HashMap<>(16);
             varMapTemp.put(SysVariables.NR_OF_INSTANCES, usersSize);
             varMapTemp.put(SysVariables.NR_OF_COMPLETED_INSTANCES, finishedCount);
@@ -134,14 +133,14 @@ public class ButtonServiceImpl implements ButtonService {
     /**
      * 构建任务上下文
      *
-     * @param tenantId 租户ID
      * @param itemId 事项ID
      * @param taskId 任务ID
      * @param itemBox 列表类型
      * @return TaskContext
      */
-    private TaskContext buildTaskContext(String tenantId, String itemId, String taskId, String itemBox) {
+    private TaskContext buildTaskContext(String itemId, String taskId, String itemBox) {
         TaskContext context = new TaskContext();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         if (ItemBoxTypeEnum.TODO.getValue().equals(itemBox) || ItemBoxTypeEnum.DOING.getValue().equals(itemBox)) {
             context.task = taskApi.findById(tenantId, taskId).getData();
         }
@@ -286,7 +285,8 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     private void handleClaimButton(Map<String, Object> result, boolean[] isButtonShow, TaskContext taskContext,
-        String taskId, String tenantId) {
+        String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         // 签收、拒签按钮
         // 当user变量没有指定人员时，显示签收
         if (!StringUtils.isNotBlank(taskContext.task.getAssignee())) {
@@ -444,9 +444,9 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     private void handleEndButton(Map<String, Object> result, boolean[] isButtonShow, TaskContext taskContext,
-        String itemId, String taskId, String tenantId) {
+        String itemId, String taskId) {
         // 基本前提条件检查
-        if (!shouldShowEndButton(taskContext, tenantId, taskId)) {
+        if (!shouldShowEndButton(taskContext, taskId)) {
             return;
         }
 
@@ -489,15 +489,14 @@ public class ButtonServiceImpl implements ButtonService {
      * @param itemId 事项ID
      * @param taskId 任务ID
      * @param itemBox 类型
-     * @param tenantId 租户ID
      * @param orgUnitId 组织机构ID
      */
     private void handleItemBoxType(Map<String, Object> result, TaskContext taskContext, String itemId, String taskId,
-        String itemBox, String tenantId, String orgUnitId) {
+        String itemBox, String orgUnitId) {
         boolean[] isButtonShow = (boolean[])result.get("isButtonShow");
         switch (ItemBoxTypeEnum.fromString(itemBox)) {
             case TODO:
-                handleTodoBox(result, isButtonShow, taskContext, itemId, taskId, tenantId, orgUnitId);
+                handleTodoBox(result, isButtonShow, taskContext, itemId, taskId, orgUnitId);
                 break;
             case DOING:
                 handleDoingBox(isButtonShow, taskContext, taskId, orgUnitId);
@@ -565,12 +564,11 @@ public class ButtonServiceImpl implements ButtonService {
      * 处理多任务实例情况
      *
      * @param isButtonShow 按钮显示数组
-     * @param tenantId 租户ID
      * @param taskId 任务ID
      * @param orgUnitId 组织单元ID
      */
-    private void handleMultipleTaskInstanceCase(boolean[] isButtonShow, String tenantId, String taskId,
-        String orgUnitId) {
+    private void handleMultipleTaskInstanceCase(boolean[] isButtonShow, String taskId, String orgUnitId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         List<IdentityLinkModel> identityLinkList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
         // 只有当候选人员数量大于2时才显示撤销签收按钮
         if (identityLinkList.size() > 2) {
@@ -587,7 +585,8 @@ public class ButtonServiceImpl implements ButtonService {
      * 处理多任务实例的退签逻辑
      */
     private void handleMultipleTaskInstanceUnclaim(List<ItemButtonModel> buttonList, TodoTaskContext context,
-        String tenantId, String taskId) {
+        String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         List<IdentityLinkModel> identityLinkList = identityApi.getIdentityLinksForTask(tenantId, taskId).getData();
 
         // 只有当候选人员数量大于2时才显示退签按钮
@@ -617,10 +616,9 @@ public class ButtonServiceImpl implements ButtonService {
     /**
      * 处理普通流程退回
      */
-    private void handleNormalProcessReturn(List<ItemButtonModel> buttonList, TodoTaskContext context, String tenantId,
-        String taskId) {
-        List<HistoricTaskInstanceModel> hisTaskList = historictaskApi.getThePreviousTasks(tenantId, taskId).getData();
-
+    private void handleNormalProcessReturn(List<ItemButtonModel> buttonList, TodoTaskContext context, String taskId) {
+        List<HistoricTaskInstanceModel> hisTaskList = historictaskApi.getThePreviousTasks(taskId).getData();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         if (!hisTaskList.isEmpty()) {
             Boolean isSubProcess4Send = processDefinitionApi
                 .isSubProcessChildNode(tenantId, context.processDefinitionId, hisTaskList.get(0).getTaskDefinitionKey())
@@ -636,14 +634,12 @@ public class ButtonServiceImpl implements ButtonService {
      * 处理普通流程的收回按钮逻辑
      *
      * @param buttonModelList 按钮列表
-     * @param tenantId 租户ID
      * @param taskId 任务ID
      * @param task 任务模型
      */
-    private void handleNormalProcessTakeBack(List<ItemButtonModel> buttonModelList, String tenantId, String taskId,
-        TaskModel task) {
-        List<HistoricTaskInstanceModel> hisTaskList = historictaskApi.getThePreviousTasks(tenantId, taskId).getData();
-
+    private void handleNormalProcessTakeBack(List<ItemButtonModel> buttonModelList, String taskId, TaskModel task) {
+        List<HistoricTaskInstanceModel> hisTaskList = historictaskApi.getThePreviousTasks(taskId).getData();
+        String tenantId = Y9LoginUserHolder.getTenantId();
         if (!hisTaskList.isEmpty()) {
             Boolean isSubProcess4Send =
                 processDefinitionApi
@@ -658,7 +654,7 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     private void handleParallelCompleteButton(boolean[] isButtonShow, TaskContext taskContext, String itemId,
-        String taskId, String tenantId) {
+        String taskId) {
         // 基本前提条件检查
         if (!shouldShowParallelCompleteButton(taskContext)) {
             return;
@@ -666,7 +662,7 @@ public class ButtonServiceImpl implements ButtonService {
 
         // 如果不是主办人，并且不是最后一个处理人，显示办理完成按钮
         if (!taskContext.isParallelSponsor && !taskContext.isLastParallel) {
-            handleParallelCompleteButtonLogic(isButtonShow, taskContext, itemId, taskId, tenantId);
+            handleParallelCompleteButtonLogic(isButtonShow, taskContext, itemId, taskId);
         }
     }
 
@@ -694,15 +690,14 @@ public class ButtonServiceImpl implements ButtonService {
      * @param taskContext 任务上下文
      * @param itemId 事项ID
      * @param taskId 任务ID
-     * @param tenantId 租户ID
      */
     private void handleParallelCompleteButtonLogic(boolean[] isButtonShow, TaskContext taskContext, String itemId,
-        String taskId, String tenantId) {
+        String taskId) {
         ItemTaskConf itemTaskConf = itemTaskConfService.findByItemIdAndProcessDefinitionIdAndTaskDefKey4Own(itemId,
             taskContext.task.getProcessDefinitionId(), taskContext.task.getTaskDefinitionKey());
 
         if (isSignTask(itemTaskConf)) {
-            handleSignTaskCompleteButton(isButtonShow, taskContext, taskId, tenantId);
+            handleSignTaskCompleteButton(isButtonShow, taskContext, taskId);
         } else {
             // 显示办理完成按钮
             isButtonShow[8] = true;
@@ -850,17 +845,17 @@ public class ButtonServiceImpl implements ButtonService {
     /**
      * 处理退回按钮
      */
-    private void handleReturnButton(List<ItemButtonModel> buttonList, TodoTaskContext context, String tenantId,
-        String taskId) {
+    private void handleReturnButton(List<ItemButtonModel> buttonList, TodoTaskContext context, String taskId) {
         if (context.isAssignee && !context.customItem && !containsTuiQian(buttonList)) {
+            String tenantId = Y9LoginUserHolder.getTenantId();
             Boolean isSub4Current =
                 processDefinitionApi.isSubProcessChildNode(tenantId, context.processDefinitionId, context.taskDefKey)
                     .getData();
 
             if (Boolean.TRUE.equals(isSub4Current)) {
-                handleSubProcessReturn(buttonList, context, tenantId);
+                handleSubProcessReturn(buttonList, context);
             } else {
-                handleNormalProcessReturn(buttonList, context, tenantId, taskId);
+                handleNormalProcessReturn(buttonList, context, taskId);
             }
         }
     }
@@ -875,9 +870,9 @@ public class ButtonServiceImpl implements ButtonService {
     }
 
     private void handleSendButton(Map<String, Object> result, boolean[] isButtonShow, TaskContext taskContext,
-        String itemId, String taskId, String tenantId) {
+        String itemId, String taskId) {
         // 基本前提条件检查
-        if (!shouldShowSendButton(taskContext, tenantId, taskId)) {
+        if (!shouldShowSendButton(taskContext, taskId)) {
             return;
         }
 
@@ -980,8 +975,8 @@ public class ButtonServiceImpl implements ButtonService {
         int usersSize = context.varsUsers.size();
 
         if (usersSize > 1) {
-            long finishedCount = adjustSequentialVariablesIfNeeded(context, tenantId, nrOfInstances,
-                nrOfCompletedInstances, nrOfActiveInstances, loopCounter, usersSize);
+            long finishedCount = adjustSequentialVariablesIfNeeded(context, nrOfInstances, nrOfCompletedInstances,
+                nrOfActiveInstances, loopCounter, usersSize);
 
             if (nrOfInstances == (finishedCount + 1)
                 && orgUnitId.equals(context.varsUsers.get(context.varsUsers.size() - 1))) {
@@ -1007,8 +1002,7 @@ public class ButtonServiceImpl implements ButtonService {
         if (usersSize > 1) {
             if (usersSize != nrOfInstances || nrOfCompletedInstances != loopCounter || 1 != nrOfActiveInstances) {
                 long finishedCount =
-                    historictaskApi.getFinishedCountByExecutionId(context.tenantId, context.task.getExecutionId())
-                        .getData();
+                    historictaskApi.getFinishedCountByExecutionId(context.task.getExecutionId()).getData();
                 nrOfCompletedInstances = finishedCount;
                 Map<String, Object> varMapTemp = new HashMap<>(16);
                 varMapTemp.put(SysVariables.NR_OF_INSTANCES, usersSize);
@@ -1097,10 +1091,9 @@ public class ButtonServiceImpl implements ButtonService {
      * @param isButtonShow 按钮显示数组
      * @param taskContext 任务上下文
      * @param taskId 任务ID
-     * @param tenantId 租户ID
      */
-    private void handleSignTaskCompleteButton(boolean[] isButtonShow, TaskContext taskContext, String taskId,
-        String tenantId) {
+    private void handleSignTaskCompleteButton(boolean[] isButtonShow, TaskContext taskContext, String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(tenantId, taskId).getData();
         if (outPutNodeCount > 0) {
             if (taskContext.showSubmitButton) {
@@ -1180,7 +1173,8 @@ public class ButtonServiceImpl implements ButtonService {
     /**
      * 处理子流程退回
      */
-    private void handleSubProcessReturn(List<ItemButtonModel> buttonList, TodoTaskContext context, String tenantId) {
+    private void handleSubProcessReturn(List<ItemButtonModel> buttonList, TodoTaskContext context) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         OrgUnit currentBureau = orgUnitApi.getOrgUnitBureau(tenantId, context.orgUnitId).getData();
         OrgUnit sendBureau = orgUnitApi.getOrgUnitBureau(tenantId, context.taskSenderId).getData();
 
@@ -1193,12 +1187,11 @@ public class ButtonServiceImpl implements ButtonService {
      * 处理子流程的收回按钮逻辑
      *
      * @param buttonModelList 按钮列表
-     * @param tenantId 租户ID
      * @param orgUnitId 组织单元ID
      * @param task 任务模型
      */
-    private void handleSubProcessTakeBack(List<ItemButtonModel> buttonModelList, String tenantId, String orgUnitId,
-        TaskModel task) {
+    private void handleSubProcessTakeBack(List<ItemButtonModel> buttonModelList, String orgUnitId, TaskModel task) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         OrgUnit sendBureau = orgUnitApi.getOrgUnitBureau(tenantId, orgUnitId).getData();
         OrgUnit currentBureau = orgUnitApi.getOrgUnitBureau(tenantId, task.getAssignee()).getData();
 
@@ -1233,15 +1226,15 @@ public class ButtonServiceImpl implements ButtonService {
                 .getData();
 
             if (Boolean.TRUE.equals(isSub4Current)) {
-                handleSubProcessTakeBack(buttonModelList, tenantId, orgUnitId, task);
+                handleSubProcessTakeBack(buttonModelList, orgUnitId, task);
             } else {
-                handleNormalProcessTakeBack(buttonModelList, tenantId, taskId, task);
+                handleNormalProcessTakeBack(buttonModelList, taskId, task);
             }
         }
     }
 
     private void handleTaskButtons(Map<String, Object> result, boolean[] isButtonShow, TaskContext taskContext,
-        String itemId, String taskId, String tenantId, String orgUnitId) {
+        String itemId, String taskId, String orgUnitId) {
         String assignee = taskContext.task.getAssignee();
         boolean isAssignee = StringUtils.isNotBlank(assignee);
         // 保存按钮
@@ -1249,7 +1242,7 @@ public class ButtonServiceImpl implements ButtonService {
             isButtonShow[0] = true;
         }
         // 发送按钮
-        handleSendButton(result, isButtonShow, taskContext, itemId, taskId, tenantId);
+        handleSendButton(result, isButtonShow, taskContext, itemId, taskId);
         // 返回按钮
         isButtonShow[2] = true;
         // 退回按钮
@@ -1259,23 +1252,23 @@ public class ButtonServiceImpl implements ButtonService {
         // 送下一人按钮
         handleSendNextButton(isButtonShow, taskContext);
         // 并行处理时办理完成按钮
-        handleParallelCompleteButton(isButtonShow, taskContext, itemId, taskId, tenantId);
+        handleParallelCompleteButton(isButtonShow, taskContext, itemId, taskId);
         // 签收按钮
-        handleClaimButton(result, isButtonShow, taskContext, taskId, tenantId);
+        handleClaimButton(result, isButtonShow, taskContext, taskId);
         // 撤销签收按钮
-        handleUnclaimButton(isButtonShow, taskContext, taskId, tenantId, orgUnitId);
+        handleUnclaimButton(isButtonShow, taskContext, taskId, orgUnitId);
         // 办结按钮
-        handleEndButton(result, isButtonShow, taskContext, itemId, taskId, tenantId);
+        handleEndButton(result, isButtonShow, taskContext, itemId, taskId);
     }
 
     private void handleTodoBox(Map<String, Object> result, boolean[] isButtonShow, TaskContext taskContext,
-        String itemId, String taskId, String tenantId, String orgUnitId) {
+        String itemId, String taskId, String orgUnitId) {
         // 设置默认值
         result.put(ItemConsts.NEXTNODE_KEY, false);
         result.put("multiInstance", taskContext.multiInstance);
 
         if (taskContext.task != null) {
-            handleTaskButtons(result, isButtonShow, taskContext, itemId, taskId, tenantId, orgUnitId);
+            handleTaskButtons(result, isButtonShow, taskContext, itemId, taskId, orgUnitId);
         } else {
             // task为null，此时是新增
             handleNewTaskButtons(isButtonShow, taskContext);
@@ -1286,8 +1279,7 @@ public class ButtonServiceImpl implements ButtonService {
         handleSignButtons(isButtonShow, taskContext, orgUnitId);
     }
 
-    private void handleUnclaimButton(boolean[] isButtonShow, TaskContext taskContext, String taskId, String tenantId,
-        String orgUnitId) {
+    private void handleUnclaimButton(boolean[] isButtonShow, TaskContext taskContext, String taskId, String orgUnitId) {
         // 撤销签收 - 只有已签收的用户才能操作
         if (!StringUtils.isNotBlank(taskContext.task.getAssignee())) {
             return;
@@ -1295,10 +1287,10 @@ public class ButtonServiceImpl implements ButtonService {
         // 判断当前流程实例经过的任务节点数和当前流程实例是否存在父流程实例
         // 如果任务节点数为1且存在父流程实例，则是流程调用，此时显示拒签按钮
         // 否则是流程中发给多人等情况，不显示拒签按钮
-        if (isSingleTaskInstance(tenantId, taskContext)) {
+        if (isSingleTaskInstance(taskContext)) {
             handleSingleTaskInstanceCase(isButtonShow, taskContext);
         } else {
-            handleMultipleTaskInstanceCase(isButtonShow, tenantId, taskId, orgUnitId);
+            handleMultipleTaskInstanceCase(isButtonShow, taskId, orgUnitId);
         }
     }
 
@@ -1313,10 +1305,10 @@ public class ButtonServiceImpl implements ButtonService {
         }
 
         // 根据任务实例数量判断处理方式
-        if (isSingleTaskInstance(tenantId, context)) {
+        if (isSingleTaskInstance(context)) {
             handleSingleTaskInstanceUnclaim(buttonList, context);
         } else {
-            handleMultipleTaskInstanceUnclaim(buttonList, context, tenantId, taskId);
+            handleMultipleTaskInstanceUnclaim(buttonList, context, taskId);
         }
     }
 
@@ -1362,23 +1354,20 @@ public class ButtonServiceImpl implements ButtonService {
     /**
      * 判断是否为单任务实例（父子流程调用情况）
      *
-     * @param tenantId 租户ID
      * @param taskContext 任务上下文
      * @return true表示是单任务实例，false表示不是
      */
-    private boolean isSingleTaskInstance(String tenantId, TaskContext taskContext) {
-        int count = historictaskApi.getByProcessInstanceId(tenantId, taskContext.task.getProcessInstanceId(), "")
-            .getData()
-            .size();
+    private boolean isSingleTaskInstance(TaskContext taskContext) {
+        int count =
+            historictaskApi.getByProcessInstanceId(taskContext.task.getProcessInstanceId(), "").getData().size();
         return count == 1;
     }
 
     /**
      * 判断是否为单任务实例
      */
-    private boolean isSingleTaskInstance(String tenantId, TodoTaskContext context) {
-        int count =
-            historictaskApi.getByProcessInstanceId(tenantId, context.task.getProcessInstanceId(), "").getData().size();
+    private boolean isSingleTaskInstance(TodoTaskContext context) {
+        int count = historictaskApi.getByProcessInstanceId(context.task.getProcessInstanceId(), "").getData().size();
         return count == 1;
     }
 
@@ -1419,12 +1408,12 @@ public class ButtonServiceImpl implements ButtonService {
      * 检查是否应该显示办结按钮
      *
      * @param taskContext 任务上下文
-     * @param tenantId 租户ID
      * @param taskId 任务ID
      * @return true表示应该显示办结按钮，false表示不应该显示
      */
-    private boolean shouldShowEndButton(TaskContext taskContext, String tenantId, String taskId) {
+    private boolean shouldShowEndButton(TaskContext taskContext, String taskId) {
         boolean isAssignee = StringUtils.isNotBlank(taskContext.task.getAssignee());
+        String tenantId = Y9LoginUserHolder.getTenantId();
         Boolean isContainEndEvent = processDefinitionApi.isContainEndEvent(tenantId, taskId).getData();
 
         // 办结 - 当前节点的目标节点存在ENDEVENT类型节点时，显示办结按钮
@@ -1449,11 +1438,11 @@ public class ButtonServiceImpl implements ButtonService {
      * 检查是否应该显示发送按钮
      *
      * @param taskContext 任务上下文
-     * @param tenantId 租户ID
      * @param taskId 任务ID
      * @return true表示应该显示发送按钮，false表示不应该显示
      */
-    private boolean shouldShowSendButton(TaskContext taskContext, String tenantId, String taskId) {
+    private boolean shouldShowSendButton(TaskContext taskContext, String taskId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         boolean isAssignee = StringUtils.isNotBlank(taskContext.task.getAssignee());
         int outPutNodeCount = processDefinitionApi.getOutPutNodeCount(tenantId, taskId).getData();
 
@@ -1464,13 +1453,12 @@ public class ButtonServiceImpl implements ButtonService {
 
     @Override
     public Map<String, Object> showButton(String itemId, String taskId, String itemBox) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String orgUnitId = Y9FlowableHolder.getPositionId();
         Map<String, Object> result = initializeResultMap();
         // 获取任务和相关变量信息
-        TaskContext taskContext = buildTaskContext(tenantId, itemId, taskId, itemBox);
+        TaskContext taskContext = buildTaskContext(itemId, taskId, itemBox);
         // 根据不同的itemBox类型处理按钮显示逻辑
-        handleItemBoxType(result, taskContext, itemId, taskId, itemBox, tenantId, orgUnitId);
+        handleItemBoxType(result, taskContext, itemId, taskId, itemBox, orgUnitId);
         return result;
     }
 
@@ -1579,9 +1567,7 @@ public class ButtonServiceImpl implements ButtonService {
                 calendar.setTime(processParam.getCreateTime());
                 String year = String.valueOf(calendar.get(Calendar.YEAR));
                 List<HistoricTaskInstanceModel> list =
-                    historictaskApi
-                        .getByProcessInstanceIdOrderByEndTimeDesc(Y9LoginUserHolder.getTenantId(),
-                            model.getProcessInstanceId(), year)
+                    historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(model.getProcessInstanceId(), year)
                         .getData();
                 HistoricTaskInstanceModel hisTaskModelTemp = list != null && !list.isEmpty() ? list.get(0) : null;
                 if (hisTaskModelTemp != null

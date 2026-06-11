@@ -533,7 +533,7 @@ public class AsyncUtilServiceImpl implements AsyncUtilService {
     public void takeBackTwoTaskDefKeyAuditLog(String tenantId, String orgUnitId, String taskId, String targetTaskKey) {
         Y9LoginUserHolder.setTenantId(tenantId);
         try {
-            HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(tenantId, taskId).getData();
+            HistoricTaskInstanceModel historicTaskInstanceModel = historicTaskApi.getById(taskId).getData();
             List<TargetModel> targetModelList =
                 processDefinitionApi.getNodes(tenantId, historicTaskInstanceModel.getProcessDefinitionId()).getData();
             TargetModel targetModel = targetModelList.stream()

@@ -305,9 +305,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 title = processParamModel.getTitle();
             }
             HistoricTaskInstanceModel hisTaskModelTemp =
-                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
-                    .getData()
-                    .get(0);
+                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year).getData().get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
             /*
               2、添加流程的历程
@@ -360,9 +358,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
                 year = getYear(processParamModel.getCreateTime());
             }
             HistoricTaskInstanceModel hisTaskModel =
-                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(tenantId, processInstanceId, year)
-                    .getData()
-                    .get(0);
+                historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year).getData().get(0);
             runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
             // 2、添加动作名称
             Map<String, Object> vars = new HashMap<>();

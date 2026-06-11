@@ -1214,7 +1214,8 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理保存按钮相关的自定义普通按钮（待办场景）
      */
     private void handleCommonButtonsForTodo(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
-        String taskDefKey, String tenantId, String orgUnitId) {
+        String taskDefKey, String orgUnitId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         List<ItemButtonBind> commonButtons =
             buttonItemBindService.listContainRoleId(itemId, ItemButtonTypeEnum.COMMON, processDefinitionId, taskDefKey);
         commonButtons.stream().filter(bind -> !"发送".equals(bind.getButtonName())).forEach(bind -> {
@@ -1556,11 +1557,12 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理退回按钮
      */
     private void handleRollbackButtons(String itemId, List<ItemButtonModel> buttonList, String taskId,
-        String processDefinitionId, String taskDefKey, String tenantId) {
+        String processDefinitionId, String taskDefKey) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         TaskModel task = taskApi.findById(tenantId, taskId).getData();
         Boolean isSub = processDefinitionApi.isSubProcessChildNode(tenantId, processDefinitionId, taskDefKey).getData();
         List<HistoricTaskInstanceModel> results =
-            historictaskApi.getByProcessInstanceId(tenantId, task.getProcessInstanceId(), "").getData();
+            historictaskApi.getByProcessInstanceId(task.getProcessInstanceId(), "").getData();
         if (isSub) {
             handleSubProcessRollback(itemId, buttonList, task, results, tenantId);
         } else {
@@ -1647,7 +1649,8 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理发送按钮相关的路由和自定义按钮（待办场景）
      */
     private void handleSendButtonsForTodo(List<ItemButtonModel> buttonList, String itemId, String processDefinitionId,
-        String taskDefKey, String tenantId, String orgUnitId) {
+        String taskDefKey, String orgUnitId) {
+        String tenantId = Y9LoginUserHolder.getTenantId();
         // 检查是否有自定义"发送"按钮
         AtomicBoolean haveSendButton = new AtomicBoolean(false);
         List<ItemButtonBind> commonButtons =
@@ -1689,14 +1692,14 @@ public class DocumentServiceImpl implements DocumentService {
      * 处理签收任务逻辑
      */
     private SignTaskConfigModel handleSignTask(SignTaskConfigModel model, ProcessParam processParam, String itemId,
-        String processDefinitionId, String taskDefinitionKey, String tenantId) {
+        String processDefinitionId, String taskDefinitionKey) {
         model.setSignTask(true);
         boolean searchPerson = true;
         // 查找已分配的人员
         if (processParam != null && StringUtils.isNotBlank(processParam.getProcessInstanceId())) {
-            List<HistoricTaskInstanceModel> hisTaskList = historictaskApi
-                .findTaskByProcessInstanceIdOrByEndTimeAsc(tenantId, processParam.getProcessInstanceId(), "")
-                .getData();
+            List<HistoricTaskInstanceModel> hisTaskList =
+                historictaskApi.findTaskByProcessInstanceIdOrByEndTimeAsc(processParam.getProcessInstanceId(), "")
+                    .getData();
             for (HistoricTaskInstanceModel hisTask : hisTaskList) {
                 if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)
                     && StringUtils.isNotBlank(hisTask.getAssignee())) {
@@ -2001,17 +2004,17 @@ public class DocumentServiceImpl implements DocumentService {
 
     @Override
     public DocumentDetailModel menuControl4Todo(DocumentDetailModel model) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), orgUnitId = Y9FlowableHolder.getPositionId();
+        String orgUnitId = Y9FlowableHolder.getPositionId();
         String itemId = model.getItemId(), processDefinitionId = model.getProcessDefinitionId(),
             taskDefKey = model.getTaskDefKey(), taskId = model.getTaskId();
         List<ItemButtonModel> buttonList = buttonService.showButton4Todo(model);
         // 处理保存按钮相关的自定义普通按钮
         if (buttonList.contains(ItemButton.baoCun)) {
-            handleCommonButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
+            handleCommonButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
         }
         // 处理发送按钮相关的路由和自定义按钮
         if (buttonList.contains(ItemButton.faSong) && StringUtils.isNotBlank(taskDefKey)) {
-            handleSendButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, tenantId, orgUnitId);
+            handleSendButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
         }
 
         // 处理退回上一步按钮，通过按钮配置显示后，进一步处理是否显示退回按钮
@@ -2031,7 +2034,7 @@ public class DocumentServiceImpl implements DocumentService {
             .filter(itemButtonModel -> itemButtonModel.getKey().equals("back2any"))
             .collect(Collectors.toList())
             .size() > 0) {
-            handleRollbackButtons(itemId, buttonList, taskId, processDefinitionId, taskDefKey, tenantId);
+            handleRollbackButtons(itemId, buttonList, taskId, processDefinitionId, taskDefKey);
         }
         // 打印按钮添加到最后
         buttonList.add(ItemButton.daYin);
@@ -2451,7 +2454,7 @@ public class DocumentServiceImpl implements DocumentService {
             ProcessParam processParam = processParamService.findByProcessSerialNumber(processSerialNumber);
             // 处理签收任务逻辑
             if (itemTaskConf != null && itemTaskConf.getSignTask()) {
-                return handleSignTask(model, processParam, itemId, processDefinitionId, taskDefinitionKey, tenantId);
+                return handleSignTask(model, processParam, itemId, processDefinitionId, taskDefinitionKey);
             } else {
                 // 处理非签收任务逻辑
                 return handleNonSignTask(model, itemId, processDefinitionId, taskDefinitionKey, processParam);

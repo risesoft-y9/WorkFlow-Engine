@@ -838,9 +838,7 @@ public class ButtonOperationRestController {
     private void handleParallelInstance(TaskInfoHolder taskInfo, List<Map<String, Object>> listMap) {
         List<HistoricTaskInstanceModel> modelList;
         try {
-            modelList = historictaskApi
-                .getByProcessInstanceId(Y9LoginUserHolder.getTenantId(), taskInfo.taskModel.getProcessInstanceId(), "")
-                .getData();
+            modelList = historictaskApi.getByProcessInstanceId(taskInfo.taskModel.getProcessInstanceId(), "").getData();
         } catch (Exception e) {
             LOGGER.warn("获取历史任务实例失败", e);
             return;
@@ -933,8 +931,7 @@ public class ButtonOperationRestController {
         boolean isEnd = true;
         List<HistoricTaskInstanceModel> modelList = new ArrayList<>();
         try {
-            modelList = historictaskApi.getByProcessInstanceId(tenantId, taskInfo.taskModel.getProcessInstanceId(), "")
-                .getData();
+            modelList = historictaskApi.getByProcessInstanceId(taskInfo.taskModel.getProcessInstanceId(), "").getData();
         } catch (Exception e) {
             LOGGER.warn("获取历史任务实例失败", e);
         }
