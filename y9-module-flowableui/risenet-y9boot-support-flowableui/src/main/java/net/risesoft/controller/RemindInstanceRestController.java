@@ -8,7 +8,6 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -71,7 +70,7 @@ public class RemindInstanceRestController {
         List<TargetModel> list = new ArrayList<>();
         Map<String, Object> retMap = new HashMap<>(16);
         String tenantId = Y9LoginUserHolder.getTenantId();
-        HistoricProcessInstanceModel his = historicProcessApi.getById(tenantId, processInstanceId).getData();
+        HistoricProcessInstanceModel his = historicProcessApi.getById(processInstanceId).getData();
         List<TargetModel> list0 = processDefinitionApi.getNodes(tenantId, his.getProcessDefinitionId()).getData();
         RemindInstanceModel remindInstance = remindInstanceApi.getRemindInstance(processInstanceId).getData();
         retMap.put(REMINDTYPE_KEY, "");

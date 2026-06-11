@@ -275,7 +275,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             actRuDetailApi.removeByProcessSerialNumber(processSerialNumber);
             processParamModel = processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
             // 删除流程实例
-            historicProcessApi.deleteProcessInstance(tenantId, processParamModel.getProcessInstanceId());
+            historicProcessApi.deleteProcessInstance(processParamModel.getProcessInstanceId());
             asyncUtilService.removeToDoAuditLog(tenantId, positionId, processParamModel.getProcessSerialNumber(),
                 processParamModel.getTitle());
         }
