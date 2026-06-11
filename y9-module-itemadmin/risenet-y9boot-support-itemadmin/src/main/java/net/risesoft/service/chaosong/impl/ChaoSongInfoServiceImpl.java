@@ -717,7 +717,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     public Y9Result<Object> save(String processInstanceId, String users, String isSendSms, String isShuMing,
         String smsContent, String smsPersonId) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             String currUserId = Y9FlowableHolder.getPositionId();
             OrgUnit currOrgUnit = Y9FlowableHolder.getPosition();
             ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
