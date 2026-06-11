@@ -231,11 +231,8 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public Y9Result<String> multipleResumeToDo(String[] processInstanceIds, String desc) {
-        boolean haveDoing =
-            Arrays.stream(processInstanceIds)
-                .anyMatch(processInstanceId -> runtimeApi
-                    .getProcessInstance(Y9LoginUserHolder.getTenantId(), processInstanceId)
-                    .isSuccess());
+        boolean haveDoing = Arrays.stream(processInstanceIds)
+            .anyMatch(processInstanceId -> runtimeApi.getProcessInstance(processInstanceId).isSuccess());
         if (haveDoing) {
             return Y9Result.failure("存在正在运行的流程，请刷新列表！");
         }
@@ -283,7 +280,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
 
     @Override
     public void resumeToDo(String processInstanceId, String desc) throws Exception {
-        String positionId = Y9FlowableHolder.getPositionId();
         String userName = Y9FlowableHolder.getPosition().getName();
         String tenantId = Y9LoginUserHolder.getTenantId();
         String title = "";
@@ -305,7 +301,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             }
             HistoricTaskInstanceModel hisTaskModelTemp =
                 historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year).getData().get(0);
-            runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
+            runtimeApi.recovery4Completed(processInstanceId, year);
             /*
               2、添加流程的历程
              */
@@ -343,7 +339,6 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
     @Override
     public Y9Result<String> resumeToDoAndReposition(String processInstanceId, String desc) {
         String positionId = Y9FlowableHolder.getPositionId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             // 1、恢复待办
             String year;
@@ -358,7 +353,7 @@ public class ButtonOperationServiceImpl implements ButtonOperationService {
             }
             HistoricTaskInstanceModel hisTaskModel =
                 historictaskApi.getByProcessInstanceIdOrderByEndTimeDesc(processInstanceId, year).getData().get(0);
-            runtimeApi.recovery4Completed(tenantId, positionId, processInstanceId, year);
+            runtimeApi.recovery4Completed(processInstanceId, year);
             // 2、添加动作名称
             Map<String, Object> vars = new HashMap<>();
             vars.put("val", desc);

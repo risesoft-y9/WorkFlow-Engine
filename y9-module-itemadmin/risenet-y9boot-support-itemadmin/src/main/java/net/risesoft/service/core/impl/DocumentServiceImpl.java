@@ -446,16 +446,15 @@ public class DocumentServiceImpl implements DocumentService {
         /*
          * 1办结流程
          */
-        runtimeApi.complete(tenantId, Y9FlowableHolder.getPositionId(), processInstanceId, taskId);
+        runtimeApi.complete(processInstanceId, taskId);
     }
 
     @Override
     public void completeSub(String taskId, List<String> userList) throws Exception {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         /*
          * 1办结流程
          */
-        runtimeApi.completeSub(tenantId, Y9FlowableHolder.getPositionId(), taskId, userList);
+        runtimeApi.completeSub(taskId, userList);
     }
 
     /**
@@ -2584,9 +2583,8 @@ public class DocumentServiceImpl implements DocumentService {
             CommonOpt.setVariables(orgUnit.getId(), orgUnit.getName(), "", Arrays.asList(userIds.split(",")),
                 processSerialNumber, null, vars);
             assert item != null;
-            ProcessInstanceModel piModel = runtimeApi
-                .startProcessInstanceByKey(tenantId, orgUnit.getId(), processDefinitionKey, item.getSystemName(), vars)
-                .getData();
+            ProcessInstanceModel piModel =
+                runtimeApi.startProcessInstanceByKey(processDefinitionKey, item.getSystemName(), vars).getData();
             // 获取运行的任务节点,这里没有考虑启动节点下一个用户任务节点是多实例的情况
             String processInstanceId = piModel.getId();
             TaskModel task = taskApi.findByProcessInstanceId(tenantId, processInstanceId).getData().get(0);

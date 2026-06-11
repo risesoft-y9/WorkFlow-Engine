@@ -304,8 +304,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
      * @return 匹配的ActRuDetail列表
      */
     private List<ActRuDetail> getActRuDetailsByExecutionId(String executionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        ExecutionModel executionModel = runtimeApi.getExecutionById(tenantId, executionId).getData();
+        ExecutionModel executionModel = runtimeApi.getExecutionById(executionId).getData();
         List<ActRuDetail> list = actRuDetailRepository.findByProcessInstanceId(executionModel.getProcessInstanceId());
         return list.stream().filter(actRuDetail -> {
             String taskExecutionId = historictaskApi.getById(actRuDetail.getTaskId()).getData().getExecutionId();

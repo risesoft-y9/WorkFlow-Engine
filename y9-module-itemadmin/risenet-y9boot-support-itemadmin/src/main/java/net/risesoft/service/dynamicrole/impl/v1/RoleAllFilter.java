@@ -39,7 +39,7 @@ public class RoleAllFilter extends AbstractDynamicRoleMember {
         String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9FlowableHolder.getPositionId();
         if (dynamicRole.isUseProcessInstanceId()) {
-            ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(tenantId, processInstanceId).getData();
+            ProcessInstanceModel processInstance = runtimeApi.getProcessInstance(processInstanceId).getData();
             userId = processInstance.getStartUserId();
         }
         OrgUnit bureau = orgUnitApi.getOrgUnitBureau(tenantId, userId).getData();
