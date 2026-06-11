@@ -93,11 +93,9 @@ public class BpmnViewerRestController {
     /**
      * 获取主办人信息
      */
-    private HistoricVariableInstanceModel getZhuBanInfo(String tenantId, HistoricActivityInstanceModel task,
-        String year) {
+    private HistoricVariableInstanceModel getZhuBanInfo(HistoricActivityInstanceModel task, String year) {
         try {
-            return historicVariableApi
-                .getByTaskIdAndVariableName(tenantId, task.getTaskId(), SysVariables.PARALLEL_SPONSOR, year)
+            return historicVariableApi.getByTaskIdAndVariableName(task.getTaskId(), SysVariables.PARALLEL_SPONSOR, year)
                 .getData();
         } catch (Exception e) {
             LOGGER.error("获取主办人失败，taskId: {}", task.getTaskId(), e);
@@ -134,7 +132,7 @@ public class BpmnViewerRestController {
                 // 获取办理人信息
                 OrgUnit employee = orgUnitApi.getPersonOrPosition(tenantId, assignee).getData();
                 // 获取主办人信息
-                HistoricVariableInstanceModel zhuBan = getZhuBanInfo(tenantId, task, year);
+                HistoricVariableInstanceModel zhuBan = getZhuBanInfo(task, year);
                 // 设置办理人名称
                 String employeeName = getEmployeeName(task, employee);
                 // 将TenantId字段存储意见内容

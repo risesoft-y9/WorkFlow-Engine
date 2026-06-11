@@ -37,12 +37,11 @@ public interface CustomHistoricVariableService {
     /**
      * 根据流程实例Id,获取指定的流程变量
      *
-     * @param tenantId 租户Id
      * @param processInstanceId 流程实例Id
      * @param keys 流程变量key集合
      * @return Map<String, Object>
      */
-    Map<String, Object> getVariables(String tenantId, String processInstanceId, Collection<String> keys);
+    Map<String, Object> getVariables(String processInstanceId, Collection<String> keys);
 
     /**
      * 根据流程实例Id,获取历史流程变量集合
