@@ -69,9 +69,6 @@ public class MultiInstanceRestController {
      * @param userChoice 选择人员
      * @param selectUserId 加签人员
      * @param num 加签序号
-     * @param isSendSms 是否短信提醒
-     * @param isShuMing 是否署名
-     * @param smsContent 短信内容
      * @return Y9Result<String>
      */
     @FlowableLog(operationName = "加签", operationType = FlowableOperationTypeEnum.ADD)
@@ -79,15 +76,13 @@ public class MultiInstanceRestController {
     public Y9Result<String> addExecutionId(@RequestParam @NotBlank String processInstanceId,
         @RequestParam(required = false) String executionId, @RequestParam @NotBlank String taskId,
         @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String selectUserId,
-        @RequestParam(required = false) Integer num, @RequestParam(required = false) String isSendSms,
-        @RequestParam(required = false) String isShuMing, @RequestParam(required = false) String smsContent) {
+        @RequestParam(required = false) Integer num) {
         try {
             /*
               selectUserId不为空说明是从串行加签过来的
              */
             if (StringUtils.isBlank(selectUserId)) {
-                multiInstanceService.addExecutionId(processInstanceId, taskId, userChoice, isSendSms, isShuMing,
-                    smsContent);
+                multiInstanceService.addExecutionId(processInstanceId, taskId, userChoice);
             } else {
                 multiInstanceService.addExecutionId4Sequential(executionId, taskId, userChoice, selectUserId, num);
             }

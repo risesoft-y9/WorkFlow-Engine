@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -30,7 +31,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.ButtonOperationApi;
 import net.risesoft.api.itemadmin.CustomProcessInfoApi;
 import net.risesoft.api.itemadmin.ProcessTrackApi;
-import net.risesoft.api.itemadmin.SmsDetailApi;
 import net.risesoft.api.itemadmin.core.ActRuDetailApi;
 import net.risesoft.api.itemadmin.core.DocumentApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
@@ -52,7 +52,6 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.CustomProcessInfoModel;
 import net.risesoft.model.itemadmin.ProcessTrackModel;
 import net.risesoft.model.itemadmin.SignTaskConfigModel;
-import net.risesoft.model.itemadmin.SmsDetailModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.platform.org.Position;
@@ -105,7 +104,6 @@ public class ButtonOperationRestController {
     private final CustomProcessInfoApi customProcessInfoApi;
     private final ButtonOperationService buttonOperationService;
     private final ActRuDetailApi actRuDetailApi;
-    private final SmsDetailApi smsDetailApi;
     private final AsyncUtilService asyncUtilService;
     private final PositionApi positionApi;
 
@@ -451,21 +449,6 @@ public class ButtonOperationRestController {
     public Y9Result<Map<String, Object>> forwarding(@RequestBody @Valid ForwardingDTO forwardingDTO) {
         Map<String, Object> map = new HashMap<>();
         try {
-            SmsDetailModel smsDetailModel = SmsDetailModel.builder()
-                .processSerialNumber(forwardingDTO.getProcessSerialNumber())
-                .positionId(Y9FlowableHolder.getPositionId())
-                .positionName(Y9LoginUserHolder.getUserInfo().getName())
-                .send(!StringUtils.isBlank(forwardingDTO.getIsSendSms())
-                    && Boolean.parseBoolean(forwardingDTO.getIsSendSms()))
-                .sign(!StringUtils.isBlank(forwardingDTO.getIsShuMing())
-                    && Boolean.parseBoolean(forwardingDTO.getIsShuMing()))
-                .content(forwardingDTO.getSmsContent())
-                .positionIds(Y9JsonUtil.writeValueAsString(forwardingDTO.getUserChoice()))
-                .build();
-            Y9Result<Object> result = smsDetailApi.saveOrUpdate(smsDetailModel);
-            if (!result.isSuccess()) {
-                return Y9Result.failure("保存短信详情失败！");
-            }
             Y9Result<String> y9Result = documentApi.saveAndForwarding(forwardingDTO);
             if (y9Result.isSuccess()) {
                 map.put("processInstanceId", y9Result.getData());
@@ -1165,21 +1148,6 @@ public class ButtonOperationRestController {
                 users.add(user.getId());
             }
             String routeToTaskId = forwardingDTO.getRouteToTaskId();
-            SmsDetailModel smsDetailModel = SmsDetailModel.builder()
-                .processSerialNumber(forwardingDTO.getProcessSerialNumber())
-                .positionId(Y9FlowableHolder.getPositionId())
-                .positionName(Y9LoginUserHolder.getUserInfo().getName())
-                .send(!StringUtils.isBlank(forwardingDTO.getIsSendSms())
-                    && Boolean.parseBoolean(forwardingDTO.getIsSendSms()))
-                .sign(!StringUtils.isBlank(forwardingDTO.getIsShuMing())
-                    && Boolean.parseBoolean(forwardingDTO.getIsShuMing()))
-                .content(forwardingDTO.getSmsContent())
-                .positionIds(Y9JsonUtil.writeValueAsString(forwardingDTO.getUserChoice()))
-                .build();
-            Y9Result<Object> result = smsDetailApi.saveOrUpdate(smsDetailModel);
-            if (!result.isSuccess()) {
-                return Y9Result.failure("保存短信详情失败！");
-            }
             buttonOperationApi.reposition(taskId, routeToTaskId, users, "",
                 StringUtils.isBlank(forwardingDTO.getSponsorGuid()) ? "" : forwardingDTO.getSponsorGuid());
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
