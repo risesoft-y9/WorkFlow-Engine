@@ -21,8 +21,8 @@ import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.ItemPermission;
 import net.risesoft.entity.receive.ReceiveDepartment;
 import net.risesoft.enums.DynamicRoleKindsEnum;
-import net.risesoft.enums.ItemPermissionEnum;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
+import net.risesoft.enums.ItemUserChoiceEnum;
 import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
@@ -78,11 +78,8 @@ public class RoleServiceImpl implements RoleService {
         model.setGuidPath(orgUnit.getGuidPath());
         model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
         model.setOrgType(orgUnit.getOrgType().getValue());
-        model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ? ItemPermissionEnum.DEPARTMENT
-            : ItemPermissionEnum.POSITION);
-        if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-            model.setPerson("6:" + orgUnit.getId());
-        }
+        model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT) ? ItemUserChoiceEnum.DEPARTMENT
+            : ItemUserChoiceEnum.POSITION);
         model.setTabIndex(orgUnit.getTabIndex());
         return model;
     }
@@ -100,11 +97,10 @@ public class RoleServiceImpl implements RoleService {
         model.setGuidPath(orgUnit.getGuidPath());
 
         if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
-            model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
+            model.setPrincipalType(ItemUserChoiceEnum.DEPARTMENT);
             model.setName(getOrgUnitDisplayName(orgUnit));
         } else if (OrgTypeEnum.POSITION.equals(orgUnit.getOrgType())) {
-            model.setPrincipalType(ItemPermissionEnum.POSITION);
-            model.setPerson("6:" + orgUnit.getId());
+            model.setPrincipalType(ItemUserChoiceEnum.POSITION);
         }
         model.setTabIndex(orgUnit.getTabIndex());
         return model;
@@ -121,7 +117,7 @@ public class RoleServiceImpl implements RoleService {
         model.setIsParent(true);
         model.setGuidPath(org.getGuidPath());
         model.setOrgType(org.getOrgType().getValue());
-        model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
+        model.setPrincipalType(ItemUserChoiceEnum.DEPARTMENT);
         model.setTabIndex(org.getTabIndex());
         return model;
     }
@@ -137,8 +133,7 @@ public class RoleServiceImpl implements RoleService {
         model.setIsParent(false);
         model.setOrgType(position.getOrgType().getValue());
         model.setOrderedPath(position.getOrderedPath());
-        model.setPrincipalType(ItemPermissionEnum.POSITION);
-        model.setPerson("6:" + position.getId());
+        model.setPrincipalType(ItemUserChoiceEnum.POSITION);
         model.setGuidPath(position.getGuidPath());
         model.setTabIndex(position.getTabIndex());
         return model;
@@ -158,12 +153,10 @@ public class RoleServiceImpl implements RoleService {
         model.setParentId(orgUnit.getParentId());
         model.setName(orgUnit.getName());
         model.setOrgType(orgUnit.getOrgType().getValue());
+        model.setIsParent(false);
 
         if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
             || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
-            model.setIsParent(true);
-        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-            model.setPerson("6:" + orgUnit.getId());
             model.setIsParent(true);
         }
         model.setTabIndex(orgUnit.getTabIndex());
@@ -185,13 +178,11 @@ public class RoleServiceImpl implements RoleService {
         model.setOrgType(orgUnit.getOrgType().getValue());
         model.setParentId(orgUnit.getParentId());
         model.setGuidPath(orgUnit.getGuidPath());
+        model.setIsParent(false);
 
         if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
             || orgUnit.getOrgType().equals(OrgTypeEnum.ORGANIZATION)) {
             model.setIsParent(true);
-        } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-            model.setPerson("6:" + orgUnit.getId());
-            model.setIsParent(false);
         }
         model.setTabIndex(orgUnit.getTabIndex());
         return model;
@@ -207,7 +198,7 @@ public class RoleServiceImpl implements RoleService {
         model.setName(customGroup.getGroupName());
         model.setIsParent(true);
         model.setOrgType(ItemConsts.CUSTOMGROUP_KEY);
-        model.setPrincipalType(ItemPermissionEnum.GROUP_CUSTOM);
+        model.setPrincipalType(ItemUserChoiceEnum.GROUP_CUSTOM);
         model.setTabIndex(customGroup.getTabIndex());
         return model;
     }
@@ -223,8 +214,7 @@ public class RoleServiceImpl implements RoleService {
         model.setName(user.getName());
         model.setIsParent(false);
         model.setOrgType(user.getOrgType().getValue());
-        model.setPerson("6:" + user.getId() + ":" + user.getParentId());
-        model.setPrincipalType(ItemPermissionEnum.POSITION);
+        model.setPrincipalType(ItemUserChoiceEnum.POSITION);
         model.setTabIndex(customGroupMember.getTabIndex());
         return model;
     }
@@ -266,8 +256,7 @@ public class RoleServiceImpl implements RoleService {
                 model.setName(position.getName());
                 model.setIsParent(false);
                 model.setOrgType(position.getOrgType().getValue());
-                model.setPrincipalType(ItemPermissionEnum.POSITION);
-                model.setPerson("6:" + position.getId());
+                model.setPrincipalType(ItemUserChoiceEnum.POSITION);
                 model.setOrderedPath(position.getOrderedPath());
                 model.setGuidPath(position.getGuidPath());
                 if (itemList.contains(model)) {
@@ -304,7 +293,7 @@ public class RoleServiceImpl implements RoleService {
                 StringUtils.isNotBlank(department.getAliasName()) ? department.getAliasName() : department.getName());
             parentModel.setIsParent(true);
             parentModel.setOrgType(parent.getOrgType().getValue());
-            parentModel.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
+            parentModel.setPrincipalType(ItemUserChoiceEnum.DEPARTMENT);
             parentModel.setGuidPath(department.getGuidPath());
             if (!itemList.contains(parentModel)) {
                 itemList.add(parentModel);
@@ -747,10 +736,7 @@ public class RoleServiceImpl implements RoleService {
                 model.setIsParent(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT));
                 model.setOrgType(orgUnit.getOrgType().getValue());
                 model.setPrincipalType(orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)
-                    ? ItemPermissionEnum.DEPARTMENT : ItemPermissionEnum.POSITION);
-                if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                    model.setPerson("6:" + orgUnit.getId());
-                }
+                    ? ItemUserChoiceEnum.DEPARTMENT : ItemUserChoiceEnum.POSITION);
                 item.add(model);
             });
         } catch (Exception e) {
@@ -1649,7 +1635,7 @@ public class RoleServiceImpl implements RoleService {
                     model.setName(department.getName());
                     model.setOrgType(OrgTypeEnum.DEPARTMENT.getEnName());
                     model.setParentId(receiveDepartment.getParentId());
-                    model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
+                    model.setPrincipalType(ItemUserChoiceEnum.DEPARTMENT);
                     Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
                     model.setIsParent(count > 0);
                     item.add(model);
@@ -1666,7 +1652,7 @@ public class RoleServiceImpl implements RoleService {
                     model.setName(department.getName());
                     model.setOrgType(OrgTypeEnum.DEPARTMENT.getEnName());
                     model.setParentId(receiveDepartment.getParentId());
-                    model.setPrincipalType(ItemPermissionEnum.DEPARTMENT);
+                    model.setPrincipalType(ItemUserChoiceEnum.DEPARTMENT);
                     Integer count = receiveDepartmentRepository.countByParentId(receiveDepartment.getDeptId());
                     model.setIsParent(count > 0);
                     item.add(model);
