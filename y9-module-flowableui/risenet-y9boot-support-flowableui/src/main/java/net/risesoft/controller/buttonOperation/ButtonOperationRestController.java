@@ -72,7 +72,6 @@ import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
 import net.risesoft.y9.json.Y9JsonUtil;
-import net.risesoft.y9.util.Y9Util;
 
 /**
  * 操作按钮方法
@@ -1149,48 +1148,40 @@ public class ButtonOperationRestController {
     /**
      * 重定向（选择任意流程节点重定向）
      *
-     * @param taskId 任务Id
-     * @param routeToTaskId 流程节点Id
-     * @param userChoice 选择重定向的人员
-     * @param processSerialNumber 流程编号
-     * @param sponsorGuid 主办人id
-     * @param isSendSms 是否短信提醒
-     * @param isShuMing 是否署名
-     * @param smsContent 短信内容
+     * forwardingDTO 办件发送参数
+     * 
      * @return Y9Result<String>
      */
     @FlowableLog(operationName = "重定向", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/reposition")
-    public Y9Result<String> reposition(@RequestParam @NotBlank String taskId,
-        @RequestParam @NotBlank String routeToTaskId, @RequestParam @NotBlank String processSerialNumber,
-        @RequestParam @NotBlank String userChoice, @RequestParam(required = false) String sponsorGuid,
-        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
-        @RequestParam(required = false) String smsContent) {
+    public Y9Result<String> reposition(@RequestBody @Valid ForwardingDTO forwardingDTO) {
         Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
+            String taskId = forwardingDTO.getTaskId();
             TaskModel task = taskApi.findById(taskId).getData();
             List<String> users = new ArrayList<>();
-            List<String> usersTemp = Y9Util.stringToList(userChoice, ";");
-            for (String user : usersTemp) {
-                String[] arr = user.split(":");
-                users.add(arr[1]);
+            for (UserChoiceDTO user : forwardingDTO.getUserChoice()) {
+                users.add(user.getId());
             }
+            String routeToTaskId = forwardingDTO.getRouteToTaskId();
             SmsDetailModel smsDetailModel = SmsDetailModel.builder()
-                .processSerialNumber(processSerialNumber)
+                .processSerialNumber(forwardingDTO.getProcessSerialNumber())
                 .positionId(Y9FlowableHolder.getPositionId())
                 .positionName(Y9LoginUserHolder.getUserInfo().getName())
-                .send(!StringUtils.isBlank(isSendSms) && Boolean.parseBoolean(isSendSms))
-                .sign(!StringUtils.isBlank(isShuMing) && Boolean.parseBoolean(isShuMing))
-                .content(smsContent)
-                .positionIds(userChoice)
+                .send(!StringUtils.isBlank(forwardingDTO.getIsSendSms())
+                    && Boolean.parseBoolean(forwardingDTO.getIsSendSms()))
+                .sign(!StringUtils.isBlank(forwardingDTO.getIsShuMing())
+                    && Boolean.parseBoolean(forwardingDTO.getIsShuMing()))
+                .content(forwardingDTO.getSmsContent())
+                .positionIds(Y9JsonUtil.writeValueAsString(forwardingDTO.getUserChoice()))
                 .build();
             Y9Result<Object> result = smsDetailApi.saveOrUpdate(smsDetailModel);
             if (!result.isSuccess()) {
                 return Y9Result.failure("保存短信详情失败！");
             }
             buttonOperationApi.reposition(taskId, routeToTaskId, users, "",
-                StringUtils.isBlank(sponsorGuid) ? "" : sponsorGuid);
+                StringUtils.isBlank(forwardingDTO.getSponsorGuid()) ? "" : forwardingDTO.getSponsorGuid());
             process4SearchService.saveToDataCenter(tenantId, taskId, task.getProcessInstanceId());
             asyncUtilService.repositionAuditLog(tenantId, positionId, taskId, routeToTaskId, users);
             return Y9Result.successMsg("重定向成功");

@@ -7,6 +7,7 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -75,12 +76,14 @@ public class QuickSendRestController {
                     map.put("id", orgUnit.getId());
                     map.put("name", orgUnit.getName());
                     map.put(ORGTYPE_KEY, OrgTypeEnum.POSITION.getEnName());
+                    map.put("principalType", principalType);
                     list.add(map);
                 } else if (principalType == ItemUserChoiceEnum.DEPARTMENT.getValue()) {
                     Department dept = departmentApi.get(tenantId, orgId).getData();
                     map.put("id", dept.getId());
                     map.put("name", dept.getName());
                     map.put(ORGTYPE_KEY, OrgTypeEnum.DEPARTMENT.getEnName());
+                    map.put("principalType", principalType);
                     list.add(map);
                 } else if (principalType == ItemUserChoiceEnum.GROUP_CUSTOM.getValue()) {
                     CustomGroup customGroup =
@@ -88,6 +91,7 @@ public class QuickSendRestController {
                     map.put("id", customGroup.getId());
                     map.put("name", customGroup.getGroupName());
                     map.put(ORGTYPE_KEY, "customGroup");
+                    map.put("principalType", principalType);
                     list.add(map);
                 }
             }
