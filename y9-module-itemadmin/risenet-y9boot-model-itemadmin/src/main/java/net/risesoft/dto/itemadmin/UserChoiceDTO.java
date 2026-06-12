@@ -6,6 +6,7 @@ import javax.validation.constraints.NotBlank;
 import javax.validation.constraints.NotNull;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 import net.risesoft.enums.ItemUserChoiceEnum;
 
@@ -17,6 +18,7 @@ import net.risesoft.enums.ItemUserChoiceEnum;
  * @date 2022/12/20
  */
 @Data
+@Accessors(chain = true)
 public class UserChoiceDTO implements Serializable {
 
     private static final long serialVersionUID = -6022193332291668234L;

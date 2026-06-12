@@ -130,7 +130,6 @@ public class ButtonOperationRestController {
     @PostMapping(value = "/batchRollBack")
     public Y9Result<List<TargetModel>> batchRollBack(@RequestParam @NotBlank String actionName,
         @RequestParam String[] taskIdAndProcessSerialNumbers) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             TaskCollectionResult collectionResult = collectTaskInfo(tenantId, taskIdAndProcessSerialNumbers);
             Y9Result<List<TargetModel>> validationResult = validateTasks(collectionResult);
@@ -882,7 +881,7 @@ public class ButtonOperationRestController {
         // 改变流程变量中users的值
         try {
             String userObj = variableApi.getVariable(taskId, SysVariables.USERS).getData();
-            List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readValue(userObj, List.class);
+            List<String> users = userObj == null ? new ArrayList<>() : Y9JsonUtil.readList(userObj, String.class);
             if (users != null && users.isEmpty()) {
                 List<String> usersTemp = new ArrayList<>();
                 for (TaskModel t : list) {
@@ -1370,7 +1369,6 @@ public class ButtonOperationRestController {
             }
             String routeToTaskId = (String)map.get("taskKey");
             List<Map<String, Object>> orgList = (List<Map<String, Object>>)map.get("orgList");
-            String userChoice = "";
             List<UserChoiceDTO> userChoiceDTOList = new ArrayList<>();
             for (Map<String, Object> org : orgList) {
                 UserChoiceDTO userChoiceDTO = new UserChoiceDTO();

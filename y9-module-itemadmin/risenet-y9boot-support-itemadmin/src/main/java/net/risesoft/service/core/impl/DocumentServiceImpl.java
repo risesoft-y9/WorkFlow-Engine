@@ -405,22 +405,18 @@ public class DocumentServiceImpl implements DocumentService {
     /**
      * 构建用户选择字符串
      */
-    private String buildUserChoice(List<OrgUnit> orgUnitList) {
-        StringBuilder userChoice = new StringBuilder();
+    private List<UserChoiceDTO> buildUserChoice(List<OrgUnit> orgUnitList) {
+        List<UserChoiceDTO> userChoiceList = new ArrayList<>();
         for (OrgUnit orgUnit : orgUnitList) {
-            int type = 0;
+            UserChoiceDTO userChoice = new UserChoiceDTO();
+            int type = 6;
             if (orgUnit.getOrgType().equals(OrgTypeEnum.DEPARTMENT)) {
                 type = 2;
-            } else if (orgUnit.getOrgType().equals(OrgTypeEnum.POSITION)) {
-                type = 6;
             }
-
-            if (userChoice.length() > 0) {
-                userChoice.append(";");
-            }
-            userChoice.append(type).append(":").append(orgUnit.getId());
+            userChoice.setType(ItemUserChoiceEnum.valueOf(type)).setId(orgUnit.getId());
+            userChoiceList.add(userChoice);
         }
-        return userChoice.toString();
+        return userChoiceList;
     }
 
     /**
@@ -1408,7 +1404,9 @@ public class DocumentServiceImpl implements DocumentService {
         // 只有一个人且为岗位时，设置直接发送
         if (orgUnitList.size() == 1 && orgUnitList.get(0).getOrgType().equals(OrgTypeEnum.POSITION)) {
             model.setOnePerson(true);
-            model.setUserChoice("6:" + orgUnitList.get(0).getId());
+            UserChoiceDTO userChoiceDTO = new UserChoiceDTO();
+            userChoiceDTO.setId(orgUnitList.get(0).getId()).setType(ItemUserChoiceEnum.POSITION);
+            model.setUserChoice(List.of(userChoiceDTO));
         }
         return model;
     }
@@ -1675,7 +1673,9 @@ public class DocumentServiceImpl implements DocumentService {
                 if (hisTask.getTaskDefinitionKey().equals(taskDefinitionKey)
                     && StringUtils.isNotBlank(hisTask.getAssignee())) {
                     searchPerson = false;
-                    model.setUserChoice("6:" + hisTask.getAssignee());
+                    UserChoiceDTO userChoice = new UserChoiceDTO();
+                    userChoice.setId(hisTask.getAssignee()).setType(ItemUserChoiceEnum.POSITION);
+                    model.setUserChoice(List.of(userChoice));
                     break;
                 }
             }
@@ -2371,7 +2371,7 @@ public class DocumentServiceImpl implements DocumentService {
         String processSerialNumber) {
         SignTaskConfigModel model = new SignTaskConfigModel();
         model.setSignTask(false);
-        model.setUserChoice("");
+        model.setUserChoice(List.of());
         model.setOnePerson(false);
         try {
             String multiInstance = processDefinitionApi.getNodeType(processDefinitionId, taskDefinitionKey).getData();
