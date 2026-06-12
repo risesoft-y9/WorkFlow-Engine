@@ -1,8 +1,11 @@
 package net.risesoft.model.itemadmin;
 
 import java.io.Serializable;
+import java.util.List;
 
 import lombok.Data;
+
+import net.risesoft.dto.itemadmin.UserChoiceDTO;
 
 /**
  * 签收任务配置信息
@@ -27,7 +30,8 @@ public class SignTaskConfigModel implements Serializable {
     /**
      * 发送候选人
      */
-    private String userChoice;
+    // private String userChoice;
+    private List<UserChoiceDTO> userChoice;
 
     /**
      * 是否只有一个发送候选人
