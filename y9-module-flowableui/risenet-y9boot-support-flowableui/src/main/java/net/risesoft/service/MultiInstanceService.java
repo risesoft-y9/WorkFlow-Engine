@@ -13,12 +13,8 @@ public interface MultiInstanceService {
      * @param processInstanceId 流程实例id
      * @param taskId 任务id
      * @param userChoice 选择人
-     * @param isSendSms 是否发送短信
-     * @param isShuMing 是否署名
-     * @param smsContent 短信内容
      */
-    void addExecutionId(String processInstanceId, String taskId, String userChoice, String isSendSms, String isShuMing,
-        String smsContent) throws Exception;
+    void addExecutionId(String processInstanceId, String taskId, String userChoice) throws Exception;
 
     /**
      * 并行加签

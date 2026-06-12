@@ -48,21 +48,6 @@ public class ForwardingDTO implements Serializable {
     private String sponsorGuid;
 
     /**
-     * 是否发送短信
-     */
-    private String isSendSms;
-
-    /**
-     * 是否署名
-     */
-    private String isShuMing;
-
-    /**
-     * 短信内容
-     */
-    private String smsContent;
-
-    /**
      * 流程变量
      */
     private Map<String, Object> variables;

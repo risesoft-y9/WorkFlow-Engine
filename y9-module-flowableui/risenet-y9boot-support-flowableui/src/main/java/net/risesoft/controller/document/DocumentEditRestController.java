@@ -2,6 +2,7 @@ package net.risesoft.controller.document;
 
 import javax.validation.constraints.NotBlank;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.core.DocumentApi;
-import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.enums.ItemBoxTypeEnum;
 import net.risesoft.log.FlowableLogLevelEnum;
@@ -40,8 +40,6 @@ public class DocumentEditRestController {
     private final DocumentApi documentApi;
 
     private final TaskApi taskApi;
-
-    private final HistoricVariableApi historicVariableApi;
 
     /**
      * 获取抄送件详情数据
