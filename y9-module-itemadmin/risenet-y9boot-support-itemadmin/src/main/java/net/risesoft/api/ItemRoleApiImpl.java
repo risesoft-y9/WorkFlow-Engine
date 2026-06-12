@@ -247,8 +247,6 @@ public class ItemRoleApiImpl implements ItemRoleApi {
             model.setOrgType(orgUnit.getOrgType().getValue());
             if (OrgTypeEnum.DEPARTMENT.equals(orgUnit.getOrgType())) {
                 model.setIsParent(true);
-            } else if (OrgTypeEnum.POSITION.equals(orgUnit.getOrgType())) {
-                model.setPerson("6:" + orgUnit.getId());
             }
             item.add(model);
         }

@@ -6,7 +6,6 @@ import java.util.stream.Collectors;
 
 import jakarta.validation.constraints.NotBlank;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -24,7 +23,6 @@ import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
-import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
 import net.risesoft.model.itemadmin.ItemRoleOrgUnitModel;
 import net.risesoft.model.itemadmin.SignDeptDetailModel;
 import net.risesoft.model.platform.org.Department;
@@ -100,21 +98,6 @@ public class RoleRestController {
         if (!userIds.contains(userId)) {
             userIds.add(userId);
         }
-    }
-
-    /**
-     * 获取组织机构数据
-     *
-     * @param id 父节点id
-     * @param treeType 架构树类型
-     * @param name 搜索词
-     * @return Y9Result<List<ItemRoleOrgUnitModel>>
-     */
-    @GetMapping(value = "/getOrgTree")
-    @Deprecated
-    public Y9Result<List<ItemRoleOrgUnitModel>> findAll(@RequestParam(required = false) String id,
-        @RequestParam OrgTreeTypeEnum treeType, @RequestParam(required = false) String name) {
-        return itemRoleApi.getOrgTree(id, treeType, name);
     }
 
     /**
