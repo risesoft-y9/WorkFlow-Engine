@@ -7,7 +7,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -37,7 +36,6 @@ import net.risesoft.service.HandleFormDataService;
 import net.risesoft.service.TodoService;
 import net.risesoft.service.UtilService;
 import net.risesoft.util.Y9DateTimeUtils;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 @Slf4j
 @RequiredArgsConstructor
@@ -60,7 +58,6 @@ public class TodoServiceImpl implements TodoService {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String taskId = task.getId();
         String processInstanceId = task.getProcessInstanceId();
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             // 基本任务信息
             Date taskCreateTime = task.getCreateTime();
