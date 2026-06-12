@@ -327,8 +327,7 @@ public class WorkListServiceImpl implements WorkListService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildDoneList4AllItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        int serialNumber) {
+    private Map<String, Object> buildDoneList4AllItem(ActRuDetailModel ardModel, String itemId, int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         String taskId = ardModel.getTaskId();
@@ -362,8 +361,8 @@ public class WorkListServiceImpl implements WorkListService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildDoneList4DeptItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        OrgUnit bureau, boolean isBureau, int serialNumber) {
+    private Map<String, Object> buildDoneList4DeptItem(ActRuDetailModel ardModel, String itemId, OrgUnit bureau,
+        boolean isBureau, int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         String taskId = ardModel.getTaskId();
@@ -400,8 +399,7 @@ public class WorkListServiceImpl implements WorkListService {
         return mapTemp;
     }
 
-    private Map<String, Object> buildDoneListItem(ActRuDetailModel ardModel, String tenantId, String itemId,
-        int serialNumber) {
+    private Map<String, Object> buildDoneListItem(ActRuDetailModel ardModel, String itemId, int serialNumber) {
         Map<String, Object> mapTemp = new HashMap<>(16);
         String processInstanceId = ardModel.getProcessInstanceId();
         String taskId = ardModel.getTaskId();
@@ -725,14 +723,13 @@ public class WorkListServiceImpl implements WorkListService {
     @Override
     public Y9Page<Map<String, Object>> doneList(String itemId, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage = itemDoneApi.findByUserIdAndSystemName(item.getSystemName(), page, rows);
             List<ActRuDetailModel> actRuDetailList = itemPage.getRows();
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
-                Map<String, Object> itemMap = buildDoneListItem(ardModel, tenantId, itemId, ++serialNumber);
+                Map<String, Object> itemMap = buildDoneListItem(ardModel, itemId, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取办结列表成功");
@@ -745,7 +742,6 @@ public class WorkListServiceImpl implements WorkListService {
     @Override
     public Y9Page<Map<String, Object>> doneList4All(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
@@ -757,7 +753,7 @@ public class WorkListServiceImpl implements WorkListService {
             List<Map<String, Object>> items = new ArrayList<>();
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
-                Map<String, Object> itemMap = buildDoneList4AllItem(ardModel, tenantId, itemId, ++serialNumber);
+                Map<String, Object> itemMap = buildDoneList4AllItem(ardModel, itemId, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取所有办结件列表成功");
@@ -789,7 +785,7 @@ public class WorkListServiceImpl implements WorkListService {
             int serialNumber = (page - 1) * rows;
             for (ActRuDetailModel ardModel : actRuDetailList) {
                 Map<String, Object> itemMap =
-                    buildDoneList4DeptItem(ardModel, tenantId, itemId, bureau, isBureau, ++serialNumber);
+                    buildDoneList4DeptItem(ardModel, itemId, bureau, isBureau, ++serialNumber);
                 items.add(itemMap);
             }
             return Y9Page.success(page, itemPage.getTotalPages(), itemPage.getTotal(), items, "获取委办局或部门待办列表成功");
@@ -1077,7 +1073,6 @@ public class WorkListServiceImpl implements WorkListService {
      * @return List<TaskRelatedModel>
      */
     private List<TaskRelatedModel> getTaskRelated4Urge(String processSerialNumber, boolean isSub, String executionId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<TaskRelatedModel> taskRelatedList = new ArrayList<>();
         try {
             // 催办
@@ -1238,7 +1233,6 @@ public class WorkListServiceImpl implements WorkListService {
     @Override
     public Y9Page<Map<String, Object>> todoList(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
@@ -1263,7 +1257,6 @@ public class WorkListServiceImpl implements WorkListService {
     @Override
     public Y9Page<Map<String, Object>> todoList4Other(String itemId, String searchMapStr, Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage =
                 itemTodoApi.searchByUserIdAndSystemName4Other(item.getSystemName(), searchMapStr, page, rows);
@@ -1285,7 +1278,6 @@ public class WorkListServiceImpl implements WorkListService {
     public Y9Page<Map<String, Object>> todoList4TaskDefKey(String itemId, String taskDefKey, String searchMapStr,
         Integer page, Integer rows) {
         try {
-            String tenantId = Y9LoginUserHolder.getTenantId();
             ItemModel item = itemApi.getByItemId(itemId).getData();
             Y9Page<ActRuDetailModel> itemPage;
             if (StringUtils.isBlank(searchMapStr)) {
