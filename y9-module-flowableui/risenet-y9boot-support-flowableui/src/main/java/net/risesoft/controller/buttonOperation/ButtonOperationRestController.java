@@ -35,6 +35,7 @@ import net.risesoft.api.itemadmin.core.ActRuDetailApi;
 import net.risesoft.api.itemadmin.core.DocumentApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
+import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.HistoricTaskApi;
 import net.risesoft.api.processadmin.HistoricVariableApi;
 import net.risesoft.api.processadmin.IdentityApi;
@@ -107,6 +108,7 @@ public class ButtonOperationRestController {
     private final ActRuDetailApi actRuDetailApi;
     private final SmsDetailApi smsDetailApi;
     private final AsyncUtilService asyncUtilService;
+    private final PositionApi positionApi;
 
     /**
      * 添加协办人员名称
@@ -496,18 +498,6 @@ public class ButtonOperationRestController {
     }
 
     /**
-     * 获取员工信息
-     */
-    private OrgUnit getEmployeeInfo(String assigneeId) {
-        try {
-            return orgUnitApi.getPersonOrPosition(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
-        } catch (Exception e) {
-            LOGGER.warn("获取员工信息失败: assigneeId={}", assigneeId, e);
-            return null;
-        }
-    }
-
-    /**
      * 获取串行办理人顺序
      *
      * @param taskId 任务id
@@ -645,8 +635,7 @@ public class ButtonOperationRestController {
             String multiInstance =
                 processDefinitionApi.getNodeType(taskModel.getProcessDefinitionId(), taskModel.getTaskDefinitionKey())
                     .getData();
-
-            List<String> users = (List<String>)variables.get("users");
+            List<String> users = Y9JsonUtil.readList(variables.get("users").toString(), String.class);
             return new TaskInfoHolder(taskModel, variables, multiInstance, users);
         } catch (Exception e) {
             LOGGER.error("获取任务信息失败", e);
@@ -1050,9 +1039,9 @@ public class ButtonOperationRestController {
                 }
                 String assigneeId = task.getAssignee();
                 if (isAssistantUser(assigneeId, positionId)) {
-                    OrgUnit employee = getEmployeeInfo(assigneeId);
-                    if (employee != null) {
-                        appendAssistantName(assistantNames, employee.getName());
+                    Position position = positionApi.get(Y9LoginUserHolder.getTenantId(), assigneeId).getData();
+                    if (position != null) {
+                        appendAssistantName(assistantNames, position.getName());
                         count++;
                     }
                 }
@@ -1424,8 +1413,7 @@ public class ButtonOperationRestController {
             String processSerialNumber = processParamModel.getProcessSerialNumber();
             String user = variableApi.getVariableLocal(taskId, SysVariables.TASK_SENDER_ID).getData();
             UserChoiceDTO userChoice = new UserChoiceDTO();
-            userChoice.setId(user);
-            userChoice.setType(ItemUserChoiceEnum.POSITION);
+            userChoice.setId(user).setType(ItemUserChoiceEnum.POSITION);
             String multiInstance =
                 processDefinitionApi.getNodeType(taskModel.getProcessDefinitionId(), routeToTaskId).getData();
             String sponsorHandle = "";
