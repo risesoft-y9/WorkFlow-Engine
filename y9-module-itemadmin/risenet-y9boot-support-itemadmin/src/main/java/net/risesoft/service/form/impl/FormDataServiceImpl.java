@@ -527,8 +527,7 @@ public class FormDataServiceImpl implements FormDataService {
         for (Map<String, Object> map : listMap) {
             String keyValue = findValueIgnoreCase(map, key);
             if (keyValue != null) {
-                mergedMap.merge(keyValue, new HashMap<>(map),
-                    (existingMap, newMap) -> mergeTwoMaps(existingMap, newMap));
+                mergedMap.merge(keyValue, new HashMap<>(map), this::mergeTwoMaps);
             }
         }
         return mergedMap;
@@ -551,27 +550,14 @@ public class FormDataServiceImpl implements FormDataService {
     @Transactional
     public String saveAFormData(String itemId, String formData, String formId) throws Exception {
         try {
-            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formData, Map.class);
-            List<Map<String, Object>> listMap = new ArrayList<>();
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("name", FORM_ID_KEY);
-            map.put(ItemConsts.VALUE_KEY, formId);
-            listMap.add(map);
-            assert mapFormJsonData != null;
-            for (String columnName : mapFormJsonData.keySet()) {
-                // 根据数据库表名获取列名
-                String value = mapFormJsonData.get(columnName).toString();
-                map = new HashMap<>(16);
-                map.put("name", columnName);
-                map.put(ItemConsts.VALUE_KEY, value);
-                listMap.add(map);
-            }
-            formData = Y9JsonUtil.writeValueAsString(listMap);
-            Y9Result<Object> y9Result = y9FormService.saveFormData(formData);// 保存前置表单数据
+            Map<String, Object> formDataJson = Y9JsonUtil.readValue(formData, Map.class);
+            assert formDataJson != null;
+            formDataJson.put(FORM_ID_KEY, formId);
+            // 保存前置表单数据
+            Y9Result<Object> y9Result = y9FormService.saveFormData(formDataJson);
             if (!y9Result.isSuccess()) {
                 throw new Exception("FormDataService savePreFormData前置表单 error0");
             }
-
             // 获取事项绑定主表信息
             Item item = itemService.findById(itemId);
             String processDefineKey = item.getWorkflowGuid();
@@ -585,18 +571,14 @@ public class FormDataServiceImpl implements FormDataService {
             }
             String processSerialNumber = Y9IdGenerator.genId(IdType.SNOWFLAKE);
             if (!bindFormId.isEmpty()) {
-                List<Map<String, Object>> list1 = Y9JsonUtil.readValue(formData, List.class);
-                for (Map<String, Object> map1 : list1) {
-                    if (map1.get("name").equals(FORM_ID_KEY)) {// 重设表单id
-                        map1.put(ItemConsts.VALUE_KEY, bindFormId);
-                    } else if (map1.get("name").equals("guid")) {// 重设主键id
-                        map1.put(ItemConsts.VALUE_KEY, processSerialNumber);
-                    } else if (map1.get("name").equals("GUID")) {// 重设主键id
-                        map1.put(ItemConsts.VALUE_KEY, processSerialNumber);
-                    }
+                formDataJson.put(FORM_ID_KEY, bindFormId);
+                if (formDataJson.containsKey("guid")) {
+                    formDataJson.put("guid", processSerialNumber);
+                } else if (formDataJson.containsKey("GUID")) {
+                    formDataJson.put("GUID", processSerialNumber);
                 }
-                formData = Y9JsonUtil.writeValueAsString(list1);
-                Y9Result<Object> y9Result2 = y9FormService.saveFormData(formData);// 保存主表信息
+                // 保存主表信息
+                Y9Result<Object> y9Result2 = y9FormService.saveFormData(formDataJson);
                 if (!y9Result2.isSuccess()) {
                     throw new Exception("FormDataService savePreFormData主表 error0");
                 }
@@ -669,26 +651,17 @@ public class FormDataServiceImpl implements FormDataService {
     @Override
     @Transactional
     public void saveFormData(String formData, String formId) throws Exception {
+        Map<String, Object> formDataMap = new HashMap<>(16);
         try {
-            Map<String, Object> mapFormJsonData = Y9JsonUtil.readValue(formData, Map.class);
-            List<Map<String, Object>> listMap = new ArrayList<>();
-            Map<String, Object> map = new HashMap<>(16);
-            map.put("name", FORM_ID_KEY);
-            map.put(ItemConsts.VALUE_KEY, formId);
-            listMap.add(map);
-            for (String columnName : mapFormJsonData.keySet()) {
-                map = new HashMap<>(16);
-                map.put("name", columnName);
-                map.put(ItemConsts.VALUE_KEY, mapFormJsonData.get(columnName));
-                listMap.add(map);
-            }
-            formData = Y9JsonUtil.writeValueAsString(listMap);
-            Y9Result<Object> y9Result = y9FormService.saveFormData(formData);
+            formDataMap = Y9JsonUtil.readValue(formData, Map.class);
+            assert formDataMap != null;
+            formDataMap.put(FORM_ID_KEY, formId);
+            Y9Result<Object> y9Result = y9FormService.saveFormData(formDataMap);
             if (!y9Result.isSuccess()) {
                 throw new Exception("FormDataService saveFormData error0");
             }
         } catch (Exception e) {
-            LOGGER.error("****************************formData:{}", formData);
+            LOGGER.error("****************************formData:{}", Y9JsonUtil.writeValueAsString(formDataMap));
             final Writer result = new StringWriter();
             final PrintWriter print = new PrintWriter(result);
             e.printStackTrace(print);

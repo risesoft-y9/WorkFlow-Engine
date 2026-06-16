@@ -1,10 +1,8 @@
 package net.risesoft.controller.form;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
@@ -24,7 +22,6 @@ import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.form.FormDataApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.OrganizationApi;
 import net.risesoft.api.platform.org.PersonApi;
 import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.platform.tenant.TenantApi;
@@ -41,7 +38,6 @@ import net.risesoft.model.itemadmin.Y9FormOptionValueModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.platform.org.Department;
 import net.risesoft.model.platform.org.OrgUnit;
-import net.risesoft.model.platform.org.Organization;
 import net.risesoft.model.platform.org.Person;
 import net.risesoft.model.platform.org.PersonExt;
 import net.risesoft.model.platform.org.Position;
@@ -79,8 +75,6 @@ public class Y9FormRestController {
     private final OptionClassApi optionClassApi;
 
     private final DepartmentApi departmentApi;
-
-    private final OrganizationApi organizationApi;
 
     private final ItemApi itemApi;
 
@@ -357,34 +351,6 @@ public class Y9FormRestController {
      */
     @GetMapping(value = "/getOptionValueList")
     public Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(@RequestParam @NotBlank String type) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
-        if ("fwsj".equals(type)) {
-            Position position = Y9FlowableHolder.getPosition();
-            List<Organization> orgList = organizationApi.list(tenantId)
-                .getData()
-                .stream()
-                .filter(org -> position.getGuidPath().contains(org.getId()))
-                .collect(Collectors.toList());
-            List<Department> bureaus = organizationApi.listAllBureaus(tenantId, orgList.get(0).getId()).getData();
-            List<Y9FormOptionValueModel> list = new ArrayList<>();
-            Y9FormOptionValueModel none = new Y9FormOptionValueModel();
-            none.setCode("");
-            none.setName("请选择");
-            list.add(none);
-            bureaus.stream().filter(b -> position.getGuidPath().contains(b.getGuidPath())).forEach(b -> {
-                Y9FormOptionValueModel model = new Y9FormOptionValueModel();
-                model.setCode(b.getId());
-                model.setName(b.getAliasName());
-                list.add(model);
-            });
-            bureaus.stream().filter(b -> "国际司".equals(b.getAliasName())).forEach(b -> {
-                Y9FormOptionValueModel model = new Y9FormOptionValueModel();
-                model.setCode(b.getId());
-                model.setName(b.getAliasName());
-                list.add(model);
-            });
-            return Y9Result.success(list);
-        }
         return optionClassApi.getOptionValueList(type);
     }
 
@@ -432,7 +398,6 @@ public class Y9FormRestController {
     public Y9Result<String> saveChildTableData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String tableId, @RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String jsonData) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             formDataApi.saveChildTableData(formId, tableId, processSerialNumber, jsonData);
             return Y9Result.successMsg("保存成功");
@@ -473,7 +438,6 @@ public class Y9FormRestController {
     @PostMapping(value = "/savePreFormData")
     public Y9Result<String> savePreFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String jsonData) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         try {
             String processSerialNumber = formDataApi.savePreFormData(itemId, formId, jsonData).getData();
             return Y9Result.success(processSerialNumber, "保存成功");

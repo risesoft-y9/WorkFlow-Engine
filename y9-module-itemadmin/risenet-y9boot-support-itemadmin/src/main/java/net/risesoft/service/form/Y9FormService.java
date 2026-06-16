@@ -166,7 +166,7 @@ public interface Y9FormService {
      * @param formData
      * @return
      */
-    Y9Result<Object> saveFormData(String formData);
+    Y9Result<Object> saveFormData(Map<String, Object> formData);
 
     /**
      * 保存绑定表单字段信息
