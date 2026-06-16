@@ -11,7 +11,6 @@ import java.util.stream.Collectors;
 
 import javax.persistence.criteria.Predicate;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageRequest;
@@ -515,7 +514,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
 
     @Override
     public OpenDataModel detail(String processInstanceId, Integer status, boolean mobile) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         // 获取任务信息
         TaskInfo taskInfo = getTaskInfo(processInstanceId);
         // 获取流程定义信息
@@ -549,12 +547,12 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     }
 
     private ProcessDefinitionInfo getProcessDefinitionInfo(String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         HistoricProcessInstanceModel hpi = historicProcessApi.getById(processInstanceId).getData();
 
         ProcessDefinitionInfo processDefInfo = new ProcessDefinitionInfo();
 
+        String processDefinitionId = "";
         if (hpi == null) {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
@@ -562,17 +560,17 @@ public class ChaoSongServiceImpl implements ChaoSongService {
                 calendar.setTime(processParam.getCreateTime());
                 String year = String.valueOf(calendar.get(Calendar.YEAR));
                 hpi = historicProcessApi.getByIdAndYear(processInstanceId, year).getData();
-                processDefInfo.setProcessDefinitionId(hpi.getProcessDefinitionId());
-                processDefInfo
-                    .setProcessDefinitionKey(processDefInfo.getProcessDefinitionId().split(SysVariables.COLON)[0]);
+                processDefinitionId = hpi.getProcessDefinitionId();
+                processDefInfo.setProcessDefinitionId(processDefinitionId);
+                processDefInfo.setProcessDefinitionKey(processDefinitionId.split(SysVariables.COLON)[0]);
             } else {
                 processDefInfo.setProcessDefinitionId(officeDoneInfo.getProcessDefinitionId());
                 processDefInfo.setProcessDefinitionKey(officeDoneInfo.getProcessDefinitionKey());
             }
         } else {
-            processDefInfo.setProcessDefinitionId(hpi.getProcessDefinitionId());
-            processDefInfo
-                .setProcessDefinitionKey(processDefInfo.getProcessDefinitionId().split(SysVariables.COLON)[0]);
+            processDefinitionId = hpi.getProcessDefinitionId();
+            processDefInfo.setProcessDefinitionId(processDefinitionId);
+            processDefInfo.setProcessDefinitionKey(processDefinitionId.split(SysVariables.COLON)[0]);
         }
 
         processDefInfo.setStartor(processParam.getStartor());
@@ -715,7 +713,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Y9Page<ChaoSong4DataBaseModel> pageOpinionChaosongByUserId(String userId, String documentTitle, int rows,
         int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (page < 1) {
             page = 1;
         }
@@ -730,7 +727,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
 
     @Override
     public Y9Page<ChaoSong4DataBaseModel> pageTodoList(String orgUnitId, String documentTitle, int rows, int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (page < 1) {
             page = 1;
         }
@@ -816,7 +812,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(String searchName, String itemId, String userName,
         Integer state, String year, Integer page, Integer rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9FlowableHolder.getPositionId();
         if (page == null || page < 1) {
             page = 1;
@@ -836,7 +831,6 @@ public class ChaoSongServiceImpl implements ChaoSongService {
     @Override
     public Y9Page<ChaoSong4DataBaseModel> searchAllList(String searchName, String itemId, String senderName,
         String userName, Integer state, String year, Integer page, Integer rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (page == null || page < 1) {
             page = 1;
         }
