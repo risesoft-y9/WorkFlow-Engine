@@ -432,7 +432,7 @@ public class Y9FormServiceImpl implements Y9FormService {
      * @param listMap
      * @return
      */
-    private Map<String, Object> listMapToKeyValue(List<Map<String, Object>> listMap) {
+    private Map<String, Object> listMapToMap(List<Map<String, Object>> listMap) {
         Map<String, Object> map = new CaseInsensitiveMap<>(16);
         for (Map<String, Object> m : listMap) {
             map.put((String)m.get("name"), m.get("value"));
@@ -725,7 +725,7 @@ public class Y9FormServiceImpl implements Y9FormService {
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
             List<Map<String, Object>> listMap = Y9JsonUtil.readValue(jsonData, new TypeReference<>() {});
             assert listMap != null;
-            Map<String, Object> keyValue = this.listMapToKeyValue(listMap);
+            Map<String, Object> keyValue = this.listMapToMap(listMap);
             String guid = getGuidFromData(keyValue);
             List<String> tableNames = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNames) {
@@ -815,21 +815,17 @@ public class Y9FormServiceImpl implements Y9FormService {
         }
     }
 
-    @SuppressWarnings({"unchecked"})
     @Override
     @Transactional
-    public Y9Result<Object> saveFormData(String formData) {
+    public Y9Result<Object> saveFormData(Map<String, Object> formData) {
         try {
             String dialect = DbMetaDataUtil.getDatabaseDialectName(jdbcTemplate4Tenant.getDataSource());
-            List<Map<String, Object>> listMap = Y9JsonUtil.readValue(formData, List.class);
-            assert listMap != null;
-            Map<String, Object> keyValue = this.listMapToKeyValue(listMap);
-            String formId = (String)keyValue.get("form_Id");
-            if (!keyValue.containsKey("guid") && !keyValue.containsKey("GUID")) {
+            if (!formData.containsKey("guid") && !formData.containsKey("GUID")) {
                 LOGGER.error("保存失败:表单未绑定guid字段");
                 return Y9Result.failure("保存失败:表单未绑定guid字段");
             }
-            String guid = getGuidFromData(keyValue);
+            String guid = getGuidFromData(formData);
+            String formId = (String)formData.get("form_Id");
             List<String> tableNames = y9FormRepository.findBindTableName(formId);
             for (String tableName : tableNames) {
                 Y9Table y9Table = y9TableService.findByTableName(tableName);
@@ -840,9 +836,9 @@ public class Y9FormServiceImpl implements Y9FormService {
                 String actionType = determineActionType(guid, tableName);
                 List<Y9TableField> tableFieldList = y9TableFieldRepository.findByTableName(tableName);
                 if ("0".equals(actionType)) {
-                    performInsertOperation(dialect, tableName, keyValue, formId, tableFieldList, true);
+                    performInsertOperation(dialect, tableName, formData, formId, tableFieldList, true);
                 } else {
-                    performUpdateOperation(dialect, tableName, keyValue, formId, tableFieldList);
+                    performUpdateOperation(dialect, tableName, formData, formId, tableFieldList);
                 }
             }
             return Y9Result.successMsg("保存成功");
