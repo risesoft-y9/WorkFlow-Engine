@@ -402,7 +402,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Override
     public OpenDataModel detail(String processInstanceId, Integer status, boolean mobile) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         // 获取流程状态和任务信息
         TaskInfo taskInfo = getTaskInfo(processInstanceId);
         // 获取流程定义信息
@@ -434,10 +433,10 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     }
 
     private ProcessDefinitionInfo getProcessDefinitionInfo(String processInstanceId) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         ProcessParam processParam = processParamService.findByProcessInstanceId(processInstanceId);
         HistoricProcessInstanceModel hpi = historicProcessApi.getById(processInstanceId).getData();
         ProcessDefinitionInfo processDefInfo = new ProcessDefinitionInfo();
+        String processDefinitionId = "";
         if (hpi == null) {
             OfficeDoneInfo officeDoneInfo = officeDoneInfoService.findByProcessInstanceId(processInstanceId);
             if (officeDoneInfo == null) {
@@ -445,17 +444,17 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
                 calendar.setTime(processParam.getCreateTime());
                 String year = String.valueOf(calendar.get(Calendar.YEAR));
                 hpi = historicProcessApi.getByIdAndYear(processInstanceId, year).getData();
-                processDefInfo.setProcessDefinitionId(hpi.getProcessDefinitionId());
-                processDefInfo
-                    .setProcessDefinitionKey(processDefInfo.getProcessDefinitionId().split(SysVariables.COLON)[0]);
+                processDefinitionId = hpi.getProcessDefinitionId();
+                processDefInfo.setProcessDefinitionId(processDefinitionId);
+                processDefInfo.setProcessDefinitionKey(processDefinitionId.split(SysVariables.COLON)[0]);
             } else {
                 processDefInfo.setProcessDefinitionId(officeDoneInfo.getProcessDefinitionId());
                 processDefInfo.setProcessDefinitionKey(officeDoneInfo.getProcessDefinitionKey());
             }
         } else {
-            processDefInfo.setProcessDefinitionId(hpi.getProcessDefinitionId());
-            processDefInfo
-                .setProcessDefinitionKey(processDefInfo.getProcessDefinitionId().split(SysVariables.COLON)[0]);
+            processDefinitionId = hpi.getProcessDefinitionId();
+            processDefInfo.setProcessDefinitionId(processDefinitionId);
+            processDefInfo.setProcessDefinitionKey(processDefinitionId.split(SysVariables.COLON)[0]);
         }
         processDefInfo.setStartor(processParam.getStartor());
         processDefInfo.setProcessSerialNumber(processParam.getProcessSerialNumber());
@@ -503,7 +502,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         e.printStackTrace(print);
         try {
             String msg = result.toString();
-            String time = Y9DateTimeUtils.formatCurrentDateTime();
             ErrorLog errorLog = new ErrorLog();
             errorLog.setId(Y9IdGenerator.genId(IdType.SNOWFLAKE));
             errorLog.setErrorFlag(ErrorLogModel.ERROR_FLAG_SAVE_CHAOSONG);
@@ -553,7 +551,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Override
     public Y9Page<ChaoSongModel> pageDoneList(String orgUnitId, String documentTitle, int rows, int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (page < 1) {
             page = 1;
         }
@@ -572,8 +569,8 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
             page = 1;
         }
         // 查询数据
-        Page<ChaoSongInfo> pageList = searchChaoSongInfoByUser(Y9LoginUserHolder.getTenantId(), userId, searchName,
-            itemId, userName, state, year, page, rows);
+        Page<ChaoSongInfo> pageList =
+            searchChaoSongInfoByUser(userId, searchName, itemId, userName, state, year, page, rows);
         // 构建返回列表
         List<ChaoSongModel> list = buildMyChaoSongModelList(pageList.getContent(), page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
@@ -581,7 +578,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Override
     public Y9Page<ChaoSongModel> pageOpinionChaosongByUserId(String userId, String documentTitle, int rows, int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         List<ChaoSongInfo> csList;
         if (page < 1) {
             page = 1;
@@ -649,7 +645,6 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
 
     @Override
     public Y9Page<ChaoSongModel> pageTodoList(String orgUnitId, String documentTitle, int rows, int page) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         if (page < 1) {
             page = 1;
         }
@@ -740,14 +735,13 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
     @Override
     public Y9Page<ChaoSongModel> searchAllByUserId(String searchName, String itemId, String userName, String state,
         String year, Integer page, Integer rows) {
-        String tenantId = Y9LoginUserHolder.getTenantId();
         String userId = Y9FlowableHolder.getPositionId();
         if (page < 1) {
             page = 1;
         }
         // 查询数据
         Page<ChaoSongInfo> pageList =
-            searchChaoSongInfoByUser(tenantId, userId, searchName, itemId, userName, state, year, page, rows);
+            searchChaoSongInfoByUser(userId, searchName, itemId, userName, state, year, page, rows);
         // 构建返回列表
         List<ChaoSongModel> list = buildChaoSongModelList(pageList.getContent(), page, rows);
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), list);
@@ -822,10 +816,12 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         return new PageImpl<>(csList, pageable, searchHits.getTotalHits());
     }
 
-    private Page<ChaoSongInfo> searchChaoSongInfoByUser(String tenantId, String userId, String searchName,
-        String itemId, String userName, String state, String year, Integer page, Integer rows) {
+    private Page<ChaoSongInfo> searchChaoSongInfoByUser(String userId, String searchName, String itemId,
+        String userName, String state, String year, Integer page, Integer rows) {
         Pageable pageable = PageRequest.of(page - 1, rows, Direction.DESC, ItemConsts.CREATETIME_KEY);
-        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(tenantId).and(ItemConsts.USERID_KEY).is(userId);
+        Criteria criteria = new Criteria(ItemConsts.TENANTID_KEY).is(Y9LoginUserHolder.getTenantId())
+            .and(ItemConsts.USERID_KEY)
+            .is(userId);
         if (StringUtils.isNotBlank(searchName)) {
             criteria.subCriteria(new Criteria(ItemConsts.TITLE_KEY).contains(searchName));
         }
