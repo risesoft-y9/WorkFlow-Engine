@@ -177,7 +177,9 @@ public class DraftApiImpl implements DraftApi {
             draftList.add(retMap);
             number += 1;
         }
-        draftEntityService.handelFormData(itemId, draftList, processSerialNumbers);
+        if (processSerialNumbers.size() > 0) {
+            draftEntityService.handelFormData(itemId, draftList, processSerialNumbers);
+        }
         return Y9Page.success(page, pageList.getTotalPages(), pageList.getTotalElements(), draftList);
     }
 
@@ -223,8 +225,6 @@ public class DraftApiImpl implements DraftApi {
     /**
      * 编辑草稿
      *
-     * @param tenantId 租户id
-     * @param orgUnitId 人员、岗位id
      * @param itemId 事项id
      * @param processSerialNumber 流程编号
      * @param mobile 是否手机端

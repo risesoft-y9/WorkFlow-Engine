@@ -23,6 +23,9 @@ public class HandleFormDataServiceImpl implements HandleFormDataService {
 
     @Override
     public void execute(String itemId, List<Map<String, Object>> items, List<String> processSerialNumbers) {
+        if (processSerialNumbers == null || processSerialNumbers.isEmpty()) {
+            return;
+        }
         Y9Result<Map<String, Map<String, Object>>> formDataResult =
             formDataApi.getDataByProcessSerialNumbers(itemId, processSerialNumbers);
         if (formDataResult.isSuccess()) {
