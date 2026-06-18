@@ -34,12 +34,6 @@
             <groupId>net.risesoft</groupId>
             <artifactId>risenet-y9boot-starter-security</artifactId>
             <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>xml-apis</groupId>
-                    <artifactId>xml-apis</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
 
         <dependency>
@@ -112,6 +106,7 @@
                 </plugins>
             </build>
         </profile>
+
         <profile>
             <id>deploy-maven-central</id>
             <build>
@@ -123,7 +118,6 @@
                             <skip>true</skip>
                         </configuration>
                     </plugin>
-
                     <plugin>
                         <groupId>org.sonatype.central</groupId>
                         <artifactId>central-publishing-maven-plugin</artifactId>

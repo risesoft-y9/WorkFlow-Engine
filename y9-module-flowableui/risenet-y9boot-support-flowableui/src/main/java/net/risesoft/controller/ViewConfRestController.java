@@ -4,7 +4,6 @@ import java.util.List;
 
 import jakarta.validation.constraints.NotBlank;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;

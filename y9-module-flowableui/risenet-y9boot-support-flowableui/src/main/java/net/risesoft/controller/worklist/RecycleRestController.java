@@ -3,7 +3,6 @@ package net.risesoft.controller.worklist;
 import java.util.List;
 import java.util.Map;
 
-
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.GetMapping;

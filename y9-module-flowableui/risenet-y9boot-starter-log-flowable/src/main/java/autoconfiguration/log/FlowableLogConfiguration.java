@@ -84,7 +84,6 @@ public class FlowableLogConfiguration {
 
     @Primary
     @Bean(name = {"y9ThreadPoolTaskExecutor"})
-    @ConditionalOnMissingBean(name = "y9ThreadPoolTaskExecutor")
     public Executor y9ThreadPoolTaskExecutor(ThreadPoolTaskExecutorBuilder builder) {
         ThreadPoolTaskExecutor taskExecutor = builder.build();
         taskExecutor.setCorePoolSize(10);

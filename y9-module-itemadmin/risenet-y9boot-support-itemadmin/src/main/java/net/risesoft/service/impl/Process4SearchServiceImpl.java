@@ -8,8 +8,6 @@ import java.util.Map;
 
 import javax.sql.DataSource;
 
-import jakarta.annotation.Resource;
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.jdbc.core.JdbcTemplate;

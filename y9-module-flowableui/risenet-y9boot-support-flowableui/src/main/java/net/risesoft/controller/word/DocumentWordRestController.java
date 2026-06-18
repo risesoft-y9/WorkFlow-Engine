@@ -94,9 +94,8 @@ public class DocumentWordRestController {
     @GetMapping(value = "/getHisWord")
     public Y9Result<List<DocumentWordModel>> getHisWord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String wordType) {
-        List<DocumentWordModel> list = documentWordApi
-            .findHisByProcessSerialNumberAndWordType(processSerialNumber, wordType)
-            .getData();
+        List<DocumentWordModel> list =
+            documentWordApi.findHisByProcessSerialNumberAndWordType(processSerialNumber, wordType).getData();
         return Y9Result.success(list, "获取信息成功");
     }
 
@@ -114,8 +113,7 @@ public class DocumentWordRestController {
     public Y9Result<Boolean> getPermissionWord(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processDefinitionId, @RequestParam(required = false) String taskDefKey,
         @RequestParam @NotBlank String wordType) {
-        return documentWordApi.getPermissionWord(itemId, processDefinitionId,
-            taskDefKey, wordType);
+        return documentWordApi.getPermissionWord(itemId, processDefinitionId, taskDefKey, wordType);
     }
 
     /**
@@ -129,9 +127,8 @@ public class DocumentWordRestController {
     @GetMapping(value = "/getWord")
     public Y9Result<DocumentWordModel> getWord(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String wordType) {
-        List<DocumentWordModel> list = documentWordApi
-            .findByProcessSerialNumberAndWordType(processSerialNumber, wordType)
-            .getData();
+        List<DocumentWordModel> list =
+            documentWordApi.findByProcessSerialNumberAndWordType(processSerialNumber, wordType).getData();
         return Y9Result.success(list.isEmpty() ? null : list.get(0), "获取信息成功");
     }
 
