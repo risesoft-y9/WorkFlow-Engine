@@ -1,4 +1,0 @@
-office:
-    # /Libreoffice/Openoffice  驱动的绝对路径
-    # home: C:\\Program Files\\LibreOffice
-    home: /opt/libreoffice7
