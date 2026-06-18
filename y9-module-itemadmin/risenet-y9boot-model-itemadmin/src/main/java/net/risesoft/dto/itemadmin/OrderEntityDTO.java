@@ -1,6 +1,6 @@
 package net.risesoft.dto.itemadmin;
 
-import javax.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotBlank;
 
 import lombok.Data;
 

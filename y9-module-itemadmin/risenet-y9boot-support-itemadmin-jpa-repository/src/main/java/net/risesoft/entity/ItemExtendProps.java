@@ -2,15 +2,15 @@ package net.risesoft.entity;
 
 import java.io.Serializable;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.GeneratedValue;
-import javax.persistence.Id;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Convert;
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
 import org.hibernate.annotations.Comment;
 import org.hibernate.annotations.GenericGenerator;
-import org.hibernate.annotations.Type;
 
 import lombok.Data;
 import lombok.NoArgsConstructor;
@@ -24,7 +24,7 @@ import lombok.NoArgsConstructor;
 @Data
 @Entity
 @Table(name = "FF_ITEM_EXTENDPROPS")
-@org.hibernate.annotations.Table(comment = "事项扩展属性信息表", appliesTo = "FF_ITEM_EXTENDPROPS")
+@Comment("事项扩展属性信息表")
 public class ItemExtendProps implements Serializable {
 
     private static final long serialVersionUID = 2822386808572556307L;
@@ -40,17 +40,17 @@ public class ItemExtendProps implements Serializable {
     @Column(name = "ITEMID", length = 100, nullable = false)
     private String itemId;
 
-    @Type(type = "numeric_boolean")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否显示意见附件")
     @Column(name = "SHOWFILETAB")
     private boolean showFileTab = false;
 
-    @Type(type = "numeric_boolean")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否显示正文")
     @Column(name = "SHOWDOCUMENTTAB")
     private boolean showDocumentTab = false;
 
-    @Type(type = "numeric_boolean")
+    @Convert(converter = org.hibernate.type.NumericBooleanConverter.class)
     @Comment("是否显示关联流程")
     @Column(name = "SHOWHISTORYTAB")
     private boolean showHistoryTab = false;

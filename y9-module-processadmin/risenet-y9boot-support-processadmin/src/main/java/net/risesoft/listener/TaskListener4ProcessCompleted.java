@@ -77,8 +77,7 @@ public class TaskListener4ProcessCompleted extends AbstractFlowableEventListener
                 String tenantIdTemp = (String)executionEntityStart.getVariable(SysVariables.TENANT_ID);
                 Y9LoginUserHolder.setTenantId(tenantIdTemp);
                 ItemModel itemModel =
-                    itemApi.findByProcessDefinitionKey(tenantIdTemp, executionEntityStart.getProcessDefinitionKey())
-                        .getData();
+                    itemApi.findByProcessDefinitionKey(executionEntityStart.getProcessDefinitionKey()).getData();
                 if (StringUtils.isNotEmpty(itemModel.getType()) && "sub".equals(itemModel.getType())) {
                     String processSerialNumber =
                         (String)executionEntityStart.getVariable(SysVariables.PROCESS_SERIAL_NUMBER);

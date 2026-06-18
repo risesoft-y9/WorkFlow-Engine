@@ -23,14 +23,13 @@ public interface ActRuDetailApi {
 
     /**
      * 根据流程实例id标记流程为办结
-     *
-     * @param tenantId 租户id
+     * 
      * @param processInstanceId 流程实例id
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
      */
     @PostMapping("/endByProcessInstanceId")
-    Y9Result<Object> endByProcessInstanceId(String tenantId, @RequestParam String processInstanceId);
+    Y9Result<Object> endByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 根据执行实例id标记流程为删除
