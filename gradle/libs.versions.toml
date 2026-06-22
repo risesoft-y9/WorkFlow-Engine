@@ -5,9 +5,10 @@ y9-digitalbase = "9.7.0-SNAPSHOT"
 flowable-spring-boot = "7.2.0"
 
 # database
-com-oracle-database-jdbc-ojdbc11 = "21.9.0.0"
-kingbase-hibernate-dialect = "5.4.6.Finaldialect"
-kingbase-hibernate-jpa-api = "2.1.0.Final"
+com-oracle-database-jdbc-ojdbc17 = "23.8.0.25.04"
+com-dameng = "8.1.4.6"
+com-dameng-dialect = "8.1.4.93"
+kingbase-kesdialect-hibernate62 = "2.0.1"
 kingbase-kingbase8 = "8.6.1"
 
 cn-wps-yun-graph-java-client = "1.0.11"
@@ -60,9 +61,10 @@ flowable-groovy-script-static-engine = { module = "org.flowable:flowable-groovy-
 groovy-jsr223 = { module = "org.apache.groovy:groovy-jsr223" }
 
 # database
-com-oracle-database-jdbc-ojdbc11 = { module = "com.oracle.database.jdbc:ojdbc11", version.ref = "com-oracle-database-jdbc-ojdbc11" }
-kingbase-hibernate-dialect = { module = "cn.com.kingbase:hibernate-dialect", version.ref = "kingbase-hibernate-dialect" }
-kingbase-hibernate-jpa-api = { module = "cn.com.kingbase:hibernate-jpa-api", version.ref = "kingbase-hibernate-jpa-api" }
+com-oracle-database-jdbc-ojdbc17 = { module = "com.oracle.database.jdbc:ojdbc17", version.ref = "com-oracle-database-jdbc-ojdbc17" }
+dameng-dmdialect-hibernate66 = { module = "com.dameng:DmDialect-for-hibernate6.6", version.ref = "com-dameng-dialect" }
+dameng-dmjdbcdriver11 = { module = "com.dameng:DmJdbcDriver11", version.ref = "com-dameng" }
+kingbase-kesdialect-hibernate62 = { module = "cn.com.kingbase:KesDialect-for-hibernate6.2", version.ref = "kingbase-kesdialect-hibernate62" }
 kingbase-kingbase8 = { module = "cn.com.kingbase:kingbase8", version.ref = "kingbase-kingbase8" }
 
 graph-java-client = { module = "cn.wps.yun:graph-java-client", version.ref = "cn-wps-yun-graph-java-client" }
