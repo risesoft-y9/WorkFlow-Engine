@@ -1,6 +1,7 @@
 ﻿plugins {
     alias(libs.plugins.y9.conventions.java)
     alias(libs.plugins.y9.lombok)
+    alias(libs.plugins.y9.aspectj)
     alias(libs.plugins.y9.smart.doc)
 }
 

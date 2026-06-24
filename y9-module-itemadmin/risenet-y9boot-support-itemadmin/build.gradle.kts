@@ -17,6 +17,7 @@ dependencies {
     api("net.risesoft:risenet-y9boot-common-util")
     api("net.risesoft:risenet-y9boot-common-sqlddl")
     api("net.risesoft:risenet-y9boot-starter-log")
+    api("net.risesoft:risenet-y9boot-support-audit")
     api("net.risesoft:risenet-y9boot-starter-jpa-public")
     api("net.risesoft:risenet-y9boot-starter-multi-tenant")
     api("net.risesoft:risenet-y9boot-starter-cache-redis")

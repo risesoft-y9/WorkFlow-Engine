@@ -10,7 +10,6 @@ dependencies {
     api("net.risesoft:risenet-y9boot-starter-idgenerator")
     api("net.risesoft:risenet-y9boot-properties")
     api("net.risesoft:risenet-y9boot-common-model")
-    api("net.risesoft:risenet-y9boot-support-file-jpa-repository")
     api("net.risesoft:risenet-y9boot-support-file-service-local")
     api("net.risesoft:risenet-y9boot-common-util")
     api("net.risesoft:risenet-y9boot-common-sqlddl")
