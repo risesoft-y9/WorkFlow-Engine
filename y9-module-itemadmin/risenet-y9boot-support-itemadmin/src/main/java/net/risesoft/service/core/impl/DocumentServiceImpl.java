@@ -28,8 +28,8 @@ import net.risesoft.api.platform.org.CustomGroupApi;
 import net.risesoft.api.platform.org.DepartmentApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PositionApi;
+import net.risesoft.api.platform.permission.cache.PositionResourceApi;
 import net.risesoft.api.platform.permission.cache.PositionRoleApi;
-import net.risesoft.api.platform.resource.AppApi;
 import net.risesoft.api.processadmin.ConditionParserApi;
 import net.risesoft.api.processadmin.HistoricActivityApi;
 import net.risesoft.api.processadmin.HistoricProcessApi;
@@ -199,7 +199,6 @@ public class DocumentServiceImpl implements DocumentService {
     private final HistoricActivityApi historicActivityApi;
     private final ActRuDetailService actRuDetailService;
     private final SignDeptDetailService signDeptDetailService;
-    private final AppApi appApi;
     private final ButtonService buttonService;
     private final AttachmentService attachmentService;
     private final Y9WordService y9WordService;
@@ -207,6 +206,8 @@ public class DocumentServiceImpl implements DocumentService {
     private final SpeakInfoService speakInfoService;
     private final OfficeFollowService officeFollowService;
     private final ItemBackTaskConfService itemBackTaskConfService;
+
+    private final PositionResourceApi positionResourceApi;
 
     /**
      * 根据用户类型处理用户选择
@@ -1070,7 +1071,7 @@ public class DocumentServiceImpl implements DocumentService {
     public String getFirstItem() {
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9FlowableHolder.getPositionId();
-            List<App> list = appApi.listAccessAppForPosition(tenantId, userId, AuthorityEnum.BROWSE).getData();
+            List<App> list = positionResourceApi.listApps(tenantId, userId, AuthorityEnum.BROWSE).getData();
             String url;
             for (Resource r : list) {
                 url = r.getUrl();
@@ -1799,7 +1800,7 @@ public class DocumentServiceImpl implements DocumentService {
         try {
             String userId = Y9FlowableHolder.getPositionId();
             String tenantId = Y9LoginUserHolder.getTenantId();
-            List<App> list = appApi.listAccessAppForPosition(tenantId, userId, AuthorityEnum.BROWSE).getData();
+            List<App> list = positionResourceApi.listApps(tenantId, userId, AuthorityEnum.BROWSE).getData();
             ItemListModel model;
             String url;
             long todoCount;
@@ -1844,7 +1845,7 @@ public class DocumentServiceImpl implements DocumentService {
         List<ItemListModel> listMap = new ArrayList<>();
         try {
             String tenantId = Y9LoginUserHolder.getTenantId(), userId = Y9FlowableHolder.getPositionId();
-            List<App> list = appApi.listAccessAppForPosition(tenantId, userId, AuthorityEnum.BROWSE).getData();
+            List<App> list = positionResourceApi.listApps(tenantId, userId, AuthorityEnum.BROWSE).getData();
             ItemListModel model;
             String url;
             for (Resource r : list) {
