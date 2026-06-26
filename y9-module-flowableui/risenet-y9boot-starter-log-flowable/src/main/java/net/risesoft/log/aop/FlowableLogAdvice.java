@@ -190,9 +190,12 @@ public class FlowableLogAdvice implements MethodInterceptor {
 
     private Object processParameterValue(Object value, String paramName, RequestInfo requestInfo) {
         if (value instanceof MultipartFile) {
-            return ((MultipartFile)value).getOriginalFilename();
+            String filename = ((MultipartFile)value).getOriginalFilename();
+            return filename != null ? filename : "";
+        } else if (value instanceof HttpServletRequest || value instanceof HttpServletResponse) {
+            return "[Servlet Object]";
         } else {
-            if ("processSerialNumber".equalsIgnoreCase(paramName)) {
+            if ("processSerialNumber".equalsIgnoreCase(paramName) && value instanceof String) {
                 requestInfo.setProcessSerialNumber((String)value);
             }
             return value;
@@ -213,6 +216,9 @@ public class FlowableLogAdvice implements MethodInterceptor {
         String[] paramNames = parameterNameDiscoverer.getParameterNames(method);
         if (null != paramNames) {
             Object[] args = invocation.getArguments();
+            if (args == null) {
+                return;
+            }
             Map<String, Object> paramMap = buildParameterMap(paramNames, args, requestInfo);
             if (!paramMap.isEmpty()) {
                 flowableAccessLog.setArguments(Y9JsonUtil.writeValueAsString(paramMap));
@@ -234,12 +240,14 @@ public class FlowableLogAdvice implements MethodInterceptor {
     private void setTitleInformation(FlowableAccessLog flowableAccessLog, String processSerialNumber) {
         if (StringUtils.hasText(processSerialNumber)) {
             try {
-                ProcessParamModel processParam =
-                    processParamApi.findByProcessSerialNumber(processSerialNumber).getData();
-                if (null != processParam) {
-                    flowableAccessLog.setSystemName(processParam.getSystemCnName());
-                    flowableAccessLog.setModularName(processParam.getItemName());
-                    flowableAccessLog.setTitle(processParam.getTitle());
+                var result = processParamApi.findByProcessSerialNumber(processSerialNumber);
+                if (result != null) {
+                    ProcessParamModel processParam = result.getData();
+                    if (processParam != null) {
+                        flowableAccessLog.setSystemName(processParam.getSystemCnName());
+                        flowableAccessLog.setModularName(processParam.getItemName());
+                        flowableAccessLog.setTitle(processParam.getTitle());
+                    }
                 }
             } catch (Exception e) {
                 LOGGER.warn("获取流程参数信息失败", e);
@@ -257,7 +265,8 @@ public class FlowableLogAdvice implements MethodInterceptor {
             flowableAccessLog.setPersonType(userInfo.getPersonType());
             flowableAccessLog.setDn(userInfo.getDn());
             flowableAccessLog.setTenantId(userInfo.getTenantId());
-            flowableAccessLog.setTenantName(Y9LoginUserHolder.getTenantName());
+            String tenantName = Y9LoginUserHolder.getTenantName();
+            flowableAccessLog.setTenantName(tenantName != null ? tenantName : "");
         }
     }
 
