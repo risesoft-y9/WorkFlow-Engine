@@ -2,8 +2,8 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2024-04-23 15:08:38
- * @LastEditors: mengjuhua
- * @LastEditTime: 2025-12-26 16:38:22
+ * @LastEditors: yihong yihong@risesoft.net
+ * @LastEditTime: 2026-05-29 14:59:59
  * @Descripttion: 加减签
  * @FilePath: \y9-vue\y9vue-flowableUI\src\views\multiInstance\list.vue
 -->
@@ -133,11 +133,14 @@
             loading.value = false;
             type.value = res.data.type;
             if (type.value == 'sequential') {
-                tableConfig.value.columns.splice(2, 0, {
-                    title: computed(() => t('任务状态')),
-                    key: 'status',
-                    width: '150'
-                });
+                const hasStatusCol = tableConfig.value.columns.some((col) => col.key === 'status');
+                if (!hasStatusCol) {
+                    tableConfig.value.columns.splice(2, 0, {
+                        title: computed(() => t('任务状态')),
+                        key: 'status',
+                        width: '150'
+                    });
+                }
                 for (let item of res.data.rows) {
                     if (item.status == '未开始') {
                         //串行加签后存在未开始人员，如果有发送按钮，提交按钮，办结按钮等，要提醒重新打开办件处理
@@ -149,11 +152,14 @@
                     emits('refreshButton');
                 }
             } else if (type.value == 'parallel') {
-                tableConfig.value.columns.splice(2, 0, {
-                    title: computed(() => t('是否主办')),
-                    key: 'isZhuBan',
-                    width: '150'
-                });
+                const hasZhuBanCol = tableConfig.value.columns.some((col) => col.key === 'isZhuBan');
+                if (!hasZhuBanCol) {
+                    tableConfig.value.columns.splice(2, 0, {
+                        title: computed(() => t('是否主办')),
+                        key: 'isZhuBan',
+                        width: '150'
+                    });
+                }
                 for (let item of res.data.rows) {
                     //并行加签后，存在多人，如果有发送按钮，提交按钮，办结按钮等，要提醒重新打开办件处理，显示办理完成按钮
                     if (item.assigneeId == res.data.userId && res.data.rows.length > 1 && item.isZhuBan == '否') {

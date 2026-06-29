@@ -1,4 +1,13 @@
-<!-- 流转状态 -->
+<!--
+
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-11-16 15:25:20
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 15:05:02
+ * @Descripttion: 流转状态
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\components\Handling\ProcessStatus.vue
+-->
 <template>
     <div class="process-style">
         <div class="line-status">
@@ -87,7 +96,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-    import { reactive, toRefs, watch, inject } from 'vue';
+    import { inject, reactive, toRefs, watch } from 'vue';
     import { $dataType } from '@/utils/object';
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo');

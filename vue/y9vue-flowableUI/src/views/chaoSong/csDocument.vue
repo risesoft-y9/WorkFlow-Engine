@@ -112,7 +112,7 @@
     import speakInfo from '@/views/speakInfo/speakInfo.vue';
     import csUserChoise from '@/views/chaoSong/dialogContent/csUserChoise.vue';
     import flowChart from '@/views/flowchart/index.vue';
-    import { chaoSongData } from '@/api/flowableUI/chaoSong';
+    import { chaoSongData, monitorChaoSongData } from '@/api/flowableUI/chaoSong';
     import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
     import { useRoute, useRouter } from 'vue-router';
     import { useFlowableStore } from '@/store/modules/flowableStore';
@@ -340,6 +340,13 @@
         dataList.value.push({ label: '历程', name: 'process' });
         dataList.value.push({ label: '流程图', name: 'flowChart' });
         operationBtnList.value = [];
+        operationBtnList.value.push({
+            name: '返回',
+            icon: 'ri-arrow-go-back-fill',
+            onClick: () => {
+                backToList();
+            }
+        });
         for (let item of menuMap.value) {
             if (item.key.indexOf('follow') > -1 && follow.value) {
                 //关注按钮：取消关注
@@ -445,7 +452,10 @@
                 });
                 return;
             }
-            if (printFormType.value == '2') {
+            if (printFormType.value == '1') {
+                //打印word
+                openWord('print');
+            } else if (printFormType.value == '2') {
                 //打印表单
                 printUrl.value =
                     import.meta.env.VUE_APP_HOST_INDEX +

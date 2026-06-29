@@ -43,7 +43,7 @@
     </y9Table>
 </template>
 <script lang="ts" setup>
-    import { computed, inject, onMounted, reactive, toRefs } from 'vue';
+    import { computed, inject, onMounted, reactive } from 'vue';
     import { deleteDraft, draftViewConf, getDraftRecycleList, reduction } from '@/api/flowableUI/draft';
     import { useRoute, useRouter } from 'vue-router';
     import { useFlowableStore } from '@/store/modules/flowableStore';

@@ -15,9 +15,24 @@ export default (serve) => {
     const ENV = loadEnv(serve.mode, process.cwd(), prefix);
     return defineConfig({
         base: ENV.VUE_APP_PUBLIC_PATH,
+        // 优化：依赖预构建，加速首次访问
+        optimizeDeps: {
+            include: [
+                'vue',
+                'vue-router',
+                'pinia',
+                'element-plus',
+                '@element-plus/icons-vue',
+                'axios',
+                'vue-i18n',
+                '@vueuse/core',
+                'remixicon/fonts/remixicon.css'
+            ],
+            exclude: ['y9plugin-sso'] // 排除SSO插件，避免预构建问题
+        },
         build: {
             outDir: ENV.VUE_APP_NAME,
-            chunkSizeWarningLimit: 1000,
+            chunkSizeWarningLimit: 1500,
             rollupOptions: {
                 output: {
                     manualChunks(id) {

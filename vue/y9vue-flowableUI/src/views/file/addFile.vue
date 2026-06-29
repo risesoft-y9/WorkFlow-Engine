@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { inject, reactive, ref } from 'vue';
+    import { defineProps, inject, reactive, ref } from 'vue';
     import type { UploadInstance } from 'element-plus';
     import axios from 'axios';
     import y9_storage from '@/utils/storage';

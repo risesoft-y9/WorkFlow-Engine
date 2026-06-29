@@ -121,7 +121,12 @@
                             </el-table>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('短信提醒')" name="SMSReminder" style="height: 360px">
+                    <el-tab-pane
+                        v-if="smsRemind == 'true'"
+                        :label="$t('短信提醒')"
+                        name="SMSReminder"
+                        style="height: 360px"
+                    >
                         <el-checkbox v-model="awoke">{{ $t('短信提醒') }}</el-checkbox>
                         <el-checkbox v-model="awokeShuMing" @change="addShuMing">{{ $t('是否添加署名') }}</el-checkbox>
                         <table class="table-input" style="width: 100%; border-spacing: 0">
@@ -195,7 +200,7 @@
             }
         }
     });
-
+    const smsRemind = ref(import.meta.env.VUE_APP_SMS);
     const emits = defineEmits(['set-UserChoise']);
     const flowableStore = useFlowableStore();
     const data = reactive({
@@ -207,8 +212,8 @@
         taskId: '',
         activeName: 'addressee',
         routeToTask: '',
-        awoke: 'false',
-        awokeShuMing: 'false',
+        awoke: false,
+        awokeShuMing: false,
         awokeText: '',
         lastfixSmsContext: '',
         remindContent: '',
@@ -431,7 +436,7 @@
         userChoice.value = newuserChoice;
     }
 
-    function send() {
+    async function send() {
         //发送
         if (userChoice.value.length == 0) {
             ElMessage({ type: 'error', message: t('请选择办理人'), offset: 65, appendTo: '.userChoise4Custom' });
@@ -618,7 +623,7 @@
     }
 
     #tab-SMSReminder {
-        display: none;
+        // display: none;
     }
 </style>
 

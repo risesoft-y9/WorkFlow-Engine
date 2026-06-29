@@ -4,8 +4,8 @@
  * @Author: zhangchongjie
  * @Date: 2024-04-23 15:08:38
  * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-07 09:09:17
- * @FilePath: \vue\y9vue-flowableUI\src\views\workForm\add.vue
+ * @LastEditTime: 2025-12-25 09:36:34
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\views\workForm\add.vue
 -->
 <template>
     <el-container>
@@ -23,7 +23,7 @@
     </el-container>
 </template>
 <script lang="ts" setup>
-    import { computed, nextTick, onMounted, reactive, ref, toRefs, watch } from 'vue';
+    import { computed, nextTick, onMounted, reactive, watch } from 'vue';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { getFormInitData, getFormJson } from '@/api/flowableUI/form';
     import { getBindPreFormByItemId, savePreFormData } from '@/api/flowableUI/preform';
@@ -35,8 +35,8 @@
     const currentrRute = useRoute();
     const flowableStore = useFlowableStore();
 
-    let generateForm = ref();
     const data = reactive({
+        generateForm: '',
         formJson: { list: [], config: {} },
         edit: true, //表单是否可编辑
         remoteFuncs: {},
@@ -109,7 +109,7 @@
         }
     });
 
-    let { formJson, edit, remoteFuncs, initDataUrl, formId, dialogConfig } = toRefs(data);
+    let { generateForm, formJson, edit, remoteFuncs, initDataUrl, formId, dialogConfig } = toRefs(data);
 
     onMounted(() => {
         openForm();

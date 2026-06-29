@@ -1,19 +1,20 @@
 /*
  * @Author: your name
  * @Date: 2021-05-19 09:41:06
- * @LastEditTime: 2021-07-02 16:00:47
- * @LastEditors: zhangchongjie
- * @Description: In User Settings Edit
- * @FilePath: \workspace-y9boot-9.5.x-vue\y9vue-flowableUI\src\api\flowableUI\index.js
+ * @LastEditTime: 2026-06-29 14:46:09
+ * @LastEditors: mengjuhua
+ * @Description: 事项相关  
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\index.ts
  */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
+
 //获取事项列表
 export function getItemList() {
     const params = {};
     return flowableRequest({
-        url: "/vue/document/getItemList",
+        url: '/vue/item/getItemList',
         method: 'get',
         params: params
     });
@@ -25,7 +26,7 @@ export function getItem(itemId) {
         itemId: itemId
     };
     return flowableRequest({
-        url: "/vue/main/getItem",
+        url: '/vue/main/getItem',
         method: 'get',
         params: params
     });
@@ -35,7 +36,7 @@ export function getItem(itemId) {
 export function getRole() {
     const params = {};
     return flowableRequest({
-        url: "/vue/main/getRole",
+        url: '/vue/main/getRole',
         method: 'get',
         params: params
     });
@@ -45,7 +46,7 @@ export function getRole() {
 export function getPositionList(count, itemId) {
     const params = { count: count, itemId: itemId };
     return flowableRequest({
-        url: "/vue/main/getPositionList",
+        url: '/vue/main/getPositionList',
         method: 'get',
         params: params
     });
@@ -59,12 +60,11 @@ export function getTaskOrProcessInfo(taskId, processInstanceId, type) {
         type: type
     };
     return flowableRequest({
-        url: "/vue/main/getTaskOrProcessInfo",
+        url: '/vue/main/getTaskOrProcessInfo',
         method: 'get',
         params: params
     });
 }
-
 
 //获取新建数据
 export function addData(itemId) {
@@ -72,7 +72,7 @@ export function addData(itemId) {
         itemId: itemId
     };
     return flowableRequest({
-        url: "/vue/document/add",
+        url: '/vue/document/add',
         method: 'get',
         params: params
     });
@@ -83,8 +83,8 @@ export function getFormInitData(url, processSerialNumber) {
     const params = {
         processSerialNumber: processSerialNumber
     };
-    if (url == "") {
-        url = "/vue/y9form/getInitData";
+    if (url == '') {
+        url = '/vue/y9form/getInitData';
     }
     return flowableRequest({
         url: url,
@@ -174,4 +174,3 @@ export function getReadCount() {
         params: params
     });
 }
-

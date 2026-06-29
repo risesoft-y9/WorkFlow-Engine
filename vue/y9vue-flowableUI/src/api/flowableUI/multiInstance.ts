@@ -1,3 +1,12 @@
+/*
+ * @version:
+ * @Author: zhangchongjie
+ * @Date: 2024-05-11 16:39:47
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 14:46:49
+ * @Descripttion:  加减签 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\multiInstance.ts
+ */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
@@ -13,19 +22,15 @@ export function getAddOrDeleteMultiInstance(processInstanceId) {
     });
 }
 
-
 //加签
-export function addExecutionId(processInstanceId, executionId, taskId, userChoice, selectUserId, num, isSendSms, isShuMing, smsContent) {
+export function addExecutionId(processInstanceId, executionId, taskId, userChoice, selectUserId, num) {
     const params = {
         processInstanceId: processInstanceId,
         executionId: executionId,
         taskId: taskId,
         userChoice: userChoice,
         selectUserId: selectUserId,
-        isSendSms: isSendSms,
-        num: num,
-        isShuMing: isShuMing,
-        smsContent: smsContent
+        num: num
     };
     return flowableRequest({
         url: '/vue/multiInstance/addExecutionId',
@@ -47,7 +52,6 @@ export function removeExecution(executionId, taskId, elementUser) {
         params: params
     });
 }
-
 
 //串行减签
 export function removeExecution4Sequential(executionId, taskId, elementUser, num) {

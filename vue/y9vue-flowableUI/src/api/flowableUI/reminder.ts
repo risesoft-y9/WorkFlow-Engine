@@ -1,14 +1,15 @@
 /*
  * @Author: your name
  * @Date: 2021-05-25 09:42:19
- * @LastEditTime: 2026-01-07 10:18:06
+ * @LastEditTime: 2026-06-29 14:48:38
  * @LastEditors: mengjuhua
- * @Description: In User Settings Edit
- * @FilePath: \vue\y9vue-flowableUI\src\api\flowableUI\reminder.ts
+ * @Description: 催办相关接口 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\reminder.ts
  */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
+
 //获取催办任务列表
 export function taskList(processInstanceId, page, rows) {
     const params = {
@@ -17,7 +18,7 @@ export function taskList(processInstanceId, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/reminder/taskList",
+        url: '/vue/reminder/taskList',
         method: 'get',
         params: params
     });
@@ -32,7 +33,7 @@ export function reminderList(type, processInstanceId, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/reminder/reminderList",
+        url: '/vue/reminder/reminderList',
         method: 'get',
         params: params
     });
@@ -46,7 +47,7 @@ export function saveReminder(processInstanceId, taskIds, msgContent) {
         msgContent: msgContent
     };
     return flowableRequest({
-        url: "/vue/reminder/saveReminder",
+        url: '/vue/reminder/saveReminder',
         method: 'POST',
         params: params
     });
@@ -59,7 +60,7 @@ export function updateReminder(id, msgContent) {
         msgContent: msgContent
     };
     return flowableRequest({
-        url: "/vue/reminder/updateReminder",
+        url: '/vue/reminder/updateReminder',
         method: 'POST',
         params: params
     });
@@ -71,7 +72,7 @@ export function deleteList(ids) {
         ids: ids
     };
     return flowableRequest({
-        url: "/vue/reminder/deleteList",
+        url: '/vue/reminder/deleteList',
         method: 'post',
         params: params
     });
@@ -85,7 +86,7 @@ export function reminderMeList(taskId, page, rows) {
         page: page
     };
     return flowableRequest({
-        url: "/vue/reminder/reminderMeList",
+        url: '/vue/reminder/reminderMeList',
         method: 'get',
         params: params
     });
@@ -97,7 +98,7 @@ export function setReadTime(ids) {
         ids: ids
     };
     return flowableRequest({
-        url: "/vue/reminder/setReadTime",
+        url: '/vue/reminder/setReadTime',
         method: 'post',
         params: params
     });
@@ -109,10 +110,10 @@ export function remindTaskList(processInstanceId) {
         processInstanceId
     };
     return flowableRequest({
-        url: "/vue/remindInstance/taskList",
+        url: '/vue/remindInstance/taskList',
         method: 'get',
         params: params
-    })
+    });
 }
 
 //获取任务节点信息和流程定义信息
@@ -121,10 +122,10 @@ export function getBpmList(processInstanceId) {
         processInstanceId
     };
     return flowableRequest({
-        url: "/vue/remindInstance/getBpmList",
+        url: '/vue/remindInstance/getBpmList',
         method: 'get',
         params: params
-    })
+    });
 }
 
 export function saveRemindInstance(processInstanceId, taskIds, process, arriveTaskKey, completeTaskKey) {
@@ -133,11 +134,11 @@ export function saveRemindInstance(processInstanceId, taskIds, process, arriveTa
         taskIds,
         process,
         arriveTaskKey,
-        completeTaskKey,
+        completeTaskKey
     };
     return flowableRequest({
-        url: "/vue/remindInstance/saveRemindInstance",
+        url: '/vue/remindInstance/saveRemindInstance',
         method: 'post',
         params: params
-    })
+    });
 }

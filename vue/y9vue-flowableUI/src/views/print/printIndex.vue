@@ -1,8 +1,8 @@
 <!--
  * @Author: your name
  * @Date: 2021-04-13 10:34:31
- * @LastEditTime: 2026-01-07 09:43:44
- * @LastEditors: mengjuhua
+ * @LastEditTime: 2024-02-05 16:59:24
+ * @LastEditors: zhangchongjie
  * @Description: In User Settings Edit
  * @FilePath: \vue\y9vue-flowableUI\src\views\print\printIndex.vue
 -->
@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject, nextTick, onMounted, reactive, ref } from 'vue';
+    import { inject, nextTick, onMounted, reactive, ref } from 'vue';
     import { getFormData, getFormJson } from '@/api/flowableUI/form';
     import { getBindOpinionFrame } from '@/api/flowableUI/opinion';
     import { useRoute } from 'vue-router';

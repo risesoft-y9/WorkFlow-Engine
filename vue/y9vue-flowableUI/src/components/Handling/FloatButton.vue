@@ -1,4 +1,13 @@
-<!-- 操作按钮 -->
+<!--
+
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-11-16 15:25:20
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 15:04:25
+ * @Descripttion: 操作按钮 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\components\Handling\FloatButton.vue
+-->
 <template>
     <div v-if="btnList.length" class="operation-style">
         <div class="btn-style">
@@ -56,8 +65,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-    import { reactive, toRefs, watch, ref, inject } from 'vue';
-    import { $deeploneObject } from '@/utils/object';
+    import { inject, reactive, ref, toRefs, watch } from 'vue';
     import Render from '@/utils/render.vue';
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo');

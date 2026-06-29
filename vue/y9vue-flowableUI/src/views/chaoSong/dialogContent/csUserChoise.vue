@@ -1,8 +1,8 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2026-01-07 11:30:35
- * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-12 17:25:48
+ * @LastEditors: zhangchongjie
  * @Description:  抄送人员选择
 -->
 <template>
@@ -26,62 +26,65 @@
             </div>
             <el-main class="context_div" width="38.2%">
                 <el-tabs v-model="activeName" class="usertab" @tab-click="tabclick">
-                    <el-tab-pane :label="$t('收件人')" name="addressee" style="height: 480px">
-                        <div style="height: 94%">
-                            <el-table
-                                :data="userChoice"
-                                header-row-class-name="table-header"
-                                height="480"
-                                style="width: 100%"
-                                @row-dblclick="delPerson"
-                            >
-                                <el-table-column :label="$t('名称')" prop="name" width="auto">
-                                    <template #default="name_cell">
-                                        <i
-                                            v-if="name_cell.row.type == 'Person' && name_cell.row.sex == '0'"
-                                            class="ri-women-line"
-                                            style="vertical-align: middle"
-                                        ></i>
-                                        <i
-                                            v-else-if="name_cell.row.type == 'Person' && name_cell.row.sex == '1'"
-                                            class="ri-men-line"
-                                            style="vertical-align: middle"
-                                        ></i>
-                                        <i
-                                            v-else-if="name_cell.row.type == 'Position'"
-                                            class="ri-shield-user-line"
-                                            style="vertical-align: middle"
-                                        ></i>
-                                        <i
-                                            v-else-if="name_cell.row.type == 'customGroup'"
-                                            class="ri-shield-star-line"
-                                            style="vertical-align: middle"
-                                        ></i>
-                                        <i
-                                            v-else-if="name_cell.row.type == 'Department'"
-                                            class="ri-slack-line"
-                                            style="vertical-align: middle"
-                                        ></i>
-                                        {{ name_cell.row.name }}
-                                    </template>
-                                </el-table-column>
-                                <el-table-column :label="$t('操作')" align="center" prop="opt" width="85">
-                                    <template #default="opt_cell">
-                                        <i
-                                            :style="{
-                                                fontSize: fontSizeObj.largeFontSize,
-                                                color: '#586cb1',
-                                                cursor: 'pointer'
-                                            }"
-                                            class="ri-close-line"
-                                            @click="delPerson(opt_cell.row)"
-                                        ></i>
-                                    </template>
-                                </el-table-column>
-                            </el-table>
-                        </div>
+                    <el-tab-pane :label="$t('收件人')" name="addressee" style="height: 500px">
+                        <el-table
+                            :data="userChoice"
+                            header-row-class-name="table-header"
+                            height="500"
+                            style="width: 100%"
+                            @row-dblclick="delPerson"
+                        >
+                            <el-table-column :label="$t('名称')" prop="name" width="auto">
+                                <template #default="name_cell">
+                                    <i
+                                        v-if="name_cell.row.type == 'Person' && name_cell.row.sex == '0'"
+                                        class="ri-women-line"
+                                        style="vertical-align: middle"
+                                    ></i>
+                                    <i
+                                        v-else-if="name_cell.row.type == 'Person' && name_cell.row.sex == '1'"
+                                        class="ri-men-line"
+                                        style="vertical-align: middle"
+                                    ></i>
+                                    <i
+                                        v-else-if="name_cell.row.type == 'Position'"
+                                        class="ri-shield-user-line"
+                                        style="vertical-align: middle"
+                                    ></i>
+                                    <i
+                                        v-else-if="name_cell.row.type == 'customGroup'"
+                                        class="ri-shield-star-line"
+                                        style="vertical-align: middle"
+                                    ></i>
+                                    <i
+                                        v-else-if="name_cell.row.type == 'Department'"
+                                        class="ri-slack-line"
+                                        style="vertical-align: middle"
+                                    ></i>
+                                    {{ name_cell.row.name }}
+                                </template>
+                            </el-table-column>
+                            <el-table-column :label="$t('操作')" align="center" prop="opt" width="85">
+                                <template #default="opt_cell">
+                                    <i
+                                        :style="{
+                                            fontSize: fontSizeObj.largeFontSize,
+                                            color: '#586cb1',
+                                            cursor: 'pointer'
+                                        }"
+                                        class="ri-close-line"
+                                        @click="delPerson(opt_cell.row)"
+                                    ></i>
+                                </template>
+                            </el-table-column>
+                        </el-table>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('短信提醒')" name="SMSReminder" style="height: 525px">
+                    <el-tab-pane
+                        v-if="smsRemind == 'true'"
+                        :label="$t('短信提醒')"
+                        name="SMSReminder"
+                        style="height: 500px"
+                    >
                         <el-checkbox v-model="awoke">{{ $t('短信提醒') }}</el-checkbox>
                         <el-checkbox v-model="awokeShuMing" @change="addShuMing">{{ $t('是否添加署名') }}</el-checkbox>
                         <table class="table-input" style="width: 100%; border-spacing: 0">
@@ -145,6 +148,7 @@
     import { chaoSongSave } from '@/api/flowableUI/chaoSong';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { useI18n } from 'vue-i18n';
+    import y9_storage from '@/utils/storage';
 
     const { t } = useI18n();
     // 注入 字体对象
@@ -163,6 +167,8 @@
             }
         }
     });
+
+    const smsRemind = ref(import.meta.env.VUE_APP_SMS);
 
     const emits = defineEmits(['csRefreshCount', 'update-BasicData']);
     const flowableStore = useFlowableStore();
@@ -187,8 +193,9 @@
     }
 
     function addShuMing(val) {
+        const userInfo = y9_storage.getObjectItem('ssoUserInfo');
         if (val) {
-            lastfixSmsContext.value = '-- 姓名';
+            lastfixSmsContext.value = '-- ' + userInfo.name;
         } else {
             lastfixSmsContext.value = '';
         }
@@ -239,7 +246,7 @@
         userChoice.value = newuserChoice;
     }
 
-    function send() {
+    async function send() {
         if (userChoice.value.length == 0) {
             ElMessage({ type: 'error', message: t('请选择收件人'), offset: 65, appendTo: '.csUserChoise' });
             return;
@@ -305,20 +312,20 @@
             overflow: hidden;
         }
 
-        .el-tabs__header {
-            width: 60%;
+        .el-aside {
             background-color: #fff;
-            margin: 0px;
+            border: 1px solid #ccc;
+            padding: 0;
         }
 
         .el-divider--vertical {
             height: 220px;
         }
 
-        .el-aside {
+        .el-tabs__header {
+            width: 60%;
             background-color: #fff;
-            border: 1px solid #ccc;
-            padding: 0;
+            margin: 0px;
         }
 
         .el-tabs__nav-scroll {
@@ -330,23 +337,18 @@
             font-size: v-bind('fontSizeObj.baseFontSize');
         }
 
-        .el-tabs__item {
-            color: #c0c4cc;
-        }
-
-        .el-checkbox {
-            height: 40px;
-        }
-
-        .el-menu--horizontal > .el-menu-item {
-            height: 40px;
-            line-height: 40px;
-            font-size: v-bind('fontSizeObj.baseFontSize');
-        }
-
         .el-tabs__nav-wrap::after {
             height: 0px;
             background-color: #ccc;
+        }
+
+        .el-table::before {
+            height: 0;
+        }
+
+        .table-header .el-table__cell {
+            background-color: #ebeef5;
+            color: #9ba7d0;
         }
 
         .el-table__cell {
@@ -358,33 +360,28 @@
             width: 100%;
         }
 
-        .el-textarea__inner {
-            padding: 0px 11px;
+        .el-checkbox {
+            height: 40px;
         }
 
         .el-input__wrapper {
-            /* box-shadow: 0 0 0 0px var(--el-input-border-color,var(--el-border-color)) inset; */
             width: 100%;
             height: 30px;
             border-radius: 50px;
             font-size: v-bind('fontSizeObj.baseFontSize');
         }
 
+        .el-textarea__inner {
+            padding: 0px 11px;
+            box-shadow: 0 0 0 0px var(--el-input-border-color, var(--el-border-color)) inset;
+        }
+
         .el-button--primary.is-plain {
             --el-button-bg-color: white;
         }
 
-        .table-header .el-table__cell {
-            background-color: #ebeef5;
-            color: #9ba7d0;
-        }
-
         .el-textarea {
             display: block;
-        }
-
-        .el-table::before {
-            height: 0;
         }
     }
 
@@ -398,13 +395,16 @@
     }
 
     #tab-SMSReminder {
-        display: none;
+        // display: none;
     }
 </style>
 
 <style lang="scss" scoped>
     :deep(.el-table__empty-text) {
         font-size: v-bind('fontSizeObj.baseFontSize');
+    }
+    :deep(.el-table__empty-block) {
+        height: 400px !important;
     }
 
     .csUserChoise {
@@ -413,8 +413,13 @@
         }
 
         .context_div {
-            height: 525px;
+            height: 550px;
             border: 0;
+        }
+
+        .personTree {
+            height: 535px !important;
+            border: 0px;
         }
 
         .move_center_div {

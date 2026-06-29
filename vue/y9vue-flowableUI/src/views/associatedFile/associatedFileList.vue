@@ -1,7 +1,7 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2026-01-06 16:06:41
+ * @LastEditTime: 2025-12-25 09:51:43
  * @LastEditors: mengjuhua
  * @Description:  关联流程
 -->
@@ -236,16 +236,16 @@
     }
 </script>
 
-<style lang="scss" scoped>
-    :deep(.el-main-table) {
+<style>
+    .el-main-table {
         padding: 0px;
     }
 
-    :deep(.el-table__header-wrapper) {
+    .el-table__header-wrapper {
         border-top: 1px solid #ebeef5;
     }
 
-    .assFile :deep(.el-button--primary.is-plain) {
+    .assFile .el-button--primary.is-plain {
         --el-button-bg-color: white;
     }
 </style>

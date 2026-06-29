@@ -25,7 +25,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject, reactive, ref, toRefs } from 'vue';
+    import { computed, inject } from 'vue';
     import { getOrgList, getOrgTree, treeSearch } from '@/api/flowableUI/entrustManage';
     import { useI18n } from 'vue-i18n';
 
@@ -37,11 +37,10 @@
     });
 
     const emits = defineEmits(['update_person']);
-    //人员树
-    let selectTreeRef = ref();
-
+    const ruleForm = ref<FormInstance>();
     const data = reactive({
         showButton: false,
+        selectTreeRef: '',
         treeApiObj: {
             //tree接口对象
             topLevel: getOrgList,
@@ -82,11 +81,11 @@
                         reject();
                         return;
                     }
-                    let name: any = [];
+                    let name = [];
                     for (let item of treeSelectedData.value) {
                         name.push(item.name);
                     }
-                    let data: any = {};
+                    let data = {};
                     data.tableField = props.tableField;
                     data.value = name;
                     emits('update_personName', data); //向父组件GenerateElementItem传值
@@ -98,7 +97,7 @@
         treeSelectedData: []
     });
 
-    let { showButton, dialogConfig, treeApiObj, selectField, treeSelectedData } = toRefs(data);
+    let { showButton, dialogConfig, selectTreeRef, treeApiObj, selectField, treeSelectedData } = toRefs(data);
 
     defineExpose({
         initPersonTree

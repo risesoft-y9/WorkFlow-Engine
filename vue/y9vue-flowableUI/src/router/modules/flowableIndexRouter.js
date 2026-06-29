@@ -271,7 +271,8 @@ const flowableIndexRouter = [
                     processSerialNumber: route.query.processSerialNumber,
                     itembox: route.query.itembox,
                     currPage: route.query.currPage,
-                    listType: route.query.listType
+                    listType: route.query.listType,
+                    chaoSongId: route.query.chaoSongId
                 }),
                 name: 'workIndex_editIndex_1',
                 meta: {

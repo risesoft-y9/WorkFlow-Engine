@@ -1,10 +1,10 @@
 /*
  * @Author: your name
  * @Date: 2021-12-22 14:38:02
- * @LastEditTime: 2024-04-09 17:48:58
+ * @LastEditTime: 2025-12-24 17:04:02
  * @LastEditors: mengjuhua
  * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
- * @FilePath: /sz-team-frontend-9.5.x/y9vue-flowableUI/src/router/checkRouter.js
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\router\checkRouter.js
  */
 import '@/assets/css/nprogress.css'; // progress bar style
 import router from '@/router';
@@ -93,18 +93,7 @@ async function check() {
         return false;
     }
     // token在有效期且角色已获取路由
-    if (isTokenValid && isRoleValid) {
-        return true;
-    } else {
-        if (!isTokenValid || !isRoleValid) {
-            const params = {
-                redirect_uri: import.meta.env.VUE_APP_HOST_INDEX
-            };
-            $y9_SSO.ssoLogout(params);
-        }
-
-        return false;
-    }
+    return true;
 }
 
 // 修复刷新bug

@@ -1,7 +1,7 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2026-01-06 16:02:54
+ * @LastEditTime: 2026-06-29 15:06:57
  * @LastEditors: mengjuhua
  * @Description:  添加关联流程
 -->
@@ -48,7 +48,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject, onMounted, reactive, toRefs } from 'vue';
+    import { computed, inject, onMounted, reactive } from 'vue';
     import { getAssociatedDoneList, saveAssociatedFile } from '@/api/flowableUI/associatedFile';
     import { useI18n } from 'vue-i18n';
 
@@ -111,6 +111,7 @@
 
     function handleSelectionChange(data) {
         multipleSelection.value = data;
+        console.log(data);
     }
 
     //当前页改变时触发
@@ -155,17 +156,19 @@
     }
 </script>
 
-<style lang="scss">
-    .el-main-tabl {
+<style>
+    .el-main-table {
         padding: 0px;
     }
 
     .el-dialog__body {
         padding: 0 20px 10px 20px;
     }
+
     .el-table__header-wrapper {
         border-top: 1px solid #ebeef5;
     }
+
     .el-table-column--selection .cell {
         padding-left: 10px;
         padding-right: 10px;

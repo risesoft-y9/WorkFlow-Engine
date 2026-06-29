@@ -1,3 +1,13 @@
+<!--
+
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-11-16 15:25:20
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 15:06:27
+ * @Descripttion: 选择树
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\components\pageModule\selectTree.vue
+-->
 <template>
     <slot v-if="showHeader" name="header">
         <div class="select-tree-filter-div">
@@ -43,8 +53,8 @@
 </template>
 
 <script lang="ts" setup>
-    import { $dataType, $deepAssignObject, $deeploneObject } from '@/utils/object'; //工具类
-    import { inject, ref, useCssModule, watch } from 'vue';
+    import { $dataType } from '@/utils/object'; //工具类
+    import { ref, watch } from 'vue';
     // 注入 字体对象
 
     const props = defineProps({
@@ -293,12 +303,15 @@
             const data = res.data;
             //格式化tree数据
             await formatLazyTreeData(data);
-            // resourceType 为0 的parentId 为空
+
             await data?.map((item) => {
-                if (item.resourceType == 0) {
+                let child = data.filter((resultItem) => item.parentId === resultItem.id);
+                if (child.length == 0) {
+                    // 处理查询的数据不存在根节点时，找到这部分数据的顶节点作为树的根节点
                     item.parentId = '';
                 }
             });
+
             //根据搜索结果转换成tree结构显示出来
             alreadyLoadTreeData.value = transformTreeBySearchResult(data);
 

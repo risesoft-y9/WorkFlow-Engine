@@ -1,10 +1,10 @@
 /*
  * @Author: your name
  * @Date: 2021-04-15 10:16:53
- * @LastEditTime: 2026-01-07 10:19:55
+ * @LastEditTime: 2025-12-26 17:10:42
  * @LastEditors: mengjuhua
  * @Description: In User Settings Edit
- * @FilePath: \vue\y9vue-flowableUI\src\api\lib\request.js
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\api\lib\request.js
  */
 import settings from '@/settings';
 import y9_storage from '@/utils/storage';
@@ -26,15 +26,11 @@ function y9Request(baseUrl = '') {
     // 请求拦截器
     service.interceptors.request.use(
         (config) => {
-            // config.cancelToken = new axios.CancelToken(e => {
-            //     console.log(config.url);
-            //     // 阻止重复请求
-            //     requestList.has(config.url) ? e(`${location.host}${config.url}---重复请求被中断`) : requestList.add(config.url)
-            // })
-            config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
-            // 自定义
+            // cType为true时，使用json提交
             if (config.cType) {
-                config.headers['userLoginName'] = config.data.userLoginName;
+                config.headers['Content-Type'] = 'application/json;charset=UTF-8';
+            } else {
+                config.headers['Content-Type'] = 'application/x-www-form-urlencoded;charset=UTF-8';
             }
             config.headers['positionId'] = sessionStorage.getItem('positionId');
             const access_token = y9_storage.getObjectItem(settings.siteTokenKey, 'access_token');

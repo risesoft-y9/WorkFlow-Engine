@@ -7,7 +7,7 @@
  * @FilePath: \vue\y9vue-flowableUI\src\App.vue
 -->
 <script lang="ts" setup>
-    import { onUnmounted, onBeforeMount, onMounted, watch, computed, ref, provide } from 'vue';
+    import { computed, onBeforeMount, onMounted, onUnmounted, provide, ref, watch } from 'vue';
     import { useI18n } from 'vue-i18n';
     import y9_zhCn from 'y9plugin-components-auto/dist/locale/zh-cn.mjs'; //默认的y9组件插件中文包
     import y9_en from 'y9plugin-components-auto/dist/locale/en.mjs'; //默认的y9组件插件英文包
@@ -157,6 +157,5 @@
 </script>
 
 <template>
-    <el-config-provider :locale="currentLocale">
-        <router-view /> </el-config-provider
+    <el-config-provider :locale="currentLocale"> <router-view /> </el-config-provider
 ></template>

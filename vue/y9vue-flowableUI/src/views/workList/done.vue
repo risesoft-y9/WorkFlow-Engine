@@ -44,7 +44,7 @@
         </template>
         <template #other="{ row, column, index }">
             <a
-                :style="{ 
+                :style="{
                     fontSize: fontSizeObj.baseFontSize,
                     cursor: 'pointer',
                     textDecoration: 'none'
@@ -116,7 +116,7 @@
     import { computed, inject, onMounted, reactive, watch } from 'vue';
     import HistoryList from '@/views/process/historyList.vue';
     import flowChart from '@/views/flowchart/index4List.vue';
-    import { viewConf, getDoneList } from '@/api/flowableUI/workList';
+    import { getDoneList, viewConf } from '@/api/flowableUI/workList';
     import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
     import { buttonApi } from '@/api/flowableUI/buttonOpt';
     import { useRoute, useRouter } from 'vue-router';
@@ -264,7 +264,7 @@
     }
 
     async function getViewConfig() {
-        let res = await viewConf(itemId.value,"done");
+        let res = await viewConf(itemId.value, 'done');
         if (res.success) {
             viewConfig.value = res.data;
             let searchArr = [];

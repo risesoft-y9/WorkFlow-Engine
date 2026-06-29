@@ -1,3 +1,12 @@
+/*
+ * @version:
+ * @Author: zhangchongjie
+ * @Date: 2021-05-27 16:33:29
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 14:45:29
+ * @Descripttion: 委托设置 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\entrustManage.ts
+ */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
@@ -16,8 +25,8 @@ export function getEntrustList() {
 
 /**
  * 删除委托
- * @param id 
- * @returns 
+ * @param id
+ * @returns
  */
 export function deleteEntrust(id) {
     const params = {
@@ -32,8 +41,8 @@ export function deleteEntrust(id) {
 
 /**
  * 保存委托
- * @param jsonData 
- * @returns 
+ * @param jsonData
+ * @returns
  */
 export function saveOrUpdate(jsonData) {
     const params = {
@@ -46,12 +55,11 @@ export function saveOrUpdate(jsonData) {
     });
 }
 
-
 //获取组织机构
 export function getOrgList(param) {
     const params = {};
     return flowableRequest({
-        url: "/vue/entrust/getOrgList",
+        url: '/vue/entrust/getOrgList',
         method: 'get',
         params: params
     });
@@ -64,7 +72,7 @@ export function getOrgTree(param) {
         treeType: param.treeType
     };
     return flowableRequest({
-        url: "/vue/entrust/getOrgTree",
+        url: '/vue/entrust/getOrgTree',
         method: 'get',
         params: params
     });
@@ -77,7 +85,7 @@ export function treeSearch(param) {
         treeType: param.treeType
     };
     return flowableRequest({
-        url: "/vue/entrust/treeSearch",
+        url: '/vue/entrust/treeSearch',
         method: 'get',
         params: params
     });

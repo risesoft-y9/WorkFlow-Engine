@@ -1,16 +1,25 @@
 /*
  * @Author: your name
  * @Date: 2021-05-19 09:41:06
- * @LastEditTime: 2026-03-03 13:47:50
- * @LastEditors: zhangchongjie
- * @Description: In User Settings Edit
- * @FilePath: \vue\y9vue-flowableUI\src\api\flowableUI\processParam.ts
+ * @LastEditTime: 2026-06-29 14:48:16
+ * @LastEditors: mengjuhua
+ * @Description: 自定义变量 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\processParam.ts
  */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
+
 //保存自定义变量数据
-export function saveProcessParam(itemId, processSerialNumber, processInstanceId, documentTitle, number, level, customItem) {
+export function saveProcessParam(
+    itemId,
+    processSerialNumber,
+    processInstanceId,
+    documentTitle,
+    number,
+    level,
+    customItem
+) {
     const params = {
         processSerialNumber: processSerialNumber,
         itemId: itemId,

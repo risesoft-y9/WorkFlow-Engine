@@ -3,7 +3,7 @@
  * @Date: 2022-01-10 18:09:52
  * @LastEditTime: 2026-02-05 10:46:12
  * @LastEditors: mengjuhua
- * @Description:  自定义附件列表组件
+ * @Description:  表单附件列表
 -->
 <template>
     <div class="from-file" style="width: 100%; height: 97.7%; margin: 15px auto">
@@ -90,6 +90,7 @@
 <script lang="ts" setup>
     import { computed, inject, onMounted, reactive } from 'vue';
     import { delAttachment, getAttachmentList, saveOrder } from '@/api/flowableUI/attachment';
+    import { type IdsParam } from '@/api/flowableUI/dto';
     import settings from '@/settings';
     import y9_storage from '@/utils/storage';
     import { useI18n } from 'vue-i18n';
@@ -268,7 +269,7 @@
             appendTo: '.from-file'
         })
             .then(() => {
-                delAttachment(ids.join(',')).then((res) => {
+                delAttachment({ ids: ids }).then((res) => {
                     if (res.success) {
                         ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.from-file' });
                         reloadTable();
@@ -361,12 +362,11 @@
     };
 
     function saveFileOrder() {
-        let ids = [];
-        for (let item of fileTableConfig.value.tableData) {
-            ids.push(item.id + ':' + item.tabIndex);
-        }
-        //const loading = ElLoading.service({ lock: true, text: '正在处理中', background: 'rgba(0, 0, 0, 0.3)' });
-        saveOrder(ids.toString()).then((res) => {
+        const ids = fileTableConfig.value.tableData.map((item) => item.id);
+        const params: IdsParam = {
+            ids: ids
+        };
+        saveOrder(params).then((res) => {
             //loading.close();
             if (res.success) {
                 //ElNotification({ title: '操作提示', message: res.msg, type: 'success', duration: 2000, offset: 80 });

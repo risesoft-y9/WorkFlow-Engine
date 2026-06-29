@@ -1,4 +1,14 @@
+/*
+ * @version:
+ * @Author: zhangchongjie
+ * @Date: 2024-05-11 16:39:47
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 14:46:58
+ * @Descripttion:  个人常用语 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\opinion.ts
+ */
 import Request from '@/api/lib/request';
+import { OpinionFrameParam, OpinionParam } from './dto';
 
 var flowableRequest = new Request();
 //获取个人常用语
@@ -25,8 +35,8 @@ export function saveCommonSentences(content) {
 
 /**
  * 更新常用语使用次数
- * @param id 
- * @returns 
+ * @param id
+ * @returns
  */
 export function updateUseNumber(id) {
     const params = {
@@ -90,31 +100,22 @@ export function getBindOpinionFrame(itemId, processDefinitionId) {
 }
 
 //获取意见列表
-export function getOpinionList(processSerialNumber, taskId, itembox, opinionFrameMark, itemId, taskDefinitionKey, activitiUser) {
-    const params = {
-        processSerialNumber: processSerialNumber,
-        taskId: taskId,
-        itembox: itembox,
-        opinionFrameMark: opinionFrameMark,
-        itemId: itemId,
-        taskDefinitionKey: taskDefinitionKey
-    };
+export function getOpinionList(param: OpinionFrameParam) {
     return flowableRequest({
         url: '/vue/opinion/personCommentList',
-        method: 'get',
-        params: params
+        method: 'post',
+        data: param,
+        cType: true
     });
 }
 
 //保存意见
-export function saveOpinion(jsonData) {
-    const params = {
-        jsonData: jsonData
-    };
+export function saveOpinion(param: OpinionParam) {
     return flowableRequest({
         url: '/vue/opinion/saveOrUpdate',
         method: 'post',
-        params: params
+        data: param,
+        cType: true
     });
 }
 
@@ -126,32 +127,6 @@ export function delOpinion(id) {
     return flowableRequest({
         url: '/vue/opinion/delete',
         method: 'post',
-        params: params
-    });
-}
-
-//获取意见框历史记录数量
-export function countOpinionHistory(processSerialNumber, opinionFrameMark) {
-    const params = {
-        processSerialNumber: processSerialNumber,
-        opinionFrameMark: opinionFrameMark
-    };
-    return flowableRequest({
-        url: '/vue/opinion/countOpinionHistory',
-        method: 'get',
-        params: params
-    });
-}
-
-//获取意见框历史记录
-export function getOpinionHistoryList(processSerialNumber, opinionFrameMark) {
-    const params = {
-        processSerialNumber: processSerialNumber,
-        opinionFrameMark: opinionFrameMark
-    };
-    return flowableRequest({
-        url: '/vue/opinion/opinionHistoryList',
-        method: 'get',
         params: params
     });
 }

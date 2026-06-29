@@ -1,12 +1,12 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2026-01-07 11:41:18
- * @LastEditors: mengjuhua
- * @Description:  抄送选择成员树
+ * @LastEditTime: 2026-06-12 17:25:48
+ * @LastEditors: zhangchongjie
+ * @Description:  抄送人员树
 -->
 <template>
-    <el-container class="personTree" style="height: 525px">
+    <el-container class="personTree">
         <el-header style="height: 36px; padding: 0">
             <el-input
                 v-model="searchName"
@@ -20,19 +20,19 @@
         <el-main class="personTree_main" width="45%">
             <el-menu ref="csMenu" class="el-menu-demo" default-active="2" mode="horizontal" @select="handleSelect">
                 <el-menu-item index="2">{{ $t('部门') }}</el-menu-item>
-                <el-menu-item index="7" v-if="existCustomGroup">{{ $t('用户组') }}</el-menu-item>
+                <el-menu-item index="7">{{ $t('用户组') }}</el-menu-item>
             </el-menu>
             <div class="mytreediv" style="width: 100%; height: 91%; overflow-y: auto">
                 <y9Tree
                     ref="y9TreeRef"
                     :checkStrictly="checkStrictly"
                     :data="alreadyLoadTreeData"
+                    :defaultExpandAll="true"
+                    :expandOnClickNode="true"
                     :highlightCurrent="highlightCurrent"
                     :lazy="lazy"
                     :load="onTreeLazyLoad"
                     :nodeDblclick="true"
-                    :expandOnClickNode="true"
-                    :defaultExpandAll="true"
                     showCheckbox
                     @node-click="onNodeClick"
                     @node-dblclick="nodeDblclick"
@@ -51,9 +51,11 @@
 <script lang="ts" setup>
     import { Search } from '@element-plus/icons-vue';
     import { $dataType } from '@/utils/object'; //工具类
-    import { reactive, ref, toRefs } from 'vue';
+    import { inject, reactive, ref, toRefs } from 'vue';
     import { findCsUser, findCsUserSearch } from '@/api/flowableUI/personTree';
     // 注入 字体对象
+    const fontSizeObj: any = inject('sizeObjInfo');
+
     const data = reactive({
         searchName: '',
         principalType: 2,
@@ -62,11 +64,10 @@
                 fieldName: 'orgType',
                 value: ['Department', 'Position', 'customGroup']
             }
-        ], //设置需要选择的字段
-        existCustomGroup: false
+        ] //设置需要选择的字段
     });
 
-    let { searchName, principalType, selectField, existCustomGroup } = toRefs(data);
+    let { searchName, principalType, selectField } = toRefs(data);
 
     const props = defineProps({
         treeApiObj: {
@@ -258,9 +259,11 @@
             await data?.map((item) => {
                 let child = data.filter((resultItem) => item.parentId === resultItem.id);
                 if (child.length == 0) {
+                    // 处理查询的数据不存在根节点时，找到这部分数据的顶节点作为树的根节点
                     item.parentId = '';
                 }
             });
+
             //根据搜索结果转换成tree结构显示出来
             alreadyLoadTreeData.value = transformTreeBySearchResult(data);
             nextTick(() => {
@@ -377,9 +380,19 @@
     @import '@/theme/global-vars';
     @import '@/theme/global';
 
+    .personTree_main {
+        height: auto;
+        overflow: hidden;
+        border-top: 0px solid #ccc;
+        border-left: 0;
+        border-right: 0;
+        border-bottom: 0;
+    }
+
     :deep(.el-menu--horizontal > .el-menu-item) {
         height: 40px;
         line-height: 40px;
+        font-size: v-bind('fontSizeObj.baseFontSize');
     }
 
     :deep(.el-menu--horizontal.el-menu) {
@@ -389,14 +402,6 @@
 
     :deep(.el-menu--horizontal > .el-menu-item.is-active) {
         background-color: transparent;
-    }
-    .personTree_main {
-        height: auto;
-        overflow: hidden;
-        border-top: 0px solid #ccc;
-        border-left: 0;
-        border-right: 0;
-        border-bottom: 0;
     }
 
     //过滤样式

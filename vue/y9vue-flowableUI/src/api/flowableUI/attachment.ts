@@ -1,16 +1,17 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 16:33:29
  * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-07 10:14:21
- * @FilePath: \vue\y9vue-flowableUI\src\api\flowableUI\attachment.ts
+ * @LastEditTime: 2026-06-29 14:44:35
+ * @Descripttion: 附件列表 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\attachment.ts
  */
 import Request from '@/api/lib/request';
-import qs from "qs";
+import { IdsParam } from './dto';
 
 var flowableRequest = new Request();
+
 //获取附件列表
 export function getAttachmentList(processSerialNumber, page, rows) {
     const params = {
@@ -29,12 +30,12 @@ export function getAttachmentList(processSerialNumber, page, rows) {
 //保存附件
 export function saveAttachment(processSerialNumber, processInstanceId, taskId, fileSource, file) {
     let formData = new FormData();
-    formData.append("file", file);
-    formData.append("processSerialNumber", processSerialNumber);
-    formData.append("processInstanceId", processInstanceId);
-    formData.append("taskId", taskId);
-    formData.append("fileSource", fileSource);
-    formData.append("describes", "1");
+    formData.append('file', file);
+    formData.append('processSerialNumber', processSerialNumber);
+    formData.append('processInstanceId', processInstanceId);
+    formData.append('taskId', taskId);
+    formData.append('fileSource', fileSource);
+    formData.append('describes', '1');
     return flowableRequest({
         url: '/vue/attachment/upload',
         method: 'post',
@@ -55,21 +56,19 @@ export function download(id) {
 }
 
 //删除附件
-export function delAttachment(ids) {
-    const params = {
-        ids: ids
-    };
+export function delAttachment(params: IdsParam) {
     return flowableRequest({
         url: '/vue/attachment/delFile',
         method: 'post',
-        params: params
+        data: params,
+        cType: true
     });
 }
 
 /**
  * 获取附件配置
- * @param attachmentType 
- * @returns 
+ * @param attachmentType
+ * @returns
  */
 export function getAttachmentConfig(attachmentType) {
     const params = {
@@ -83,14 +82,11 @@ export function getAttachmentConfig(attachmentType) {
 }
 
 //保存排序
-export function saveOrder(idAndTabIndexs) {
-    const params = {
-        idAndTabIndexs: idAndTabIndexs
-    };
-    const data = qs.stringify(params);
+export function saveOrder(param: IdsParam) {
     return flowableRequest({
-        url: "/vue/attachment/saveOrder",
+        url: '/vue/attachment/saveOrder',
         method: 'post',
-        data: data
+        data: param,
+        cType: true
     });
 }

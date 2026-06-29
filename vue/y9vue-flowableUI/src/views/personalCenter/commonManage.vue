@@ -40,7 +40,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject, reactive } from 'vue';
+    import { computed, defineProps, inject, reactive } from 'vue';
     import {
         commonSentencesList,
         delCommonSentences,

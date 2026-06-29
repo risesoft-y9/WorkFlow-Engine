@@ -1,14 +1,15 @@
 /*
  * @Author: your name
  * @Date: 2021-05-10 09:48:00
- * @LastEditTime: 2026-01-07 10:17:47
+ * @LastEditTime: 2026-06-29 14:49:07
  * @LastEditors: mengjuhua
- * @Description: In User Settings Edit
- * @FilePath: \vue\y9vue-flowableUI\src\api\flowableUI\speakInfo.ts
+ * @Description: 沟通交流 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\speakInfo.ts
  */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
+
 //获取沟通交流信息
 export function speakInfoList(processInstanceId) {
     const params = {

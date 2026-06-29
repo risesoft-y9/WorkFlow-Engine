@@ -1,3 +1,12 @@
+/*
+ * @version:
+ * @Author: zhangchongjie
+ * @Date: 2024-05-11 16:39:47
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 14:45:49
+ * @Descripttion:  关注列表  
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\follow.ts
+ */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
@@ -9,7 +18,7 @@ export function followList(searchName, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/officeFollow/followList",
+        url: '/vue/officeFollow/followList',
         method: 'get',
         params: params
     });
@@ -19,7 +28,7 @@ export function followList(searchName, page, rows) {
 export function getFollowCount() {
     const params = {};
     return flowableRequest({
-        url: "/vue/officeFollow/getFollowCount",
+        url: '/vue/officeFollow/getFollowCount',
         method: 'get',
         params: params
     });
@@ -31,7 +40,7 @@ export function saveOfficeFollow(processInstanceId) {
         processInstanceId: processInstanceId
     };
     return flowableRequest({
-        url: "/vue/officeFollow/saveOfficeFollow",
+        url: '/vue/officeFollow/saveOfficeFollow',
         method: 'post',
         params: params
     });
@@ -43,7 +52,7 @@ export function delOfficeFollow(processInstanceId) {
         processInstanceIds: processInstanceId
     };
     return flowableRequest({
-        url: "/vue/officeFollow/delOfficeFollow",
+        url: '/vue/officeFollow/delOfficeFollow',
         method: 'post',
         params: params
     });

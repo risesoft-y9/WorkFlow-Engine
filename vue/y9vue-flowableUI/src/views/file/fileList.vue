@@ -151,6 +151,7 @@
     import y9_storage from '@/utils/storage';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useI18n } from 'vue-i18n';
+    import { IdsParam } from '@/api/flowableUI/dto';
 
     const { t } = useI18n();
     const settingStore = useSettingStore();
@@ -373,7 +374,7 @@
                 appendTo: '.filecontainer'
             })
                 .then(() => {
-                    delAttachment(ids.join(',')).then((res) => {
+                    delAttachment({ ids: ids }).then((res) => {
                         if (res.success) {
                             ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.filecontainer' });
                             reloadTable();
@@ -467,12 +468,11 @@
     };
 
     function saveFileOrder() {
-        let ids = [];
-        for (let item of fileTableConfig.value.tableData) {
-            ids.push(item.id + ':' + item.tabIndex);
-        }
-        //const loading = ElLoading.service({ lock: true, text: '正在处理中', background: 'rgba(0, 0, 0, 0.3)' });
-        saveOrder(ids.toString()).then((res) => {
+        const ids = fileTableConfig.value.tableData.map((item) => item.id);
+        const params: IdsParam = {
+            ids: ids
+        };
+        saveOrder(params).then((res) => {
             //loading.close();
             if (res.success) {
                 //ElNotification({ title: '操作提示', message: res.msg, type: 'success', duration: 2000, offset: 80 });

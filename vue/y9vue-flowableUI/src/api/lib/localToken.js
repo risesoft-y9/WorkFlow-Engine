@@ -1,10 +1,10 @@
 /*
  * @Author: your name
  * @Date: 2021-10-08 11:04:48
- * @LastEditTime: 2026-01-07 10:19:34
- * @LastEditors: mengjuhua
- * @Description:
- * @FilePath: \vue\y9vue-flowableUI\src\api\lib\localToken.js
+ * @LastEditTime: 2021-12-22 20:21:25
+ * @LastEditors: Please set LastEditors
+ * @Description: 打开koroFileHeader查看配置 进行设置: https://github.com/OBKoro1/koro1FileHeader/wiki/%E9%85%8D%E7%BD%AE
+ * @FilePath: /y9vue-flowableUI/src/api/lib/localToken.js
  */
 import Cookies from 'js-cookie'; // 考虑CDN
 import { siteTokenKey } from '@/settings';

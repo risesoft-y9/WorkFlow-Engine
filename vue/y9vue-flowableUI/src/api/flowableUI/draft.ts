@@ -1,3 +1,12 @@
+/*
+ * @version:
+ * @Author: zhangchongjie
+ * @Date: 2021-05-27 16:33:29
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 14:45:17
+ * @Descripttion: 草稿相关接口 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\draft.ts
+ */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
@@ -7,7 +16,7 @@ export function draftViewConf(itemId) {
         itemId: itemId
     };
     return flowableRequest({
-        url: "/vue/draft/draftViewConf",
+        url: '/vue/draft/draftViewConf',
         method: 'get',
         params: params
     });
@@ -22,7 +31,7 @@ export function getDraftList(itemId, searchTerm, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/draft/draftList",
+        url: '/vue/draft/draftList',
         method: 'get',
         params: params
     });
@@ -37,7 +46,7 @@ export function getDraftRecycleList(itemId, searchTerm, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/draft/draftRecycleList",
+        url: '/vue/draft/draftRecycleList',
         method: 'get',
         params: params
     });
@@ -49,7 +58,7 @@ export function removeDraft(ids) {
         ids: ids
     };
     return flowableRequest({
-        url: "/vue/draft/removeDraft",
+        url: '/vue/draft/removeDraft',
         method: 'post',
         params: params
     });
@@ -61,7 +70,7 @@ export function deleteDraft(ids) {
         ids: ids
     };
     return flowableRequest({
-        url: "/vue/draft/deleteDraft",
+        url: '/vue/draft/deleteDraft',
         method: 'post',
         params: params
     });
@@ -73,19 +82,18 @@ export function reduction(id) {
         id: id
     };
     return flowableRequest({
-        url: "/vue/draft/reduction",
+        url: '/vue/draft/reduction',
         method: 'post',
         params: params
     });
 }
-
 
 //获取打开草稿数据
 export function openDraft(processSerialNumber, itemId) {
     const params = {
         processSerialNumber: processSerialNumber,
         itemId: itemId,
-        draftRecycle: '',
+        draftRecycle: ''
     };
     return flowableRequest({
         url: '/vue/document/edit/draft',
@@ -117,5 +125,3 @@ export function saveDraft(processSerialNumber, itemId, processDefinitionKey, num
         data: formData
     });
 }
-
-

@@ -28,7 +28,7 @@
     </el-dialog>
 </template>
 <script lang="ts" setup>
-    import { inject, ref } from 'vue';
+    import { defineExpose, inject, ref } from 'vue';
     import CommonManage from '@/views/personalCenter/commonManage.vue';
     import EntrustManage from '@/views/personalCenter/entrustManage.vue';
     // 注入 字体对象

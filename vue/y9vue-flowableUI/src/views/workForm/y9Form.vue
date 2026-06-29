@@ -2,10 +2,10 @@
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2024-04-23 15:08:38
- * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-07 09:47:09
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-05-28 15:23:45
  * @Descripttion: 表单信息
- * @FilePath: \vue\y9vue-flowableUI\src\views\workForm\y9Form.vue
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\views\workForm\Y9Form.vue
 -->
 <template>
     <el-container
@@ -31,7 +31,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { inject, nextTick, onBeforeUnmount, onMounted, reactive, ref, toRefs } from 'vue';
+    import { inject, nextTick, onBeforeUnmount, onMounted, reactive, toRefs } from 'vue';
     import { EventBus } from '@/components/formMaking/util/event-bus';
     import { saveProcessParam } from '@/api/flowableUI/processParam';
     import { saveDraft } from '@/api/flowableUI/draft';
@@ -77,18 +77,16 @@
 
     const emits = defineEmits(['refreshCount', 'fromBindValue', 'oneClickSet']);
     const flowableStore = useFlowableStore();
-
-    let generateForm = ref();
-
     const data = reactive({
+        generateForm: '',
         basicData: props.basicData,
         loading: false,
-        formJson: { list: [], config: { size: 'medium' } },
+        formJson: { list: [], config: {} },
         formId: '',
         edit: true, //表单是否可编辑
         initDataUrl: '', //表单初始化数据路径
         msgType: false, //是否提示保存成功
-        bindOpinionFrameList: [] as any, //绑定意见框列表
+        bindOpinionFrameList: [], //绑定意见框列表
         remoteFuncs: {
             getOptionData(resolve, optionInfo) {
                 //动态获取数据字典
@@ -118,10 +116,11 @@
         fileRequired: false, //附件必传
         fileRequired_change: false, //附件必传是否修改
         fileMessage: '', //附件必传提醒内容
-        formFieldUsed: [] as any //表单字段内容使用
+        formFieldUsed: [] //表单字段内容使用
     });
 
     let {
+        generateForm,
         basicData,
         loading,
         formJson,
@@ -870,6 +869,18 @@
         :global(.el-message .el-message__content) {
             font-size: v-bind('fontSizeObj.baseFontSize');
         }
+    }
+
+    :deep(.el-form-item__content) {
+        font-size: v-bind('fontSizeObj.smallFontSize');
+    }
+
+    :deep(.el-input__wrapper) {
+        font-size: v-bind('fontSizeObj.smallFontSize');
+    }
+
+    :deep(.el-form-item__error) {
+        font-size: v-bind('fontSizeObj.smallFontSize');
     }
 
     /* 设置一些级别样式，可根据具体需求修改 */
