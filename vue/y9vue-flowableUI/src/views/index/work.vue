@@ -51,20 +51,6 @@
                     let taskId = currentrRute.query?.taskId;
                     openDoc(itembox, res.data.processSerialNumber, res.data.processInstanceId, taskId);
                 }
-            } else if (type == 'fromCplane') {
-                let processInstanceId = currentrRute.query.processInstanceId;
-                let res = await getTaskOrProcessInfo('', processInstanceId, type);
-                if (res.data.taskId == '') {
-                    //办结件
-                    openDoc('done', res.data.processSerialNumber, res.data.processInstanceId, '');
-                } else {
-                    openDoc(
-                        res.data.isTodo ? 'todo' : 'doing',
-                        res.data.processSerialNumber,
-                        res.data.processInstanceId,
-                        res.data.taskId
-                    );
-                }
             }
         } else {
             openTodo();

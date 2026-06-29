@@ -16,7 +16,6 @@
     >
         <span v-if="list[0].path.indexOf('/workIndex') > -1" class="title">{{ $t(flowableStore.itemName) }}</span>
         <span v-else-if="list[0].path == '/index'" class="title">{{ $t(list[1].meta.title) }}</span>
-        <span v-else-if="list[0].path == '/cplane'" class="title">{{ $t(list[0].meta.title) }}</span>
         <span v-else class="title">{{ $t(list[0].meta.title) }}</span>
         <span class="title"></span>
         <div style="display: flex; align-items: center; cursor: pointer">
@@ -31,9 +30,6 @@
                     {{ item.path == '/workIndex' ? $t(flowableStore.itemName) : $t(item.meta.title) }}
                 </el-breadcrumb-item>
                 <el-breadcrumb-item v-else-if="list[0].path == '/index'">
-                    {{ $t(list[1].meta.title) }}
-                </el-breadcrumb-item>
-                <el-breadcrumb-item v-else-if="list[0].path == '/cplane'">
                     {{ $t(list[1].meta.title) }}
                 </el-breadcrumb-item>
                 <!-- <el-breadcrumb-item>

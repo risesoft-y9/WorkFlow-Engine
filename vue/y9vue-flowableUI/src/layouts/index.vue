@@ -121,17 +121,6 @@
                         routesData.push(obj);
                     }
                 }
-            } else if (route.path.indexOf('/cplane') > -1) {
-                let newmenuData = routerStore.getPermissionRoutes;
-                for (let obj of newmenuData) {
-                    if (obj.path.indexOf('/cplane') > -1) {
-                        menuData.push(obj);
-                    }
-                    flowableStore.itemName = t('我的协作');
-                    if (obj.path == '/cplane') {
-                        routesData.push(obj);
-                    }
-                }
             }
 
             // 当前路由 item
@@ -182,9 +171,6 @@
             });
 
             const getItemInfo = () => {
-                if (route.path.indexOf('/cplane') > -1) {
-                    return;
-                }
                 // 获取当前路由
                 if (flowableStore.getItemId == '' && route.path.indexOf('/index') > -1) {
                     //let itemId = route.query?.itemId?route.query?.itemId: '';
@@ -225,9 +211,6 @@
             };
 
             const getPositionListAndTodoCount = () => {
-                if (route.path.indexOf('/cplane') > -1) {
-                    return;
-                }
                 let itemId = route.path.indexOf('/index') > -1 ? y9_storage.getObjectItem('query', 'itemId') : '';
                 getPositionList('count', itemId)
                     .then((res) => {
@@ -259,9 +242,6 @@
             };
 
             const getAllMenuCount = () => {
-                if (route.path.indexOf('/cplane') > -1) {
-                    return;
-                }
                 if (flowableStore.getItemId != '' && route.path.indexOf('/index') > -1) {
                     getAllCountItems(flowableStore.getItemId)
                         .then((res) => {
