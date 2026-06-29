@@ -125,21 +125,21 @@
     </y9Dialog>
 </template>
 <script lang="ts" setup>
-import { computed, inject, onMounted, reactive, watch } from 'vue';
-import HistoryList from '@/views/process/historyList.vue';
-import TaskList from '@/views/reminder/taskList.vue';
-import RemindInstance from '@/views/reminder/remindInstance.vue';
-import flowChart from '@/views/flowchart/index4List.vue';
-import { getDoingList, viewConf } from '@/api/flowableUI/workList';
-import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
-import { useRoute, useRouter } from 'vue-router';
-import y9_storage from '@/utils/storage';
-import { useFlowableStore } from '@/store/modules/flowableStore';
-import { useSettingStore } from '@/store/modules/settingStore';
-import { getOptionValueList } from '@/api/flowableUI/form';
-import { useI18n } from 'vue-i18n';
+    import { computed, inject, onMounted, reactive, watch } from 'vue';
+    import HistoryList from '@/views/process/historyList.vue';
+    import TaskList from '@/views/reminder/taskList.vue';
+    import RemindInstance from '@/views/reminder/remindInstance.vue';
+    import flowChart from '@/views/flowchart/index4List.vue';
+    import { getDoingList, viewConf } from '@/api/flowableUI/workList';
+    import { delOfficeFollow, saveOfficeFollow } from '@/api/flowableUI/follow';
+    import { useRoute, useRouter } from 'vue-router';
+    import y9_storage from '@/utils/storage';
+    import { useFlowableStore } from '@/store/modules/flowableStore';
+    import { useSettingStore } from '@/store/modules/settingStore';
+    import { getOptionValueList } from '@/api/flowableUI/form';
+    import { useI18n } from 'vue-i18n';
 
-const { t } = useI18n();
+    const { t } = useI18n();
     const settingStore = useSettingStore();
     const router = useRouter();
     // 获取当前路由

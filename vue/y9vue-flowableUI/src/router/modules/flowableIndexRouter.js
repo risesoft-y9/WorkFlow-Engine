@@ -150,28 +150,6 @@ const flowableIndexRouter = [
         ]
     },
     {
-        path: '/cplane',
-        component: () => import('@/layouts/index.vue'),
-        name: 'cplane',
-        redirect: '/cplane/list',
-        meta: {
-            title: '我的协作',
-            roles: ['user']
-        },
-        children: [
-            {
-                path: '/cplane/list',
-                component: () => import('@/views/cplane/index.vue'),
-                name: 'cplanelist',
-                meta: {
-                    title: '协作状态',
-                    icon: 'ri-equalizer-line',
-                    roles: ['user']
-                }
-            }
-        ]
-    },
-    {
         path: '/workIndex',
         component: () => import('@/layouts/index.vue'),
         name: 'workIndex_1',
