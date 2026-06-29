@@ -1,3 +1,13 @@
+<!--
+
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-11-16 15:25:20
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 15:06:09
+ * @Descripttion: 组织树 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\components\pageModule\orgTree.vue
+-->
 <template>
     <y9Card :showHeader="showHeader">
         <template #header>
@@ -29,11 +39,10 @@
 </template>
 
 <script lang="ts" setup>
-    import { inject, reactive, toRefs } from 'vue';
+    import { inject, onMounted, useCssModule } from 'vue'; // 注入 字体对象
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useOrgTreeStore } from '@/store/modules/orgTreeStore';
     import { $dataType, $deepAssignObject, $deeploneObject } from '@/utils/object'; //工具类
-    import { onMounted, useCssModule } from 'vue';
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo');
     const props = defineProps({
@@ -77,7 +86,7 @@
         newSelectedData: []
     });
 
-    let { itemList, filterValue, currTreeNodeInfo, isExpandAllTree, newSelectedData } = toRefs(data);
+    let { itemList, filterValue, y9TreeRef, currTreeNodeInfo, isExpandAllTree, newSelectedData } = toRefs(data);
 
     // 初始化orgTreeStore
     let orgTreeStore = useOrgTreeStore();

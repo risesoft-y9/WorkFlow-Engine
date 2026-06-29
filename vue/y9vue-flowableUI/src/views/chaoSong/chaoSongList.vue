@@ -1,7 +1,7 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2026-01-06 16:09:28
+ * @LastEditTime: 2025-12-26 16:39:33
  * @LastEditors: mengjuhua
  * @Description:  抄送列表
 -->
@@ -44,7 +44,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject, onMounted, reactive, toRefs } from 'vue';
+    import { computed, inject, reactive } from 'vue';
     import { deleteList, getChaoSongList } from '@/api/flowableUI/chaoSong';
     import { useI18n } from 'vue-i18n';
 

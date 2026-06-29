@@ -263,9 +263,11 @@
                 await data?.map((item) => {
                     let child = data.filter((resultItem) => item.parentId === resultItem.id);
                     if (child.length == 0) {
+                        // 处理查询的数据不存在根节点时，找到这部分数据的顶节点作为树的根节点
                         item.parentId = '';
                     }
                 });
+
                 //根据搜索结果转换成tree结构显示出来
                 alreadyLoadTreeData.value = transformTreeBySearchResult(data);
                 nextTick(() => {
@@ -332,6 +334,7 @@
             await data?.map((item) => {
                 let child = data.filter((resultItem) => item.parentId === resultItem.id);
                 if (child.length == 0) {
+                    // 处理查询的数据不存在根节点时，找到这部分数据的顶节点作为树的根节点
                     item.parentId = '';
                 }
             });

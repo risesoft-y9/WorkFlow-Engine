@@ -1,3 +1,12 @@
+/*
+ * @version:
+ * @Author: zhangchongjie
+ * @Date: 2021-05-27 16:33:29
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 14:44:58
+ * @Descripttion: 抄送接口 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\chaoSong.ts
+ */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
@@ -11,7 +20,7 @@ export function search(documentTitle, year, status, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/chaoSong/search",
+        url: '/vue/chaoSong/search',
         method: 'get',
         params: params
     });
@@ -23,7 +32,7 @@ export function changeStatus(ids) {
         ids: ids
     };
     return flowableRequest({
-        url: "/vue/chaoSong/changeStatus",
+        url: '/vue/chaoSong/changeStatus',
         method: 'post',
         params: params
     });
@@ -36,7 +45,7 @@ export function changeChaoSongState(id, type) {
         type: type
     };
     return flowableRequest({
-        url: "/vue/chaoSong/changeChaoSongState",
+        url: '/vue/chaoSong/changeChaoSongState',
         method: 'post',
         params: params
     });
@@ -50,7 +59,7 @@ export function chaoSongData(id, processInstanceId, itembox) {
         itembox: itembox
     };
     return flowableRequest({
-        url: "/vue/document/edit/chaoSong",
+        url: '/vue/document/edit/chaoSong',
         method: 'get',
         params: params
     });
@@ -63,14 +72,24 @@ export function monitorChaoSongData(id, processInstanceId) {
         processInstanceId: processInstanceId
     };
     return flowableRequest({
-        url: "/vue/document/edit/chaoSongAdmin",
+        url: '/vue/document/edit/chaoSongAdmin',
         method: 'get',
         params: params
     });
 }
 
 //抄送
-export function chaoSongSave(processInstanceId, itemId, processSerialNumber, processDefinitionKey, users, isSendSms, isShuMing, smsContent, smsPersonId) {
+export function chaoSongSave(
+    processInstanceId,
+    itemId,
+    processSerialNumber,
+    processDefinitionKey,
+    users,
+    isSendSms,
+    isShuMing,
+    smsContent,
+    smsPersonId
+) {
     const params = {
         processInstanceId: processInstanceId,
         itemId: itemId,
@@ -83,7 +102,7 @@ export function chaoSongSave(processInstanceId, itemId, processSerialNumber, pro
         smsPersonId: smsPersonId
     };
     return flowableRequest({
-        url: "/vue/chaoSong/save",
+        url: '/vue/chaoSong/save',
         method: 'post',
         params: params
     });
@@ -99,7 +118,7 @@ export function getChaoSongList(type, userName, processInstanceId, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/chaoSong/list",
+        url: '/vue/chaoSong/list',
         method: 'get',
         params: params
     });
@@ -111,7 +130,7 @@ export function deleteList(ids) {
         ids: ids
     };
     return flowableRequest({
-        url: "/vue/chaoSong/deleteList",
+        url: '/vue/chaoSong/deleteList',
         method: 'post',
         params: params
     });

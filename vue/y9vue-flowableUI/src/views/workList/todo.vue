@@ -1,8 +1,8 @@
 <!--
  * @Author: zhangchongjie
  * @Date: 2022-01-10 18:09:52
- * @LastEditTime: 2024-06-14 09:20:47
- * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-04-08 15:39:20
+ * @LastEditors: mengjuhua
  * @Description:  待办件
 -->
 <template>
@@ -55,23 +55,12 @@
                 class="ri-notification-3-line"
                 style="color: red"
             ></i>
-            <el-link
-                :style="{ color: 'blue', fontSize: fontSizeObj.baseFontSize }"
-                :underline="false"
-                @click="openDoc(row)"
-            >
-                {{ row.title == '' ? $t('未定义标题') : row.title }}
-            </el-link>
+            <a class="title-link" :underline="false" :href="getHref(row)" @click.stop.prevent="openDoc(row)"
+                >{{ row.title == '' ? $t('未定义标题') : row.title }}
+            </a>
         </template>
         <template #other="{ row, column, index }">
-            <a
-                :style="{
-                    fontSize: fontSizeObj.baseFontSize,
-                    cursor: 'pointer',
-                    textDecoration: 'none'
-                }"
-                @click="openDoc(row)"
-            >
+            <a class="info-link" :href="getHref(row)" @click.stop.prevent="openDoc(row)">
                 {{ row[column.property] }}
             </a>
         </template>
@@ -454,6 +443,23 @@
         }
     }
 
+    function getHref(row) {
+        let link = currentrRute.matched[0].path;
+        let query = {
+            itemId: itemId.value,
+            processSerialNumber: row.processSerialNumber,
+            itembox: 'todo',
+            taskId: row.taskId,
+            processInstanceId: row.processInstanceId,
+            listType: 'todo'
+        };
+        const routeData = router.resolve({
+            path: link + '/edit',
+            query: query
+        });
+        return routeData.href;
+    }
+
     function openDoc(row) {
         if (JSON.stringify(currFilters.value) != '{}') {
             flowableStore.searchContent = currFilters.value;
@@ -539,7 +545,8 @@
     }
 </style>
 
-<style scoped>
+<style scoped lang="scss">
+    @import '@/theme/global-vars.scss';
     .margin-button {
         margin-left: 3px;
     }
@@ -547,5 +554,34 @@
     /*message */
     :global(.el-message .el-message__content) {
         font-size: v-bind('fontSizeObj.baseFontSize');
+    }
+    .info-link {
+        font-size: v-bind('fontSizeObj.baseFontSize');
+        cursor: pointer;
+        text-decoration: none;
+        color: #626262;
+
+        &:link,
+        &:visited,
+        &:hover,
+        &:active,
+        &:focus {
+            text-decoration: none;
+        }
+    }
+
+    .title-link {
+        font-size: v-bind('fontSizeObj.baseFontSize');
+        cursor: pointer;
+        text-decoration: none;
+        color: var(--el-color-primary);
+
+        &:link,
+        &:visited,
+        &:hover,
+        &:active,
+        &:focus {
+            text-decoration: none;
+        }
     }
 </style>

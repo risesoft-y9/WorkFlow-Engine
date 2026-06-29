@@ -1,3 +1,12 @@
+/*
+ * @version:
+ * @Author: zhangchongjie
+ * @Date: 2024-05-11 16:39:47
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 14:49:42
+ * @Descripttion:  列表相关接口  
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\workList.ts
+ */
 import Request from '@/api/lib/request';
 import qs from 'qs';
 
@@ -11,7 +20,7 @@ export function getAllCountItems(itemId) {
         url: '/vue/main/getCount4Item',
         method: 'get',
         params
-    })
+    });
 }
 
 //获取待办列表
@@ -23,7 +32,7 @@ export function getTodoList(itemId, searchTerm, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/workList/todoList",
+        url: '/vue/workList/todoList',
         method: 'get',
         params: params
     });
@@ -38,7 +47,7 @@ export function getDoingList(itemId, searchTerm, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/workList/doingList",
+        url: '/vue/workList/doingList',
         method: 'get',
         params: params
     });
@@ -53,7 +62,7 @@ export function getDoneList(itemId, searchTerm, page, rows) {
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/workList/doneList",
+        url: '/vue/workList/doneList',
         method: 'get',
         params: params
     });
@@ -72,7 +81,7 @@ export function viewConf(itemId, viewType) {
         viewType
     };
     return flowableRequest({
-        url: "/vue/viewConf/list",
+        url: '/vue/viewConf/list',
         method: 'get',
         params: params
     });
@@ -101,20 +110,16 @@ export function getQueryList(itemId, state, createDate, tableName, searchMapStr,
     };
     const data = qs.stringify(params);
     let formData = new FormData();
-    formData.append("itemId", itemId);
-    formData.append("state", state);
-    formData.append("createDate", createDate);
-    formData.append("tableName", tableName);
-    formData.append("searchMapStr", searchMapStr);
-    formData.append("page", page);
-    formData.append("rows", rows);
+    formData.append('itemId', itemId);
+    formData.append('state', state);
+    formData.append('createDate', createDate);
+    formData.append('tableName', tableName);
+    formData.append('searchMapStr', searchMapStr);
+    formData.append('page', page);
+    formData.append('rows', rows);
     return flowableRequest({
-        url: "/vue/workList/queryList",
+        url: '/vue/workList/queryList',
         method: 'post',
-        cType: false,
-        headers: {
-            'Content-Type': 'application/json'
-        },
         data: formData
     });
-} 
+}

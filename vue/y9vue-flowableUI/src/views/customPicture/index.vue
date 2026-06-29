@@ -11,7 +11,7 @@
 </template>
 
 <script lang="ts" setup>
-    import { inject, reactive, toRefs } from 'vue';
+    import { inject } from 'vue';
     import { useI18n } from 'vue-i18n';
 
     const { t } = useI18n();

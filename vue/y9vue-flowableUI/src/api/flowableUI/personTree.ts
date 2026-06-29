@@ -1,14 +1,15 @@
 /*
  * @Author: your name
  * @Date: 2021-05-10 09:48:00
- * @LastEditTime: 2021-05-27 15:46:09
- * @LastEditors: your name
- * @Description: In User Settings Edit
- * @FilePath: \workspace-y9boot-v9.5.x-vue\y9vue-flowableUI\src\api\flowableUI\personTree.js
+ * @LastEditTime: 2026-06-29 14:47:44
+ * @LastEditors: mengjuhua
+ * @Description: 发送选人接口 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\personTree.ts
  */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
+
 //获取发送选人数据
 export function findAllPermUser(itemId, processDefinitionId, taskDefKey, principalType, processInstanceId, id) {
     const params = {
@@ -20,7 +21,7 @@ export function findAllPermUser(itemId, processDefinitionId, taskDefKey, princip
         id: id
     };
     return flowableRequest({
-        url: "/vue/rolePerson/findAllPermUser",
+        url: '/vue/rolePerson/findAllPermUser',
         method: 'get',
         params: params
     });
@@ -37,7 +38,7 @@ export function findPermUserByName(param) {
         name: param.name
     };
     return flowableRequest({
-        url: "/vue/rolePerson/findPermUserByName",
+        url: '/vue/rolePerson/findPermUserByName',
         method: 'get',
         params: params
     });
@@ -51,7 +52,7 @@ export function findCsUser(principalType, processInstanceId, id) {
         id: id
     };
     return flowableRequest({
-        url: "/vue/rolePerson/findCsUser",
+        url: '/vue/rolePerson/findCsUser',
         method: 'get',
         params: params
     });
@@ -65,9 +66,8 @@ export function findCsUserSearch(param) {
         name: param.name
     };
     return flowableRequest({
-        url: "/vue/rolePerson/findCsUserSearch",
+        url: '/vue/rolePerson/findCsUserSearch',
         method: 'get',
         params: params
     });
 }
-

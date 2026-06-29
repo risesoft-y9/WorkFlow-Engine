@@ -1,4 +1,14 @@
+/*
+ * @version:
+ * @Author: zhangchongjie
+ * @Date: 2021-05-27 16:33:29
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 14:44:48
+ * @Descripttion: 按钮相关接口 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\buttonOpt.ts
+ */
 import Request from '@/api/lib/request';
+import { ForwardingParam } from './dto';
 
 var flowableRequest = new Request();
 export const buttonApi = {
@@ -9,7 +19,7 @@ export const buttonApi = {
             reason: reason
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/takeback",
+            url: '/vue/buttonOperation/takeback',
             method: 'post',
             params: params
         });
@@ -22,7 +32,7 @@ export const buttonApi = {
             reason: reason
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/specialComplete",
+            url: '/vue/buttonOperation/specialComplete',
             method: 'post',
             params: params
         });
@@ -34,7 +44,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/getTaskList",
+            url: '/vue/buttonOperation/getTaskList',
             method: 'get',
             params: params
         });
@@ -47,22 +57,22 @@ export const buttonApi = {
             reason: reason
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/rollback",
+            url: '/vue/buttonOperation/rollback',
             method: 'post',
             params: params
         });
     },
 
     //多步退回
-    rollback2history(taskId,routeToTaskId,orgUnitIds,reason){
+    rollback2history(taskId, routeToTaskId, orgUnitIds, reason) {
         const params = {
-            taskId:taskId,
-            routeToTaskId:routeToTaskId,
-            orgUnitIds:orgUnitIds,
-            reason:reason
+            taskId: taskId,
+            routeToTaskId: routeToTaskId,
+            orgUnitIds: orgUnitIds,
+            reason: reason
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/rollBack2History",
+            url: '/vue/buttonOperation/rollBack2History',
             method: 'post',
             params: params
         });
@@ -72,10 +82,10 @@ export const buttonApi = {
     rollbackToStartor(taskId) {
         const params = {
             taskId: taskId,
-            reason: "退回拟稿人"
+            reason: '退回拟稿人'
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/rollbackToStartor",
+            url: '/vue/buttonOperation/rollbackToStartor',
             method: 'post',
             params: params
         });
@@ -87,7 +97,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/rollbackToSender",
+            url: '/vue/buttonOperation/rollbackToSender',
             method: 'post',
             params: params
         });
@@ -99,7 +109,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/handleParallel",
+            url: '/vue/buttonOperation/handleParallel',
             method: 'post',
             params: params
         });
@@ -111,7 +121,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/getHandleSerial",
+            url: '/vue/buttonOperation/getHandleSerial',
             method: 'get',
             params: params
         });
@@ -123,7 +133,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/handleSerial",
+            url: '/vue/buttonOperation/handleSerial',
             method: 'post',
             params: params
         });
@@ -135,7 +145,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/claim",
+            url: '/vue/buttonOperation/claim',
             method: 'post',
             params: params
         });
@@ -147,7 +157,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/refuseClaim",
+            url: '/vue/buttonOperation/refuseClaim',
             method: 'post',
             params: params
         });
@@ -159,7 +169,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/unclaim",
+            url: '/vue/buttonOperation/unclaim',
             method: 'post',
             params: params
         });
@@ -173,7 +183,7 @@ export const buttonApi = {
             routeToTask: routeToTask
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/directSend",
+            url: '/vue/buttonOperation/directSend',
             method: 'post',
             params: params
         });
@@ -185,7 +195,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/sendToSender",
+            url: '/vue/buttonOperation/sendToSender',
             method: 'post',
             params: params
         });
@@ -197,7 +207,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/sendToStartor",
+            url: '/vue/buttonOperation/sendToStartor',
             method: 'post',
             params: params
         });
@@ -210,7 +220,7 @@ export const buttonApi = {
             infoOvert: infoOvert
         };
         return flowableRequest({
-            url: "/vue/document/complete",
+            url: '/vue/buttonOperation/complete',
             method: 'post',
             params: params
         });
@@ -222,7 +232,7 @@ export const buttonApi = {
             processInstanceIds: processInstanceIds
         };
         return flowableRequest({
-            url: "/vue/document/multipleResumeToDo",
+            url: '/vue/buttonOperation/extend/multipleResumeToDo',
             method: 'post',
             params: params
         });
@@ -234,7 +244,7 @@ export const buttonApi = {
             taskId: taskId
         };
         return flowableRequest({
-            url: "/vue/document/getParallelNames",
+            url: '/vue/buttonOperation/getParallelNames',
             method: 'get',
             params: params
         });
@@ -249,14 +259,23 @@ export const buttonApi = {
             processSerialNumber: processSerialNumber
         };
         return flowableRequest({
-            url: "/vue/document/signTaskConfig",
+            url: '/vue/buttonOperation/signTaskConfig',
             method: 'get',
             params: params
         });
     },
 
     //定制流程办理完成，办结
-    customProcessHandle(itemId, processSerialNumber, processDefinitionKey, multiInstance, nextNode, processInstanceId, taskId, infoOvert) {
+    customProcessHandle(
+        itemId,
+        processSerialNumber,
+        processDefinitionKey,
+        multiInstance,
+        nextNode,
+        processInstanceId,
+        taskId,
+        infoOvert
+    ) {
         const params = {
             itemId: itemId,
             processSerialNumber: processSerialNumber,
@@ -268,7 +287,7 @@ export const buttonApi = {
             infoOvert: infoOvert
         };
         return flowableRequest({
-            url: "/vue/buttonOperation/customProcessHandle",
+            url: '/vue/buttonOperation/customProcessHandle',
             method: 'post',
             params: params
         });
@@ -281,53 +300,30 @@ export const buttonApi = {
             processSerialNumber: processSerialNumber
         };
         return flowableRequest({
-            url: "/vue/document/submitTo",
+            url: '/vue/buttonOperation/submitTo',
             method: 'post',
             params: params
         });
     }
-}
+};
 
 //重定向(选择任意流程节点重定向)
-export function reposition(taskId, routeToTaskId, userChoice, processSerialNumber, sponsorGuid, isSendSms, isShuMing, smsContent) {
-    const params = {
-        taskId: taskId,
-        routeToTaskId: routeToTaskId,
-        userChoice: userChoice,
-        processSerialNumber: processSerialNumber,
-        sponsorGuid: sponsorGuid,
-        isSendSms: isSendSms,
-        isShuMing: isShuMing,
-        smsContent: smsContent
-    };
+export function reposition(param: ForwardingParam) {
     return flowableRequest({
-        url: "/vue/buttonOperation/reposition",
+        url: '/vue/buttonOperation/reposition',
         method: 'post',
-        params: params
+        data: param,
+        cType: true
     });
 }
 
 //发送
-export function forwarding(itemId, processInstanceId, taskId, processDefinitionKey, processSerialNumber, sponsorHandle,
-    userChoice, sponsorGuid, routeToTaskId, isSendSms, isShuMing, smsContent) {
-    const params = {
-        itemId: itemId,
-        processInstanceId: processInstanceId,
-        taskId: taskId,
-        processDefinitionKey: processDefinitionKey,
-        processSerialNumber: processSerialNumber,
-        sponsorHandle: sponsorHandle,
-        userChoice: userChoice,
-        sponsorGuid: sponsorGuid,
-        routeToTaskId: routeToTaskId,
-        isSendSms: isSendSms,
-        isShuMing: isShuMing,
-        smsContent: smsContent
-    };
+export function forwarding(param: ForwardingParam) {
     return flowableRequest({
-        url: "/vue/document/forwarding",
+        url: '/vue/buttonOperation/forwarding',
         method: 'post',
-        params: params
+        data: param,
+        cType: true
     });
 }
 
@@ -338,12 +334,11 @@ export function getTargetNodes(processDefinitionId, taskDefKey) {
         taskDefKey: taskDefKey
     };
     return flowableRequest({
-        url: "/vue/buttonOperation/getTargetNodes",
+        url: '/vue/buttonOperation/getTargetNodes',
         method: 'get',
         params: params
     });
 }
-
 
 //获取定制流程信息
 export function getCustomProcessTaskList(processSerialNumber) {
@@ -351,7 +346,7 @@ export function getCustomProcessTaskList(processSerialNumber) {
         processSerialNumber: processSerialNumber
     };
     return flowableRequest({
-        url: "/vue/buttonOperation/getCustomProcessTaskList",
+        url: '/vue/buttonOperation/getCustomProcessTaskList',
         method: 'get',
         params: params
     });
@@ -363,12 +358,11 @@ export function getContainEndEvent4UserTask(processDefinitionId) {
         processDefinitionId: processDefinitionId
     };
     return flowableRequest({
-        url: "/vue/buttonOperation/getContainEndEvent4UserTask",
+        url: '/vue/buttonOperation/getContainEndEvent4UserTask',
         method: 'get',
         params: params
     });
 }
-
 
 //保存流程定制信息
 export function saveCustomProcess(itemId, processSerialNumber, processDefinitionKey, jsonData) {
@@ -379,9 +373,8 @@ export function saveCustomProcess(itemId, processSerialNumber, processDefinition
         jsonData: jsonData
     };
     return flowableRequest({
-        url: "/vue/buttonOperation/saveCustomProcess",
+        url: '/vue/buttonOperation/saveCustomProcess',
         method: 'post',
         params: params
     });
 }
-

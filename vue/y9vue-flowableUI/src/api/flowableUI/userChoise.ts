@@ -1,15 +1,16 @@
-/*
- * @Descripttion: 
- * @version: 
+/* 
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2021-05-27 16:33:53
  * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-07 10:18:33
- * @FilePath: \vue\y9vue-flowableUI\src\api\flowableUI\userChoise.ts
+ * @LastEditTime: 2026-06-29 14:49:19
+ * @Descripttion: 发送相关接口 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\userChoise.ts
  */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
+
 //获取发送选人数据
 export function getUserChoiseData(itemId, routeToTask, processDefinitionId, taskId, processInstanceId) {
     const params = {
@@ -20,7 +21,7 @@ export function getUserChoiseData(itemId, routeToTask, processDefinitionId, task
         processInstanceId: processInstanceId
     };
     return flowableRequest({
-        url: '/vue/document/userChoiseData',
+        url: '/vue/userChoise/userChoiseData',
         method: 'get',
         params: params
     });

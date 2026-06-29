@@ -1,4 +1,13 @@
-<!-- tab栏 -->
+<!--
+
+ * @version: 
+ * @Author: zhangchongjie
+ * @Date: 2022-11-16 15:25:20
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 15:05:32
+ * @Descripttion: tab栏
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\components\Handling\Tabs.vue
+-->
 <template>
     <div class="tabs-style">
         <div style="display: flex">
@@ -19,7 +28,7 @@
     </div>
 </template>
 <script lang="ts" setup>
-    import { reactive, toRefs, watch, inject } from 'vue';
+    import { inject, reactive, toRefs, watch } from 'vue';
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo');
 

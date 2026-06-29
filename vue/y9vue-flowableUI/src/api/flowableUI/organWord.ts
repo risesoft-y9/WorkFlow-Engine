@@ -1,15 +1,16 @@
 /*
- * @Descripttion: 
- * @version: 
+ * @version:
  * @Author: zhangchongjie
  * @Date: 2021-09-28 10:49:27
- * @LastEditors: yihong yihong@risesoft.net
- * @LastEditTime: 2024-07-16 17:50:22
- * @FilePath: \workspace-y9boot-9.5.x-vue\y9vue-flowableUI\src\api\flowableUI\organWord.js
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 14:47:08
+ * @Descripttion: 编号相关
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\organWord.ts
  */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
+
 //获取编号权限及机关代字
 export function findByCustom(itemId, processDefinitionId, taskDefKey, custom) {
     const params = {
@@ -59,7 +60,7 @@ export function getNumber(itemId, custom, characterValue, year) {
 export function getTempNumber(itemId, custom) {
     const params = {
         itemId: itemId,
-        custom: custom,
+        custom: custom
     };
     return flowableRequest({
         url: '/vue/organWord/getTempNumber',

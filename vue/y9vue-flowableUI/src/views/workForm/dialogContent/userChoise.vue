@@ -1,11 +1,11 @@
-<!-- 
+<!--
  * @version: 
  * @Author: zhangchongjie
  * @Date: 2024-04-23 15:08:38
- * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-07 11:47:44
+ * @LastEditors: zhangchongjie
+ * @LastEditTime: 2026-06-12 16:21:55
  * @Descripttion: 发送操作信息
- * @FilePath: \vue\y9vue-flowableUI\src\views\workForm\dialogContent\userChoise.vue
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\views\workForm\dialogContent\userChoise.vue
 -->
 <template>
     <el-container
@@ -118,7 +118,7 @@
                                     :label="$t(optlabel)"
                                     align="center"
                                     prop="zxbSign"
-                                    width="100"
+                                    width="90"
                                 >
                                     <template #default="zxbSign_cell">
                                         <el-link
@@ -156,7 +156,12 @@
                             </el-table>
                         </div>
                     </el-tab-pane>
-                    <el-tab-pane :label="$t('短信提醒')" name="SMSReminder" style="height: 360px">
+                    <el-tab-pane
+                        v-if="smsRemind == 'true'"
+                        :label="$t('短信提醒')"
+                        name="SMSReminder"
+                        style="height: 360px"
+                    >
                         <el-checkbox v-model="awoke">{{ $t('短信提醒') }}</el-checkbox>
                         <el-checkbox v-model="awokeShuMing" @change="addShuMing">{{ $t('是否添加署名') }}</el-checkbox>
                         <table class="table-input" style="width: 100%; border-spacing: 0">
@@ -222,18 +227,20 @@
 </template>
 
 <script lang="ts" setup>
-    import { inject, reactive, toRefs } from 'vue';
+    import { inject, reactive, ref, toRefs } from 'vue';
     import personTree from '@/views/workForm/dialogContent/personTree.vue';
-    import { getUserChoiseData, getUserCount } from '@/api/flowableUI/userChoise';
+    import { getUserChoiseData } from '@/api/flowableUI/userChoise';
     import { forwarding, reposition } from '@/api/flowableUI/buttonOpt';
     import { addExecutionId } from '@/api/flowableUI/multiInstance';
     import { getAssignee, saveOrUpdate } from '@/api/flowableUI/quickSend';
+    import { ForwardingParam, SmsParam, UserChoiceParam } from '@/api/flowableUI/dto';
     import { useRoute, useRouter } from 'vue-router';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import y9_storage from '@/utils/storage';
     import settings from '@/settings';
     import { useI18n } from 'vue-i18n';
     import { debounce__ } from '@/utils';
+    import { saveSms } from '@/api/flowableUI/sms';
 
     const { t } = useI18n();
     // 注入 字体对象
@@ -262,7 +269,7 @@
         reposition: String,
         fromType: String //加减签选人
     });
-
+    const smsRemind = ref(import.meta.env.VUE_APP_SMS);
     const emits = defineEmits(['refreshData', 'reloadTable']);
     const flowableStore = useFlowableStore();
     const router = useRouter();
@@ -275,8 +282,8 @@
         taskId: '',
         activeName: 'addressee',
         routeToTask: '',
-        awoke: 'false',
-        awokeShuMing: 'false',
+        awoke: false,
+        awokeShuMing: false,
         awokeText: '',
         lastfixSmsContext: '',
         remindContent: '',
@@ -382,21 +389,12 @@
     const debouncedSaveQuickSend = debounce__(saveQuickSend, 500);
 
     async function saveQuickSend() {
-        let userChoiceId = [];
+        let quickSendUserId = [];
         for (let item of userChoice.value) {
-            let id = '';
-            if (item.type == 'Person') {
-                id = '3:' + item.id;
-            } else if (item.type == 'Department') {
-                id = '2:' + item.id;
-            } else if (item.type == 'customGroup') {
-                id = '7:' + item.id;
-            } else if (item.type == 'Position') {
-                id = '6:' + item.id;
-            }
-            userChoiceId.push(id);
+            let id = item.principalType + ':' + item.id;
+            quickSendUserId.push(id);
         }
-        let res = await saveOrUpdate(props.basicData.itemId, routeToTask.value, userChoiceId.join(','));
+        let res = await saveOrUpdate(props.basicData.itemId, routeToTask.value, quickSendUserId.join(','));
         ElMessage({ type: res.success ? 'success' : 'error', message: res.msg, offset: 65, appendTo: '.userChoise' });
     }
 
@@ -451,6 +449,7 @@
         user.type = checkNode.orgType;
         user.sex = checkNode.sex;
         user.zxbSign = '';
+        user.principalType = checkNode.principalType;
         user.index = userChoice.value.length + 1;
         let ischeck = true;
         //单人节点,报销业务负责人审核,重定位选人，加减签不能选择部门,用户组
@@ -504,9 +503,10 @@
     }
 
     function addShuMing(val) {
+        const userInfo = y9_storage.getObjectItem('ssoUserInfo');
         //添加署名
         if (val) {
-            lastfixSmsContext.value = '-- ' + userChoiseData.value.userName;
+            lastfixSmsContext.value = '-- ' + userInfo.name;
         } else {
             lastfixSmsContext.value = '';
         }
@@ -539,7 +539,7 @@
 
     const debouncedSend = debounce__(send, 500);
 
-    function send() {
+    async function send() {
         //发送
         if (userChoice.value.length == 0) {
             ElMessage({ type: 'error', message: t('请选择收件人'), offset: 65, appendTo: '.userChoise' });
@@ -547,6 +547,19 @@
         }
         let userChoiceId = [];
         let sponsorGuid = '';
+        if (smsRemind.value == 'true') {
+            const smsparams: SmsParam = {
+                processSerialNumber: props.basicData.processSerialNumber,
+                send: awoke.value,
+                sign: awokeShuMing.value,
+                content: awokeText.value
+            };
+            let res1 = await saveSms(smsparams);
+            if (!res1.success) {
+                ElMessage({ type: 'error', message: t('保存短信提醒失败'), offset: 65, appendTo: '.userChoise' });
+                return;
+            }
+        }
         if (props.fromType == '加减签') {
             for (let j = 0; j < userChoice.value.length; j++) {
                 let id = userChoice.value[j].id;
@@ -559,10 +572,7 @@
                 props.basicData.taskId,
                 userChoiceId.join(';'),
                 props.instanceData.assigneeId,
-                props.instanceData.num,
-                awoke.value,
-                awokeShuMing.value,
-                awokeText.value
+                props.instanceData.num
             ).then((res) => {
                 loading.value = false;
                 if (res.success) {
@@ -574,67 +584,40 @@
                 }
             });
         } else {
-            for (let item of userChoice.value) {
-                let id = '';
-                if (item.type == 'Person') {
-                    id = '3:' + item.id;
-                } else if (item.type == 'Department') {
-                    id = '2:' + item.id;
-                } else if (item.type == 'customGroup') {
-                    id = '7:' + item.id;
-                } else if (item.type == 'Position') {
-                    id = '6:' + item.id;
-                }
-                userChoiceId.push(id);
-                if (item.zxbSign == '主办') {
-                    sponsorGuid = id;
-                }
-            }
+            const result: UserChoiceParam[] = userChoice.value.map((item) => {
+                return {
+                    id: item.id,
+                    type: item.principalType
+                };
+            });
             if (repositionSign.value == 'reposition') {
                 //重定位发送
-                repositionSend(userChoiceId, sponsorGuid);
+                repositionSend(result, sponsorGuid);
                 return;
             }
-            getUserCount(userChoiceId.join(';')).then((res) => {
+            let link = currentrRute.matched[0].path;
+            loading.value = true;
+            const params: ForwardingParam = {
+                itemId: props.basicData.itemId,
+                taskId: props.basicData.taskId,
+                processSerialNumber: props.basicData.processSerialNumber,
+                sponsorHandle: props.basicData.sponsorHandle,
+                userChoice: result,
+                sponsorGuid: sponsorGuid,
+                routeToTaskId: routeToTask.value
+            };
+            forwarding(params).then((res) => {
+                loading.value = false;
                 if (res.success) {
-                    if (res.data > 100) {
-                        ElMessage({
-                            type: 'error',
-                            message: t('发送人数不能超过100人'),
-                            offset: 65,
-                            appendTo: '.userChoise'
-                        });
-                        return;
-                    }
-                    let link = currentrRute.matched[0].path;
-                    loading.value = true;
-                    forwarding(
-                        props.basicData.itemId,
-                        props.basicData.processInstanceId,
-                        props.basicData.taskId,
-                        props.basicData.processDefinitionKey,
-                        props.basicData.processSerialNumber,
-                        props.basicData.sponsorHandle,
-                        userChoiceId.join(';'),
-                        sponsorGuid,
-                        routeToTask.value,
-                        awoke.value,
-                        awokeShuMing.value,
-                        awokeText.value
-                    ).then((res) => {
-                        loading.value = false;
-                        if (res.success) {
-                            ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.userChoise' });
-                            let query = {
-                                itemId: props.basicData.itemId,
-                                refreshCount: true
-                            };
+                    ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.userChoise' });
+                    let query = {
+                        itemId: props.basicData.itemId,
+                        refreshCount: true
+                    };
 
-                            router.push({ path: link + '/todo', query: query });
-                        } else {
-                            ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.userChoise' });
-                        }
-                    });
+                    router.push({ path: link + '/todo', query: query });
+                } else {
+                    ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.userChoise' });
                 }
             });
         }
@@ -645,16 +628,16 @@
         let listType = currentrRute.query.listType;
         //重定位
         loading.value = true;
-        reposition(
-            props.basicData.taskId,
-            routeToTask.value,
-            userChoiceId.join(';'),
-            props.basicData.processSerialNumber,
-            sponsorGuid != '' ? sponsorGuid.split(':')[1] : '',
-            awoke.value,
-            awokeShuMing.value,
-            awokeText.value
-        ).then((res) => {
+        const params: ForwardingParam = {
+            itemId: props.basicData.itemId,
+            taskId: props.basicData.taskId,
+            processSerialNumber: props.basicData.processSerialNumber,
+            sponsorHandle: props.basicData.sponsorHandle,
+            userChoice: userChoiceId,
+            sponsorGuid: sponsorGuid,
+            routeToTaskId: routeToTask.value
+        };
+        reposition(params).then((res) => {
             loading.value = false;
             if (res.success) {
                 ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.userChoise' });
@@ -825,7 +808,7 @@
     }
 
     #tab-SMSReminder {
-        display: none;
+        // display: inline;
     }
 
     .userChoise {

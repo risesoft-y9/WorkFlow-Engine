@@ -3,9 +3,9 @@
  * @Author: zhangchongjie
  * @Date: 2024-04-23 15:08:38
  * @LastEditors: zhangchongjie
- * @LastEditTime: 2026-06-01 09:45:39
+ * @LastEditTime: 2026-06-18 16:34:00
  * @Descripttion: 编辑/查看 详情信息
- * @FilePath: \vue\y9vue-flowableUI\src\views\workForm\y9Document.vue
+ * @FilePath: \y9-vue\y9vue-flowableUI\src\views\workForm\y9Document.vue
 -->
 <template>
     <el-container
@@ -43,12 +43,12 @@
                     v-show="activeName.indexOf('y9form') > -1"
                     ref="myForm"
                     :basicData="basicData"
-                    :saveFormId="saveFormId"
-                    :processInstanceId="processInstanceId"
                     :initFormData="initFormData"
-                    @refreshCount="updateLeftListCount"
+                    :processInstanceId="processInstanceId"
+                    :saveFormId="saveFormId"
                     @fromBindValue="getFromBindValue"
                     @oneClickSet="oneClickSetMethod"
+                    @refreshCount="updateLeftListCount"
                 />
                 <!-- 附件 -->
                 <fileList
@@ -204,9 +204,7 @@
     import { useRoute, useRouter } from 'vue-router';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useFlowableStore } from '@/store/modules/flowableStore';
-
     import myFormRef from '@/views/workForm/y9Form.vue';
-
     import ProcessStatus from '@/components/Handling/ProcessStatus.vue';
     import fileList from '@/views/file/fileList.vue';
     import associatedFileList from '@/views/associatedFile/associatedFileList.vue';
@@ -215,12 +213,10 @@
     import csUserChoise from '@/views/chaoSong/dialogContent/csUserChoise.vue';
     import multiInstance from '@/views/multiInstance/list.vue';
     import flowChart from '@/views/flowchart/index.vue';
-
     import userChoise from '@/views/workForm/dialogContent/userChoise.vue';
     import rollbackOrTakeback from '@/views/workForm/dialogContent/rollbackOrTakeback.vue';
     import specialComplete from '@/views/workForm/dialogContent/specialComplete.vue';
     import customProcessCom from '@/views/workForm/dialogContent/customProcess.vue';
-
     import {
         addData,
         getDoingData,
@@ -246,25 +242,15 @@
     }
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo') || {};
+
     const router = useRouter();
     // 获取当前路由
-    const currentrRute = useRoute();
+    const currentRoute = useRoute();
     const flowableStore = useFlowableStore();
-    let baseData1 = {
-        tenantId: '',
-        userId: '',
-        processSerialNumber: '',
-        processDefinitionId: '',
-        processInstanceId: '',
-        taskId: '',
-        taskDefKey: '',
-        formId: '',
-        itembox: '',
-        initDataUrl: '',
-        itemId: '',
-        startTaskDefKey: ''
-    };
 
+    const emits = defineEmits(['refreshCount']);
+    const myForm = ref();
+    const y9UserInfo = y9_storage.getObjectItem('ssoUserInfo');
     const buttonIcon = {
         '01': 'ri-save-line',
         '02': 'ri-send-plane-fill',
@@ -286,22 +272,18 @@
         '19': 'ri-user-add-line',
         '20': 'ri-device-recover-line',
         '21': 'ri-check-line',
-        common_follow:'ri-star-line',
+        common_follow: 'ri-star-line',
         back2draft: 'ri-reply-line',
         back2any: 'ri-reply-line'
     };
-
-    let myForm = ref();
-
-    const emits = defineEmits(['refreshCount']);
     const data = reactive({
         clickCount: 0,
-        processDataList: [] as any,
+        processDataList: [],
         fromType: '', //区分弹窗选人来源哪个操作
         optType: '',
         routeToTask: '',
         reposition: '',
-        y9UserInfo: {} as any,
+        wordIframe: '',
         dialogVisible: false,
         loading: false,
         loadingtext: '拼命加载中',
@@ -314,9 +296,29 @@
         menuMap: [] as any, //按钮菜单数据
         sendMap: [] as any, //发送菜单数据
         repositionMap: [] as any, //重定位菜单
-        backTaskMap: [] as any,//多步退回菜单
+        backTaskMap: [] as any, //多步退回菜单
         formList: [{ formName: '未绑定表单' }] as any, //绑定表单数据
-        basicData: baseData1,
+        basicData: {
+            tenantId: '',
+            userId: '',
+            processSerialNumber: '',
+            processDefinitionId: '',
+            processInstanceId: '',
+            processDefinitionKey: '',
+            taskId: '',
+            taskDefKey: '',
+            formId: '',
+            formType: '',
+            itembox: '',
+            initDataUrl: '',
+            itemId: '',
+            startTaskDefKey: '',
+            activitiUser: '',
+            flowableUIBaseURL: '',
+            printFormId: '',
+            sponsorHandle: '',
+            startor: ''
+        },
         processSerialNumber: '', //流程编号
         processInstanceId: '', //流程实例id
         printUrl: '', //打印url
@@ -341,9 +343,9 @@
         dialogConfig: {
             show: false,
             title: '',
-            type: '',
             onOkLoading: true,
             closeOnClickModal: false, //是否可以通过点击 modal 关闭 Dialog
+            type: '',
             onOk: (newConfig) => {
                 return new Promise(async (resolve, reject) => {});
             },
@@ -355,12 +357,21 @@
         operationBtnList: [] as any,
         processTimeLineList: [] as any,
         // 收缩 流程状态
-        processFlag: false,
+        processFlag: true,
         saveFormId: '', //已经保存过表单数据的表单id，多表单新建时，切换页签先保存表单，避免重新初始化数据。
         isRefreshButton: false, //串行存在未开始人员，如果有发送按钮，提交按钮，办结按钮等，要提醒重新打开办件处理
         bindValue: '', //表单数据绑定值，用于根据绑定值获取正文模板
         initFormData: {} as any, //表单初始化数据
-        rollbackInfo: {} as any,//多步退回选择任务路由
+        queryMap: {
+            itemId: '',
+            itembox: '',
+            taskId: '',
+            processInstanceId: '',
+            processSerialNumber: '',
+            listType: '',
+            formType: ''
+        },
+        rollbackInfo: {} as any //多步退回选择任务路由
     });
 
     let {
@@ -368,7 +379,7 @@
         processDataList,
         routeToTask,
         reposition,
-        y9UserInfo,
+        wordIframe,
         dialogVisible,
         loading,
         loadingtext,
@@ -416,19 +427,33 @@
         optType,
         fromType,
         bindValue,
-        initFormData
+        initFormData,
+        queryMap
     } = toRefs(data);
 
     onMounted(async () => {
-        y9UserInfo.value = y9_storage.getObjectItem('ssoUserInfo');
+        queryMap.value = {
+            itemId: String(currentRoute.query.itemId || ''),
+            itembox: String(currentRoute.query.itembox || ''),
+            taskId: String(currentRoute.query.taskId || ''),
+            processInstanceId: String(currentRoute.query.processInstanceId || ''),
+            processSerialNumber: String(currentRoute.query.processSerialNumber || ''),
+            listType: String(currentRoute.query.listType || ''),
+            formType: String(currentRoute.query.formType || '')
+        };
+        console.log('当前获取的参数', queryMap.value);
+        if (!queryMap.value.itemId) {
+            queryMap.value = y9_storage.getObjectItem('query');
+            console.log('拿不到参数,从缓存获取', queryMap.value);
+        }
         const value = JSON.parse(sessionStorage.getItem('newProcess'));
         processFlag.value = value === null ? true : value;
-        itemId.value = currentrRute.query.itemId;
-        itembox.value = currentrRute.query.itembox;
-        taskId.value = currentrRute.query.taskId;
-        processInstanceId.value = currentrRute.query.processInstanceId;
-        processSerialNumber.value = currentrRute.query.processSerialNumber;
-        listType.value = currentrRute.query.listType;
+        itemId.value = queryMap.value.itemId;
+        itembox.value = queryMap.value.itembox;
+        taskId.value = queryMap.value.taskId;
+        processInstanceId.value = queryMap.value.processInstanceId;
+        processSerialNumber.value = queryMap.value.processSerialNumber;
+        listType.value = queryMap.value.listType;
         basicData.value.itembox = itembox.value;
         doneManage.value = false;
         nextNode.value = false;
@@ -455,7 +480,7 @@
             itembox.value === 'monitorDoing' ||
             itembox.value === 'monitorDone'
         ) {
-            customItem = false;
+            customItem.value = false;
             await getOpenData();
         }
         setTimeout(() => {
@@ -496,11 +521,11 @@
             setBasicData(addInitData.value);
 
             //事项前置表单处理
-            if (currentrRute.query.processSerialNumber != '' && currentrRute.query.processSerialNumber != undefined) {
+            if (queryMap.value.processSerialNumber != '' && queryMap.value.processSerialNumber != undefined) {
                 //填写前置表单，返回主表主键id
-                processSerialNumber.value = currentrRute.query.processSerialNumber;
-                basicData.value.processSerialNumber = currentrRute.query.processSerialNumber;
-                basicData.value.formType = currentrRute.query.formType; //前置表单标识
+                processSerialNumber.value = queryMap.value.processSerialNumber;
+                basicData.value.processSerialNumber = queryMap.value.processSerialNumber;
+                basicData.value.formType = queryMap.value.formType; //前置表单标识
             }
             myForm.value.show(formId.value);
         }
@@ -592,7 +617,7 @@
                         return h('div', {}, sbnArr);
                     }
                 });
-            } else if (item.key == 'back2any') {
+            } else if (!customItem.value && item.key == 'back2any') {
                 //多步退回按钮
                 operationBtnList.value.push({
                     name: item.name,
@@ -646,11 +671,7 @@
                         return h('div', {}, rArr);
                     }
                 });
-            } else if (
-                item.key != '02' &&
-                item.key != '16' &&
-                item.key.indexOf('follow') == -1
-            ) {
+            } else if (item.key != '02' && item.key != '16' && item.key.indexOf('follow') == -1) {
                 //其他按钮
                 operationBtnList.value.push({
                     name: item.name,
@@ -925,8 +946,7 @@
         if (match != null) {
             browser = '';
         }
-
-        let msg = {
+        let msg: any = {
             msgType: 'openWord',
             itemId: basicData.value.itemId,
             itembox: basicData.value.itembox,
@@ -935,7 +955,7 @@
             taskId: basicData.value.taskId,
             browser: browser,
             tenantId: basicData.value.tenantId,
-            userId: y9UserInfo.value.personId
+            userId: y9UserInfo.personId
         };
         if (type == 'print') {
             //打印
@@ -943,7 +963,7 @@
             msg.activitiUser = basicData.value.activitiUser;
             msg.taskDefKey = basicData.value.taskDefKey;
         }
-
+        // wordIframe.value?.contentWindow?.postMessage(msg,wordUrl.value);
         let positionId = sessionStorage.getItem('positionId');
         if (!ntkoBrowser.ExtensionInstalled()) {
             document.getElementById('risesoftNTKOWord').style.display = '';
@@ -969,7 +989,7 @@
                     '&tenantId=' +
                     basicData.value.tenantId +
                     '&userId=' +
-                    y9UserInfo.value.personId +
+                    y9UserInfo.personId +
                     '&positionId=' +
                     positionId,
                 false
@@ -979,7 +999,7 @@
 
     function backToList() {
         //返回列表
-        let link = currentrRute.matched[0].path;
+        let link = currentRoute.matched[0].path;
         let query = {
             itemId: itemId.value
         };
@@ -1361,20 +1381,19 @@
     function directForwarding(userChoice, sendKey) {
         //直接发送
         loading.value = true;
-        forwarding(
-            basicData.value.itemId,
-            basicData.value.processInstanceId,
-            basicData.value.taskId,
-            basicData.value.processDefinitionKey,
-            basicData.value.processSerialNumber,
-            basicData.value.sponsorHandle,
-            userChoice,
-            '',
-            sendKey,
-            'false',
-            'false',
-            ''
-        ).then((res) => {
+        const params: ForwardingParam = {
+            itemId: basicData.value.itemId,
+            taskId: basicData.value.taskId,
+            processSerialNumber: basicData.value.processSerialNumber,
+            sponsorHandle: basicData.value.sponsorHandle,
+            userChoice: userChoice,
+            sponsorGuid: '',
+            routeToTaskId: sendKey,
+            isSendSms: 'false',
+            isShuMing: 'false',
+            smsContent: ''
+        };
+        forwarding(params).then((res) => {
             loading.value = false;
             if (res.success) {
                 ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
@@ -1382,7 +1401,7 @@
                     itemId: basicData.value.itemId,
                     refreshCount: true
                 };
-                let link = currentrRute.matched[0].path;
+                let link = currentRoute.matched[0].path;
                 router.push({ path: link + '/todo', query: query });
             } else {
                 ElMessage({ type: 'error', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
@@ -1718,7 +1737,8 @@
             });
         } else if (key == 'common_faqiren') {
             rollbackToStartor();
-        } else if (key == 'back2draft') {//退回发起节点
+        } else if (key == 'back2draft') {
+            //退回发起节点
             optType.value = 'back2draft';
             Object.assign(dialogConfig.value, {
                 show: true,
@@ -1754,8 +1774,8 @@
                                     offset: 65,
                                     appendTo: '.y9Document-container'
                                 });
-                                let link = currentrRute.matched[0].path;
-                                let listType = currentrRute.query.listType;
+                                let link = currentRoute.matched[0].path;
+                                let listType = queryMap.value.listType;
                                 let query = {
                                     itemId: basicData.value.itemId
                                 };
@@ -1806,10 +1826,10 @@
         loading.value = false;
         if (res.success) {
             ElMessage({ type: 'success', message: res.msg, offset: 65, appendTo: '.y9Document-container' });
-            let link = currentrRute.matched[0].path;
+            let link = currentRoute.matched[0].path;
             let query = {
                 itemId: basicData.value.itemId,
-                refreshCount: true
+                refreshCount: 'true'
             };
             router.push({ path: link + '/todo', query: query });
         } else {

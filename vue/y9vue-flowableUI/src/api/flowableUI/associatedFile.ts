@@ -1,3 +1,12 @@
+/*
+ * @version:
+ * @Author: zhangchongjie
+ * @Date: 2021-05-27 16:33:29
+ * @LastEditors: mengjuhua
+ * @LastEditTime: 2026-06-29 14:44:21
+ * @Descripttion: 关联流程设置 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\associatedFile.ts
+ */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();

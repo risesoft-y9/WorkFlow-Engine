@@ -1,14 +1,15 @@
 /*
- * @Author: mengjuhua
- * @Date: 2026-01-05 17:10:30
+ * @Author: your name
+ * @Date: 2021-05-19 09:41:06
+ * @LastEditTime: 2026-06-29 14:48:05
  * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-07 10:16:53
- * @FilePath: \vue\y9vue-flowableUI\src\api\flowableUI\process.ts
- * @Description: 
+ * @Description: 历程信息 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\process.ts
  */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
+
 //获取简易历程
 export function processList(processInstanceId) {
     const params = {

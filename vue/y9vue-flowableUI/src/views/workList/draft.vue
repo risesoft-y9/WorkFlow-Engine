@@ -35,7 +35,7 @@
         </template>
         <template #other="{ row, column, index }">
             <a
-                :style="{ 
+                :style="{
                     fontSize: fontSizeObj.baseFontSize,
                     cursor: 'pointer',
                     textDecoration: 'none'

@@ -1,14 +1,15 @@
 /*
  * @Author: your name
  * @Date: 2021-05-19 09:41:06
- * @LastEditTime: 2022-01-04 11:38:34
- * @LastEditors: zhangchongjie
- * @Description: In User Settings Edit
- * @FilePath: \workspace-y9boot-9.5-vue\y9vue-flowableUI\src\api\flowableUI\monitor.js
+ * @LastEditTime: 2026-06-29 14:46:38
+ * @LastEditors: mengjuhua
+ * @Description: 监控 
+ * @FilePath: \y9-flowable\vue\y9vue-flowableUI\src\api\flowableUI\monitor.ts
  */
 import Request from '@/api/lib/request';
 
 var flowableRequest = new Request();
+
 //单位所有件
 export function deptList(itemId, searchName, userName, state, year, page, rows) {
     const params = {
@@ -19,9 +20,9 @@ export function deptList(itemId, searchName, userName, state, year, page, rows) 
         year,
         page,
         rows
-    }
+    };
     return flowableRequest({
-        url: "/vue/monitor/deptList",
+        url: '/vue/monitor/deptList',
         method: 'get',
         params: params
     });
@@ -34,9 +35,9 @@ export function getmonitorDoingList(itemId, searchTerm, page, rows) {
         searchTerm,
         page,
         rows
-    }
+    };
     return flowableRequest({
-        url: "/vue/monitor/monitorDoingList",
+        url: '/vue/monitor/monitorDoingList',
         method: 'get',
         params: params
     });
@@ -49,9 +50,9 @@ export function getmonitorDoneList(itemId, searchTerm, page, rows) {
         searchTerm,
         page,
         rows
-    }
+    };
     return flowableRequest({
-        url: "/vue/monitor/monitorDoneList",
+        url: '/vue/monitor/monitorDoneList',
         method: 'get',
         params: params
     });
@@ -63,10 +64,10 @@ export function removeProcess(processInstanceIds) {
         processInstanceIds
     };
     return flowableRequest({
-        url: "/vue/monitor/removeProcess",
+        url: '/vue/monitor/removeProcess',
         method: 'post',
         params: params
-    })
+    });
 }
 
 //监控办件
@@ -81,7 +82,7 @@ export function monitorBanjianList(searchName, itemId, userName, state, year, pa
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/monitor/list",
+        url: '/vue/monitor/list',
         method: 'get',
         params: params
     });
@@ -100,7 +101,7 @@ export function monitorChaosongList(searchName, itemId, senderName, userName, st
         rows: rows
     };
     return flowableRequest({
-        url: "/vue/monitor/chaoSongList",
+        url: '/vue/monitor/chaoSongList',
         method: 'get',
         params: params
     });
@@ -110,7 +111,7 @@ export function monitorChaosongList(searchName, itemId, senderName, userName, st
 export function getAllItemList() {
     const params = {};
     return flowableRequest({
-        url: "/vue/main/getAllItemList",
+        url: '/vue/main/getAllItemList',
         method: 'get',
         params: params
     });

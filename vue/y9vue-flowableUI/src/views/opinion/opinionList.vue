@@ -1,23 +1,13 @@
 <!--
  * @Author: qinman
  * @Date: 2023-11-10 09:17:03
- * @LastEditors: mengjuhua
- * @LastEditTime: 2026-01-07 10:31:05
- * @Description:
- * @FilePath: \vue\y9vue-flowableUI\src\views\opinion\opinionList.vue
+ * @LastEditors: yihong Yh599598!@#
+ * @LastEditTime: 2025-09-23 11:33:33
+ * @Description: 
+ * @FilePath: \workspace-y9boot-9.5-liantong-vued:\workspace-y9cloud-v9.6\y9-vue\y9vue-flowableUI\src\views\opinion\opinionList.vue
 -->
 <template>
     <el-container class="opinionList-container" style="height: 100%; width: 100%; padding: 0 5px">
-        <el-header :height="headerheight" style="line-height: 25px; padding: 0">
-            <el-link
-                v-if="historyShow"
-                :underline="false"
-                icon="el-icon-time"
-                type="primary"
-                @click="showOpinionHistory"
-                >{{ $t('意见留痕') }}
-            </el-link>
-        </el-header>
         <el-main style="background-color: #fff; padding: 0">
             <div :style="suggeststyle" class="suggest">
                 <ul :style="ulstyle">
@@ -146,29 +136,20 @@
                 </ul>
             </div>
         </el-main>
-        <y9Dialog v-model:config="dialogConfig">
-            <opinionHistory
-                ref="opinionHistoryRef"
-                :opinionframemark="opinionframemark"
-                :processSerialNumber="processSerialNumber"
-            />
-        </y9Dialog>
     </el-container>
 </template>
 
 <script lang="ts" setup>
-    import { computed, inject, reactive } from 'vue';
-    import opinionHistory from '@/views/opinion/opinionHistory.vue';
+    import { defineProps, inject, reactive } from 'vue';
     import {
         commonSentencesList,
-        countOpinionHistory,
         delOpinion,
         getOpinionList,
         personalComment,
         saveOpinion,
         updateUseNumber
     } from '@/api/flowableUI/opinion';
-    import settings from '@/settings';
+    import { OpinionFrameParam, OpinionParam } from './dto';
     import { useRoute } from 'vue-router';
     import phoneImg from '@/assets/phone.png';
     import { useI18n } from 'vue-i18n';
@@ -188,10 +169,7 @@
         textareaStyle: { padding: '10px' },
         commonList: [],
         opinionId: '',
-        userId: '',
         userName: '',
-        deptId: '',
-        selectTime: '',
         opinionModel: {},
         opinionInput: '',
         processSerialNumber: '',
@@ -206,12 +184,9 @@
         oldContent: '',
         opinionArray: [],
         basicData: {},
-        historyShow: false,
-        headerheight: '0px',
         phone: phoneImg,
         suggeststyle: '',
         ulstyle: '',
-        opinionHistoryRef: '',
         //弹窗配置
         dialogConfig: {
             show: false,
@@ -228,10 +203,7 @@
     let {
         textareaStyle,
         opinionId,
-        userId,
         userName,
-        deptId,
-        selectTime,
         opinionModel,
         opinionInput,
         processSerialNumber,
@@ -246,12 +218,9 @@
         opinionArray,
         basicData,
         opinionOptShow,
-        historyShow,
-        headerheight,
         phone,
         suggeststyle,
         ulstyle,
-        opinionHistoryRef,
         dialogConfig,
         commonList,
         hiddenDiv
@@ -269,14 +238,15 @@
         opinionArray.value = [];
         addable.value = {};
         opinionName.value = props.opinionName;
-        getOpinionList(
-            basicData.value.processSerialNumber,
-            basicData.value.taskId,
-            basicData.value.itembox,
-            props.opinionframemark,
-            basicData.value.itemId,
-            basicData.value.taskDefKey
-        ).then((res) => {
+        const params: OpinionFrameParam = {
+            processSerialNumber: basicData.value.processSerialNumber,
+            opinionFrameMark: props.opinionframemark,
+            itemId: basicData.value.itemId,
+            itembox: basicData.value.itembox,
+            taskId: basicData.value.taskId,
+            taskDefinitionKey: basicData.value.taskDefKey
+        };
+        getOpinionList(params).then((res) => {
             if (res.success) {
                 let resdata = res.data;
                 addable.value = resdata;
@@ -298,15 +268,6 @@
                 }
             }
         });
-        if (currentrRute.path.indexOf('/print') == -1 && settings.opinion_History) {
-            //打印表单不获取,opinion_History开启
-            countOpinionHistory(basicData.value.processSerialNumber, props.opinionframemark).then((res) => {
-                if (res.success && res.data > 0) {
-                    historyShow.value = true;
-                    headerheight.value = '25px';
-                }
-            });
-        }
     }
 
     getCommonSentencesList();
@@ -375,15 +336,10 @@
         opinionImgShow.value = false;
         opinionOptShow.value = false;
         personalComment(opinionId.value).then((res) => {
-            //opinionInput.value.focus();
             if (res.success) {
-                opinionModel.value = res.data.opinion;
-                //opinionContent.value = opinionModel.value.content;
+                opinionModel.value = res.data;
                 userName.value = opinionModel.value.userName;
-                userId.value = opinionModel.value.userId;
-                deptId.value = opinionModel.value.deptId;
-                selectTime.value = res.data.date;
-                oldContent.value = res.data.opinion.content;
+                oldContent.value = res.data.content;
             }
         });
     }
@@ -393,8 +349,6 @@
         opinionContent.value = '';
         opinionModel.value = {};
         userName.value = '';
-        userId.value = '';
-        deptId.value = '';
         oldContent.value = '';
     }
 
@@ -439,17 +393,6 @@
         opinionOptShow.value = true;
     }
 
-    function showOpinionHistory() {
-        processSerialNumber.value = basicData.value.processSerialNumber;
-        opinionframemark.value = props.opinionframemark;
-        Object.assign(dialogConfig.value, {
-            show: true,
-            width: '75%',
-            title: computed(() => t('意见留痕')),
-            showFooter: false
-        });
-    }
-
     function saveChange() {
         //保存未保存的意见内容
         if (opinionContent.value != oldContent.value) {
@@ -460,27 +403,19 @@
     const debouncedSave = debounce__(saveOrUpdateOpinion, 500);
 
     function saveOrUpdateOpinion() {
-        if (opinionId.value == '') {
-            opinionModel.value.id = opinionId.value;
-            opinionModel.value.opinionFrameMark = props.opinionframemark;
-            opinionModel.value.processSerialNumber = basicData.value.processSerialNumber;
-            opinionModel.value.processInstanceId = basicData.value.processInstanceId;
-            opinionModel.value.taskId = basicData.value.taskId;
-            opinionModel.value.userId = userId.value;
-            opinionModel.value.deptId = deptId.value;
-            opinionModel.value.createDate = selectTime.value;
-        }
-        opinionModel.value.userId = userId.value;
-        opinionModel.value.deptId = deptId.value;
-        opinionModel.value.createDate = selectTime.value;
-        opinionModel.value.content = opinionContent.value;
         if (opinionContent.value == '') {
             ElMessage({ type: 'error', message: t('内容不能为空'), offset: 65, appendTo: '.opinionList-container' });
             return;
         }
-        let jsonData = JSON.stringify(opinionModel.value).toString();
-
-        saveOpinion(jsonData).then((res) => {
+        let params: OpinionParam = {
+            id: opinionId.value || undefined,
+            opinionFrameMark: props.opinionframemark,
+            processSerialNumber: basicData.value.processSerialNumber,
+            processInstanceId: basicData.value.processInstanceId,
+            taskId: basicData.value.taskId,
+            content: opinionContent.value
+        };
+        saveOpinion(params).then((res) => {
             if (res.success) {
                 ElMessage({ type: 'success', message: res.msg, appendTo: '.opinionList-container' });
                 //emits("childFunction",basicData.value);
