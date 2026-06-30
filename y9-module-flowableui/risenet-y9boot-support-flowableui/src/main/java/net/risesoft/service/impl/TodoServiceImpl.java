@@ -16,6 +16,7 @@ import com.google.common.base.Strings;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
+import net.risesoft.api.itemadmin.TaskRelatedApi;
 import net.risesoft.api.itemadmin.TaskVariableApi;
 import net.risesoft.api.itemadmin.core.ItemApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
@@ -26,6 +27,7 @@ import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.FlowableUiConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.enums.ItemBoxTypeEnum;
+import net.risesoft.model.itemadmin.TaskRelatedModel;
 import net.risesoft.model.itemadmin.TaskVariableModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
@@ -52,6 +54,7 @@ public class TodoServiceImpl implements TodoService {
     private final TaskVariableApi taskvariableApi;
     private final HandleFormDataService handleFormDataService;
     private final UtilService utilService;
+    private final TaskRelatedApi taskRelatedApi;
 
     private Map<String, Object> buildTodoListItem(TaskModel task, String itemId, String itemName,
         List<String> processSerialNumbers) {
@@ -164,6 +167,11 @@ public class TodoServiceImpl implements TodoService {
             // 退回件标识
             String rollBack = variableApi.getVariableLocal(taskId, SysVariables.ROLLBACK).getData();
             if (Boolean.parseBoolean(rollBack)) {
+                mapTemp.put("rollBack", true);
+            }
+            // 多步退回标识
+            List<TaskRelatedModel> taskRelatedList = taskRelatedApi.findByTaskId(task.getId()).getData();
+            if (taskRelatedList.stream().filter(item -> item.getInfoType().equals("4")).findFirst().isPresent()) {
                 mapTemp.put("rollBack", true);
             }
             // 收回件标识

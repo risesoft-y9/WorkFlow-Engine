@@ -14,7 +14,6 @@ import java.util.stream.Collectors;
 import javax.validation.Valid;
 import javax.validation.constraints.NotBlank;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -1171,7 +1170,8 @@ public class ButtonOperationRestController {
     @FlowableLog(operationName = "多步退回", operationType = FlowableOperationTypeEnum.ROLLBACK)
     @PostMapping(value = "/rollBack2History")
     public Y9Result<String> rollBack2History(@RequestParam @NotBlank String taskId,
-        @RequestParam @NotBlank String routeToTaskId, @RequestParam String[] orgUnitIds) {
+        @RequestParam @NotBlank String routeToTaskId, @RequestParam String[] orgUnitIds,
+        @RequestParam(required = false) String reason) {
         Position position = Y9FlowableHolder.getPosition();
         String positionId = position.getId(), tenantId = Y9LoginUserHolder.getTenantId();
         try {
@@ -1180,7 +1180,7 @@ public class ButtonOperationRestController {
                 return Y9Result.failure("该件已被处理！");
             }
             buttonOperationApi.rollBack2History(taskId, routeToTaskId,
-                Arrays.stream(orgUnitIds).collect(Collectors.toList()), "", "");
+                Arrays.stream(orgUnitIds).collect(Collectors.toList()), reason, "");
             asyncUtilService.rollBackTwoHistoryAuditLog(tenantId, positionId, taskId, routeToTaskId,
                 Arrays.stream(orgUnitIds).collect(Collectors.toList()));
             return Y9Result.successMsg("多步退回成功");

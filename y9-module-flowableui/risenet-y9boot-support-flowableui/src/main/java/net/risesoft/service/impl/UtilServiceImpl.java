@@ -175,7 +175,6 @@ public class UtilServiceImpl implements UtilService {
     @Override
     public void setPublicData(Map<String, Object> mapTemp, String processInstanceId, List<TaskModel> taskList,
         ItemBoxTypeEnum itemBoxTypeEnum) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         int chaosongNum = 0, speakInfoNum = 0, countFollow = 0;
         boolean isReminder = false;
         RemindInstanceModel remindInstanceModel = null;
