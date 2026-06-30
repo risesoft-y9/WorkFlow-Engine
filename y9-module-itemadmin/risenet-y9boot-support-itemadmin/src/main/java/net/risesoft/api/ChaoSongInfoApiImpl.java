@@ -9,8 +9,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.ChaoSongApi;
-import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.model.itemadmin.ChaoSongModel;
 import net.risesoft.model.itemadmin.OpenDataModel;
 import net.risesoft.nosql.elastic.entity.ChaoSongInfo;
@@ -32,10 +30,6 @@ import net.risesoft.y9.Y9FlowableHolder;
 public class ChaoSongInfoApiImpl implements ChaoSongApi {
 
     private final ChaoSongInfoService chaoSongInfoService;
-
-    private final PositionApi positionApi;
-
-    private final UserApi userApi;
 
     /**
      * 改变抄送件意见状态

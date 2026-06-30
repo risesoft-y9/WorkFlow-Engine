@@ -14,7 +14,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.SignaturePictureApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.SignaturePicture;
 import net.risesoft.model.itemadmin.SignaturePictureModel;
 import net.risesoft.pojo.Y9Result;
@@ -35,8 +34,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class SignaturePictureApiImpl implements SignaturePictureApi {
 
     private final SignaturePictureService signaturePictureService;
-
-    private final UserApi userApi;
 
     /**
      * 删除签名图片信息

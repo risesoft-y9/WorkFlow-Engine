@@ -14,8 +14,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.view.CustomViewApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.model.itemadmin.CustomViewModel;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.view.CustomViewService;
@@ -34,10 +32,6 @@ import net.risesoft.service.view.CustomViewService;
 public class CustomViewApiImpl implements CustomViewApi {
 
     private final CustomViewService customViewService;
-
-    private final OrgUnitApi orgUnitApi;
-
-    private final PositionApi positionApi;
 
     /**
      * 删除自定义视图

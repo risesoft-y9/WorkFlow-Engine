@@ -6,6 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.MediaType;
@@ -19,8 +20,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.DocumentCopyApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.DocumentCopy;
 import net.risesoft.entity.ProcessParam;
 import net.risesoft.entity.opinion.OpinionCopy;
@@ -58,10 +57,6 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
 
     private final ItemPageService itemPageService;
 
-    private final UserApi userApi;
-
-    private final OrgUnitApi orgUnitApi;
-
     private final JdbcTemplate jdbcTemplate;
 
     public DocumentCopyApiImpl(
@@ -69,15 +64,11 @@ public class DocumentCopyApiImpl implements DocumentCopyApi {
         ProcessParamService processParamService,
         OpinionCopyService opinionCopyService,
         ItemPageService itemPageService,
-        UserApi userApi,
-        OrgUnitApi orgUnitApi,
         @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate) {
         this.documentCopyService = documentCopyService;
         this.processParamService = processParamService;
         this.opinionCopyService = opinionCopyService;
         this.itemPageService = itemPageService;
-        this.userApi = userApi;
-        this.orgUnitApi = orgUnitApi;
         this.jdbcTemplate = jdbcTemplate;
     }
 

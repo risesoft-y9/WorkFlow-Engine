@@ -2,6 +2,7 @@ package net.risesoft.api;
 
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -11,7 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.SpeakInfoApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.SpeakInfo;
 import net.risesoft.model.itemadmin.SpeakInfoModel;
 import net.risesoft.pojo.Y9Result;
@@ -33,8 +33,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class SpeakInfoApiImpl implements SpeakInfoApi {
 
     private final SpeakInfoService speakInfoService;
-
-    private final UserApi userApi;
 
     /**
      * 逻辑删除发出的沟通消息

@@ -15,7 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.form.FormDataApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.consts.UtilConsts;
 import net.risesoft.entity.form.Y9FormItemBind;
 import net.risesoft.model.itemadmin.BindFormModel;
@@ -41,8 +40,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class FormDataApiImpl implements FormDataApi {
 
     private final FormDataService formDataService;
-
-    private final PositionApi positionApi;
 
     private final Y9FormItemBindService y9FormItemBindService;
 

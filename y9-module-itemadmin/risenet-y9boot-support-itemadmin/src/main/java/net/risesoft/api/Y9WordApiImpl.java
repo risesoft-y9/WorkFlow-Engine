@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,7 +21,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.ItemConsts;
@@ -82,8 +82,6 @@ public class Y9WordApiImpl implements Y9WordApi {
     private final ItemWordTemplateBindRepository wordTemplateBindRepository;
 
     private final PersonApi personApi;
-
-    private final UserApi userApi;
 
     private final OrgUnitApi orgUnitApi;
 

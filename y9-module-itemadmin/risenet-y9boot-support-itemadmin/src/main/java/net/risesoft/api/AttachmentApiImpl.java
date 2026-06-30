@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.stream.IntStream;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,9 +15,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
-import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.dto.itemadmin.IdsDTO;
 import net.risesoft.entity.attachment.Attachment;
 import net.risesoft.entity.attachment.AttachmentConf;
@@ -52,12 +50,6 @@ public class AttachmentApiImpl implements AttachmentApi {
     private final AttachmentRepository attachmentRepository;
 
     private final AttachmentConfRepository attachmentConfRepository;
-
-    private final OrgUnitApi orgUnitApi;
-
-    private final PositionApi positionApi;
-
-    private final UserApi userApi;
 
     /**
      * 根据流程编号删除附件
@@ -101,9 +93,30 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
+     * 获取附件配置信息
+     *
+     *
+     * @param attachmentType 附件类型
+     * @return Y9Result<List<AttachmentConfModel>>
+     */
+    @Override
+    public Y9Result<List<AttachmentConfModel>> findByAttachmentType(@RequestParam String attachmentType) {
+        List<AttachmentConfModel> attachmentConfModelList = new ArrayList<>();
+        List<AttachmentConf> attachmentConfList =
+            attachmentConfRepository.findByAttachmentTypeOrderByTabIndexAsc(attachmentType);
+        AttachmentConfModel attachmentConfModel;
+        for (AttachmentConf attachmentConf : attachmentConfList) {
+            attachmentConfModel = new AttachmentConfModel();
+            Y9BeanUtil.copyProperties(attachmentConf, attachmentConfModel);
+            attachmentConfModelList.add(attachmentConfModel);
+        }
+        return Y9Result.success(attachmentConfModelList);
+    }
+
+    /**
      * 根据附件id获取附件信息
      *
-     * 
+     *
      * @param id 附件id
      * @return {@code Y9Result<AttachmentModel>} 通用请求返回对象 - data是附件对象
      * @since 9.6.6
@@ -122,7 +135,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 根据流程编号、附件来源、文件类型获取附件数量
      *
-     * 
+     *
      * @param processSerialNumber 流程编号
      * @param fileSource 附件来源
      * @param fileType 文件类型
@@ -140,7 +153,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 获取附件分页列表
      *
-     * 
+     *
      * @param processSerialNumber 流程编号
      * @param fileSource 附件来源
      * @param page 页码
@@ -157,7 +170,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 获取附件文件信息
      *
-     * 
+     *
      * @param fileId 附件id
      * @return {@code Y9Result<AttachmentModel>} 通用请求返回对象 - data是附件对象
      * @since 9.6.6
@@ -174,9 +187,22 @@ public class AttachmentApiImpl implements AttachmentApi {
     }
 
     /**
+     * 保存附件排序
+     *
+     * @param idsDTO idsDTO
+     * @return Y9Result<Object>
+     */
+    @Override
+    public Y9Result<Object> saveOrder(@RequestBody IdsDTO idsDTO) {
+        List<String> ids = idsDTO.getIds();
+        IntStream.range(0, ids.size()).forEach(i -> attachmentRepository.updateAttachmentOrder(i + 1, ids.get(i)));
+        return Y9Result.success();
+    }
+
+    /**
      * 更新附件信息
      *
-     * 
+     *
      * @param fileId 文件id
      * @param fileSize 文件大小
      * @param taskId 任务id
@@ -216,7 +242,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 上传附件
      *
-     * 
+     *
      * @param fileName 文件名
      * @param fileSize 文件大小
      * @param processInstanceId 流程实例id
@@ -240,7 +266,7 @@ public class AttachmentApiImpl implements AttachmentApi {
     /**
      * 更新附件信息(model)
      *
-     * 
+     *
      * @param attachmentModel 附件实体信息
      * @return {@code Y9Result<Object>} 通用请求返回对象
      * @since 9.6.6
@@ -250,40 +276,6 @@ public class AttachmentApiImpl implements AttachmentApi {
         Attachment file = new Attachment();
         Y9BeanUtil.copyProperties(attachmentModel, file);
         attachmentService.uploadRestModel(file);
-        return Y9Result.success();
-    }
-
-    /**
-     * 获取附件配置信息
-     * 
-     * 
-     * @param attachmentType 附件类型
-     * @return Y9Result<List<AttachmentConfModel>>
-     */
-    @Override
-    public Y9Result<List<AttachmentConfModel>> findByAttachmentType(@RequestParam String attachmentType) {
-        List<AttachmentConfModel> attachmentConfModelList = new ArrayList<>();
-        List<AttachmentConf> attachmentConfList =
-            attachmentConfRepository.findByAttachmentTypeOrderByTabIndexAsc(attachmentType);
-        AttachmentConfModel attachmentConfModel;
-        for (AttachmentConf attachmentConf : attachmentConfList) {
-            attachmentConfModel = new AttachmentConfModel();
-            Y9BeanUtil.copyProperties(attachmentConf, attachmentConfModel);
-            attachmentConfModelList.add(attachmentConfModel);
-        }
-        return Y9Result.success(attachmentConfModelList);
-    }
-
-    /**
-     * 保存附件排序
-     * 
-     * @param idsDTO idsDTO
-     * @return Y9Result<Object>
-     */
-    @Override
-    public Y9Result<Object> saveOrder(@RequestBody IdsDTO idsDTO) {
-        List<String> ids = idsDTO.getIds();
-        IntStream.range(0, ids.size()).forEach(i -> attachmentRepository.updateAttachmentOrder(i + 1, ids.get(i)));
         return Y9Result.success();
     }
 }
