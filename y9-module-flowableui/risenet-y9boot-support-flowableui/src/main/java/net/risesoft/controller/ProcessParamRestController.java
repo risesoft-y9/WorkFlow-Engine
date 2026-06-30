@@ -5,7 +5,6 @@ import java.util.Map;
 
 import javax.validation.constraints.NotBlank;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -21,6 +20,8 @@ import net.risesoft.api.itemadmin.core.ActRuDetailApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.processadmin.VariableApi;
 import net.risesoft.consts.processadmin.SysVariables;
+import net.risesoft.log.FlowableOperationTypeEnum;
+import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.StartProcessResultModel;
 import net.risesoft.model.itemadmin.core.ProcessParamModel;
 import net.risesoft.pojo.Y9Result;
@@ -63,11 +64,13 @@ public class ProcessParamRestController {
     }
 
     /**
-     * 保存流程变量
+     * 保存动作事件
      *
      * @param processInstanceId 流程实例id
+     * @param actionName 动作事件
      * @return Y9Result<StartProcessResultModel>
      */
+    @FlowableLog(operationName = "保存动作事件", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveActionName")
     public Y9Result<StartProcessResultModel> saveActionName(@RequestParam(required = false) String processInstanceId,
         @RequestParam(required = false) String actionName) {
@@ -92,6 +95,7 @@ public class ProcessParamRestController {
      * @param customItem 是否定制流程
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存流程变量", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/saveOrUpdate")
     public Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId,
         @RequestParam @NotBlank String processSerialNumber, @RequestParam(required = false) String processInstanceId,
@@ -107,6 +111,7 @@ public class ProcessParamRestController {
      * @param actRuDetailId 待办详情id
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "设置待办已读", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/setRead")
     public Y9Result<Object> setRead(@RequestParam @NotBlank String actRuDetailId) {
         return actRuDetailApi.setRead(actRuDetailId);
@@ -120,6 +125,7 @@ public class ProcessParamRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "更新主办司局信息", operationType = FlowableOperationTypeEnum.SAVE)
     @PostMapping(value = "/updateHostDept")
     public Y9Result<Object> updateHostDept(@RequestParam String deptId, @RequestParam String deptName,
         @RequestParam String processSerialNumber) {

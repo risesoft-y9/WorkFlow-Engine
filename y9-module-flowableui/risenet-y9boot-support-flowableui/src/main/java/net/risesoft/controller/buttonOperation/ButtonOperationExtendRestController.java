@@ -10,7 +10,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.constraints.NotBlank;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.validation.annotation.Validated;
@@ -365,6 +364,7 @@ public class ButtonOperationExtendRestController {
      * @param desc 原因
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "批量恢复待办", operationType = FlowableOperationTypeEnum.RESUME)
     @PostMapping(value = "/multipleResumeToDo")
     public Y9Result<String> multipleResumeToDo(@RequestParam @NotBlank String processInstanceIds,
         @RequestParam(required = false) String desc) {

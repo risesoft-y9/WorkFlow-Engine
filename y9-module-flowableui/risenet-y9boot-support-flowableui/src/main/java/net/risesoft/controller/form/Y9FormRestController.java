@@ -373,6 +373,7 @@ public class Y9FormRestController {
      * @param jsonData 表数据
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存子表单数据", operationType = FlowableOperationTypeEnum.SAVE_FORM)
     @PostMapping(value = "/saveChildFormData")
     public Y9Result<String> saveChildFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String jsonData) {
@@ -394,6 +395,7 @@ public class Y9FormRestController {
      * @param jsonData 表数据
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存子表单数据", operationType = FlowableOperationTypeEnum.SAVE_FORM)
     @PostMapping(value = "/saveChildTableData")
     public Y9Result<String> saveChildTableData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String tableId, @RequestParam @NotBlank String processSerialNumber,
@@ -435,6 +437,7 @@ public class Y9FormRestController {
      * @param jsonData 表单数据
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "保存前置表单数据", operationType = FlowableOperationTypeEnum.SAVE_FORM)
     @PostMapping(value = "/savePreFormData")
     public Y9Result<String> savePreFormData(@RequestParam @NotBlank String formId,
         @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String jsonData) {
@@ -454,6 +457,7 @@ public class Y9FormRestController {
      * @param jsonData 表单数据
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "更新表单数据", operationType = FlowableOperationTypeEnum.SAVE_FORM)
     @PostMapping(value = "/updateFormData")
     public Y9Result<String> updateFormData(@RequestParam @NotBlank String guid,
         @RequestParam @NotBlank String jsonData) {

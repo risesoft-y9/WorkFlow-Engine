@@ -220,6 +220,7 @@ public class ButtonOperationRestController {
      * @param infoOvert 办结数据是否在数据中心公开
      * @return Y9Result<String>
      */
+    @FlowableLog(operationName = "流程办结", operationType = FlowableOperationTypeEnum.COMPLETE)
     @PostMapping(value = "/complete")
     public Y9Result<String> complete(@RequestParam @NotBlank String taskId,
         @RequestParam(required = false) String infoOvert) {
@@ -1491,6 +1492,7 @@ public class ButtonOperationRestController {
      * @param processSerialNumber 流程编号
      * @return Y9Result<Object>
      */
+    @FlowableLog(operationName = "办件提交", operationType = FlowableOperationTypeEnum.SEND)
     @PostMapping(value = "/submitTo")
     public Y9Result<Object> submitTo(@RequestParam @NotBlank String itemId,
         @RequestParam(required = false) String taskId, @RequestParam @NotBlank String processSerialNumber) {

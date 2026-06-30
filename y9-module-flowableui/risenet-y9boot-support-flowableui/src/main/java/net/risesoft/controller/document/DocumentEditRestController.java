@@ -21,8 +21,6 @@ import net.risesoft.log.annotation.FlowableLog;
 import net.risesoft.model.itemadmin.core.DocumentDetailModel;
 import net.risesoft.model.processadmin.TaskModel;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.y9.Y9FlowableHolder;
-import net.risesoft.y9.Y9LoginUserHolder;
 
 /**
  * 打开公文
@@ -174,7 +172,6 @@ public class DocumentEditRestController {
     @GetMapping("/draft")
     public Y9Result<DocumentDetailModel> draft(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String itemId) {
-        String tenantId = Y9LoginUserHolder.getTenantId(), positionId = Y9FlowableHolder.getPositionId();
         DocumentDetailModel model = documentApi.editDraft(itemId, processSerialNumber, false).getData();
         return Y9Result.success(model, "获取成功");
     }
