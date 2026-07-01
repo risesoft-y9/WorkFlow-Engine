@@ -25,6 +25,7 @@ import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemExtendProps;
 import net.risesoft.entity.ItemMappingConf;
+import net.risesoft.enums.SysTypeEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.itemadmin.ItemSystemListModel;
@@ -369,23 +370,19 @@ public class ItemServiceImpl implements ItemService {
                 }
             }
             itemRepository.save(item);
-            ItemMappingConf itemMappingConf =
-                itemMappingConfRepository.findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), "1");
+            ItemMappingConf itemMappingConfIn = itemMappingConfRepository
+                .findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), SysTypeEnum.IN.getValue());
             // 删除事项映射字段
-            if (itemMappingConf != null) {
-                if (StringUtils.isBlank(item.getDockingItemId())
-                    || !item.getDockingItemId().equals(itemMappingConf.getMappingId())) {
-                    itemMappingConfRepository.deleteByMappingId(itemMappingConf.getMappingId());
-                }
+            if (itemMappingConfIn != null && (StringUtils.isBlank(item.getDockingItemId())
+                || !item.getDockingItemId().equals(itemMappingConfIn.getMappingId()))) {
+                itemMappingConfRepository.deleteByMappingId(itemMappingConfIn.getMappingId());
             }
-            ItemMappingConf itemMappingConf1 =
-                itemMappingConfRepository.findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), "2");
+            ItemMappingConf itemMappingConfOut = itemMappingConfRepository
+                .findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), SysTypeEnum.OUT.getValue());
             // 删除系统映射字段
-            if (itemMappingConf1 != null) {
-                if (StringUtils.isBlank(item.getDockingSystem())
-                    || !item.getDockingSystem().equals(itemMappingConf1.getMappingId())) {
-                    itemMappingConfRepository.deleteByMappingId(itemMappingConf1.getMappingId());
-                }
+            if (itemMappingConfOut != null && (StringUtils.isBlank(item.getDockingSystem())
+                || !item.getDockingSystem().equals(itemMappingConfOut.getMappingId()))) {
+                itemMappingConfRepository.deleteByMappingId(itemMappingConfOut.getMappingId());
             }
             return Y9Result.success(item, "保存成功");
         } catch (Exception e) {
