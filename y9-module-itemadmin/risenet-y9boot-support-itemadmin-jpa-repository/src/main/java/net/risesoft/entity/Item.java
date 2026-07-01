@@ -8,6 +8,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.Id;
 import javax.persistence.Lob;
 import javax.persistence.Table;
+import javax.persistence.Transient;
 
 import org.hibernate.annotations.ColumnDefault;
 import org.hibernate.annotations.Comment;
@@ -123,4 +124,7 @@ public class Item extends ItemAdminBaseEntity implements Serializable {
     @Comment("排序")
     @Column(name = "TABINDEX")
     private Integer tabIndex;
+
+    @Transient
+    private String tenantId;
 }

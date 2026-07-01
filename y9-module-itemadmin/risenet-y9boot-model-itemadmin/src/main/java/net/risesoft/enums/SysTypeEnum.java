@@ -11,7 +11,7 @@ import lombok.Getter;
  */
 @Getter
 @AllArgsConstructor
-public enum SysTypeEnum implements ValuedEnum<Integer> {
+public enum SysTypeEnum {
     IN("1", "内部系统"),
     OUT("2", "外部系统");
 
