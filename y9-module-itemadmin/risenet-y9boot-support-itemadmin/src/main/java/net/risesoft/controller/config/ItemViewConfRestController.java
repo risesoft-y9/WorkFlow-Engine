@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -86,7 +85,6 @@ public class ItemViewConfRestController {
      */
     @GetMapping(value = "/findByItemId")
     public Y9Result<List<ItemViewConf>> findByItemId(@RequestParam String itemId, @RequestParam String viewType) {
-        itemViewConfService.init(itemId, viewType);
         List<ItemViewConf> list = itemViewConfService.listByItemIdAndViewType(itemId, viewType);
         return Y9Result.success(list, "获取成功");
     }
