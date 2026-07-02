@@ -24,5 +24,5 @@ public interface HistoricIdentityApi {
      * @since 9.6.8
      */
     @GetMapping("/getIdentityLinksForTask")
-    Y9Result<List<IdentityLinkModel>> getIdentityLinksForTask(@RequestParam("taskId") String taskId);
+    Y9Result<List<IdentityLinkModel>> getIdentityLinksForTask(@RequestParam String taskId);
 }

@@ -25,8 +25,7 @@ public interface HistoricActivityApi {
      * @since 9.6.6
      */
     @GetMapping("/getByProcessInstanceId")
-    Y9Result<List<HistoricActivityInstanceModel>>
-        getByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 根据年份，流程实例获取历史节点实例
@@ -37,9 +36,8 @@ public interface HistoricActivityApi {
      * @since 9.6.6
      */
     @GetMapping("/getByProcessInstanceIdAndYear")
-    Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceIdAndYear(
-        @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam(value = "year", required = false) String year);
+    Y9Result<List<HistoricActivityInstanceModel>> getByProcessInstanceIdAndYear(@RequestParam String processInstanceId,
+        @RequestParam(required = false) String year);
 
     /**
      * 根据流程实例和执行id获取历史节点实例
@@ -51,7 +49,6 @@ public interface HistoricActivityApi {
      * @since 9.6.6
      */
     @GetMapping("/getTaskListByExecutionId")
-    Y9Result<List<HistoricActivityInstanceModel>> getTaskListByExecutionId(
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("executionId") String executionId,
-        @RequestParam(value = "year", required = false) String year);
+    Y9Result<List<HistoricActivityInstanceModel>> getTaskListByExecutionId(@RequestParam String processInstanceId,
+        @RequestParam String executionId, @RequestParam(required = false) String year);
 }

@@ -26,7 +26,7 @@ public interface HistoricProcessApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteProcessInstance")
-    Y9Result<Object> deleteProcessInstance(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> deleteProcessInstance(@RequestParam String processInstanceId);
 
     /**
      * 根据流程实例id获取实例
@@ -36,7 +36,7 @@ public interface HistoricProcessApi {
      * @since 9.6.6
      */
     @GetMapping("/getById")
-    Y9Result<HistoricProcessInstanceModel> getById(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<HistoricProcessInstanceModel> getById(@RequestParam String processInstanceId);
 
     /**
      * 根据流程实例id和年度获取实例
@@ -47,8 +47,8 @@ public interface HistoricProcessApi {
      * @since 9.6.6
      */
     @GetMapping("/getByIdAndYear")
-    Y9Result<HistoricProcessInstanceModel> getByIdAndYear(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam(value = "year", required = false) String year);
+    Y9Result<HistoricProcessInstanceModel> getByIdAndYear(@RequestParam String processInstanceId,
+        @RequestParam(required = false) String year);
 
     /**
      * 根据父流程实例获取所有历史子流程实例
@@ -59,7 +59,7 @@ public interface HistoricProcessApi {
      */
     @GetMapping("/getBySuperProcessInstanceId")
     Y9Result<List<HistoricProcessInstanceModel>>
-        getBySuperProcessInstanceId(@RequestParam("superProcessInstanceId") String superProcessInstanceId);
+        getBySuperProcessInstanceId(@RequestParam String superProcessInstanceId);
 
     /**
      * 根据流程实例获取父流程实例
@@ -69,8 +69,7 @@ public interface HistoricProcessApi {
      * @since 9.6.6
      */
     @GetMapping("/getSuperProcessInstanceById")
-    Y9Result<HistoricProcessInstanceModel>
-        getSuperProcessInstanceById(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<HistoricProcessInstanceModel> getSuperProcessInstanceById(@RequestParam String processInstanceId);
 
     /**
      * 彻底删除流程实例
@@ -80,7 +79,7 @@ public interface HistoricProcessApi {
      * @since 9.6.6
      */
     @PostMapping("/removeProcess")
-    Y9Result<Object> removeProcess(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> removeProcess(@RequestParam String processInstanceId);
 
     /**
      * 设置流程优先级
@@ -92,7 +91,7 @@ public interface HistoricProcessApi {
      * @since 9.6.6
      */
     @PostMapping("/setPriority")
-    Y9Result<Object> setPriority(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("priority") String priority) throws Exception;
+    Y9Result<Object> setPriority(@RequestParam String processInstanceId, @RequestParam String priority)
+        throws Exception;
 
 }

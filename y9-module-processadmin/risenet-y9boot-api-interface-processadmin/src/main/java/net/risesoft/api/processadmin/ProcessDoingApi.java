@@ -26,8 +26,7 @@ public interface ProcessDoingApi {
      */
     @GetMapping(value = "/getListByUserIdAndProcessDefinitionKeyOrderBySendTime")
     Y9Page<ProcessInstanceModel> getListByUserIdAndProcessDefinitionKeyOrderBySendTime(
-        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+        @RequestParam String processDefinitionKey, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据流程定义key条件搜索在办件
@@ -40,8 +39,6 @@ public interface ProcessDoingApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/searchListByUserIdAndProcessDefinitionKey")
-    Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(
-        @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam(value = "searchTerm", required = false) String searchTerm, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<ProcessInstanceModel> searchListByUserIdAndProcessDefinitionKey(@RequestParam String processDefinitionKey,
+        @RequestParam(required = false) String searchTerm, @RequestParam Integer page, @RequestParam Integer rows);
 }

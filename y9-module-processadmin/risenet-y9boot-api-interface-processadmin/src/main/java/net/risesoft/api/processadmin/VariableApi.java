@@ -30,7 +30,7 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteVariable")
-    Y9Result<Object> deleteVariable(@RequestParam("taskId") String taskId, @RequestParam("key") String key);
+    Y9Result<Object> deleteVariable(@RequestParam String taskId, @RequestParam String key);
 
     /***
      * 删除任务变量
@@ -41,7 +41,7 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteVariableLocal")
-    Y9Result<Object> deleteVariableLocal(@RequestParam("taskId") String taskId, @RequestParam("key") String key);
+    Y9Result<Object> deleteVariableLocal(@RequestParam String taskId, @RequestParam String key);
 
     /**
      * 获取流程变量
@@ -52,7 +52,7 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @GetMapping("/getVariable")
-    Y9Result<String> getVariable(@RequestParam("taskId") String taskId, @RequestParam("key") String key);
+    Y9Result<String> getVariable(@RequestParam String taskId, @RequestParam String key);
 
     /**
      * 获取流程变量
@@ -63,8 +63,7 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @GetMapping("/getVariableByProcessInstanceId")
-    Y9Result<String> getVariableByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("key") String key);
+    Y9Result<String> getVariableByProcessInstanceId(@RequestParam String processInstanceId, @RequestParam String key);
 
     /**
      * 获取任务变量
@@ -75,7 +74,7 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @GetMapping("/getVariableLocal")
-    Y9Result<String> getVariableLocal(@RequestParam("taskId") String taskId, @RequestParam("key") String key);
+    Y9Result<String> getVariableLocal(@RequestParam String taskId, @RequestParam String key);
 
     /**
      * 获取多个流程变量
@@ -85,7 +84,7 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @GetMapping("/getVariables")
-    Y9Result<Map<String, Object>> getVariables(@RequestParam("taskId") String taskId);
+    Y9Result<Map<String, Object>> getVariables(@RequestParam String taskId);
 
     /**
      * 获取指定的流程变量
@@ -96,8 +95,8 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @RequestMapping(value = "/getVariablesByProcessInstanceId", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Map<String, Object>> getVariablesByProcessInstanceId(
-        @RequestParam("processInstanceId") String processInstanceId, @RequestBody Collection<String> keys);
+    Y9Result<Map<String, Object>> getVariablesByProcessInstanceId(@RequestParam String processInstanceId,
+        @RequestBody Collection<String> keys);
 
     /**
      * 获取所有任务变量
@@ -107,7 +106,7 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @GetMapping("/getVariablesLocal")
-    Y9Result<Map<String, Object>> getVariablesLocal(@RequestParam("taskId") String taskId);
+    Y9Result<Map<String, Object>> getVariablesLocal(@RequestParam String taskId);
 
     /**
      * 设置流程变量
@@ -119,7 +118,7 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/setVariable", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> setVariable(@RequestParam("taskId") String taskId, @RequestParam("key") String key,
+    Y9Result<Object> setVariable(@RequestParam String taskId, @RequestParam String key,
         @RequestBody Map<String, Object> map);
 
     /**
@@ -132,8 +131,8 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/setVariableByProcessInstanceId", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> setVariableByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("key") String key, @RequestBody Map<String, Object> map);
+    Y9Result<Object> setVariableByProcessInstanceId(@RequestParam String processInstanceId, @RequestParam String key,
+        @RequestBody Map<String, Object> map);
 
     /**
      * 设置任务变量
@@ -145,7 +144,7 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/setVariableLocal", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> setVariableLocal(@RequestParam("taskId") String taskId, @RequestParam("key") String key,
+    Y9Result<Object> setVariableLocal(@RequestParam String taskId, @RequestParam String key,
         @RequestBody Map<String, Object> map);
 
     /**
@@ -157,7 +156,7 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/setVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> setVariables(@RequestParam("taskId") String taskId, @RequestBody Map<String, Object> map);
+    Y9Result<Object> setVariables(@RequestParam String taskId, @RequestBody Map<String, Object> map);
 
     /**
      * 设置多个任务变量
@@ -168,6 +167,6 @@ public interface VariableApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/setVariablesLocal", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> setVariablesLocal(@RequestParam("taskId") String taskId, @RequestBody Map<String, Object> map);
+    Y9Result<Object> setVariablesLocal(@RequestParam String taskId, @RequestBody Map<String, Object> map);
 
 }

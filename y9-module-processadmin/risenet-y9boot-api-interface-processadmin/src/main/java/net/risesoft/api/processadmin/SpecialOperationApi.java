@@ -29,11 +29,9 @@ public interface SpecialOperationApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/reposition", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> reposition(@RequestParam("taskId") String taskId,
-        @RequestParam("repositionToTaskId") String repositionToTaskId,
-        @RequestParam("userChoice") List<String> userChoice,
-        @RequestParam(value = "reason", required = false) String reason,
-        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
+    Y9Result<Object> reposition(@RequestParam String taskId, @RequestParam String repositionToTaskId,
+        @RequestParam List<String> userChoice, @RequestParam(required = false) String reason,
+        @RequestParam(required = false) String sponsorGuid);
 
     /**
      * 退回
@@ -44,8 +42,7 @@ public interface SpecialOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/rollBack")
-    Y9Result<Object> rollBack(@RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> rollBack(@RequestParam String taskId, @RequestParam(required = false) String reason);
 
     /**
      * 重定向
@@ -59,10 +56,9 @@ public interface SpecialOperationApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/rollBack2History", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> rollBack2History(@RequestParam("taskId") String taskId,
-        @RequestParam("routeToTaskId") String routeToTaskId, @RequestParam("userChoice") List<String> userChoice,
-        @RequestParam(value = "reason", required = false) String reason,
-        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
+    Y9Result<Object> rollBack2History(@RequestParam String taskId, @RequestParam String routeToTaskId,
+        @RequestParam List<String> userChoice, @RequestParam(required = false) String reason,
+        @RequestParam(required = false) String sponsorGuid);
 
     /**
      * 发回给发送人
@@ -72,7 +68,7 @@ public interface SpecialOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/rollbackToSender")
-    Y9Result<Object> rollbackToSender(@RequestParam("taskId") String taskId);
+    Y9Result<Object> rollbackToSender(@RequestParam String taskId);
 
     /**
      * 返回拟稿人
@@ -83,8 +79,7 @@ public interface SpecialOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/rollbackToStartor")
-    Y9Result<Object> rollbackToStartor(@RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> rollbackToStartor(@RequestParam String taskId, @RequestParam(required = false) String reason);
 
     /**
      * 特殊办结
@@ -95,8 +90,7 @@ public interface SpecialOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/specialComplete")
-    Y9Result<Object> specialComplete(@RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> specialComplete(@RequestParam String taskId, @RequestParam(required = false) String reason);
 
     /**
      * 收回
@@ -107,8 +101,7 @@ public interface SpecialOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/takeBack")
-    Y9Result<Object> takeBack(@RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> takeBack(@RequestParam String taskId, @RequestParam(required = false) String reason);
 
     /**
      * 收回
@@ -120,7 +113,7 @@ public interface SpecialOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/takeBack2TaskDefKey")
-    Y9Result<Object> takeBack2TaskDefKey(@RequestParam("taskId") String taskId,
-        @RequestParam("taskDefKey") String taskDefKey, @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> takeBack2TaskDefKey(@RequestParam String taskId, @RequestParam String taskDefKey,
+        @RequestParam(required = false) String reason);
 
 }

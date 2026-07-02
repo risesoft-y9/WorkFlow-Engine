@@ -27,7 +27,7 @@ public interface RepositoryApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/delete")
-    Y9Result<Object> delete(@RequestParam("deploymentId") String deploymentId);
+    Y9Result<Object> delete(@RequestParam String deploymentId);
 
     /**
      * 部署流程
@@ -47,8 +47,7 @@ public interface RepositoryApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getLatestProcessDefinitionByKey")
-    Y9Result<ProcessDefinitionModel>
-        getLatestProcessDefinitionByKey(@RequestParam("processDefinitionKey") String processDefinitionKey);
+    Y9Result<ProcessDefinitionModel> getLatestProcessDefinitionByKey(@RequestParam String processDefinitionKey);
 
     /**
      * 获取所有流程定义最新版本的集合
@@ -67,8 +66,7 @@ public interface RepositoryApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getPreviousProcessDefinitionById")
-    Y9Result<ProcessDefinitionModel>
-        getPreviousProcessDefinitionById(@RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<ProcessDefinitionModel> getPreviousProcessDefinitionById(@RequestParam String processDefinitionId);
 
     /**
      * 根据流程定义Id获取流程定义
@@ -78,8 +76,7 @@ public interface RepositoryApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getProcessDefinitionById")
-    Y9Result<ProcessDefinitionModel>
-        getProcessDefinitionById(@RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<ProcessDefinitionModel> getProcessDefinitionById(@RequestParam String processDefinitionId);
 
     /**
      * 根据流程定义key获取最新部署的流程定义
@@ -89,8 +86,7 @@ public interface RepositoryApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getProcessDefinitionListByKey")
-    Y9Result<List<ProcessDefinitionModel>>
-        getProcessDefinitionListByKey(@RequestParam("processDefinitionKey") String processDefinitionKey);
+    Y9Result<List<ProcessDefinitionModel>> getProcessDefinitionListByKey(@RequestParam String processDefinitionKey);
 
     /**
      * 获取流程定义xml
@@ -102,9 +98,8 @@ public interface RepositoryApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getXmlByProcessInstance")
-    Y9Result<String> getXmlByProcessInstance(@RequestParam("resourceType") String resourceType,
-        @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<String> getXmlByProcessInstance(@RequestParam String resourceType, @RequestParam String processInstanceId,
+        @RequestParam String processDefinitionId);
 
     /**
      * 获取已部署流程定义列表
@@ -124,6 +119,5 @@ public interface RepositoryApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/switchSuspendOrActive")
-    Y9Result<Object> switchSuspendOrActive(@RequestParam("state") String state,
-        @RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<Object> switchSuspendOrActive(@RequestParam String state, @RequestParam String processDefinitionId);
 }

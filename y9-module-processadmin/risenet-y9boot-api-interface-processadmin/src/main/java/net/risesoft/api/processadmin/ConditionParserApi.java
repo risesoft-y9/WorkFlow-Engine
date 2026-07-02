@@ -26,6 +26,5 @@ public interface ConditionParserApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/parser", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Boolean> parser(@RequestParam("conditionExpression") String conditionExpression,
-        @RequestBody Map<String, Object> variables);
+    Y9Result<Boolean> parser(@RequestParam String conditionExpression, @RequestBody Map<String, Object> variables);
 }
