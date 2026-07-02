@@ -24,7 +24,7 @@ public interface SignaturePictureApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteById")
-    Y9Result<Object> deleteById(@RequestParam("id") String id);
+    Y9Result<Object> deleteById(@RequestParam String id);
 
     /**
      * 根据id获取签名图片
@@ -34,7 +34,7 @@ public interface SignaturePictureApi {
      * @since 9.6.6
      */
     @GetMapping("/findById")
-    Y9Result<SignaturePictureModel> findById(@RequestParam("id") String id);
+    Y9Result<SignaturePictureModel> findById(@RequestParam String id);
 
     /**
      * 根据人员id获取签名图片
@@ -44,7 +44,7 @@ public interface SignaturePictureApi {
      * @since 9.6.6
      */
     @GetMapping("/findByUserId")
-    Y9Result<SignaturePictureModel> findByUserId(@RequestParam("userId") String userId);
+    Y9Result<SignaturePictureModel> findByUserId(@RequestParam String userId);
 
     /**
      * 保存或更新签名图片
@@ -54,5 +54,5 @@ public interface SignaturePictureApi {
      * @since 9.6.6
      */
     @PostMapping("/saveOrUpdate")
-    Y9Result<SignaturePictureModel> saveOrUpdate(@RequestParam("spJson") String spJson);
+    Y9Result<SignaturePictureModel> saveOrUpdate(@RequestParam String spJson);
 }

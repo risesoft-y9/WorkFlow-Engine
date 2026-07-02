@@ -32,7 +32,7 @@ public interface ItemTodoApi {
      * @since 9.6.6
      */
     @GetMapping("/countByUserId")
-    Y9Result<Integer> countByUserId(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId);
+    Y9Result<Integer> countByUserId(@RequestParam String tenantId, @RequestParam String userId);
 
     /**
      * 根据用户id和系统名称查询待办数量
@@ -42,7 +42,7 @@ public interface ItemTodoApi {
      * @since 9.6.6
      */
     @GetMapping("/countByUserIdAndSystemName")
-    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("systemName") @NotBlank String systemName);
+    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam @NotBlank String systemName);
 
     /**
      * 根据用户id和系统名称查询待办列表(以发送时间排序)
@@ -64,8 +64,8 @@ public interface ItemTodoApi {
      * @since 9.6.6
      */
     @GetMapping("/findByUserIdAndSystemName")
-    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam @NotBlank String systemName,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据用户id和系统名称查询待办列表(以发送时间排序)
@@ -78,10 +78,8 @@ public interface ItemTodoApi {
      * @since 9.6.6
      */
     @GetMapping("/findByUserIdAndSystemNameAndTaskDefKey")
-    Y9Page<ActRuDetailModel> findByUserIdAndSystemNameAndTaskDefKey(
-        @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam(value = "taskDefKey", required = false) String taskDefKey, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> findByUserIdAndSystemNameAndTaskDefKey(@RequestParam @NotBlank String systemName,
+        @RequestParam(required = false) String taskDefKey, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据用户id和系统名称、搜索集合查询待办列表(以发送时间排序)
@@ -94,12 +92,12 @@ public interface ItemTodoApi {
      * @since 9.6.6
      */
     @PostMapping("/searchByUserIdAndSystemName")
-    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("systemName") @NotBlank String systemName,
-        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows);
 
     @PostMapping("/searchByUserIdAndSystemName4Other")
-    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName4Other(@RequestParam("systemName") @NotBlank String systemName,
-        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName4Other(@RequestParam @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据用户id和系统名称、搜索集合查询待办列表(以发送时间排序)
@@ -113,19 +111,17 @@ public interface ItemTodoApi {
      * @since 9.6.6
      */
     @PostMapping("/searchByUserIdAndSystemNameAndTaskDefKey")
-    Y9Page<ActRuDetailModel> searchByUserIdAndSystemNameAndTaskDefKey(
-        @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam(value = "taskDefKey", required = false) String taskDefKey, @RequestBody String searchMapStr,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> searchByUserIdAndSystemNameAndTaskDefKey(@RequestParam @NotBlank String systemName,
+        @RequestParam(required = false) String taskDefKey, @RequestBody String searchMapStr, @RequestParam Integer page,
+        @RequestParam Integer rows);
 
     @PostMapping("/searchListByUserIdAndSystemName4Other")
-    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName4Other(
-        @RequestParam("systemName") @NotBlank String systemName, @RequestBody String searchMapStr);
+    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName4Other(@RequestParam @NotBlank String systemName,
+        @RequestBody String searchMapStr);
 
     @PostMapping("/searchListByUserIdAndSystemNameAndTaskDefKey")
     Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemNameAndTaskDefKey(
-        @RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam(value = "taskDefKey", required = false) String taskDefKey,
+        @RequestParam @NotBlank String systemName, @RequestParam(required = false) String taskDefKey,
         @RequestBody(required = false) String searchMapStr);
 
 }

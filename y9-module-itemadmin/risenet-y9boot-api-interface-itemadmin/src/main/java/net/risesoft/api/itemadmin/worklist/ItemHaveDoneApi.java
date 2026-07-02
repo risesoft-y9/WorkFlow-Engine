@@ -27,7 +27,7 @@ public interface ItemHaveDoneApi {
      * @since 9.6.6
      */
     @GetMapping("/countByUserIdAndSystemName")
-    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("systemName") String systemName);
+    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam String systemName);
 
     /**
      * 根据系统名称查询已办（包含在办和办结）列表 #TODO
@@ -39,8 +39,8 @@ public interface ItemHaveDoneApi {
      * @since 9.6.6
      */
     @GetMapping("/findBySystemName")
-    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam("systemName") String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String systemName, @RequestParam Integer page,
+        @RequestParam Integer rows);
 
     /**
      * 根据用户id和系统名称查询已办（包含在办和办结）列表
@@ -52,8 +52,8 @@ public interface ItemHaveDoneApi {
      * @since 9.6.6
      */
     @GetMapping("/findByUserIdAndSystemName")
-    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("systemName") String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String systemName, @RequestParam Integer page,
+        @RequestParam Integer rows);
 
     /**
      * 根据系统名称、表名称、搜索内容查询已办（包含在办和办结）列表 #TODO
@@ -67,9 +67,8 @@ public interface ItemHaveDoneApi {
      * @since 9.6.6
      */
     @PostMapping("/searchBySystemName")
-    Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("systemName") String systemName,
-        @RequestParam(value = "tableName") String tableName, @RequestBody String searchMapStr,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String systemName, @RequestParam String tableName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据用户id、系统名称、表名称、搜索内容查询已办（包含在办和办结）列表 #TODO
@@ -82,10 +81,10 @@ public interface ItemHaveDoneApi {
      * @since 9.6.6
      */
     @PostMapping("/searchByUserIdAndSystemName")
-    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("systemName") String systemName,
-        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows);
 
     @PostMapping("/searchListByUserIdAndSystemName")
-    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam("systemName") String systemName,
+    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String systemName,
         @RequestBody String searchMapStr);
 }

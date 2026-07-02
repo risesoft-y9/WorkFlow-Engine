@@ -24,6 +24,5 @@ public interface TaskVariableApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/findByTaskIdAndKeyName")
-    Y9Result<TaskVariableModel> findByTaskIdAndKeyName(@RequestParam("taskId") String taskId,
-        @RequestParam("keyName") String keyName);
+    Y9Result<TaskVariableModel> findByTaskIdAndKeyName(@RequestParam String taskId, @RequestParam String keyName);
 }

@@ -24,7 +24,7 @@ public interface UrgeInfoApi {
      * @return
      */
     @PostMapping(value = "/deleteById", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> deleteById(@RequestParam("id") String id);
+    Y9Result<Object> deleteById(@RequestParam String id);
 
     /**
      * 查找催办信息
@@ -33,8 +33,7 @@ public interface UrgeInfoApi {
      * @return
      */
     @GetMapping(value = "/findByProcessSerialNumber", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<List<UrgeInfoModel>>
-        findByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<UrgeInfoModel>> findByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 保存催办信息
@@ -44,6 +43,5 @@ public interface UrgeInfoApi {
      * @return
      */
     @PostMapping(value = "/save", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> save(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("msgContent") String msgContent);
+    Y9Result<Object> save(@RequestParam String processSerialNumber, @RequestParam String msgContent);
 }

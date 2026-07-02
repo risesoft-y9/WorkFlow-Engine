@@ -27,8 +27,7 @@ public interface CustomProcessInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/getCurrentTaskNextNode")
-    Y9Result<CustomProcessInfoModel>
-        getCurrentTaskNextNode(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<CustomProcessInfoModel> getCurrentTaskNextNode(@RequestParam String processSerialNumber);
 
     /**
      * 保存流程定制信息
@@ -40,9 +39,8 @@ public interface CustomProcessInfoApi {
      * @since 9.6.6
      */
     @PostMapping("/saveOrUpdate")
-    Y9Result<Object> saveOrUpdate(@RequestParam("itemId") String itemId,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("taskList") List<Map<String, Object>> taskList);
+    Y9Result<Object> saveOrUpdate(@RequestParam String itemId, @RequestParam String processSerialNumber,
+        @RequestParam List<Map<String, Object>> taskList);
 
     /**
      * 更新当前运行节点
@@ -52,6 +50,6 @@ public interface CustomProcessInfoApi {
      * @since 9.6.6
      */
     @PostMapping("/updateCurrentTask")
-    Y9Result<Object> updateCurrentTask(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Object> updateCurrentTask(@RequestParam String processSerialNumber);
 
 }

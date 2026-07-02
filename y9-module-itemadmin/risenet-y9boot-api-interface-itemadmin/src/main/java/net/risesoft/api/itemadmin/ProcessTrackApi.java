@@ -31,7 +31,7 @@ public interface ProcessTrackApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteById")
-    Y9Result<Object> deleteById(@RequestParam("id") String id) throws Exception;
+    Y9Result<Object> deleteById(@RequestParam String id) throws Exception;
 
     /**
      * 根据任务id获取自定义历程
@@ -41,7 +41,7 @@ public interface ProcessTrackApi {
      * @since 9.6.6
      */
     @GetMapping("/findByTaskId")
-    Y9Result<List<ProcessTrackModel>> findByTaskId(@RequestParam("taskId") String taskId);
+    Y9Result<List<ProcessTrackModel>> findByTaskId(@RequestParam String taskId);
 
     /**
      * 根据任务id获取自定义历程
@@ -51,7 +51,7 @@ public interface ProcessTrackApi {
      * @since 9.6.6
      */
     @GetMapping("/findByTaskIdAsc")
-    Y9Result<List<ProcessTrackModel>> findByTaskIdAsc(@RequestParam("taskId") String taskId);
+    Y9Result<List<ProcessTrackModel>> findByTaskIdAsc(@RequestParam String taskId);
 
     /**
      * 获取流程图任务节点信息
@@ -61,8 +61,7 @@ public interface ProcessTrackApi {
      * @since 9.6.6
      */
     @GetMapping("/getTaskList")
-    Y9Result<List<HistoricActivityInstanceModel>>
-        getTaskList(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<List<HistoricActivityInstanceModel>> getTaskList(@RequestParam String processInstanceId);
 
     /**
      * 获取历程列表(包含每个任务节点的特殊操作的历程)
@@ -72,7 +71,7 @@ public interface ProcessTrackApi {
      * @since 9.6.6
      */
     @GetMapping("/processTrackList")
-    Y9Result<List<HistoryProcessModel>> processTrackList(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<List<HistoryProcessModel>> processTrackList(@RequestParam String processInstanceId);
 
     /**
      * 获取历程信息
@@ -82,8 +81,7 @@ public interface ProcessTrackApi {
      * @since 9.6.6
      */
     @GetMapping("/processTrackList4Simple")
-    Y9Result<List<HistoryProcessModel>>
-        processTrackList4Simple(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<List<HistoryProcessModel>> processTrackList4Simple(@RequestParam String processInstanceId);
 
     /**
      * 获取历程列表(包含每个任务节点的特殊操作的历程)
@@ -93,8 +91,7 @@ public interface ProcessTrackApi {
      * @since 9.6.6
      */
     @GetMapping("/processTrackListWithActionName")
-    Y9Result<List<HistoryProcessModel>>
-        processTrackListWithActionName(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<List<HistoryProcessModel>> processTrackListWithActionName(@RequestParam String processInstanceId);
 
     /**
      * 保存或更新历程

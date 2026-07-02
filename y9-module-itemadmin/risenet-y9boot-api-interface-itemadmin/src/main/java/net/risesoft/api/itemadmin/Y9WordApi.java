@@ -41,8 +41,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/deleteByIsTaoHong")
-    Y9Result<Object> deleteByIsTaoHong(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("isTaoHong") String isTaoHong);
+    Y9Result<Object> deleteByIsTaoHong(@RequestParam String processSerialNumber, @RequestParam String isTaoHong);
 
     /**
      * 获取正文文件信息（数据传输）
@@ -52,8 +51,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/exchangeFindWordByProcessSerialNumber")
-    Y9Result<Y9WordModel>
-        exchangeFindWordByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Y9WordModel> exchangeFindWordByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 打开历史文件
@@ -63,7 +61,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/findHistoryVersionDoc")
-    Y9Result<Y9WordHistoryModel> findHistoryVersionDoc(@RequestParam("taskId") String taskId);
+    Y9Result<Y9WordHistoryModel> findHistoryVersionDoc(@RequestParam String taskId);
 
     /**
      * 获取正文文件信息
@@ -73,8 +71,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/findWordByProcessSerialNumber")
-    Y9Result<Y9WordModel>
-        findWordByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Y9WordModel> findWordByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 获取正文列表
@@ -84,7 +81,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getWordList")
-    Y9Result<List<Y9WordModel>> getWordList(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<Y9WordModel>> getWordList(@RequestParam String processSerialNumber);
 
     /**
      * 保存公文传输转入工作流的正文信息
@@ -95,8 +92,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/importY9Word")
-    Y9Result<Boolean> importY9Word(@RequestParam("docJson") String docJson,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Boolean> importY9Word(@RequestParam String docJson, @RequestParam String processSerialNumber);
 
     /**
      * 打开正文
@@ -108,8 +104,8 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/openDocument")
-    Y9Result<String> openDocument(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("itemId") String itemId, @RequestParam("bindValue") String bindValue);
+    Y9Result<String> openDocument(@RequestParam String processSerialNumber, @RequestParam String itemId,
+        @RequestParam String bindValue);
 
     /**
      * 根据流程编号打开正文
@@ -119,7 +115,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/openDocumentByProcessSerialNumber")
-    Y9Result<String> openDocumentByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<String> openDocumentByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 打开套红模板
@@ -129,7 +125,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/openDocumentTemplate")
-    Y9Result<String> openDocumentTemplate(@RequestParam("templateGuid") String templateGuid);
+    Y9Result<String> openDocumentTemplate(@RequestParam String templateGuid);
 
     /**
      * 打开PDF
@@ -139,7 +135,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/openPdf")
-    Y9Result<String> openPdf(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<String> openPdf(@RequestParam String processSerialNumber);
 
     /**
      * 打开撤销PDF后的正文
@@ -150,8 +146,8 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/openRevokePDFAfterDocument")
-    Y9Result<String> openRevokePdfAfterDocument(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("isTaoHong") String isTaoHong);
+    Y9Result<String> openRevokePdfAfterDocument(@RequestParam String processSerialNumber,
+        @RequestParam String isTaoHong);
 
     /**
      * 选择套红
@@ -161,7 +157,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/openTaoHong")
-    Y9Result<String> openTaoHong(@RequestParam("activitiUser") String activitiUser);
+    Y9Result<String> openTaoHong(@RequestParam String activitiUser);
 
     /**
      * 获取正文
@@ -175,9 +171,9 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/showWord")
-    Y9Result<Y9WordInfo> showWord(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("itemId") String itemId, @RequestParam(value = "itembox", required = false) String itembox,
-        @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("bindValue") String bindValue);
+    Y9Result<Y9WordInfo> showWord(@RequestParam String processSerialNumber, @RequestParam String itemId,
+        @RequestParam(required = false) String itembox, @RequestParam(required = false) String taskId,
+        @RequestParam String bindValue);
 
     /**
      * 获取套红模板列表
@@ -187,8 +183,7 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/taoHongTemplateList")
-    Y9Result<List<TaoHongTemplateModel>>
-        taoHongTemplateList(@RequestParam("currentBureauGuid") String currentBureauGuid);
+    Y9Result<List<TaoHongTemplateModel>> taoHongTemplateList(@RequestParam String currentBureauGuid);
 
     /**
      * 草稿箱保存正文
@@ -205,12 +200,10 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/uploadWord")
-    Y9Result<Boolean> uploadWord(@RequestParam("documentTitle") String documentTitle,
-        @RequestParam("fileType") String fileType, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam(value = "isTaoHong", required = false) String isTaoHong,
-        @RequestParam(value = "docCategory", required = false) String docCategory,
-        @RequestParam(value = "taskId", required = false) String taskId,
-        @RequestParam("fileSizeString") String fileSizeString, @RequestParam("fileStoreId") String fileStoreId);
+    Y9Result<Boolean> uploadWord(@RequestParam String documentTitle, @RequestParam String fileType,
+        @RequestParam String processSerialNumber, @RequestParam(required = false) String isTaoHong,
+        @RequestParam(required = false) String docCategory, @RequestParam(required = false) String taskId,
+        @RequestParam String fileSizeString, @RequestParam String fileStoreId);
 
     /**
      * 下载正文
@@ -220,5 +213,5 @@ public interface Y9WordApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/wordDownload")
-    Y9Result<Y9WordModel> wordDownload(@RequestParam("id") String id);
+    Y9Result<Y9WordModel> wordDownload(@RequestParam String id);
 }

@@ -29,10 +29,8 @@ public interface QueryListApi {
      * @since 9.6.6
      */
     @PostMapping("/getQueryList")
-    Y9Page<ActRuDetailModel> getQueryList(@RequestParam("systemName") String systemName,
-        @RequestParam(value = "state", required = false) String state,
-        @RequestParam(value = "createDate", required = false) String createDate,
-        @RequestParam(value = "tableName", required = false) String tableName, @RequestBody String searchMapStr,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> getQueryList(@RequestParam String systemName, @RequestParam(required = false) String state,
+        @RequestParam(required = false) String createDate, @RequestParam(required = false) String tableName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows);
 
 }

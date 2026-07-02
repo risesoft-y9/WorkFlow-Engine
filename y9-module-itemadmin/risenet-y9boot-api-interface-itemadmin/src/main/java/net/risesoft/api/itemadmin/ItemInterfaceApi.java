@@ -33,9 +33,9 @@ public interface ItemInterfaceApi {
      * @since 9.6.6
      */
     @GetMapping("/getInterface")
-    Y9Result<List<InterfaceModel>> getInterface(@RequestParam("itemId") @NotBlank String itemId,
-        @RequestParam(value = "taskKey", required = false) String taskKey,
-        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("condition") String condition);
+    Y9Result<List<InterfaceModel>> getInterface(@RequestParam @NotBlank String itemId,
+        @RequestParam(required = false) String taskKey, @RequestParam String processDefinitionId,
+        @RequestParam String condition);
 
     /**
      * 根据事项id获取绑定接口
@@ -45,7 +45,7 @@ public interface ItemInterfaceApi {
      * @since 9.6.6
      */
     @GetMapping("/getInterfaceList")
-    Y9Result<List<InterfaceModel>> getInterfaceList(@RequestParam("itemId") @NotBlank String itemId);
+    Y9Result<List<InterfaceModel>> getInterfaceList(@RequestParam @NotBlank String itemId);
 
     /**
      * 获取事项接口参数信息
@@ -56,8 +56,8 @@ public interface ItemInterfaceApi {
      * @since 9.6.6
      */
     @GetMapping("/getInterfaceParams")
-    Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam("itemId") @NotBlank String itemId,
-        @RequestParam("interfaceId") @NotBlank String interfaceId);
+    Y9Result<List<InterfaceParamsModel>> getInterfaceParams(@RequestParam @NotBlank String itemId,
+        @RequestParam @NotBlank String interfaceId);
 
     /**
      * 获取任务时间配置信息
@@ -69,9 +69,7 @@ public interface ItemInterfaceApi {
      * @since 9.6.6
      */
     @GetMapping("/getTaskTimeConf")
-    Y9Result<TaskTimeConfModel> getTaskTimeConf(
-        @RequestParam("processDefinitionId") @NotBlank String processDefinitionId,
-        @RequestParam("itemId") @NotBlank String itemId,
-        @RequestParam(value = "taskKey", required = false) String taskKey);
+    Y9Result<TaskTimeConfModel> getTaskTimeConf(@RequestParam @NotBlank String processDefinitionId,
+        @RequestParam @NotBlank String itemId, @RequestParam(required = false) String taskKey);
 
 }

@@ -28,7 +28,7 @@ public interface SpeakInfoApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/deleteById")
-    Y9Result<Object> deleteById(@RequestParam("id") String id);
+    Y9Result<Object> deleteById(@RequestParam String id);
 
     /**
      * 根据唯一标示获取发言信息
@@ -38,7 +38,7 @@ public interface SpeakInfoApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/findById")
-    Y9Result<SpeakInfoModel> findById(@RequestParam("id") String id);
+    Y9Result<SpeakInfoModel> findById(@RequestParam String id);
 
     /**
      * 根据流程实例查找某一个流程的所有发言信息，根据时间倒叙排列
@@ -48,7 +48,7 @@ public interface SpeakInfoApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/findByProcessInstanceId")
-    Y9Result<List<SpeakInfoModel>> findByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<List<SpeakInfoModel>> findByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 获取未读消息计数
@@ -58,7 +58,7 @@ public interface SpeakInfoApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getNotReadCount")
-    Y9Result<Integer> getNotReadCount(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Integer> getNotReadCount(@RequestParam String processInstanceId);
 
     /**
      * 保存或者更新发言信息

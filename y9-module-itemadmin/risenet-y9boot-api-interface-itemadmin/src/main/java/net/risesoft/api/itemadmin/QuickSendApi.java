@@ -27,8 +27,7 @@ public interface QuickSendApi {
      * @since 9.6.6
      */
     @GetMapping("/getAssignee")
-    Y9Result<String> getAssignee(@RequestParam("itemId") @NotBlank String itemId,
-        @RequestParam("taskKey") @NotBlank String taskKey);
+    Y9Result<String> getAssignee(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey);
 
     /**
      * 保存快速发送设置
@@ -40,7 +39,7 @@ public interface QuickSendApi {
      * @since 9.6.6
      */
     @PostMapping("/saveOrUpdate")
-    Y9Result<String> saveOrUpdate(@RequestParam("itemId") @NotBlank String itemId,
-        @RequestParam("taskKey") @NotBlank String taskKey, @RequestParam("assignee") String assignee);
+    Y9Result<String> saveOrUpdate(@RequestParam @NotBlank String itemId, @RequestParam @NotBlank String taskKey,
+        @RequestParam String assignee);
 
 }

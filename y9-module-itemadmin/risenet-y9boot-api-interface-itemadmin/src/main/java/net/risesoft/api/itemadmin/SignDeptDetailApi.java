@@ -27,7 +27,7 @@ public interface SignDeptDetailApi {
      * @since 9.6.8
      */
     @PostMapping(value = "/deleteById")
-    Y9Result<Object> deleteById(@RequestParam("id") String id);
+    Y9Result<Object> deleteById(@RequestParam String id);
 
     /**
      * 根据会签部门详情id获取会签信息
@@ -47,8 +47,7 @@ public interface SignDeptDetailApi {
      * @since 9.6.8
      */
     @GetMapping(value = "/findByProcessSerialNumber")
-    Y9Result<List<SignDeptDetailModel>>
-        findByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 根据流程序列号获取最新会签信息
@@ -59,8 +58,8 @@ public interface SignDeptDetailApi {
      * @since 9.6.8
      */
     @GetMapping(value = "/findByProcessSerialNumberAndDeptId4Latest")
-    Y9Result<SignDeptDetailModel> findByProcessSerialNumberAndDeptId4Latest(
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("deptId") String deptId);
+    Y9Result<SignDeptDetailModel> findByProcessSerialNumberAndDeptId4Latest(@RequestParam String processSerialNumber,
+        @RequestParam String deptId);
 
     /**
      * 根据流程序列号和会签状态获取会签信息
@@ -71,9 +70,8 @@ public interface SignDeptDetailApi {
      * @since 9.6.8
      */
     @GetMapping(value = "/findByProcessSerialNumberAndStatus")
-    Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumberAndStatus(
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("status") SignDeptDetailStatusEnum status);
+    Y9Result<List<SignDeptDetailModel>> findByProcessSerialNumberAndStatus(@RequestParam String processSerialNumber,
+        @RequestParam SignDeptDetailStatusEnum status);
 
     /**
      * 根据主键恢复会签信息
@@ -83,7 +81,7 @@ public interface SignDeptDetailApi {
      * @since 9.6.8
      */
     @PostMapping(value = "/recoverById")
-    Y9Result<Object> recoverById(@RequestParam("id") String id);
+    Y9Result<Object> recoverById(@RequestParam String id);
 
     /**
      * 保存会签信息
@@ -104,6 +102,5 @@ public interface SignDeptDetailApi {
      * @since 9.6.8
      */
     @PostMapping(value = "/updateFileStoreId")
-    Y9Result<Object> updateFileStoreId(@RequestParam("signId") String signId,
-        @RequestParam("fileStoreId") String fileStoreId);
+    Y9Result<Object> updateFileStoreId(@RequestParam String signId, @RequestParam String fileStoreId);
 }

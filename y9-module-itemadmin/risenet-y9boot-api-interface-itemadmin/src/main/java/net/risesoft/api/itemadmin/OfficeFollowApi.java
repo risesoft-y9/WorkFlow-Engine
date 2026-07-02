@@ -27,7 +27,7 @@ public interface OfficeFollowApi {
      * @since 9.6.6
      */
     @GetMapping("/countByProcessInstanceId")
-    Y9Result<Integer> countByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Integer> countByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 取消关注
@@ -37,7 +37,7 @@ public interface OfficeFollowApi {
      * @since 9.6.6
      */
     @PostMapping("/delOfficeFollow")
-    Y9Result<Object> delOfficeFollow(@RequestParam("processInstanceIds") String processInstanceIds);
+    Y9Result<Object> delOfficeFollow(@RequestParam String processInstanceIds);
 
     /**
      * 根据流程实例id删除关注
@@ -47,7 +47,7 @@ public interface OfficeFollowApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteByProcessInstanceId")
-    Y9Result<Object> deleteByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> deleteByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 获取我的关注数量
@@ -69,9 +69,8 @@ public interface OfficeFollowApi {
      * @since 9.6.6
      */
     @GetMapping("/getFollowListBySystemName")
-    Y9Page<OfficeFollowModel> getFollowListBySystemName(@RequestParam("systemName") String systemName,
-        @RequestParam(value = "searchName", required = false) String searchName, @RequestParam("page") int page,
-        @RequestParam("rows") int rows);
+    Y9Page<OfficeFollowModel> getFollowListBySystemName(@RequestParam String systemName,
+        @RequestParam(required = false) String searchName, @RequestParam int page, @RequestParam int rows);
 
     /**
      * 获取关注列表
@@ -83,9 +82,8 @@ public interface OfficeFollowApi {
      * @since 9.6.6
      */
     @GetMapping("/getOfficeFollowList")
-    Y9Page<OfficeFollowModel> getOfficeFollowList(
-        @RequestParam(value = "searchName", required = false) String searchName, @RequestParam("page") int page,
-        @RequestParam("rows") int rows);
+    Y9Page<OfficeFollowModel> getOfficeFollowList(@RequestParam(required = false) String searchName,
+        @RequestParam int page, @RequestParam int rows);
 
     /**
      * 保存办件关注信息
@@ -106,7 +104,6 @@ public interface OfficeFollowApi {
      * @since 9.6.6
      */
     @PostMapping("/updateTitle")
-    Y9Result<Object> updateTitle(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("documentTitle") String documentTitle);
+    Y9Result<Object> updateTitle(@RequestParam String processInstanceId, @RequestParam String documentTitle);
 
 }

@@ -29,7 +29,7 @@ public interface AssociatedFileApi {
      * @since 9.6.6
      */
     @GetMapping("/countAssociatedFile")
-    Y9Result<Integer> countAssociatedFile(@RequestParam("processSerialNumber") @NotBlank String processSerialNumber);
+    Y9Result<Integer> countAssociatedFile(@RequestParam @NotBlank String processSerialNumber);
 
     /**
      * 删除关联流程
@@ -40,8 +40,8 @@ public interface AssociatedFileApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteAllAssociatedFile")
-    Y9Result<Object> deleteAllAssociatedFile(@RequestParam("processSerialNumber") @NotBlank String processSerialNumber,
-        @RequestParam("delIds") String delIds);
+    Y9Result<Object> deleteAllAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam String delIds);
 
     /**
      * 删除关联流程
@@ -52,8 +52,8 @@ public interface AssociatedFileApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteAssociatedFile")
-    Y9Result<Object> deleteAssociatedFile(@RequestParam("processSerialNumber") @NotBlank String processSerialNumber,
-        @RequestParam("delId") String delId);
+    Y9Result<Object> deleteAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam String delId);
 
     /**
      * 获取关联流程列表,包括未办结件
@@ -63,8 +63,7 @@ public interface AssociatedFileApi {
      * @since 9.6.6
      */
     @GetMapping("/getAssociatedFileAllList")
-    Y9Result<List<AssociatedFileModel>>
-        getAssociatedFileAllList(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<AssociatedFileModel>> getAssociatedFileAllList(@RequestParam @NotBlank String processSerialNumber);
 
     /**
      * 保存关联流程
@@ -74,7 +73,7 @@ public interface AssociatedFileApi {
      * @return {@code Y9Result<Object>} 通用请求返回对象
      */
     @PostMapping("/saveAssociatedFile")
-    Y9Result<Object> saveAssociatedFile(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processInstanceIds") String processInstanceIds);
+    Y9Result<Object> saveAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
+        @RequestParam String processInstanceIds);
 
 }

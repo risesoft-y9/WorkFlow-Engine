@@ -24,6 +24,6 @@ public interface RejectReasonApi {
      * @since 9.6.6
      */
     @PostMapping("/save")
-    Y9Result<Object> save(@RequestParam("action") Integer action, @RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> save(@RequestParam Integer action, @RequestParam String taskId,
+        @RequestParam(required = false) String reason);
 }

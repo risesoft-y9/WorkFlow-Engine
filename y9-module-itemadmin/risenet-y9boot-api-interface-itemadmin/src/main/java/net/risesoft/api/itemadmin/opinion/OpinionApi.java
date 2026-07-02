@@ -34,8 +34,7 @@ public interface OpinionApi {
      * @since 9.6.6
      */
     @GetMapping("/checkSignOpinion")
-    Y9Result<Boolean> checkSignOpinion(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("taskId") String taskId);
+    Y9Result<Boolean> checkSignOpinion(@RequestParam String processSerialNumber, @RequestParam String taskId);
 
     /**
      * 删除意见
@@ -46,7 +45,7 @@ public interface OpinionApi {
      * @since 9.6.6
      */
     @PostMapping("/delete")
-    Y9Result<Object> delete(@RequestParam("id") String id) throws Exception;
+    Y9Result<Object> delete(@RequestParam String id) throws Exception;
 
     /**
      * 获取事项绑定的意见框列表
@@ -57,8 +56,8 @@ public interface OpinionApi {
      * @since 9.6.6
      */
     @GetMapping("/getBindOpinionFrame")
-    Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(@RequestParam("itemId") String itemId,
-        @RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<List<ItemOpinionFrameBindModel>> getBindOpinionFrame(@RequestParam String itemId,
+        @RequestParam String processDefinitionId);
 
     /**
      * 根据id获取意见
@@ -68,7 +67,7 @@ public interface OpinionApi {
      * @since 9.6.6
      */
     @GetMapping("/getById")
-    Y9Result<OpinionModel> getById(@RequestParam("id") String id);
+    Y9Result<OpinionModel> getById(@RequestParam String id);
 
     /**
      * 获取个人意见列表
@@ -83,10 +82,10 @@ public interface OpinionApi {
      * @since 9.6.6
      */
     @GetMapping("/personCommentList")
-    Y9Result<List<OpinionListModel>> personCommentList(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam(value = "taskId", required = false) String taskId, @RequestParam("itembox") String itembox,
-        @RequestParam("opinionFrameMark") String opinionFrameMark, @RequestParam("itemId") String itemId,
-        @RequestParam(value = "taskDefinitionKey", required = false) String taskDefinitionKey);
+    Y9Result<List<OpinionListModel>> personCommentList(@RequestParam String processSerialNumber,
+        @RequestParam(required = false) String taskId, @RequestParam String itembox,
+        @RequestParam String opinionFrameMark, @RequestParam String itemId,
+        @RequestParam(required = false) String taskDefinitionKey);
 
     /**
      * 获取个人意见列表
@@ -129,5 +128,5 @@ public interface OpinionApi {
      * @since 9.6.6
      */
     @PostMapping("/updateOpinion")
-    Y9Result<Object> updateOpinion(@RequestParam("id") String id, @RequestParam("content") String content);
+    Y9Result<Object> updateOpinion(@RequestParam String id, @RequestParam String content);
 }

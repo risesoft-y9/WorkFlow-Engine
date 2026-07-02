@@ -212,7 +212,7 @@ public class ButtonOperationApiImpl implements ButtonOperationApi {
      */
     @Override
     public Y9Result<Object> reposition(@RequestParam String taskId, @RequestParam String repositionToTaskId,
-        @RequestParam("userChoice") List<String> userChoice, String reason, String sponsorGuid) {
+        @RequestParam List<String> userChoice, String reason, String sponsorGuid) {
         specialOperationApi.reposition(taskId, repositionToTaskId, userChoice, reason, sponsorGuid);
         return Y9Result.success();
     }

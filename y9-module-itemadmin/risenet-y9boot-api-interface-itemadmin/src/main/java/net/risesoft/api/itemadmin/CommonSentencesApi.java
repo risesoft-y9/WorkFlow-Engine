@@ -26,7 +26,7 @@ public interface CommonSentencesApi {
      * @since 9.6.6
      */
     @PostMapping("/delete")
-    Y9Result<Object> delete(@RequestParam("id") String id);
+    Y9Result<Object> delete(@RequestParam String id);
 
     /**
      * 获取常用语
@@ -45,7 +45,7 @@ public interface CommonSentencesApi {
      * @since 9.6.6
      */
     @PostMapping("/removeCommonSentences")
-    Y9Result<Object> removeCommonSentences(@RequestParam("tabIndex") int tabIndex);
+    Y9Result<Object> removeCommonSentences(@RequestParam int tabIndex);
 
     /**
      * 清空常用语使用次数
@@ -65,7 +65,7 @@ public interface CommonSentencesApi {
      * @since 9.6.6
      */
     @PostMapping("/save")
-    Y9Result<Object> save(@RequestParam("id") String id, @RequestParam("content") String content);
+    Y9Result<Object> save(@RequestParam String id, @RequestParam String content);
 
     /**
      * 根据排序号tabIndex保存更新常用语
@@ -76,8 +76,7 @@ public interface CommonSentencesApi {
      * @since 9.6.6
      */
     @PostMapping("/saveCommonSentences")
-    Y9Result<Object> saveCommonSentences(@RequestParam("content") String content,
-        @RequestParam("tabIndex") int tabIndex);
+    Y9Result<Object> saveCommonSentences(@RequestParam String content, @RequestParam int tabIndex);
 
     /**
      * 更新常用语使用次数
@@ -87,5 +86,5 @@ public interface CommonSentencesApi {
      * @since 9.6.6
      */
     @PostMapping("/updateUseNumber")
-    Y9Result<Object> updateUseNumber(@RequestParam("id") String id);
+    Y9Result<Object> updateUseNumber(@RequestParam String id);
 }

@@ -21,15 +21,13 @@ import net.risesoft.pojo.Y9Result;
 public interface DocumentCopyApi {
 
     @PostMapping("/deleteByProcessSerialNumber")
-    Y9Result<Object> deleteByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Object> deleteByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     @GetMapping("/findByProcessSerialNumberAndSenderId")
-    Y9Result<List<DocumentCopyModel>>
-        findByProcessSerialNumberAndSenderId(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<DocumentCopyModel>> findByProcessSerialNumberAndSenderId(@RequestParam String processSerialNumber);
 
     @PostMapping("/findByProcessSerialNumbers")
-    Y9Result<List<DocumentCopyModel>>
-        findByProcessSerialNumbers(@RequestParam("processSerialNumbers") String[] processSerialNumbers);
+    Y9Result<List<DocumentCopyModel>> findByProcessSerialNumbers(@RequestParam String[] processSerialNumbers);
 
     @PostMapping("/findByUserId")
     Y9Page<DocumentCopyModel> findByUserId(@RequestBody QueryParamModel queryParamModel);
@@ -38,11 +36,10 @@ public interface DocumentCopyApi {
     Y9Result<List<DocumentCopyModel>> findListByUserId(@RequestBody(required = false) QueryParamModel queryParamModel);
 
     @PostMapping("/save")
-    Y9Result<Object> save(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("users") String users, @RequestParam(value = "opinion", required = false) String opinion);
+    Y9Result<Object> save(@RequestParam String processSerialNumber, @RequestParam String users,
+        @RequestParam(required = false) String opinion);
 
     @PostMapping("/setStatus")
-    Y9Result<Object> setStatus(@RequestParam("tenantId") String tenantId, @RequestParam("userId") String userId,
-        @RequestParam("orgUnitId") String orgUnitId, @RequestParam("id") String id,
-        @RequestParam(value = "status") DocumentCopyStatusEnum status);
+    Y9Result<Object> setStatus(@RequestParam String tenantId, @RequestParam String userId,
+        @RequestParam String orgUnitId, @RequestParam String id, @RequestParam DocumentCopyStatusEnum status);
 }

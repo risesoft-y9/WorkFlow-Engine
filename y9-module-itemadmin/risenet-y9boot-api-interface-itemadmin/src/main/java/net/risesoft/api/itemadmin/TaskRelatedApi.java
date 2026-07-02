@@ -24,8 +24,7 @@ public interface TaskRelatedApi {
      * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumber")
-    Y9Result<List<TaskRelatedModel>>
-        findByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<TaskRelatedModel>> findByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 根据任务id查找任务相关信息
@@ -35,7 +34,7 @@ public interface TaskRelatedApi {
      * @since 9.6.6
      */
     @GetMapping("/findByTaskId")
-    Y9Result<List<TaskRelatedModel>> findByTaskId(@RequestParam("taskId") String taskId);
+    Y9Result<List<TaskRelatedModel>> findByTaskId(@RequestParam String taskId);
 
     /**
      * 保存或者更新

@@ -26,7 +26,7 @@ public interface DocumentWpsApi {
      * @since 9.6.6
      */
     @GetMapping("/findById")
-    Y9Result<DocumentWpsModel> findById(@RequestParam("id") String id);
+    Y9Result<DocumentWpsModel> findById(@RequestParam String id);
 
     /**
      * 根据流程编号查询WPS正文
@@ -36,7 +36,7 @@ public interface DocumentWpsApi {
      * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumber")
-    Y9Result<DocumentWpsModel> findByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<DocumentWpsModel> findByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 保存WPS正文
@@ -57,7 +57,6 @@ public interface DocumentWpsApi {
      * @since 9.6.6
      */
     @PostMapping("/saveWpsContent")
-    Y9Result<Object> saveWpsContent(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("hasContent") String hasContent);
+    Y9Result<Object> saveWpsContent(@RequestParam String processSerialNumber, @RequestParam String hasContent);
 
 }

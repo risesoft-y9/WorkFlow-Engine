@@ -25,7 +25,7 @@ public interface ItemOpinionFrameBindApi {
      * @since 9.6.6
      */
     @GetMapping("/findByItemId")
-    Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(@RequestParam("itemId") String itemId);
+    Y9Result<List<ItemOpinionFrameBindModel>> findByItemId(@RequestParam String itemId);
 
     /**
      * 根据事项id和流程定义id获取所有绑定意见框
@@ -36,8 +36,8 @@ public interface ItemOpinionFrameBindApi {
      * @since 9.6.6
      */
     @GetMapping("/findByItemIdAndProcessDefinitionId")
-    Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionId(@RequestParam("itemId") String itemId,
-        @RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionId(@RequestParam String itemId,
+        @RequestParam String processDefinitionId);
 
     /**
      * 根据事项id和任务id获取绑定意见框
@@ -50,8 +50,8 @@ public interface ItemOpinionFrameBindApi {
      */
     @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKey")
     Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKey(
-        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam(value = "taskDefKey", required = false) String taskDefKey);
+        @RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam(required = false) String taskDefKey);
 
     /**
      * 根据事项id和任务id获取绑定意见框（包含角色信息）
@@ -64,7 +64,7 @@ public interface ItemOpinionFrameBindApi {
      */
     @GetMapping("/findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole")
     Y9Result<List<ItemOpinionFrameBindModel>> findByItemIdAndProcessDefinitionIdAndTaskDefKeyContainRole(
-        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam(value = "taskDefKey", required = false) String taskDefKey);
+        @RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam(required = false) String taskDefKey);
 
 }

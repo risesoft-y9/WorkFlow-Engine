@@ -27,7 +27,7 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @PostMapping("/cancelMeeting")
-    Y9Result<Object> cancelMeeting(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> cancelMeeting(@RequestParam String processInstanceId);
 
     /**
      * 监控办结统计
@@ -37,7 +37,7 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/countByItemId")
-    Y9Result<Integer> countByItemId(@RequestParam(value = "itemId", required = false) String itemId);
+    Y9Result<Integer> countByItemId(@RequestParam(required = false) String itemId);
 
     /**
      * 统计个人办结件
@@ -47,7 +47,7 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/countByUserId")
-    Y9Result<Integer> countByUserId(@RequestParam(value = "itemId", required = false) String itemId);
+    Y9Result<Integer> countByUserId(@RequestParam(required = false) String itemId);
 
     /**
      * 根据系统名称统计个人办结件
@@ -57,8 +57,7 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/countByUserIdAndSystemName")
-    Y9Result<Integer>
-        countByUserIdAndSystemName(@RequestParam(value = "systemName", required = false) String systemName);
+    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam(required = false) String systemName);
 
     /**
      * 监控在办统计
@@ -68,7 +67,7 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/countDoingByItemId")
-    Y9Result<Long> countDoingByItemId(@RequestParam(value = "itemId", required = false) String itemId);
+    Y9Result<Long> countDoingByItemId(@RequestParam(required = false) String itemId);
 
     /**
      * 根据流程实例id删除办件信息
@@ -78,7 +77,7 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteOfficeDoneInfo")
-    Y9Result<Object> deleteOfficeDoneInfo(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> deleteOfficeDoneInfo(@RequestParam String processInstanceId);
 
     /**
      * 根据流程实例id获取办件信息
@@ -88,7 +87,7 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/findByProcessInstanceId")
-    Y9Result<OfficeDoneInfoModel> findByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<OfficeDoneInfoModel> findByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 根据流程流水号获取办件信息
@@ -98,8 +97,7 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumber")
-    Y9Result<OfficeDoneInfoModel>
-        findByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<OfficeDoneInfoModel> findByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 上会台账列表（定制）
@@ -114,11 +112,9 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/getMeetingList")
-    Y9Page<OfficeDoneInfoModel> getMeetingList(@RequestParam(value = "userName", required = false) String userName,
-        @RequestParam(value = "deptName", required = false) String deptName,
-        @RequestParam(value = "title", required = false) String title,
-        @RequestParam(value = "meetingType", required = false) String meetingType, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<OfficeDoneInfoModel> getMeetingList(@RequestParam(required = false) String userName,
+        @RequestParam(required = false) String deptName, @RequestParam(required = false) String title,
+        @RequestParam(required = false) String meetingType, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 保存办结信息,不经过kafka消息队列，直接保存
@@ -146,13 +142,10 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/searchAllByDeptId")
-    Y9Page<OfficeDoneInfoModel> searchAllByDeptId(@RequestParam("deptId") String deptId,
-        @RequestParam(value = "title", required = false) String title,
-        @RequestParam(value = "itemId", required = false) String itemId,
-        @RequestParam(value = "userName", required = false) String userName,
-        @RequestParam(value = "state", required = false) String state,
-        @RequestParam(value = "year", required = false) String year, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchAllByDeptId(@RequestParam String deptId,
+        @RequestParam(required = false) String title, @RequestParam(required = false) String itemId,
+        @RequestParam(required = false) String userName, @RequestParam(required = false) String state,
+        @RequestParam(required = false) String year, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 个人所有件搜索
@@ -170,14 +163,11 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/searchAllByUserId")
-    Y9Page<OfficeDoneInfoModel> searchAllByUserId(@RequestParam(value = "title", required = false) String title,
-        @RequestParam(value = "itemId", required = false) String itemId,
-        @RequestParam(value = "userName", required = false) String userName,
-        @RequestParam(value = "state", required = false) String state,
-        @RequestParam(value = "year", required = false) String year,
-        @RequestParam(value = "startDate", required = false) String startDate,
-        @RequestParam(value = "endDate", required = false) String endDate, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchAllByUserId(@RequestParam(required = false) String title,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam(required = false) String startDate, @RequestParam(required = false) String endDate,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据系统，个人所有件搜索
@@ -195,15 +185,11 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/searchAllByUserIdAndSystemName")
-    Y9Page<OfficeDoneInfoModel> searchAllByUserIdAndSystemName(
-        @RequestParam(value = "title", required = false) String title,
-        @RequestParam(value = "systemName", required = false) String systemName,
-        @RequestParam(value = "itemId", required = false) String itemId,
-        @RequestParam(value = "state", required = false) String state,
-        @RequestParam(value = "year", required = false) String year,
-        @RequestParam(value = "startdate", required = false) String startdate,
-        @RequestParam(value = "enddate", required = false) String enddate, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchAllByUserIdAndSystemName(@RequestParam(required = false) String title,
+        @RequestParam(required = false) String systemName, @RequestParam(required = false) String itemId,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam(required = false) String startdate, @RequestParam(required = false) String enddate,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 监控办件列表
@@ -219,12 +205,10 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/searchAllList")
-    Y9Page<OfficeDoneInfoModel> searchAllList(@RequestParam(value = "searchName", required = false) String searchName,
-        @RequestParam(value = "itemId", required = false) String itemId,
-        @RequestParam(value = "userName", required = false) String userName,
-        @RequestParam(value = "state", required = false) String state,
-        @RequestParam(value = "year", required = false) String year, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchAllList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) String state, @RequestParam(required = false) String year,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 获取监控在办，办结件列表
@@ -240,12 +224,10 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/searchByItemId")
-    Y9Page<OfficeDoneInfoModel> searchByItemId(@RequestParam(value = "title", required = false) String title,
-        @RequestParam(value = "itemId", required = false) String itemId,
-        @RequestParam(value = "state", required = false) String state,
-        @RequestParam(value = "startdate", required = false) String startdate,
-        @RequestParam(value = "enddate", required = false) String enddate, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchByItemId(@RequestParam(required = false) String title,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String state,
+        @RequestParam(required = false) String startdate, @RequestParam(required = false) String enddate,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 获取个人办结件列表
@@ -260,11 +242,9 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/searchByUserId")
-    Y9Page<OfficeDoneInfoModel> searchByUserId(@RequestParam(value = "title", required = false) String title,
-        @RequestParam(value = "itemId", required = false) String itemId,
-        @RequestParam(value = "startdate", required = false) String startdate,
-        @RequestParam(value = "enddate", required = false) String enddate, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchByUserId(@RequestParam(required = false) String title,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String startdate,
+        @RequestParam(required = false) String enddate, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据id,系统名称，获取个人办结件列表
@@ -279,12 +259,9 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @GetMapping("/searchByUserIdAndSystemName")
-    Y9Page<OfficeDoneInfoModel> searchByUserIdAndSystemName(
-        @RequestParam(value = "title", required = false) String title,
-        @RequestParam(value = "systemName", required = false) String systemName,
-        @RequestParam(value = "startdate", required = false) String startdate,
-        @RequestParam(value = "enddate", required = false) String enddate, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<OfficeDoneInfoModel> searchByUserIdAndSystemName(@RequestParam(required = false) String title,
+        @RequestParam(required = false) String systemName, @RequestParam(required = false) String startdate,
+        @RequestParam(required = false) String enddate, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 设置会议类型(上会)
@@ -295,7 +272,6 @@ public interface OfficeDoneInfoApi {
      * @since 9.6.6
      */
     @PostMapping("/setMeeting")
-    Y9Result<Object> setMeeting(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("meetingType") String meetingType);
+    Y9Result<Object> setMeeting(@RequestParam String processInstanceId, @RequestParam String meetingType);
 
 }

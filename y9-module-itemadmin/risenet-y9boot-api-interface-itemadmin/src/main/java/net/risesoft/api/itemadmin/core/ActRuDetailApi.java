@@ -50,7 +50,7 @@ public interface ActRuDetailApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteByProcessSerialNumber")
-    Y9Result<Object> deleteByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Object> deleteByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 根据流程实例id标记流程为办结

@@ -30,7 +30,7 @@ public interface ItemRecycleApi {
      * @since 9.6.6
      */
     @GetMapping("/countByUserIdAndSystemName")
-    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("systemName") @NotBlank String systemName);
+    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam @NotBlank String systemName);
 
     /**
      * 根据科室id和系统名称查询回收站
@@ -44,9 +44,8 @@ public interface ItemRecycleApi {
      * @since 9.6.6
      */
     @GetMapping("/findByDeptIdAndSystemName")
-    Y9Page<ActRuDetailModel> findByDeptIdAndSystemName(@RequestParam("deptId") String deptId,
-        @RequestParam("isBureau") boolean isBureau, @RequestParam("systemName") String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> findByDeptIdAndSystemName(@RequestParam String deptId, @RequestParam boolean isBureau,
+        @RequestParam String systemName, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据系统名称查询办结列表
@@ -58,8 +57,8 @@ public interface ItemRecycleApi {
      * @since 9.6.6
      */
     @GetMapping("/findBySystemName")
-    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam("systemName") String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam String systemName, @RequestParam Integer page,
+        @RequestParam Integer rows);
 
     /**
      * 根据用户id和系统名称查询办结列表
@@ -71,8 +70,8 @@ public interface ItemRecycleApi {
      * @since 9.6.6
      */
     @GetMapping("/findByUserIdAndSystemName")
-    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("systemName") String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam String systemName, @RequestParam Integer page,
+        @RequestParam Integer rows);
 
     /**
      * 根据用户id、系统名称、表名称、搜索内容查询办结列表
@@ -86,9 +85,9 @@ public interface ItemRecycleApi {
      * @since 9.6.6
      */
     @PostMapping("/searchByDeptIdAndSystemName")
-    Y9Page<ActRuDetailModel> searchByDeptIdAndSystemName(@RequestParam("deptId") String deptId,
-        @RequestParam("isBureau") boolean isBureau, @RequestParam("systemName") String systemName,
-        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> searchByDeptIdAndSystemName(@RequestParam String deptId, @RequestParam boolean isBureau,
+        @RequestParam String systemName, @RequestBody String searchMapStr, @RequestParam Integer page,
+        @RequestParam Integer rows);
 
     /**
      * 根据系统名称、表名称、搜索内容查询办结列表
@@ -101,8 +100,8 @@ public interface ItemRecycleApi {
      * @since 9.6.6
      */
     @PostMapping("/searchBySystemName")
-    Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("systemName") String systemName,
-        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam String systemName, @RequestBody String searchMapStr,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据用户id、系统名称、表名称、搜索内容查询办结列表
@@ -115,19 +114,18 @@ public interface ItemRecycleApi {
      * @since 9.6.6
      */
     @PostMapping("/searchByUserIdAndSystemName")
-    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("systemName") String systemName,
-        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows);
 
     @PostMapping("/searchListByDeptIdAndSystemName")
-    Y9Result<List<ActRuDetailModel>> searchListByDeptIdAndSystemName(@RequestParam("deptId") String deptId,
-        @RequestParam("isBureau") boolean isBureau, @RequestParam("systemName") String systemName,
-        @RequestBody String searchMapStr);
+    Y9Result<List<ActRuDetailModel>> searchListByDeptIdAndSystemName(@RequestParam String deptId,
+        @RequestParam boolean isBureau, @RequestParam String systemName, @RequestBody String searchMapStr);
 
     @PostMapping("/searchListBySystemName")
-    Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam("systemName") String systemName,
+    Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam String systemName,
         @RequestBody String searchMapStr);
 
     @PostMapping("/searchListByUserIdAndSystemName")
-    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam("systemName") String systemName,
+    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam String systemName,
         @RequestBody String searchMapStr);
 }
