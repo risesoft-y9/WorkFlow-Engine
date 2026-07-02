@@ -69,7 +69,7 @@ public class DraftApiImpl implements DraftApi {
      * @since 9.6.6
      */
     @Override
-    public Y9Result<Object> deleteDraft(@RequestParam("ids") String ids) {
+    public Y9Result<Object> deleteDraft(@RequestParam String ids) {
         draftEntityService.deleteDraft(ids);
         return Y9Result.success();
     }
