@@ -13,7 +13,6 @@ import net.risesoft.model.processadmin.HistoricProcessInstanceModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomMonitorService;
-import net.risesoft.service.CustomRecycleService;
 
 /**
  * 监控流程实例接口
@@ -28,8 +27,6 @@ import net.risesoft.service.CustomRecycleService;
 public class MonitorApiImpl implements MonitorApi {
 
     private final CustomMonitorService customMonitorService;
-
-    private final CustomRecycleService customRecycleService;
 
     /**
      * 根据系统名称获取监控在办件
