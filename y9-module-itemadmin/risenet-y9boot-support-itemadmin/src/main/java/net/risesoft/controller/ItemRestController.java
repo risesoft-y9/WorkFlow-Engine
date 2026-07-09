@@ -164,6 +164,18 @@ public class ItemRestController {
     }
 
     /**
+     * 根据系统名称获取事项列表
+     *
+     * @param systemName 系统名称
+     * @return
+     */
+    @GetMapping(value = "/listBySystemName")
+    public Y9Result<List<Item>> listBySystemName(@RequestParam String systemName) {
+        List<Item> list = itemService.findBySystemName(systemName);
+        return Y9Result.success(list, "获取成功");
+    }
+
+    /**
      * 获取新增或修改数据
      *
      * @param id 事项id
