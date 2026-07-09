@@ -134,11 +134,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
             .sql(sql00)
             .parameter(SysVariables.PROC_INST_ID_KEY, processInstanceId)
             .singleResult();
-
-        // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 对 DELETE 语句的锁等待问题
-        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_ = ? OR EXECUTION_ID_ = ? OR TASK_ID_ = ?";
-        jdbcTemplate.update(sql01, processInstanceId, miRootExecution.getId(), taskId);
-
+        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_ = '" + processInstanceId
+            + "' OR EXECUTION_ID_ = '" + miRootExecution.getId() + "' OR TASK_ID_ = '" + taskId + "'";
+        historyService.createNativeHistoricVariableInstanceQuery().sql(sql01).singleResult();
         runtimeService.setVariablesLocal(miRootExecution.getId(), new HashMap<>(16));
     }
 
@@ -146,9 +144,9 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
      * 清理普通实例的历史变量数据
      */
     private void cleanupNormalHistoricVariables(String processInstanceId, String taskId) {
-        // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 对 DELETE 语句的锁等待问题
-        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_ = ? OR TASK_ID_ = ?";
-        jdbcTemplate.update(sql01, processInstanceId, taskId);
+        String sql01 = "DELETE FROM ACT_HI_VARINST WHERE EXECUTION_ID_ = '" + processInstanceId + "' OR TASK_ID_ = '"
+            + taskId + "'";
+        historyService.createNativeHistoricVariableInstanceQuery().sql(sql01).singleResult();
     }
 
     @Override
@@ -163,7 +161,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
      * @param sql SQL语句
      */
     private void executeYearDataSql(String sql) {
-        jdbcTemplate.execute(sql);
+        historyService.createNativeHistoricProcessInstanceQuery().sql(sql).singleResult();
     }
 
     private String getActGeBytearraySql(String year, String processInstanceId) {
@@ -461,14 +459,14 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
 
         for (HistoricActivityInstance hisActivity : hisActivityList) {
             if (hisActivity.getActivityType().equals(SysVariables.USER_TASK)) {
-                // 改用 jdbcTemplate 直接执行 UPDATE，避免 Flowable native query 的锁等待问题
-                jdbcTemplate.update(
-                    "UPDATE ACT_HI_ACTINST SET END_TIME_=NULL, DURATION_=NULL, DELETE_REASON_=NULL WHERE ID_ = ?",
-                    hisActivity.getId());
+                String sql =
+                    "UPDATE ACT_HI_ACTINST SET END_TIME_=NULL, DURATION_=NULL, DELETE_REASON_=NULL WHERE ID_ = '"
+                        + hisActivity.getId() + "'";
+                historyService.createNativeHistoricActivityInstanceQuery().sql(sql).singleResult();
                 break;
             } else {
-                // 改用 jdbcTemplate 直接执行 DELETE，避免 Flowable native query 的锁等待问题
-                jdbcTemplate.update("DELETE FROM ACT_HI_ACTINST WHERE ID_ = ?", hisActivity.getId());
+                String sql = "DELETE FROM ACT_HI_ACTINST WHERE ID_ = '" + hisActivity.getId() + "'";
+                historyService.createNativeHistoricVariableInstanceQuery().sql(sql).singleResult();
             }
         }
     }
@@ -569,6 +567,7 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
         String nodeType = getNodeMultiInstanceType(hti);
         // 4. 复制年度历史数据到正在运行历史表
         saveYearData(year, processInstanceId);
+        LOGGER.info("复制年度历史数据到正在运行历史表成功，processInstanceId:" + processInstanceId);
         // 5. 获取流程变量和任务变量
         VariableMaps variableMaps = getProcessAndTaskVariables(executionSet, hti.getId(), nodeType);
         // 6. 清理历史变量数据
@@ -615,16 +614,22 @@ public class CustomRuntimeServiceImpl implements CustomRuntimeService {
     public void saveYearData(String year, String processInstanceId) {
         // 同步历史任务
         executeYearDataSql(getActHiTaskinstSql(year, processInstanceId));
+        LOGGER.info("同步历史任务成功，processInstanceId:" + processInstanceId);
         // 同步历史变量
         executeYearDataSql(getActHiVarinstSql(year, processInstanceId));
+        LOGGER.info("同步历史变量成功，processInstanceId:" + processInstanceId);
         // 同步二进制数据表
         executeYearDataSql(getActGeBytearraySql(year, processInstanceId));
+        LOGGER.info("同步二进制数据表成功，processInstanceId:" + processInstanceId);
         // 同步历史参与人
         executeYearDataSql(getActHiIdentiyLinkSql(year, processInstanceId));
+        LOGGER.info("同步历史参与人成功，processInstanceId:" + processInstanceId);
         // 同步历史节点
         executeYearDataSql(getActHiActinstSql(year, processInstanceId));
+        LOGGER.info("同步历史节点成功，processInstanceId:" + processInstanceId);
         // 同步流程实例
         executeYearDataSql(getActHiProcinstSql(year, processInstanceId));
+        LOGGER.info("同步流程实例成功，processInstanceId:" + processInstanceId);
     }
 
     @Override
