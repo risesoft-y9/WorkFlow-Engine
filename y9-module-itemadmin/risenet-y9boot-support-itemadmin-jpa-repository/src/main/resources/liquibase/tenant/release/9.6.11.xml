@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<databaseChangeLog
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+        xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
+                      https://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.26.xsd"
+        objectQuotingStrategy="QUOTE_ONLY_RESERVED_WORDS">
+
+    <changeSet id="1704700588888-1" author="qinMan" runOnChange="true">
+        <preConditions onFail="MARK_RAN">
+            <not>
+                <tableExists tableName="FF_ITEM_SYSTEM"/>
+            </not>
+        </preConditions>
+        <createTable remarks="事项系统定义信息表" tableName="FF_ITEM_SYSTEM">
+            <column name="ID" remarks="主键" type="VARCHAR(50)">
+                <constraints nullable="false" primaryKey="true"/>
+            </column>
+            <column name="NAME" remarks="系统名称" type="VARCHAR(200)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="CNNAME" remarks="系统中文名称" type="VARCHAR(50)">
+                <constraints nullable="false" unique="true"/>
+            </column>
+            <column name="TABINDEX" remarks="排序" type="INT"/>
+            <column name="CREATETIME" remarks="创建时间" type="datetime"/>
+            <column name="UPDATETIME" remarks="更新时间" type="datetime"/>
+        </createTable>
+    </changeSet>
+
+</databaseChangeLog>
