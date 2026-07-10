@@ -76,7 +76,7 @@ public class DeletePrintPdfFileUtil {
         }
     }
 
-    @Scheduled(cron = "0 0/3 * * * ?") // 每5分钟执行一次
+    // @Scheduled(cron = "0 0/3 * * * ?") // 每5分钟执行一次
     public void updateTaskEndTime() {// kingbase办结时出现.截转数据时最后一个历史任务时间为null，历程不显示
         Date date = new Date();
         Y9LoginUserHolder.setTenantId("11111111-1111-1111-1111-111111111113");
