@@ -25,18 +25,19 @@ import org.springframework.transaction.annotation.Transactional;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.entity.Item;
+import net.risesoft.entity.ItemSystem;
 import net.risesoft.entity.form.Y9Table;
 import net.risesoft.entity.form.Y9TableField;
 import net.risesoft.enums.DialectEnum;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.repository.form.Y9FormFieldRepository;
 import net.risesoft.repository.form.Y9TableFieldRepository;
 import net.risesoft.repository.form.Y9TableRepository;
 import net.risesoft.service.ItemWorkDayService;
+import net.risesoft.service.config.ItemSystemService;
 import net.risesoft.service.core.ItemService;
 import net.risesoft.service.form.TableManagerService;
 import net.risesoft.service.form.Y9TableService;
@@ -67,6 +68,8 @@ public class Y9TableServiceImpl implements Y9TableService {
 
     private final ItemService itemService;
 
+    private final ItemSystemService itemSystemService;
+
     private final ItemWorkDayService itemWorkDayService;
 
     private final Y9TableService self;
@@ -78,6 +81,7 @@ public class Y9TableServiceImpl implements Y9TableService {
         Y9FormFieldRepository y9FormFieldRepository,
         TableManagerService tableManagerService,
         ItemService itemService,
+        ItemSystemService itemSystemService,
         ItemWorkDayService itemWorkDayService,
         @Lazy Y9TableService self) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
@@ -86,6 +90,7 @@ public class Y9TableServiceImpl implements Y9TableService {
         this.y9FormFieldRepository = y9FormFieldRepository;
         this.tableManagerService = tableManagerService;
         this.itemService = itemService;
+        this.itemSystemService = itemSystemService;
         this.itemWorkDayService = itemWorkDayService;
         this.self = self;
     }
@@ -473,13 +478,12 @@ public class Y9TableServiceImpl implements Y9TableService {
         }
         List<Y9Table> list = pageList.getContent();
         Map<String, Object> map = tableManagerService.getDataSourceTableNames();
-        List<ItemSystemListModel> systemList = itemService.getItemSystem();
-        systemList = systemList.stream()
-            .filter(system -> system.getSystemName().equals(systemName))
-            .collect(Collectors.toList());
-        Optional<ItemSystemListModel> optional =
-            systemList.stream().filter(system -> system.getSystemName().equals(systemName)).findFirst();
-        String systemCnName = optional.isPresent() ? optional.get().getSysLevel() : "";
+        List<ItemSystem> systemList = itemSystemService.listAll();
+        systemList =
+            systemList.stream().filter(system -> system.getName().equals(systemName)).collect(Collectors.toList());
+        Optional<ItemSystem> optional =
+            systemList.stream().filter(system -> system.getName().equals(systemName)).findFirst();
+        String systemCnName = optional.isPresent() ? optional.get().getCnName() : "";
         for (Y9Table y9Table : list) {
             y9Table.setSystemCnName(systemCnName.isEmpty() ? y9Table.getSystemCnName() : systemCnName);
             y9Table.setTableMemo("0");

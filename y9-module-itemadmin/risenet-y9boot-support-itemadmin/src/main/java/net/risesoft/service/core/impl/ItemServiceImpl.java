@@ -1,6 +1,5 @@
 package net.risesoft.service.core.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -26,7 +25,6 @@ import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemExtendProps;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.platform.System;
 import net.risesoft.model.platform.resource.App;
@@ -271,21 +269,6 @@ public class ItemServiceImpl implements ItemService {
     @Override
     public List<Item> findBySystemName(String systemName) {
         return itemRepository.findBySystemName(systemName, Sort.by(Sort.Direction.ASC, ItemConsts.TABINDEX_KEY));
-    }
-
-    @Override
-    public List<ItemSystemListModel> getItemSystem() {
-        List<Item> list = this.list();
-        List<ItemSystemListModel> itemList = new ArrayList<>();
-        list.forEach(item -> {
-            ItemSystemListModel model = new ItemSystemListModel();
-            model.setSystemName(item.getSystemName());
-            model.setSysLevel(item.getSysLevel());
-            if (!itemList.contains(model)) {
-                itemList.add(model);
-            }
-        });
-        return itemList;
     }
 
     @Override

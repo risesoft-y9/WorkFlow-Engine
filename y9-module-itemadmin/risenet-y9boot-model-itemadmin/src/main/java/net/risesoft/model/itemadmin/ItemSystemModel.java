@@ -12,17 +12,16 @@ import lombok.Data;
  * @date 2022/12/20
  */
 @Data
-public class ItemSystemListModel implements Serializable {
+public class ItemSystemModel implements Serializable {
 
     private static final long serialVersionUID = 6908045098273484292L;
     /**
      * 系统英文名称
      */
-    private String systemName;
+    private String name;
 
     /**
      * 系统名称
      */
-    private String sysLevel;
-
+    private String cnName;
 }
