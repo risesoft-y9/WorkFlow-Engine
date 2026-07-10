@@ -96,9 +96,8 @@ public class ItemAdminApplicationReadyListener implements ApplicationListener<Ap
             creatApp();
             createPublicRoles();
 
-            // 初始化默认租户的表数据
-            // Y9LoginUserHolder.setTenantId(InitDataConsts.TENANT_ID);
-            // initTableDataService.init(InitDataConsts.TENANT_ID);
+            // 检查所有租户的事项系统[FF_ITEM_SYSTEM]数据
+            initTableDataService.checkItemSystem();
         } catch (Exception e) {
             LOGGER.error("初始化数据失败", e);
         }
