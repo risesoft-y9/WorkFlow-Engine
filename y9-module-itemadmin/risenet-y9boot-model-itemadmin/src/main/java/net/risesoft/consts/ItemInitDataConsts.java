@@ -19,6 +19,11 @@ public class ItemInitDataConsts {
     public static final String Y9_SYSTEM_NAME = "itemAdmin";
 
     /**
+     * 事项系统id
+     */
+    public static final String ITEM_SYSTEM_ID = "11111111-1111-1111-1111-111111111110";
+
+    /**
      * 事项id
      */
     public static final String ITEM_ID = "11111111-1111-1111-1111-111111111111";
