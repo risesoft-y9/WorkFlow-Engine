@@ -18,7 +18,6 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.System;
 import net.risesoft.model.platform.resource.App;
-import net.risesoft.service.init.InitTableDataService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
 
@@ -34,8 +33,6 @@ import net.risesoft.y9.configuration.Y9Properties;
 @Slf4j
 @RequiredArgsConstructor
 public class ItemAdminApplicationReadyListener implements ApplicationListener<ApplicationReadyEvent> {
-
-    private final InitTableDataService initTableDataService;
 
     private final SystemApi systemApi;
     private final AppApi appApi;
@@ -53,7 +50,7 @@ public class ItemAdminApplicationReadyListener implements ApplicationListener<Ap
                     // 生成应用并自动租用
                     appApi
                         .registerApp(ItemInitDataConsts.Y9_SYSTEM_NAME, ItemInitDataConsts.SYSTEM_CN_NAME, appUrl,
-                            ItemInitDataConsts.SYSTEM_NAME, InitDataConsts.TENANT_ID)
+                            ItemInitDataConsts.SYSTEM_NAME)
                         .getData();
                 }
             }
@@ -69,9 +66,8 @@ public class ItemAdminApplicationReadyListener implements ApplicationListener<Ap
             System system = systemApi.getByName(ItemConsts.ITEMADMIN_KEY).getData();
             if (system == null) {
                 // 注册系统并自动租用
-                System y9System = systemApi
-                    .registrySystem(ItemConsts.ITEMADMIN_KEY, "事项管理", "/server-itemadmin", InitDataConsts.TENANT_ID)
-                    .getData();
+                System y9System =
+                    systemApi.registrySystem(ItemConsts.ITEMADMIN_KEY, "事项管理", "/server-itemadmin").getData();
                 systemId = y9System.getId();
             } else {
                 systemId = system.getId();
