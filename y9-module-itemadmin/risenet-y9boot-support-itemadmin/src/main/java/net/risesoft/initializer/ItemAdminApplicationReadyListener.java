@@ -18,6 +18,7 @@ import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
 import net.risesoft.model.platform.System;
 import net.risesoft.model.platform.resource.App;
+import net.risesoft.service.init.InitTableDataService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.configuration.Y9Properties;
 
@@ -34,6 +35,8 @@ import net.risesoft.y9.configuration.Y9Properties;
 @RequiredArgsConstructor
 public class ItemAdminApplicationReadyListener implements ApplicationListener<ApplicationReadyEvent> {
 
+    private final InitTableDataService initTableDataService;
+
     private final SystemApi systemApi;
     private final AppApi appApi;
     private final RoleApi roleApi;
@@ -48,10 +51,8 @@ public class ItemAdminApplicationReadyListener implements ApplicationListener<Ap
                     String appUrl = y9Config.getCommon().getBaseUrl() + "/" + Y9Context.getSystemName() + "?itemId="
                         + ItemInitDataConsts.ITEM_ID;
                     // 生成应用并自动租用
-                    appApi
-                        .registerApp(ItemInitDataConsts.Y9_SYSTEM_NAME, ItemInitDataConsts.SYSTEM_CN_NAME, appUrl,
-                            ItemInitDataConsts.SYSTEM_NAME)
-                        .getData();
+                    appApi.registerApp(ItemInitDataConsts.Y9_SYSTEM_NAME, ItemInitDataConsts.SYSTEM_CN_NAME, appUrl,
+                        ItemInitDataConsts.SYSTEM_NAME);
                 }
             }
         } catch (Exception e) {
@@ -59,32 +60,25 @@ public class ItemAdminApplicationReadyListener implements ApplicationListener<Ap
         }
     }
 
-    private String createSystem() {
-
-        String systemId = "";
+    private void createSystem() {
         try {
             System system = systemApi.getByName(ItemConsts.ITEMADMIN_KEY).getData();
             if (system == null) {
                 // 注册系统并自动租用
-                System y9System =
-                    systemApi.registrySystem(ItemConsts.ITEMADMIN_KEY, "事项管理", "/server-itemadmin").getData();
-                systemId = y9System.getId();
-            } else {
-                systemId = system.getId();
+                systemApi.registrySystem(ItemConsts.ITEMADMIN_KEY, "事项管理", "/server-itemadmin");
             }
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("注册系统并自动租用失败", e);
         }
-        return systemId;
     }
 
     private void createPublicRoles() {
         try {
-            // 创建流程监控公共角色
+            //
             roleApi.createRole(Y9IdGenerator.genId(IdType.SNOWFLAKE), ItemInitDataConsts.MONITOR_ROLE,
                 InitDataConsts.TOP_PUBLIC_ROLE_ID, ItemInitDataConsts.MONITOR_ROLE_CUSTOM_ID, RoleTypeEnum.ROLE);
         } catch (Exception e) {
-            e.printStackTrace();
+            LOGGER.error("创建流程监控公共角色失败", e);
         }
     }
 
