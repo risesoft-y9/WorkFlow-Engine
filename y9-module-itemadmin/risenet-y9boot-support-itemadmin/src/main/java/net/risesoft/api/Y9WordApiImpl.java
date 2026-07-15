@@ -4,7 +4,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -708,6 +707,7 @@ public class Y9WordApiImpl implements Y9WordApi {
 
             if (wordTemplate != null && wordTemplate.getId() != null) {
                 wordInfo.setFileDocumentId(wordTemplate.getId());
+                wordInfo.setFileStoreId(wordTemplate.getFilePath());
                 wordInfo.setOpenWordOrPdf("openWordTemplate");
                 String fileName = wordTemplate.getFileName();
                 String fileType = fileName.substring(fileName.lastIndexOf("."));
@@ -739,14 +739,12 @@ public class Y9WordApiImpl implements Y9WordApi {
             Y9WordInfo wordInfo = new Y9WordInfo();
             populateWordInfoBasics(wordInfo, Y9LoginUserHolder.getUserInfo(), processSerialNumber, itemId, itembox,
                 taskId);
-
             List<Y9Word> wordList = getExistingWordList(processSerialNumber, bindValue);
             if (!wordList.isEmpty()) {
                 populateWordInfoFromExistingWord(wordInfo, wordList.get(0));
             } else {
                 populateWordInfoFromTemplate(wordInfo, itemId, taskId, bindValue);
             }
-
             return Y9Result.success(wordInfo);
         } catch (Exception e) {
             LOGGER.error("获取正文文件信息失败", e);
