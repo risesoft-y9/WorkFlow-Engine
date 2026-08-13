@@ -173,7 +173,7 @@ public class FlowableLogAdvice implements MethodInterceptor {
         if (flowableLog != null && flowableLog.enable()) {
             RequestInfo requestInfo = collectRequestInfo();
             long endTime = System.nanoTime();
-            long elapsedTime = endTime - startTime;
+            long elapsedTime = (endTime - startTime) / 1_000_000;
             try {
                 FlowableAccessLog flowableAccessLog =
                     buildFlowableAccessLog(method, flowableLog, invocation, elapsedTime, requestInfo, exceptionInfo);
