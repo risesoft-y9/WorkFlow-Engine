@@ -1,7 +1,10 @@
 <script lang="ts" setup>
     import { inject } from 'vue';
-    import RightTopUser from '../components/RightTopUser.vue';
     import { useSettingStore } from '@/store/modules/settingStore';
+
+    import RightTopUser from '../components/RightTopUser.vue';
+    import UseDark from '../components/UseDark/index.vue';
+
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo');
     const props = defineProps({
@@ -21,14 +24,6 @@
     const toggleCollapsedFunc = () => {
         toggleCollapsed();
     };
-
-    // 白天黑夜功能
-    const isDark = useDark({
-        selector: 'html',
-        valueDark: 'theme-dark',
-        valueLight: ''
-    });
-    const toggleDark = useToggle(isDark);
 
     // 锁屏
     const lockScreenFunc = () => {
@@ -77,11 +72,8 @@
             <!-- <div class="item notify">
                 <el-badge :value="3" class="badge"></el-badge>
                 <i class="ri-notification-line"></i>
-            </div>
-            <div class="item isDark">
-                <i class="ri-moon-line" @click="toggleDark" v-if="!isDark"></i>
-                <i class="ri-sun-line" @click="toggleDark" v-else></i>
             </div> -->
+            <!-- <UseDark /> -->
             <div :class="{ item: true, user: true, 'user-mobile': settingStore.getWindowWidth > 425 }">
                 <RightTopUser />
             </div>
