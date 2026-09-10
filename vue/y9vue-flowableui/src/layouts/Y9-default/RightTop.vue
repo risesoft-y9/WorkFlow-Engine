@@ -1,11 +1,14 @@
 <script lang="ts" setup>
     import { inject } from 'vue';
-    import PersonInfo from '@/views/personalCenter/personInfo.vue';
-    import RightTopPosition from '../components/RightTopPosition.vue';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import y9_storage from '@/utils/storage';
     import { $y9_SSO } from '@/main';
+
+    import PersonInfo from '@/views/personalCenter/personInfo.vue';
+    import RightTopPosition from '../components/RightTopPosition.vue';
+    import UseDark from '../components/UseDark/index.vue';
+
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo');
     // 个人信息 —— 头像
@@ -30,14 +33,6 @@
             menuCollapsed: !settingStore.getMenuCollapsed
         });
     };
-
-    // 白天黑夜功能
-    const isDark = useDark({
-        selector: 'html',
-        valueDark: 'theme-dark',
-        valueLight: ''
-    });
-    const toggleDark = useToggle(isDark);
 
     // 锁屏
     const lockScreenFunc = () => {
@@ -105,16 +100,9 @@
                 <el-badge v-if="flowableStore.allCount > 0" :value="flowableStore.allCount" class="badge"></el-badge>
                 <i class="ri-notification-line"></i>
             </div> -->
-            <!-- <div class="item isDark">
-                <i class="ri-moon-line" @click="toggleDark" v-if="!isDark"></i>
-                <i class="ri-sun-line" @click="toggleDark" v-else></i>
-            </div> -->
-            <!-- <div class="item user">
-                <RightTopUser />
-            </div> -->
+            <!-- <UseDark /> -->
             <RightTopPosition />
             <div class="item user">
-                <!-- 头像测试链接地址：https://www.youshengyun.com/fileManager/files/e6b5d41fd2bd4cdda538139f9b7848c7.jpg -->
                 <el-avatar :src="userInfo.avator ? userInfo.avator : ''"> {{ userInfo.loginName }}</el-avatar>
             </div>
             <!-- <div class="item" @click="backHomeMethod">
