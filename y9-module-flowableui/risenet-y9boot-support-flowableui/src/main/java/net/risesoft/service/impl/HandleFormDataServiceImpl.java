@@ -31,12 +31,16 @@ public class HandleFormDataServiceImpl implements HandleFormDataService {
         if (formDataResult.isSuccess()) {
             Map<String, Map<String, Object>> formDataResultData = formDataResult.getData();
             items.forEach(map -> {
-                Map<String, Object> formDataMap = formDataResultData.get(map.get("processSerialNumber").toString());
-                if (null != formDataMap) {
-                    formatFormData(formDataMap);
-                    map.putAll(formDataMap);
+                if (map.get("processSerialNumber") == null) {
+                    map.put("processSerialNumber", "编号异常");
                 } else {
-                    LOGGER.error("流程序列号{}对应的表单数据为null！", map.get("processSerialNumber"));
+                    Map<String, Object> formDataMap = formDataResultData.get(map.get("processSerialNumber").toString());
+                    if (null != formDataMap) {
+                        formatFormData(formDataMap);
+                        map.putAll(formDataMap);
+                    } else {
+                        LOGGER.error("流程序列号{}对应的表单数据为null！", map.get("processSerialNumber"));
+                    }
                 }
             });
         } else {

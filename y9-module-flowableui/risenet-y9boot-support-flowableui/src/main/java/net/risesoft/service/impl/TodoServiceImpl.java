@@ -77,13 +77,7 @@ public class TodoServiceImpl implements TodoService {
             // 新待办标识
             int isNewTodo = StringUtils.isBlank(task.getFormKey()) ? 1 : Integer.parseInt(task.getFormKey());
 
-            // 流程参数信息
-            ProcessParamModel processParam = processParamApi.findByProcessInstanceId(processInstanceId).getData();
-            String processSerialNumber = processParam.getProcessSerialNumber();
-            processSerialNumbers.add(processSerialNumber);
-
             // 设置基本字段
-            mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
             mapTemp.put("processInstanceId", processInstanceId);
             mapTemp.put("processDefinitionId", task.getProcessDefinitionId());
             mapTemp.put("itemId", itemId);
@@ -95,6 +89,12 @@ public class TodoServiceImpl implements TodoService {
             mapTemp.put("taskAssignee", taskAssignee);
             mapTemp.put(SysVariables.TASK_SENDER, taskSender);
             mapTemp.put(SysVariables.IS_NEW_TODO, isNewTodo);
+
+            // 流程参数信息
+            ProcessParamModel processParam = processParamApi.findByProcessInstanceId(processInstanceId).getData();
+            String processSerialNumber = processParam.getProcessSerialNumber();
+            processSerialNumbers.add(processSerialNumber);
+            mapTemp.put(SysVariables.PROCESS_SERIAL_NUMBER, processSerialNumber);
 
             // 处理并行任务
             handleParallelTaskInfo(mapTemp, task, processParam);
@@ -207,7 +207,7 @@ public class TodoServiceImpl implements TodoService {
             handleFormDataService.execute(itemId, items, processSerialNumbers);
             return Y9Page.success(page, taskPage.getTotalPages(), taskPage.getTotal(), items, "获取列表成功");
         } catch (Exception e) {
-            LOGGER.error("获取待办异常", e);
+            LOGGER.error("获取待办异常{}", e);
         }
         return Y9Page.failure(0, 0, 0, List.of(), "获取列表失败", 500);
     }
