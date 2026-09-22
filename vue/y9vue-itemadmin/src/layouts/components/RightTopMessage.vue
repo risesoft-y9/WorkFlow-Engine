@@ -1,7 +1,7 @@
 <!--
  * @Author: your name
  * @Date: 2022-01-13 17:30:06
- * @LastEditTime: 2025-12-04 14:15:35
+ * @LastEditTime: 2023-12-26 11:22:05
  * @LastEditors: mengjuhua
  * @Description: 消息提醒 
 -->
@@ -32,7 +32,7 @@
     });
 </script>
 <style lang="scss" scoped>
-    //@import  '../../assets/css/global.scss';
+    // @import '../../assets/css/global.scss';
     .indexlayout-top-message {
         height: $headerHeight;
         line-height: $headerHeight;

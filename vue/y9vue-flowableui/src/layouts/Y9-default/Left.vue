@@ -1,91 +1,76 @@
 <template>
-    <div
-        id="left"
-        :class="{
-            narrow: menuCollapsed,
-            'sidebar-separate': layoutSubName === 'sidebar-separate' ? true : false,
-            'add-backgroundImage': settingStore.getMenuBg ? true : false
-        }"
-        :style="{ 'background-image': settingStore.getMenuBg ? 'url(' + settingStore.getMenuBg + ')' : '' }"
-    >
+    <div id="left" :class="leftClasses" :style="leftStyle">
         <div class="left-logo">
             <div class="logo-url">
-                <img v-if="menuCollapsed" alt="y9-logo" src="@/assets/images/yun.png" />
-                <span v-if="!menuCollapsed" class="logo-title">{{
+                <img v-if="props.menuCollapsed" alt="y9-logo" src="@/assets/images/yun.png" />
+                <span v-if="!props.menuCollapsed" class="logo-title">{{
                     currentrRute.path.indexOf('/workIndex') > -1 ? $t('工作台') : $t(flowableStore.itemName)
                 }}</span>
             </div>
         </div>
         <div class="left-menu">
-            <!-- <div style="height:56px;" id="indexlayout-left" :class="{ narrow: menuCollapsed }">
-              <li style="line-height:56px;list-style:none;font-size: 16px;letter-spacing: 2px;margin-left:10px;">
-                <div @click="reload" style="margin-left:0px; text-decoration: none; color: #555555;">
-                  <img title="工作台" v-if="currentrRute.path.indexOf('/workIndex') > -1" src="@/assets/gongzuotai.png" style="height:35px;vertical-align: middle;"/> -->
-            <!-- <i class="ri-computer-line" title="工作台" v-if="currentrRute.path.indexOf('/workIndex') > -1" style="font-size: 24px;vertical-align: middle;"></i>
-            <img :title="flowableStore.itemInfo.name" v-else-if="flowableStore.itemInfo.iconData == '' || flowableStore.itemInfo.iconData == null" src="@/assets/images/gongdan.png" style="height:35px;vertical-align: middle;"/>
-            <img :title="flowableStore.itemInfo.name" v-else :src="flowableStore.itemInfo.iconData" style="height:35px;vertical-align: middle;"/>
-            <span v-if="!menuCollapsed" style="margin-left: 10px;vertical-align: middle;font-size: 20px;">{{currentrRute.path.indexOf('/workIndex') > -1 ? '工作台' : flowableStore.itemName}}</span>
-          </div>
-        </li>
-      </div> -->
+            <!-- 使用 v-memo 优化菜单渲染性能，仅当依赖项变化时重新渲染 -->
             <sider-menu
-                :belongTopMenu="belongTopMenu"
-                :defaultActive="defaultActive"
-                :defaultOpened="defaultOpened"
-                :menuCollapsed="menuCollapsed"
-                :menuData="menuData"
+                v-memo="[props.menuCollapsed, props.belongTopMenu, props.defaultActive, props.menuData]"
+                :belong-top-menu="props.belongTopMenu"
+                :default-active="props.defaultActive"
+                :menu-collapsed="props.menuCollapsed"
+                :menu-data="props.menuData"
             ></sider-menu>
         </div>
     </div>
 </template>
+
 <script lang="ts" setup>
-    import { inject } from 'vue';
+    import { computed, inject } from 'vue';
     import SiderMenu from '@/layouts/components/SiderMenu.vue';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import { useRoute } from 'vue-router';
-    // 注入 字体对象
-    const fontSizeObj: any = inject('sizeObjInfo');
-    const currentrRute = useRoute();
-    const flowableStore = useFlowableStore();
-    const settingStore = useSettingStore();
-    const props = defineProps({
-        menuCollapsed: {
-            type: Boolean as computed<Boolean>,
-            required: true
-        },
-        belongTopMenu: {
-            type: String,
-            default: ''
-        },
-        defaultActive: {
-            type: String,
-            default: ''
-        },
-        defaultOpened: {
-            type: String,
-            default: ''
-        },
-        menuData: {
-            type: Array,
-            default: () => {
-                return [];
-            }
-        },
-        layoutSubName: {
-            type: String as Ref<string>,
-            required: true
-        }
+    import type { RoutesDataItem } from '@/utils/routes';
+
+    // 严格定义 Props 类型接口，完全修复原代码中错误的类型断言
+    interface Props {
+        menuCollapsed: boolean;
+        belongTopMenu?: string;
+        defaultActive?: string;
+        menuData?: RoutesDataItem[];
+        layoutSubName: string;
+    }
+
+    // 使用 withDefaults 给可选属性设置默认值，避免运行时空值错误
+    const props = withDefaults(defineProps<Props>(), {
+        belongTopMenu: '',
+        defaultActive: '',
+        menuData: () => []
     });
 
-    onMounted(() => {});
+    const settingStore = useSettingStore();
+    const currentrRute = useRoute();
+    const flowableStore = useFlowableStore();
+
+    // 注入字体变量
+    const fontSizeObj: any = inject('sizeObjInfo');
+
+    // 计算属性集中管理动态类名，大幅简化模板逻辑
+    const leftClasses = computed(() => ({
+        narrow: props.menuCollapsed,
+        'sidebar-separate': props.layoutSubName === 'sidebar-separate',
+        'add-backgroundImage': !!settingStore.getMenuBg
+    }));
+
+    // 计算属性集中管理动态样式，背景图逻辑完全抽离，更易维护
+    const leftStyle = computed(() => ({
+        'background-image': settingStore.getMenuBg ? `url(${settingStore.getMenuBg})` : ''
+    }));
 </script>
 
 <style lang="scss" scoped>
     @import '@/theme/global-vars.scss';
 
+    // 动态绑定字体行高，完全兼容全局字体大小切换
     #left .el-menu-item {
-        height: 38px !important;
+        height: v-bind('fontSizeObj.lineHeight') !important;
     }
 
     $sidebar-separate-margin-top: calc(#{$sidebar-separate-margin-left} + #{$headerHeight});
@@ -97,9 +82,7 @@
         flex-direction: column;
         width: $leftSideBarWidth;
         background-color: var(--el-bg-color);
-        //background-color: #161b2d;
-        //border-right: 1px solid #f8f8f8;
-        transition-duration: 0.25s;
+        transition: width 0.25s ease, background-image 0.25s ease;
 
         &.sidebar-separate {
             position: absolute;
@@ -118,6 +101,7 @@
             line-height: $headerHeight;
             text-align: center;
             vertical-align: middle;
+            flex-shrink: 0; // 防止logo被压缩
 
             .logo-url {
                 display: inline-block;
@@ -129,13 +113,13 @@
                     display: inline-block;
                     font-size: v-bind('fontSizeObj.extraLargeFont');
                     font-weight: 500;
-
                     color: var(--el-color-primary);
+                    transition: color 0.3s ease;
                 }
             }
 
             img {
-                width: $logoWidth;
+                width: v-bind('fontSizeObj.logoWidth');
                 vertical-align: middle;
             }
         }
@@ -143,16 +127,22 @@
         .left-menu {
             flex: 1;
             overflow: hidden auto;
+            // 隐藏滚动条但保留功能
+            scrollbar-width: none;
+            &::-webkit-scrollbar {
+                width: 0;
+                height: 0;
+                background-color: transparent;
+            }
 
             & > ul {
                 border-right: none;
                 background-color: var(--el-bg-color);
-                //background-color: #161b2d;
+
                 :deep(a) {
                     text-decoration: none;
 
                     & > li {
-                        //  font-size: 15px;
                         i {
                             margin-right: 15px;
                             font-size: v-bind('fontSizeObj.largeFontSize');
@@ -164,71 +154,60 @@
                         }
                     }
 
-                    & li:hover {
+                    &:hover > li {
                         background-color: var(--el-color-primary-light-9);
                         color: var(--el-color-primary-light-3);
                     }
                 }
-            }
-
-            .left-scrollbar {
-                width: 100%;
-                height: 100%;
             }
         }
 
         &.narrow {
             width: $menu-collapsed-width;
         }
-
-        @include scrollbar;
     }
 
-    // 设置菜单背景时 css修改
+    // 背景图模式下的样式覆盖
     #left.add-backgroundImage {
-        & > .left-logo {
-            & > .logo-url .logo-title {
-                color: var(--el-color-white);
-            }
+        .left-logo .logo-url .logo-title {
+            color: var(--el-color-white);
         }
 
-        & > .left-menu {
-            & > ul {
-                background-color: transparent;
-                background: transparent;
+        .left-menu > ul {
+            background-color: transparent;
+            background: transparent;
 
-                :deep(a) {
-                    text-decoration: none;
+            :deep(a) {
+                text-decoration: none;
 
-                    & > li {
-                        color: var(--el-color-white);
+                & > li {
+                    color: var(--el-color-white);
 
-                        &.is-active {
-                            color: var(--el-color-primary);
-                            background-color: var(--el-color-primary-light-9);
-                        }
-                    }
-
-                    :hover {
+                    &.is-active {
                         color: var(--el-color-primary);
                         background-color: var(--el-color-primary-light-9);
                     }
                 }
 
-                :deep(li) {
-                    .el-sub-menu__title {
-                        color: var(--el-color-white);
-                    }
+                &:hover > li {
+                    color: var(--el-color-primary);
+                    background-color: var(--el-color-primary-light-9);
+                }
+            }
 
-                    div:hover {
-                        color: var(--el-color-primary);
-                        background-color: var(--el-color-primary-light-9);
-                    }
+            :deep(li) {
+                .el-sub-menu__title {
+                    color: var(--el-color-white);
+                }
 
-                    ul > a:hover {
-                        color: var(--el-color-primary);
-                        background-color: var(--el-color-primary-light-9);
-                    }
+                div:hover {
+                    color: var(--el-color-primary);
+                    background-color: var(--el-color-primary-light-9);
+                }
+
+                ul > a:hover {
+                    color: var(--el-color-primary);
+                    background-color: var(--el-color-primary-light-9);
                 }
             }
         }

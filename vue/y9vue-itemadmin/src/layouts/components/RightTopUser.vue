@@ -45,7 +45,7 @@
                         style="text-align: center"
                         @click="changeDept(item.departmentId)"
                     >{{ item.departmentName }}</div>
-                </el-dropdown-item> 
+                </el-dropdown-item>
                 <el-divider style="padding-bottom: 5px; margin: 0px"></el-divider>-->
                 <el-dropdown-item command="logout">
                     <div class="el-dropdown-item"><i class="ri-logout-box-r-line"></i>{{ $t('退出') }}</div>
@@ -55,73 +55,51 @@
     </el-dropdown>
     <!-- <PersonInfo ref="personInfo"/> -->
 </template>
-<script lang="ts">
-    import { defineComponent } from 'vue';
+<script lang="ts" setup>
     import { useRouter } from 'vue-router';
     import { useSettingStore } from '@/store/modules/settingStore';
     import y9_storage from '@/utils/storage';
     import IconSvg from './IconSvg';
     import { $y9_SSO } from '@/main';
+    import { ElMessage } from 'element-plus';
 
     // import PersonInfo from '@/views/personal/personInfo.vue';
-    interface RightTopUserSetupData {
-        userInfo: Object;
-        initInfo: Object;
-        departmentMapList: Object;
-        onMenuClick: (event: any) => Promise<void>;
-    }
+    defineOptions({ name: 'RightTopUser' });
 
-    export default defineComponent({
-        name: 'RightTopUser',
-        components: {
-            IconSvg
-            // PersonInfo
-        },
-        setup(): RightTopUserSetupData {
-            const settingStore = useSettingStore();
+    const settingStore = useSettingStore();
 
-            const router = useRouter();
-            // const personInfo = ref();
-            // 获取当前登录用户信息
-            const userInfo = y9_storage.getObjectItem('ssoUserInfo');
-            const initInfo = y9_storage.getObjectItem('initInfo');
-            const departmentMapList = y9_storage.getObjectItem('departmentMapList');
-            // 点击菜单
-            const onMenuClick = async (command: string) => {
-                switch (command) {
-                    case 'personalCenter':
-                        // personInfo.value.show(userInfo.personId);
-                        router.push({ name: 'personInfo' });
-                        break;
-                    case 'signIn':
-                        break;
-                    case 'signOut':
-                        break;
-                    case 'changeDept':
-                        break;
-                    case 'logout':
-                        try {
-                            // const loginOut = await this.$store.dispatch("user/logout");
-                            $y9_SSO.ssoLogout({});
-                        } catch (error) {
-                            this.$message.error(error.message || 'Has Error');
-                        }
-                        break;
-
-                    default:
-                        break;
+    const router = useRouter();
+    // const personInfo = ref();
+    // 获取当前登录用户信息
+    const userInfo = y9_storage.getObjectItem('ssoUserInfo');
+    const initInfo = y9_storage.getObjectItem('initInfo');
+    const departmentMapList = y9_storage.getObjectItem('departmentMapList');
+    // 点击菜单
+    const onMenuClick = async (command: string) => {
+        switch (command) {
+            case 'personalCenter':
+                // personInfo.value.show(userInfo.personId);
+                router.push({ name: 'personInfo' });
+                break;
+            case 'signIn':
+                break;
+            case 'signOut':
+                break;
+            case 'changeDept':
+                break;
+            case 'logout':
+                try {
+                    // const loginOut = await this.$store.dispatch("user/logout");
+                    $y9_SSO.ssoLogout({});
+                } catch (error) {
+                    ElMessage.error(error.message || 'Has Error');
                 }
-            };
-            return {
-                settingStore,
-                userInfo,
-                initInfo,
-                departmentMapList,
-                onMenuClick
-                // personInfo
-            };
+                break;
+
+            default:
+                break;
         }
-    });
+    };
 </script>
 <style lang="scss" scoped>
     @import '@/theme/global-vars.scss';

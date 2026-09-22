@@ -60,26 +60,17 @@
     <PersonInfo ref="personInfo" />
 </template>
 <script lang="ts" setup>
-    import { defineComponent, inject, ref } from 'vue';
-    import { useRoute, useRouter } from 'vue-router';
+    import { inject, ref } from 'vue';
+    import { useRoute } from 'vue-router';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import y9_storage from '@/utils/storage';
     import PersonInfo from '@/views/personalCenter/personInfo.vue';
 
-    interface RightTopUserSetupData {
-        userInfo: Object;
-        onMenuClick: (event: any) => Promise<void>;
-        settingStore;
-        flowableStore;
-        setPosition;
-        personInfo;
-        fontSizeObj;
-    }
+    defineOptions({ name: 'RightTopUser' });
 
     const settingStore = useSettingStore();
     const flowableStore = useFlowableStore();
-    const router = useRouter();
     const currentrRute = useRoute();
     const personInfo = ref();
     // 注入 字体对象

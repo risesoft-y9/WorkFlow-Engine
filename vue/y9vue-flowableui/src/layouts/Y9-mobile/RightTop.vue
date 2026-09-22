@@ -2,7 +2,7 @@
     import { inject } from 'vue';
     import { useSettingStore } from '@/store/modules/settingStore';
 
-    import RightTopUser from '../components/RightTopUser.vue';
+    import RightTopPosition from '../components/RightTopPosition.vue';
     import UseDark from '../components/UseDark/index.vue';
 
     // 注入 字体对象
@@ -72,11 +72,9 @@
             <!-- <div class="item notify">
                 <el-badge :value="3" class="badge"></el-badge>
                 <i class="ri-notification-line"></i>
-            </div> -->
+            </div>  -->
             <!-- <UseDark /> -->
-            <div :class="{ item: true, user: true, 'user-mobile': settingStore.getWindowWidth > 425 }">
-                <RightTopUser />
-            </div>
+            <RightTopPosition style="z-index: 9999" />
         </div>
     </div>
 </template>

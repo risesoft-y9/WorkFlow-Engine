@@ -1,16 +1,18 @@
 <script lang="ts" setup>
-    import { inject } from 'vue';
+    import { inject, ref } from 'vue';
+    import { useRoute } from 'vue-router';
     import { useSettingStore } from '@/store/modules/settingStore';
     import y9_storage from '@/utils/storage';
     import { $y9_SSO } from '@/main';
     import { useFlowableStore } from '@/store/modules/flowableStore';
 
+    import PersonInfo from '@/views/personalCenter/personInfo.vue';
     import RightTopPosition from '../components/RightTopPosition.vue';
-    import UseDark from '../components/UseDark/index.vue';
 
     const flowableStore = useFlowableStore();
-    const currentrRute = useRoute();
     const settingStore = useSettingStore();
+    const currentrRute = useRoute();
+    const personInfo = ref();
     // 注入 字体对象
     const fontSizeObj: any = inject('sizeObjInfo');
     // 全屏功能
@@ -85,7 +87,7 @@
             </div>
             <!-- <UseDark /> -->
             <RightTopPosition style="z-index: 9999" />
-            <div class="item user"> 
+            <div class="item user">
                 <el-avatar :src="userInfo.avator ? userInfo.avator : ''"> {{ userInfo.loginName }}</el-avatar>
             </div>
             <!-- <div class="item" @click="backHomeMethod">
@@ -98,6 +100,7 @@
             </div>
         </div>
     </div>
+    <PersonInfo ref="personInfo" />
 </template>
 
 <style lang="scss" scoped>

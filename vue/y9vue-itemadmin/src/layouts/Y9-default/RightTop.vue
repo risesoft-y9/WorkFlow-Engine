@@ -4,6 +4,7 @@
 
     import RightTopUser from '../components/RightTopUser.vue';
     import UseDark from '../components/UseDark/index.vue';
+
     // 个人信息 —— 头像
     const userInfo = y9_storage.getObjectItem('ssoUserInfo');
 

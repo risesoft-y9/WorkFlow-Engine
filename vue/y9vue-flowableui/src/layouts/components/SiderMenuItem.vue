@@ -163,32 +163,29 @@
     </template>
 </template>
 <script lang="ts" setup>
-    import { computed, ComputedRef, defineComponent, inject, nextTick, PropType, ref, Ref, toRefs } from 'vue';
+    import { computed, inject, nextTick, toRefs } from 'vue';
     import { getRouteBelongTopMenu, hasChildRoute, RoutesDataItem } from '@/utils/routes';
     import { useSettingStore } from '@/store/modules/settingStore';
     import { useFlowableStore } from '@/store/modules/flowableStore';
     import ALink from '@/layouts/components/ALink/index.vue';
     import Icon from './Icon.vue';
     import settings from '@/settings';
-    import { useRoute, useRouter } from 'vue-router';
+    import { useRoute } from 'vue-router';
 
-    const props = defineProps({
-        routeItem: {
-            type: Object as PropType<RoutesDataItem>,
-            required: true
-        },
-        belongTopMenu: {
-            type: String,
-            default: ''
-        }
+    defineOptions({ name: 'SiderMenuItem' });
+
+    interface Props {
+        routeItem: RoutesDataItem;
+        belongTopMenu?: string;
+    }
+
+    const props = withDefaults(defineProps<Props>(), {
+        belongTopMenu: ''
     });
 
-    // 注入 字体对象
-    const fontSizeObj: any = inject('sizeObjInfo');
-
-    const { routeItem } = toRefs(props);
-    const topMenuPath = computed<string>(() => getRouteBelongTopMenu(routeItem.value as RoutesDataItem));
-    const router = useRouter();
+    // 将 routeItem prop 别名为 item，保留模板中对 item 的引用
+    const { routeItem: item } = toRefs(props);
+    const topMenuPath = computed<string>(() => getRouteBelongTopMenu(item.value as RoutesDataItem));
     const currentrRute = useRoute();
     const flowableStore = useFlowableStore();
     const settingStore = useSettingStore();
@@ -202,13 +199,13 @@
         return new URL(`../../assets/${name}`, import.meta.url).href;
     };
     const setAppType = (app) => {
-        if (routeItem.value.path.indexOf('/workIndex') > -1) {
+        if (item.value.path.indexOf('/workIndex') > -1) {
             flowableStore.$patch({
                 appType: app.name,
                 itemName: app.parentTitle,
                 itemId: app.itemId != undefined ? app.itemId : flowableStore.itemId
             });
-            if (currentrRute.path == routeItem.value.path && app.itemId != undefined) {
+            if (currentrRute.path == item.value.path && app.itemId != undefined) {
                 flowableStore.$patch({
                     isReload: false
                 });
@@ -226,9 +223,8 @@
     const openEmail = () => {
         window.location.href = settings.emailURL;
     };
-
-    let item: any = ref({});
-    item.value = routeItem.value;
+    // 注入 字体对象
+    const fontSizeObj: any = inject('sizeObjInfo');
 </script>
 
 <style lang="scss" scoped>

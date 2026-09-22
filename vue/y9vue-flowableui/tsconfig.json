@@ -2,12 +2,11 @@
     "compilerOptions": {
         "target": "esnext",
         "module": "esnext",
-        "moduleResolution": "node",
+        "moduleResolution": "bundler",
         "skipLibCheck": true,
         "strict": true,
         "allowSyntheticDefaultImports": true,
-        "jsx": "preserve",
-        "baseUrl": ".",
+        "jsx": "preserve", 
         "importHelpers": true,
         "isolatedModules": true,
         "sourceMap": true,
@@ -25,9 +24,7 @@
             "element-plus/global"
         ],
         "paths": {
-            "@/*": [
-                "src/*"
-            ]
+            "@/*": ["./src/*"]
         }
     },
     "include": [

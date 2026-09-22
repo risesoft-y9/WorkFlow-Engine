@@ -11,14 +11,6 @@
     const { isFullscreen, toggle } = useFullscreen();
     const toggleFullScreen = toggle;
 
-    // 白天黑夜功能
-    const isDark = useDark({
-        selector: 'html',
-        valueDark: 'theme-dark',
-        valueLight: ''
-    });
-    const toggleDark = useToggle(isDark);
-
     // 锁屏
     const lockScreenFunc = () => {
         settingStore.$patch({
@@ -45,8 +37,8 @@
             <span>{{ $t('工作流引擎') }}</span>
         </div>
         <!-- <div class="center">
-
-    </div> -->
+            
+        </div> -->
         <div class="right">
             <div class="item full-screen" @click="toggleFullScreen">
                 <i class="ri-fullscreen-line"></i>
@@ -77,7 +69,6 @@
                 <RightTopUser style="z-index: 9999" />
             </div>
             <div class="item user">
-                <!-- <img src="@/assets/images/app-icon.png"> -->
                 <el-avatar :src="userInfo.avator ? userInfo.avator : ''"> {{ userInfo.loginName }}</el-avatar>
             </div>
             <!-- <div class="item" @click="logout">
