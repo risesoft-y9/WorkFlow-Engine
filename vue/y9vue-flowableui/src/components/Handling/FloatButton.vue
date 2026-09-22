@@ -43,7 +43,7 @@
                     <!-- 插槽或函数渲染 -->
                     <template #default>
                         <slot v-if="item.slot" :name="item.slot"></slot>
-                        <Render v-if="item.render" :render="item.render"></Render>
+                        <Render v-if="item.render" :renderFn="item.render"></Render>
                     </template>
                 </el-popover>
                 <div v-else @click="item?.onClick">
@@ -87,48 +87,6 @@
     const btnList = ref<Array<listTypeof>>([]);
 
     const data = reactive({
-        // 默认的数组值 '返回', '加减签', '收回', '抄送', '打印
-        // btnList: [
-        // {
-        //     name: '返回', // 按钮名称,
-        //     render: () => {
-        //         return h('div',{}, [
-        //             h('span', {
-        //                 onclick: () => {
-        //                     console.log(333);
-
-        //                 },
-        //             }, '增签'),
-        //             h('span', {
-        //                 onclick: () => {
-        //                     console.log(222);
-
-        //                 }
-        //             }, '减签是成绩单丝偶发VN手动蝶阀'),
-        //         ])
-        //     }
-
-        // },
-        // {
-        //     name: '加减签', // 按钮名称,
-        //     // slot: 'slotName'
-        // },
-        // {
-        //     name: '收回', // 按钮名称,
-
-        // },
-        // {
-        //     name: '抄送', // 按钮名称,
-        //     onClick: () => {
-        //          console.log('抄送');
-
-        //     }, // 按钮的点击
-        // },
-        // {
-        //     name: '打印', // 按钮名称,
-        //     icon: 'ri-star-line', // 图标
-        // }
-        // ],
         // 弹框出现
         popoverShow: null
     });
