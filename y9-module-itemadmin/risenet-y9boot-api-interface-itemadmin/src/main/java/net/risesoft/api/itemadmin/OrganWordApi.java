@@ -33,10 +33,9 @@ public interface OrganWordApi {
      * @since 9.6.6
      */
     @GetMapping("/checkNumberStr")
-    Y9Result<Integer> checkNumberStr(@RequestParam("characterValue") String characterValue,
-        @RequestParam("custom") String custom, @RequestParam("year") Integer year,
-        @RequestParam("numberTemp") Integer numberTemp, @RequestParam("itemId") String itemId,
-        @RequestParam("common") Integer common, @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Integer> checkNumberStr(@RequestParam String characterValue, @RequestParam String custom,
+        @RequestParam Integer year, @RequestParam Integer numberTemp, @RequestParam String itemId,
+        @RequestParam Integer common, @RequestParam String processSerialNumber);
 
     /**
      * 判断机构代字custom在某个流程实例中是否已经编号,没有编号的话就查找有权限的编号的机关代字
@@ -49,10 +48,8 @@ public interface OrganWordApi {
      * @since 9.6.6
      */
     @GetMapping("/exist")
-    Y9Result<OrganWordModel> exist(@RequestParam("custom") String custom,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
-        @RequestParam("itembox") String itembox);
+    Y9Result<OrganWordModel> exist(@RequestParam String custom, @RequestParam String processSerialNumber,
+        @RequestParam(required = false) String processInstanceId, @RequestParam String itembox);
 
     /**
      *
@@ -66,9 +63,8 @@ public interface OrganWordApi {
      * @since 9.6.6
      */
     @GetMapping("/findByCustom")
-    Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam("custom") String custom,
-        @RequestParam("itemId") String itemId, @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam(value = "taskDefKey", required = false) String taskDefKey);
+    Y9Result<List<OrganWordPropertyModel>> findByCustom(@RequestParam String custom, @RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey);
 
     /**
      * 查找有权限的机构代字及编号
@@ -79,8 +75,8 @@ public interface OrganWordApi {
      * @return {@code Y9Result<List<OrganWordPropertyModel>>} 通用请求返回对象 -data是数据字典列表
      */
     @GetMapping("/findByCustomNumber")
-    Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam("itemId") String itemId,
-        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("taskDefKey") String taskDefKey);
+    Y9Result<List<OrganWordPropertyModel>> findByCustomNumber(@RequestParam String itemId,
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey);
 
     /**
      * 获取编号
@@ -94,9 +90,8 @@ public interface OrganWordApi {
      * @since 9.6.6
      */
     @GetMapping("/getNumber")
-    Y9Result<Integer> getNumber(@RequestParam("custom") String custom,
-        @RequestParam("characterValue") String characterValue, @RequestParam("year") Integer year,
-        @RequestParam("common") Integer common, @RequestParam("itemId") String itemId);
+    Y9Result<Integer> getNumber(@RequestParam String custom, @RequestParam String characterValue,
+        @RequestParam Integer year, @RequestParam Integer common, @RequestParam String itemId);
 
     /**
      * 获取编号的数字
@@ -111,9 +106,8 @@ public interface OrganWordApi {
      *
      */
     @GetMapping("/getNumberOnly")
-    Y9Result<Integer> getNumberOnly(@RequestParam("custom") String custom,
-        @RequestParam("characterValue") String characterValue, @RequestParam("year") Integer year,
-        @RequestParam("common") Integer common, @RequestParam("itemId") String itemId);
+    Y9Result<Integer> getNumberOnly(@RequestParam String custom, @RequestParam String characterValue,
+        @RequestParam Integer year, @RequestParam Integer common, @RequestParam String itemId);
 
     /**
      * 获取临时编号
@@ -125,8 +119,8 @@ public interface OrganWordApi {
      * @since 9.6.6
      */
     @GetMapping("/getTempNumber")
-    Y9Result<String> getTempNumber(@RequestParam("custom") String custom,
-        @RequestParam("characterValue") String characterValue, @RequestParam("itemId") String itemId);
+    Y9Result<String> getTempNumber(@RequestParam String custom, @RequestParam String characterValue,
+        @RequestParam String itemId);
 
     /**
      * 保存编号字符串
@@ -139,8 +133,7 @@ public interface OrganWordApi {
      * @since 9.6.6
      */
     @GetMapping("/saveNumberString")
-    Y9Result<Map<String, Object>> saveNumberString(@RequestParam("custom") String custom,
-        @RequestParam("numberString") String numberString, @RequestParam("itemId") String itemId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Map<String, Object>> saveNumberString(@RequestParam String custom, @RequestParam String numberString,
+        @RequestParam String itemId, @RequestParam String processSerialNumber);
 
 }

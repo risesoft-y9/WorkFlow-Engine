@@ -26,7 +26,7 @@ public interface ProcessParamApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteByProcessInstanceId")
-    Y9Result<Object> deleteByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> deleteByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 根据流程实例查找流程数据
@@ -36,7 +36,7 @@ public interface ProcessParamApi {
      * @since 9.6.6
      */
     @GetMapping("/findByProcessInstanceId")
-    Y9Result<ProcessParamModel> findByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<ProcessParamModel> findByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 根据流程编号查找流程数据
@@ -46,8 +46,7 @@ public interface ProcessParamApi {
      * @since 9.6.6
      */
     @GetMapping("/findByProcessSerialNumber")
-    Y9Result<ProcessParamModel>
-        findByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<ProcessParamModel> findByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 初始化callActivity流程数据
@@ -60,10 +59,9 @@ public interface ProcessParamApi {
      * @return
      */
     @PostMapping(value = "/initCallActivity", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> initCallActivity(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("subProcessSerialNumber") String subProcessSerialNumber,
-        @RequestParam("subProcessInstanceId") String subProcessInstanceId, @RequestParam("itemId") String itemId,
-        @RequestParam("itemName") String itemName);
+    Y9Result<Object> initCallActivity(@RequestParam String processSerialNumber,
+        @RequestParam String subProcessSerialNumber, @RequestParam String subProcessInstanceId,
+        @RequestParam String itemId, @RequestParam String itemName);
 
     /**
      * 保存或更新流程数据
@@ -84,6 +82,5 @@ public interface ProcessParamApi {
      * @since 9.6.6
      */
     @PostMapping("/updateCustomItem")
-    Y9Result<Object> updateCustomItem(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("isCustomItem") boolean isCustomItem);
+    Y9Result<Object> updateCustomItem(@RequestParam String processSerialNumber, @RequestParam boolean isCustomItem);
 }

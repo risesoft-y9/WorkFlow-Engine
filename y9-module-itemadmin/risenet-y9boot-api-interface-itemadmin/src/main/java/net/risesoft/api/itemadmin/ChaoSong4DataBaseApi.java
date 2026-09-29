@@ -29,8 +29,7 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @PostMapping("/changeChaoSongState")
-    Y9Result<Object> changeChaoSongState(@RequestParam("id") String id,
-        @RequestParam(value = "type", required = false) String type);
+    Y9Result<Object> changeChaoSongState(@RequestParam String id, @RequestParam(required = false) String type);
 
     /**
      * 抄送件状态设为已阅
@@ -50,7 +49,7 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @PostMapping("/changeStatus2read")
-    Y9Result<Object> changeStatus2read(@RequestParam("chaoSongId") String chaoSongId);
+    Y9Result<Object> changeStatus2read(@RequestParam String chaoSongId);
 
     /**
      * 根据流程实例id统计除当前人外是否有抄送件
@@ -60,7 +59,7 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/countByProcessInstanceId")
-    Y9Result<Integer> countByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Integer> countByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 根据流程实例id统计当前人是否有抄送件
@@ -70,7 +69,7 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/countByUserIdAndProcessInstanceId")
-    Y9Result<Integer> countByUserIdAndProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Integer> countByUserIdAndProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 删除抄送件
@@ -90,7 +89,7 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteByProcessInstanceId")
-    Y9Result<Object> deleteByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> deleteByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 获取抄送件详情
@@ -104,10 +103,9 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/detail")
-    Y9Result<OpenDataModel> detail(@RequestParam("id") String id,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("status") Integer status,
-        @RequestParam(value = "openNotRead", required = false) Boolean openNotRead,
-        @RequestParam("mobile") boolean mobile);
+    Y9Result<OpenDataModel> detail(@RequestParam String id, @RequestParam String processInstanceId,
+        @RequestParam Integer status, @RequestParam(required = false) Boolean openNotRead,
+        @RequestParam boolean mobile);
 
     /**
      * 获取批阅件计数
@@ -137,9 +135,8 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/getDoneList")
-    Y9Page<ChaoSong4DataBaseModel> getDoneList(
-        @RequestParam(value = "documentTitle", required = false) String documentTitle, @RequestParam("rows") int rows,
-        @RequestParam("page") int page);
+    Y9Page<ChaoSong4DataBaseModel> getDoneList(@RequestParam(required = false) String documentTitle,
+        @RequestParam int rows, @RequestParam int page);
 
     /**
      * 根据流程实例获取除当前人外的其他抄送件
@@ -152,10 +149,8 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/getListByProcessInstanceId")
-    Y9Page<ChaoSong4DataBaseModel> getListByProcessInstanceId(
-        @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam(value = "userName", required = false) String userName, @RequestParam("rows") int rows,
-        @RequestParam("page") int page);
+    Y9Page<ChaoSong4DataBaseModel> getListByProcessInstanceId(@RequestParam String processInstanceId,
+        @RequestParam(required = false) String userName, @RequestParam int rows, @RequestParam int page);
 
     /**
      * 根据流程实例获取当前人的抄送件
@@ -168,10 +163,8 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/getListBySenderIdAndProcessInstanceId")
-    Y9Page<ChaoSong4DataBaseModel> getListBySenderIdAndProcessInstanceId(
-        @RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam(value = "userName", required = false) String userName, @RequestParam("rows") int rows,
-        @RequestParam("page") int page);
+    Y9Page<ChaoSong4DataBaseModel> getListBySenderIdAndProcessInstanceId(@RequestParam String processInstanceId,
+        @RequestParam(required = false) String userName, @RequestParam int rows, @RequestParam int page);
 
     /**
      * 批阅件
@@ -183,9 +176,8 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/getOpinionChaosongByUserId")
-    Y9Page<ChaoSong4DataBaseModel> getOpinionChaosongByUserId(
-        @RequestParam(value = "documentTitle", required = false) String documentTitle, @RequestParam("rows") int rows,
-        @RequestParam("page") int page);
+    Y9Page<ChaoSong4DataBaseModel> getOpinionChaosongByUserId(@RequestParam(required = false) String documentTitle,
+        @RequestParam int rows, @RequestParam int page);
 
     /**
      * 根据人员id获取抄送已阅件统计
@@ -206,9 +198,8 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/getTodoList")
-    Y9Page<ChaoSong4DataBaseModel> getTodoList(
-        @RequestParam(value = "documentTitle", required = false) String documentTitle, @RequestParam("rows") int rows,
-        @RequestParam("page") int page);
+    Y9Page<ChaoSong4DataBaseModel> getTodoList(@RequestParam(required = false) String documentTitle,
+        @RequestParam int rows, @RequestParam int page);
 
     /**
      * 我的抄送列表
@@ -224,13 +215,10 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/myChaoSongList")
-    Y9Page<ChaoSong4DataBaseModel> myChaoSongList(
-        @RequestParam(value = "searchName", required = false) String searchName,
-        @RequestParam(value = "itemId", required = false) String itemId,
-        @RequestParam(value = "userName", required = false) String userName,
-        @RequestParam(value = "state", required = false) Integer state,
-        @RequestParam(value = "year", required = false) String year, @RequestParam("page") int page,
-        @RequestParam("rows") int rows);
+    Y9Page<ChaoSong4DataBaseModel> myChaoSongList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) Integer state, @RequestParam(required = false) String year,
+        @RequestParam int page, @RequestParam int rows);
 
     /**
      * 抄送保存
@@ -245,11 +233,9 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @PostMapping("/save")
-    Y9Result<Object> save(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("users") String users, @RequestParam(value = "isSendSms", required = false) String isSendSms,
-        @RequestParam(value = "isShuMing", required = false) String isShuMing,
-        @RequestParam(value = "smsContent", required = false) String smsContent,
-        @RequestParam(value = "smsPersonId", required = false) String smsPersonId);
+    Y9Result<Object> save(@RequestParam String processInstanceId, @RequestParam(required = false) String users,
+        @RequestParam(required = false) String isSendSms, @RequestParam(required = false) String isShuMing,
+        @RequestParam(required = false) String smsContent, @RequestParam(required = false) String smsPersonId);
 
     /**
      * 个人阅件搜索
@@ -265,13 +251,10 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/searchAllByUserId")
-    Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(
-        @RequestParam(value = "searchName", required = false) String searchName,
-        @RequestParam(value = "itemId", required = false) String itemId,
-        @RequestParam(value = "userName", required = false) String userName,
-        @RequestParam(value = "state", required = false) Integer state,
-        @RequestParam(value = "year", required = false) String year, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<ChaoSong4DataBaseModel> searchAllByUserId(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String userName,
+        @RequestParam(required = false) Integer state, @RequestParam(required = false) String year,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 监控阅件列表
@@ -288,14 +271,10 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @GetMapping("/searchAllList")
-    Y9Page<ChaoSong4DataBaseModel> searchAllList(
-        @RequestParam(value = "searchName", required = false) String searchName,
-        @RequestParam(value = "itemId", required = false) String itemId,
-        @RequestParam(value = "senderName", required = false) String senderName,
-        @RequestParam(value = "userName", required = false) String userName,
-        @RequestParam(value = "state", required = false) Integer state,
-        @RequestParam(value = "year", required = false) String year, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<ChaoSong4DataBaseModel> searchAllList(@RequestParam(required = false) String searchName,
+        @RequestParam(required = false) String itemId, @RequestParam(required = false) String senderName,
+        @RequestParam(required = false) String userName, @RequestParam(required = false) Integer state,
+        @RequestParam(required = false) String year, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 更新抄送件标题
@@ -306,7 +285,6 @@ public interface ChaoSong4DataBaseApi {
      * @since 9.6.6
      */
     @PostMapping("/updateTitle")
-    Y9Result<Object> updateTitle(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("documentTitle") String documentTitle);
+    Y9Result<Object> updateTitle(@RequestParam String processInstanceId, @RequestParam String documentTitle);
 
 }

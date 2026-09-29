@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Objects;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -15,8 +16,6 @@ import lombok.RequiredArgsConstructor;
 import net.risesoft.api.itemadmin.ItemRoleApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.OrganizationApi;
-import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.enums.ItemPrincipalTypeEnum;
 import net.risesoft.enums.platform.org.OrgTreeTypeEnum;
 import net.risesoft.enums.platform.org.OrgTypeEnum;
@@ -43,13 +42,9 @@ public class ItemRoleApiImpl implements ItemRoleApi {
 
     private final RoleService roleService;
 
-    private final PositionApi positionApi;
-
     private final OrgUnitApi orgUnitApi;
 
     private final OrganizationApi organizationApi;
-
-    private final UserApi userApi;
 
     /**
      * 获取发送人gfg

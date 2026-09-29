@@ -26,7 +26,7 @@ public interface RemindInstanceApi {
      * @since 9.6.6
      */
     @GetMapping("/findRemindInstance")
-    Y9Result<List<RemindInstanceModel>> findRemindInstance(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<List<RemindInstanceModel>> findRemindInstance(@RequestParam String processInstanceId);
 
     /**
      * 根据流程实例id和任务key获取消息提醒设置
@@ -38,7 +38,7 @@ public interface RemindInstanceApi {
      */
     @GetMapping("/findRemindInstanceByProcessInstanceIdAndArriveTaskKey")
     Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndArriveTaskKey(
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskKey") String taskKey);
+        @RequestParam String processInstanceId, @RequestParam String taskKey);
 
     /**
      * 根据流程实例id和任务key获取消息提醒设置
@@ -50,7 +50,7 @@ public interface RemindInstanceApi {
      */
     @GetMapping("/findRemindInstanceByProcessInstanceIdAndCompleteTaskKey")
     Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndCompleteTaskKey(
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskKey") String taskKey);
+        @RequestParam String processInstanceId, @RequestParam String taskKey);
 
     /**
      * 根据流程实例id和提醒类型获取消息提醒设置
@@ -62,7 +62,7 @@ public interface RemindInstanceApi {
      */
     @GetMapping("/findRemindInstanceByProcessInstanceIdAndRemindType")
     Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndRemindType(
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("remindType") String remindType);
+        @RequestParam String processInstanceId, @RequestParam String remindType);
 
     /**
      * 根据流程实例id和任务id获取消息提醒设置
@@ -74,7 +74,7 @@ public interface RemindInstanceApi {
      */
     @GetMapping("/findRemindInstanceByProcessInstanceIdAndTaskId")
     Y9Result<List<RemindInstanceModel>> findRemindInstanceByProcessInstanceIdAndTaskId(
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("taskId") String taskId);
+        @RequestParam String processInstanceId, @RequestParam String taskId);
 
     /**
      * 根据流程实例id获取个人消息提醒设置
@@ -84,7 +84,7 @@ public interface RemindInstanceApi {
      * @since 9.6.6
      */
     @GetMapping("/getRemindInstance")
-    Y9Result<RemindInstanceModel> getRemindInstance(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<RemindInstanceModel> getRemindInstance(@RequestParam String processInstanceId);
 
     /**
      * 保存消息提醒
@@ -98,8 +98,7 @@ public interface RemindInstanceApi {
      * @since 9.6.6
      */
     @PostMapping("/saveRemindInstance")
-    Y9Result<String> saveRemindInstance(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("taskIds") String taskIds, @RequestParam("process") Boolean process,
-        @RequestParam("arriveTaskKey") String arriveTaskKey, @RequestParam("completeTaskKey") String completeTaskKey);
+    Y9Result<String> saveRemindInstance(@RequestParam String processInstanceId, @RequestParam String taskIds,
+        @RequestParam Boolean process, @RequestParam String arriveTaskKey, @RequestParam String completeTaskKey);
 
 }

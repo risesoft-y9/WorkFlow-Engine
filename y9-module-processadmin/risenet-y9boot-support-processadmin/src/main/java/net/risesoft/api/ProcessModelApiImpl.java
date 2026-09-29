@@ -37,7 +37,6 @@ import com.fasterxml.jackson.databind.node.ObjectNode;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
-import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.processadmin.ProcessModelApi;
 import net.risesoft.model.processadmin.FlowableBpmnModel;
 import net.risesoft.pojo.Y9Result;
@@ -62,8 +61,6 @@ public class ProcessModelApiImpl implements ProcessModelApi {
     private final RepositoryService repositoryService;
 
     private final ModelRepository modelRepository;
-
-    private final OrgUnitApi orgUnitApi;
 
     /**
      * 删除模型

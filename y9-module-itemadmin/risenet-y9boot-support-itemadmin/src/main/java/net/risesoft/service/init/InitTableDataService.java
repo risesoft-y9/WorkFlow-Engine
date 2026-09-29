@@ -4,16 +4,21 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.dao.DataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.stereotype.Service;
+
+import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.ItemInitDataConsts;
 import net.risesoft.entity.DynamicRole;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemPermission;
+import net.risesoft.entity.ItemSystem;
 import net.risesoft.entity.form.Y9Form;
 import net.risesoft.entity.form.Y9FormField;
 import net.risesoft.entity.form.Y9FormItemBind;
@@ -38,6 +43,7 @@ import net.risesoft.repository.form.Y9TableRepository;
 import net.risesoft.repository.jpa.DynamicRoleRepository;
 import net.risesoft.repository.jpa.ItemPermissionRepository;
 import net.risesoft.repository.jpa.ItemRepository;
+import net.risesoft.repository.jpa.ItemSystemRepository;
 import net.risesoft.repository.opinion.ItemOpinionFrameBindRepository;
 import net.risesoft.repository.opinion.OpinionFrameRepository;
 import net.risesoft.repository.template.ItemPrintTemplateBindRepository;
@@ -54,14 +60,19 @@ import net.risesoft.y9.sqlddl.pojo.DbColumn;
  * @author zhangchongjie
  * @date 2023/01/03
  */
+@Slf4j
 @Service(value = "initTableDataService")
 public class InitTableDataService {
 
     private final JdbcTemplate jdbcTemplate4Tenant;
 
+    private final JdbcTemplate jdbcTemplate4Public;
+
     private final SyncYearTableService syncYearTableService;
 
     private final ItemRepository itemRepository;
+
+    private final ItemSystemRepository itemSystemRepository;
 
     private final OpinionFrameRepository opinionFrameRepository;
 
@@ -91,8 +102,10 @@ public class InitTableDataService {
 
     public InitTableDataService(
         @Qualifier("jdbcTemplate4Tenant") JdbcTemplate jdbcTemplate4Tenant,
+        @Qualifier("jdbcTemplate4Public") JdbcTemplate jdbcTemplate4Public,
         SyncYearTableService syncYearTableService,
         ItemRepository itemRepository,
+        ItemSystemRepository itemSystemRepository,
         OpinionFrameRepository opinionFrameRepository,
         DynamicRoleRepository dynamicRoleRepository,
         Y9TableRepository y9TableRepository,
@@ -107,8 +120,10 @@ public class InitTableDataService {
         TableManagerService tableManagerService,
         Y9Properties y9Config) {
         this.jdbcTemplate4Tenant = jdbcTemplate4Tenant;
+        this.jdbcTemplate4Public = jdbcTemplate4Public;
         this.syncYearTableService = syncYearTableService;
         this.itemRepository = itemRepository;
+        this.itemSystemRepository = itemSystemRepository;
         this.opinionFrameRepository = opinionFrameRepository;
         this.dynamicRoleRepository = dynamicRoleRepository;
         this.y9TableRepository = y9TableRepository;
@@ -135,6 +150,43 @@ public class InitTableDataService {
             dynamicRole.setClassPath("net.risesoft.service.dynamicrole.impl.CurrentOrg");
             dynamicRole.setTenantId(Y9LoginUserHolder.getTenantId());
             dynamicRoleRepository.save(dynamicRole);
+        }
+    }
+
+    private void createItemSystem() {
+        List<ItemSystem> itemSystems = itemSystemRepository.findAllOrderByTabIndex();
+        if (itemSystems.isEmpty()) {
+            ItemSystem itemSystem = new ItemSystem();
+            itemSystem.setId(ItemInitDataConsts.ITEM_SYSTEM_ID);
+            itemSystem.setName(ItemInitDataConsts.SYSTEM_CN_NAME);
+            itemSystem.setCnName(ItemInitDataConsts.SYSTEM_NAME);
+            itemSystem.setTabIndex(1);
+            itemSystemRepository.save(itemSystem);
+        }
+    }
+
+    public void checkItemSystem() {
+        try {
+            List<String> tenantIds = jdbcTemplate4Public.queryForList("select id from y9_common_tenant", String.class);
+            tenantIds.forEach(tenantId -> {
+                Y9LoginUserHolder.setTenantId(tenantId);
+                List<Item> items = itemRepository.findAll();
+                AtomicInteger i = new AtomicInteger(1);
+                items.forEach(item -> {
+                    ItemSystem itemSystem = itemSystemRepository.findByName(item.getSystemName());
+                    if (null == itemSystem) {
+                        itemSystem = new ItemSystem();
+                        itemSystem.setId(Y9IdGenerator.genId());
+                        itemSystem.setName(item.getSystemName());
+                        itemSystem.setCnName(item.getSysLevel());
+                        itemSystem.setTabIndex(i.get());
+                        itemSystemRepository.save(itemSystem);
+                        i.getAndIncrement();
+                    }
+                });
+            });
+        } catch (DataAccessException e) {
+            LOGGER.error("校验事项系统表数据失败", e);
         }
     }
 
@@ -1124,6 +1176,7 @@ public class InitTableDataService {
     public void init(String tenantId) {
         Y9LoginUserHolder.setTenantId(tenantId);
         createYearTable();// 创建年度表结构
+        createItemSystem();// 创建事项系统
         createItem();// 创建事项
         createOpinionFrame();// 创建个人意见框
         createDynamicRole();// 创建动态角色

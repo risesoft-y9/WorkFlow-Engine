@@ -209,25 +209,6 @@ public class DocumentServiceImpl implements DocumentService {
 
     private final PositionResourceApi positionResourceApi;
 
-    /**
-     * 根据用户类型处理用户选择
-     */
-    private List<String> processUserChoiceByType(String tenantId, ItemUserChoiceEnum principalType, String orgUnitId) {
-        List<String> users = new ArrayList<>();
-        switch (principalType) {
-            case POSITION:
-                users.add(orgUnitId);
-                break;
-            case DEPARTMENT:
-                users = processDepartmentUser(orgUnitId);
-                break;
-            case GROUP_CUSTOM:
-                users = processCustomGroupUser(tenantId, orgUnitId);
-                break;
-        }
-        return users;
-    }
-
     @Override
     public DocumentDetailModel add(String itemId) {
         String userId = Y9FlowableHolder.getPositionId(), tenantId = Y9LoginUserHolder.getTenantId();
@@ -1990,9 +1971,11 @@ public class DocumentServiceImpl implements DocumentService {
         if (buttonList.contains(ItemButton.faSong) && StringUtils.isNotBlank(taskDefKey)) {
             handleSendButtonsForTodo(buttonList, itemId, processDefinitionId, taskDefKey, orgUnitId);
         }
-
         // 处理退回上一步按钮，通过按钮配置显示后，进一步处理是否显示退回按钮
-        if (buttonList.contains(ItemButton.tuiHui)) {
+        if (buttonList.stream()
+            .filter(itemButtonModel -> itemButtonModel.getKey().equals(ItemButton.tuiHui.getKey()))
+            .findFirst()
+            .isPresent()) {
             String returnDoc = variableApi.getVariableLocal(taskId, SysVariables.ROLLBACK).getData();
             String takeBackDoc = variableApi.getVariableLocal(taskId, SysVariables.TAKEBACK).getData();
             String repositionDoc = variableApi.getVariableLocal(taskId, SysVariables.REPOSITION).getData();
@@ -2183,6 +2166,25 @@ public class DocumentServiceImpl implements DocumentService {
                 }
             }
         }
+    }
+
+    /**
+     * 根据用户类型处理用户选择
+     */
+    private List<String> processUserChoiceByType(String tenantId, ItemUserChoiceEnum principalType, String orgUnitId) {
+        List<String> users = new ArrayList<>();
+        switch (principalType) {
+            case POSITION:
+                users.add(orgUnitId);
+                break;
+            case DEPARTMENT:
+                users = processDepartmentUser(orgUnitId);
+                break;
+            case GROUP_CUSTOM:
+                users = processCustomGroupUser(tenantId, orgUnitId);
+                break;
+        }
+        return users;
     }
 
     @Override

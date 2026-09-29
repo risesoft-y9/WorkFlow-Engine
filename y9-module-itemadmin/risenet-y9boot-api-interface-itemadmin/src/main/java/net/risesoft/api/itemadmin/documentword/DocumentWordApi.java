@@ -21,9 +21,8 @@ import net.risesoft.pojo.Y9Result;
 public interface DocumentWordApi {
 
     @GetMapping("/copyByProcessSerialNumberAndWordType")
-    Y9Result<Object> copyByProcessSerialNumberAndWordType(@RequestParam("sourceProcessSerialNumber") String sourceProcessSerialNumber,
-        @RequestParam("targetProcessSerialNumber") String targetProcessSerialNumber,
-        @RequestParam("wordType") String wordType);
+    Y9Result<Object> copyByProcessSerialNumberAndWordType(@RequestParam String sourceProcessSerialNumber,
+        @RequestParam String targetProcessSerialNumber, @RequestParam String wordType);
 
     /**
      * 根据流程编号和正文类别查询正文信息
@@ -33,8 +32,8 @@ public interface DocumentWordApi {
      * @return {@code Y9Result<List<DocumentWordModel>>}
      */
     @GetMapping("/findByProcessSerialNumberAndWordType")
-    Y9Result<List<DocumentWordModel>> findByProcessSerialNumberAndWordType(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("wordType") String wordType);
+    Y9Result<List<DocumentWordModel>> findByProcessSerialNumberAndWordType(@RequestParam String processSerialNumber,
+        @RequestParam String wordType);
 
     /**
      * 根据流程编号和正文类别查询历史正文信息
@@ -44,8 +43,8 @@ public interface DocumentWordApi {
      * @return {@code Y9Result<List<DocumentWordModel>>}
      */
     @GetMapping("/findHisByProcessSerialNumberAndWordType")
-    Y9Result<List<DocumentWordModel>> findHisByProcessSerialNumberAndWordType(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("wordType") String wordType);
+    Y9Result<List<DocumentWordModel>> findHisByProcessSerialNumberAndWordType(@RequestParam String processSerialNumber,
+        @RequestParam String wordType);
 
     /**
      * 根据id查询历史正文信息
@@ -54,7 +53,7 @@ public interface DocumentWordApi {
      * @return {@code Y9Result<DocumentWordModel>}
      */
     @GetMapping("/findHisWordById")
-    Y9Result<DocumentWordModel> findHisWordById(@RequestParam("id") String id);
+    Y9Result<DocumentWordModel> findHisWordById(@RequestParam String id);
 
     /**
      * 根据id查询正文信息
@@ -63,7 +62,7 @@ public interface DocumentWordApi {
      * @return {@code Y9Result<DocumentWordModel>}
      */
     @GetMapping("/findWordById")
-    Y9Result<DocumentWordModel> findWordById(@RequestParam("id") String id);
+    Y9Result<DocumentWordModel> findWordById(@RequestParam String id);
 
     /**
      * 获取正文权限
@@ -75,10 +74,8 @@ public interface DocumentWordApi {
      * @return {@code Y9Result<Boolean>}
      */
     @GetMapping("/getPermissionWord")
-    Y9Result<Boolean> getPermissionWord(@RequestParam("itemId") String itemId,
-        @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam(value = "taskDefKey", required = false) String taskDefKey,
-        @RequestParam("wordType") String wordType);
+    Y9Result<Boolean> getPermissionWord(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam(required = false) String taskDefKey, @RequestParam String wordType);
 
     /**
      * 替换正文
@@ -89,8 +86,8 @@ public interface DocumentWordApi {
      * @return {@code Y9Result<Object>}
      */
     @PostMapping(value = "/replaceWord", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> replaceWord(@RequestBody DocumentWordModel documentWordModel, @RequestParam("oldId") String oldId,
-        @RequestParam("taskId") String taskId);
+    Y9Result<Object> replaceWord(@RequestBody DocumentWordModel documentWordModel, @RequestParam String oldId,
+        @RequestParam String taskId);
 
     /**
      * 保存正文信息

@@ -20,7 +20,6 @@ import lombok.extern.slf4j.Slf4j;
 import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
 import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.api.processadmin.RepositoryApi;
 import net.risesoft.api.processadmin.TaskApi;
 import net.risesoft.consts.ItemConsts;
@@ -82,8 +81,6 @@ public class Y9WordApiImpl implements Y9WordApi {
     private final ItemWordTemplateBindRepository wordTemplateBindRepository;
 
     private final PersonApi personApi;
-
-    private final UserApi userApi;
 
     private final OrgUnitApi orgUnitApi;
 
@@ -710,6 +707,7 @@ public class Y9WordApiImpl implements Y9WordApi {
 
             if (wordTemplate != null && wordTemplate.getId() != null) {
                 wordInfo.setFileDocumentId(wordTemplate.getId());
+                wordInfo.setFileStoreId(wordTemplate.getFilePath());
                 wordInfo.setOpenWordOrPdf("openWordTemplate");
                 String fileName = wordTemplate.getFileName();
                 String fileType = fileName.substring(fileName.lastIndexOf("."));
@@ -741,14 +739,12 @@ public class Y9WordApiImpl implements Y9WordApi {
             Y9WordInfo wordInfo = new Y9WordInfo();
             populateWordInfoBasics(wordInfo, Y9LoginUserHolder.getUserInfo(), processSerialNumber, itemId, itembox,
                 taskId);
-
             List<Y9Word> wordList = getExistingWordList(processSerialNumber, bindValue);
             if (!wordList.isEmpty()) {
                 populateWordInfoFromExistingWord(wordInfo, wordList.get(0));
             } else {
                 populateWordInfoFromTemplate(wordInfo, itemId, taskId, bindValue);
             }
-
             return Y9Result.success(wordInfo);
         } catch (Exception e) {
             LOGGER.error("获取正文文件信息失败", e);

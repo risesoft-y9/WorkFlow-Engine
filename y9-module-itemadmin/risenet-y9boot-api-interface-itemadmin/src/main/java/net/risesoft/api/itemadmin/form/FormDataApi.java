@@ -38,7 +38,7 @@ public interface FormDataApi {
      */
     @PostMapping("/delChildTableRow")
     Y9Result<Object> delChildTableRow(@RequestParam String formId, @RequestParam String tableId,
-        @RequestParam("guid") String guid);
+        @RequestParam String guid);
 
     /**
      * 删除前置表单数据
@@ -133,8 +133,7 @@ public interface FormDataApi {
      * @return {@code Y9Result<Map<String, Object>>} 通用请求返回对象 - data 是表数据
      */
     @GetMapping(value = "/getData4TableAlias")
-    Y9Result<Map<String, Object>> getData4TableAlias(@RequestParam("guid") String guid,
-        @RequestParam("tableAlias") String tableAlias);
+    Y9Result<Map<String, Object>> getData4TableAlias(@RequestParam String guid, @RequestParam String tableAlias);
 
     /**
      * 根据事项id和流程编号集合获取数据
@@ -181,7 +180,7 @@ public interface FormDataApi {
      * @since 9.6.6
      */
     @GetMapping("/getFormField")
-    Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam("itemId") String itemId);
+    Y9Result<List<Y9FormFieldModel>> getFormField(@RequestParam String itemId);
 
     /**
      * 根据表单id获取绑定字段信息
@@ -191,7 +190,7 @@ public interface FormDataApi {
      * @since 9.6.6
      */
     @GetMapping("/getFormFieldDefine")
-    Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(@RequestParam("formId") String formId);
+    Y9Result<List<FormFieldDefineModel>> getFormFieldDefine(@RequestParam String formId);
 
     /**
      * 获取表单json数据
@@ -201,7 +200,7 @@ public interface FormDataApi {
      * @since 9.6.6
      */
     @GetMapping("/getFormJson")
-    Y9Result<String> getFormJson(@RequestParam("formId") String formId);
+    Y9Result<String> getFormJson(@RequestParam String formId);
 
     /**
      * 根据表单id获取前置表单数据
@@ -211,10 +210,10 @@ public interface FormDataApi {
      * @since 9.6.6
      */
     @GetMapping("/getPreFormDataByFormId")
-    Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(@RequestParam("formId") String formId);
+    Y9Result<List<Map<String, Object>>> getPreFormDataByFormId(@RequestParam String formId);
 
     @PostMapping(value = "/insertFormData")
-    Y9Result<String> insertFormData(@RequestParam("tableName") String tableName, @RequestParam("guid") String guid,
+    Y9Result<String> insertFormData(@RequestParam String tableName, @RequestParam String guid,
         @RequestBody String formJsonData);
 
     /**
@@ -229,8 +228,8 @@ public interface FormDataApi {
      * @since 9.6.6
      */
     @PostMapping("/saveChildTableData")
-    Y9Result<Object> saveChildTableData(@RequestParam("formId") String formId, @RequestParam("tableId") String tableId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestBody String jsonData) throws Exception;
+    Y9Result<Object> saveChildTableData(@RequestParam String formId, @RequestParam String tableId,
+        @RequestParam String processSerialNumber, @RequestBody String jsonData) throws Exception;
 
     /**
      * 保存子表单数据，一个表单是一个子表
@@ -242,8 +241,7 @@ public interface FormDataApi {
      * @since 9.6.6
      */
     @PostMapping("/saveChildTableData1")
-    Y9Result<Object> saveChildTableData(@RequestParam("formId") String formId, @RequestBody String formJsonData)
-        throws Exception;
+    Y9Result<Object> saveChildTableData(@RequestParam String formId, @RequestBody String formJsonData) throws Exception;
 
     /**
      * 保存表单数据
@@ -255,8 +253,7 @@ public interface FormDataApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/saveFormData")
-    Y9Result<Object> saveFormData(@RequestParam("formId") String formId, @RequestBody String formJsonData)
-        throws Exception;
+    Y9Result<Object> saveFormData(@RequestParam String formId, @RequestBody String formJsonData) throws Exception;
 
     /**
      * 保存前置表单数据
@@ -269,10 +266,10 @@ public interface FormDataApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/savePreFormData")
-    Y9Result<String> savePreFormData(@RequestParam("itemId") String itemId, @RequestParam("formId") String formId,
+    Y9Result<String> savePreFormData(@RequestParam String itemId, @RequestParam String formId,
         @RequestBody String formJsonData) throws Exception;
 
     @PostMapping(value = "/updateFormData")
-    Y9Result<String> updateFormData(@RequestParam("guid") String guid, @RequestBody String formJsonData);
+    Y9Result<String> updateFormData(@RequestParam String guid, @RequestBody String formJsonData);
 
 }

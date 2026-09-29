@@ -120,6 +120,7 @@ public class OrganWordRestController {
      * @param common 是否公共
      * @return Y9Result<Map < String, Object>>
      */
+    @FlowableLog(operationName = "获取最新编号", operationType = FlowableOperationTypeEnum.ADD)
     @GetMapping(value = "/getNumber")
     public Y9Result<Map<String, Object>> getNumber(@RequestParam @NotBlank String custom,
         @RequestParam @NotBlank String itemId, @RequestParam @NotBlank String characterValue,
@@ -143,6 +144,7 @@ public class OrganWordRestController {
      * @param custom
      * @return
      */
+    @FlowableLog(operationName = "获取最新临时编号", operationType = FlowableOperationTypeEnum.ADD)
     @GetMapping(value = "/getTempNumber")
     public Y9Result<String> getTempNumber(@RequestParam String itemId, @RequestParam String custom,
         @RequestParam @NotBlank String processSerialNumber) {

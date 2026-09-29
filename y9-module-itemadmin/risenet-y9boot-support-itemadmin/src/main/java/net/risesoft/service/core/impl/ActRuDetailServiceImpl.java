@@ -775,6 +775,7 @@ public class ActRuDetailServiceImpl implements ActRuDetailService {
     @Transactional
     public Y9Result<Object> todo2doing(String taskId, String assignee) {
         ActRuDetail todo = actRuDetailRepository.findByTaskIdAndAssignee(taskId, assignee);
+        initSubNodeMap(todo.getProcessDefinitionId());
         List<ActRuDetail> doingList = actRuDetailRepository.findByProcessSerialNumberAndAssigneeAndStatus(
             todo.getProcessSerialNumber(), assignee, ActRuDetailStatusEnum.DOING);
         if (doingList.isEmpty()) {

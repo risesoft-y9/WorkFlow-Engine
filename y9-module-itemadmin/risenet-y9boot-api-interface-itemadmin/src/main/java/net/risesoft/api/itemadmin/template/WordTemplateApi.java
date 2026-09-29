@@ -22,7 +22,7 @@ public interface WordTemplateApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getFilePathById")
-    Y9Result<String> getFilePathById(@RequestParam("id") String id);
+    Y9Result<String> getFilePathById(@RequestParam String id);
 
     /**
      * 根据正文模板id获取正文模板绑定信息
@@ -33,6 +33,5 @@ public interface WordTemplateApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getWordTemplateBind")
-    Y9Result<String> getWordTemplateBind(@RequestParam("itemId") String itemId,
-        @RequestParam(value = "wordType", required = false) String wordType);
+    Y9Result<String> getWordTemplateBind(@RequestParam String itemId, @RequestParam(required = false) String wordType);
 }

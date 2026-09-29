@@ -5,7 +5,6 @@ import java.util.List;
 import org.springframework.data.domain.Page;
 
 import net.risesoft.entity.Item;
-import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -73,13 +72,6 @@ public interface ItemService {
      * @return
      */
     Boolean hasProcessDefinitionByKey(String processDefinitionKey);
-
-    /**
-     * 获取所有系统
-     * 
-     * @return List<ItemSystemListModel>
-     */
-    List<ItemSystemListModel> getItemSystem();
 
     /**
      *

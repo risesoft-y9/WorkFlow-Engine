@@ -1,6 +1,5 @@
 package net.risesoft.service.core.impl;
 
-import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,10 +23,8 @@ import net.risesoft.consts.ItemConsts;
 import net.risesoft.consts.processadmin.SysVariables;
 import net.risesoft.entity.Item;
 import net.risesoft.entity.ItemExtendProps;
-import net.risesoft.entity.ItemMappingConf;
 import net.risesoft.id.IdType;
 import net.risesoft.id.Y9IdGenerator;
-import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.model.platform.System;
 import net.risesoft.model.platform.resource.App;
@@ -35,7 +32,6 @@ import net.risesoft.model.processadmin.ProcessDefinitionModel;
 import net.risesoft.model.processadmin.TargetModel;
 import net.risesoft.model.user.UserInfo;
 import net.risesoft.pojo.Y9Result;
-import net.risesoft.repository.jpa.ItemMappingConfRepository;
 import net.risesoft.repository.jpa.ItemRepository;
 import net.risesoft.service.config.ItemBackTaskConfService;
 import net.risesoft.service.config.ItemButtonBindService;
@@ -57,6 +53,8 @@ import net.risesoft.service.core.ItemService;
 import net.risesoft.service.template.PrintTemplateService;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.pubsub.event.Y9EntityCreatedEvent;
+import net.risesoft.y9.pubsub.event.Y9EntityUpdatedEvent;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -73,7 +71,6 @@ public class ItemServiceImpl implements ItemService {
     private final ItemRepository itemRepository;
     private final SystemApi systemApi;
     private final AppApi appApi;
-    private final ItemMappingConfRepository itemMappingConfRepository;
     private final RepositoryApi repositoryApi;
     private final ProcessDefinitionApi processDefinitionApi;
     private final Y9FormItemBindService y9FormItemBindService;
@@ -275,21 +272,6 @@ public class ItemServiceImpl implements ItemService {
     }
 
     @Override
-    public List<ItemSystemListModel> getItemSystem() {
-        List<Item> list = this.list();
-        List<ItemSystemListModel> itemList = new ArrayList<>();
-        list.forEach(item -> {
-            ItemSystemListModel model = new ItemSystemListModel();
-            model.setSystemName(item.getSystemName());
-            model.setSysLevel(item.getSysLevel());
-            if (!itemList.contains(model)) {
-                itemList.add(model);
-            }
-        });
-        return itemList;
-    }
-
-    @Override
     public Boolean hasProcessDefinitionByKey(String processDefinitionKey) {
         boolean hasKey = false;
         try {
@@ -359,8 +341,8 @@ public class ItemServiceImpl implements ItemService {
             UserInfo person = Y9LoginUserHolder.getUserInfo();
             item.setCreaterId(person.getPersonId());
             item.setCreaterName(person.getName());
-            Item olditem = itemRepository.findById(item.getId()).orElse(null);
-            if (olditem == null) {
+            Item existItem = itemRepository.findById(item.getId()).orElse(null);
+            if (existItem == null) {
                 Integer tabIndex = itemRepository.getMaxTabIndex();
                 if (tabIndex == null) {
                     item.setTabIndex(1);
@@ -369,23 +351,13 @@ public class ItemServiceImpl implements ItemService {
                 }
             }
             itemRepository.save(item);
-            ItemMappingConf itemMappingConf =
-                itemMappingConfRepository.findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), "1");
-            // 删除事项映射字段
-            if (itemMappingConf != null) {
-                if (StringUtils.isBlank(item.getDockingItemId())
-                    || !item.getDockingItemId().equals(itemMappingConf.getMappingId())) {
-                    itemMappingConfRepository.deleteByMappingId(itemMappingConf.getMappingId());
-                }
-            }
-            ItemMappingConf itemMappingConf1 =
-                itemMappingConfRepository.findTopByItemIdAndSysTypeOrderByCreateTimeDesc(item.getId(), "2");
-            // 删除系统映射字段
-            if (itemMappingConf1 != null) {
-                if (StringUtils.isBlank(item.getDockingSystem())
-                    || !item.getDockingSystem().equals(itemMappingConf1.getMappingId())) {
-                    itemMappingConfRepository.deleteByMappingId(itemMappingConf1.getMappingId());
-                }
+
+            item.setTenantId(Y9LoginUserHolder.getTenantId());
+            if (existItem == null) {
+                Y9Context.publishEvent(new Y9EntityCreatedEvent<>(item));
+            } else {
+                existItem.setTenantId(Y9LoginUserHolder.getTenantId());
+                Y9Context.publishEvent(new Y9EntityUpdatedEvent<>(existItem, item));
             }
             return Y9Result.success(item, "保存成功");
         } catch (Exception e) {

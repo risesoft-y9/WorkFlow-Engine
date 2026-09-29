@@ -28,9 +28,8 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/addMultiInstanceExecution")
-    Y9Result<Object> addMultiInstanceExecution(@RequestParam("activityId") String activityId,
-        @RequestParam("parentExecutionId") String parentExecutionId, @RequestParam("taskId") String taskId,
-        @RequestParam("elementUser") String elementUser);
+    Y9Result<Object> addMultiInstanceExecution(@RequestParam String activityId, @RequestParam String parentExecutionId,
+        @RequestParam String taskId, @RequestParam String elementUser);
 
     /**
      * 加签
@@ -42,8 +41,8 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/addMultiInstanceExecutionByActivityId")
-    Y9Result<Object> addMultiInstanceExecutionByActivityId(@RequestParam("activityId") String activityId,
-        @RequestParam("parentExecutionId") String parentExecutionId, @RequestParam("elementUser") String elementUser);
+    Y9Result<Object> addMultiInstanceExecutionByActivityId(@RequestParam String activityId,
+        @RequestParam String parentExecutionId, @RequestParam String elementUser);
 
     /**
      * 减签
@@ -55,8 +54,8 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteMultiInstanceExecution")
-    Y9Result<Object> deleteMultiInstanceExecution(@RequestParam("executionId") String executionId,
-        @RequestParam("taskId") String taskId, @RequestParam("elementUser") String elementUser);
+    Y9Result<Object> deleteMultiInstanceExecution(@RequestParam String executionId, @RequestParam String taskId,
+        @RequestParam String elementUser);
 
     /**
      * 直接发送至流程启动人
@@ -68,8 +67,8 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/directSend")
-    Y9Result<Object> directSend(@RequestParam("taskId") String taskId, @RequestParam("routeToTask") String routeToTask,
-        @RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> directSend(@RequestParam String taskId, @RequestParam String routeToTask,
+        @RequestParam String processInstanceId);
 
     /**
      * 最后一人拒签退回
@@ -79,7 +78,7 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/refuseClaimRollback")
-    Y9Result<Object> refuseClaimRollback(@RequestParam("taskId") String taskId);
+    Y9Result<Object> refuseClaimRollback(@RequestParam String taskId);
 
     /**
      * 重定位
@@ -93,11 +92,9 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/reposition", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> reposition(@RequestParam("taskId") String taskId,
-        @RequestParam("repositionToTaskId") String repositionToTaskId,
-        @RequestParam("userChoice") List<String> userChoice,
-        @RequestParam(value = "reason", required = false) String reason,
-        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
+    Y9Result<Object> reposition(@RequestParam String taskId, @RequestParam String repositionToTaskId,
+        @RequestParam List<String> userChoice, @RequestParam(required = false) String reason,
+        @RequestParam(required = false) String sponsorGuid);
 
     /**
      * 退回操作
@@ -108,8 +105,7 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/rollBack")
-    Y9Result<Object> rollBack(@RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> rollBack(@RequestParam String taskId, @RequestParam(required = false) String reason);
 
     /**
      * 退回至流转过的节点
@@ -123,10 +119,9 @@ public interface ButtonOperationApi {
      * @since 9.6.8
      */
     @PostMapping(value = "/rollBack2History", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> rollBack2History(@RequestParam("taskId") String taskId,
-        @RequestParam("routeToTaskId") String routeToTaskId, @RequestParam("userChoice") List<String> userChoice,
-        @RequestParam(value = "reason", required = false) String reason,
-        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
+    Y9Result<Object> rollBack2History(@RequestParam String taskId, @RequestParam String routeToTaskId,
+        @RequestParam List<String> userChoice, @RequestParam(required = false) String reason,
+        @RequestParam(required = false) String sponsorGuid);
 
     /**
      * 发回给上一步的发送人
@@ -136,7 +131,7 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/rollbackToSender")
-    Y9Result<Object> rollbackToSender(@RequestParam("taskId") String taskId);
+    Y9Result<Object> rollbackToSender(@RequestParam String taskId);
 
     /**
      * 退回操作，直接退回到办件登记人
@@ -147,8 +142,7 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/rollbackToStartor")
-    Y9Result<Object> rollbackToStartor(@RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> rollbackToStartor(@RequestParam String taskId, @RequestParam(required = false) String reason);
 
     /**
      * 特殊办结
@@ -159,8 +153,7 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/specialComplete")
-    Y9Result<Object> specialComplete(@RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> specialComplete(@RequestParam String taskId, @RequestParam(required = false) String reason);
 
     /**
      * 收回操作
@@ -171,8 +164,7 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/takeBack2TaskDefKey")
-    Y9Result<Object> takeBack2TaskDefKey(@RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> takeBack2TaskDefKey(@RequestParam String taskId, @RequestParam(required = false) String reason);
 
     /**
      * 收回操作
@@ -183,7 +175,6 @@ public interface ButtonOperationApi {
      * @since 9.6.6
      */
     @PostMapping("/takeback")
-    Y9Result<Object> takeback(@RequestParam("taskId") String taskId,
-        @RequestParam(value = "reason", required = false) String reason);
+    Y9Result<Object> takeback(@RequestParam String taskId, @RequestParam(required = false) String reason);
 
 }

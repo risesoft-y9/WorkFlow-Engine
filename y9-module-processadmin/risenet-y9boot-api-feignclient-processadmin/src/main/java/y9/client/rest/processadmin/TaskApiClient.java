@@ -33,7 +33,7 @@ public interface TaskApiClient extends TaskApi {
      */
     @Override
     @PostMapping(value = "/createWithVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> createWithVariables(@RequestParam("routeToTaskId") String routeToTaskId,
-        @SpringQueryMap Map<String, Object> vars, @RequestBody List<String> orgUnitIdList);
+    Y9Result<Object> createWithVariables(@RequestParam String routeToTaskId, @SpringQueryMap Map<String, Object> vars,
+        @RequestBody List<String> orgUnitIdList);
 
 }

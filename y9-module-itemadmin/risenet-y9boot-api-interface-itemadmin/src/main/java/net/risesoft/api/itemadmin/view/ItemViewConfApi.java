@@ -26,6 +26,6 @@ public interface ItemViewConfApi {
      * @since 9.6.6
      */
     @GetMapping("/findByItemIdAndViewType")
-    Y9Result<List<ItemViewConfModel>> findByItemIdAndViewType(@RequestParam("itemId") String itemId,
-        @RequestParam("viewType") String viewType);
+    Y9Result<List<ItemViewConfModel>> findByItemIdAndViewType(@RequestParam String itemId,
+        @RequestParam String viewType);
 }

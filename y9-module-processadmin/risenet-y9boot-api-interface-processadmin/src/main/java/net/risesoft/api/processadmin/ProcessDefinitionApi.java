@@ -27,8 +27,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getContainEndEvent4UserTask")
-    Y9Result<List<TargetModel>>
-        getContainEndEvent4UserTask(@RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<List<TargetModel>> getContainEndEvent4UserTask(@RequestParam String processDefinitionId);
 
     /**
      * 查找当前任务节点的输出目标节点中是否包含某一类型的特定节点
@@ -38,7 +37,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getEndNode")
-    Y9Result<TargetModel> getEndNode(@RequestParam("taskId") String taskId);
+    Y9Result<TargetModel> getEndNode(@RequestParam String taskId);
 
     /**
      * 获取具体流程的某个节点类型
@@ -49,8 +48,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.8
      */
     @GetMapping(value = "/getNode")
-    Y9Result<FlowElementModel> getNode(@RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+    Y9Result<FlowElementModel> getNode(@RequestParam String processDefinitionId, @RequestParam String taskDefKey);
 
     /**
      * 获取具体流程的某个节点类型
@@ -61,8 +59,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getNodeType")
-    Y9Result<String> getNodeType(@RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+    Y9Result<String> getNodeType(@RequestParam String processDefinitionId, @RequestParam String taskDefKey);
 
     /**
      * 根据流程定义Id获取节点信息
@@ -72,7 +69,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getNodes")
-    Y9Result<List<TargetModel>> getNodes(@RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<List<TargetModel>> getNodes(@RequestParam String processDefinitionId);
 
     /**
      * 根据流程定义Id获取节点信息
@@ -82,7 +79,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getNodesOnlyMain")
-    Y9Result<List<TargetModel>> getNodesOnlyMain(@RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<List<TargetModel>> getNodesOnlyMain(@RequestParam String processDefinitionId);
 
     /**
      * 根据taskId获取某个节点除去end节点和默认路由节点的所有的输出线路的个数
@@ -92,7 +89,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getOutPutNodeCount")
-    Y9Result<Integer> getOutPutNodeCount(@RequestParam("taskId") String taskId);
+    Y9Result<Integer> getOutPutNodeCount(@RequestParam String taskId);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -103,8 +100,8 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getParallelGatewayList")
-    Y9Result<List<GatewayModel>> getParallelGatewayList(@RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+    Y9Result<List<GatewayModel>> getParallelGatewayList(@RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey);
 
     /**
      * 根据流程定义id获取开始节点
@@ -114,8 +111,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getStartNodeKeyByProcessDefinitionId")
-    Y9Result<String>
-        getStartNodeKeyByProcessDefinitionId(@RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<String> getStartNodeKeyByProcessDefinitionId(@RequestParam String processDefinitionId);
 
     /**
      * 根据流程定义key获取最新版本的流程定义的启动节点的taskDefineKey
@@ -125,8 +121,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getStartNodeKeyByProcessDefinitionKey")
-    Y9Result<String>
-        getStartNodeKeyByProcessDefinitionKey(@RequestParam("processDefinitionKey") String processDefinitionKey);
+    Y9Result<String> getStartNodeKeyByProcessDefinitionKey(@RequestParam String processDefinitionKey);
 
     /**
      * 判断流程定义的节点是否是SubProcess内的节点
@@ -136,7 +131,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getSubProcessChildNode")
-    Y9Result<List<TargetModel>> getSubProcessChildNode(@RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<List<TargetModel>> getSubProcessChildNode(@RequestParam String processDefinitionId);
 
     /**
      * 获取子流程父节点
@@ -147,8 +142,8 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getSubProcessParentNode")
-    Y9Result<TargetModel> getSubProcessParentNode(@RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+    Y9Result<TargetModel> getSubProcessParentNode(@RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -159,8 +154,8 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getTargetNodes")
-    Y9Result<List<TargetModel>> getTargetNodes(@RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+    Y9Result<List<TargetModel>> getTargetNodes(@RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey);
 
     /**
      * 根据流程定义Id和流程节点Key获取目标任务节点集合
@@ -172,8 +167,8 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getTargetNodes4UserTask")
-    Y9Result<List<TargetModel>> getTargetNodes4UserTask(@RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey, @RequestParam("isContainEndNode") Boolean isContainEndNode);
+    Y9Result<List<TargetModel>> getTargetNodes4UserTask(@RequestParam String processDefinitionId,
+        @RequestParam String taskDefKey, @RequestParam Boolean isContainEndNode);
 
     /**
      * 判断流程定义的节点是否是callActivity节点
@@ -184,8 +179,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/isCallActivity")
-    Y9Result<Boolean> isCallActivity(@RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+    Y9Result<Boolean> isCallActivity(@RequestParam String processDefinitionId, @RequestParam String taskDefKey);
 
     /**
      * 查找当前任务节点的输出目标节点中是否包含某一类型的特定节点
@@ -195,7 +189,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/isContainEndEvent")
-    Y9Result<Boolean> isContainEndEvent(@RequestParam("taskId") String taskId);
+    Y9Result<Boolean> isContainEndEvent(@RequestParam String taskId);
 
     /**
      * 判断流程定义的节点是否是SubProcess节点
@@ -206,8 +200,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/isSubProcess")
-    Y9Result<Boolean> isSubProcess(@RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+    Y9Result<Boolean> isSubProcess(@RequestParam String processDefinitionId, @RequestParam String taskDefKey);
 
     /**
      * 判断流程定义的节点是否是SubProcess内的节点
@@ -218,8 +211,7 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/isSubProcessChildNode")
-    Y9Result<Boolean> isSubProcessChildNode(@RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefKey") String taskDefKey);
+    Y9Result<Boolean> isSubProcessChildNode(@RequestParam String processDefinitionId, @RequestParam String taskDefKey);
 
     /**
      * 根据流程定义Id获取节点,路由信息 isContainStartNode为true时，不包含开始节点
@@ -229,5 +221,5 @@ public interface ProcessDefinitionApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/listUserTask")
-    Y9Result<List<FlowElementModel>> listUserTask(@RequestParam("processDefinitionId") String processDefinitionId);
+    Y9Result<List<FlowElementModel>> listUserTask(@RequestParam String processDefinitionId);
 }

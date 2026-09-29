@@ -1,6 +1,5 @@
 package net.risesoft.controller;
 
-import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -102,43 +101,6 @@ public class ItemRestController {
         return itemService.delete(id);
     }
 
-    @SuppressWarnings("unused")
-    private boolean deleteDirectory(String sPath) {
-        if (!sPath.endsWith(File.separator)) {
-            sPath = sPath + File.separator;
-        }
-        File dirFile = new File(sPath);
-        if (!dirFile.exists() || !dirFile.isDirectory()) {
-            return false;
-        }
-        boolean flag = true;
-        File[] files = dirFile.listFiles();
-        assert files != null;
-        for (File file : files) {
-            if (file.isFile()) {
-                flag = deleteFile(file.getAbsolutePath());
-            } else {
-                flag = deleteDirectory(file.getAbsolutePath());
-            }
-            if (!flag) {
-                break;
-            }
-        }
-        if (!flag) {
-            return false;
-        }
-        return dirFile.delete();
-    }
-
-    private boolean deleteFile(String sPath) {
-        boolean flag = false;
-        File file = new File(sPath);
-        if (file.isFile() && file.exists()) {
-            flag = true;
-        }
-        return flag;
-    }
-
     /**
      * 获取部门
      *
@@ -198,6 +160,18 @@ public class ItemRestController {
     @GetMapping(value = "/list")
     public Y9Result<List<Item>> list() {
         List<Item> list = itemService.list();
+        return Y9Result.success(list, "获取成功");
+    }
+
+    /**
+     * 根据系统名称获取事项列表
+     *
+     * @param systemName 系统名称
+     * @return
+     */
+    @GetMapping(value = "/listBySystemName")
+    public Y9Result<List<Item>> listBySystemName(@RequestParam String systemName) {
+        List<Item> list = itemService.findBySystemName(systemName);
         return Y9Result.success(list, "获取成功");
     }
 

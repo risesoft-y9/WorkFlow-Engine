@@ -42,7 +42,7 @@ public class ItemMappingConf extends ItemAdminBaseEntity implements Serializable
     private String itemId;
 
     /**
-     * 1为内部系统，2为外部系统
+     * {@link net.risesoft.enums.SysTypeEnum}
      */
     @Comment("对接系统类型")
     @Column(name = "SYSTYPE", length = 1, nullable = false)

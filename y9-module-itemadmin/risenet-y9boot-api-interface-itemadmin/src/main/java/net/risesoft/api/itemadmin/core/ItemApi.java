@@ -7,7 +7,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import net.risesoft.model.itemadmin.ItemListModel;
 import net.risesoft.model.itemadmin.ItemMappingConfModel;
-import net.risesoft.model.itemadmin.ItemSystemListModel;
 import net.risesoft.model.itemadmin.core.ItemModel;
 import net.risesoft.pojo.Y9Result;
 
@@ -101,15 +100,6 @@ public interface ItemApi {
     @GetMapping("/getItemMappingConf")
     Y9Result<List<ItemMappingConfModel>> getItemMappingConf(@RequestParam String itemId,
         @RequestParam String mappingId);
-
-    /**
-     * 获取事项系统
-     *
-     * @return {@code Y9Result<List<ItemSystemListModel>>} 通用请求返回对象 - data 是事项系统列表
-     * @since 9.6.6
-     */
-    @GetMapping("/getItemSystem")
-    Y9Result<List<ItemSystemListModel>> getItemSystem();
 
     /**
      * 获取个人有权限事项列表

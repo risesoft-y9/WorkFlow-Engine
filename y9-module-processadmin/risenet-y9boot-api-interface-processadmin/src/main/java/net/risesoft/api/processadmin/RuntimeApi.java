@@ -33,8 +33,8 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/addMultiInstanceExecution", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> addMultiInstanceExecution(@RequestParam("activityId") String activityId,
-        @RequestParam("parentExecutionId") String parentExecutionId, @RequestBody Map<String, Object> map);
+    Y9Result<Object> addMultiInstanceExecution(@RequestParam String activityId, @RequestParam String parentExecutionId,
+        @RequestBody Map<String, Object> map);
 
     /**
      * 真办结
@@ -45,8 +45,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping("/complete")
-    Y9Result<Object> complete(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("taskId") String taskId) throws Exception;
+    Y9Result<Object> complete(@RequestParam String processInstanceId, @RequestParam String taskId) throws Exception;
 
     /**
      * 真办结
@@ -56,8 +55,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping("/completeSub")
-    Y9Result<Object> completeSub(@RequestParam("taskId") String taskId, @RequestParam("userList") List<String> userList)
-        throws Exception;
+    Y9Result<Object> completeSub(@RequestParam String taskId, @RequestParam List<String> userList) throws Exception;
 
     /**
      * 减签
@@ -67,7 +65,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteMultiInstanceExecution")
-    Y9Result<Object> deleteMultiInstanceExecution(@RequestParam("executionId") String executionId);
+    Y9Result<Object> deleteMultiInstanceExecution(@RequestParam String executionId);
 
     /**
      * 根据执行Id获取当前活跃的节点信息
@@ -77,7 +75,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @GetMapping("/getActiveActivityIds")
-    Y9Result<List<String>> getActiveActivityIds(@RequestParam("executionId") String executionId);
+    Y9Result<List<String>> getActiveActivityIds(@RequestParam String executionId);
 
     /**
      * 根据执行实例Id查找执行实例
@@ -87,7 +85,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @GetMapping("/getExecutionById")
-    Y9Result<ExecutionModel> getExecutionById(@RequestParam("executionId") String executionId);
+    Y9Result<ExecutionModel> getExecutionById(@RequestParam String executionId);
 
     /**
      * 根据父流程实例获取子流程实例
@@ -97,8 +95,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @GetMapping("/getListBySuperProcessInstanceId")
-    Y9Result<List<ProcessInstanceModel>>
-        getListBySuperProcessInstanceId(@RequestParam("superProcessInstanceId") String superProcessInstanceId);
+    Y9Result<List<ProcessInstanceModel>> getListBySuperProcessInstanceId(@RequestParam String superProcessInstanceId);
 
     /**
      * 根据流程实例Id获取流程实例
@@ -108,7 +105,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @GetMapping("/getProcessInstance")
-    Y9Result<ProcessInstanceModel> getProcessInstance(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<ProcessInstanceModel> getProcessInstance(@RequestParam String processInstanceId);
 
     /**
      * 根据流程定义id获取流程实例列表
@@ -120,9 +117,8 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @GetMapping("/getProcessInstancesByDefId")
-    Y9Page<ProcessInstanceModel> getProcessInstancesByDefId(
-        @RequestParam("processDefinitionId") String processDefinitionId, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<ProcessInstanceModel> getProcessInstancesByDefId(@RequestParam String processDefinitionId,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据流程定义Key获取流程实例列表
@@ -132,8 +128,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @GetMapping("/getProcessInstancesByKey")
-    Y9Result<List<ProcessInstanceModel>>
-        getProcessInstancesByKey(@RequestParam("processDefinitionKey") String processDefinitionKey);
+    Y9Result<List<ProcessInstanceModel>> getProcessInstancesByKey(@RequestParam String processDefinitionKey);
 
     /**
      * 真办结后恢复流程实例为待办状态
@@ -144,8 +139,8 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping("/recovery4Completed")
-    Y9Result<Object> recovery4Completed(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam(value = "year", required = false) String year) throws Exception;
+    Y9Result<Object> recovery4Completed(@RequestParam String processInstanceId,
+        @RequestParam(required = false) String year) throws Exception;
 
     /**
      * 恢复流程实例为待办状态，其实是先激活，再设置流程实例的结束时间为null
@@ -155,7 +150,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping("/recovery4SetUpCompleted")
-    Y9Result<Object> recovery4SetUpCompleted(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> recovery4SetUpCompleted(@RequestParam String processInstanceId);
 
     /**
      * 获取正在运行流程实例列表
@@ -167,8 +162,8 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/runningList")
-    Y9Page<ProcessInstanceModel> runningList(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("page") int page, @RequestParam("rows") int rows);
+    Y9Page<ProcessInstanceModel> runningList(@RequestParam String processInstanceId, @RequestParam int page,
+        @RequestParam int rows);
 
     /**
      * 设置流程实例为办结的状态，其实是先暂停，再设置流程结束时间为当前时间
@@ -178,7 +173,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping("/setUpCompleted")
-    Y9Result<Object> setUpCompleted(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Object> setUpCompleted(@RequestParam String processInstanceId);
 
     /**
      * 根据流程实例id设置流程变量
@@ -190,8 +185,8 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/setVariable", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> setVariable(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("key") String key, @RequestBody Map<String, Object> map);
+    Y9Result<Object> setVariable(@RequestParam String processInstanceId, @RequestParam String key,
+        @RequestBody Map<String, Object> map);
 
     /**
      * 根据流程实例id设置流程变量
@@ -202,8 +197,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/setVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> setVariables(@RequestParam("executionId") String executionId,
-        @RequestBody Map<String, Object> map);
+    Y9Result<Object> setVariables(@RequestParam String executionId, @RequestBody Map<String, Object> map);
 
     /**
      * 根据流程定义Key启动流程实例，设置流程变量,并返回流程实例,流程启动人是人员Id
@@ -215,9 +209,8 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/startProcessInstanceByKey", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<ProcessInstanceModel> startProcessInstanceByKey(
-        @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("systemName") String systemName, @RequestBody Map<String, Object> map);
+    Y9Result<ProcessInstanceModel> startProcessInstanceByKey(@RequestParam String processDefinitionKey,
+        @RequestParam String systemName, @RequestBody Map<String, Object> map);
 
     /**
      * 判断是否是挂起实例
@@ -227,7 +220,7 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @GetMapping("/suspendedByProcessInstanceId")
-    Y9Result<Boolean> suspendedByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<Boolean> suspendedByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 挂起或者激活流程实例
@@ -238,7 +231,6 @@ public interface RuntimeApi {
      * @since 9.6.6
      */
     @PostMapping("/switchSuspendOrActive")
-    Y9Result<Object> switchSuspendOrActive(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("state") String state);
+    Y9Result<Object> switchSuspendOrActive(@RequestParam String processInstanceId, @RequestParam String state);
 
 }

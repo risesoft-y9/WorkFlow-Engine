@@ -13,8 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.opinion.OpinionApi;
-import net.risesoft.api.platform.org.PositionApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.dto.itemadmin.OpinionDTO;
 import net.risesoft.dto.itemadmin.OpinionFrameDTO;
 import net.risesoft.entity.opinion.Opinion;
@@ -42,10 +40,6 @@ public class OpinionApiImpl implements OpinionApi {
     private final OpinionService opinionService;
 
     private final ItemOpinionFrameBindService itemOpinionFrameBindService;
-
-    private final PositionApi positionApi;
-
-    private final UserApi userApi;
 
     /**
      * 验证当前taskId任务节点是否已经签写意见

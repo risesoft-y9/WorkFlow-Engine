@@ -26,7 +26,7 @@ public interface ReceiveDeptAndPersonApi {
      * @since 9.6.6
      */
     @GetMapping("/findByDeptNameLike")
-    Y9Result<List<ReceiveOrgUnit>> findByDeptNameLike(@RequestParam("name") String name);
+    Y9Result<List<ReceiveOrgUnit>> findByDeptNameLike(@RequestParam String name);
 
     /**
      * 获取所有收发单位
@@ -46,8 +46,8 @@ public interface ReceiveDeptAndPersonApi {
      * @since 9.6.6
      */
     @GetMapping("/getReceiveDeptTreeById")
-    Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTreeById(@RequestParam("orgUnitId") String orgUnitId,
-        @RequestParam(value = "name", required = false) String name);
+    Y9Result<List<ReceiveOrgUnit>> getReceiveDeptTreeById(@RequestParam String orgUnitId,
+        @RequestParam(required = false) String name);
 
     /**
      * 根据收发单位id,获取人员集合
@@ -57,7 +57,7 @@ public interface ReceiveDeptAndPersonApi {
      * @since 9.6.6
      */
     @GetMapping("/getSendReceiveByDeptId")
-    Y9Result<List<OrgUnit>> getSendReceiveByDeptId(@RequestParam("deptId") String deptId);
+    Y9Result<List<OrgUnit>> getSendReceiveByDeptId(@RequestParam String deptId);
 
     /**
      * 根据id,获取对应的收发单位
@@ -67,5 +67,5 @@ public interface ReceiveDeptAndPersonApi {
      * @since 9.6.6
      */
     @GetMapping("/getSendReceiveByUserId")
-    Y9Result<List<ReceiveOrgUnit>> getSendReceiveByUserId(@RequestParam("orgUnitId") String orgUnitId);
+    Y9Result<List<ReceiveOrgUnit>> getSendReceiveByUserId(@RequestParam String orgUnitId);
 }

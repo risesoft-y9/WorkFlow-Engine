@@ -26,11 +26,10 @@ public interface OpinionCopyApi {
      * @since 9.6.6
      */
     @PostMapping("/deleteById")
-    Y9Result<Object> deleteById(@RequestParam("id") String id);
+    Y9Result<Object> deleteById(@RequestParam String id);
 
     @GetMapping("/findByProcessSerialNumber")
-    Y9Result<List<OpinionCopyModel>>
-        findByProcessSerialNumber(@RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<OpinionCopyModel>> findByProcessSerialNumber(@RequestParam String processSerialNumber);
 
     /**
      * 保存或更新意见

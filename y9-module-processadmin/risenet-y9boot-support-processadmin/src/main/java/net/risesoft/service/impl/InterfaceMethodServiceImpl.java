@@ -4,7 +4,6 @@ import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.io.Writer;
 import java.net.URI;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.HashMap;
@@ -15,15 +14,14 @@ import java.util.concurrent.Future;
 
 import javax.sql.DataSource;
 
-import org.apache.commons.httpclient.HttpClient;
-import org.apache.commons.httpclient.HttpStatus;
-import org.apache.commons.httpclient.NameValuePair;
-import org.apache.commons.httpclient.methods.GetMethod;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.Consts;
+import org.apache.http.HttpStatus;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URIBuilder;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -206,8 +204,8 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     /**
      * 配置GET请求超时参数
      */
-    private void configureGetRequestTimeout(HttpClient client, String processDefinitionId, String itemId,
-        String taskKey) {
+    private void configureGetRequestTimeout(HttpGet httpGet, String processDefinitionId, String itemId, String taskKey)
+        throws Exception {
         int time = 10000;
         TaskTimeConfModel taskTimeConf =
             itemInterfaceApi.getTaskTimeConf(processDefinitionId, itemId, taskKey).getData();
@@ -217,10 +215,12 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         }
 
         LOGGER.info("*********************设置请求超时参数:" + time);
-        // 设置请求超时时间
-        client.getHttpConnectionManager().getParams().setConnectionTimeout(time);
-        // 设置读取数据超时时间
-        client.getHttpConnectionManager().getParams().setSoTimeout(time);
+        RequestConfig requestConfig = RequestConfig.custom()
+            .setConnectTimeout(time)
+            .setConnectionRequestTimeout(time)
+            .setSocketTimeout(time)
+            .build();
+        httpGet.setConfig(requestConfig);
     }
 
     /**
@@ -247,15 +247,14 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     }
 
     /**
-     * 创建GetMethod请求对象
+     * 创建HttpGet请求对象
      */
-    private GetMethod createGetMethod(InterfaceModel info) {
-        GetMethod method = new GetMethod();
-        method.setPath(info.getInterfaceAddress());
+    private HttpGet createHttpGet(InterfaceModel info) {
+        HttpGet httpGet = new HttpGet(info.getInterfaceAddress());
         // 默认添加请求头
-        method.addRequestHeader("auth-positionId", Y9FlowableHolder.getPositionId());
-        method.addRequestHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
-        return method;
+        httpGet.addHeader("auth-positionId", Y9FlowableHolder.getPositionId());
+        httpGet.addHeader("auth-tenantId", Y9LoginUserHolder.getTenantId());
+        return httpGet;
     }
 
     /**
@@ -329,17 +328,18 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     /**
      * 执行GET请求
      */
-    private void executeGetRequest(HttpClient client, GetMethod method, String processInstanceId,
+    private void executeGetRequest(CloseableHttpClient client, HttpGet httpGet, String processInstanceId,
         String processDefinitionId, String itemId, String taskKey, InterfaceModel info, String processSerialNumber,
         Y9Result<List<InterfaceParamsModel>> y9Result, Integer loopCounter) throws Exception {
-        configureGetRequestTimeout(client, processDefinitionId, itemId, taskKey);
-        int httpCode = client.executeMethod(method);
-        if (httpCode == HttpStatus.SC_OK) {
-            String response =
-                new String(method.getResponseBodyAsString().getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
-            processGetResponse(response, processInstanceId, processSerialNumber, y9Result, info, loopCounter);
-        } else {
-            handleGetErrorResponse(httpCode, processInstanceId, taskKey, info);
+        configureGetRequestTimeout(httpGet, processDefinitionId, itemId, taskKey);
+        try (CloseableHttpResponse response = client.execute(httpGet)) {
+            int httpCode = response.getStatusLine().getStatusCode();
+            if (httpCode == HttpStatus.SC_OK) {
+                String resp = EntityUtils.toString(response.getEntity(), "utf-8");
+                processGetResponse(resp, processInstanceId, processSerialNumber, y9Result, info, loopCounter);
+            } else {
+                handleGetErrorResponse(httpCode, processInstanceId, taskKey, info);
+            }
         }
     }
 
@@ -350,13 +350,14 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
         String processDefinitionId, String itemId, String taskKey, InterfaceModel info, String processSerialNumber,
         Y9Result<List<InterfaceParamsModel>> y9Result, Integer loopCounter) throws Exception {
         configureRequestTimeout(httpPost, processDefinitionId, itemId, taskKey);
-        CloseableHttpResponse response = httpclient.execute(httpPost);
-        int httpCode = response.getStatusLine().getStatusCode();
-        if (httpCode == HttpStatus.SC_OK) {
-            String resp = EntityUtils.toString(response.getEntity(), "utf-8");
-            processResponse(resp, processInstanceId, processSerialNumber, y9Result, info, loopCounter);
-        } else {
-            handleErrorResponse(httpCode, processInstanceId, taskKey, info);
+        try (CloseableHttpResponse response = httpclient.execute(httpPost)) {
+            int httpCode = response.getStatusLine().getStatusCode();
+            if (httpCode == HttpStatus.SC_OK) {
+                String resp = EntityUtils.toString(response.getEntity(), "utf-8");
+                processResponse(resp, processInstanceId, processSerialNumber, y9Result, info, loopCounter);
+            } else {
+                handleErrorResponse(httpCode, processInstanceId, taskKey, info);
+            }
         }
     }
 
@@ -450,15 +451,14 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     public void getMethod(final String processSerialNumber, final String itemId, final InterfaceModel info,
         final String processInstanceId, final String processDefinitionId, final String taskId, final String taskKey,
         final Integer loopCounter) throws Exception {
-        try {
-            HttpClient client = new HttpClient();
-            GetMethod method = createGetMethod(info);
+        try (CloseableHttpClient client = HttpClients.createDefault()) {
+            HttpGet httpGet = createHttpGet(info);
             Y9Result<List<InterfaceParamsModel>> y9Result = getInterfaceParams(itemId, info);
             if (y9Result.isSuccess() && y9Result.getData() != null && !y9Result.getData().isEmpty()) {
-                processGetRequestParameters(method, y9Result, processSerialNumber, processInstanceId, info,
+                processGetRequestParameters(httpGet, y9Result, processSerialNumber, processInstanceId, info,
                     loopCounter);
             }
-            executeGetRequest(client, method, processInstanceId, processDefinitionId, itemId, taskKey, info,
+            executeGetRequest(client, httpGet, processInstanceId, processDefinitionId, itemId, taskKey, info,
                 processSerialNumber, y9Result, loopCounter);
         } catch (Exception e) {
             handleGetMethodException(e, processInstanceId, taskId, taskKey, info);
@@ -814,29 +814,27 @@ public class InterfaceMethodServiceImpl implements InterfaceMethodService {
     /**
      * 处理GET请求参数
      */
-    private void processGetRequestParameters(GetMethod method, Y9Result<List<InterfaceParamsModel>> y9Result,
+    private void processGetRequestParameters(HttpGet httpGet, Y9Result<List<InterfaceParamsModel>> y9Result,
         String processSerialNumber, String processInstanceId, InterfaceModel info, Integer loopCounter)
         throws Exception {
         List<Map<String, Object>> list =
             getRequestParams(y9Result.getData(), processSerialNumber, processInstanceId, info, loopCounter);
-        List<NameValuePair> nameValuePairs = new ArrayList<>();
+        URIBuilder uriBuilder = new URIBuilder(httpGet.getURI());
         // 处理请求参数和请求头
         for (InterfaceParamsModel model : y9Result.getData()) {
             if (model.getBindType().equals(ItemInterfaceTypeEnum.INTERFACE_REQUEST)) {
                 if (model.getParameterType().equals(ItemInterfaceTypeEnum.PARAMS)
                     || model.getParameterType().equals(ItemInterfaceTypeEnum.BODY)) {
                     String parameterValue = getParameterValue(model, list, loopCounter);
-                    nameValuePairs.add(new NameValuePair(model.getParameterName(), parameterValue));
+                    uriBuilder.addParameter(model.getParameterName(), parameterValue);
                 }
                 if (model.getParameterType().equals(ItemInterfaceTypeEnum.HEADERS)) {
                     String parameterValue = getHeaderParameterValue(model, list);
-                    method.addRequestHeader(model.getParameterName(), parameterValue);
+                    httpGet.addHeader(model.getParameterName(), parameterValue);
                 }
             }
         }
-        if (!nameValuePairs.isEmpty()) {
-            method.setQueryString(nameValuePairs.toArray(new NameValuePair[0]));
-        }
+        httpGet.setURI(uriBuilder.build());
     }
 
     /**

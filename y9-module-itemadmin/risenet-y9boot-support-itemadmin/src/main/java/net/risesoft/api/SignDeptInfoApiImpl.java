@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -14,7 +15,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.SignDeptInfoApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.SignDeptInfo;
 import net.risesoft.entity.SignOutDept;
 import net.risesoft.entity.SignOutDeptType;
@@ -42,8 +42,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class SignDeptInfoApiImpl implements SignDeptInfoApi {
 
     private final SignDeptInfoService signDeptInfoService;
-
-    private final PositionApi positionApi;
 
     private final SignDeptOutService signDeptOutService;
 

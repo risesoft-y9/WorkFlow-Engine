@@ -26,8 +26,8 @@ public interface SmsDetailApi {
      * @since 9.6.9
      */
     @GetMapping("/findByProcessSerialNumberAndPositionId")
-    Y9Result<SmsDetailModel> findByProcessSerialNumberAndPositionId(@RequestParam("taskSenderId") String taskSenderId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<SmsDetailModel> findByProcessSerialNumberAndPositionId(@RequestParam String taskSenderId,
+        @RequestParam String processSerialNumber);
 
     /**
      * 保存或更新短信详情

@@ -25,6 +25,5 @@ public interface ItemOpinionFrameRoleApi {
      * @since 9.6.6
      */
     @GetMapping("/findByItemOpinionFrameId")
-    Y9Result<List<ItemOpinionFrameRoleModel>>
-        findByItemOpinionFrameId(@RequestParam("itemOpinionFrameId") String itemOpinionFrameId);
+    Y9Result<List<ItemOpinionFrameRoleModel>> findByItemOpinionFrameId(@RequestParam String itemOpinionFrameId);
 }

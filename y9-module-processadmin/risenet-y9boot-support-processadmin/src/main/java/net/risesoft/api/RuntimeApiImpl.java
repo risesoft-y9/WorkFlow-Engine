@@ -5,10 +5,10 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.RuntimeService;
 import org.flowable.engine.impl.HistoricProcessInstanceQueryProperty;
+import org.flowable.engine.runtime.ActivityInstance;
 import org.flowable.engine.runtime.Execution;
 import org.flowable.engine.runtime.ProcessInstance;
 import org.springframework.http.MediaType;
@@ -21,7 +21,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.platform.org.OrgUnitApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.api.processadmin.RuntimeApi;
 import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.model.processadmin.ExecutionModel;
@@ -53,8 +52,6 @@ public class RuntimeApiImpl implements RuntimeApi {
     private final CustomTaskService customTaskService;
 
     private final OrgUnitApi orgUnitApi;
-
-    private final PositionApi positionApi;
 
     /**
      * 加签
@@ -272,7 +269,6 @@ public class RuntimeApiImpl implements RuntimeApi {
                 .getData()
                 .stream()
                 .collect(Collectors.toMap(OrgUnit::getId, orgUnit -> orgUnit));
-
         for (ProcessInstance processInstance : processInstanceList) {
             processInstanceId = processInstance.getId();
             ProcessInstanceModel piModel = new ProcessInstanceModel();
@@ -281,13 +277,13 @@ public class RuntimeApiImpl implements RuntimeApi {
             piModel.setProcessDefinitionName(processInstance.getProcessDefinitionName());
             piModel.setStartTime(processInstance.getStartTime());
             try {
-                piModel.setActivityName(runtimeService.createActivityInstanceQuery()
+                ActivityInstance activityInstance = runtimeService.createActivityInstanceQuery()
                     .processInstanceId(processInstanceId)
                     .orderByActivityInstanceStartTime()
                     .desc()
                     .list()
-                    .get(0)
-                    .getActivityName());
+                    .get(0);
+                piModel.setActivityName(activityInstance != null ? activityInstance.getActivityName() : "");
                 piModel.setSuspended(processInstance.isSuspended());
                 piModel.setStartUserName("无");
                 if (StringUtils.isNotBlank(processInstance.getStartUserId())) {

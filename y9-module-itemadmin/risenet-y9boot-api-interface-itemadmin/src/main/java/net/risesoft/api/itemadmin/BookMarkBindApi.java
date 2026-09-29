@@ -25,6 +25,6 @@ public interface BookMarkBindApi {
      * @since 9.6.6
      */
     @GetMapping("/getBookMarkData")
-    Y9Result<Map<String, Object>> getBookMarkData(@RequestParam("wordTemplateId") String wordTemplateId,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Map<String, Object>> getBookMarkData(@RequestParam String wordTemplateId,
+        @RequestParam String processSerialNumber);
 }

@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.RejectReasonApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.RejectReasonService;
 
@@ -25,8 +24,6 @@ import net.risesoft.service.RejectReasonService;
 public class RejectReasonApiImpl implements RejectReasonApi {
 
     private final RejectReasonService rejectReasonService;
-
-    private final UserApi userApi;
 
     /**
      * 保存驳回原因信息

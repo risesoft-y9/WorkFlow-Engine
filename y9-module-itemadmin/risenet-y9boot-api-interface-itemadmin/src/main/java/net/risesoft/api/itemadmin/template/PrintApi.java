@@ -22,6 +22,6 @@ public interface PrintApi {
      * @since 9.6.6
      */
     @GetMapping("/openDocument")
-    Y9Result<String> openDocument(@RequestParam("itemId") String itemId);
+    Y9Result<String> openDocument(@RequestParam String itemId);
 
 }

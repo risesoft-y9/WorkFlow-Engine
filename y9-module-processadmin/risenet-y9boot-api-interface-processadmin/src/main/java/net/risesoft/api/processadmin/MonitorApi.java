@@ -26,8 +26,8 @@ public interface MonitorApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getAllListBySystemName")
-    Y9Page<HistoricProcessInstanceModel> getAllListBySystemName(@RequestParam("systemName") String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getAllListBySystemName(@RequestParam String systemName,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据流程定义Key获取监控在办件统计
@@ -37,8 +37,7 @@ public interface MonitorApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getDoingCountByProcessDefinitionKey")
-    Y9Result<Long>
-        getDoingCountByProcessDefinitionKey(@RequestParam("processDefinitionKey") String processDefinitionKey);
+    Y9Result<Long> getDoingCountByProcessDefinitionKey(@RequestParam String processDefinitionKey);
 
     /**
      * 根据系统英文名称获取监控在办件数量
@@ -48,7 +47,7 @@ public interface MonitorApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getDoingCountBySystemName")
-    Y9Result<Long> getDoingCountBySystemName(@RequestParam("systemName") String systemName);
+    Y9Result<Long> getDoingCountBySystemName(@RequestParam String systemName);
 
     /**
      * 根据流程定义Key获取监控在办件
@@ -60,9 +59,8 @@ public interface MonitorApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getDoingListByProcessDefinitionKey")
-    Y9Page<HistoricProcessInstanceModel> getDoingListByProcessDefinitionKey(
-        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getDoingListByProcessDefinitionKey(@RequestParam String processDefinitionKey,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据系统名称获取监控在办件
@@ -74,8 +72,8 @@ public interface MonitorApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getDoingListBySystemName")
-    Y9Page<HistoricProcessInstanceModel> getDoingListBySystemName(@RequestParam("systemName") String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<HistoricProcessInstanceModel> getDoingListBySystemName(@RequestParam String systemName,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据流程定义Key获取监控办结件统计
@@ -85,8 +83,7 @@ public interface MonitorApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getDoneCountByProcessDefinitionKey")
-    Y9Result<Long>
-        getDoneCountByProcessDefinitionKey(@RequestParam("processDefinitionKey") String processDefinitionKey);
+    Y9Result<Long> getDoneCountByProcessDefinitionKey(@RequestParam String processDefinitionKey);
 
     /**
      * 根据流程定义Key条件搜索在办件
@@ -100,9 +97,8 @@ public interface MonitorApi {
      */
     @GetMapping(value = "/searchDoingListByProcessDefinitionKey")
     Y9Page<HistoricProcessInstanceModel> searchDoingListByProcessDefinitionKey(
-        @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+        @RequestParam String processDefinitionKey, @RequestParam String searchTerm, @RequestParam Integer page,
+        @RequestParam Integer rows);
 
     /**
      * 根据系统英文名称条件搜索在办件
@@ -115,7 +111,6 @@ public interface MonitorApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/searchDoingListBySystemName")
-    Y9Page<HistoricProcessInstanceModel> searchDoingListBySystemName(@RequestParam("systemName") String systemName,
-        @RequestParam("searchTerm") String searchTerm, @RequestParam("page") Integer page,
-        @RequestParam("rows") Integer rows);
+    Y9Page<HistoricProcessInstanceModel> searchDoingListBySystemName(@RequestParam String systemName,
+        @RequestParam String searchTerm, @RequestParam Integer page, @RequestParam Integer rows);
 }

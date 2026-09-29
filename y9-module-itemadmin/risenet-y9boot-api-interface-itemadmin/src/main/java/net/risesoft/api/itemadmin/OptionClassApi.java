@@ -25,7 +25,7 @@ public interface OptionClassApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/findAll")
-    Y9Result<List<Y9FormOptionValueModel>> findAll(@RequestParam("tenantId") String tenantId);
+    Y9Result<List<Y9FormOptionValueModel>> findAll(@RequestParam String tenantId);
 
     /**
      * 获取数据字典列表
@@ -35,6 +35,6 @@ public interface OptionClassApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getOptionValueList")
-    Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(@RequestParam("type") String type);
+    Y9Result<List<Y9FormOptionValueModel>> getOptionValueList(@RequestParam String type);
 
 }

@@ -23,5 +23,5 @@ public interface CalendarConfigApi {
      * @since 9.6.6
      */
     @GetMapping("/findByYear")
-    Y9Result<CalendarConfigModel> findByYear(@RequestParam("year") String year);
+    Y9Result<CalendarConfigModel> findByYear(@RequestParam String year);
 }

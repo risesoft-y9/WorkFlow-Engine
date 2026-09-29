@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.SignDeptDetailApi;
-import net.risesoft.api.platform.org.PositionApi;
 import net.risesoft.entity.SignDeptDetail;
 import net.risesoft.entity.opinion.OpinionSign;
 import net.risesoft.enums.SignDeptDetailStatusEnum;
@@ -35,8 +35,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class SignDeptDetailApiImpl implements SignDeptDetailApi {
 
     private final SignDeptDetailService signDeptDetailService;
-
-    private final PositionApi positionApi;
 
     private final OpinionSignService opinionSignService;
 

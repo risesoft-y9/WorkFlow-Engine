@@ -30,8 +30,8 @@ public interface SignDeptInfoApi {
      * @since 9.6.0
      */
     @PostMapping(value = "/addSignDept")
-    Y9Result<Object> addSignDept(@RequestParam("deptIds") String deptIds, @RequestParam("deptType") String deptType,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Object> addSignDept(@RequestParam String deptIds, @RequestParam String deptType,
+        @RequestParam String processSerialNumber);
 
     /**
      * 根据主键删除会签信息
@@ -41,7 +41,7 @@ public interface SignDeptInfoApi {
      * @since 9.6.0
      */
     @PostMapping(value = "/deleteById")
-    Y9Result<Object> deleteById(@RequestParam("id") String id);
+    Y9Result<Object> deleteById(@RequestParam String id);
 
     /**
      * 获取联合发文单位总称
@@ -51,7 +51,7 @@ public interface SignDeptInfoApi {
      * @since 9.6.0
      */
     @GetMapping(value = "/findByDeptNameMax")
-    Y9Result<Map<String, String>> findByDeptNameMax(@RequestParam("deptNameMax") String deptNameMax);
+    Y9Result<Map<String, String>> findByDeptNameMax(@RequestParam String deptNameMax);
 
     /**
      * 根据流程编号获取会签信息
@@ -62,8 +62,8 @@ public interface SignDeptInfoApi {
      * @since 9.6.0
      */
     @GetMapping(value = "/getSignDeptList")
-    Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam("deptType") String deptType,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<List<SignDeptModel>> getSignDeptList(@RequestParam String deptType,
+        @RequestParam String processSerialNumber);
 
     /**
      * 获取委外会签部门选择树
@@ -73,7 +73,7 @@ public interface SignDeptInfoApi {
      * @since 9.6.0
      */
     @GetMapping(value = "/getSignOutDeptTree")
-    Y9Result<List<Department>> getSignOutDeptTree(@RequestParam("id") String id);
+    Y9Result<List<Department>> getSignOutDeptTree(@RequestParam String id);
 
     /**
      * 根据流程编号和部门ID判断是否是会签部门
@@ -85,8 +85,8 @@ public interface SignDeptInfoApi {
      * @since 9.6.0
      */
     @GetMapping(value = "/isSignDept")
-    Y9Result<Boolean> isSignDept(@RequestParam("deptId") String deptId, @RequestParam("deptType") String deptType,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Boolean> isSignDept(@RequestParam String deptId, @RequestParam String deptType,
+        @RequestParam String processSerialNumber);
 
     /**
      * 保存会签信息
@@ -99,9 +99,8 @@ public interface SignDeptInfoApi {
      * @since 9.6.0
      */
     @PostMapping(value = "/saveSignDept")
-    Y9Result<Object> saveSignDept(@RequestParam("deptIds") String deptIds, @RequestParam("deptType") String deptType,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam(value = "tzsDeptId", required = false) String tzsDeptId);
+    Y9Result<Object> saveSignDept(@RequestParam String deptIds, @RequestParam String deptType,
+        @RequestParam String processSerialNumber, @RequestParam(required = false) String tzsDeptId);
 
     /**
      * 保存会签签名
@@ -112,8 +111,7 @@ public interface SignDeptInfoApi {
      * @since 9.6.0
      */
     @PostMapping(value = "/saveSignDeptInfo")
-    Y9Result<Object> saveSignDeptInfo(@RequestParam("id") String id,
-        @RequestParam(value = "userName", required = false) String userName);
+    Y9Result<Object> saveSignDeptInfo(@RequestParam String id, @RequestParam(required = false) String userName);
 
     /**
      * 插入或更新会签部门，更新显示名称
@@ -125,6 +123,6 @@ public interface SignDeptInfoApi {
      * @since 9.6.0
      */
     @PostMapping(value = "/updateSignDept")
-    Y9Result<Object> updateSignDept(@RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("type") String type, @RequestParam("tzsDeptId") String tzsDeptId);
+    Y9Result<Object> updateSignDept(@RequestParam String processSerialNumber, @RequestParam String type,
+        @RequestParam String tzsDeptId);
 }

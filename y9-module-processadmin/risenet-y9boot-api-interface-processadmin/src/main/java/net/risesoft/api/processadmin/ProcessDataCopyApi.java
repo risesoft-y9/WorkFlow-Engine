@@ -24,7 +24,7 @@ public interface ProcessDataCopyApi {
      * @since 9.6.6
      */
     @PostMapping("/copyModel")
-    Y9Result<Object> copyModel(@RequestParam("sourceTenantId") String sourceTenantId,
-        @RequestParam("targetTenantId") String targetTenantId, @RequestParam("modelKey") String modelKey);
+    Y9Result<Object> copyModel(@RequestParam String sourceTenantId, @RequestParam String targetTenantId,
+        @RequestParam String modelKey);
 
 }

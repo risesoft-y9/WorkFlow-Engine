@@ -29,8 +29,7 @@ public interface OpinionSignApi {
      * @since 9.6.6
      */
     @GetMapping("/checkSignOpinion")
-    Y9Result<Boolean> checkSignOpinion(@RequestParam("signDeptDetailId") String signDeptDetailId,
-        @RequestParam("taskId") String taskId);
+    Y9Result<Boolean> checkSignOpinion(@RequestParam String signDeptDetailId, @RequestParam String taskId);
 
     /**
      * 删除意见
@@ -41,7 +40,7 @@ public interface OpinionSignApi {
      * @since 9.6.6
      */
     @PostMapping("/delete")
-    Y9Result<Object> delete(@RequestParam("id") String id) throws Exception;
+    Y9Result<Object> delete(@RequestParam String id) throws Exception;
 
     /**
      * 根据id获取意见
@@ -51,7 +50,7 @@ public interface OpinionSignApi {
      * @since 9.6.6
      */
     @GetMapping("/getById")
-    Y9Result<OpinionSignModel> getById(@RequestParam("id") String id);
+    Y9Result<OpinionSignModel> getById(@RequestParam String id);
 
     /**
      * 获取个人意见列表
@@ -65,11 +64,9 @@ public interface OpinionSignApi {
      * @since 9.6.6
      */
     @GetMapping("/personCommentList")
-    Y9Result<List<OpinionSignListModel>> personCommentList(
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("signDeptDetailId") String signDeptDetailId, @RequestParam("itembox") String itembox,
-        @RequestParam(value = "taskId", required = false) String taskId,
-        @RequestParam("opinionFrameMark") String opinionFrameMark);
+    Y9Result<List<OpinionSignListModel>> personCommentList(@RequestParam String processSerialNumber,
+        @RequestParam String signDeptDetailId, @RequestParam String itembox,
+        @RequestParam(required = false) String taskId, @RequestParam String opinionFrameMark);
 
     /**
      * 保存或更新意见

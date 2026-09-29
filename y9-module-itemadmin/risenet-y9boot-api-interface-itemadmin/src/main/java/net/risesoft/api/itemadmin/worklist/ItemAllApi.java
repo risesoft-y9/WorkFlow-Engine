@@ -30,7 +30,7 @@ public interface ItemAllApi {
      * @since 9.6.6
      */
     @GetMapping("/countByUserIdAndSystemName")
-    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam("systemName") @NotBlank String systemName);
+    Y9Result<Integer> countByUserIdAndSystemName(@RequestParam @NotBlank String systemName);
 
     /**
      * 根据用户id和系统名称查询待办列表(以发送时间排序)
@@ -42,8 +42,8 @@ public interface ItemAllApi {
      * @since 9.6.6
      */
     @GetMapping("/findBySystemName")
-    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam @NotBlank String systemName, @RequestParam Integer page,
+        @RequestParam Integer rows);
 
     /**
      * 根据用户id和系统名称查询待办列表(以发送时间排序)#TODO
@@ -65,8 +65,8 @@ public interface ItemAllApi {
      * @since 9.6.6
      */
     @GetMapping("/findByUserIdAndSystemName")
-    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> findByUserIdAndSystemName(@RequestParam @NotBlank String systemName,
+        @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      *
@@ -75,8 +75,7 @@ public interface ItemAllApi {
      * @since 9.6.6
      */
     @PostMapping("/searchByProcessSerialNumbers")
-    Y9Result<List<ActRuDetailModel>>
-        searchByProcessSerialNumbers(@RequestParam("processSerialNumbers") String[] processSerialNumbers);
+    Y9Result<List<ActRuDetailModel>> searchByProcessSerialNumbers(@RequestParam String[] processSerialNumbers);
 
     /**
      * 根据用户id和系统名称、 搜索集合查询流程列表(以发送时间排序)
@@ -89,8 +88,8 @@ public interface ItemAllApi {
      * @since 9.6.6
      */
     @PostMapping("/searchBySystemName")
-    Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam("systemName") @NotBlank String systemName,
-        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> searchBySystemName(@RequestParam @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据用户id和系统名称、 搜索集合查询待办列表(以发送时间排序)#TODO
@@ -103,8 +102,8 @@ public interface ItemAllApi {
      * @since 9.6.6
      */
     @PostMapping("/searchByUserIdAndSystemName")
-    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam("systemName") @NotBlank String systemName,
-        @RequestBody String searchMapStr, @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> searchByUserIdAndSystemName(@RequestParam @NotBlank String systemName,
+        @RequestBody String searchMapStr, @RequestParam Integer page, @RequestParam Integer rows);
 
     /**
      * 根据用户id和系统名称、 搜索集合查询列表(以发送时间排序)
@@ -114,7 +113,7 @@ public interface ItemAllApi {
      * @return {@code Y9Result<List<ActRuDetailModel>>} 通用请求返回对象 -data 流转详细信息列表
      */
     @PostMapping("/searchListBySystemName")
-    Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam("systemName") @NotBlank String systemName,
+    Y9Result<List<ActRuDetailModel>> searchListBySystemName(@RequestParam @NotBlank String systemName,
         @RequestBody String searchMapStr);
 
     /**
@@ -125,7 +124,7 @@ public interface ItemAllApi {
      * @return {@code Y9Result<List<ActRuDetailModel>>} 通用请求返回对象 -data 流转详细信息列表
      */
     @PostMapping("/searchListByUserIdAndSystemName")
-    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(
-        @RequestParam("systemName") @NotBlank String systemName, @RequestBody(required = false) String searchMapStr);
+    Y9Result<List<ActRuDetailModel>> searchListByUserIdAndSystemName(@RequestParam @NotBlank String systemName,
+        @RequestBody(required = false) String searchMapStr);
 
 }

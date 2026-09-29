@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+
 import org.apache.commons.lang3.StringUtils;
 import org.flowable.engine.HistoryService;
 import org.flowable.engine.RuntimeService;
@@ -21,7 +22,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 
 import net.risesoft.api.itemadmin.AttachmentApi;
-import net.risesoft.api.itemadmin.OfficeDoneInfoApi;
 import net.risesoft.api.itemadmin.Y9WordApi;
 import net.risesoft.api.itemadmin.core.ProcessParamApi;
 import net.risesoft.api.platform.org.OrgUnitApi;
@@ -32,8 +32,6 @@ import net.risesoft.model.platform.org.OrgUnit;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.pojo.Y9Result;
 import net.risesoft.service.CustomHistoricProcessService;
-import net.risesoft.service.CustomIdentityService;
-import net.risesoft.service.CustomTaskService;
 import net.risesoft.util.Y9DateTimeUtils;
 import net.risesoft.y9.Y9LoginUserHolder;
 
@@ -55,9 +53,6 @@ public class ProcessInstanceVueController {
     private final AttachmentApi attachmentApi;
     private final ProcessParamApi processParamApi;
     private final CustomHistoricProcessService customHistoricProcessService;
-    private final OfficeDoneInfoApi officeDoneInfoApi;
-    private final CustomIdentityService customIdentityService;
-    private final CustomTaskService customTaskService;
 
     /**
      * 彻底删除流程实例

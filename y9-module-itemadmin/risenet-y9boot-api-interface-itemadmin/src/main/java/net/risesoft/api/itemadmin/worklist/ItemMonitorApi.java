@@ -26,6 +26,6 @@ public interface ItemMonitorApi {
      * @since 9.6.6
      */
     @GetMapping("/findBySystemName")
-    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam("systemName") @NotBlank String systemName,
-        @RequestParam("page") Integer page, @RequestParam("rows") Integer rows);
+    Y9Page<ActRuDetailModel> findBySystemName(@RequestParam @NotBlank String systemName, @RequestParam Integer page,
+        @RequestParam Integer rows);
 }

@@ -29,8 +29,7 @@ public interface HistoricVariableApi {
      * @since 9.6.6
      */
     @GetMapping("/getByProcessInstanceId")
-    Y9Result<List<HistoricVariableInstanceModel>>
-        getByProcessInstanceId(@RequestParam("processInstanceId") String processInstanceId);
+    Y9Result<List<HistoricVariableInstanceModel>> getByProcessInstanceId(@RequestParam String processInstanceId);
 
     /**
      * 根据流程实例Id和流程变量的Key,获取历史流程变量的值
@@ -43,8 +42,8 @@ public interface HistoricVariableApi {
      */
     @GetMapping("/getByProcessInstanceIdAndVariableName")
     Y9Result<HistoricVariableInstanceModel> getByProcessInstanceIdAndVariableName(
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("variableName") String variableName,
-        @RequestParam(value = "year", required = false) String year);
+        @RequestParam String processInstanceId, @RequestParam String variableName,
+        @RequestParam(required = false) String year);
 
     /**
      * 根据任务Id,获取历史任务变量的值集合
@@ -54,7 +53,7 @@ public interface HistoricVariableApi {
      * @since 9.6.6
      */
     @GetMapping("/getByTaskId")
-    Y9Result<List<HistoricVariableInstanceModel>> getByTaskId(@RequestParam("taskId") String taskId);
+    Y9Result<List<HistoricVariableInstanceModel>> getByTaskId(@RequestParam String taskId);
 
     /**
      * 根据任务Id和变量Key,获取历史任务变量的值
@@ -66,8 +65,8 @@ public interface HistoricVariableApi {
      * @since 9.6.6
      */
     @GetMapping("/getByTaskIdAndVariableName")
-    Y9Result<HistoricVariableInstanceModel> getByTaskIdAndVariableName(@RequestParam("taskId") String taskId,
-        @RequestParam("variableName") String variableName, @RequestParam(value = "year", required = false) String year);
+    Y9Result<HistoricVariableInstanceModel> getByTaskIdAndVariableName(@RequestParam String taskId,
+        @RequestParam String variableName, @RequestParam(required = false) String year);
 
     /**
      * 根据流程实例Id,获取指定的流程变量
@@ -78,7 +77,7 @@ public interface HistoricVariableApi {
      * @since 9.6.6
      */
     @GetMapping(value = "/getVariables", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Map<String, Object>> getVariables(@RequestParam("processInstanceId") String processInstanceId,
+    Y9Result<Map<String, Object>> getVariables(@RequestParam String processInstanceId,
         @RequestBody Collection<String> keys);
 
 }

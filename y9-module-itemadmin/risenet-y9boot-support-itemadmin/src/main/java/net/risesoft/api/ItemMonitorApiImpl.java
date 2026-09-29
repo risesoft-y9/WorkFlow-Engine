@@ -18,7 +18,6 @@ import net.risesoft.entity.ActRuDetail;
 import net.risesoft.model.itemadmin.core.ActRuDetailModel;
 import net.risesoft.pojo.Y9Page;
 import net.risesoft.service.core.ActRuDetailService;
-import net.risesoft.service.util.ItemPageService;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -31,8 +30,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @RequiredArgsConstructor
 @RequestMapping(value = "/services/rest/itemMonitor", produces = MediaType.APPLICATION_JSON_VALUE)
 public class ItemMonitorApiImpl implements ItemMonitorApi {
-
-    private final ItemPageService itemPageService;
 
     private final ActRuDetailService actRuDetailService;
 

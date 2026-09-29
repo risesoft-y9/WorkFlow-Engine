@@ -3,6 +3,7 @@ package net.risesoft.api;
 import java.util.ArrayList;
 import java.util.List;
 
+
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -11,8 +12,6 @@ import org.springframework.web.bind.annotation.RestController;
 import lombok.RequiredArgsConstructor;
 
 import net.risesoft.api.itemadmin.CommonSentencesApi;
-import net.risesoft.api.platform.org.PersonApi;
-import net.risesoft.api.platform.user.UserApi;
 import net.risesoft.entity.commonsentences.CommonSentences;
 import net.risesoft.model.itemadmin.CommonSentencesModel;
 import net.risesoft.pojo.Y9Result;
@@ -33,10 +32,6 @@ import net.risesoft.y9.util.Y9BeanUtil;
 public class CommonSentencesApiImpl implements CommonSentencesApi {
 
     private final CommonSentencesService commonSentencesService;
-
-    private final PersonApi personApi;
-
-    private final UserApi userApi;
 
     /**
      * 删除常用语

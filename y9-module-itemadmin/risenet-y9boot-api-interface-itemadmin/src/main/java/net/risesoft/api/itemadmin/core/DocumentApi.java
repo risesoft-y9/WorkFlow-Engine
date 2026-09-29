@@ -39,7 +39,7 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/add")
-    Y9Result<DocumentDetailModel> add(@RequestParam("itemId") String itemId);
+    Y9Result<DocumentDetailModel> add(@RequestParam String itemId);
 
     /**
      * 新建
@@ -50,7 +50,7 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/add4Old")
-    Y9Result<OpenDataModel> add4Old(@RequestParam("itemId") String itemId, @RequestParam("mobile") boolean mobile);
+    Y9Result<OpenDataModel> add4Old(@RequestParam String itemId, @RequestParam boolean mobile);
 
     /**
      * 新建 用于一个开始节点经过排他网关到达多个任务节点的情况，具体到达哪个任务节点开始，需要由用户选择
@@ -62,8 +62,8 @@ public interface DocumentApi {
      * @since 9.6.8
      */
     @GetMapping("/addWithStartTaskDefKey")
-    Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam("itemId") String itemId,
-        @RequestParam("startTaskDefKey") String startTaskDefKey, @RequestParam("mobile") boolean mobile);
+    Y9Result<DocumentDetailModel> addWithStartTaskDefKey(@RequestParam String itemId,
+        @RequestParam String startTaskDefKey, @RequestParam boolean mobile);
 
     /**
      * 办件办结
@@ -74,7 +74,7 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @PostMapping("/complete")
-    Y9Result<Object> complete(@RequestParam("taskId") String taskId) throws Exception;
+    Y9Result<Object> complete(@RequestParam String taskId) throws Exception;
 
     /**
      * 办件办结
@@ -85,8 +85,7 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @PostMapping("/completeSub")
-    Y9Result<Object> completeSub(@RequestParam("taskId") String taskId, @RequestParam("userList") List<String> userList)
-        throws Exception;
+    Y9Result<Object> completeSub(@RequestParam String taskId, @RequestParam List<String> userList) throws Exception;
 
     /**
      * 获取发送选人信息
@@ -101,12 +100,9 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/docUserChoise")
-    Y9Result<DocUserChoiseModel> docUserChoise(@RequestParam("itemId") String itemId,
-        @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam(value = "taskId", required = false) String taskId,
-        @RequestParam("routeToTask") String routeToTask,
-        @RequestParam(value = "processInstanceId", required = false) String processInstanceId);
+    Y9Result<DocUserChoiseModel> docUserChoise(@RequestParam String itemId, @RequestParam String processDefinitionKey,
+        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskId,
+        @RequestParam String routeToTask, @RequestParam(required = false) String processInstanceId);
 
     /**
      * 编辑文档
@@ -120,10 +116,8 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/edit")
-    Y9Result<OpenDataModel> edit(@RequestParam("itembox") String itembox,
-        @RequestParam(value = "taskId", required = false) String taskId,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("itemId") String itemId,
-        @RequestParam("mobile") boolean mobile);
+    Y9Result<OpenDataModel> edit(@RequestParam String itembox, @RequestParam(required = false) String taskId,
+        @RequestParam String processInstanceId, @RequestParam String itemId, @RequestParam boolean mobile);
 
     /**
      * 获取抄送件详情
@@ -135,9 +129,8 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/editChaoSong")
-    Y9Result<DocumentDetailModel> editChaoSong(@RequestParam("id") String id,
-        @RequestParam("processInstanceId") String processInstanceId, @RequestParam("mobile") boolean mobile,
-        @RequestParam("itembox") String itembox);
+    Y9Result<DocumentDetailModel> editChaoSong(@RequestParam String id, @RequestParam String processInstanceId,
+        @RequestParam boolean mobile, @RequestParam String itembox);
 
     /**
      * 编辑文档
@@ -148,9 +141,8 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/editDoing")
-    Y9Result<DocumentDetailModel> editDoing(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("documentId") String documentId, @RequestParam("isAdmin") boolean isAdmin,
-        @RequestParam("itemBox") ItemBoxTypeEnum itemBox, @RequestParam boolean mobile);
+    Y9Result<DocumentDetailModel> editDoing(@RequestParam String processInstanceId, @RequestParam String documentId,
+        @RequestParam boolean isAdmin, @RequestParam ItemBoxTypeEnum itemBox, @RequestParam boolean mobile);
 
     /**
      * 编辑文档
@@ -161,9 +153,8 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/editDone")
-    Y9Result<DocumentDetailModel> editDone(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("documentId") String documentId, @RequestParam("isAdmin") boolean isAdmin,
-        @RequestParam("itemBox") ItemBoxTypeEnum itemBox, @RequestParam("mobile") boolean mobile);
+    Y9Result<DocumentDetailModel> editDone(@RequestParam String processInstanceId, @RequestParam String documentId,
+        @RequestParam boolean isAdmin, @RequestParam ItemBoxTypeEnum itemBox, @RequestParam boolean mobile);
 
     /**
      * 编辑草稿
@@ -175,8 +166,8 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/editDraft")
-    Y9Result<DocumentDetailModel> editDraft(@RequestParam("itemId") String itemId,
-        @RequestParam("processSerialNumber") String processSerialNumber, @RequestParam("mobile") boolean mobile);
+    Y9Result<DocumentDetailModel> editDraft(@RequestParam String itemId, @RequestParam String processSerialNumber,
+        @RequestParam boolean mobile);
 
     /**
      * 编辑文档
@@ -187,8 +178,7 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/editRecycle")
-    Y9Result<DocumentDetailModel> editRecycle(@RequestParam("processInstanceId") String processInstanceId,
-        @RequestParam("mobile") boolean mobile);
+    Y9Result<DocumentDetailModel> editRecycle(@RequestParam String processInstanceId, @RequestParam boolean mobile);
 
     /**
      * 编辑文档
@@ -199,8 +189,7 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/editTodo")
-    Y9Result<DocumentDetailModel> editTodo(@RequestParam(value = "taskId", required = false) String taskId,
-        @RequestParam("mobile") boolean mobile);
+    Y9Result<DocumentDetailModel> editTodo(@RequestParam(required = false) String taskId, @RequestParam boolean mobile);
 
     /**
      * 带自定义变量发送
@@ -214,10 +203,9 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/forwarding", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<String> forwarding(@RequestParam("taskId") String taskId, @RequestParam("userChoice") String userChoice,
-        @RequestParam("routeToTaskId") String routeToTaskId,
-        @RequestParam(value = "sponsorHandle", required = false) String sponsorHandle,
-        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid);
+    Y9Result<String> forwarding(@RequestParam String taskId, @RequestParam String userChoice,
+        @RequestParam String routeToTaskId, @RequestParam(required = false) String sponsorHandle,
+        @RequestParam(required = false) String sponsorGuid);
 
     /**
      * 获取签收任务配置
@@ -227,7 +215,7 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/getAllStartTaskDefKey")
-    Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam("itemId") String itemId);
+    Y9Result<List<ItemStartNodeRoleModel>> getAllStartTaskDefKey(@RequestParam String itemId);
 
     /**
      * 获取按钮
@@ -237,7 +225,7 @@ public interface DocumentApi {
      * @since 9.6.8
      */
     @GetMapping("/getButtons")
-    Y9Result<List<ItemButtonModel>> getButtons(@RequestParam(value = "taskId", required = false) String taskId);
+    Y9Result<List<ItemButtonModel>> getButtons(@RequestParam(required = false) String taskId);
 
     /**
      * 解析用户
@@ -252,12 +240,9 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/parserUser")
-    Y9Result<List<String>> parserUser(@RequestParam("itemId") String itemId,
-        @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("routeToTaskId") String routeToTaskId,
-        @RequestParam(value = "taskDefName", required = false) String taskDefName,
-        @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
-        @RequestParam(value = "multiInstance", required = false) String multiInstance);
+    Y9Result<List<String>> parserUser(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String routeToTaskId, @RequestParam(required = false) String taskDefName,
+        @RequestParam(required = false) String processInstanceId, @RequestParam(required = false) String multiInstance);
 
     /**
      * 带自定义变量发送
@@ -287,16 +272,12 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/saveAndForwardingByTaskKey", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<String> saveAndForwardingByTaskKey(
-        @RequestParam(value = "processInstanceId", required = false) String processInstanceId,
-        @RequestParam(value = "taskId", required = false) String taskId,
-        @RequestParam(value = "sponsorHandle", required = false) String sponsorHandle,
-        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam("userChoice") String userChoice,
-        @RequestParam(value = "sponsorGuid", required = false) String sponsorGuid,
-        @RequestParam("routeToTaskId") String routeToTaskId,
-        @RequestParam("startRouteToTaskId") String startRouteToTaskId, @RequestBody Map<String, Object> variables);
+    Y9Result<String> saveAndForwardingByTaskKey(@RequestParam(required = false) String processInstanceId,
+        @RequestParam(required = false) String taskId, @RequestParam(required = false) String sponsorHandle,
+        @RequestParam String itemId, @RequestParam String processSerialNumber,
+        @RequestParam String processDefinitionKey, @RequestParam String userChoice,
+        @RequestParam(required = false) String sponsorGuid, @RequestParam String routeToTaskId,
+        @RequestParam String startRouteToTaskId, @RequestBody Map<String, Object> variables);
 
     /**
      * 带自定义变量发送
@@ -308,8 +289,8 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @PostMapping(value = "/saveAndSubmitTo", consumes = MediaType.APPLICATION_JSON_VALUE)
-    Y9Result<Object> saveAndSubmitTo(@RequestParam(value = "taskId", required = false) String taskId,
-        @RequestParam("itemId") String itemId, @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<Object> saveAndSubmitTo(@RequestParam(required = false) String taskId, @RequestParam String itemId,
+        @RequestParam String processSerialNumber);
 
     /**
      * 获取签收任务配置
@@ -322,10 +303,8 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @GetMapping("/signTaskConfig")
-    Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam("itemId") String itemId,
-        @RequestParam("processDefinitionId") String processDefinitionId,
-        @RequestParam("taskDefinitionKey") String taskDefinitionKey,
-        @RequestParam("processSerialNumber") String processSerialNumber);
+    Y9Result<SignTaskConfigModel> signTaskConfig(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam String taskDefinitionKey, @RequestParam String processSerialNumber);
 
     /**
      * 启动流程
@@ -338,9 +317,8 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @PostMapping("/startProcess")
-    Y9Result<StartProcessResultModel> startProcess(@RequestParam("itemId") String itemId,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processDefinitionKey") String processDefinitionKey) throws Exception;
+    Y9Result<StartProcessResultModel> startProcess(@RequestParam String itemId,
+        @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey) throws Exception;
 
     /**
      * 启动流程，多人
@@ -354,10 +332,9 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @PostMapping("/startProcess1")
-    Y9Result<StartProcessResultModel> startProcess(@RequestParam("itemId") String itemId,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processDefinitionKey") String processDefinitionKey, @RequestParam("userIds") String userIds)
-        throws Exception;
+    Y9Result<StartProcessResultModel> startProcess(@RequestParam String itemId,
+        @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey,
+        @RequestParam String userIds) throws Exception;
 
     /**
      * 启动流程
@@ -370,10 +347,9 @@ public interface DocumentApi {
      * @since 9.6.6
      */
     @PostMapping("/startProcessByTaskKey")
-    Y9Result<StartProcessResultModel> startProcessByTheTaskKey(@RequestParam("itemId") String itemId,
-        @RequestParam("processSerialNumber") String processSerialNumber,
-        @RequestParam("processDefinitionKey") String processDefinitionKey,
-        @RequestParam(name = "startTaskDefKey", required = false) String startTaskDefKey,
-        @RequestBody List<String> startOrgUnitIdList) throws Exception;
+    Y9Result<StartProcessResultModel> startProcessByTheTaskKey(@RequestParam String itemId,
+        @RequestParam String processSerialNumber, @RequestParam String processDefinitionKey,
+        @RequestParam(required = false) String startTaskDefKey, @RequestBody List<String> startOrgUnitIdList)
+        throws Exception;
 
 }
