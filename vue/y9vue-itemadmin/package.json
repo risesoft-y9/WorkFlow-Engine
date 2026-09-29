@@ -1,6 +1,6 @@
 {
     "name": "y9vue-itemadmin",
-    "version": "9.6.11-SNAPSHOT",
+    "version": "9.6.11",
     "scripts": {
         "serve": "vite  --mode development",
         "serve-local": "vite  --mode localEnv",
