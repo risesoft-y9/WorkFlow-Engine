@@ -1,9 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <databaseChangeLog
-        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xmlns="http://www.liquibase.org/xml/ns/dbchangelog"
+        xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
         xsi:schemaLocation="http://www.liquibase.org/xml/ns/dbchangelog
                       http://www.liquibase.org/xml/ns/dbchangelog/dbchangelog-4.9.xsd">
 
-    <include file="liquibase/public/flowable-modeler-app-db-changelog.xml"/>
+    <include file="liquibase/itemadmin/tenant/init.xml"/>
+    <includeAll path="liquibase/itemadmin/tenant/release/" resourceComparator="net.risesoft.liquibase.VersionComparator" errorIfMissingOrEmpty="false"/>
+
 </databaseChangeLog>
