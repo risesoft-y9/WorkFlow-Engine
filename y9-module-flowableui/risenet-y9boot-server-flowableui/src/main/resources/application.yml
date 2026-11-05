@@ -45,10 +45,6 @@ spring:
             - optional:nacos:flowableUI.yml
             #- optional:nacos:test01.yml?group=group_02
             #- optional:nacos:test02.yml?group=group_03&refreshEnabled=false
-    cache:
-        redis:
-            time-to-live: PT2H
-        type: redis
     data:
         jpa:
             repositories:
@@ -142,20 +138,6 @@ spring:
         view:
             prefix: /WEB-INF/jsp/
             suffix: .jsp
-    redis:
-        database: 8
-        host: 192.168.3.37
-        password: Y9i-83204585
-        port: 6379
-        lettuce:
-            pool:
-                max-active: 8
-                max-idle: 8
-                max-wait: -1
-                min-idle: 0
-            shutdown-timeout: 100ms
-        ssl: false
-        timeout: 10000
     servlet:
         multipart:
             max-file-size: 200MB
@@ -251,10 +233,6 @@ y9:
             enabled: true
             # kafka, api
             reportMethod: kafka
-        session:
-            redis:
-                enabled: true
-                maxInactiveIntervalInSeconds: 3600
         security:
             enabled: true
             csrf:

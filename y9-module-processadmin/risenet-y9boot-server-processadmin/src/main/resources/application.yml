@@ -150,20 +150,6 @@ spring:
         view:
             prefix: /WEB-INF/jsp/
             suffix: .jsp
-    redis:
-        database: 8
-        host: localhost
-        password: 111111
-        port: 6379
-        lettuce:
-            pool:
-                max-active: 8
-                max-idle: 8
-                max-wait: -1
-                min-idle: 0
-            shutdown-timeout: 100ms
-        ssl: false
-        timeout: 10000
     servlet:
         multipart:
             max-file-size: 200MB
@@ -225,10 +211,6 @@ y9:
             enabled: true
             # kafka, api
             reportMethod: kafka
-        session:
-            redis:
-                enabled: true
-                maxInactiveIntervalInSeconds: 3600
         security:
             enabled: true
             csrf:
