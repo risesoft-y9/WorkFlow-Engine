@@ -75,6 +75,7 @@ import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9Context;
 import net.risesoft.y9.Y9FlowableHolder;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.elasticsearch.Y9IndexNameResolver;
 import net.risesoft.y9.pubsub.event.Y9EntityCreatedEvent;
 import net.risesoft.y9.pubsub.event.Y9EntityDeletedEvent;
 import net.risesoft.y9.pubsub.event.Y9EntityUpdatedEvent;
@@ -90,6 +91,8 @@ import net.risesoft.y9.util.Y9StringUtil;
 @Service
 @RequiredArgsConstructor
 public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
+
+    private final Y9IndexNameResolver indexNameResolver;
 
     private final ChaoSongInfoRepository chaoSongInfoRepository;
 
@@ -541,7 +544,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.CHAONSONG_INFO);
         SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
         List<ChaoSongInfo> csList = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(csList, pageable, searchHits.getTotalHits());
@@ -594,7 +597,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.CHAONSONG_INFO);
         SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
         List<ChaoSongInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<ChaoSongInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
@@ -780,7 +783,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.CHAONSONG_INFO);
         SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
         List<ChaoSongInfo> csList = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         return new PageImpl<>(csList, pageable, searchHits.getTotalHits());
@@ -810,7 +813,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.CHAONSONG_INFO);
         SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
         List<ChaoSongInfo> csList = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         return new PageImpl<>(csList, pageable, searchHits.getTotalHits());
@@ -839,7 +842,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.CHAONSONG_INFO);
         SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
         List<ChaoSongInfo> csList = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         return new PageImpl<>(csList, pageable, searchHits.getTotalHits());
@@ -857,7 +860,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.CHAONSONG_INFO);
         SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
         List<ChaoSongInfo> csList = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         return new PageImpl<>(csList, pageable, searchHits.getTotalHits());
@@ -875,7 +878,7 @@ public class ChaoSongInfoServiceImpl implements ChaoSongInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.CHAONSONG_INFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.CHAONSONG_INFO);
         SearchHits<ChaoSongInfo> searchHits = elasticsearchOperations.search(query, ChaoSongInfo.class, index);
         List<ChaoSongInfo> csList = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         return new PageImpl<>(csList, pageable, searchHits.getTotalHits());

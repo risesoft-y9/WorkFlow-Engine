@@ -42,6 +42,7 @@ import net.risesoft.service.ErrorLogService;
 import net.risesoft.service.OfficeDoneInfoService;
 import net.risesoft.util.Y9EsIndexConst;
 import net.risesoft.y9.Y9LoginUserHolder;
+import net.risesoft.y9.elasticsearch.Y9IndexNameResolver;
 import net.risesoft.y9.util.Y9BeanUtil;
 
 /**
@@ -55,7 +56,7 @@ import net.risesoft.y9.util.Y9BeanUtil;
 @Transactional(readOnly = true)
 public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
-    private static final IndexCoordinates INDEX = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+    private final Y9IndexNameResolver indexNameResolver;
 
     private final ErrorLogService errorLogService;
 
@@ -87,7 +88,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
             }
             Query query = new CriteriaQuery(criteria);
 
-            return (int)elasticsearchOperations.count(query, INDEX);
+            return (int)elasticsearchOperations.count(query, indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO));
         } catch (Exception e) {
             LOGGER.warn("异常", e);
         }
@@ -106,7 +107,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
             }
             Query query = new CriteriaQuery(criteria);
-            long count = elasticsearchOperations.count(query, INDEX);
+            long count = elasticsearchOperations.count(query, indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO));
             return (int)count;
         } catch (Exception e) {
             LOGGER.warn("异常", e);
@@ -126,7 +127,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 criteria.subCriteria(new Criteria(ItemConsts.SYSTEMNAME_KEY).is(systemName));
             }
             Query query = new CriteriaQuery(criteria);
-            long count = elasticsearchOperations.count(query, INDEX);
+            long count = elasticsearchOperations.count(query, indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO));
             return (int)count;
         } catch (Exception e) {
             LOGGER.warn("异常", e);
@@ -144,7 +145,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
                 criteria.subCriteria(new Criteria(ItemConsts.ITEMID_KEY).is(itemId));
             }
             Query query = new CriteriaQuery(criteria);
-            long count = elasticsearchOperations.count(query, INDEX);
+            long count = elasticsearchOperations.count(query, indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO));
             return (int)count;
         } catch (Exception e) {
             LOGGER.warn("异常", e);
@@ -209,7 +210,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO);
         SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(query, OfficeDoneInfo.class, index);
         List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
@@ -307,7 +308,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
 
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO);
         SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(query, OfficeDoneInfo.class, index);
         List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
@@ -371,7 +372,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO);
         SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(query, OfficeDoneInfo.class, index);
         List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
@@ -435,7 +436,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO);
         SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(query, OfficeDoneInfo.class, index);
         List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
@@ -490,7 +491,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO);
         SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(query, OfficeDoneInfo.class, index);
         List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
@@ -549,7 +550,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO);
         SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(query, OfficeDoneInfo.class, index);
         List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
@@ -599,7 +600,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO);
         SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(query, OfficeDoneInfo.class, index);
         List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());
@@ -650,7 +651,7 @@ public class OfficeDoneInfoServiceImpl implements OfficeDoneInfoService {
         }
         Query query = new CriteriaQuery(criteria).setPageable(pageable);
         query.setTrackTotalHits(true);
-        IndexCoordinates index = IndexCoordinates.of(Y9EsIndexConst.OFFICE_DONEINFO);
+        IndexCoordinates index = indexNameResolver.coordinates(Y9EsIndexConst.OFFICE_DONEINFO);
         SearchHits<OfficeDoneInfo> searchHits = elasticsearchOperations.search(query, OfficeDoneInfo.class, index);
         List<OfficeDoneInfo> list0 = searchHits.stream().map(SearchHit::getContent).collect(Collectors.toList());
         Page<OfficeDoneInfo> pageList = new PageImpl<>(list0, pageable, searchHits.getTotalHits());

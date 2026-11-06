@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Document(indexName = "y9_chaosonginfo")
+@Document(indexName = "#{@y9IndexNameResolver.resolve('y9_chaosonginfo')}")
 @NoArgsConstructor
 @Data
 public class ChaoSongInfo implements Serializable {

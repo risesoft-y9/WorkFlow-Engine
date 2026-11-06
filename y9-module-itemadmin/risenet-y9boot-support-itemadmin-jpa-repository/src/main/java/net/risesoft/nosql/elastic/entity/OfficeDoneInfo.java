@@ -16,7 +16,7 @@ import lombok.NoArgsConstructor;
  * @author zhangchongjie
  * @date 2022/12/20
  */
-@Document(indexName = "y9_office_doneinfo")
+@Document(indexName = "#{@y9IndexNameResolver.resolve('y9_office_doneinfo')}")
 @NoArgsConstructor
 @Data
 public class OfficeDoneInfo implements Serializable {
