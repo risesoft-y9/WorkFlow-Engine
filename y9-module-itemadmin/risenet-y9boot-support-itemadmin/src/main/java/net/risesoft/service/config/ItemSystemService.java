@@ -51,7 +51,7 @@ public interface ItemSystemService {
      * 校验系统英文名称是否已存在
      *
      * @param name 系统英文名称
-     * @param id   当前记录id（编辑时传入，排除自身）
+     * @param id 当前记录id（编辑时传入，排除自身）
      * @return true=已存在, false=不存在
      */
     boolean isNameExist(String name, String id);
@@ -60,7 +60,7 @@ public interface ItemSystemService {
      * 校验系统中文名称是否已存在
      *
      * @param cnName 系统中文名称
-     * @param id     当前记录id（编辑时传入，排除自身）
+     * @param id 当前记录id（编辑时传入，排除自身）
      * @return true=已存在, false=不存在
      */
     boolean isCnNameExist(String cnName, String id);

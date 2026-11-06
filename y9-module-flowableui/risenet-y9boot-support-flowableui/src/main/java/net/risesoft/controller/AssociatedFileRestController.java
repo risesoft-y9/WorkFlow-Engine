@@ -53,8 +53,7 @@ public class AssociatedFileRestController {
     public Y9Result<String> delAssociatedFile(@RequestParam @NotBlank String processSerialNumber,
         @RequestParam @NotBlank String processInstanceIds) {
         try {
-            Y9Result<Object> y9Result =
-                associatedFileApi.deleteAssociatedFile(processSerialNumber, processInstanceIds);
+            Y9Result<Object> y9Result = associatedFileApi.deleteAssociatedFile(processSerialNumber, processInstanceIds);
             if (y9Result.isSuccess()) {
                 return Y9Result.successMsg("删除成功");
             }

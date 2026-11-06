@@ -2,7 +2,6 @@ package net.risesoft.api;
 
 import java.util.List;
 
-
 import org.flowable.identitylink.api.IdentityLink;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;

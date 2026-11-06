@@ -60,8 +60,8 @@ public class DocumentWordApiImpl implements DocumentWordApi {
      * @return {@code Y9Result<List<DocumentWordModel>>}
      */
     @Override
-    public Y9Result<List<DocumentWordModel>> findByProcessSerialNumberAndWordType(@RequestParam String processSerialNumber,
-        @RequestParam String wordType) {
+    public Y9Result<List<DocumentWordModel>>
+        findByProcessSerialNumberAndWordType(@RequestParam String processSerialNumber, @RequestParam String wordType) {
         List<DocumentWordModel> list =
             documentWordService.findByProcessSerialNumberAndWordType(processSerialNumber, wordType);
         return Y9Result.success(list);
@@ -75,8 +75,8 @@ public class DocumentWordApiImpl implements DocumentWordApi {
      * @return {@code Y9Result<List<DocumentWordModel>>}
      */
     @Override
-    public Y9Result<List<DocumentWordModel>> findHisByProcessSerialNumberAndWordType(@RequestParam String processSerialNumber,
-        @RequestParam String wordType) {
+    public Y9Result<List<DocumentWordModel>> findHisByProcessSerialNumberAndWordType(
+        @RequestParam String processSerialNumber, @RequestParam String wordType) {
         List<DocumentHistoryWord> list = documentHistoryWordRepository
             .findByProcessSerialNumberAndWordTypeOrderByCreateTimeAsc(processSerialNumber, wordType);
         List<DocumentWordModel> resultList = new ArrayList<>();
@@ -132,9 +132,8 @@ public class DocumentWordApiImpl implements DocumentWordApi {
      * @return {@code Y9Result<Boolean>}
      */
     @Override
-    public Y9Result<Boolean> getPermissionWord(@RequestParam String itemId,
-        @RequestParam String processDefinitionId, @RequestParam(required = false) String taskDefKey,
-        @RequestParam String wordType) {
+    public Y9Result<Boolean> getPermissionWord(@RequestParam String itemId, @RequestParam String processDefinitionId,
+        @RequestParam(required = false) String taskDefKey, @RequestParam String wordType) {
         return Y9Result.success(itemWordConfService.getPermissionWord(Y9FlowableHolder.getPositionId(), itemId,
             processDefinitionId, taskDefKey, wordType));
     }

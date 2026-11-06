@@ -6,7 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-
 import org.flowable.task.api.DelegationState;
 import org.flowable.task.api.Task;
 import org.springframework.cloud.openfeign.SpringQueryMap;

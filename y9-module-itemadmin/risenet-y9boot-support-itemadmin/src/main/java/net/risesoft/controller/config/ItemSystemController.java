@@ -90,7 +90,7 @@ public class ItemSystemController {
      * 校验系统英文名称是否已存在
      *
      * @param name 系统英文名称
-     * @param id   当前记录id（编辑时传入，排除自身）
+     * @param id 当前记录id（编辑时传入，排除自身）
      * @return Y9Result<Boolean> true=已存在
      */
     @GetMapping(value = "/checkName")
@@ -103,7 +103,7 @@ public class ItemSystemController {
      * 校验系统中文名称是否已存在
      *
      * @param cnName 系统中文名称
-     * @param id     当前记录id（编辑时传入，排除自身）
+     * @param id 当前记录id（编辑时传入，排除自身）
      * @return Y9Result<Boolean> true=已存在
      */
     @GetMapping(value = "/checkCnName")

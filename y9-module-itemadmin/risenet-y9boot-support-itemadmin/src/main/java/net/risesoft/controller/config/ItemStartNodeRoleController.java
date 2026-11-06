@@ -2,7 +2,6 @@ package net.risesoft.controller.config;
 
 import java.util.List;
 
-
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.http.MediaType;
 import org.springframework.web.bind.annotation.GetMapping;
