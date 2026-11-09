@@ -5,7 +5,6 @@ import org.springframework.boot.web.servlet.FilterRegistrationBean;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.Ordered;
-import org.springframework.kafka.annotation.EnableKafka;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
 import lombok.extern.slf4j.Slf4j;
@@ -26,7 +25,6 @@ import feign.RequestInterceptor;
 @Configuration
 @EnableScheduling
 @EnableConfigurationProperties({Y9Properties.class, Y9ItemAdminProperties.class})
-@EnableKafka
 @Slf4j
 public class ItemAdminConfiguration {
 
