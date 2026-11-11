@@ -48,7 +48,7 @@ public class ItemAdminApplicationReadyListener implements ApplicationListener<Ap
             if (null != y9System) {
                 App app = appApi.findBySystemIdAndCustomId(y9System.getId(), ItemInitDataConsts.SYSTEM_NAME).getData();
                 if (null == app) {
-                    String appUrl = y9Config.getCommon().getBaseUrl() + "/" + Y9Context.getSystemName() + "?itemId="
+                    String appUrl = y9Config.getCommon().getFlowableBaseUrl() + "?itemId="
                         + ItemInitDataConsts.ITEM_ID;
                     // 生成应用并自动租用
                     appApi.registerApp(ItemInitDataConsts.Y9_SYSTEM_NAME, ItemInitDataConsts.SYSTEM_CN_NAME, appUrl,
